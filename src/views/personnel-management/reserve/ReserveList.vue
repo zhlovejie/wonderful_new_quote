@@ -180,7 +180,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '操作时间',
+    title: '创建时间',
     key: 'createdTime',
     dataIndex: 'createdTime'
   },
@@ -399,7 +399,7 @@ export default {
           }else if(action.isJson){
             var reader = new FileReader()
             reader.onload = function(e){
-              let _res = null 
+              let _res = null
               try{
                 _res = JSON.parse(e.target.result)
               }catch(err){
