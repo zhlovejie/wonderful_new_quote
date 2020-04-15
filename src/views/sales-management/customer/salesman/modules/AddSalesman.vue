@@ -1,0 +1,182 @@
+<template>
+  <a-modal
+    title="新增销售人员"
+    :width="640"
+    :visible="visible"
+    :destroyOnClose="true"
+    @ok="handleSubmit"
+    @cancel="handleCancel"
+    :confirmLoading="confirmLoading"
+    :maskClosable="false"
+  >
+    <div>
+      <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;">
+        <a-form-item label="选择销售人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            showSearch
+            placeholder="请选择销售人员"
+            optionFilterProp="children"
+            :filterOption="userFilter"
+            @change="checkUser"
+            v-decorator="['userId',{rules: [{required: true, message: '请选择销售人员！'}]}]">
+            <a-select-option v-for="user in allUser" :key="user.index" :value="user.id">{{ user.trueName }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item label="选择对应领导" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            showSearch
+            placeholder="请选择对应领导"
+            optionFilterProp="children"
+            :filterOption="userFilter"
+            v-decorator="['leader',{rules: [{required: true, message: '请选择对应领导'}]}]">
+            <a-select-option v-for="user in allUser" :key="user.index" :value="user.id">{{ user.trueName }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item label="被分配权" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeDstb()"/>
+          <a-input type="hidden" v-decorator="['canDistribute', {rules: [{required: true,message: '请选择被分配权！'}],initialValue:1}]"/>
+        </a-form-item>
+        <a-form-item label="提取客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeExtc()"/>
+          <a-input type="hidden" v-decorator="['canExtract', {rules: [{required: true,message: '请选择提取客户权限！'}],initialValue:1}]"/>
+        </a-form-item>
+        <a-form-item label="录入部门客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeEtdp()"/>
+          <a-input type="hidden" v-decorator="['canEnterDep', {rules: [{required: true,message: '请选择录入部门客户权限！'}],initialValue:1}]"/>
+        </a-form-item>
+        <a-form-item label="给其他人员录入客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeEtoh()"/>
+          <a-input type="hidden" v-decorator="['canEnterOther', {rules: [{required: true,message: '请选择给其他人员录入客户权限！'}],initialValue:1}]"/>
+        </a-form-item>
+        <a-form-item label="录入公共客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeRtcm()"/>
+          <a-input type="hidden" v-decorator="['canEnterCommon', {rules: [{required: true,message: '请选择录入公共客户权限！'}],initialValue:1}]"/>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
+</template>
+
+<script>
+import ATextarea from 'ant-design-vue/es/input/TextArea'
+import { getAllUser, addSalesman, getOneSalesman } from '@/api/customer/salesman'
+
+export default {
+  name: 'AddSalesman',
+  components: { ATextarea },
+  data () {
+    return {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 12 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 }
+      },
+      form: this.$form.createForm(this), // 只有这样注册后，才能通过表单拉取数据
+      visible: false, // 表单对话框是否可见
+      confirmLoading: false, // 确定按钮后是否显示加载图 loading
+      layout: 'inline', // 表单布局方式
+      allUser: [],
+      showMsg: false, // 是否显示提示框
+      message: '', // 提示信息
+      messageType: '' // 提示类型
+    }
+  },
+  created () {
+    getAllUser().then(res => {
+      if (res.code === 200) {
+        this.allUser = res.data
+      } else {
+        this.$message.error(res.msg)
+      }
+    })
+  },
+  methods: {
+    checkUser (value) {
+      getOneSalesman({ userId: value }).then(res => {
+        if (res.code === 200) {
+          if (res.data != null && res.data.length > 0) {
+            this.form.setFields({ 'userId': { value: '', errors: [{ 'message': '该人员已经是销售人员!', 'field': 'userId' }] } })
+          }
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    changeDstb (checked) {
+      if (checked) {
+        this.form.setFieldsValue({ 'canDistribute': 1 })
+      } else {
+        this.form.setFieldsValue({ 'canDistribute': 0 })
+      }
+    },
+    changeExtc (checked) {
+      if (checked) {
+        this.form.setFieldsValue({ 'canExtract': 1 })
+      } else {
+        this.form.setFieldsValue({ 'canExtract': 0 })
+      }
+    },
+    changeEtdp (checked) {
+      if (checked) {
+        this.form.setFieldsValue({ 'canEnterDep': 1 })
+      } else {
+        this.form.setFieldsValue({ 'canEnterDep': 0 })
+      }
+    },
+    changeEtoh (checked) {
+      if (checked) {
+        this.form.setFieldsValue({ 'canEnterOther': 1 })
+      } else {
+        this.form.setFieldsValue({ 'canEnterOther': 0 })
+      }
+    },
+    changeRtcm (checked) {
+      if (checked) {
+        this.form.setFieldsValue({ 'canEnterCommon': 1 })
+      } else {
+        this.form.setFieldsValue({ 'canEnterCommon': 0 })
+      }
+    },
+    userFilter (input, option) { // 下拉框搜索
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    showForm () {
+      this.visible = true
+    },
+    handleCancel () {
+      this.form.resetFields() // 清空表
+      this.visible = false
+    },
+    handleSubmit () {
+      const { form: { validateFields } } = this
+      this.confirmLoading = true
+      // 通过validateFields的方法，能够校验必填项是否有值，若无，则页面会给出警告！
+      // 执行this.form.resetFields()，则会将表单清空。
+      validateFields((errors, values) => {
+        if (!errors) {
+          addSalesman(values).then(res => {
+            if (res.code === 200) {
+              this.visible = false
+              this.$emit('ok')// 刷新父组件
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+        }
+        this.confirmLoading = false
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
