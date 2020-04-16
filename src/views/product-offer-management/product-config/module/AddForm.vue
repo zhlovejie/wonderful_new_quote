@@ -129,7 +129,10 @@ export default {
 
       await that.init() 
       that.visible = true
-      that.form.setFieldsValue(that.record)
+      that.$nextTick(() =>that.form.setFieldsValue({
+        itemName:that.record.itemName,
+        remarks:that.record.remarks
+      }))
     },
   }
 }

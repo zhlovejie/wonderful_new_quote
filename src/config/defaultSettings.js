@@ -21,8 +21,8 @@ export default {
   //baseURL:'http://ihcvvw.natappfree.cc/oa',
   //baseURL: 'http://23yd043297.51mypc.cn/oa',   //张恒
   //baseURL:'http://192.168.99.166:8999/oa',
-  //baseURL:'http://192.168.99.108:8999/oa',
-  baseURL:'http://192.168.99.166:8999/oa',
+  baseURL:'http://192.168.99.108:8999/oa',
+  //baseURL:'http://192.168.99.166:8999/oa',
   // baseURL: 'http://192.168.99.127:8091', // 测试
   // baseURL: 'http://192.168.99.172:8091',   //余
   //baseURL:'http://192.168.99.187:8091',

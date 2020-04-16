@@ -92,3 +92,45 @@ export function priceAdjustUpdateRecordList (parameter) {
 
 
 //---------------------中控系统模块配置清单-END--------
+
+
+//---------------------系列产品配置清单------------
+/**系列产品配置列表 */
+export function priceAdjustProductConfigList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/productConfigList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**系列产品配置根据id获取详情 */
+export function priceAdjustProductConfigDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/getProductConfig',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**系列产品配置删除 */
+export function priceAdjustProductConfigDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/delProductConfig',
+    method: 'get',
+    params: parameter
+  })
+}
+/**系列产品新增或修改产品配置 */
+export function priceAdjustProductConfigAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/productConfigAddAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//---------------------系列产品配置清单-END--------

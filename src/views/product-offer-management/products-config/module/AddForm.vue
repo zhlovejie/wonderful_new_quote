@@ -9,12 +9,25 @@
   >
     <a-spin :spinning="spinning">
     <a-form :form="form" class="add-form-wrapper">
-      <a-form-item label="中控系统模块名称">
-        <a-input :disabled="isDisabled"  v-decorator="['name', { rules: [{ required: true, message: '请输入配置名称' }] }]" />
+      <a-form-item label="系列产品名称">
+        <a-input :disabled="isDisabled"  v-decorator="['name', { rules: [{ required: true, message: '系列产品名称' }] }]" />
+      </a-form-item>
+      <a-form-item label="系列产品型号">
+        <a-input :disabled="isDisabled"  v-decorator="['model', { rules: [{ required: true, message: '系列产品名称' }] }]" />
+      </a-form-item>
+      <a-form-item label="是否为产品">
+        <a-radio-group v-decorator="['type',{initialValue: 0}]" >
+          <a-radio :value="0">是</a-radio>
+          <a-radio :value="1">否</a-radio>
+        </a-radio-group>
       </a-form-item>
       <a-form-item label="标配项" class="add-shadow">
         <OptList ref="ref_optStand" :dataSource="optStand" :showRequire="false"  />
         <a-button style="width:100%;" type="dashed" icon="plus" @click="ShowModule('optStand')" >添加标配项</a-button>
+      </a-form-item>
+      <a-form-item label="中控系列项" class="add-shadow">
+        <OptList ref="ref_optControl" :dataSource="optControl" :showRequire="false"  />
+        <a-button style="width:100%;" type="dashed" icon="plus" @click="ShowModule('optControl')" >添加标配项</a-button>
       </a-form-item>
       <div class="opt-choice-wrapper add-shadow" >
         <a-form-item label="选配项" >
@@ -67,7 +80,9 @@ export default {
       visible:false,
       actionType:'add', 
       spinning:false,
+      record:{},
       optStand:[], //标配项
+      optControl:[],//中控系列项
       optSelect:[], //选配项
       optChoice:[], //选择项
     }
@@ -121,6 +136,7 @@ export default {
           
           let optStandData = that.$refs['ref_optStand'].getData()
           let optSelectData = that.$refs['ref_optSelect'].getData()
+          let optControlData = that.$refs['ref_optControl'].getData()
           let optChoiceData = []
  
           that.optChoice.map((item,index) =>{
@@ -140,7 +156,17 @@ export default {
               mainBody:1,
               orderNo:item.serialNum,
               type:1,
-              zktId:values.id || ''
+              zktId:item.zktId || ''
+            })
+          })
+
+          optControlData && optControlData.map((item,index) =>{
+            priceSysConfigBoList.push({
+              itemId:item.id,
+              mainBody:1,
+              orderNo:item.serialNum,
+              type:3,
+              zktId:item.zktId || ''
             })
           })
 
@@ -150,7 +176,7 @@ export default {
               mainBody:1,
               orderNo:item.serialNum,
               type:2,
-              zktId:values.id || ''
+              zktId:item.zktId || ''
             })
           })
 
@@ -162,7 +188,7 @@ export default {
                 mainBody:1,
                 orderNo:item.serialNum,
                 type:item.isRequire ? 4 : 5,
-                zktId:values.id || ''
+                zktId:item.zktId || ''
               })
             })
           })
@@ -228,6 +254,11 @@ export default {
           key:'optStand',
           searchParam:{type:1},
           selected:that.optStand.map(item => Object.assign({},item))
+        },
+        optControl:{
+          key:'optControl',
+          searchParam:{type:2},
+          selected:that.optControl.map(item => Object.assign({},item))
         },
         optSelect:{
           key:'optSelect',
@@ -301,6 +332,8 @@ export default {
       }
       let optStandData = data.filter(item => item.mainBody === 1 && item.type === 1).sort((a,b) => a.orderNo - b.orderNo)
       let optSelectData = data.filter(item => item.mainBody === 1 && item.type === 2).sort((a,b) => a.orderNo - b.orderNo)
+      let optControlData = data.filter(item => item.mainBody === 1 && item.type === 3).sort((a,b) => a.orderNo - b.orderNo)
+      
       let optChoiceData = data.filter(item => item.mainBody === 1 && [4,5].includes(item.type))
 
       let groups = [...new Set(optChoiceData.map(item =>item.groupId))]
