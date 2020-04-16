@@ -5,55 +5,110 @@
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
   >
     <a-spin :spinning="spinning">
-    <a-form :form="form" class="add-form-wrapper">
-      <a-form-item label="系列产品名称">
-        <a-input :disabled="isDisabled"  v-decorator="['name', { rules: [{ required: true, message: '系列产品名称' }] }]" />
-      </a-form-item>
-      <a-form-item label="系列产品型号">
-        <a-input :disabled="isDisabled"  v-decorator="['model', { rules: [{ required: true, message: '系列产品名称' }] }]" />
-      </a-form-item>
-      <a-form-item label="是否为产品">
-        <a-radio-group v-decorator="['type',{initialValue: 0}]" >
-          <a-radio :value="0">是</a-radio>
-          <a-radio :value="1">否</a-radio>
-        </a-radio-group>
-      </a-form-item>
-      <a-form-item label="标配项" class="add-shadow">
-        <OptList ref="ref_optStand" :dataSource="optStand" :showRequire="false"  />
-        <a-button style="width:100%;" type="dashed" icon="plus" @click="ShowModule('optStand')" >添加标配项</a-button>
-      </a-form-item>
-      <a-form-item label="中控系列项" class="add-shadow">
-        <OptList ref="ref_optControl" :dataSource="optControl" :showRequire="false"  />
-        <a-button style="width:100%;" type="dashed" icon="plus" @click="ShowModule('optControl')" >添加标配项</a-button>
-      </a-form-item>
-      <div class="opt-choice-wrapper add-shadow" >
-        <a-form-item label="选配项" >
-          <OptList ref="ref_optSelect" :dataSource="optSelect" :showRequire="false" />
-          <a-button style="width:100%;" type="dashed" icon="plus" @click="ShowModule('optSelect')" >添加选配项</a-button>
+      <a-form :form="form" class="add-form-wrapper">
+        <a-form-item label="系列产品名称">
+          <a-input
+            :disabled="isDisabled"
+            v-decorator="['name', { rules: [{ required: true, message: '系列产品名称' }] }]"
+          />
         </a-form-item>
-      
-        <a-form-item class="opt-choice-item" :label="`选择项 ${index+1}`" v-for="(item,index) in optChoice" :key="index" >
-          <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除" >删除</a>
-          <OptList :ref="`ref_optChoice_${index}`" :dataSource="item.dataSource" :showRequire="true"/>
-          <a-button style="width:100%;" type="dashed" icon="plus" @click="ShowModule('optChoice',index)" >添加</a-button>
+        <a-form-item label="系列产品型号">
+          <a-input
+            :disabled="isDisabled"
+            v-decorator="['model', { rules: [{ required: true, message: '系列产品名称' }] }]"
+          />
         </a-form-item>
-        <a-form-item>
-          <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem" >添加选择项</a-button>
+        <a-form-item label="是否为产品">
+          <a-radio-group v-decorator="['type',{initialValue: 0}]">
+            <a-radio :value="0">是</a-radio>
+            <a-radio :value="1">否</a-radio>
+          </a-radio-group>
         </a-form-item>
-      </div>
-      
-      <a-form-item label="备注">
-        <a-textarea 
-          placeholder="备注" 
-          :rows="5" 
-          v-decorator="['remarks', { rules: [{ required: false, message: '备注' }] }]"
-        />
-      </a-form-item>
-    </a-form>
-    <TableOptChoice ref="tableOptChoice" @select="tableOptChoiceSelected"/>
+        <a-form-item label="标配项" class="add-shadow">
+          <OptList
+            ref="ref_optStand"
+            :dataSource="optStand"
+            inputKey="optStand"
+            :showRequire="false"
+            @change="tableOptChoiceSelected"
+          />
+          <a-button
+            style="width:100%;"
+            type="dashed"
+            icon="plus"
+            @click="ShowModule('optStand')"
+          >添加标配项</a-button>
+        </a-form-item>
+        <a-form-item label="中控系列项" class="add-shadow">
+          <OptList
+            ref="ref_optControl"
+            :dataSource="optControl"
+            inputKey="optControl"
+            :showRequire="false"
+            @change="tableOptChoiceSelected"
+          />
+          <a-button
+            style="width:100%;"
+            type="dashed"
+            icon="plus"
+            @click="ShowModule('optControl')"
+          >添加标配项</a-button>
+        </a-form-item>
+        <div class="opt-choice-wrapper add-shadow">
+          <a-form-item label="选配项">
+            <OptList
+              ref="ref_optSelect"
+              :dataSource="optSelect"
+              inputKey="optSelect"
+              :showRequire="false"
+              @change="tableOptChoiceSelected"
+            />
+            <a-button
+              style="width:100%;"
+              type="dashed"
+              icon="plus"
+              @click="ShowModule('optSelect')"
+            >添加选配项</a-button>
+          </a-form-item>
+
+          <a-form-item
+            class="opt-choice-item"
+            :label="`选择项 ${index+1}`"
+            v-for="(item,index) in optChoice"
+            :key="index"
+          >
+            <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+            <OptList
+              :ref="`ref_optChoice_${index}`"
+              :dataSource="item.dataSource"
+              :inputKey="`optChoice.${index}`"
+              :showRequire="true"
+              @change="tableOptChoiceSelected"
+            />
+            <a-button
+              style="width:100%;"
+              type="dashed"
+              icon="plus"
+              @click="ShowModule('optChoice',index)"
+            >添加</a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
+          </a-form-item>
+        </div>
+
+        <a-form-item label="备注">
+          <a-textarea
+            placeholder="备注"
+            :rows="5"
+            v-decorator="['remarks', { rules: [{ required: false, message: '备注' }] }]"
+          />
+        </a-form-item>
+      </a-form>
+      <TableOptChoice ref="tableOptChoice" @select="tableOptChoiceSelected" />
     </a-spin>
   </a-modal>
 </template>
@@ -68,288 +123,299 @@ import {
 import TableOptChoice from './TableOptChoice'
 import OptList from './OptList'
 export default {
-  name:'AddForm',
-  components:{
+  name: 'AddForm',
+  components: {
     vuedraggable,
     TableOptChoice,
     OptList
   },
-  data(){
+  data() {
     return {
       form: this.$form.createForm(this, { name: 'addForm' }),
-      visible:false,
-      actionType:'add', 
-      spinning:false,
-      record:{},
-      optStand:[], //标配项
-      optControl:[],//中控系列项
-      optSelect:[], //选配项
-      optChoice:[], //选择项
+      visible: false,
+      actionType: 'add',
+      spinning: false,
+      record: {},
+      optStand: [], //标配项
+      optControl: [], //中控系列项
+      optSelect: [], //选配项
+      optChoice: [] //选择项
     }
   },
-  computed:{
-    modalTitle(){
+  computed: {
+    modalTitle() {
       let m = {
-        'view':'查看',
-        'add':'新增',
-        'edit' : '修改',
-        'approval':'审批'
+        view: '查看',
+        add: '新增',
+        edit: '修改',
+        approval: '审批'
       }
       return `${m[this.actionType]}中控系统模块`
     },
-    isView(){
+    isView() {
       return this.actionType === 'view'
     },
-    isAdd(){
+    isAdd() {
       return this.actionType === 'add'
     },
-    isEdit(){
+    isEdit() {
       return this.actionType === 'edit'
     },
-    isApproval(){
+    isApproval() {
       return this.actionType === 'approval'
     },
-    isDisabled(){
+    isDisabled() {
       return this.isView || this.isApproval
     }
   },
 
-  methods:{
-    init(){
+  methods: {
+    init() {
       let that = this
       let queue = []
       return Promise.all(queue)
     },
-    async handleOk(){
+    async handleOk() {
       let that = this
-      if(that.isView || that.isApproval){
+      if (that.isView || that.isApproval) {
         that.handleCancel()
-        return 
+        return
       }
       this.form.validateFields((err, values) => {
         if (!err) {
-          if(that.isEdit){
+          if (that.isEdit) {
             values.id = that.record.id
           }
-          
+
           let priceSysConfigBoList = []
-          
+
           let optStandData = that.$refs['ref_optStand'].getData()
           let optSelectData = that.$refs['ref_optSelect'].getData()
           let optControlData = that.$refs['ref_optControl'].getData()
           let optChoiceData = []
- 
-          that.optChoice.map((item,index) =>{
-            try{
+
+          that.optChoice.map((item, index) => {
+            try {
               let target = that.$refs[`ref_optChoice_${index}`][0]
-              if(target){
+              if (target) {
                 optChoiceData.push(target.getData())
               }
-            }catch(err){
+            } catch (err) {
               console.log(err)
             }
           })
 
-          optStandData && optStandData.map((item,index) =>{
-            priceSysConfigBoList.push({
-              itemId:item.id,
-              mainBody:1,
-              orderNo:item.serialNum,
-              type:1,
-              zktId:item.zktId || ''
-            })
-          })
-
-          optControlData && optControlData.map((item,index) =>{
-            priceSysConfigBoList.push({
-              itemId:item.id,
-              mainBody:1,
-              orderNo:item.serialNum,
-              type:3,
-              zktId:item.zktId || ''
-            })
-          })
-
-          optSelectData && optSelectData.map((item,index) =>{
-            priceSysConfigBoList.push({
-              itemId:item.id,
-              mainBody:1,
-              orderNo:item.serialNum,
-              type:2,
-              zktId:item.zktId || ''
-            })
-          })
-
-          optChoiceData && optChoiceData.map((items,index) =>{
-            items.map((item,_index) =>{
+          optStandData &&
+            optStandData.map((item, index) => {
               priceSysConfigBoList.push({
-                groupId:(index + 1),
-                itemId:item.id,
-                mainBody:1,
-                orderNo:item.serialNum,
-                type:item.isRequire ? 4 : 5,
-                zktId:item.zktId || ''
+                itemId: item.id,
+                mainBody: 1,
+                orderNo: item.serialNum,
+                type: 1,
+                zktId: item.zktId || ''
               })
             })
-          })
 
+          optControlData &&
+            optControlData.map((item, index) => {
+              priceSysConfigBoList.push({
+                itemId: item.id,
+                mainBody: 1,
+                orderNo: item.serialNum,
+                type: 3,
+                zktId: item.zktId || ''
+              })
+            })
+
+          optSelectData &&
+            optSelectData.map((item, index) => {
+              priceSysConfigBoList.push({
+                itemId: item.id,
+                mainBody: 1,
+                orderNo: item.serialNum,
+                type: 2,
+                zktId: item.zktId || ''
+              })
+            })
+
+          optChoiceData &&
+            optChoiceData.map((items, index) => {
+              items.map((item, _index) => {
+                priceSysConfigBoList.push({
+                  groupId: index + 1,
+                  itemId: item.id,
+                  mainBody: 1,
+                  orderNo: item.serialNum,
+                  type: item.isRequire ? 4 : 5,
+                  zktId: item.zktId || ''
+                })
+              })
+            })
 
           values.priceSysConfigBoList = priceSysConfigBoList
           console.log('Received values of form: ', values)
           that.spinning = true
-          priceAdjustZktConfigAddAndUpdate(values).then(res =>{
-            that.spinning = false
-            if(res.code === 200){
-              that.visible = false 
-              that.$message.success('操作成功')
-              that.$emit('finish')
-            }else{
-              that.$message.warning(res.msg)
-            }
-          })
-          .catch(err => {
-            console.log(err)
-            that.$message.error('操作失败')
-            that.spinning = false
-          })
+          priceAdjustZktConfigAddAndUpdate(values)
+            .then(res => {
+              that.spinning = false
+              if (res.code === 200) {
+                that.visible = false
+                that.$message.success('操作成功')
+                that.$emit('finish')
+              } else {
+                that.$message.warning(res.msg)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+              that.$message.error('操作失败')
+              that.spinning = false
+            })
         }
-      });
+      })
     },
-    handleCancel(){
+    handleCancel() {
       this.form.resetFields()
-      this.$nextTick(() =>this.visible = false)
+      this.$nextTick(() => (this.visible = false))
     },
-    async query(type,record){
+    async query(type, record) {
       let that = this
-      that.actionType = type 
+      that.actionType = type
       that.record = record || {}
       that.form.resetFields()
       that.optStand = []
       that.optSelect = []
       that.optChoice = []
 
-      await that.init() 
+      await that.init()
       that.visible = true
 
-      if(this.isAdd){
+      if (this.isAdd) {
         return
       }
 
-      priceAdjustZktConfigDetail({id:record.id}).then(res =>{
+      priceAdjustZktConfigDetail({ id: record.id }).then(res => {
         //debugger
         that.form.setFieldsValue({
-          name:res.data.name,
-          remarks:res.data.remarks
+          name: res.data.name,
+          remarks: res.data.remarks
         })
-        let {optStandData,optSelectData,optChoiceData} = that.formatData(res.data.sysConfigList)
+        let { optStandData, optSelectData, optChoiceData } = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData
         that.optSelect = optSelectData
         that.optChoice = optChoiceData
       })
     },
-    ShowModule(key,index){
+    ShowModule(key, index) {
       let that = this
       let map = {
-        optStand:{
-          key:'optStand',
-          searchParam:{type:1},
-          selected:that.optStand.map(item => Object.assign({},item))
+        optStand: {
+          key: 'optStand',
+          searchParam: { type: 1 },
+          selected: that.optStand.map(item => Object.assign({}, item))
         },
-        optControl:{
-          key:'optControl',
-          searchParam:{type:2},
-          selected:that.optControl.map(item => Object.assign({},item))
+        optControl: {
+          key: 'optControl',
+          searchParam: { type: 2 },
+          selected: that.optControl.map(item => Object.assign({}, item))
         },
-        optSelect:{
-          key:'optSelect',
-          searchParam:{type:1},
-          selected:that.optSelect.map(item => Object.assign({},item))
+        optSelect: {
+          key: 'optSelect',
+          searchParam: { type: 1 },
+          selected: that.optSelect.map(item => Object.assign({}, item))
         },
-        optChoice:{
-          key:'optChoice',
-          searchParam:{type:3},
-          selected:that.optChoice.map(item => Object.assign({},item))
+        optChoice: {
+          key: 'optChoice',
+          searchParam: { type: 3 },
+          selected: that.optChoice.map(item => Object.assign({}, item))
         }
       }
 
-      if(key === 'optChoice'){
+      if (key === 'optChoice') {
         map[key] = {
-          key:`optChoice.${index}`,
-          searchParam:{type:3},
-          selected:that.optChoice[index]['dataSource'].map(item => Object.assign({},item))
+          key: `optChoice.${index}`,
+          searchParam: { type: 3 },
+          selected: that.optChoice[index]['dataSource'].map(item => Object.assign({}, item))
         }
       }
 
       map[key] && this.$refs.tableOptChoice.query(map[key])
     },
-    tableOptChoiceSelected(result){
+    tableOptChoiceSelected(result) {
       //debugger
       let that = this
-      let {inputKey,selectedRecord} = result
-      if(inputKey.startsWith('optChoice')){
+      let { inputKey, selectedRecord } = result
+      if (inputKey.startsWith('optChoice')) {
         let idx = inputKey.split('.')[1]
         let dataSource = [...that.optChoice]
-        dataSource[idx]['dataSource'] = selectedRecord.map((item,index) =>{
-          let _item = Object.assign({},item)
+        dataSource[idx]['dataSource'] = selectedRecord.map((item, index) => {
+          let _item = Object.assign({}, item)
           _item.serialNum = index + 1
           return _item
         })
         that.optChoice = [...dataSource]
-      }else{
+      } else {
         let dataSource = [...that[inputKey]]
-        dataSource = selectedRecord.map((item,index) =>{
-          let _item = Object.assign({},item)
+        dataSource = selectedRecord.map((item, index) => {
+          let _item = Object.assign({}, item)
           _item.serialNum = index + 1
           return _item
         })
         that[inputKey] = [...dataSource]
       }
     },
-    addOptChoiceItem(){
+    addOptChoiceItem() {
       this.optChoice.push({
-        dataSource:[]
+        dataSource: []
       })
     },
-    delOptChoice(index){
-      this.optChoice.splice(index,1)
+    delOptChoice(index) {
+      this.optChoice.splice(index, 1)
     },
-    formatData(data){
-      let formatDataItem = (data) =>{ //返回的列表数据格式转换成需要的数据格式
-        return data.map((item,index) =>{
+    formatData(data) {
+      let formatDataItem = data => {
+        //返回的列表数据格式转换成需要的数据格式
+        return data.map((item, index) => {
           let _item = {
-            id:item.itemId,
-            itemName:item.name,
-            key:item.itemId,
-            order:index + 1,
-            serialNum:index + 1,
-            zktId:item.zktId
+            id: item.itemId,
+            itemName: item.name,
+            key: item.itemId,
+            order: index + 1,
+            serialNum: index + 1,
+            zktId: item.zktId
           }
-          if([4,5].includes(item.type)){
+          if ([4, 5].includes(item.type)) {
             _item.isRequire = item.type === 4 ? true : false
           }
           return _item
         })
       }
-      let optStandData = data.filter(item => item.mainBody === 1 && item.type === 1).sort((a,b) => a.orderNo - b.orderNo)
-      let optSelectData = data.filter(item => item.mainBody === 1 && item.type === 2).sort((a,b) => a.orderNo - b.orderNo)
-      let optControlData = data.filter(item => item.mainBody === 1 && item.type === 3).sort((a,b) => a.orderNo - b.orderNo)
-      
-      let optChoiceData = data.filter(item => item.mainBody === 1 && [4,5].includes(item.type))
+      let optStandData = data
+        .filter(item => item.mainBody === 1 && item.type === 1)
+        .sort((a, b) => a.orderNo - b.orderNo)
+      let optSelectData = data
+        .filter(item => item.mainBody === 1 && item.type === 2)
+        .sort((a, b) => a.orderNo - b.orderNo)
+      let optControlData = data
+        .filter(item => item.mainBody === 1 && item.type === 3)
+        .sort((a, b) => a.orderNo - b.orderNo)
 
-      let groups = [...new Set(optChoiceData.map(item =>item.groupId))]
+      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5].includes(item.type))
+
+      let groups = [...new Set(optChoiceData.map(item => item.groupId))]
       let res = []
-      groups.map(groupId =>{
-        let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a,b) =>a.orderNo - b.orderNo)
-        if(dataSource.length > 0){
+      groups.map(groupId => {
+        let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
+        if (dataSource.length > 0) {
           res.push({
-            dataSource:formatDataItem(dataSource)
+            dataSource: formatDataItem(dataSource)
           })
         }
       })
       return {
-        optStandData:formatDataItem(optStandData),
-        optSelectData:formatDataItem(optSelectData),
-        optChoiceData:res
+        optStandData: formatDataItem(optStandData),
+        optSelectData: formatDataItem(optSelectData),
+        optChoiceData: res
       }
     }
   }
@@ -357,34 +423,34 @@ export default {
 </script>
 
 <style scoped>
-
-.custom-table-border th,.custom-table-border td{
+.custom-table-border th,
+.custom-table-border td {
   padding: 5px 10px;
 }
 
-.add-form-wrapper >>> .ant-form-item{
+.add-form-wrapper >>> .ant-form-item {
   margin-bottom: 10px;
 }
 
-.add-form-wrapper >>> .custom-table{
+.add-form-wrapper >>> .custom-table {
   margin-bottom: 0;
 }
 
-.add-shadow{
+.add-shadow {
   /* box-shadow: 0 0 3px #ccc; */
   border: 1px solid #d9d9d9;
   border-radius: 4px;
   padding: 10px 20px 20px;
 }
 
-.opt-choice-wrapper .opt-choice-item{
+.opt-choice-wrapper .opt-choice-item {
   position: relative;
   border-top: 1px solid #ddd;
 }
 
-.opt-choice-wrapper .opt-choice-item .opt-choice-delete{
+.opt-choice-wrapper .opt-choice-item .opt-choice-delete {
   position: absolute;
-  top:-40px;
+  top: -40px;
   right: 5px;
   color: #1890ff;
 }

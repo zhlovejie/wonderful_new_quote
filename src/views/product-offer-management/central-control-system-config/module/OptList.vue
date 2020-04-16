@@ -43,6 +43,10 @@ export default {
     showRequire: {
       type: Boolean,
       default: () => false
+    },
+    inputKey: {
+      type: String,
+      default: () => ''
     }
   },
   watch: {
@@ -62,7 +66,7 @@ export default {
   methods: {
     init() {
       this.optStandDragList = (this.dataSource || []).map(item => Object.assign({}, item))
-      if(this.optStandDragList.length > 0){
+      if (this.optStandDragList.length > 0) {
         this.isRequire = this.optStandDragList[0].isRequire || false
       }
       this.reSortAction()
@@ -76,7 +80,7 @@ export default {
           this.reSortAction()
         }
       }
-      this.$emit('change',this.optStandDragList)
+      this.$emit('change', { inputKey: this.inputKey, selectedRecord: this.optStandDragList })
     },
     reSortAction() {
       this.optStandDragList = this.optStandDragList.map((p, index) => {
@@ -89,16 +93,16 @@ export default {
       console.log(arguments)
       this.$nextTick(() => {
         this.reSortAction()
-        this.$emit('change',this.optStandDragList)
+        this.$emit('change', { inputKey: this.inputKey, selectedRecord: this.optStandDragList })
       })
     },
     getData() {
       let that = this
-      return that.optStandDragList.map(item =>{
-          let _item = Object.assign({},item)
-          _item.isRequire = that.isRequire
-          return _item
-        })
+      return that.optStandDragList.map(item => {
+        let _item = Object.assign({}, item)
+        _item.isRequire = that.isRequire
+        return _item
+      })
     }
   }
 }
