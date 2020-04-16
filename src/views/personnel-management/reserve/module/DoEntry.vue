@@ -153,7 +153,7 @@
           <td>QQ(私)</td>
           <td colspan="2">
             <a-form-item>
-              <a-input :disabled="isView" v-decorator="['privateQqNum',{rules: [{required: true,message: '输入QQ'},{max:30,message:'最多可输入30个字符'}]}]" placeholder="输入QQ"/>
+              <a-input :disabled="isView" v-decorator="['privateQqNum',{rules: [{required: false,message: '输入QQ'},{max:30,message:'最多可输入30个字符'}]}]" placeholder="输入QQ"/>
             </a-form-item>
           </td>
         </tr>
@@ -162,13 +162,13 @@
           <td>微信(私)</td>
           <td colspan="2">
             <a-form-item>
-              <a-input :disabled="isView" v-decorator="['privateWxNum',{rules: [{required: true,message: '输入微信'},{max:30,message:'最多可输入30个字符'}]}]" placeholder="输入微信"/>
+              <a-input :disabled="isView" v-decorator="['privateWxNum',{rules: [{required: false,message: '输入微信'},{max:30,message:'最多可输入30个字符'}]}]" placeholder="输入微信"/>
             </a-form-item>
           </td>
           <td>邮箱(私)</td>
           <td colspan="2">
             <a-form-item>
-              <a-input :disabled="isView" v-decorator="['privateEmail',{rules: [{required: true,message: '输入邮箱'},{pattern:/^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/,message:'请填写正确电子邮箱'},{max:50,message:'最多可输入50个字符'}]}]" placeholder="输入邮箱"/>
+              <a-input :disabled="isView" v-decorator="['privateEmail',{rules: [{required: false,message: '输入邮箱'},{pattern:/^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/,message:'请填写正确电子邮箱'},{max:50,message:'最多可输入50个字符'}]}]" placeholder="输入邮箱"/>
             </a-form-item>
           </td>
         </tr>
