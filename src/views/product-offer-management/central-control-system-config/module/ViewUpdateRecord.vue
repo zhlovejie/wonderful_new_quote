@@ -114,7 +114,7 @@ export default {
       }
       return {
         changeState:this.changeState,
-        itemName:this.itemName,
+        createdName:this.itemName,
         startTime,
         endTime
       }

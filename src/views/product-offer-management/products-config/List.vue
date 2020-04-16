@@ -219,7 +219,7 @@ export default {
           id:record.id,
           //mainBody 配置主体：1 中控系统 2 产品 3 系列产品
           //type  产品类型：0 产品 1 系列产品
-          mainBody:record.type === 0 ? 2 : 3 
+          mainBody:2 
         })
         return 
       }else if(type === 'viewOptStand'){
