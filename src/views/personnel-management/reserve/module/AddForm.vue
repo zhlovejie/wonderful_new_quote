@@ -28,26 +28,26 @@
 
         <a-col :span="12">
           <a-form-item label="籍贯">
-            <a-cascader 
-              :disabled="isView" 
+            <a-cascader
+              :disabled="isView"
               v-decorator="['birthplace',{rules: [{required: false,message: '输入籍贯'}]}]"
-              :options="birthplaceOptions" 
-              @change="birthplaceCascaderChange" 
-              :loadData="birthplaceCascaderLoadData" 
-              placeholder="输入籍贯" 
+              :options="birthplaceOptions"
+              @change="birthplaceCascaderChange"
+              :loadData="birthplaceCascaderLoadData"
+              placeholder="输入籍贯"
             />
           </a-form-item>
         </a-col>
 
         <a-col :span="12">
           <a-form-item label="应试岗位">
-            <a-cascader 
-              :disabled="isView" 
+            <a-cascader
+              :disabled="isView"
               v-decorator="['stationId',{rules: [{required: true,message: '选择应试岗位'}]}]"
-              :options="departmentOptions" 
-              @change="departmentCascaderChange" 
-              :loadData="departmentCascaderLoadData" 
-              placeholder="选择应试岗位" 
+              :options="departmentOptions"
+              @change="departmentCascaderChange"
+              :loadData="departmentCascaderLoadData"
+              placeholder="选择应试岗位"
             />
           </a-form-item>
         </a-col>
@@ -76,7 +76,7 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="手机号">
-            <a-input :disabled="isView" v-decorator="['phone',{rules: [{required: true,message: '输入手机号'},{pattern: /^\d{11}$/,message:'请输入正确的手机号码'}]}]" placeholder="输入手机号"/>
+            <a-input :disabled="isView" v-decorator="['phone',{rules: [{required: true,message: '输入手机号'},{pattern: /^1\d{10}$/,message:'请输入正确的手机号码'}]}]" placeholder="输入手机号"/>
           </a-form-item>
         </a-col>
         <a-col :span="12">
@@ -99,7 +99,7 @@
     </a-form>
     </a-spin>
   </a-modal>
-  
+
 </template>
 <script>
 import {getDictionaryList} from '@/api/workBox'
@@ -108,9 +108,9 @@ import {
   getStationList, //获取所有岗位
 } from '@/api/systemSetting'
 import {
-  getEntityBeforeDetail, 
-  reserveAddOrUpdate 
-} from '@/api/reserveApi' 
+  getEntityBeforeDetail,
+  reserveAddOrUpdate
+} from '@/api/reserveApi'
 import { getAreaByParent } from '@/api/common'
 export default {
   name:'reserveAddForm',
@@ -130,14 +130,14 @@ export default {
       return this.type === 'view' ? true : false
     },
     modalTitle(){
-      return this.type === 'add' ? '新增人员' : (this.type === 'view' ? '查看人员信息' : '编辑人员信息') 
+      return this.type === 'add' ? '新增人员' : (this.type === 'view' ? '查看人员信息' : '编辑人员信息')
     }
   },
   methods:{
     async query(type,record){
-      
+
       let that = this
-      that.visible = true 
+      that.visible = true
       that.type = type
       console.log(that)
       that.record = Object.assign({},record)
@@ -176,7 +176,7 @@ export default {
       }
       let task3 = function(){//省、市级联
         return new Promise((resolve,reject) =>{
-          getAreaByParent({ pId: 100000 }).then(res => { 
+          getAreaByParent({ pId: 100000 }).then(res => {
             that.birthplaceOptions = res.data.map(item =>{
               return {
                 label:item.area,
@@ -193,7 +193,7 @@ export default {
     fillData(resultData){
       let that = this
       let values = {...resultData}
-      let departmentId = values.departmentId 
+      let departmentId = values.departmentId
       let stationId = values.stationId
       delete values.stationId
       //填充其他
@@ -210,7 +210,7 @@ export default {
           that.$nextTick(() =>that.form.setFieldsValue({stationId:[departmentId,stationId]}))
         })
       }
-      
+
       //填充籍贯
       let areaIds = values.areaIds
       if(areaIds){
@@ -247,7 +247,7 @@ export default {
           reserveAddOrUpdate(values).then(res =>{
             that.spinning = false
             if(res.code === 200){
-              that.visible = false 
+              that.visible = false
               that.$message.success('操作成功')
               that.$emit('finish')
             }else{
@@ -255,7 +255,7 @@ export default {
             }
           })
           .catch(err => {
-            that.spinning = false  
+            that.spinning = false
             that.$message.error('操作失败')
           })
         }
