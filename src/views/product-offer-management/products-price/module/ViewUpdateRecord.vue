@@ -13,12 +13,6 @@
       <div class="search-wrapper">
         <a-form layout="inline">
           <a-form-item>
-            <a-select v-model="changeState" :allowClear="true" style="width: 120px;" placeholder="变更">
-              <a-select-option :value="1">添加</a-select-option>
-              <a-select-option :value="2">删除</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item>
             <a-input placeholder="变更人模糊查询" v-model="itemName" allowClear style="width: 180px;"/>
           </a-form-item>
           <a-form-item>
@@ -31,7 +25,6 @@
       </div>
       <div class="main-wrapper">
         <a-table
-          rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
@@ -41,8 +34,8 @@
           <div slot="order" slot-scope="text, record, index">
             {{ index + 1 }}
           </div>
-          <div slot="changeState" slot-scope="text">
-            {{parseInt(text,10) === 1 ? '添加' : '删除'}}
+          <div slot="price" slot-scope="text">
+            {{text | moneyFormatNumber}}
           </div>
         </a-table>
       </div>
@@ -53,7 +46,7 @@
 <script>
 
 import {
-  priceAdjustUpdateRecordList //修改记录
+  priceAdjustPricingRecordPricingChangList //修改记录
 } from '@/api/productOfferManagement'
 
 const columns = [
@@ -64,22 +57,17 @@ const columns = [
     scopedSlots: { customRender: 'order' },
   },
   {
-    title: '变更',
-    dataIndex: 'changeState',
-    scopedSlots: { customRender: 'changeState' },
-  },
-  {
-    title: '配置项',
-    dataIndex: 'itemName',
-    ellipsis: true
+    title: '配置价格',
+    dataIndex: 'price',
+    scopedSlots: { customRender: 'price' }
   },
   {
     title: '变更人',
-    dataIndex: 'createdName',
+    dataIndex: 'pricingName',
   },
   {
     title: '变更时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'pricingTime'
   }
 ]
 export default {
@@ -129,9 +117,12 @@ export default {
       let _searchParam = Object.assign({},{...this.searchParam},{...this.extendSearchParam},{...this.pagination},opt || {})
       console.log('执行搜索...',_searchParam)
       that.loading = true
-      priceAdjustUpdateRecordList(_searchParam).then(res => {
+      priceAdjustPricingRecordPricingChangList(_searchParam).then(res => {
         that.loading = false
-        that.dataSource = res.data.records
+        that.dataSource = res.data.records.map((item ,index) =>{
+          item.key = index
+          return item
+        })
         //设置数据总条数
         const pagination = { ...that.pagination }
         pagination.total = res.data.total

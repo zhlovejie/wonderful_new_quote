@@ -134,3 +134,46 @@ export function priceAdjustProductConfigAddAndUpdate (parameter) {
   })
 }
 //---------------------系列产品配置清单-END--------
+
+
+//---------------------产品价格配置------------
+/**获取核价列表，根据主框架类型 */
+export function priceAdjustPricingRecordList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustPricingRecord/getPricingList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**根据id和类型获取核价配置信息 */
+export function priceAdjustPricingRecordDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustPricingRecord/getPricingInfo',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**根据id和类型进行核价 */
+export function priceAdjustPricingRecordPrice (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustPricingRecord/pricingPrice',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**根据id和类型获取变更记录 */
+export function priceAdjustPricingRecordPricingChangList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustPricingRecord/getPricingChangList',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------产品价格配置-END--------
