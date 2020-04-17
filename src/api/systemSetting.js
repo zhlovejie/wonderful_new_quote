@@ -33,6 +33,17 @@ export function getUserByDep (parameter) {
   })
 }
 
+//删除角色
+export function deleteRole (parameter) {
+  console.log('deleteRole  : ' + JSON.stringify(parameter))
+  return axios({
+    baseURL: system.baseURL,
+    url: '/Role/delete',
+    method: 'post',
+    params: parameter
+  })
+}
+
 // 获取部门下面的所有人员  stationId
 export function getUserByStation (parameter) {
   return axios({
