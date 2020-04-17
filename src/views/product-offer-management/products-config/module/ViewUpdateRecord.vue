@@ -104,7 +104,7 @@ export default {
   },
   computed:{
     modalTitle(){
-      return '配置修改记录'
+      return '操作记录'
     },
     searchParam(){
       let startTime =undefined,endTime=undefined
@@ -114,7 +114,7 @@ export default {
       }
       return {
         changeState:this.changeState,
-        itemName:this.itemName,
+        createdName:this.itemName,
         startTime,
         endTime
       }

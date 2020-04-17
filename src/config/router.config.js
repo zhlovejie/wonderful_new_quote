@@ -905,6 +905,12 @@ export const asyncRouterMap = [
             name: 'pom-products-config',
             component: () => import('@/views/product-offer-management/products-config/List'),
             meta: { title: '系列产品配置', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/product-offer-management/products-price',
+            name: 'pom-products-price',
+            component: () => import('@/views/product-offer-management/products-price/List'),
+            meta: { title: '产品价格配置', icon: 'setting', keepAlive: false, permission: ['permission'] },
           }
         ]
       }

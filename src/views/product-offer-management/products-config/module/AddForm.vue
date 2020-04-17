@@ -116,9 +116,8 @@
 <script>
 import vuedraggable from 'vuedraggable'
 import {
-  priceAdjustZktConfigDetail,
-  priceAdjustZktConfigAddAndUpdate,
-  priceAdjustItemConfigList
+  priceAdjustProductConfigDetail,
+  priceAdjustProductConfigAddAndUpdate
 } from '@/api/productOfferManagement'
 import TableOptChoice from './TableOptChoice'
 import OptList from './OptList'
@@ -150,7 +149,7 @@ export default {
         edit: '修改',
         approval: '审批'
       }
-      return `${m[this.actionType]}中控系统模块`
+      return `${m[this.actionType]}系列产品`
     },
     isView() {
       return this.actionType === 'view'
@@ -209,10 +208,10 @@ export default {
             optStandData.map((item, index) => {
               priceSysConfigBoList.push({
                 itemId: item.id,
-                mainBody: 1,
+                mainBody: 2,
                 orderNo: item.serialNum,
                 type: 1,
-                zktId: item.zktId || ''
+                productId: values.id || ''
               })
             })
 
@@ -220,10 +219,10 @@ export default {
             optControlData.map((item, index) => {
               priceSysConfigBoList.push({
                 itemId: item.id,
-                mainBody: 1,
+                mainBody: 2,
                 orderNo: item.serialNum,
                 type: 3,
-                zktId: item.zktId || ''
+                productId: values.id || ''
               })
             })
 
@@ -231,10 +230,10 @@ export default {
             optSelectData.map((item, index) => {
               priceSysConfigBoList.push({
                 itemId: item.id,
-                mainBody: 1,
+                mainBody: 2,
                 orderNo: item.serialNum,
                 type: 2,
-                zktId: item.zktId || ''
+                productId: values.id || ''
               })
             })
 
@@ -244,10 +243,10 @@ export default {
                 priceSysConfigBoList.push({
                   groupId: index + 1,
                   itemId: item.id,
-                  mainBody: 1,
+                  mainBody: 2,
                   orderNo: item.serialNum,
                   type: item.isRequire ? 4 : 5,
-                  zktId: item.zktId || ''
+                  productId: values.id || ''
                 })
               })
             })
@@ -255,7 +254,7 @@ export default {
           values.priceSysConfigBoList = priceSysConfigBoList
           console.log('Received values of form: ', values)
           that.spinning = true
-          priceAdjustZktConfigAddAndUpdate(values)
+          priceAdjustProductConfigAddAndUpdate(values)
             .then(res => {
               that.spinning = false
               if (res.code === 200) {
@@ -294,16 +293,19 @@ export default {
         return
       }
 
-      priceAdjustZktConfigDetail({ id: record.id }).then(res => {
+      priceAdjustProductConfigDetail({ id: record.id }).then(res => {
         //debugger
         that.form.setFieldsValue({
           name: res.data.name,
+          model: res.data.model,
+          type: res.data.type,
           remarks: res.data.remarks
         })
-        let { optStandData, optSelectData, optChoiceData } = that.formatData(res.data.sysConfigList)
+        let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData
         that.optSelect = optSelectData
         that.optChoice = optChoiceData
+        that.optControl = optControlData
       })
     },
     ShowModule(key, index) {
@@ -382,7 +384,7 @@ export default {
             key: item.itemId,
             order: index + 1,
             serialNum: index + 1,
-            zktId: item.zktId
+            productId: item.productId
           }
           if ([4, 5].includes(item.type)) {
             _item.isRequire = item.type === 4 ? true : false
@@ -391,16 +393,16 @@ export default {
         })
       }
       let optStandData = data
-        .filter(item => item.mainBody === 1 && item.type === 1)
+        .filter(item => item.mainBody === 2 && item.type === 1)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optSelectData = data
-        .filter(item => item.mainBody === 1 && item.type === 2)
+        .filter(item => item.mainBody === 2 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optControlData = data
-        .filter(item => item.mainBody === 1 && item.type === 3)
+        .filter(item => item.mainBody === 2 && item.type === 3)
         .sort((a, b) => a.orderNo - b.orderNo)
 
-      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5].includes(item.type))
 
       let groups = [...new Set(optChoiceData.map(item => item.groupId))]
       let res = []
@@ -415,6 +417,7 @@ export default {
       return {
         optStandData: formatDataItem(optStandData),
         optSelectData: formatDataItem(optSelectData),
+        optControlData: formatDataItem(optControlData),
         optChoiceData: res
       }
     }
