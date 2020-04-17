@@ -47,24 +47,30 @@
           </td>
         </tr>
         <tr>
-          <td>出生日期</td>
-          <td>
-            <a-form-item>
-              <a-date-picker
-                :disabled="isView"
-                style="width:100%;"
-                v-decorator="['birthDate',{rules: [{required: false,message: '输入出生日期'}]}]"
-                format="YYYY-MM-DD"
-              />
-            </a-form-item>
-          </td>
+          
           <td>身份证号</td>
           <td>
             <a-form-item>
-              <a-input :disabled="isView" v-decorator="['identityCard',{rules: [{required: true,message: '输入身份证号'}]}]" placeholder="输入身份证号"/>
+              <a-input 
+              :disabled="isView" 
+              @blur="validateIdentityCard"  
+              v-decorator="['identityCard',{rules: [{required: true,message: '输入身份证号'}]}]" 
+              placeholder="输入身份证号"
+            />
             </a-form-item>
           </td>
-
+          <td title="根据身份证号码自动填充出生日期">出生日期</td>
+          <td title="根据身份证号码自动填充出生日期">
+            <a-form-item>
+              <a-date-picker
+                disabled
+                style="width:100%;"
+                v-decorator="['birthDate',{rules: [{required: false,message: '输入出生日期'}]}]"
+                format="YYYY-MM-DD" 
+                title="根据身份证号码自动填充出生日期"
+              />
+            </a-form-item>
+          </td>
           <td>政治面貌</td>
           <td>
             <a-form-item>
@@ -601,7 +607,7 @@ export default {
         values.birthDate = values.birthDate ? moment(values.birthDate) : moment()
         values.entryDate = values.entryDate ? moment(values.entryDate) : moment()
 
-
+        
 
         let stationId = values.stationId
         delete values.birthplace
@@ -639,7 +645,17 @@ export default {
         }
 
         //填充其他
-        that.$nextTick(() => that.form.setFieldsValue(Object.assign({},values)))
+        that.$nextTick(() => {
+          that.form.setFieldsValue(Object.assign({},values))
+          // try{
+          //   let s = this.getBirthDay(values.identityCard)
+          //   if(s){
+          //     this.form.setFieldsValue({'birthDate':this.moment(s)})
+          //   }
+          // }catch(err){
+          //   console.log(err)
+          // }
+        })
         //填充岗位
         if(values.departmentId){
           that.departmentChange(values.departmentId).then(() =>{
@@ -790,6 +806,36 @@ export default {
       this.form.setFieldsValue({
         inspectMoth:''
       })
+    },
+    validateIdentityCard(e){
+      console.log(e.target.value)
+      let s = this.getBirthDay(e.target.value.trim())
+      if(s){
+        this.form.setFieldsValue({'birthDate':this.moment(s)})
+      }
+    },
+    getBirthDay(cardNo,format='YYYY-MM-DD'){
+      if(typeof cardNo !== 'string'){
+        console.log('cardNo参数必须是字符串')
+        return 
+      }
+      if(cardNo.length !== 15 && cardNo.length !== 18){
+        console.log('cardNo参数必须是15位或18位')
+        return 
+      }
+      let is15 = cardNo.length === 15 ? true : false
+      let reg = is15 
+        ? /\d{6}(\d{2})(\d{2})(\d{2})\d*/ 
+        : /\d{6}(\d{4})(\d{2})(\d{2})\d*/
+      let result = cardNo.match(reg)
+      if(result){
+        format = format.toUpperCase()
+        let year = is15 ? '19'+result[1] : result[1]
+        let month = result[2]
+        let day = result[3]
+        return format.replace('YYYY',year).replace('MM',month).replace('DD',day)
+      }
+      return 
     }
   }
 }

@@ -19,7 +19,7 @@
               {{modelName}}
             </td>
           </tr>
-          <tr>
+          <tr v-if="!isSelecting">
             <td colspan="2" style="padding:0;height:auto;">
               <table class="custom-table custom-table-border" style="margin-bottom:0;">
                 <tr>
@@ -76,6 +76,9 @@ export default {
     },
     modelTitle(){
       return this.record.__activeTxt
+    },
+    isSelecting(){ //是否选配选项
+      return this.record.__activeKey === 3
     }
   },
   methods:{
