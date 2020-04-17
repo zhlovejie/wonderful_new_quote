@@ -13,7 +13,7 @@
       <template v-if="$auth('role:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd">新建角色</a-button>
       </template>
-      
+
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
@@ -45,6 +45,8 @@
             <template v-if="$auth('role:edit')">
               <a @click="handleEdit(record)">编辑</a>
               <a-divider type="vertical"/>
+              <a @click="deleteRoleInfo(record)">删除</a>
+              <a-divider type="vertical"/>
               <a @click="handleMenu(record)">菜单权限</a>
             </template>
           </span>
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import { getRoleManagementList, editRole, getDevisionList, queryRoleListById, queryRoleMenu } from '../../../api/systemSetting'
+import { deleteRole, getRoleManagementList, editRole, getDevisionList, queryRoleListById, queryRoleMenu } from '../../../api/systemSetting'
 import { STable } from '@/components'
 import RoleModal from './modules/RoleModal'
 import RoleTreeModal from './modules/RoleTreeModal'
@@ -185,6 +187,21 @@ export default {
     // 新增
     handleAdd (item) {
       this.$refs.modal.add()
+    },
+    deleteRoleInfo (record) {
+      const that = this
+      // 删除角色角色
+      deleteRole({ 'id': record.id }).then((res) => {
+        if(res && res.code && parseInt(res.code) === 500){
+          that.$message.error(res.msg);
+          return
+        } else {
+          that.$message.success('删除成功')
+          that.$refs.table.refresh(true)
+        }
+      }).catch(error => {
+        console.error(error)
+      })
     },
     handleMenu (record) {
       // 获取权限数组
