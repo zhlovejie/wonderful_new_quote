@@ -48,7 +48,7 @@
 import {
   priceAdjustPricingRecordPricingChangList //修改记录
 } from '@/api/productOfferManagement'
-
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
@@ -97,8 +97,8 @@ export default {
     searchParam(){
       let startTime =undefined,endTime=undefined
       if(Array.isArray(this.sDate) && this.sDate.length === 2){
-        startTime = this.sDate[0].format('YYYY-MM-DD')
-        endTime = this.sDate[1].format('YYYY-MM-DD')
+        startTime = this.sDate[0] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        endTime = this.sDate[1] instanceof this.moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       return {
         changeState:this.changeState,
@@ -109,6 +109,7 @@ export default {
     }
   },
   methods:{
+    moment,
     init(){
       let that = this
     },
@@ -147,9 +148,16 @@ export default {
     async query(searchParam){
       let that = this
       that.visible = true
+      that.resetForm()
       that.pagination.current = 1  
       that.extendSearchParam = Object.assign({},(searchParam || {}))
       that.searchAction()
+    },
+    resetForm(){
+      let that = this
+      that.itemName = undefined
+      that.sDate = [undefined,undefined]
+      that.dataSource = []
     }
   }
 }

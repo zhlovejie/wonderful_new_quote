@@ -31,7 +31,6 @@
       </div>
       <div class="main-wrapper">
         <a-table
-          rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
@@ -56,7 +55,7 @@
 import {
   priceAdjustUpdateRecordList //修改记录
 } from '@/api/productOfferManagement'
-
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
@@ -97,7 +96,7 @@ export default {
       visible:false,
       changeState:undefined,
       itemName:undefined,
-      sDate:[],
+      sDate:[undefined,undefined],
       columns:columns,
       dataSource:[],
       pagination:{
@@ -114,8 +113,8 @@ export default {
     searchParam(){
       let startTime =undefined,endTime=undefined
       if(Array.isArray(this.sDate) && this.sDate.length === 2){
-        startTime = this.sDate[0].format('YYYY-MM-DD')
-        endTime = this.sDate[1].format('YYYY-MM-DD')
+        startTime = this.sDate[0] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        endTime = this.sDate[1] instanceof this.moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       return {
         changeState:this.changeState,
@@ -126,6 +125,7 @@ export default {
     }
   },
   methods:{
+    moment,
     init(){
       let that = this
     },
@@ -136,7 +136,10 @@ export default {
       that.loading = true
       priceAdjustUpdateRecordList(_searchParam).then(res => {
         that.loading = false
-        that.dataSource = res.data.records
+        that.dataSource = res.data.records.map((item,index) =>{
+          item.key = index
+          return item
+        })
         //设置数据总条数
         const pagination = { ...that.pagination }
         pagination.total = res.data.total
@@ -161,9 +164,17 @@ export default {
     async query(searchParam){
       let that = this
       that.visible = true
+      that.resetForm()
       that.pagination.current = 1  
       that.extendSearchParam = Object.assign({},(searchParam || {}))
       that.searchAction()
+    },
+    resetForm(){
+      let that = this
+      that.changeState = undefined
+      that.itemName = undefined
+      that.sDate = [undefined,undefined]
+      that.dataSource = []
     }
   }
 }
