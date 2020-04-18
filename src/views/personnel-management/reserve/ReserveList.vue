@@ -2,11 +2,42 @@
   <!-- 人员储备 -->
   <div class="reserve-list-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="姓名模糊查询" v-model="userName" allowClear style="width:150px;" />
-      <a-input placeholder="手机号模糊查询" v-model="phoneNumber" allowClear style="width:150px;" />
+      <a-select
+        placeholder="选择部门"
+        @change="depChangeHandler"
+        v-model="depId"
+        :allowClear="true"
+        style="width: 150px"
+      >
+        <a-select-option
+          v-for="item in depSelectDataSource"
+          :key="item.id"
+          :value="item.id"
+        >
+          {{item.departmentName}}
+        </a-select-option>
+      </a-select>
+
+      <a-select
+        placeholder="选择岗位"
+        v-model="stationId"
+        :allowClear="true"
+        style="width: 180px"
+      >
+        <a-select-option
+          v-for="item in postSelectDataSource"
+          :key="item.id"
+          :value="item.id"
+        >
+          {{item.stationName}}
+        </a-select-option>
+      </a-select>
+
+      <a-input placeholder="姓名查询" v-model="userName" allowClear style="width:100px;" />
+      <a-input placeholder="手机号查询" v-model="phoneNumber" allowClear style="width:130px;" />
 
       <label>员工状态</label>
-      <a-select placeholder="员工状态" v-model="userStatus" :allowClear="true" style="width: 150px">
+      <a-select placeholder="员工状态" v-model="userStatus" :allowClear="true" style="width: 140px">
         <a-select-option :value="0">浏览</a-select-option>
         <a-select-option :value="1">试用期</a-select-option>
         <a-select-option :value="2">试用期不通过</a-select-option>
@@ -14,7 +45,7 @@
         <a-select-option :value="4">离职</a-select-option>
       </a-select>
 
-      <label>是否邀请面试</label><a-select placeholder="是否邀请面试" v-model="isInterviewed" :allowClear="true" style="width: 150px">
+      <label>是否邀请面试</label><a-select placeholder="是否邀请面试" v-model="isInterviewed" :allowClear="true" style="width: 50px">
         <a-select-option :value="0">否</a-select-option>
         <a-select-option :value="1">是</a-select-option>
       </a-select>
@@ -205,11 +236,15 @@ export default {
   data(){
     return {
       userName:undefined,
+      depId:undefined,
+      stationId:undefined,
       phoneNumber:undefined,
       userStatus:undefined,
       isInterviewed:undefined,
       columns:columns,
       dataSource:[],
+      depSelectDataSource:[],
+      postSelectDataSource:[],
       pagination:{
         current:1
       },
@@ -222,6 +257,8 @@ export default {
   computed:{
     searchParam(){
       return {
+        departmentId:this.depId,
+        stationId:this.stationId,
         name:this.userName,
         phone:this.phoneNumber,
         status:this.userStatus,
@@ -241,7 +278,13 @@ export default {
   },
   methods:{
     init(){
+      //let that = this
+
       let that = this
+      //depSelectDataSource
+      departmentList().then(res =>{
+        that.depSelectDataSource = res.data
+      })
       this.searchAction()
     },
     searchAction(opt = {}){
@@ -422,6 +465,13 @@ export default {
       .catch((err) =>{
         this.uploading = false
         console.log(err)
+      })
+    },
+    depChangeHandler(dep_id){
+      let that = this
+      that.postSelectDataSource = []
+      return getStationList({id:dep_id}).then(res =>{
+        that.postSelectDataSource = res.data
       })
     }
   }
