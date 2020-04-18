@@ -2,7 +2,7 @@
   <!-- 产品价格配置表 -->
   <div class="customer-list-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="系列产品名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
+      <a-input :placeholder="placeholder" v-model="itemName" allowClear style="width: 220px;"/>
       <a-button type="primary" icon="search" @click="searchAction">查询</a-button>
     </div>
     <div class="main-wrapper">
@@ -115,7 +115,8 @@ export default {
       pagination:{
         current:1
       },
-      loading:false
+      loading:false,
+      placeholder:'系列产品名称模糊查询'
     }
   },
   computed:{
@@ -137,6 +138,7 @@ export default {
     activeKey(newVal,oldVal){
       console.log(arguments)
       let txt = ['','系列产品名称','中控系统模块名称','配置名称'][newVal]
+      this.placeholder = `${txt}模糊查询`
       let columns = [...this.columns]
       let target = columns.find(item => item.dataIndex === 'name')
       if(target){

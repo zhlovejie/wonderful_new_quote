@@ -47,13 +47,15 @@
             >添加选配项</a-button>
           </a-form-item>
 
-          <a-form-item
+          <div
             class="opt-choice-item"
-            :label="`选择项 ${index+1}`"
             v-for="(item,index) in optChoice"
             :key="index"
           >
-            <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+            <div class="opt-choice-header">
+              <h4>选择项{{index+1}}:</h4>
+              <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+            </div>
             <OptList
               :ref="`ref_optChoice_${index}`"
               :dataSource="item.dataSource"
@@ -67,7 +69,7 @@
               icon="plus"
               @click="ShowModule('optChoice',index)"
             >添加</a-button>
-          </a-form-item>
+          </div>
           <a-form-item>
             <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
           </a-form-item>
@@ -280,7 +282,7 @@ export default {
         },
         optChoice: {
           key: 'optChoice',
-          searchParam: { type: 3 },
+          searchParam: { },
           selected: that.optChoice.map(item => Object.assign({}, item))
         }
       }
@@ -288,7 +290,7 @@ export default {
       if (key === 'optChoice') {
         map[key] = {
           key: `optChoice.${index}`,
-          searchParam: { type: 3 },
+          searchParam: { type:1},
           selected: that.optChoice[index]['dataSource'].map(item => Object.assign({}, item))
         }
       }
@@ -351,7 +353,7 @@ export default {
         .sort((a, b) => a.orderNo - b.orderNo)
       let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5].includes(item.type))
 
-      let groups = [...new Set(optChoiceData.map(item => item.groupId))]
+      let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
       groups.map(groupId => {
         let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
@@ -395,12 +397,26 @@ export default {
 .opt-choice-wrapper .opt-choice-item {
   position: relative;
   border-top: 1px solid #ddd;
+  padding: 10px 0;
+  margin-bottom: 15px;
 }
 
 .opt-choice-wrapper .opt-choice-item .opt-choice-delete {
+  padding: 0 15px;
+}
+
+.opt-choice-wrapper .opt-choice-item .opt-choice-header{
+  display: flex;
+  line-height: 40px;
+}
+.opt-choice-wrapper .opt-choice-item .opt-choice-header h4{
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.opt-choice-wrapper .opt-choice-item >>> .opt-list-is-require{
   position: absolute;
-  top: -40px;
-  right: 5px;
-  color: #1890ff;
+  top: 10px;
+  right: 60px;
 }
 </style>

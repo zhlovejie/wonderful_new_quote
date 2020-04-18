@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="400"
+    :width="550"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -38,15 +38,12 @@ const columns = [
     title: '序号',
     dataIndex: 'order',
     scopedSlots: { customRender: 'order' },
-  },
-  {
-    title: '编号',
-    dataIndex: 'itemId'
+    width:'70px'
   },
   {
     title: '配置名称',
     dataIndex: 'name',
-    ellipsis: true
+    width:'400px'
   }
 ]
 export default {

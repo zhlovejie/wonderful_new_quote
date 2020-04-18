@@ -23,7 +23,7 @@
         </div>
       </transition-group>
     </vuedraggable>
-    <a-form-item v-if="showRequire" style="margin-bottom:0;">
+    <a-form-item v-if="showRequire" style="margin-bottom:0;" class="opt-list-is-require">
       <a-checkbox v-model="isRequire">是否必选项</a-checkbox>
     </a-form-item>
   </div>

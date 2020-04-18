@@ -42,7 +42,7 @@
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           size="small"
         >
-          <div slot="itemName" slot-scope="text">
+          <!-- <div slot="itemName" slot-scope="text">
             <a-tooltip v-if="String(text).length > 15">
               <template slot="title">{{text}}</template>
               {{ String(text).slice(0,15) }}...
@@ -55,7 +55,7 @@
               {{ String(text).slice(0,15) }}...
             </a-tooltip>
             <span v-else>{{text}}</span>
-          </div>
+          </div> -->
         </a-table>
       </div>
     </div>
@@ -74,6 +74,7 @@ const columns = [
     title: '序号',
     dataIndex: 'order',
     key: 'order',
+    width:'70px'
   },
   {
     align: 'center',
@@ -81,6 +82,7 @@ const columns = [
     dataIndex: 'itemName',
     key: 'itemName',
     scopedSlots: { customRender: 'itemName' },
+    width:'400px'
   },
   {
     align: 'center',
@@ -88,6 +90,7 @@ const columns = [
     dataIndex: 'remarks',
     key: 'remarks',
     scopedSlots: { customRender: 'remarks' },
+    width:'200px'
   }
 ]
 export default {

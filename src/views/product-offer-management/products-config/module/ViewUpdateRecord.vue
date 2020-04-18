@@ -37,6 +37,7 @@
           :pagination="pagination"
           :loading="loading" 
           @change="handleTableChange" 
+          size="middle"
         >
           <div slot="order" slot-scope="text, record, index">
             {{ index + 1 }}
@@ -62,24 +63,28 @@ const columns = [
     title: '序号',
     dataIndex: 'order',
     scopedSlots: { customRender: 'order' },
+    width:'70px'
   },
   {
     title: '变更',
     dataIndex: 'changeState',
     scopedSlots: { customRender: 'changeState' },
+    width:'100px'
   },
   {
     title: '配置项',
     dataIndex: 'itemName',
-    ellipsis: true
+    width:'220px'
   },
   {
     title: '变更人',
     dataIndex: 'createdName',
+    width:'120px'
   },
   {
     title: '变更时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
+    width:'180px'
   }
 ]
 export default {
