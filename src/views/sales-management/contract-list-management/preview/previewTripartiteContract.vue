@@ -80,7 +80,7 @@
               </template>
 
               <template slot="price" slot-scope="text, record">
-                <span v-if="parseInt(record.priceC) <= Math.round(text)">{{ text }}</span>
+                <span v-if="record.showRedFlag == 0">{{ text }}</span>
                 <span v-else style="color:red" class="print-color-style">{{ text }}</span>
               </template>
 
@@ -106,7 +106,7 @@
                 </div>
               </template>
 
-              
+
             </a-table>
             <div class="content-p">二、质量及检验标准：依照万德福公司相关产品检验标准执行。</div>
             <div class="content-p">
@@ -427,7 +427,7 @@ export default {
   components: {},
   props: {},
   data() {
-    
+
     return {
       data: [],
       enterpriseName: '江苏万德福公共设施科技有限公司',
@@ -528,7 +528,7 @@ export default {
       qualityLimit:1, //常规桶 质保期
       detailDeliveryAddress:'', //新地址
 
-      getLookDetail_isTax:true, 
+      getLookDetail_isTax:true,
       getLookDetail_freightType:0,
       getLookDetail_freightDivType:2
     }
@@ -805,8 +805,8 @@ export default {
           this.bucketType = res.data.bucketType || 1
           this.qualityLimit = res.data.qualityLimit || 1
           this.detailDeliveryAddress = res.data.detailDeliveryAddress || ''
-          
-          this.getLookDetail_isTax = res.data.isTax 
+
+          this.getLookDetail_isTax = res.data.isTax
           this.getLookDetail_freightType = res.data.freightType
           this.getLookDetail_freightDivType = res.data.freightDivType
 

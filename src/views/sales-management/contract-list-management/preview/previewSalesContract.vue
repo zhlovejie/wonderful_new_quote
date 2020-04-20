@@ -80,7 +80,7 @@
                 <img style="height: 50px;" :src="text" />
               </template>
               <template slot="price" slot-scope="text, record">
-                <span v-if="record.priceC <= Math.round(text)">{{ text | moneyFormatNumber }}</span>
+                <span v-if="record.showRedFlag == 0">{{ text | moneyFormatNumber }}</span>
                 <span v-else style="color:red" class="print-color-style">{{ text | moneyFormatNumber }}</span>
               </template>
 
@@ -205,7 +205,7 @@
                 {{ item.moneyName }}应付金额：
                 <span class="span-paddings">{{ item.money | moneyFormatNumber}}</span>。付款周期：
                 <span class="span-paddings">{{ item.date }}</span>
-                
+
               </div>
             </div>
             <div v-if="increaseTotalPayment > 0" class="content-p p-text-index">
@@ -251,7 +251,7 @@
             <div
               class="content-p"
             >十四、其他约定事项：以上产品为甲方拥有自主知识产权的专利产品，乙方不得购买、销售假冒或仿冒合同产品，不得以任何形式伪造、仿造甲方产品。如有上述行为应视为违约，应承担法律责任。甲方有权单方面终止与乙方的一切商业合作关系，并要求乙方按合同金额的100%赔偿违约金，甲方有权从货物预付款或保证金中扣除违约金，不足部分由乙方补足，甲方保留依法追究乙方侵权责任的权利。</div>
-            
+
             <div class="content-p">十五、双方约定通过微信号、邮箱相互传递资料，作为合同的一部分，履行法律效力。</div>
             <template v-if="bucketType === 1">
             <div class="content-p">十六、培训指导</div>
@@ -260,7 +260,7 @@
             >1、自签订合同之日起，甲方为乙方提供垃圾分类运营、软件使用、设备使用的培训指导。乙方需提前三个工作日提出，基于甲乙双方协商一致的培训时间和培训内容予以实施，此过程中产生的差旅费由乙方承担。</div>
             <div class="content-p p-text-index">2、如乙方参与培训人员离职，可按15.1再次申请培训指导。</div>
             <div class="content-p p-text-index">3、培训人员应当具备高中或相当于高中以上文化程度。</div>
-            
+
             <div class="content-p">十七、安装施工要求</div>
             <div
               class="content-p p-text-index"
@@ -503,7 +503,7 @@ export default {
       qualityLimit:1, //常规桶 质保期
       detailDeliveryAddress:'', //新地址
 
-      getLookDetail_isTax:true, 
+      getLookDetail_isTax:true,
       getLookDetail_freightType:0,
       getLookDetail_freightDivType:2
     }
@@ -778,8 +778,8 @@ export default {
           this.bucketType = res.data.bucketType || 1
           this.qualityLimit = res.data.qualityLimit || 1
           this.detailDeliveryAddress = res.data.detailDeliveryAddress || ''
-          
-          this.getLookDetail_isTax = res.data.isTax 
+
+          this.getLookDetail_isTax = res.data.isTax
           this.getLookDetail_freightType = res.data.freightType
           this.getLookDetail_freightDivType = res.data.freightDivType
 

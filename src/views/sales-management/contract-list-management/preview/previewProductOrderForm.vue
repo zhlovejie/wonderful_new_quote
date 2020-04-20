@@ -79,7 +79,7 @@
                 <img style="height: 50px;" :src="text" />
               </template>
               <template slot="price" slot-scope="text, record">
-                <span v-if="record.priceC <= Math.round(text * (100 + record.rate)/100)">{{ text | moneyFormatNumber}}</span>
+                <span v-if="record.showRedFlag == 0">{{ text | moneyFormatNumber}}</span>
                 <span class="print-color-style" v-else style="color:red">{{ text | moneyFormatNumber}}</span>
               </template>
 
@@ -92,7 +92,7 @@
               <template slot="freightUnitPrice" slot-scope="text">
                 <span>{{text | moneyFormatNumber}}</span>
               </template>
-              
+
 
               <template slot="footer" slot-scope="currentPageData">
                 <div
@@ -106,7 +106,7 @@
                 </div>
               </template>
 
-              
+
             </a-table>
             <div class="content-p">二、质量及检验标准：依照万德福公司相关产品检验标准执行。</div>
             <div class="content-p">
@@ -140,7 +140,7 @@
               第 {{index + 1 | numberCircle}} 组联系人 -
               <span v-html="val"></span>
             </div> -->
-            
+
 
             <!-- <div class="content-p p-text-index"> 详细地址（省市区县乡镇街道）：<span class="span-paddings">{{ deliveryAddress }}</span></div>
           <div class="content-p p-text-index"> 联系人姓名：<span class="span-paddings">{{ deliveryName }}</span> </div>
@@ -450,7 +450,7 @@ export default {
       qualityLimit:1, //常规桶 质保期
       detailDeliveryAddress:'', //新地址
 
-      getLookDetail_isTax:true, 
+      getLookDetail_isTax:true,
       getLookDetail_freightType:0,
       getLookDetail_freightDivType:2
     }
@@ -739,7 +739,7 @@ export default {
           this.detailDeliveryAddress = res.data.detailDeliveryAddress || ''
 
 
-          this.getLookDetail_isTax = res.data.isTax 
+          this.getLookDetail_isTax = res.data.isTax
           this.getLookDetail_freightType = res.data.freightType
           this.getLookDetail_freightDivType = res.data.freightDivType
 
