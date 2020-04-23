@@ -338,9 +338,13 @@ export default {
     controlChangeHandler(controlID){
       let that = this
       if(parseInt(controlID,10) === -1){
+        that.controlResult = {
+          optStand:[],
+          optSelect:[],
+          optChoice:[]
+        }
         return
       }
-
       that.optControlSelected = this.optControl.find(item =>item.id === controlID)
       priceAdjustZktConfigDetail({ id: controlID }).then(res => {
         let { optStandData, optSelectData, optChoiceData } = that.formatData(res.data.sysConfigList)
