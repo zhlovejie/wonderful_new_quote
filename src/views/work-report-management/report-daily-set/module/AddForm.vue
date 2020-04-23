@@ -20,9 +20,7 @@
           <tr>
             <td style="width:150px;">编号</td>
             <td style="width:300px;">
-              <a-form-item>
-                <span>{{reportNum || '系统自动生成'}}</span>
-              </a-form-item>
+              <span>{{reportNum || '系统自动生成'}}</span>
             </td>
             <td>部门</td>
             <td>{{departmentName}}</td>
@@ -38,8 +36,8 @@
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th>工作内容</th>
-            <th style="width:100px;">工作进度(%)</th>
+            <th><i class="wdf-required"></i>工作内容</th>
+            <th style="width:100px;"><i class="wdf-required"></i>工作进度(%)</th>
             <th style="width:70px;" v-if="!isView">操作</th>
           </tr>
           <tr v-for="(item ,index) in todayList" :key="index">
@@ -49,8 +47,8 @@
                 <a-textarea
                   :disabled="isView"
                   placeholder="输入工作内容"
-                  :rows="1"
-                  v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: false, message: '输入工作内容' }] }]"
+                  :rows="2"
+                  v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: true, message: '输入工作内容' }] }]"
                 />
               </a-form-item>
             </td>
@@ -59,7 +57,7 @@
                 <a-input-number 
                   :disabled="isView"
                   placeholder="工作进度"
-                  v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: false, message: '输入工作进度' }] }]"
+                  v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
@@ -96,7 +94,7 @@
                 <a-textarea
                   :disabled="isView"
                   placeholder="输入工作内容"
-                  :rows="1"
+                  :rows="2"
                   v-decorator="[`planList.${index}.content`, {initialValue:planList[index].content, rules: [{ required: false, message: '输入工作内容' }] }]"
                 />
               </a-form-item>
@@ -218,6 +216,7 @@ export default {
     async query(type, record) {
       let that = this
       that.visible = true
+      that.dataReset()
       that.type = type
       console.log(that)
       that.record = Object.assign({}, record)
@@ -232,6 +231,12 @@ export default {
         that.departmentName = that.userInfo.departmentName
         that.stationName = that.userInfo.stationName
         that.trueName = that.userInfo.trueName
+        that.addItem('todayList')
+        that.addItem('todayList')
+        that.addItem('todayList')
+        that.addItem('planList')
+        that.addItem('planList')
+        that.addItem('planList')
       }
     },
     initData() {
@@ -261,6 +266,16 @@ export default {
     },
     handleSubmit() {
       let that = this
+
+      if(that.todayList.length === 0){
+        that.$message.info('请填写今日工作内容')
+        return
+      }
+      if(that.planList.length === 0){
+        that.$message.info('请填写明日工作计划')
+        return
+      }
+
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
@@ -313,11 +328,14 @@ export default {
       })
     },
     handleCancel() {
+      this.dataReset()
+      this.$nextTick(() => (this.visible = false))
+    },
+    dataReset(){
       this.form.resetFields()
       this.todayList = []
       this.planList = []
       this.fileList = []
-      this.$nextTick(() => (this.visible = false))
     },
     handleChange(info) {
       console.log(arguments)
@@ -343,5 +361,15 @@ export default {
 }
 .custom-table-border >>> .ant-form-item {
   margin-bottom: 0;
+}
+i.wdf-required::before{
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun,sans-serif;
+  font-style: normal;
+  line-height: 1;
+  content: "*";
 }
 </style>

@@ -141,7 +141,7 @@ export default {
         endDate = undefined
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
         beginDate = this.sDate[0] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        endDate = this.sDate[1] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        endDate = this.sDate[1] instanceof this.moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       return {
         userName: this.userName,

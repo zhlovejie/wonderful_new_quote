@@ -18,7 +18,7 @@ export function workReportSetDelete (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reportSet/removeWorkReport',
-    method: 'get',
+    method: 'post',
     params: parameter
   })
 }

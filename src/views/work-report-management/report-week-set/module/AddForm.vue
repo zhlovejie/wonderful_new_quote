@@ -20,9 +20,7 @@
           <tr>
             <td style="width:150px;">编号</td>
             <td style="width:300px;">
-              <a-form-item>
-                <span>{{reportNum || '系统自动生成'}}</span>
-              </a-form-item>
+              <span>{{reportNum || '系统自动生成'}}</span>
             </td>
             <td>部门</td>
             <td>{{departmentName}}</td>
@@ -30,27 +28,29 @@
           <tr>
             <td>岗位</td>
             <td>{{stationName}}</td>
-            <td>姓名</td>
+            <td>汇报人</td>
             <td>{{trueName}}</td>
           </tr>
         </table>
-        <h3>今日工作内容</h3>
+        <h3>本周工作完成情况总结</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th>工作内容</th>
-            <th style="width:100px;">工作进度(%)</th>
+            <th><i class="wdf-required"></i> 主要工作内容</th>
+            <th style="width:100px;"><i class="wdf-required"></i> 实际完成情况(%)</th>
+            <th style="width:180px;">未完成原因</th>
+            <th style="width:180px;">对策</th>
             <th style="width:70px;" v-if="!isView">操作</th>
           </tr>
-          <tr v-for="(item ,index) in todayList" :key="index">
+          <tr v-for="(item ,index) in finishList" :key="index">
             <td style="width:150px;">{{index + 1}}</td>
             <td>
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入工作内容"
+                  placeholder="输入主要工作内容"
                   :rows="1"
-                  v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: false, message: '输入工作内容' }] }]"
+                  v-decorator="[`finishList.${index}.mainContent`, {initialValue:finishList[index].mainContent, rules: [{ required: true, message: '输入主要工作内容' }] }]"
                 />
               </a-form-item>
             </td>
@@ -58,8 +58,8 @@
               <a-form-item>
                 <a-input-number 
                   :disabled="isView"
-                  placeholder="工作进度"
-                  v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: false, message: '输入工作进度' }] }]"
+                  placeholder="实际完成情况"
+                  v-decorator="[`finishList.${index}.finishDesc`, {initialValue:finishList[index].finishDesc,rules: [{ required: true, message: '输入实际完成情况' }] }]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
@@ -67,9 +67,29 @@
                 <span>&nbsp;%</span>
               </a-form-item>
             </td>
+            <td>
+              <a-form-item>
+                <a-textarea
+                  :disabled="isView"
+                  placeholder="输入未完成原因"
+                  :rows="1"
+                  v-decorator="[`finishList.${index}.noFinishReason`, {initialValue:finishList[index].noFinishReason, rules: [{ required: false, message: '输入未完成原因' }] }]"
+                />
+              </a-form-item>
+            </td>
+            <td>
+              <a-form-item>
+                <a-textarea
+                  :disabled="isView"
+                  placeholder="输入对策"
+                  :rows="1"
+                  v-decorator="[`finishList.${index}.solution`, {initialValue:finishList[index].solution, rules: [{ required: false, message: '输入对策' }] }]"
+                />
+              </a-form-item>
+            </td>
             <td style="width:70px;" v-if="!isView">
               <a-form-item >
-                <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('finishList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
@@ -79,14 +99,87 @@
           style="width:100%;"
           type="dashed"
           icon="plus"
-          @click="addItem('todayList')"
-        >添加今日工作内容</a-button>
-        <h3>明日工作计划</h3>
+          @click="addItem('finishList')"
+        >添加工作完成情况</a-button>
+
+
+        <h3>本周部门发生重大异常汇总</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th>明日工作计划</th>
-            <th style="width:100px;">工作进度(%)</th>
+            <th>重大异常</th>
+            <th style="width:70px;" v-if="!isView">操作</th>
+          </tr>
+          <tr v-for="(item ,index) in exceptionList" :key="index">
+            <td style="width:150px;">{{index + 1}}</td>
+            <td>
+              <a-form-item>
+                <a-textarea
+                  :disabled="isView"
+                  placeholder="输入重大异常内容"
+                  :rows="1"
+                  v-decorator="[`exceptionList.${index}.content`, {initialValue:exceptionList[index].content, rules: [{ required: false, message: '输入重大异常内容' }] }]"
+                />
+              </a-form-item>
+            </td>
+            <td style="width:70px;" v-if="!isView">
+              <a-form-item >
+                <a href="javascript:void(0);" @click="delItem('exceptionList',index)">删除</a>
+              </a-form-item>
+            </td>
+          </tr>
+        </table>
+        <a-button 
+          v-if="!isView"
+          style="width:100%;"
+          type="dashed"
+          icon="plus"
+          @click="addItem('exceptionList')"
+        >添加部门发生重大异常</a-button>
+
+        <h3>需要解决问题及建议</h3>
+        <table class="custom-table custom-table-border">
+          <tr>
+            <th style="width:150px;">序号</th>
+            <th>问题&建议</th>
+            <th style="width:70px;" v-if="!isView">操作</th>
+          </tr>
+          <tr v-for="(item ,index) in adviseList" :key="index">
+            <td style="width:150px;">{{index + 1}}</td>
+            <td>
+              <a-form-item>
+                <a-textarea
+                  :disabled="isView"
+                  placeholder="输入问题&建议"
+                  :rows="1"
+                  v-decorator="[`adviseList.${index}.mainContent`, {initialValue:adviseList[index].mainContent, rules: [{ required: false, message: '输入问题&建议' }] }]"
+                />
+              </a-form-item>
+            </td>
+            <td style="width:70px;" v-if="!isView">
+              <a-form-item >
+                <a href="javascript:void(0);" @click="delItem('adviseList',index)">删除</a>
+              </a-form-item>
+            </td>
+          </tr>
+        </table>
+        <a-button 
+          v-if="!isView"
+          style="width:100%;"
+          type="dashed"
+          icon="plus"
+          @click="addItem('adviseList')"
+        >添加问题及建议</a-button>
+
+
+        <h3>下周工作计划</h3>
+        <table class="custom-table custom-table-border">
+          <tr>
+            <th style="width:150px;">序号</th>
+            <th><i class="wdf-required"></i>主要工作内容</th>
+            <th style="width:100px;"><i class="wdf-required"></i>计划完成时间</th>
+            <th style="width:180px;">配合部门</th>
+            <th style="width:180px;">备注</th>
             <th style="width:70px;" v-if="!isView">操作</th>
           </tr>
           <tr v-for="(item ,index) in planList" :key="index">
@@ -95,23 +188,40 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入工作内容"
+                  placeholder="输入主要工作内容"
                   :rows="1"
-                  v-decorator="[`planList.${index}.content`, {initialValue:planList[index].content, rules: [{ required: false, message: '输入工作内容' }] }]"
+                  v-decorator="[`planList.${index}.mainContent`, {initialValue:planList[index].mainContent, rules: [{ required: true, message: '输入主要工作内容' }] }]"
                 />
               </a-form-item>
             </td>
             <td style="width:100px;">
               <a-form-item>
-                <a-input-number 
+                <a-date-picker 
                   :disabled="isView"
-                  placeholder="工作进度"
-                  v-decorator="[`planList.${index}.progress`, {initialValue:planList[index].progress,rules: [{ required: false, message: '输入工作进度' }] }]"
-                  :min="0"
-                  :max="100"
+                  placeholder="计划完成时间"
+                  v-decorator="[`planList.${index}.finishDate`, {initialValue:planList[index].finishDate,rules: [{ required: true, message: '输入计划完成时间' }] }]"
                   style="width: 120px"
                 />
-                <span>&nbsp;%</span>
+              </a-form-item>
+            </td>
+            <td>
+              <a-form-item>
+                <a-textarea
+                  :disabled="isView"
+                  placeholder="输入配合部门"
+                  :rows="1"
+                  v-decorator="[`planList.${index}.cooperateDepartment`, {initialValue:planList[index].cooperateDepartment, rules: [{ required: false, message: '输入配合部门' }] }]"
+                />
+              </a-form-item>
+            </td>
+            <td>
+              <a-form-item>
+                <a-textarea
+                  :disabled="isView"
+                  placeholder="输入备注"
+                  :rows="1"
+                  v-decorator="[`planList.${index}.remark`, {initialValue:planList[index].remark, rules: [{ required: false, message: '输入备注' }] }]"
+                />
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
@@ -127,7 +237,9 @@
           type="dashed"
           icon="plus"
           @click="addItem('planList')"
-        >添加明日工作计划</a-button>
+        >添加下周工作计划</a-button>
+
+
         <table class="custom-table custom-table-border" style="margin:20px 0 0 0;">
           <tr>
             <th style="width:150px;">附件</th>
@@ -168,8 +280,12 @@ export default {
       trueName: undefined,
       reportNum:undefined,
       record:{},
-      todayList: [],
+
+      finishList:[],
+      exceptionList:[],
+      adviseList:[],
       planList: [],
+      
       uploadPath: getUploadPath2(),
       fileList: []
     }
@@ -177,7 +293,7 @@ export default {
   computed: {
     ...mapGetters(['userInfo']),
     modalTitle() {
-      return '新增'
+      return this.isAdd ? '新增' : this.isEdit ? '编辑' : '查看'
     },
     headerTitle() {
       if(this.isAdd){
@@ -211,11 +327,11 @@ export default {
     }
   },
   methods: {
-    addItem(key) {
-      this[key].push({
-        content: undefined,
-        progress: undefined
-      })
+    moment,
+    addItem(key,count=1) {
+      for(let i=0,len = (parseInt(count,10) || 1);i<len;i++){
+        this[key].push({})
+      }
     },
     delItem(key, index) {
       let _d = [...this[key]]
@@ -225,6 +341,7 @@ export default {
     async query(type, record) {
       let that = this
       that.visible = true
+      that.dataReset()
       that.type = type
       console.log(that)
       that.record = Object.assign({}, record)
@@ -239,6 +356,12 @@ export default {
         that.departmentName = that.userInfo.departmentName
         that.stationName = that.userInfo.stationName
         that.trueName = that.userInfo.trueName
+
+        that.addItem('finishList',3)
+        that.addItem('exceptionList')
+        that.addItem('adviseList')
+        that.addItem('planList')
+
       }
     },
     initData() {
@@ -249,12 +372,19 @@ export default {
     async fillData(resultData) {
       let that = this
 
-      that.reportNum = resultData.dailyNum
+      that.reportNum = resultData.weekNum
       that.departmentName = resultData.departmentName
       that.stationName = resultData.stationName
       that.trueName = resultData.userName
-      that.todayList = resultData.todayList || []
-      that.planList = resultData.planList || []
+
+      that.finishList = resultData.finishList || []
+      that.exceptionList = (resultData.exceptionList || [])
+      that.adviseList = resultData.adviseList || []
+      that.planList = (resultData.planList || []).map(item =>{
+        item.finishDate = item.finishDate ? that.moment(item.finishDate) : undefined
+        return item
+      })  
+
       if(Array.isArray(resultData.annexList)){
         that.fileList = resultData.annexList.map((item,index) => {
           return {
@@ -268,45 +398,39 @@ export default {
     },
     handleSubmit() {
       let that = this
+      if(that.finishList.length === 0){
+        that.$message.info('请填写本周工作完成情况')
+        return
+      }
+      if(that.planList.length === 0){
+        that.$message.info('请填写下周工作计划')
+        return
+      }
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          let _values = {}
-          let { todayList, planList } = values
-          todayList = todayList.map((item, index) => {
-            item.orderNum = index + 1
-            return item
+          Object.keys(values).map(key =>{
+            let target = values[key]
+            Array.isArray(target) && target.map((item,index) =>{
+              item.orderNum = index + 1
+            })
           })
-
-          planList = planList.map((item, index) => {
-            item.orderNum = index + 1
-            return item
-          })
-          let annexList = that.fileList.map((item, index) => {
+          values.annexList = that.fileList.map((item, index) => {
             return {
               orderNum: index + 1,
               workUrl: item.url
             }
           })
-
-          // _values.dailyNum = ''
-          // _values.departmentId = ''
-          // _values.stationId = ''
-
-          _values.todayList = todayList
-          _values.planList = planList
-          _values.annexList = annexList
-
           if (that.isEdit) {
-            _values.id = that.record.id
+            values.id = that.record.id
           }
           that.spinning = true
-          workReportSetWeekSaveAndUpdate(_values)
+          workReportSetWeekSaveAndUpdate(values)
             .then(res => {
               that.spinning = false
               if (res.code === 200) {
                 that.visible = false
-                that.$message.success('操作成功')
+                that.$message.success(res.msg || '操作成功')
                 that.$emit('finish')
               } else {
                 that.$message.warning(res.msg)
@@ -320,11 +444,16 @@ export default {
       })
     },
     handleCancel() {
+      this.dataReset()
+      this.$nextTick(() => (this.visible = false))
+    },
+    dataReset(){
       this.form.resetFields()
-      this.todayList = []
+      this.finishList = []
+      this.exceptionList = []
+      this.adviseList = []
       this.planList = []
       this.fileList = []
-      this.$nextTick(() => (this.visible = false))
     },
     handleChange(info) {
       console.log(arguments)
@@ -350,5 +479,15 @@ export default {
 }
 .custom-table-border >>> .ant-form-item {
   margin-bottom: 0;
+}
+i.wdf-required::before{
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun,sans-serif;
+  font-style: normal;
+  line-height: 1;
+  content: "*";
 }
 </style>

@@ -73,12 +73,19 @@ export default {
       spinning: false,
       type: 'view',
       depSelectDataSource: [],
-      postSelectDataSource: []
+      postSelectDataSource: [],
+      record: {}
     }
   },
   computed: {
     modalTitle() {
       return this.type === 'add' ? '新增' : '编辑'
+    },
+    isAdd() {
+      return this.type === 'add'
+    },
+    isEdit() {
+      return this.type === 'edit'
     }
   },
   methods: {
@@ -86,38 +93,35 @@ export default {
       let that = this
       that.visible = true
       that.type = type
-      console.log(that)
       that.record = Object.assign({}, record)
-      that.form.resetFields()
       await that.initData()
-      that.fillData(that.record)
+      if (that.isEdit) {
+        that.$nextTick(() => {
+          that.form.setFieldsValue(Object.assign({}, that.record))
+        })
+      }
     },
     initData() {
       let that = this
       let queue = []
       let task1 = function() {
-        //部门
-        return new Promise((resolve, reject) => {
-          departmentList().then(res => (that.depSelectDataSource = res.data))
-        })
+        return departmentList().then(res => (that.depSelectDataSource = res.data))
       }
       queue.push(task1())
-
+      if (that.isEdit) {
+        let task2 = function() {
+          return that.depChangeHandler(that.record.departmentId)
+        }
+        queue.push(task2())
+      }
       return Promise.all(queue)
-    },
-    async fillData(resultData) {
-      let that = this
-      await that.depChangeHandler(resultData.departmentId)
-      //填充其他
-      that.form.setFieldsValue(Object.assign({}, resultData))
     },
     handleSubmit() {
       let that = this
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          let isEdit = that.type === 'edit' ? true : false
-          if (isEdit) {
+          if (that.isEdit) {
             values.id = that.record.id
           }
           that.spinning = true
@@ -141,6 +145,8 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
+      this.depSelectDataSource = []
+      this.postSelectDataSource = []
       this.$nextTick(() => (this.visible = false))
     },
     depChangeHandler(dep_id) {
@@ -149,8 +155,8 @@ export default {
       return getStationList({ id: dep_id }).then(res => {
         let result = [...res.data]
         result.unshift({
-          id:0,
-          stationName:'该部门所有岗位'
+          id: 0,
+          stationName: '该部门所有岗位'
         })
         that.postSelectDataSource = [...result]
       })

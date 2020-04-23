@@ -141,7 +141,7 @@ export default {
         endDate = undefined
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
         beginDate = this.sDate[0] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        endDate = this.sDate[1] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        endDate = this.sDate[1] instanceof this.moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       return {
         userName: this.userName,
@@ -155,7 +155,7 @@ export default {
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'wrm-report-daily-set') {
+        if (to.name === 'wrm-report-week-set') {
           this.init()
         }
       },
@@ -216,7 +216,7 @@ export default {
       } else if (actionType === 'edit') {
         workReportSetWeekRevocation({ id: record.id })
           .then(res => {
-            that.$message.info(res.msg)
+            //that.$message.info(res.msg)
             if(res.code === 200){
               that.$refs.addForm.query(actionType, record)
             }else{
