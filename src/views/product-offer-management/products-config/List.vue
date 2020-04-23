@@ -1,5 +1,5 @@
 <template>
-  <!-- 面试记录 -->
+  <!-- 系列产品配置 -->
   <div class="customer-list-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="系列产品名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>

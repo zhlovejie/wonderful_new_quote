@@ -286,6 +286,42 @@ function handleWindowPrint (ele, title) {
       color:#000 !important;
     }
     /*发货单导出PDF END*/
+    /*产品报价预览*/
+    .products-quotation-view-wrapper .custom-table{
+      width: 100%;
+      border-collapse: collapse;
+      margin: -1px 0 0 0 !important;
+    }
+    .products-quotation-view-wrapper .custom-table-border caption{
+        text-align: center;
+        padding: 10pt 0;
+        font-size: 125%;
+        font-weight: bold;
+        caption-side:initial;
+        color: inherit;
+    }
+    .products-quotation-view-wrapper .custom-table .custom-table{
+      /*margin: -1px;
+      width: calc(100% + 2px);*/
+    }
+    .products-quotation-view-wrapper .custom-table th,
+    .products-quotation-view-wrapper .custom-table td{
+      position: relative;
+      padding: 10pt;
+      border: 1px solid #d8d8d8;
+      text-align: center;
+    }
+  
+    .products-quotation-view-wrapper .custom-table .bottom-line{
+      position: absolute;
+      height: 1px;
+      width: 100%;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #fff;
+    }
+    /*产品报价预览 END*/
     </style>
   `
   oIframe.contentDocument.body.innerHTML = document.querySelector(ele).outerHTML
