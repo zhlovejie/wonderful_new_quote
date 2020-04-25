@@ -1,7 +1,7 @@
 <template>
   <div class="customer-list-wrapper">
     <div class="main-wrapper" style="width:1000px;margin:0 auto;">
-      <table class="custom-table custom-table-border">
+      <table class="custom-table custom-table-border" style="margin-bottom:0;">
         <tr>
           <td style="width:150px;">产品系列</td>
           <td>
@@ -10,9 +10,9 @@
         </tr>
       </table>
 
-      <ProductConfig ref="productConfigMain" @extendProductChange="extendProductChange"/>
+      <ProductConfig ref="productConfigMain" @extendProductChange="extendProductChange" prefix="产品系列-"/>
 
-      <ProductConfig ref="productConfigSub" />
+      <ProductConfig ref="productConfigSub" prefix="产品-" />
       
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" icon="check" @click="doAction('ok')" style="margin:0 10px;">确定</a-button>
@@ -57,34 +57,17 @@ export default {
     return {
       optInfo:{},
       visible:false,
+      costPrice:0,
+      viewDataSource:[]
     }
   },
   computed:{
-    costPrice(){
-      //return this.calcItems()
-    },
-    viewDataSource(){
-      // let {
-      //   optStand,
-      //   optSelect,
-      //   optChoice,
-      //   control_optStand,
-      //   control_optSelect,
-      //   control_optChoice
-      // } = this.getChoiceProducts()
-      // return {
-      //   optInfo:{...this.optInfo,optControl:this.optControlSelected},
-      //   optStand:[...optStand],
-      //   optSelect:[...optSelect,...optChoice],
-      //   optControlStand:[...control_optStand],
-      //   optControlSelect:[...control_optSelect,...control_optChoice]
-      // }
-    }
+    
   },
   methods: {
     extendProductChange(record){
       debugger
-      if(record.isProduct){
+      if(record.isProduct && record.checked){
         this.$refs.productConfigSub.query(record.id)
       }else{
         this.$refs.productConfigSub.reset()
@@ -104,17 +87,55 @@ export default {
     },
     doAction(type){
       if(type === 'ok'){
+        this.calcCostPrice()
         this.visible = true
       }else if(type === 'reset'){
-
+        this.reset()
       }else if(type === 'price-ok'){
         this.visible = false
       }else if(type === 'price-view'){
+        this.makeViewDataSource()
         this.showModule('selectProductView')
       }
     },
     showModule(key) {
       this.$refs[key].query()
+    },
+    calcCostPrice(){
+      let p1 = parseFloat(this.$refs.productConfigMain.costPrice) || 0
+      let p2 = parseFloat(this.$refs.productConfigSub.costPrice) || 0
+      this.costPrice = p1 + p2
+    },
+    makeViewDataSource(){
+      let that = this
+      let makeProducts = (key) => that.$refs[key].viewDataSource
+      let main = makeProducts('productConfigMain')
+      if(main){
+        main.__config = {
+          showTitle:true,
+          prefix:'产品系列-'
+        }
+      }
+      let sub = makeProducts('productConfigSub')
+      if(sub){
+        sub.__config = {
+          showTitle:false,
+          prefix:'产品-'
+        }
+      }
+      this.viewDataSource = [makeProducts('productConfigMain'),makeProducts('productConfigSub')]
+    },
+    reset(){
+      let that = this
+      let keys = ['productConfigMain','productConfigSub']
+      that.optInfo = {}
+      keys.map(key =>{
+        try{
+          that.$refs[key].reset()
+        }catch(err){
+          console.log(err)
+        }
+      })
     }
   }
 }

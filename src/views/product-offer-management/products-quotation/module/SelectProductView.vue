@@ -9,16 +9,17 @@
     :maskClosable="false"
   >
     <div class="products-quotation-view-wrapper" id="products-quotation-view-wrapper">
-      <table class="custom-table custom-table-border">
+      <div class="products-quotation-view-item" v-for="(productInfo,index) in dataSource" :key="index">
+      <table class="custom-table custom-table-border" v-if="productInfo.__config.showTitle">
         <caption>产品参数</caption>
         <tr>
           <td style="width:150px;">产品系列</td>
-          <td>{{dataSource.optInfo.name}}</td>
+          <td>{{productInfo.optInfo.name}}</td>
         </tr>
       </table>
-      <table class="custom-table custom-table-border" v-if="dataSource.optStand.length > 0">
+      <table class="custom-table custom-table-border" v-if="productInfo.optStand.length > 0">
         <tr>
-          <td style="width:150px;">标配</td>
+          <td style="width:150px;">{{productInfo.__config.prefix}}标配</td>
           <td style="padding:0;">
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -26,7 +27,7 @@
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
               </tr>
-              <tr v-for="(item,index) in dataSource.optStand" :key="index" >
+              <tr v-for="(item,index) in productInfo.optStand" :key="index" >
                 <td>{{index+1}}</td>
                 <td>{{item.itemName}}</td>
               </tr>
@@ -35,16 +36,16 @@
         </tr>
       </table>
 
-      <table class="custom-table custom-table-border" v-if="dataSource.optInfo.optControl">
+      <table class="custom-table custom-table-border" v-if="productInfo.optInfo.optControl">
         <tr>
-          <td style="width:150px;">中控系统模块</td>
-          <td>{{dataSource.optInfo.optControl.itemName}}</td>
+          <td style="width:150px;">{{productInfo.__config.prefix}}中控系统模块</td>
+          <td>{{productInfo.optInfo.optControl.itemName}}</td>
         </tr>
       </table>
 
-      <table class="custom-table custom-table-border" v-if="dataSource.optControlStand.length > 0">
+      <table class="custom-table custom-table-border" v-if="productInfo.optControlStand.length > 0">
         <tr>
-          <td style="width:150px;">标配</td>
+          <td style="width:150px;">中控-标配</td>
           <td style="padding:0;">
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -52,7 +53,7 @@
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
               </tr>
-              <tr v-for="(item,index) in dataSource.optControlStand" :key="index" >
+              <tr v-for="(item,index) in productInfo.optControlStand" :key="index" >
                 <td>{{index+1}}</td>
                 <td>{{item.itemName}}</td>
               </tr>
@@ -61,9 +62,9 @@
         </tr>
       </table>
 
-      <table class="custom-table custom-table-border" v-if="dataSource.optControlSelect.length > 0">
+      <table class="custom-table custom-table-border" v-if="productInfo.optControlSelect.length > 0">
         <tr>
-          <td style="width:150px;">选配</td>
+          <td style="width:150px;">中控-选配</td>
           <td style="padding:0;">
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -71,7 +72,7 @@
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
               </tr>
-              <tr v-for="(item,index) in dataSource.optControlSelect" :key="item.id" >
+              <tr v-for="(item,index) in productInfo.optControlSelect" :key="item.id" >
                 <td>{{index + 1}}</td>
                 <td>{{item.itemName}}</td>
               </tr>
@@ -80,9 +81,9 @@
         </tr>
       </table>
 
-      <table class="custom-table custom-table-border" v-if="dataSource.optSelect.length > 0">
+      <table class="custom-table custom-table-border" v-if="productInfo.optSelect.length > 0">
         <tr>
-          <td style="width:150px;">系列产品选配</td>
+          <td style="width:150px;">{{productInfo.__config.prefix}}选配</td>
           <td style="padding:0;">
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -90,7 +91,7 @@
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
               </tr>
-              <tr v-for="(item,index) in dataSource.optSelect" :key="item.id" >
+              <tr v-for="(item,index) in productInfo.optSelect" :key="item.id" >
                 <td>{{index + 1}}</td>
                 <td>{{item.itemName}}</td>
               </tr>
@@ -98,9 +99,7 @@
           </td>
         </tr>
       </table>
-
-        
-
+      </div>
     </div>
   </a-modal>
 </template>
@@ -113,15 +112,9 @@ export default {
   name: 'select-product-view',
   props:{
     dataSource:{
-      type:Object,
+      type:Array,
       default:() =>{
-        return {
-          optInfo:{},
-          optStand:[],
-          optSelect:[],
-          optControlStand:[],
-          optControlSelect:[]
-        }
+        return []
       }
     }
   },

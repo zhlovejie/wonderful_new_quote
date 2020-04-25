@@ -1,9 +1,9 @@
 <template>
   
     <div class="product-config-wrapper" style="width:1000px;margin:0 auto;">
-      <table class="custom-table custom-table-border" v-if="optStand.length > 0">
+      <table class="custom-table custom-table-border c-stand-color" v-if="optStand.length > 0">
         <tr>
-          <td style="width:150px;">标配</td>
+          <td style="width:150px;">{{prefix}}标配</td>
           <td style="padding:0;">
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -21,9 +21,9 @@
       </table>
 
       <template v-if="optControl.length > 0">
-        <table class="custom-table custom-table-border" >
+        <table class="custom-table custom-table-border c-control-color" >
           <tr>
-            <td style="width:150px;">中控系统模块</td>
+            <td style="width:150px;">{{prefix}}中控系统模块</td>
             <td>
               <a-select style="width:100%;" defaultValue=-1  @change="controlChangeHandler">
                 <a-select-option value="-1">无</a-select-option>
@@ -33,9 +33,9 @@
           </tr>
         </table>
 
-        <table class="custom-table custom-table-border" v-if="controlResult.optStand && controlResult.optStand.length > 0">
+        <table class="custom-table custom-table-border c-control-color" v-if="controlResult.optStand && controlResult.optStand.length > 0">
           <tr>
-            <td style="width:150px;">标配</td>
+            <td style="width:150px;">中控-标配</td>
             <td style="padding:0;">
               <div class="bottom-line"></div>
               <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -52,9 +52,9 @@
           </tr>
         </table>
 
-        <table class="custom-table custom-table-border" v-if="controlResult.optSelect && controlResult.optSelect.length > 0">
+        <table class="custom-table custom-table-border c-control-color" v-if="controlResult.optSelect && controlResult.optSelect.length > 0">
           <tr>
-            <td style="width:150px;">选配</td>
+            <td style="width:150px;">中控-选配</td>
             <td style="padding:0;">
               <div class="bottom-line"></div>
               <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -73,8 +73,8 @@
                       @change="controlResultOptChoiceDataSourceChange(index,$event)"
                     >
                       <a-select-option 
-                        v-for="(subItem) in item.dataSource" 
-                        :key="subItem.id"
+                        v-for="(subItem,index) in item.dataSource" 
+                        :key="index"
                         :value="subItem.id" 
                       >
                       {{subItem.itemName}}
@@ -106,9 +106,9 @@
 
       </template>
 
-      <table class="custom-table custom-table-border" v-if="optSelect.length > 0">
+      <table class="custom-table custom-table-border c-select-color" v-if="optSelect.length > 0">
         <tr>
-          <td style="width:150px;">系列产品选配</td>
+          <td style="width:150px;">{{prefix}}选配</td>
           <td style="padding:0;">
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
@@ -127,8 +127,8 @@
                     @change="optChoiceDataSourceChange(index,$event)"
                   >
                     <a-select-option 
-                      v-for="(subItem) in item.dataSource" 
-                      :key="subItem.id"
+                      v-for="(subItem,index) in item.dataSource" 
+                      :key="index"
                       :value="subItem.id" 
                     >
                     {{subItem.itemName}}
@@ -178,6 +178,12 @@ export default {
       default:() =>{
         return null
       }
+    },
+    prefix:{
+      type:String,
+      default:() =>{
+        return ''
+      }
     }
   },
   data() {
@@ -224,15 +230,18 @@ export default {
         this.optChoice = [..._optChoice]
       }
       if(target.price === null){
-        this.$message.info(`【${target.itemName}】 没有价格`)
+        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
       }
 
       this.$emit('extendProductChange',Object.assign({},target))
     },
     optChoiceCheckChange(index,e){
       let _optChoice = [...this.optChoice]
-      _optChoice[index].target.checked = e.target.checked
+      let target = _optChoice[index].target
+      target.checked = e.target.checked
       this.optChoice = [..._optChoice]
+
+      this.$emit('extendProductChange',Object.assign({},target))
     },
     optSelectCheckChange(id,e){
       let _optSelect = [...this.optSelect]
@@ -251,7 +260,7 @@ export default {
         this.controlResult = controlResult
       }
       if(target.price === null){
-        this.$message.info(`【${target.itemName}】 没有价格`)
+        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
       }
     },
     controlResultOptChoiceCheckChange(index,e){
@@ -275,6 +284,7 @@ export default {
         name,
         model,
         type,
+        price,
         remarks,
         sysConfigList
       } = result
@@ -282,6 +292,7 @@ export default {
         name,
         model,
         type,
+        price,
         remarks,
       }
       that.optStand = sysConfigList.optStand
@@ -289,9 +300,13 @@ export default {
         item.checked = false
         return item
       })
-      that.optChoice = sysConfigList.optChoice.map(item =>{
+      that.optChoice = sysConfigList.optChoice.map((item,index) =>{
         item.target = Object.assign({},item.dataSource[0])
         item.target.checked = item.target.isRequire
+
+        if(item.target.isProduct && item.target.checked){
+          that.$emit('extendProductChange',Object.assign({},item.target))
+        }
         return item
       })
       that.optControl = sysConfigList.optControl || []
@@ -305,12 +320,21 @@ export default {
           optSelect:[],
           optChoice:[]
         }
+        that.optControlSelected = null
         return
       }
       that.optControlSelected = this.optControl.find(item =>item.id === controlID)
       priceAdjustZktConfigDetail({ id: controlID }).then(res => {
-        let { optStandData, optSelectData, optChoiceData } = that.controlFormatData(res.data.sysConfigList)
+        let {name,model,type,price,remarks,sysConfigList} = res.data
+        let { optStandData, optSelectData, optChoiceData } = that.controlFormatData(sysConfigList)
         that.controlResult = {
+          optInfo:{
+            name,
+            model,
+            type,
+            price,
+            remarks,
+          },
           optStand:optStandData,
           optSelect:optSelectData.map(item => {
             item.checked = false
@@ -319,6 +343,11 @@ export default {
           optChoice:optChoiceData.map(item =>{
             item.target = Object.assign({},item.dataSource[0])
             item.target.checked = item.target.isRequire
+
+            if(item.target.price === null){
+              that.$message.info(`【${item.target.itemName}】 没有价格，请联系管理员`)
+            }
+
             return item
           })
         }
@@ -373,7 +402,7 @@ export default {
         //返回的列表数据格式转换成需要的数据格式
         return data.map((item, index) => {
           let _item = {
-            id: item.id,
+            id: item.id || item.itemId,
             itemId:item.itemId,
             itemName: item.name,
             key: item.itemId,
@@ -419,6 +448,7 @@ export default {
       }
     },
     getChoiceProducts(){
+      let that = this
       let optStand = this.optStand.map(item =>Object.assign({},item))
       let optSelect = this.optSelect.map(item =>Object.assign({},item)).filter(item => item.checked)
       let optChoice = this.optChoice.map(item => Object.assign({},item.target)).filter(item => item.checked)
@@ -433,9 +463,11 @@ export default {
         ? this.controlResult.optChoice.map(item => Object.assign({},item.target)).filter(item => item.checked) 
         :[]
       return {
+        optInfo:Object.assign({},that.optInfo),
         optStand,
         optSelect,
         optChoice,
+        control_optInfo:Object.assign({},that.controlResult.optInfo),
         control_optStand,
         control_optSelect,
         control_optChoice
@@ -443,18 +475,29 @@ export default {
     },
     calcItems(){
       let {
+        optInfo,
         optStand,
         optSelect,
         optChoice,
+        control_optInfo,
         control_optStand,
         control_optSelect,
         control_optChoice
       } = this.getChoiceProducts()
 
-      let result = [...optStand,...optSelect,...optChoice,...control_optStand,...control_optSelect,...control_optChoice].flat()
+
+      let result = [...optSelect,...optChoice,...control_optSelect,...control_optChoice].flat()
       let totalPrice = result.reduce((total,item) =>{
-        return total + (parseInt(item.price,10) || 0)
+        return total + (parseFloat(item.price) || 0)
       },0)
+
+      if(optStand.length > 0){
+        totalPrice += (parseFloat(optInfo.price) || 0)
+      }
+      if(control_optStand.length > 0){
+        totalPrice += (parseFloat(control_optInfo.price) || 0)
+      }
+
       console.log(result)
       console.log(`totalPrice:${totalPrice}`)
       return totalPrice
@@ -470,6 +513,7 @@ export default {
           model: res.data.model,
           type: res.data.type,
           remarks: res.data.remarks,
+          price:res.data.price,
           sysConfigList:{
             optStand:optStandData,
             optSelect:optSelectData,
@@ -507,13 +551,15 @@ export default {
     padding: 10px;
   }
 
-  .product-config-wrapper .custom-table >>> .bottom-line{
-    position: absolute;
-    height: 1px;
-    width: 100%;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #fff;
+  .c-stand-color{
+    background-color: rgba(170, 210, 240, .1);
   }
+  .c-control-color{
+    background-color:  rgba(170, 210, 240, .5);
+  }
+  .c-select-color{
+    background-color: rgba(170, 210, 240, .3);
+  }
+
 </style>
+
