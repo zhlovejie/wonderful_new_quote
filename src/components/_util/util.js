@@ -313,13 +313,13 @@ function handleWindowPrint (ele, title) {
     }
   
     .products-quotation-view-wrapper .custom-table .bottom-line{
-      position: absolute;
+      /*position: absolute;
       height: 1px;
       width: 100%;
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #fff;
+      background-color: #fff;*/
     }
     /*产品报价预览 END*/
     </style>

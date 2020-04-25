@@ -96,26 +96,29 @@ export default {
     },
     selectItem(record){
       let that = this
-      that.loading = true
-      priceAdjustProductConfigDetail({ id: record.id }).then(res => {
-        that.loading = false
-        let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
-        that.$emit('selected',{
-          name: res.data.name,
-          model: res.data.model,
-          type: res.data.type,
-          remarks: res.data.remarks,
-          sysConfigList:{
-            optStand:optStandData,
-            optSelect:optSelectData,
-            optChoice:optChoiceData,
-            optControl:optControlData
-          }
-        })
-        that.handleCancel()
-      }).catch(err =>{
-        that.$message.info(`请求失败：${err.message}`)
-      })
+      that.$emit('selected',record)
+      that.handleCancel()
+
+      // that.loading = true
+      // priceAdjustProductConfigDetail({ id: record.id }).then(res => {
+      //   that.loading = false
+      //   let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
+      //   that.$emit('selected',{
+      //     name: res.data.name,
+      //     model: res.data.model,
+      //     type: res.data.type,
+      //     remarks: res.data.remarks,
+      //     sysConfigList:{
+      //       optStand:optStandData,
+      //       optSelect:optSelectData,
+      //       optChoice:optChoiceData,
+      //       optControl:optControlData
+      //     }
+      //   })
+      //   that.handleCancel()
+      // }).catch(err =>{
+      //   that.$message.info(`请求失败：${err.message}`)
+      // })
     },
     searchAction(opt){
       let that = this
