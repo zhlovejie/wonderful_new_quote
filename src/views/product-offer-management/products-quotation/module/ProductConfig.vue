@@ -250,6 +250,9 @@ export default {
         target.checked = e.target.checked
         this.optSelect = [..._optSelect]
       }
+      if(target.price === null){
+        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+      }
     },
     controlResultOptChoiceDataSourceChange(index,val){
       let controlResult = {...this.controlResult}
@@ -276,6 +279,9 @@ export default {
       if(target){
         target.checked = e.target.checked
         this.controlResult = controlResult
+      }
+      if(target.price === null){
+        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
       }
     },
     selectedHandler(result) {
