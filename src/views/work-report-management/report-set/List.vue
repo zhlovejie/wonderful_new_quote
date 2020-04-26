@@ -47,13 +47,13 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="dayReport" slot-scope="text, record, index">
-          {{reportFormat(record.type).day}}
+          {{reportFormat(record.docType).day}}
         </div>
         <div slot="weekReport" slot-scope="text, record, index">
-          {{reportFormat(record.type).week}}
+          {{reportFormat(record.docType).week}}
         </div>
         <div slot="monthReport" slot-scope="text, record, index">
-          {{reportFormat(record.type).month}}
+          {{reportFormat(record.docType).month}}
         </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record">

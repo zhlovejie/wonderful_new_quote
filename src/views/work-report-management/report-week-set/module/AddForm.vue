@@ -36,8 +36,12 @@
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th><i class="wdf-required"></i> 主要工作内容</th>
-            <th style="width:100px;"><i class="wdf-required"></i> 实际完成情况(%)</th>
+            <th>
+              <i class="wdf-required"></i> 主要工作内容
+            </th>
+            <th style="width:100px;">
+              <i class="wdf-required"></i> 实际完成情况(%)
+            </th>
             <th style="width:180px;">未完成原因</th>
             <th style="width:180px;">对策</th>
             <th style="width:70px;" v-if="!isView">操作</th>
@@ -56,7 +60,7 @@
             </td>
             <td style="width:100px;">
               <a-form-item>
-                <a-input-number 
+                <a-input-number
                   :disabled="isView"
                   placeholder="实际完成情况"
                   v-decorator="[`finishList.${index}.finishDesc`, {initialValue:finishList[index].finishDesc,rules: [{ required: true, message: '输入实际完成情况' }] }]"
@@ -88,20 +92,19 @@
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
-              <a-form-item >
+              <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('finishList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button 
+        <a-button
           v-if="!isView"
           style="width:100%;"
           type="dashed"
           icon="plus"
           @click="addItem('finishList')"
         >添加工作完成情况</a-button>
-
 
         <h3>本周部门发生重大异常汇总</h3>
         <table class="custom-table custom-table-border">
@@ -123,13 +126,13 @@
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
-              <a-form-item >
+              <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('exceptionList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button 
+        <a-button
           v-if="!isView"
           style="width:100%;"
           type="dashed"
@@ -157,13 +160,13 @@
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
-              <a-form-item >
+              <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('adviseList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button 
+        <a-button
           v-if="!isView"
           style="width:100%;"
           type="dashed"
@@ -171,13 +174,16 @@
           @click="addItem('adviseList')"
         >添加问题及建议</a-button>
 
-
         <h3>下周工作计划</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th><i class="wdf-required"></i>主要工作内容</th>
-            <th style="width:100px;"><i class="wdf-required"></i>计划完成时间</th>
+            <th>
+              <i class="wdf-required"></i>主要工作内容
+            </th>
+            <th style="width:100px;">
+              <i class="wdf-required"></i>计划完成时间
+            </th>
             <th style="width:180px;">配合部门</th>
             <th style="width:180px;">备注</th>
             <th style="width:70px;" v-if="!isView">操作</th>
@@ -196,7 +202,7 @@
             </td>
             <td style="width:100px;">
               <a-form-item>
-                <a-date-picker 
+                <a-date-picker
                   :disabled="isView"
                   placeholder="计划完成时间"
                   v-decorator="[`planList.${index}.finishDate`, {initialValue:planList[index].finishDate,rules: [{ required: true, message: '输入计划完成时间' }] }]"
@@ -225,20 +231,19 @@
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
-              <a-form-item >
+              <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button 
+        <a-button
           v-if="!isView"
           style="width:100%;"
           type="dashed"
           icon="plus"
           @click="addItem('planList')"
         >添加下周工作计划</a-button>
-
 
         <table class="custom-table custom-table-border" style="margin:20px 0 0 0;">
           <tr>
@@ -278,14 +283,14 @@ export default {
       departmentName: undefined,
       stationName: undefined,
       trueName: undefined,
-      reportNum:undefined,
-      record:{},
+      reportNum: undefined,
+      record: {},
 
-      finishList:[],
-      exceptionList:[],
-      adviseList:[],
+      finishList: [],
+      exceptionList: [],
+      adviseList: [],
       planList: [],
-      
+
       uploadPath: getUploadPath2(),
       fileList: []
     }
@@ -296,10 +301,10 @@ export default {
       return this.isAdd ? '新增' : this.isEdit ? '编辑' : '查看'
     },
     headerTitle() {
-      if(this.isAdd){
+      if (this.isAdd) {
         let depName = this.departmentName
         let _date = moment().format('YYYY年MM月')
-        
+
         // moment.updateLocale("en", { week: {
         //   dow: 1, // 星期的第一天是星期一
         //   doy: 7  // 年份的第一周必须包含1月1日 (7 + 1 - 1)
@@ -307,8 +312,7 @@ export default {
         let _week = moment().week()
         let _type = '周报'
         return `${depName}${_date}第${_week}周${_type}`
-      }else{
-        
+      } else {
         let depName = this.record.departmentName
         let _date = moment(this.record.createdTime).format('YYYY年MM月')
         let _week = moment().week()
@@ -328,8 +332,8 @@ export default {
   },
   methods: {
     moment,
-    addItem(key,count=1) {
-      for(let i=0,len = (parseInt(count,10) || 1);i<len;i++){
+    addItem(key, count = 1) {
+      for (let i = 0, len = parseInt(count, 10) || 1; i < len; i++) {
         this[key].push({})
       }
     },
@@ -357,11 +361,10 @@ export default {
         that.stationName = that.userInfo.stationName
         that.trueName = that.userInfo.trueName
 
-        that.addItem('finishList',3)
+        that.addItem('finishList', 3)
         that.addItem('exceptionList')
         that.addItem('adviseList')
         that.addItem('planList')
-
       }
     },
     initData() {
@@ -378,15 +381,15 @@ export default {
       that.trueName = resultData.userName
 
       that.finishList = resultData.finishList || []
-      that.exceptionList = (resultData.exceptionList || [])
+      that.exceptionList = resultData.exceptionList || []
       that.adviseList = resultData.adviseList || []
-      that.planList = (resultData.planList || []).map(item =>{
+      that.planList = (resultData.planList || []).map(item => {
         item.finishDate = item.finishDate ? that.moment(item.finishDate) : undefined
         return item
-      })  
+      })
 
-      if(Array.isArray(resultData.annexList)){
-        that.fileList = resultData.annexList.map((item,index) => {
+      if (Array.isArray(resultData.annexList)) {
+        that.fileList = resultData.annexList.map((item, index) => {
           return {
             uid: String(index + 1),
             name: item.workUrl,
@@ -398,22 +401,23 @@ export default {
     },
     handleSubmit() {
       let that = this
-      if(that.finishList.length === 0){
+      if (that.finishList.length === 0) {
         that.$message.info('请填写本周工作完成情况')
         return
       }
-      if(that.planList.length === 0){
+      if (that.planList.length === 0) {
         that.$message.info('请填写下周工作计划')
         return
       }
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          Object.keys(values).map(key =>{
+          Object.keys(values).map(key => {
             let target = values[key]
-            Array.isArray(target) && target.map((item,index) =>{
-              item.orderNum = index + 1
-            })
+            Array.isArray(target) &&
+              target.map((item, index) => {
+                item.orderNum = index + 1
+              })
           })
           values.annexList = that.fileList.map((item, index) => {
             return {
@@ -447,7 +451,7 @@ export default {
       this.dataReset()
       this.$nextTick(() => (this.visible = false))
     },
-    dataReset(){
+    dataReset() {
       this.form.resetFields()
       this.finishList = []
       this.exceptionList = []
@@ -480,14 +484,14 @@ export default {
 .custom-table-border >>> .ant-form-item {
   margin-bottom: 0;
 }
-i.wdf-required::before{
+i.wdf-required::before {
   display: inline-block;
   margin-right: 4px;
   color: #f5222d;
   font-size: 14px;
-  font-family: SimSun,sans-serif;
+  font-family: SimSun, sans-serif;
   font-style: normal;
   line-height: 1;
-  content: "*";
+  content: '*';
 }
 </style>

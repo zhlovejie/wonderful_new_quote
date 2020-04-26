@@ -29,6 +29,10 @@
       <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
+      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" @change="tabChange">
+        <a-tab-pane tab="我提交的" key="1" />
+        <a-tab-pane tab="我的团队" key="2" />
+      </a-tabs>
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -39,12 +43,26 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+
+        <div slot="rebackFlag" slot-scope="text, record, index">
+          <span>{{ record.rebackFlag === 0 ? '已提交' : '已撤回' }}</span>
+        </div>
+
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确定要撤回该日报吗？" @confirm="doAction('edit',record)">
-            <a>撤回</a>
-          </a-popconfirm>
+
+          <template v-if="record.rebackFlag === 0">
+            <a-divider type="vertical" />
+            <a-popconfirm title="确定要撤回该日报吗？" @confirm="doAction('back',record)">
+              <a>撤回</a>
+            </a-popconfirm>
+          </template>
+
+          <template v-else>
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('edit',record)">修改</a>
+          </template>
+
           <a-divider type="vertical" />
           <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
             <a>删除</a>
@@ -96,6 +114,13 @@ const columns = [
   },
   {
     align: 'center',
+    title: '状态',
+    dataIndex: 'rebackFlag',
+    key: 'rebackFlag',
+    scopedSlots: { customRender: 'rebackFlag' }
+  },
+  {
+    align: 'center',
     title: '提交人',
     key: 'createuserName',
     dataIndex: 'createuserName'
@@ -121,6 +146,7 @@ export default {
   },
   data() {
     return {
+      activeKey: 1,
       depId: undefined,
       stationId: undefined,
       userName: undefined,
@@ -144,6 +170,7 @@ export default {
         endDate = this.sDate[1] instanceof this.moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       return {
+        listType: this.activeKey,
         userName: this.userName,
         beginDate: beginDate,
         endDate: endDate,
@@ -201,7 +228,7 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if (actionType === 'view' || actionType === 'add' ) {
+      if (actionType === 'view' || actionType === 'add') {
         this.$refs.addForm.query(actionType, record)
       } else if (actionType === 'del') {
         console.log(record)
@@ -213,19 +240,19 @@ export default {
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
-      } else if (actionType === 'edit') {
+      } else if (actionType === 'back') {
         workReportSetDailyRevocation({ id: record.id })
           .then(res => {
             that.$message.info(res.msg)
-            if(res.code === 200){
-              that.$refs.addForm.query(actionType, record)
-            }else{
-              that.$message.info(res.msg)
+            if (res.code === 200) {
+              that.searchAction()
             }
           })
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
+      } else if (actionType === 'edit') {
+        that.$refs.addForm.query(actionType, record)
       } else {
         this.$message.info('功能尚未实现！')
       }
@@ -236,6 +263,10 @@ export default {
       return getStationList({ id: dep_id }).then(res => {
         that.postSelectDataSource = res.data
       })
+    },
+    tabChange(tagKey) {
+      this.activeKey = parseInt(tagKey)
+      this.searchAction()
     }
   }
 }
