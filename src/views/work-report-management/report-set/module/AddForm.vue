@@ -13,6 +13,7 @@
       <a-form :form="form">
         <a-form-item label="部门">
           <a-select
+            :disabled="isEdit"
             placeholder="选择部门"
             @change="depChangeHandler"
             v-decorator="['departmentId',{rules: [{required: true,message: '选择部门'}]}]"

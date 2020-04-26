@@ -36,8 +36,12 @@
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th><i class="wdf-required"></i>工作内容</th>
-            <th style="width:100px;"><i class="wdf-required"></i>工作进度(%)</th>
+            <th>
+              <i class="wdf-required"></i>工作内容
+            </th>
+            <th style="width:100px;">
+              <i class="wdf-required"></i>工作进度(%)
+            </th>
             <th style="width:70px;" v-if="!isView">操作</th>
           </tr>
           <tr v-for="(item ,index) in todayList" :key="index">
@@ -54,7 +58,7 @@
             </td>
             <td style="width:100px;">
               <a-form-item>
-                <a-input-number 
+                <a-input-number
                   :disabled="isView"
                   placeholder="工作进度"
                   v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
@@ -66,13 +70,13 @@
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
-              <a-form-item >
+              <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button 
+        <a-button
           v-if="!isView"
           style="width:100%;"
           type="dashed"
@@ -101,7 +105,7 @@
             </td>
             <td style="width:100px;">
               <a-form-item>
-                <a-input-number 
+                <a-input-number
                   :disabled="isView"
                   placeholder="工作进度"
                   v-decorator="[`planList.${index}.progress`, {initialValue:planList[index].progress,rules: [{ required: false, message: '输入工作进度' }] }]"
@@ -113,13 +117,13 @@
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
-              <a-form-item >
+              <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button 
+        <a-button
           v-if="!isView"
           style="width:100%;"
           type="dashed"
@@ -164,8 +168,8 @@ export default {
       departmentName: undefined,
       stationName: undefined,
       trueName: undefined,
-      reportNum:undefined,
-      record:{},
+      reportNum: undefined,
+      record: {},
       todayList: [],
       planList: [],
       uploadPath: getUploadPath2(),
@@ -178,13 +182,12 @@ export default {
       return '新增'
     },
     headerTitle() {
-      if(this.isAdd){
+      if (this.isAdd) {
         let depName = this.departmentName
         let _date = moment().format('YYYY年MM月DD号')
         let _type = '日报'
         return `${depName}${_date}${_type}`
-      }else{
-        
+      } else {
         let depName = this.record.departmentName
         let _date = moment(this.record.createdTime).format('YYYY年MM月DD号')
         let _type = '日报'
@@ -253,8 +256,8 @@ export default {
       that.trueName = resultData.userName
       that.todayList = resultData.todayList || []
       that.planList = resultData.planList || []
-      if(Array.isArray(resultData.annexList)){
-        that.fileList = resultData.annexList.map((item,index) => {
+      if (Array.isArray(resultData.annexList)) {
+        that.fileList = resultData.annexList.map((item, index) => {
           return {
             uid: String(index + 1),
             name: item.workUrl,
@@ -267,11 +270,11 @@ export default {
     handleSubmit() {
       let that = this
 
-      if(that.todayList.length === 0){
+      if (that.todayList.length === 0) {
         that.$message.info('请填写今日工作内容')
         return
       }
-      if(that.planList.length === 0){
+      if (that.planList.length === 0) {
         that.$message.info('请填写明日工作计划')
         return
       }
@@ -331,7 +334,7 @@ export default {
       this.dataReset()
       this.$nextTick(() => (this.visible = false))
     },
-    dataReset(){
+    dataReset() {
       this.form.resetFields()
       this.todayList = []
       this.planList = []
@@ -362,14 +365,14 @@ export default {
 .custom-table-border >>> .ant-form-item {
   margin-bottom: 0;
 }
-i.wdf-required::before{
+i.wdf-required::before {
   display: inline-block;
   margin-right: 4px;
   color: #f5222d;
   font-size: 14px;
-  font-family: SimSun,sans-serif;
+  font-family: SimSun, sans-serif;
   font-style: normal;
   line-height: 1;
-  content: "*";
+  content: '*';
 }
 </style>
