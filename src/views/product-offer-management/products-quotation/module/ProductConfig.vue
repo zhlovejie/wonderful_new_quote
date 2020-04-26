@@ -226,32 +226,37 @@ export default {
       let _optChoice = [...this.optChoice]
       let target = _optChoice[index].dataSource.find(item => item.id === val)
       if(target){
+        if(target.price === null){
+          this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+        }
         _optChoice[index].target = target
         this.optChoice = [..._optChoice]
       }
-      if(target.price === null){
-        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
-      }
-
       this.$emit('extendProductChange',Object.assign({},target))
     },
     optChoiceCheckChange(index,e){
       let _optChoice = [...this.optChoice]
       let target = _optChoice[index].target
-      target.checked = e.target.checked
+      if(target.price === null){
+        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+        target.checked = false
+      }else{
+        target.checked = e.target.checked
+      }
       this.optChoice = [..._optChoice]
-
       this.$emit('extendProductChange',Object.assign({},target))
     },
     optSelectCheckChange(id,e){
       let _optSelect = [...this.optSelect]
       let target = _optSelect.find(item => item.id === id)
       if(target){
-        target.checked = e.target.checked
+        if(target.price === null){
+          this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+          target.checked = false
+        }else{
+          target.checked = e.target.checked
+        }
         this.optSelect = [..._optSelect]
-      }
-      if(target.price === null){
-        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
       }
     },
     controlResultOptChoiceDataSourceChange(index,val){
@@ -259,17 +264,23 @@ export default {
       let _optChoice = controlResult.optChoice
       let target = _optChoice[index].dataSource.find(item => item.id === val)
       if(target){
+        if(target.price === null){
+          this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+        }
         _optChoice[index].target = target
         this.controlResult = controlResult
-      }
-      if(target.price === null){
-        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
       }
     },
     controlResultOptChoiceCheckChange(index,e){
       let controlResult = {...this.controlResult}
       let _optChoice = controlResult.optChoice
-      _optChoice[index].target.checked = e.target.checked
+      let target = _optChoice[index].target
+      if(target.price === null){
+        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+        target.checked = false
+      }else{
+        target.checked = e.target.checked
+      }
       this.controlResult = controlResult
     },
     controlResultOptSelectCheckChange(id,e){
@@ -277,11 +288,13 @@ export default {
       let _optSelect = controlResult.optSelect
       let target = _optSelect.find(item => item.id === id)
       if(target){
-        target.checked = e.target.checked
+        if(target.price === null){
+          this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
+          target.checked = false
+        }else{
+          target.checked = e.target.checked
+        }
         this.controlResult = controlResult
-      }
-      if(target.price === null){
-        this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
       }
     },
     selectedHandler(result) {
