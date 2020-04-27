@@ -42,17 +42,18 @@
         </a-form-item>
 
         <a-form-item label="工作上报">
-          <a-select
+          <a-select 
+            mode="multiple"
             placeholder="工作上报"
-            v-decorator="['docType',{rules: [{required: true,message: '请选择工作上报'}]}]"
+            v-decorator="['docTypeStr',{rules: [{required: true,message: '请选择工作上报'}]}]"
           >
             <a-select-option :value="1">日报</a-select-option>
             <a-select-option :value="2">周报</a-select-option>
             <a-select-option :value="3">月报</a-select-option>
-            <a-select-option :value="4">日报和周报</a-select-option>
+            <!-- <a-select-option :value="4">日报和周报</a-select-option>
             <a-select-option :value="5">日报和月报</a-select-option>
             <a-select-option :value="6">周报和月报</a-select-option>
-            <a-select-option :value="7">全部</a-select-option>
+            <a-select-option :value="7">全部</a-select-option> -->
           </a-select>
         </a-form-item>
       </a-form>
@@ -95,6 +96,9 @@ export default {
       that.visible = true
       that.type = type
       that.record = Object.assign({}, record)
+      if(that.record.docTypeStr){
+        that.record.docTypeStr = that.record.docTypeStr.split(',').map(v => +v)
+      }
       await that.initData()
       if (that.isEdit) {
         that.$nextTick(() => {
@@ -124,6 +128,9 @@ export default {
           console.log('Received values of form: ', values)
           if (that.isEdit) {
             values.id = that.record.id
+          }
+          if(Array.isArray(values.docTypeStr)){
+            values.docTypeStr = values.docTypeStr.join(',')
           }
           that.spinning = true
           workReportSetSaveAndUpdate(values)

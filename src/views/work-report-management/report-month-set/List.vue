@@ -48,21 +48,22 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
-          <template v-if="record.rebackFlag === 0">
-            <a-divider type="vertical" />
-            <a-popconfirm title="确定要撤回该月报吗？" @confirm="doAction('back',record)">
-              <a>撤回</a>
-            </a-popconfirm>
+          <template v-if="parseInt(activeKey,10) === 1">
+            <template v-if="record.rebackFlag === 0">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确定要撤回该月报吗？" @confirm="doAction('back',record)">
+                <a>撤回</a>
+              </a-popconfirm>
+            </template>
+            <template v-else>
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('edit',record)">修改</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+                <a>删除</a>
+              </a-popconfirm>
+            </template>
           </template>
-
-          <template v-else>
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('edit',record)">修改</a>
-          </template>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
-            <a>删除</a>
-          </a-popconfirm>
         </div>
       </a-table>
     </div>
@@ -79,7 +80,8 @@ import {
 import {
   workReportSetMonthPage,
   workReportSetMonthDelete,
-  workReportSetMonthRevocation
+  workReportSetMonthRevocation,
+  workReportCheckDocPrivate
 } from '@/api/workReportManagement'
 import AddForm from './module/AddForm'
 import moment from 'moment'
@@ -154,7 +156,8 @@ export default {
       pagination: {
         current: 1
       },
-      loading: false
+      loading: false,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
@@ -224,9 +227,17 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if (actionType === 'view' || actionType === 'add') {
+      if (actionType === 'view') {
         this.$refs.addForm.query(actionType, record)
-      } else if (actionType === 'del') {
+      } else if(actionType === 'add'){
+        workReportCheckDocPrivate({docType:3}).then(res =>{
+          if(res.code === 200){
+            that.$refs.addForm.query(actionType, record)
+          }else{
+            that.$message.info(res.msg)
+          }
+        })
+      }else if (actionType === 'del') {
         console.log(record)
         workReportSetMonthDelete({ id: record.id })
           .then(res => {
@@ -237,6 +248,10 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'back') {
+        if(that.userInfo.id !== record.createdId){
+          that.$message.info('您没有权限撤回该月报')
+          return 
+        }
         workReportSetMonthRevocation({ id: record.id })
           .then(res => {
             that.$message.info(res.msg)

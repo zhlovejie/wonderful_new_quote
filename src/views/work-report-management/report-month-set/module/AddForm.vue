@@ -52,7 +52,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入主要工作内容"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`finishList.${index}.mainContent`, {initialValue:finishList[index].mainContent, rules: [{ required: true, message: '输入主要工作内容' }] }]"
                 />
@@ -62,20 +62,19 @@
               <a-form-item>
                 <a-input-number
                   :disabled="isView"
-                  placeholder="实际完成情况"
+                  placeholder=""
                   v-decorator="[`finishList.${index}.finishDesc`, {initialValue:finishList[index].finishDesc,rules: [{ required: true, message: '输入实际完成情况' }] }]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
                 />
-                <span>&nbsp;%</span>
               </a-form-item>
             </td>
             <td>
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入未完成原因"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`finishList.${index}.noFinishReason`, {initialValue:finishList[index].noFinishReason, rules: [{ required: false, message: '输入未完成原因' }] }]"
                 />
@@ -85,7 +84,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入对策"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`finishList.${index}.solution`, {initialValue:finishList[index].solution, rules: [{ required: false, message: '输入对策' }] }]"
                 />
@@ -119,7 +118,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入重大异常内容"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`exceptionList.${index}.content`, {initialValue:exceptionList[index].content, rules: [{ required: false, message: '输入重大异常内容' }] }]"
                 />
@@ -153,7 +152,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入问题&建议"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`adviseList.${index}.mainContent`, {initialValue:adviseList[index].mainContent, rules: [{ required: false, message: '输入问题&建议' }] }]"
                 />
@@ -194,7 +193,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入主要工作内容"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`planList.${index}.mainContent`, {initialValue:planList[index].mainContent, rules: [{ required: true, message: '输入主要工作内容' }] }]"
                 />
@@ -204,7 +203,7 @@
               <a-form-item>
                 <a-date-picker
                   :disabled="isView"
-                  placeholder="计划完成时间"
+                  placeholder=""
                   v-decorator="[`planList.${index}.finishDate`, {initialValue:planList[index].finishDate,rules: [{ required: true, message: '输入计划完成时间' }] }]"
                   style="width: 120px"
                 />
@@ -214,7 +213,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入配合部门"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`planList.${index}.cooperateDepartment`, {initialValue:planList[index].cooperateDepartment, rules: [{ required: false, message: '输入配合部门' }] }]"
                 />
@@ -224,7 +223,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入备注"
+                  placeholder=""
                   :rows="1"
                   v-decorator="[`planList.${index}.remark`, {initialValue:planList[index].remark, rules: [{ required: false, message: '输入备注' }] }]"
                 />
@@ -298,7 +297,7 @@ export default {
   computed: {
     ...mapGetters(['userInfo']),
     modalTitle() {
-      return this.isAdd ? '新增' : this.isEdit ? '编辑' : '查看'
+      return `${this.isView ? '查看' : (this.isAdd ? '新增' : '编辑')}月报`
     },
     headerTitle() {
       if (this.isAdd) {
@@ -394,6 +393,10 @@ export default {
     },
     handleSubmit() {
       let that = this
+      if(that.isView){
+        that.handleCancel()
+        return
+      }
       if (that.finishList.length === 0) {
         that.$message.info('请填写本月工作完成情况')
         return
