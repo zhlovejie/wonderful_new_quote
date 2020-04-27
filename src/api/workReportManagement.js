@@ -181,3 +181,13 @@ export function workReportSetMonthSaveAndUpdate (parameter) {
 }
 //---------------------工作月报-END-------------------
 
+//添加是否有添加 日报、周报、月报权限
+export function workReportCheckDocPrivate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/reportDaily/checkDocPrivate',
+    method: 'get',
+    params: parameter
+  })
+}
+

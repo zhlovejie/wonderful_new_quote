@@ -50,7 +50,7 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入工作内容"
+                  placeholder=""
                   :rows="2"
                   v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: true, message: '输入工作内容' }] }]"
                 />
@@ -60,13 +60,12 @@
               <a-form-item>
                 <a-input-number
                   :disabled="isView"
-                  placeholder="工作进度"
+                  placeholder=""
                   v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
                 />
-                <span>&nbsp;%</span>
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
@@ -87,8 +86,8 @@
         <table class="custom-table custom-table-border">
           <tr>
             <th style="width:150px;">序号</th>
-            <th>明日工作计划</th>
-            <th style="width:100px;">工作进度(%)</th>
+            <th><i class="wdf-required"></i>明日工作计划</th>
+            <th style="width:100px;"><i class="wdf-required"></i>工作进度(%)</th>
             <th style="width:70px;" v-if="!isView">操作</th>
           </tr>
           <tr v-for="(item ,index) in planList" :key="index">
@@ -97,9 +96,9 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
-                  placeholder="输入工作内容"
+                  placeholder=""
                   :rows="2"
-                  v-decorator="[`planList.${index}.content`, {initialValue:planList[index].content, rules: [{ required: false, message: '输入工作内容' }] }]"
+                  v-decorator="[`planList.${index}.content`, {initialValue:planList[index].content, rules: [{ required: true, message: '输入工作内容' }] }]"
                 />
               </a-form-item>
             </td>
@@ -107,13 +106,12 @@
               <a-form-item>
                 <a-input-number
                   :disabled="isView"
-                  placeholder="工作进度"
-                  v-decorator="[`planList.${index}.progress`, {initialValue:planList[index].progress,rules: [{ required: false, message: '输入工作进度' }] }]"
+                  placeholder=""
+                  v-decorator="[`planList.${index}.progress`, {initialValue:planList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
                 />
-                <span>&nbsp;%</span>
               </a-form-item>
             </td>
             <td style="width:70px;" v-if="!isView">
@@ -179,7 +177,7 @@ export default {
   computed: {
     ...mapGetters(['userInfo']),
     modalTitle() {
-      return '新增'
+      return `${this.isView ? '查看' : (this.isAdd ? '新增' : '编辑')}日报`
     },
     headerTitle() {
       if (this.isAdd) {
@@ -238,8 +236,6 @@ export default {
         that.addItem('todayList')
         that.addItem('todayList')
         that.addItem('planList')
-        that.addItem('planList')
-        that.addItem('planList')
       }
     },
     initData() {
@@ -270,6 +266,10 @@ export default {
     handleSubmit() {
       let that = this
 
+      if(that.isView){
+        that.handleCancel()
+        return
+      }
       if (that.todayList.length === 0) {
         that.$message.info('请填写今日工作内容')
         return
@@ -316,7 +316,7 @@ export default {
             .then(res => {
               that.spinning = false
               if (res.code === 200) {
-                that.visible = false
+                that.handleCancel()
                 that.$message.success('操作成功')
                 that.$emit('finish')
               } else {
