@@ -2,6 +2,7 @@
   <!-- 工作周报设置 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
+      <template v-if="parseInt(activeKey,10) === 2">
       <a-select
         placeholder="选择部门"
         @change="depChangeHandler"
@@ -24,6 +25,8 @@
         >{{item.stationName}}</a-select-option>
       </a-select>
       <a-input placeholder="姓名模糊查询" v-model="userName" allowClear style="width:160px;" />
+      </template>
+
       <a-range-picker v-model="sDate" style="width:240px;" :allowClear="true" />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
@@ -81,7 +84,8 @@ import {
   workReportSetWeekPage, 
   workReportSetWeekDelete, 
   workReportSetWeekRevocation,
-  workReportCheckDocPrivate
+  workReportCheckDocPrivate,
+  reportDailyUserDep
 } from '@/api/workReportManagement'
 import AddForm from './module/AddForm'
 import moment from 'moment'
@@ -192,7 +196,7 @@ export default {
     moment,
     init() {
       let that = this
-      departmentList().then(res => {
+      reportDailyUserDep().then(res => {
         that.depSelectDataSource = res.data
       })
       this.searchAction()
@@ -277,6 +281,11 @@ export default {
     },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
+      if(this.activeKey === 1){
+        this.depId = undefined
+        this.stationId = undefined
+        this.userName = undefined
+      }
       this.searchAction()
     }
   }

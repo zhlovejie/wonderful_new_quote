@@ -190,4 +190,12 @@ export function workReportCheckDocPrivate (parameter) {
     params: parameter
   })
 }
-
+/**根据登录人获取部门下拉列表数据 */
+export function reportDailyUserDep (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/reportDaily/getUserDep',
+    method: 'get',
+    params: parameter
+  })
+}
