@@ -22,7 +22,7 @@
           </tr>
           <tr>
             <td>客户名称</td>
-            <td>{{customerName}}</td>
+            <td>{{isView && record.findCustomerFlag === 0 ? '***' : customerName}}</td>
             <td>销售经理</td>
             <td>{{saleUserName}}</td>
           </tr>
