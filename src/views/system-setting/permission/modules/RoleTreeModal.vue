@@ -12,7 +12,8 @@
     >
     <a-spin :spinning="loading" tip="处理中...">
       <div class="spin-content">
-      <a-tree
+      <a-tree 
+        ref="aTree" 
         checkable
         checkedKeys 
         :showLine="false" 
@@ -82,6 +83,7 @@ export default {
       this.selectedKeys = selectedKeys
     },
     setCheckedNodes (res, id) {
+      let that = this
       //fix 0607
       //由于包含父节点，会选中所有的子节点，会导致 新增的子节点也会被选中
       //此函数过滤父节点，只包含叶子节点，来修复此问题
@@ -91,6 +93,20 @@ export default {
       this.roleId = id
       this.visible = true
       console.log('权限选中的', this.defaultCheckedKeys)
+
+      //返回的子节点权限，不包括父节点，所以不操作直接点修改，会丢失父节点，导致菜单异常
+      that.$nextTick(() =>{
+        try{
+          let innerTreeRef = that.$refs.aTree.$refs.tree
+          let _data = innerTreeRef._data
+          that.checkedKeys = [..._data._checkedKeys]
+          that.halfCheckedKeys = [..._data._halfCheckedKeys]
+
+          console.log([..._data._checkedKeys,..._data._halfCheckedKeys])
+        }catch(err){
+          console.log(err.message)
+        }
+      })
     },
     handleOk () {
       const _this = this
