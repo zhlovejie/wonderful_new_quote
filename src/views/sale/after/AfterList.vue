@@ -343,17 +343,17 @@ export default {
       this.$refs.table.refresh(true)
     },
     handleVue (e) {
-      this.$router.push({ name: 'AfterVueOfAudit', params: { id: e.id, type: 1 } })
+      this.$router.push({ name: 'AfterVueOfAudit', params: { id: e.id, type: 1 ,afterType:e.afterType || 0} })
     },
     handleEdotVue (e) {
-      this.$router.push({ name: 'AfterVueOfAudit', params: { id: e.id, type: 1 ,action:'edit'} })
+      this.$router.push({ name: 'AfterVueOfAudit', params: { id: e.id, type: 1 ,action:'edit',afterType:e.afterType || 0} })
     },
     handleAudit (e) {
       if (this.userInfo.id === 1) {
         this.$message.info('你没有审批权限，不可以审批')
         return
       }
-      this.$router.push({ name: 'AfterVueOfAudit', params: { id: e.id, type: 2 } })
+      this.$router.push({ name: 'AfterVueOfAudit', params: { id: e.id, type: 2 ,afterType:e.afterType || 0} })
     },
     handleAuditOk () {
       this.$refs.table.refresh(false)

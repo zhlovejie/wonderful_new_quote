@@ -46,9 +46,10 @@
           </div>
           <template slot="deliveryDate" slot-scope="text, record">
             <a-date-picker
-              :disabled="!isCreatedUser"
+              :disabled="!isCreatedUser" 
+              placeholder=""
               format="YYYY-MM-DD"
-              :value="moment(record.deliveryDate)"
+              :value="record.deliveryDate"
               @change="onChangeDate(record,$event)"
             />
           </template>
@@ -57,7 +58,7 @@
             <a-select
               :disabled="!isProducer"
               :value="record.productStatus === null ? undefined :String(record.productStatus)"
-              placeholder="选择产品状态"
+              placeholder=""
               @change="productStatusSelectChange(record,$event)"
               style="width:120px;"
             >
@@ -70,7 +71,7 @@
           <template slot="remarks" slot-scope="text, record">
             <a-textarea
               :disabled="!isProducer"
-              placeholder="备注"
+              placeholder=""
               autosize
               :value="record.remarks"
               @change="remarksSelectChange(record,$event)"
@@ -232,6 +233,7 @@ export default {
       that.saleUserName = resultData.saleUserName
       that.dataSource = resultData.productList.map(item => {
         item.key = item.id
+        item.deliveryDate = item.deliveryDate ? that.moment(item.deliveryDate) : undefined
         return item
       })
     },
@@ -288,6 +290,7 @@ export default {
     },
     // 交货日期的改变
     onChangeDate(record, e) {
+      debugger
       const dataSource = [...this.dataSource]
       const target = dataSource.find(item => item.key === record.key)
       if (target) {

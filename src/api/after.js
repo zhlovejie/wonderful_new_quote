@@ -45,6 +45,16 @@ export function listInvoiceByContractId (parameter) {
   })
 }
 
+/**根据赠送订单查询发货单 */
+export function listInvoiceByPresentId (parameter) {
+  console.log('listInvoiceByPresentId manages' + JSON.stringify(parameter))
+  return axios({
+    baseURL: system.baseURL,
+    url: '/invoice/listInvoiceByPresentId/' + parameter.id,
+    method: 'get'
+  })
+}
+
 /**
  * 保存发货单据
  * @param parameter

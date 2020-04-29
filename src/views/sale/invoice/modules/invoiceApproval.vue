@@ -25,7 +25,7 @@
                 <a-input read-only="read-only" style="border: none;" v-decorator="['invoiceNum', {}]" />
               </a-form-item>
             </td>
-            <td class="print-w150"><span>合同编号</span></td>
+            <td class="print-w150"><span>合同/赠送单(编号)</span></td>
             <td colspan="3">
               <a-form-item>
               <a-input disabled style="border: none;" v-decorator="['contractNum', {}]" @click="openModel"/>
