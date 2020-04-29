@@ -33,6 +33,10 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1}}</span>
           </div>
+          <div slot="customerName" slot-scope="text, record, index">
+            <span>{{ record.findCustomerFlag === 1 ? text : '***'}}</span>
+          </div>
+
           <span slot="action" slot-scope="text, record">
             <a @click="doAction('view',record)">查看</a>
             <a-divider type="vertical"/>
