@@ -56,6 +56,7 @@
                 <a-input-number
                   style="width:100%;"
                   :min="0"
+                  :max="99999"
                   :step="1"
                   v-decorator="['intervalTime', { rules: [{ required: true, message: '请输入原销售提取限制天数' }]}]"
                 />
@@ -89,6 +90,7 @@
             </td>
           </tr>
         </table>
+        <a-alert message="注：低于金额设置(元) 客户释放到公共客户池 ，开启时间：启用时间，结束时间：暂停使用时间" banner />
       </a-form>
     </a-spin>
   </a-modal>
