@@ -15,7 +15,21 @@
             v-decorator="['name', { rules: [{ required: true, message: '请输入配置名称' }] }]"
           />
         </a-form-item>
-        <a-form-item label="标配项" class="add-shadow">
+
+        <a-form-item label="竞争力">
+          <a-select 
+            :disabled="isDisabled"
+            :allowClear="true" 
+            v-decorator="['priceCoefficientId',{rules: [{ required: true, message: '请选择竞争力'}]}]" 
+            placeholder="请选择竞争力" 
+            style="width: 100%"
+          >
+            <a-select-option v-for="item in productPriceCoefficientList" :value="item.id" :key="item.id" >{{ item.name }}</a-select-option>
+          </a-select>
+        </a-form-item>
+
+
+        <a-form-item label="标准配置" class="add-shadow">
           <OptList
             ref="ref_optStand"
             :dataSource="optStand"
@@ -28,10 +42,10 @@
             type="dashed"
             icon="plus"
             @click="ShowModule('optStand')"
-          >添加标配项</a-button>
+          >添加标准配置</a-button>
         </a-form-item>
         <div class="opt-choice-wrapper add-shadow">
-          <a-form-item label="选配项">
+          <a-form-item label="选择配置">
             <OptList
               ref="ref_optSelect"
               :dataSource="optSelect"
@@ -44,7 +58,7 @@
               type="dashed"
               icon="plus"
               @click="ShowModule('optSelect')"
-            >添加选配项</a-button>
+            >添加选择配置</a-button>
           </a-form-item>
 
           <div
@@ -94,9 +108,10 @@ import {
   priceAdjustZktConfigDetail,
   priceAdjustZktConfigAddAndUpdate,
   priceAdjustItemConfigList
-} from '@/api/productOfferManagement'
+} from '@/api/productOfferManagement' 
+import {productPriceCoefficientListWithoutPage} from '@/api/workBox' 
 import TableOptChoice from './TableOptChoice'
-import OptList from './OptList'
+import OptList from './OptList' 
 export default {
   name: 'AddForm',
   components: {
@@ -112,7 +127,8 @@ export default {
       spinning: false,
       optStand: [], //标配项
       optSelect: [], //选配项
-      optChoice: [] //选择项
+      optChoice: [], //选择项
+      productPriceCoefficientList:[]
     }
   },
   computed: {
@@ -146,6 +162,9 @@ export default {
     init() {
       let that = this
       let queue = []
+      queue.push(productPriceCoefficientListWithoutPage().then(res =>{
+        that.productPriceCoefficientList = res.data
+      }))
       return Promise.all(queue)
     },
     async handleOk() {

@@ -23,11 +23,7 @@
         </div>
 
         <div slot="name" slot-scope="text, record, index">
-          <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
-          </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span>{{text}}</span>
         </div>
 
         <div slot="price" slot-scope="text, record, index">
@@ -73,6 +69,12 @@ const columns = [
     title: '系列产品名称',
     dataIndex: 'name',
     scopedSlots: { customRender: 'name' }
+  },
+  {
+    align: 'center',
+    title: '系列产品型号',
+    dataIndex: 'model',
+    scopedSlots: { customRender: 'model' },
   },
   {
     align: 'center',

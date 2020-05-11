@@ -19,16 +19,12 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="itemName" slot-scope="text, record, index">
-          <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
-          </a-tooltip>
-          <span v-else>{{text}}</span>
+          <div >{{text}}</div>
         </div>
         <div slot="remarks" slot-scope="text, record, index">
-          <a-tooltip v-if="String(text).length > 15">
+          <a-tooltip v-if="String(text).length > 10">
             <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
+            {{ String(text).slice(0,10) }}...
           </a-tooltip>
           <span v-else>{{text}}</span>
         </div>
@@ -69,14 +65,14 @@ const columns = [
     title: '配置名称',
     dataIndex: 'itemName',
     key: 'itemName',
-    scopedSlots: { customRender: 'itemName' },
+    scopedSlots: { customRender: 'itemName' }
   },
   {
     align: 'center',
     title: '备注',
     dataIndex: 'remarks',
     key: 'remarks',
-    scopedSlots: { customRender: 'remarks' },
+    scopedSlots: { customRender: 'remarks' }
   },
   {
     align: 'center',
