@@ -57,12 +57,17 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('approval',record)">审批</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
-            <a>删除</a>
-          </a-popconfirm>
+          <template v-if="+activeKey === 1">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('approval',record)">审批</a>
+          </template>
+
+          <template v-if="+activeKey === 0">
+            <a-divider type="vertical" />
+            <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+              <a>删除</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>

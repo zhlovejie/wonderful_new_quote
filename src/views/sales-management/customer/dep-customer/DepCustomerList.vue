@@ -88,9 +88,10 @@
         </template>
 
         <!-- 客户释放 新增申诉按钮 -->
-        <a-divider type="vertical" />
-        <a @click="handleAppeal('add',record)">申诉</a>
-
+        <template v-if="record.needAppeal === 1">
+          <a-divider type="vertical" />
+          <a @click="handleAppeal('add',record)">申诉</a>
+        </template>
       </span>
     </s-table>
     <dep-step-form ref="depStepForm" :salesJurisdiction="salesJurisdiction" @ok="handleOk" />

@@ -181,6 +181,9 @@ export default {
       that.form.resetFields()
       await that.init()
       that.visible = true
+
+      that.$refs.f1 && that.$refs.f1.setFiles([])
+
       if (that.isAdd) {
         let _detail = {...that.detail}
         _detail.customerId = that.record.id
