@@ -278,7 +278,8 @@ export default {
         //debugger
         that.form.setFieldsValue({
           name: res.data.name,
-          remarks: res.data.remarks
+          remarks: res.data.remarks,
+          priceCoefficientId:+res.data.priceCoefficientId
         })
         let { optStandData, optSelectData, optChoiceData } = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData

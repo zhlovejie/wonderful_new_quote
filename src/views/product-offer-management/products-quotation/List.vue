@@ -30,7 +30,11 @@
       :maskClosable="false"
       :footer="null"
     >
-      <p>成本价：{{costPrice | moneyFormatNumber}}</p>
+      <p>成本价：{{costPrice.price | moneyFormatNumber}}</p>
+      <p>A价：{{costPrice.aprice | moneyFormatNumber}}</p>
+      <p>B价：{{costPrice.bprice | moneyFormatNumber}}</p>
+      <p>C价：{{costPrice.cprice | moneyFormatNumber}}</p>
+      <p>市场价：{{costPrice.retailPrice | moneyFormatNumber}}</p>
       <div style="text-align:center;margin-top:10px;">
           <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>
           <a-button type="primary" @click="doAction('price-view')" style="margin:0 10px;">预览</a-button>
@@ -57,7 +61,7 @@ export default {
     return {
       optInfo:{},
       visible:false,
-      costPrice:0,
+      costPrice:{},
       viewDataSource:[]
     }
   },
@@ -102,9 +106,28 @@ export default {
       this.$refs[key].query()
     },
     calcCostPrice(){
-      let p1 = parseFloat(this.$refs.productConfigMain.costPrice) || 0
-      let p2 = parseFloat(this.$refs.productConfigSub.costPrice) || 0
-      this.costPrice = p1 + p2
+      debugger
+      let mainPrice = this.$refs.productConfigMain.costPrice
+      let subPrice = this.$refs.productConfigSub.costPrice
+
+      let priceResult = {
+        price:0,
+        aprice:0,
+        bprice:0,
+        cprice:0,
+        retailPrice:0
+      }
+      let arr = [Object.assign({},mainPrice),Object.assign({},subPrice)]
+      arr.reduce((calc,item) =>{
+        calc.price += (parseFloat(item.price) || 0)
+        calc.aprice += (parseFloat(item.aprice) || 0)
+        calc.bprice += (parseFloat(item.bprice) || 0)
+        calc.cprice += (parseFloat(item.cprice) || 0)
+        calc.retailPrice += (parseFloat(item.retailPrice) || 0)
+        return calc
+      },priceResult)
+
+      this.costPrice = priceResult
     },
     makeViewDataSource(){
       let that = this
