@@ -1,5 +1,5 @@
 <template>
-  <!-- 面试记录 -->
+  <!-- 中控系统模块 -->
   <div class="customer-list-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="中控系统名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
