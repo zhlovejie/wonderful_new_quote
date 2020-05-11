@@ -119,6 +119,12 @@ export const asyncRouterMap = [
                 meta: { title: '数据字典', permission: ['permission'] }
               },
               {
+                path: '/system-setting/work-box/productPriceCoefficient',
+                name: 'productPriceCoefficient',
+                component: () => import('@/views/system-setting/work-box/productPriceCoefficient/List'),
+                meta: { title: '产品价格系数', permission: ['permission'] }
+              },
+              {
                 path: '/system-setting/work-box/CommonSeal',
                 name: 'CommonSeal',
                 component: () => import('@/views/system-setting/work-box/CommonSeal'),
