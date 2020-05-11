@@ -16,7 +16,7 @@
         <a-form-item v-if="parseInt(record.checkFlag,10) === 1">
           <UploadFile ref="f2" txt="上传考核文件" />
         </a-form-item>
-        <a-form-item>
+        <a-form-item  v-if="parseInt(record.checkFlag,10) === 1">
           <UploadFile ref="f3" txt="上传考核结果" />
         </a-form-item>
       </a-form>
@@ -78,7 +78,7 @@ export default {
         let f3 = that.$refs.f3.getFiles()
         checkResultUrl = Array.isArray(f3) && f3.length > 0 ? f3[0].url : undefined
       }
-      
+
       let values = {
         id: that.record.id,
         recordUrl: recordUrl,
