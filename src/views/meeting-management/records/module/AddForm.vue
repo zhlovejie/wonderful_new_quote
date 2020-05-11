@@ -45,7 +45,8 @@
                   <a-select
                     style="width:165px;"
                     placeholder="选择人员"
-                    v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]"
+                    v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]" 
+                    @change="chargePersonChange"
                   >
                     <a-select-option
                       v-for="item in personList"
@@ -193,7 +194,8 @@
                       v-for="(item,index) in oaMeetingJoinList"
                       :key="index"
                       style="margin-top:7px;"
-                      closable
+                      :closable="!item.__root" 
+                      :color="item.__root ? 'red' :''"
                       @close="removeTag(item,index)"
                     >{{item.trueName}}</a-tag>
                   </div>
@@ -346,9 +348,27 @@ export default {
       that.visible = true
       that.actionType = type
       that.record = record || {}
+      that.oaMeetingJoinList = []
       await that.form.resetFields()
       await that.init()
+      
       //填充数据
+      if(that.isStart){
+        await that.depChangeHandler(that.record.departmentId)
+        let obj = {
+          eventId:that.record.eventId,
+          meetingNum:that.record.meetingNum,
+          typeDicName:that.record.typeDicName,
+          departmentId:+that.record.departmentId,
+          chargePersonId:+that.record.chargePersonId,
+          name:that.record.name,
+          checkFlag:that.record.checkFlag
+        }
+        that.$nextTick(() =>that.form.setFieldsValue(obj))
+
+        that.setRootPerson(that.record.chargePersonId)
+        return
+      }
       let result = await meetingRecordDetail({ id: that.record.id })
         .then(res => res.data)
         .catch(err => null)
@@ -434,6 +454,16 @@ export default {
           that.meetingLenths = `${parseInt(diff / 60, 10)}小时${diff % 60}分钟`
         }
       })
+    },
+    chargePersonChange(pid){
+      this.setRootPerson(pid)
+    },
+    setRootPerson(pid){
+      const that = this
+      let _person = that.personList.find(p => +p.id === +pid)
+      if(_person){
+        that.oaMeetingJoinList = [Object.assign({},_person,{__root:true}),...that.oaMeetingJoinList.filter(p => !p.__root)]
+      }
     }
   }
 }
