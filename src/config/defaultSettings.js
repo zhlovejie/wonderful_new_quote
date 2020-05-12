@@ -24,7 +24,7 @@ export default {
   //baseURL:'http://192.168.99.108:8999/oa',
   //baseURL:'http://192.168.99.166:8999/oa',
   // baseURL: 'http://192.168.99.127:8091', // 测试
-  baseURL: 'http://192.168.99.196:8998/oa',   //余
+  baseURL:'http://192.168.99.108:8995/cloud_new',
   //baseURL:'http://192.168.99.187:8091',
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu

@@ -593,13 +593,13 @@ export const asyncRouterMap = [
                 component: () => import('@/views/sale/present-receipt/List'),
                 meta: { title: '赠送单', permission: ['permission'] }
               },
-              {
-                path: '/sale/present-order/List',
-                name: 'presentOrder',
-                hidden: true,
-                component: () => import('@/views/sale/present-order/List'),
-                meta: { title: '赠送订单', permission: ['permission'] }
-              },
+              // {
+              //   path: '/sale/present-order/List',
+              //   name: 'presentOrder',
+              //   hidden: true,
+              //   component: () => import('@/views/sale/present-order/List'),
+              //   meta: { title: '赠送订单', permission: ['permission'] }
+              // },
               {
                 path: '/sale/income/List',
                 name: 'incomeReceipt',
