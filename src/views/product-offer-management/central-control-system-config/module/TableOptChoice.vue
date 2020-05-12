@@ -18,7 +18,7 @@
             <a-input placeholder="备注模糊查询" v-model="remarks" allowClear style="width: 200px;"/>
           </a-form-item>
           <a-form-item>
-            <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+            <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
           </a-form-item>
         </a-form>
       </div>
