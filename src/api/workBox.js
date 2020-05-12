@@ -392,5 +392,51 @@ export function queryPriceByArea (id) {
   })
 }
 
-
+//---------------------产品价格系数------------------
+/**产品价格系数新增和修改 */
+export function productPriceCoefficientAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/productPriceCoefficient/price-coefficient/addAndUpdatePriceCoefficient',
+    method: 'post',
+    data: parameter
+  })
+}
+/**产品价格系数删除 */
+export function productPriceCoefficientDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/productPriceCoefficient/price-coefficient/delPriceCoefficient',
+    method: 'get',
+    params: parameter
+  })
+}
+/**产品价格系数详情 */
+export function productPriceCoefficientDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/productPriceCoefficient/price-coefficient/getPriceCoefficientDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/**产品价格系数列表无分页 */
+export function productPriceCoefficientListWithoutPage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/productPriceCoefficient/price-coefficient/getPriceCoefficientList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**产品价格系数列表 */
+export function productPriceCoefficientList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/productPriceCoefficient/price-coefficient/getPriceCoefficientPage',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------产品价格系数------------------
 

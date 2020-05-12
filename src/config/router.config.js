@@ -119,6 +119,12 @@ export const asyncRouterMap = [
                 meta: { title: '数据字典', permission: ['permission'] }
               },
               {
+                path: '/system-setting/work-box/productPriceCoefficient',
+                name: 'productPriceCoefficient',
+                component: () => import('@/views/system-setting/work-box/productPriceCoefficient/List'),
+                meta: { title: '产品价格系数', permission: ['permission'] }
+              },
+              {
                 path: '/system-setting/work-box/CommonSeal',
                 name: 'CommonSeal',
                 component: () => import('@/views/system-setting/work-box/CommonSeal'),
@@ -586,6 +592,13 @@ export const asyncRouterMap = [
                 hidden: true,
                 component: () => import('@/views/sale/present-receipt/List'),
                 meta: { title: '赠送单', permission: ['permission'] }
+              },
+              {
+                path: '/sale/present-order/List',
+                name: 'presentOrder',
+                hidden: true,
+                component: () => import('@/views/sale/present-order/List'),
+                meta: { title: '赠送订单', permission: ['permission'] }
               },
               {
                 path: '/sale/income/List',

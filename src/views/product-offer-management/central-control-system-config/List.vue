@@ -1,5 +1,5 @@
 <template>
-  <!-- 面试记录 -->
+  <!-- 中控系统模块 -->
   <div class="customer-list-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="中控系统名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
@@ -18,16 +18,12 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="itemName" slot-scope="text, record, index">
-          <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
-          </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span>{{text}}</span>
         </div>
         <div slot="remarks" slot-scope="text, record, index">
-          <a-tooltip v-if="String(text).length > 15">
+          <a-tooltip v-if="String(text).length > 10">
             <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
+            {{ String(text).slice(0,10) }}...
           </a-tooltip>
           <span v-else>{{text}}</span>
         </div>
@@ -84,6 +80,11 @@ const columns = [
     dataIndex: 'name',
     key: 'name',
     scopedSlots: { customRender: 'name' },
+  },
+  {
+    align:'center',
+    title:'竞争力',
+    dataIndex:'priceCoefficientName'
   },
   {
     align: 'center',

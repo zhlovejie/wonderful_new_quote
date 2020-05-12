@@ -25,8 +25,7 @@
           <tr>
             <td style="width:150px;">{{prefix}}中控系统模块</td>
             <td>
-              <a-select style="width:100%;" defaultValue=-1  @change="controlChangeHandler">
-                <a-select-option value="-1">无</a-select-option>
+              <a-select style="width:100%;" :defaultValue="optControlSelectedDefault"  @change="controlChangeHandler">
                 <a-select-option v-for="(item,index) in optControl" :key="index" :value="item.id">{{item.itemName}}</a-select-option>
               </a-select>
             </td>
@@ -195,7 +194,7 @@ export default {
       optControl:[],
 
       optControlSelected:null,
-
+      optControlSelectedDefault:undefined,
       controlResult:{},
     }
   },
@@ -299,11 +298,16 @@ export default {
     },
     selectedHandler(result) {
       let that = this
+      debugger
       let {
         name,
         model,
         type,
         price,
+        aprice,
+        bprice,
+        cprice,
+        retailPrice,
         remarks,
         sysConfigList
       } = result
@@ -312,6 +316,10 @@ export default {
         model,
         type,
         price,
+        aprice,
+        bprice,
+        cprice,
+        retailPrice,
         remarks,
       }
       that.optStand = sysConfigList.optStand
@@ -328,10 +336,23 @@ export default {
         }
         return item
       })
-      that.optControl = sysConfigList.optControl || []
+      //根据系列产品配置，带入中控系统，如果未配置中控系统显示无
+      //若配置了多个中控系统，默认带入第一个中控系统，有中控系统的时候不带入选项无
+      let __optControl = [...sysConfigList.optControl || []]
+      let __optControlSelectedDefault = undefined
+      if(__optControl.length === 0){
+        __optControl.push({id:'-1',itemName:'无' })
+        __optControlSelectedDefault = '-1'
+      }else{
+        __optControlSelectedDefault = +__optControl[0].id
+      }
+      that.optControl = __optControl
+      that.optControlSelectedDefault = __optControlSelectedDefault
+      that.controlChangeHandler(that.optControlSelectedDefault)
       console.log(result)
     },
     controlChangeHandler(controlID){
+      //debugger
       let that = this
       if(parseInt(controlID,10) === -1){
         that.controlResult = {
@@ -343,8 +364,12 @@ export default {
         return
       }
       that.optControlSelected = this.optControl.find(item =>item.id === controlID)
-      priceAdjustZktConfigDetail({ id: controlID }).then(res => {
-        let {name,model,type,price,remarks,sysConfigList} = res.data
+      priceAdjustZktConfigDetail({ id: controlID ,isPrice:true}).then(res => {
+        if(res.code !== 200){
+          that.$message.info(res.msg)
+          return 
+        }
+        let {name,model,type,price,remarks,sysConfigList,aprice,bprice,cprice,retailPrice} = res.data
         let { optStandData, optSelectData, optChoiceData } = that.controlFormatData(sysConfigList)
         that.controlResult = {
           optInfo:{
@@ -352,6 +377,10 @@ export default {
             model,
             type,
             price,
+            aprice,
+            bprice,
+            cprice,
+            retailPrice,
             remarks,
           },
           optStand:optStandData,
@@ -384,7 +413,11 @@ export default {
             order: index + 1,
             serialNum: index + 1,
             zktId: item.zktId,
-            price:item.price 
+            price:item.price,
+            aprice:item.aprice,
+            bprice:item.bprice,
+            cprice:item.cprice,
+            retailPrice:item.retailPrice,
           }
           if ([4, 5].includes(item.type)) {
             _item.isRequire = item.type === 4 ? true : false
@@ -429,6 +462,10 @@ export default {
             serialNum: index + 1,
             productId: item.productId,
             price:item.price,
+            aprice:item.aprice,
+            bprice:item.bprice,
+            cprice:item.cprice,
+            retailPrice:item.retailPrice,
             isProduct:item.isProduct === 1 ? true : false
           }
           if ([4, 5].includes(item.type)) {
@@ -504,28 +541,54 @@ export default {
         control_optChoice
       } = this.getChoiceProducts()
 
-
       let result = [...optSelect,...optChoice,...control_optSelect,...control_optChoice].flat()
-      let totalPrice = result.reduce((total,item) =>{
-        return total + (parseFloat(item.price) || 0)
-      },0)
+      let priceResult = {
+        price:0,
+        aprice:0,
+        bprice:0,
+        cprice:0,
+        retailPrice:0
+      }
+      result.reduce((calc,item) =>{
+        calc.price += (parseFloat(item.price) || 0)
+        calc.aprice += (parseFloat(item.aprice) || 0)
+        calc.bprice += (parseFloat(item.bprice) || 0)
+        calc.cprice += (parseFloat(item.cprice) || 0)
+        calc.retailPrice += (parseFloat(item.retailPrice) || 0)
+        return calc
+      },priceResult)
 
       if(optStand.length > 0){
-        totalPrice += (parseFloat(optInfo.price) || 0)
+        priceResult.price += (parseFloat(optInfo.price) || 0)
+        priceResult.aprice += (parseFloat(optInfo.aprice) || 0)
+        priceResult.bprice += (parseFloat(optInfo.bprice) || 0)
+        priceResult.cprice += (parseFloat(optInfo.cprice) || 0)
+        priceResult.retailPrice += (parseFloat(optInfo.retailPrice) || 0)
       }
       if(control_optStand.length > 0){
-        totalPrice += (parseFloat(control_optInfo.price) || 0)
+        //totalPrice += (parseFloat(control_optInfo.price) || 0)
+        priceResult.price += (parseFloat(control_optInfo.price) || 0)
+        priceResult.aprice += (parseFloat(control_optInfo.aprice) || 0)
+        priceResult.bprice += (parseFloat(control_optInfo.bprice) || 0)
+        priceResult.cprice += (parseFloat(control_optInfo.cprice) || 0)
+        priceResult.retailPrice += (parseFloat(control_optInfo.retailPrice) || 0)
       }
 
-      console.log(result)
-      console.log(`totalPrice:${totalPrice}`)
-      return totalPrice
+      console.log(priceResult)
+      //console.log(`totalPrice:${totalPrice}`)
+      return priceResult
     },
     query(id){
       let that = this
       that.reset()
-      priceAdjustProductConfigDetail({ id: id }).then(res => {
+      priceAdjustProductConfigDetail({ id: id ,isPrice:true}).then(res => {
         that.loading = false
+
+        if(res.code !== 200){
+          that.$message.info(res.msg)
+          return 
+        }
+
         let { optStandData, optSelectData, optChoiceData ,optControlData} = that.productFormatData(res.data.sysConfigList)
         that.selectedHandler({
           name: res.data.name,
@@ -533,6 +596,10 @@ export default {
           type: res.data.type,
           remarks: res.data.remarks,
           price:res.data.price,
+          aprice:res.data.aprice,
+          bprice:res.data.bprice,
+          cprice:res.data.cprice,
+          retailPrice:res.data.retailPrice,
           sysConfigList:{
             optStand:optStandData,
             optSelect:optSelectData,

@@ -23,11 +23,7 @@
         </div>
 
         <div slot="name" slot-scope="text, record, index">
-          <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
-          </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span>{{text}}</span>
         </div>
 
         <div slot="price" slot-scope="text, record, index">
@@ -61,42 +57,7 @@ import {
 import ViewUpdateRecord from './module/ViewUpdateRecord'
 import AddForm from './module/AddForm'
 
-const columns = [
-  {
-    align: 'center',
-    title: '序号',
-    width: '70px',
-    scopedSlots: { customRender: 'order' }
-  },
-  {
-    align: 'center',
-    title: '系列产品名称',
-    dataIndex: 'name',
-    scopedSlots: { customRender: 'name' }
-  },
-  {
-    align: 'center',
-    title: '标配价格(元)',
-    dataIndex: 'price',
-    scopedSlots: { customRender: 'price' }
-  },
-  {
-    align: 'center',
-    title: '核价人',
-    dataIndex: 'pricingName',
-  },
-  {
-    align: 'center',
-    title: '核价时间',
-    dataIndex: 'pricingTime'
-  },
-  {
-    align: 'center',
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
-]
+
 
 export default {
   name:'pom-products-price',
@@ -110,7 +71,6 @@ export default {
       itemName:undefined,
       depSelectDataSource:[],
       postSelectDataSource:[],
-      columns:columns,
       dataSource:[],
       pagination:{
         current:1
@@ -124,6 +84,66 @@ export default {
       return {
         name:this.itemName
       }
+    },
+    columns(){
+      let baseColumns = [
+        {
+          align: 'center',
+          title: '序号',
+          width: '70px',
+          scopedSlots: { customRender: 'order' }
+        },
+        {
+          align: 'center',
+          title: '系列产品名称',
+          dataIndex: 'name',
+          scopedSlots: { customRender: 'name' }
+        },
+        {
+          align: 'center',
+          title: '标配价格(元)',
+          dataIndex: 'price',
+          scopedSlots: { customRender: 'price' }
+        },
+        {
+          align: 'center',
+          title: '核价人',
+          dataIndex: 'pricingName',
+        },
+        {
+          align: 'center',
+          title: '核价时间',
+          dataIndex: 'pricingTime'
+        },
+        {
+          align: 'center',
+          title: '操作',
+          key: 'action',
+          scopedSlots: { customRender: 'action' }
+        }
+      ]
+      let extendColumns = [...baseColumns]
+      //系列产品名称 添加 系列产品型号
+      extendColumns.splice(2,0,{align: 'center',title: '系列产品型号',dataIndex: 'model'})
+
+      let targetColumns = +this.activeKey === 1 ? extendColumns : baseColumns
+
+      //系列产品名称,中控系统模块名称 添加 竞争力
+      if(+this.activeKey !== 3){
+        targetColumns.splice(
+          +this.activeKey === 1 ? 3 : 2
+          ,0
+          ,{align: 'center',title: '竞争力',dataIndex: 'priceCoefficientName'})
+      }
+
+      let txt = ['','系列产品名称','中控系统模块名称','配置名称'][this.activeKey]
+      this.placeholder = `${txt}模糊查询`
+      let columns = [...targetColumns]
+      let target = columns.find(item => item.dataIndex === 'name')
+      if(target){
+        target.title = txt
+      }
+      return columns
     }
   },
   watch:{
@@ -134,17 +154,6 @@ export default {
         }
       },
       immediate:true
-    },
-    activeKey(newVal,oldVal){
-      console.log(arguments)
-      let txt = ['','系列产品名称','中控系统模块名称','配置名称'][newVal]
-      this.placeholder = `${txt}模糊查询`
-      let columns = [...this.columns]
-      let target = columns.find(item => item.dataIndex === 'name')
-      if(target){
-        target.title = txt
-        this.columns = [...columns]
-      }
     }
   },
   methods:{

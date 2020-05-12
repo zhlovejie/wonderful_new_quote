@@ -21,13 +21,24 @@
             v-decorator="['model', { rules: [{ required: true, message: '系列产品名称' }] }]"
           />
         </a-form-item>
+        <a-form-item label="竞争力">
+          <a-select 
+            :disabled="isDisabled"
+            :allowClear="true" 
+            v-decorator="['priceCoefficientId',{rules: [{ required: true, message: '请选择竞争力'}]}]" 
+            placeholder="请选择竞争力" 
+            style="width: 100%"
+          >
+            <a-select-option v-for="item in productPriceCoefficientList" :value="item.id" :key="item.id" >{{ item.name }}</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="是否为产品">
           <a-radio-group v-decorator="['type',{initialValue: 1}]">
             <a-radio :value="0">是</a-radio>
             <a-radio :value="1">否</a-radio>
           </a-radio-group>
         </a-form-item>
-        <a-form-item label="标配项" class="add-shadow">
+        <a-form-item label="标准配置" class="add-shadow">
           <OptList
             ref="ref_optStand"
             :dataSource="optStand"
@@ -40,7 +51,7 @@
             type="dashed"
             icon="plus"
             @click="ShowModule('optStand')"
-          >添加标配项</a-button>
+          >添加标准配置</a-button>
         </a-form-item>
         <a-form-item label="中控系列项" class="add-shadow">
           <OptList
@@ -55,10 +66,10 @@
             type="dashed"
             icon="plus"
             @click="ShowModule('optControl')"
-          >添加标配项</a-button>
+          >添加标准配置</a-button>
         </a-form-item>
         <div class="opt-choice-wrapper add-shadow">
-          <a-form-item label="选配项">
+          <a-form-item label="选择配置">
             <OptList
               ref="ref_optSelect"
               :dataSource="optSelect"
@@ -71,7 +82,7 @@
               type="dashed"
               icon="plus"
               @click="ShowModule('optSelect')"
-            >添加选配项</a-button>
+            >添加选择配置</a-button>
           </a-form-item>
 
           <div
@@ -121,7 +132,8 @@ import vuedraggable from 'vuedraggable'
 import {
   priceAdjustProductConfigDetail,
   priceAdjustProductConfigAddAndUpdate
-} from '@/api/productOfferManagement'
+} from '@/api/productOfferManagement' 
+import {productPriceCoefficientListWithoutPage} from '@/api/workBox' 
 import TableOptChoice from './TableOptChoice'
 import OptList from './OptList'
 export default {
@@ -138,10 +150,11 @@ export default {
       actionType: 'add',
       spinning: false,
       record: {},
-      optStand: [], //标配项
+      optStand: [], //标准配置
       optControl: [], //中控系列项
-      optSelect: [], //选配项
-      optChoice: [] //选择项
+      optSelect: [], //选择配置
+      optChoice: [], //选择项
+      productPriceCoefficientList:[]
     }
   },
   computed: {
@@ -175,6 +188,9 @@ export default {
     init() {
       let that = this
       let queue = []
+      queue.push(productPriceCoefficientListWithoutPage().then(res =>{
+        that.productPriceCoefficientList = res.data
+      }))
       return Promise.all(queue)
     },
     async handleOk() {
@@ -303,7 +319,8 @@ export default {
           name: res.data.name,
           model: res.data.model,
           type: res.data.type,
-          remarks: res.data.remarks
+          remarks: res.data.remarks,
+          priceCoefficientId:+res.data.priceCoefficientId
         })
         let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData
