@@ -30,7 +30,7 @@
       :maskClosable="false"
       :footer="null"
     >
-      <p>成本价：{{parseInt(costPrice.price) | moneyFormatNumber}}</p>
+      <!-- <p>成本价：{{parseInt(costPrice.price) | moneyFormatNumber}}</p> -->
       <p>A价：{{parseInt(costPrice.aprice) | moneyFormatNumber}}</p>
       <p>B价：{{parseInt(costPrice.bprice) | moneyFormatNumber}}</p>
       <p>C价：{{parseInt(costPrice.cprice) | moneyFormatNumber}}</p>

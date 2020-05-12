@@ -89,7 +89,8 @@ export default {
   methods:{
     query(){
       this.visible = true
-      this.searchAction()
+      this.itemName = undefined
+      this.$nextTick(() => this.searchAction())
     },
     handleCancel(){
       this.visible = false
