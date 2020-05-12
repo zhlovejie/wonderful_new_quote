@@ -38,7 +38,7 @@
             <a-radio :value="1">否</a-radio>
           </a-radio-group>
         </a-form-item>
-        <a-form-item label="标配项" class="add-shadow">
+        <a-form-item label="标准配置" class="add-shadow">
           <OptList
             ref="ref_optStand"
             :dataSource="optStand"
@@ -51,7 +51,7 @@
             type="dashed"
             icon="plus"
             @click="ShowModule('optStand')"
-          >添加标配项</a-button>
+          >添加标准配置</a-button>
         </a-form-item>
         <a-form-item label="中控系列项" class="add-shadow">
           <OptList
@@ -66,10 +66,10 @@
             type="dashed"
             icon="plus"
             @click="ShowModule('optControl')"
-          >添加标配项</a-button>
+          >添加标准配置</a-button>
         </a-form-item>
         <div class="opt-choice-wrapper add-shadow">
-          <a-form-item label="选配项">
+          <a-form-item label="选择配置">
             <OptList
               ref="ref_optSelect"
               :dataSource="optSelect"
@@ -82,7 +82,7 @@
               type="dashed"
               icon="plus"
               @click="ShowModule('optSelect')"
-            >添加选配项</a-button>
+            >添加选择配置</a-button>
           </a-form-item>
 
           <div
@@ -150,9 +150,9 @@ export default {
       actionType: 'add',
       spinning: false,
       record: {},
-      optStand: [], //标配项
+      optStand: [], //标准配置
       optControl: [], //中控系列项
-      optSelect: [], //选配项
+      optSelect: [], //选择配置
       optChoice: [], //选择项
       productPriceCoefficientList:[]
     }

@@ -200,7 +200,10 @@ export default {
       that.extendSearchParam = Object.assign({},(searchParam || {}))
       that.selectedRowKeys = selected.map(item => item.key)
       that.selectedRecord = selected.map(item => Object.assign({},item))
-      that.searchAction()
+
+      that.itemName = undefined
+      that.remarks = undefined
+      that.$nextTick(() => that.searchAction())
     }
   }
 }

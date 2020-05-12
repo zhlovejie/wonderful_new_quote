@@ -102,6 +102,11 @@ const columns = [
     scopedSlots: { customRender: 'type' },
   },
   {
+    align:'center',
+    title:'竞争力',
+    dataIndex:'priceCoefficientName'
+  },
+  {
     align: 'center',
     title: '标配项',
     scopedSlots: { customRender: 'optStand' },

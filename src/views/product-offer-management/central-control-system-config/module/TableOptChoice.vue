@@ -134,6 +134,7 @@ export default {
       let that = this
     },
     searchAction(opt){
+      //debugger
       let that = this
       let _searchParam = Object.assign({},{...this.searchParam},{...this.extendSearchParam},{...this.pagination},opt || {})
       console.log('执行搜索...',_searchParam)
@@ -200,7 +201,10 @@ export default {
       that.extendSearchParam = Object.assign({},(searchParam || {}))
       that.selectedRowKeys = selected.map(item => item.key)
       that.selectedRecord = selected.map(item => Object.assign({},item))
-      that.searchAction()
+
+      that.itemName = undefined
+      that.remarks = undefined
+      that.$nextTick(() => that.searchAction())
     }
   }
 }

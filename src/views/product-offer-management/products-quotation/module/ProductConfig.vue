@@ -348,9 +348,11 @@ export default {
       }
       that.optControl = __optControl
       that.optControlSelectedDefault = __optControlSelectedDefault
+      that.controlChangeHandler(that.optControlSelectedDefault)
       console.log(result)
     },
     controlChangeHandler(controlID){
+      //debugger
       let that = this
       if(parseInt(controlID,10) === -1){
         that.controlResult = {
