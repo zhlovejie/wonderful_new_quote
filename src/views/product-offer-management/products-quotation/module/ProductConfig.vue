@@ -266,7 +266,9 @@ export default {
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        _optChoice[index].target = target
+        target.checked = target.isRequire
+        //target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        _optChoice[index].target = {...target}
         this.controlResult = controlResult
       }
     },
@@ -298,7 +300,8 @@ export default {
     },
     selectedHandler(result) {
       let that = this
-      debugger
+      that.$emit('extendProductChange',null)
+      
       let {
         name,
         model,
@@ -352,17 +355,17 @@ export default {
       console.log(result)
     },
     controlChangeHandler(controlID){
-      //debugger
       let that = this
+      that.controlResult = {
+        optStand:[],
+        optSelect:[],
+        optChoice:[]
+      }
+      that.optControlSelected = null
       if(parseInt(controlID,10) === -1){
-        that.controlResult = {
-          optStand:[],
-          optSelect:[],
-          optChoice:[]
-        }
-        that.optControlSelected = null
         return
       }
+
       that.optControlSelected = this.optControl.find(item =>item.id === controlID)
       priceAdjustZktConfigDetail({ id: controlID ,isPrice:true}).then(res => {
         if(res.code !== 200){
@@ -530,6 +533,7 @@ export default {
       }
     },
     calcItems(){
+      debugger
       let {
         optInfo,
         optStand,
@@ -541,6 +545,9 @@ export default {
         control_optChoice
       } = this.getChoiceProducts()
 
+      //参与价格计算 去除为产品的 防止计算重复
+      optChoice = optChoice.filter(o =>!o.isProduct)
+
       let result = [...optSelect,...optChoice,...control_optSelect,...control_optChoice].flat()
       let priceResult = {
         price:0,
@@ -550,6 +557,7 @@ export default {
         retailPrice:0
       }
       result.reduce((calc,item) =>{
+        console.log(`${item.itemName} 成本价：${item.price} A价：${item.aprice} B价：${item.bprice} C价：${item.cprice} 销售价：${item.retailPrice}`)
         calc.price += (parseFloat(item.price) || 0)
         calc.aprice += (parseFloat(item.aprice) || 0)
         calc.bprice += (parseFloat(item.bprice) || 0)
@@ -559,6 +567,7 @@ export default {
       },priceResult)
 
       if(optStand.length > 0){
+        console.log(`【标配】 ${optInfo.name} 成本价：${optInfo.price} A价：${optInfo.aprice} B价：${optInfo.bprice} C价：${optInfo.cprice} 销售价：${optInfo.retailPrice}`)
         priceResult.price += (parseFloat(optInfo.price) || 0)
         priceResult.aprice += (parseFloat(optInfo.aprice) || 0)
         priceResult.bprice += (parseFloat(optInfo.bprice) || 0)
@@ -566,6 +575,7 @@ export default {
         priceResult.retailPrice += (parseFloat(optInfo.retailPrice) || 0)
       }
       if(control_optStand.length > 0){
+        console.log(`【中控标配】 ${control_optInfo.name} 成本价：${control_optInfo.price} A价：${control_optInfo.aprice} B价：${control_optInfo.bprice} C价：${control_optInfo.cprice} 销售价：${control_optInfo.retailPrice}`)
         //totalPrice += (parseFloat(control_optInfo.price) || 0)
         priceResult.price += (parseFloat(control_optInfo.price) || 0)
         priceResult.aprice += (parseFloat(control_optInfo.aprice) || 0)
