@@ -342,7 +342,7 @@ export default {
       let __optControlSelectedDefault = undefined
       if(__optControl.length === 0){
         //__optControl.push({id:'-1',itemName:'无' })
-        //__optControlSelectedDefault = '-1'
+        __optControlSelectedDefault = '-1'
       }else{
         __optControlSelectedDefault = +__optControl[0].id
       }
