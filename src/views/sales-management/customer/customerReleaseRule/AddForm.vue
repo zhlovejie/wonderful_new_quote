@@ -64,7 +64,7 @@
             </td>
           </tr>
           <tr>
-            <td>开始时间</td>
+            <td>开始时间(包含)</td>
             <td>
               <a-form-item>
                 <a-month-picker 
@@ -77,7 +77,7 @@
             </td>
           </tr>
           <tr>
-            <td>结束时间</td>
+            <td>结束时间(包含)</td>
             <td>
               <a-form-item>
                 <a-month-picker 
