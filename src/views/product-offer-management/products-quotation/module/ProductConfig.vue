@@ -222,12 +222,14 @@ export default {
   },
   methods: {
     optChoiceDataSourceChange(index,val){
+      debugger
       let _optChoice = [...this.optChoice]
       let target = _optChoice[index].dataSource.find(item => item.id === val)
       if(target){
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
+        target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
         _optChoice[index].target = target
         this.optChoice = [..._optChoice]
       }
@@ -259,6 +261,7 @@ export default {
       }
     },
     controlResultOptChoiceDataSourceChange(index,val){
+      debugger
       let controlResult = {...this.controlResult}
       let _optChoice = controlResult.optChoice
       let target = _optChoice[index].dataSource.find(item => item.id === val)
@@ -266,8 +269,8 @@ export default {
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        target.checked = target.isRequire
-        //target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        //target.checked = target.isRequire
+        target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
         _optChoice[index].target = {...target}
         this.controlResult = controlResult
       }
