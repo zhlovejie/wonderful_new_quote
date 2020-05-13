@@ -70,12 +70,11 @@ export default {
   },
   methods: {
     extendProductChange(record){
-      debugger
-      if(record.isProduct && record.checked){
-        this.$refs.productConfigSub.query(record.id)
-      }else{
-        this.$refs.productConfigSub.reset()
+      if(record && record.isProduct && record.checked){
+        this.$refs.productConfigSub.query(record.id) 
+        return
       }
+      this.$refs.productConfigSub.reset()
     },
     selectedHandler(record){
       this.optInfo = {
@@ -127,7 +126,20 @@ export default {
         return calc
       },priceResult)
 
-      this.costPrice = priceResult
+      //最终的钱 最后一位 保证是0  低于5不进 高于5进1
+      let formatPrice = (n)=>{
+        let _n = Math.round(parseFloat(n))
+        if(_n < 10) return _n
+        return (parseInt(_n / 10,10) + (_n % 10 >= 5 ? 1 : 0)) * 10
+      }
+
+      for(let key in priceResult){
+        if(priceResult.hasOwnProperty(key)){
+          priceResult[key] = formatPrice(priceResult[key])
+        }
+      }
+
+      this.costPrice = {...priceResult}
     },
     makeViewDataSource(){
       let that = this
