@@ -103,6 +103,12 @@ export const asyncRouterMap = [
                 name: 'activity',
                 component: () => import('@/views/system-setting/activity/ActivitiProcDefList'),
                 meta: { title: '流程定义', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/permission/SysJobList',
+                name: 'sysJob',
+                component: () => import('@/views/system-setting/permission/SysJobList'),
+                meta: { title: '任务调度管理', permission: ['permission'] }
               }
             ]
           },
