@@ -32,11 +32,11 @@ export default {
   },
   methods: {
     beforeUpload(file) {
-      let _aceptFileTypes = this.aceptFileTypes
-      const isDocType = _aceptFileTypes.includes(file.type)
-      if (!isDocType) {
-        this.$message.error('只支持上传.doc,.docx的word文档!')
-      }
+      //let _aceptFileTypes = this.aceptFileTypes
+      // const isDocType = _aceptFileTypes.includes(file.type)
+      // if (!isDocType) {
+      //   this.$message.error('只支持上传.doc,.docx的word文档!')
+      // }
       const isLt10M = file.size / 1024 / 1024 < 10
       if (!isLt10M) {
         this.$message.error('上传文件必须小于10M!')
@@ -55,7 +55,7 @@ export default {
       this.fileList = fileList.filter(f => this.checkFile(f))
     },
     checkFile(file) {
-      const isDocType = this.aceptFileTypes.includes(file.type)
+      //const isDocType = this.aceptFileTypes.includes(file.type)
       const isLt10M = file.size / 1024 / 1024 < 10
       return isLt10M
     },

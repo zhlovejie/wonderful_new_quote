@@ -23,7 +23,7 @@
             </td>
           </tr>
           <tr>
-            <td>设定时间(月)</td>
+            <td>设定统计周期(月)</td>
             <td>
               <a-form-item>
                 <a-select
@@ -153,9 +153,9 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          debugger
+
           let diff = values.endTime.diff(values.startTime,'months')
-          if(diff <= 0){
+          if(diff < 0){
             that.$message.info('结束时间必须大于开始时间')
             return 
           }
