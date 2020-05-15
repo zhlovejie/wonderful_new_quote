@@ -228,7 +228,8 @@ export default {
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        _optChoice[index].target = target
+        target.checked = _optChoice[index].target.checked
+        _optChoice[index].target = {...target}
         this.optChoice = [..._optChoice]
       }
       this.$emit('extendProductChange',Object.assign({},target))
@@ -266,7 +267,7 @@ export default {
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        target.checked = target.isRequire
+        target.checked = _optChoice[index].target.checked
         //target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
         _optChoice[index].target = {...target}
         this.controlResult = controlResult
@@ -352,7 +353,7 @@ export default {
       that.optControl = __optControl
       that.optControlSelectedDefault = __optControlSelectedDefault
       that.controlChangeHandler(that.optControlSelectedDefault)
-      console.log(result)
+      //console.log(result)
     },
     controlChangeHandler(controlID){
       let that = this
@@ -533,7 +534,6 @@ export default {
       }
     },
     calcItems(){
-      debugger
       let {
         optInfo,
         optStand,
@@ -549,6 +549,7 @@ export default {
       optChoice = optChoice.filter(o =>!o.isProduct)
 
       let result = [...optSelect,...optChoice,...control_optSelect,...control_optChoice].flat()
+
       let priceResult = {
         price:0,
         aprice:0,
@@ -585,7 +586,6 @@ export default {
       }
 
       console.log(priceResult)
-      //console.log(`totalPrice:${totalPrice}`)
       return priceResult
     },
     query(id){
