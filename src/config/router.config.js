@@ -966,6 +966,22 @@ export const asyncRouterMap = [
             meta: { title: '月报', icon: 'setting', keepAlive: false, permission: ['permission'] },
           },
         ]
+      },
+      {
+        //制度文档管理
+        path: '/files-management',
+        name: 'files-management',
+        component: PageView,
+        meta: { title: '制度文档管理', icon: 'file', permission: ['permission'] },
+        redirect: '/files-management/list',
+        children:[
+          {
+            path: '/files-management/list',
+            name: 'files-management-list',
+            component: () => import('@/views/files-management/List'),
+            meta: { title: '制度文档管理', icon: 'file', keepAlive: false, permission: ['permission'] },
+          }
+        ]
       }
     ]
   }

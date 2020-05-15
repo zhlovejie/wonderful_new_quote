@@ -1,0 +1,71 @@
+<template>
+  <div class="directory-wrapper">
+    <a-row :gutter="24">
+      <a-col :span="8" v-for="dir in dirList" :key="dir.id">
+        <DirectoryManagement :dir="dir" @finish="init()" />
+      </a-col>
+      <a-col :span="8">
+        <div class="dir-add-wrapper">
+          <a-button type="primary" icon="plus" size="large" @click="doAction('add')">新建文件夹</a-button>
+        </div>
+      </a-col>
+    </a-row>
+    <AddDirectory ref="addDirectory" @finish="init()" />
+  </div>
+</template>
+<script>
+import {docDirList} from '@/api/files-management'
+import DirectoryManagement from './DirectoryManagement'
+import AddDirectory from './AddDirectory'
+export default {
+  name:'files-management-list',
+  components:{
+    DirectoryManagement,
+    AddDirectory
+  },
+  watch:{
+    '$route':{
+      handler:function(to,from) {
+        if(to.name === 'files-management-list'){
+          this.init()
+        }
+      },
+      immediate:true
+    }
+  },
+  data(){
+    return {
+      dirList:[]
+    }
+  },
+  methods:{
+    init(){
+      let that = this
+      docDirList().then(res =>that.dirList = res.data)
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'add'){
+        that.$refs.addDirectory.query()
+      }
+    }
+  }
+}
+</script>
+<style scoped>
+  .directory-wrapper{
+    margin-top: -20px;
+  }
+  .dir-add-wrapper{
+    padding: 20px;
+    background: rgba(255,255,255,1);
+    box-shadow: 0 0 10px 0 rgba(34,58,156,.07);
+    border-radius: 2px;
+    border: 1px solid rgba(231,233,234,1);
+    margin-top:24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 379.19px;
+  }
+</style>
