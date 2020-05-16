@@ -43,6 +43,7 @@ export default {
           console.log('Received values of form: ', values)
           that.spinning = true 
           docDirAdd(values).then(res =>{
+            that.$message.info(res.msg)
             that.spinning = false
             that.handleCancel()
             that.$emit('finish')

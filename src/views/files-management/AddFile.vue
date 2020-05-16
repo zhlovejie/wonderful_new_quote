@@ -34,6 +34,7 @@
           />
         </a-form-item>
       </a-form>
+      <a-alert message="注：查看权限 未设置默认为全部人员可见" banner />
     </a-spin>
   </a-modal>
 </template>
@@ -84,7 +85,7 @@ export default {
       return this.type === 'edit'
     },
     modalTitle() {
-      return this.isAdd ? '新增' : '修改'
+      return `${this.isAdd ? '添加' : '修改'}文件`
     }
   },
   methods: {

@@ -1,9 +1,21 @@
 <template>
   <div class="dir-wrapper">
     <div class="dir-header">
-      <h3>{{dir.dirName}}</h3>
-      <div class="dir-option-wrapper">
-        <a-button type="primary" icon="plus" @click="doAction('add')" />
+      <h3><a-icon type="folder" /><span style="margin-left:10px;">{{dir.dirName}}</span></h3>
+      <div class="dir-option-wrapper" v-if="$auth('files-management-list:addFile') || $auth('files-management-list:delDir')">
+        <a-dropdown>
+          <a-menu slot="overlay" @click="handleMenuClick">
+            <a-menu-item key="add" v-if="$auth('files-management-list:addFile')">
+              <a-icon type="plus" />添加文件
+            </a-menu-item>
+            <a-menu-item key="clear" v-if="$auth('files-management-list:delDir')">
+              <a-icon type="close" />删除文件夹
+            </a-menu-item>
+          </a-menu>
+          <a-button type="link"><a-icon type="menu" /></a-button>
+        </a-dropdown>
+        <!-- <a-button v-if="$auth('files-management-list:addFile')"  icon="plus" @click="doAction('add')" >添加文件</a-button>
+        <a-button v-if="$auth('files-management-list:delDir')" style="margin-left:10px;"  icon="close" @click="doAction('clear')" >删除文件夹</a-button> -->
       </div>
     </div>
     <div class="dir-body">
@@ -20,16 +32,15 @@
           <a-form-item>
             <a-button
               class="a-button"
-              type="primary"
               icon="search"
               @click="searchAction({current:1})"
             >查询</a-button>
           </a-form-item>
         </a-form>
       </div>
-      <div class="dir-main-wrapper" @click="doAction('clear')">
+      <div class="dir-main-wrapper">
         <a-table
-          :columns="columns"
+          :columns="columns" 
           :dataSource="dataSource"
           :pagination="pagination"
           :loading="loading"
@@ -37,18 +48,24 @@
           size="small"
         >
           <div slot="action" slot-scope="text, record">
-            <a type="primary" @click="doAction('view',record)">预览</a>
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('edit',record)">修改</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
-              <a href="javascript:void(0);">删除</a>
-            </a-popconfirm>
+            <template v-if="$auth('files-management-list:viewFile')">
+              <a type="primary" @click="doAction('view',record)">预览</a>
+            </template>
+            <template v-if="$auth('files-management-list:editFile')">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('edit',record)">修改</a>
+            </template>
+            <template v-if="$auth('files-management-list:delFile')">
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+                <a href="javascript:void(0);">删除</a>
+              </a-popconfirm>
+            </template>
           </div>
         </a-table>
       </div>
     </div>
-    <AddFile ref="addFile" @finish="searchAction()" />
+    <AddFile ref="addFile" @finish="searchAction({current:1})" />
     <XdocView ref="xdocView" />
   </div>
 </template>
@@ -64,7 +81,8 @@ const columns = [
   {
     align: 'center',
     title: '操作',
-    scopedSlots: { customRender: 'action' }
+    scopedSlots: { customRender: 'action' },
+    width:180
   }
 ]
 export default {
@@ -87,7 +105,8 @@ export default {
     return {
       columns: columns,
       pagination: {
-        current: 1
+        current: 1,
+        defaultPageSize:5
       },
       loading: false,
       fileName: undefined,
@@ -109,7 +128,7 @@ export default {
   methods: {
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination },{size:5}, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       docFileList(_searchParam)
@@ -122,6 +141,7 @@ export default {
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
+          pagination.current = res.data.current
           that.pagination = pagination
         })
         .catch(err => (that.loading = false))
@@ -151,6 +171,7 @@ export default {
       }
       if (type === 'clear') {
         if (this.dataSource.length > 0) {
+          that.$message.info('不能删除非空目录')
           return
         }
         this.$confirm({
@@ -180,13 +201,16 @@ export default {
           record: { ...(record || {}) }
         })
       }
+    },
+    handleMenuClick(event){
+      this.doAction(event.key)
     }
   }
 }
 </script>
 <style scoped>
 .dir-wrapper {
-  padding: 20px;
+  padding: 20px 20px 0 20px;
   margin-top: 24px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0 0 10px 0 rgba(34, 58, 156, 0.07);
@@ -204,12 +228,12 @@ export default {
   right: 0;
 }
 .dir-wrapper .dir-body {
-  margin-top: 10px;
+  margin-top: 0;
 }
 .dir-wrapper .dir-main-wrapper {
-  height: 240px;
-  min-height: 240px;
-  max-height: 240px;
+  height: 295px;
+  min-height: 295px;
+  max-height: 295px;
   overflow-x: hidden;
   overflow-y: auto;
 }

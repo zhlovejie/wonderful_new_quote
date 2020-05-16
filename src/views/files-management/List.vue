@@ -2,13 +2,13 @@
   <div class="directory-wrapper">
     <a-row :gutter="24">
       <transition-group name="list" tag="div">
-        <a-col :span="8" v-for="dir in dirList" :key="dir.id">
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" :xxl="8" v-for="dir in dirList" :key="dir.id">
           <DirectoryManagement :dir="dir" @finish="init()" />
         </a-col>
       </transition-group>
-      <a-col :span="8">
+      <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" :xxl="8" v-if="$auth('files-management-list:addDir')">
         <div class="dir-add-wrapper">
-          <a-button type="primary" icon="plus" size="large" @click="doAction('add')">新建文件夹</a-button>
+          <a-button type="dashed" icon="plus" size="large" @click="doAction('add')">新建文件夹</a-button>
         </div>
       </a-col>
     </a-row>
@@ -68,7 +68,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 379.19px;
+  height: 406.19px;
 }
 
 .list-enter-active,

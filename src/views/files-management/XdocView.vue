@@ -33,7 +33,6 @@ export default {
       this.visible = false
     },
     query(xdocUrl) {
-      debugger
       let that = this
       that.visibleIframe = false
       that.xdocUrl = ''
@@ -80,6 +79,7 @@ export default {
         that.$message.info('不支持预览的文件格式')
         setTimeout(() => {
           that.spinning = false
+          that.handleCancel()
         }, 2000)
       }
     }
