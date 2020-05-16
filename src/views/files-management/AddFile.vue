@@ -178,7 +178,7 @@ export default {
           formData.append(`authoritySaveBoList[${index}].stationIds`, item.stationIds)
         }
       })
-      if (that.isAdd) {
+      if (files.length > 0) {
         formData.append('file', files[0].originFileObj)
       }
 
