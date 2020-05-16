@@ -246,7 +246,8 @@ export default {
         }
       })
 
-      let leafs = this.treeData.map(item => item.children || []).flat(3)
+      //let leafs = this.treeData.map(item => item.children || []).flat(3)
+      let leafs = this.flatten(this.treeData.map(item => item.children || []))
       authoritySaveBoList.map(v => {
         let target = leafs.find(n => n.value === v)
         if (target) {
@@ -270,6 +271,16 @@ export default {
         })
       })
       return result
+    },
+    flatten(array) {
+      var flattend = [];
+      (function flat(array) {
+        array.forEach(function(el) {
+          if (Array.isArray(el)) flat(el);
+          else flattend.push(el);
+        });
+      })(array);
+      return flattend;
     }
   }
 }
