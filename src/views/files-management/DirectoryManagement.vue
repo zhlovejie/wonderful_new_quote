@@ -3,17 +3,27 @@
     <div class="dir-header">
       <h3>{{dir.dirName}}</h3>
       <div class="dir-option-wrapper">
-        <a-button type="primary" icon="plus" @click="doAction('upload')" />
+        <a-button type="primary" icon="plus" @click="doAction('add')" />
       </div>
     </div>
     <div class="dir-body">
       <div class="dir-search-wrapper">
         <a-form layout="inline">
-          <a-form-item >
-            <a-input v-model="fileName" style="width:200px;"  placeholder="文件名模糊查询" :allowClear="true" />
+          <a-form-item>
+            <a-input
+              v-model="fileName"
+              style="width:200px;"
+              placeholder="文件名模糊查询"
+              :allowClear="true"
+            />
           </a-form-item>
           <a-form-item>
-            <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
+            <a-button
+              class="a-button"
+              type="primary"
+              icon="search"
+              @click="searchAction({current:1})"
+            >查询</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -38,12 +48,14 @@
         </a-table>
       </div>
     </div>
-    <AddFile ref="addFile" @finish="searchAction()"/>
+    <AddFile ref="addFile" @finish="searchAction()" />
+    <XdocView ref="xdocView" />
   </div>
 </template>
 <script>
-import {docDirDelete,docFileList,docFileDelete} from '@/api/files-management'
+import { docDirDelete, docFileList, docFileDelete } from '@/api/files-management'
 import AddFile from './AddFile'
+import XdocView from './XdocView'
 const columns = [
   {
     title: '文件名',
@@ -56,50 +68,45 @@ const columns = [
   }
 ]
 export default {
-  name:'DirectoryManagement',
-  components:{
-    AddFile
+  name: 'DirectoryManagement',
+  components: {
+    AddFile,
+    XdocView
   },
-  props:{
-    dir:{
-      type:Object,
-      default(){
+  props: {
+    dir: {
+      type: Object,
+      default() {
         return {
-          fileList:[]
+          fileList: []
         }
       }
     }
   },
-  data(){
+  data() {
     return {
       columns: columns,
       pagination: {
         current: 1
       },
       loading: false,
-      fileName:undefined,
-      dataSource:[]
+      fileName: undefined,
+      dataSource: []
     }
   },
-  computed:{
-    searchParam(){
+  computed: {
+    searchParam() {
       return {
-        dirId:this.dir.id || undefined,
-        userId:this.dir.userId || undefined,
-        fileName:this.fileName
+        dirId: this.dir.id || undefined,
+        userId: this.dir.userId || undefined,
+        fileName: this.fileName
       }
-    },
-    // dataSource(){
-    //   if(this.dir && this.dir.fileList){
-    //     return [...this.dir.fileList]
-    //   }
-    //   return []
-    // }
+    }
   },
-  mounted(){
+  mounted() {
     this.searchAction()
   },
-  methods:{
+  methods: {
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
@@ -127,19 +134,23 @@ export default {
       this.pagination = pager
       this.searchAction()
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'view'){
+      if (type === 'view') {
+        that.$refs.xdocView.query(record.filePath)
         return
       }
-      if(type === 'edit'){
+      if (type === 'del') {
+        docFileDelete(`id=${record.id}`).then(res => {
+          that.$message.info(res.msg)
+          if (res.code === 200) {
+            that.searchAction()
+          }
+        })
         return
       }
-      if(type === 'del'){
-        return
-      }
-      if(type === 'clear'){
-        if(this.dataSource.length > 0 ){
+      if (type === 'clear') {
+        if (this.dataSource.length > 0) {
           return
         }
         this.$confirm({
@@ -147,56 +158,59 @@ export default {
           content: `确定要删除此文件夹吗?`,
           okText: '确定',
           cancelText: '取消',
-          onOk () {
+          onOk() {
             console.log('OK')
-            docDirDelete(`dirId=${that.dir.id}`).then(res =>{
+            docDirDelete(`dirId=${that.dir.id}`).then(res => {
               that.$message.info(res.msg)
-              if(res.code !== 200){
+              if (res.code !== 200) {
                 return
               }
               that.$emit('finish')
             })
           },
-          onCancel () {
+          onCancel() {
             console.log('Cancel')
           }
         })
         return
       }
-      if(type === 'upload'){
-        that.$refs.addFile.query(type,Object.assign({},that.dir))
+      if (type === 'add' || type === 'edit') {
+        that.$refs.addFile.query(type, {
+          dir: { ...that.dir },
+          record: { ...(record || {}) }
+        })
       }
     }
   }
-};
+}
 </script>
 <style scoped>
-.dir-wrapper{
+.dir-wrapper {
   padding: 20px;
-  margin-top:24px;
-  background: rgba(255,255,255,1);
-    box-shadow: 0 0 10px 0 rgba(34,58,156,.07);
-    border-radius: 2px;
-    border: 1px solid rgba(231,233,234,1);
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 10px 0 rgba(34, 58, 156, 0.07);
+  border-radius: 2px;
+  border: 1px solid rgba(231, 233, 234, 1);
 }
-.dir-wrapper .dir-header{
+.dir-wrapper .dir-header {
   position: relative;
   line-height: 40px;
   border-bottom: 1px solid #ddd;
 }
-.dir-wrapper .dir-header .dir-option-wrapper{
+.dir-wrapper .dir-header .dir-option-wrapper {
   position: absolute;
   top: 0;
   right: 0;
 }
-.dir-wrapper .dir-body{
+.dir-wrapper .dir-body {
   margin-top: 10px;
 }
-.dir-wrapper .dir-main-wrapper{
+.dir-wrapper .dir-main-wrapper {
   height: 240px;
   min-height: 240px;
   max-height: 240px;
-  overflow-x:hidden;
-  overflow-y:auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 </style>

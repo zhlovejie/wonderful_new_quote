@@ -37,15 +37,15 @@ export default {
       // if (!isDocType) {
       //   this.$message.error('只支持上传.doc,.docx的word文档!')
       // }
-      const isLt10M = file.size / 1024 / 1024 < 10
+      const isLt10M = file.size / 1024 / 1024 < 100
       if (!isLt10M) {
-        this.$message.error('上传文件必须小于10M!')
+        this.$message.error('上传文件必须小于100M!')
       }
-      return  isLt10M
+      return isLt10M
     },
     handleChange(info) {
       let fileList = [...info.fileList]
-      fileList = fileList.slice(-3)
+      fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
@@ -56,7 +56,7 @@ export default {
     },
     checkFile(file) {
       //const isDocType = this.aceptFileTypes.includes(file.type)
-      const isLt10M = file.size / 1024 / 1024 < 10
+      const isLt10M = file.size / 1024 / 1024 < 100
       return isLt10M
     },
     getFiles() {
@@ -68,7 +68,7 @@ export default {
           uid: Math.random()
             .toString(16)
             .slice(-10),
-          name: f.url,
+          name: f.fileName || f.url,
           status: 'done',
           url: f.url
         }
