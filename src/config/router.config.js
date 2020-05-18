@@ -103,6 +103,12 @@ export const asyncRouterMap = [
                 name: 'activity',
                 component: () => import('@/views/system-setting/activity/ActivitiProcDefList'),
                 meta: { title: '流程定义', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/permission/SysJobList',
+                name: 'sysJob',
+                component: () => import('@/views/system-setting/permission/SysJobList'),
+                meta: { title: '任务调度管理', permission: ['permission'] }
               }
             ]
           },
@@ -593,13 +599,6 @@ export const asyncRouterMap = [
                 component: () => import('@/views/sale/present-receipt/List'),
                 meta: { title: '赠送单', permission: ['permission'] }
               },
-              // {
-              //   path: '/sale/present-order/List',
-              //   name: 'presentOrder',
-              //   hidden: true,
-              //   component: () => import('@/views/sale/present-order/List'),
-              //   meta: { title: '赠送订单', permission: ['permission'] }
-              // },
               {
                 path: '/sale/income/List',
                 name: 'incomeReceipt',
@@ -980,6 +979,28 @@ export const asyncRouterMap = [
             name: 'files-management-list',
             component: () => import('@/views/files-management/List'),
             meta: { title: '制度文档管理', icon: 'file', keepAlive: false, permission: ['permission'] },
+          }
+        ]
+      },
+      {
+        //会议管理
+        path: '/meeting-management',
+        name: 'meeting-management',
+        component: PageView,
+        meta: { title: '会议管理', icon: 'team', permission: ['permission'] },
+        redirect: '/meeting-management/settings',
+        children:[
+          {
+            path: '/meeting-management/settings',
+            name: 'meetingManagementSettings',
+            component: () => import('@/views/meeting-management/settings/List'),
+            meta: { title: '会议设置', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/meeting-management/records',
+            name: 'meetingManagementRecords',
+            component: () => import('@/views/meeting-management/records/List'),
+            meta: { title: '会议记录', icon: 'setting', keepAlive: false, permission: ['permission'] },
           }
         ]
       }
