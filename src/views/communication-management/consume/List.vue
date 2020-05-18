@@ -30,6 +30,8 @@
         </div>
       </a-table>
     </div>
+    <AddForm ref="addForm" @finish="searchAction" />
+    <XdocView ref="xdocView" />
   </div>
 </template>
 <script>
@@ -39,6 +41,8 @@ import {
   comManageSpendDetailExportExcel
 } from '@/api/communicationManagement'
 
+import AddForm from './AddFile'
+import XdocView from './XdocView'
 const columns = [
   {
     align: 'center',
@@ -88,6 +92,8 @@ const columns = [
 export default {
   name: 'communication-management-consume',
   components: {
+    AddForm,
+    XdocView
   },
   data() {
     return {
@@ -155,7 +161,16 @@ export default {
         return
       }
       if(type === 'detail'){
-        
+        if(!record.detailUrl){
+          that.$message.info('尚未上传文件')
+          return
+        }
+        that.$refs.xdocView.query(record.detailUrl)
+        return 
+      }
+      if(type === 'upload'){
+        that.$refs.addForm.query(type,record)
+        return
       }
     }
   }
