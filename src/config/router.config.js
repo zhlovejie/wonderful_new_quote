@@ -283,7 +283,7 @@ export const asyncRouterMap = [
                 path: '/sales-management/customer/customer-release-rule',
                 name: 'customerReleaseRule',
                 component: () => import('@/views/sales-management/customer/customerReleaseRule/List'),
-                meta: { title: '客户释放', keepAlive: false, permission: ['permission'] }
+                meta: { title: '客户释放规则', keepAlive: false, permission: ['permission'] }
               },
               {
                 path: '/sales-management/customer/customer-appeal',

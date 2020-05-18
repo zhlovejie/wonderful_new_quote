@@ -98,7 +98,7 @@
     <give-up ref="giveUp" @ok="handleOk" />
     <preview ref="previewModal" @ok="handleOk" />
     <call-record ref="callRecord"/>
-    <AppealAddForm ref="appealAddForm" />
+    <AppealAddForm ref="appealAddForm" @finish="handleOk" />
   </a-card>
 </template>
 
