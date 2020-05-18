@@ -102,3 +102,29 @@ export function comManageMobileManageDetail (parameter) {
     params: parameter
   })
 }
+
+//-----------------消费详情-----------------------
+
+/**下载模板 手机号管理为主，关联通讯设置查询出套餐费用 */
+export function comManageSpendDetailExportExcel () {
+  return `${system.baseURL}/comManage/spend-detail/exportExcel`
+}
+
+/**消费详情列表 */
+export function comManageSpendDetailPage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/spend-detail/getSpendDetailList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function comManageSpendDetailUpload (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/spend-detail/spendDetailUpload',
+    method: 'post',
+    data: params
+  })
+}
