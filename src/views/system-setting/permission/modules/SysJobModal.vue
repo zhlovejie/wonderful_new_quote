@@ -77,6 +77,16 @@
             v-decorator="['cronExpression', { rules: [{ required: true, message: 'cron表达式!' }] }]"
           />
         </a-form-item>
+
+        <a-form-item
+          label="备注信息"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol">
+          <a-input
+            :disabled="queryBoolean"
+            placeholder="备注信息"
+            v-decorator="['remarks']"/>
+        </a-form-item>
       </a-form>
       <!--<span style="color: #cf1322">*注：银行卡开户行/税号信息需要填写全部信息</span>-->
     </a-spin>
