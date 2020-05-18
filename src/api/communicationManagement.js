@@ -55,3 +55,50 @@ export function comManageSettingsDelete (parameter) {
     params: parameter
   })
 }
+
+
+//-----------------手机号管理-----------------------
+/**获取手机号管理列表 */
+export function comManageMobileManagePage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/mobile-manage/getMobileManagePage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**手机号管理下载 */
+export function comManageMobileManageExportExcel () {
+  return `${system.baseURL}/comManage/mobile-manage/exportExcel`
+}
+
+/**手机号管理软删除 */
+export function comManageMobileManageDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/mobile-manage/delMobileManage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**手机号管理新增和修改 */
+export function comManageMobileManageAddAndUpdate (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/mobile-manage/addAndUpdateMobileManage',
+    method: 'post',
+    data: params
+  })
+}
+
+/**获取手机号管理详情 */
+export function comManageMobileManageDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/mobile-manage/getMobileManageDetail',
+    method: 'get',
+    params: parameter
+  })
+}
