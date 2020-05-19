@@ -45,7 +45,7 @@
                   <a-select
                     style="width:165px;"
                     placeholder="选择人员"
-                    v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]" 
+                    v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]"
                     @change="chargePersonChange"
                   >
                     <a-select-option
@@ -194,7 +194,7 @@
                       v-for="(item,index) in oaMeetingJoinList"
                       :key="index"
                       style="margin-top:7px;"
-                      :closable="!item.__root" 
+                      :closable="!item.__root"
                       :color="item.__root ? 'red' :''"
                       @close="removeTag(item,index)"
                     >{{item.trueName}}</a-tag>
@@ -208,7 +208,7 @@
           <tr v-if="isView">
             <td class="wdf-column">会议启动时间</td>
             <td>
-              <a-form-item>{{detail.beginTime}}</a-form-item>
+              <a-form-item>{{detail.startTime}}</a-form-item>
             </td>
             <td class="wdf-column">会议完结时间</td>
             <td>
@@ -351,7 +351,7 @@ export default {
       that.oaMeetingJoinList = []
       await that.form.resetFields()
       await that.init()
-      
+
       //填充数据
       if(that.isStart){
         await that.depChangeHandler(that.record.departmentId)
