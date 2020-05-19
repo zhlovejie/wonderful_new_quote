@@ -23,11 +23,17 @@
       </a-select>
       <a-range-picker v-model="sDate" style="width:240px;" :allowClear="true" />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <!-- <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <template v-if="$auth('customerAppeal:all')">
+          <a-tab-pane tab="全部" key="3" />
+        </template>
+        <template v-else>
+          <a-tab-pane tab="全部" key="0" />
+        </template>
+        
         <a-tab-pane tab="待审批" key="1" />
         <a-tab-pane tab="已审批" key="2" />
       </a-tabs>
@@ -53,7 +59,7 @@
           <span v-else>无</span>
         </div>
         <div slot="state" slot-scope="text, record, index">
-          {{getStateTxt(text)}}
+          <a  @click="approvalPreview(record)" >{{ getStateTxt(text) }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
@@ -62,7 +68,7 @@
             <a type="primary" @click="doAction('approval',record)">审批</a>
           </template>
 
-          <template v-if="+activeKey === 0">
+          <template v-if="+activeKey === 0 && +userInfo.id === +record.createdId">
             <a-divider type="vertical" />
             <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
               <a>删除</a>
@@ -73,10 +79,12 @@
     </div>
 
     <AddForm ref="addForm" @finish="searchAction()" />
+    <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
 
 <script>
+
 import {
   departmentList, //所有部门
   getStationList //获取部门下面的岗位
@@ -89,6 +97,7 @@ import {
   customerAppealAdd
 } from '@/api/customerReleaseRule'
 import AddForm from './AddForm'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo' 
 import moment from 'moment'
 const columns = [
   {
@@ -147,7 +156,8 @@ const columns = [
 export default {
   name: 'customerAppeal',
   components: {
-    AddForm: AddForm
+    AddForm: AddForm,
+    ApproveInfo:ApproveInfo
   },
   data() {
     return {
@@ -202,6 +212,7 @@ export default {
       departmentList().then(res => {
         that.depSelectDataSource = res.data
       })
+      that.activeKey = that.$auth('customerAppeal:all') ? 3 : 0
       this.searchAction()
     },
     searchAction(opt = {}) {
@@ -235,6 +246,10 @@ export default {
     doAction(actionType, record) {
       let that = this
       if (actionType === 'del') {
+        if(record.state === 1){
+          that.$message.info('该申诉尚未完结，禁止删除')
+          return
+        }
         customerAppealDelete(`id=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
@@ -258,7 +273,10 @@ export default {
     },
     getStateTxt(state){
       return {1:'待审批',2:'通过',3:'不通过'}[state] || '未知'
-    }
+    },
+    approvalPreview(record){
+      this.$refs.approveInfoCard.init(record.instanceId)
+    },
   }
 }
 </script>
