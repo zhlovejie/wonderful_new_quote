@@ -30,7 +30,7 @@
         <template v-if="$auth('customerAppeal:all')">
           <a-tab-pane tab="全部" key="3" />
         </template>
-        <template v-else>
+        <template v-if="$auth('customerAppeal:one')">
           <a-tab-pane tab="全部" key="0" />
         </template>
         
@@ -222,11 +222,12 @@ export default {
       that.loading = true
       customerAppealList(_searchParam)
         .then(res => {
+          debugger
           that.loading = false
-          that.dataSource = res.data.records.map((item, index) => {
+          that.dataSource = res.data.records && res.data.records.map((item, index) => {
             item.key = index + 1
             return item
-          })
+          }) || []
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total || 0
