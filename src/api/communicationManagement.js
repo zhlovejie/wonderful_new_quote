@@ -128,3 +128,47 @@ export function comManageSpendDetailUpload (params) {
     data: params
   })
 }
+
+//-----------------账户管理-----------------------
+
+/**账户管理列表 */
+export function comManageAccountPage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/account-manage/getAccountManageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**账户管理删除 */
+export function comManageAccountDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/account-manage/delAccountManage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**账户管理详情 */
+export function comManageAccountDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/account-manage/accountManageDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**账户管理新增和修改 */
+export function comManageAccountAddAndUpdate (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/account-manage/addAndUpdateAccountManage',
+    method: 'post',
+    data: params
+  })
+}
+
+//-----------------账户管理-END-------------------
