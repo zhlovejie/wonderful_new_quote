@@ -172,3 +172,55 @@ export function comManageAccountAddAndUpdate (params) {
 }
 
 //-----------------账户管理-END-------------------
+
+//-----------------群组管理-----------------------
+/**群组管理分页列表 */
+export function comManageGroupPage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/group-manage/getGroupManageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**群组管理详情 */
+export function comManageGroupDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/group-manage/getGroupManageDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**群组管理删除 */
+export function comManageGroupDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/group-manage/delGroupManage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**群组管理新增和修改 */
+export function comManageGroupAddAndUpdate (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/group-manage/addAndUpdateGroupManage',
+    method: 'post',
+    data: params
+  })
+}
+
+/**群组修改记录根据群组id获取修改记录分页列表 */
+export function comManageGroupRecordPage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/group-record/getGroupRecordList',
+    method: 'get',
+    params: parameter
+  })
+}
+//-----------------群组管理-END-------------------
