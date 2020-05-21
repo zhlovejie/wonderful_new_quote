@@ -611,6 +611,13 @@ export const asyncRouterMap = [
                 component: () => import('@/views/sale/present-receipt/List'),
                 meta: { title: '赠送单', permission: ['permission'] }
               },
+              // {
+              //   path: '/sale/present-order/List',
+              //   name: 'presentOrder',
+              //   hidden: true,
+              //   component: () => import('@/views/sale/present-order/List'),
+              //   meta: { title: '赠送订单', permission: ['permission'] }
+              // },
               {
                 path: '/sale/income/List',
                 name: 'incomeReceipt',
@@ -1017,24 +1024,42 @@ export const asyncRouterMap = [
         ]
       },
       {
-        //会议管理
-        path: '/meeting-management',
-        name: 'meeting-management',
+        //通讯管理
+        path: '/communication-management',
+        name: 'communication-management',
         component: PageView,
-        meta: { title: '会议管理', icon: 'team', permission: ['permission'] },
-        redirect: '/meeting-management/settings',
+        meta: { title: '通讯管理', icon: 'phone', permission: ['permission'] },
+        redirect: '/communication-management',
         children:[
           {
-            path: '/meeting-management/settings',
-            name: 'meetingManagementSettings',
-            component: () => import('@/views/meeting-management/settings/List'),
-            meta: { title: '会议设置', icon: 'setting', keepAlive: false, permission: ['permission'] },
+            path: '/communication-management/settings',
+            name: 'communication-management-settings',
+            component: () => import('@/views/communication-management/settings/List'),
+            meta: { title: '通讯设置', icon: 'setting', keepAlive: false, permission: ['permission'] },
           },
           {
-            path: '/meeting-management/records',
-            name: 'meetingManagementRecords',
-            component: () => import('@/views/meeting-management/records/List'),
-            meta: { title: '会议记录', icon: 'setting', keepAlive: false, permission: ['permission'] },
+            path: '/communication-management/phone-number',
+            name: 'communication-management-phone-number',
+            component: () => import('@/views/communication-management/phone-number/List'),
+            meta: { title: '手机号管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/consume',
+            name: 'communication-management-consume',
+            component: () => import('@/views/communication-management/consume/List'),
+            meta: { title: '消费详情', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/account',
+            name: 'communication-management-account',
+            component: () => import('@/views/communication-management/account/List'),
+            meta: { title: '账号管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/group-leader',
+            name: 'communication-management-group-leader',
+            component: () => import('@/views/communication-management/group-leader/List'),
+            meta: { title: '群主管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
           }
         ]
       }
