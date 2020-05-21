@@ -200,6 +200,10 @@ export default {
               .then(() => {
                 that.spinning = false
                 that.detail = { ...res.data }
+                that.form.setFieldsValue({
+                  departmentId:res.data.departmentId,
+                  stationId:res.data.stationId
+                })
               })
               .catch(err => {
                 that.spinning = false
@@ -246,6 +250,7 @@ export default {
     },
     depChangeHandler(dep_id) {
       let that = this
+      that.form.setFieldsValue({stationId:undefined })
       that.postSelectDataSource = []
       return getStationList({ id: dep_id }).then(res => (that.postSelectDataSource = res.data))
     }
