@@ -336,8 +336,7 @@ export default {
     initRecipeList() {
       let that = this;
       let result = [];
-      let weekMap = ["日", "一", "二", "三", "四", "五", "六"];
-
+      let weekMap = ["", "一", "二", "三", "四", "五", "六","日"];
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
         let sDate = this.sDate[0],
           eDate = this.sDate[1];
@@ -348,7 +347,7 @@ export default {
           result.push({
             key: that.makeUUID(),
             date: tmpDate.format("YYYY-MM-DD"),
-            week: `星期${weekMap[tmpDate.weekday()]}`,
+            week: `星期${weekMap[tmpDate.isoWeekday()]}`,
             recipes: []
           });
         }

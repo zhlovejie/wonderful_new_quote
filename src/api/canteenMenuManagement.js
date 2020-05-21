@@ -119,3 +119,14 @@ export function canteenEvaluatePage (parameter) {
   })
 }
 //---------------------食堂评价--END------------------
+
+//---------------------食堂记录-----------------------
+export function canteenMenuRecord (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/canteenMenu/menuRecord',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------食堂记录--END------------------
