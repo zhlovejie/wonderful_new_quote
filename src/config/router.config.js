@@ -290,6 +290,18 @@ export const asyncRouterMap = [
                 name: 'customer_delay_record',
                 component: () => import('@/views/sales-management/customer/customer_delay_record/CustomerDelayRecordList'),
                 meta: { title: '客户延时', keepAlive: false, permission: ['permission'] }
+              },
+              {
+                path: '/sales-management/customer/customer-release-rule',
+                name: 'customerReleaseRule',
+                component: () => import('@/views/sales-management/customer/customerReleaseRule/List'),
+                meta: { title: '客户释放规则', keepAlive: false, permission: ['permission'] }
+              },
+              {
+                path: '/sales-management/customer/customer-appeal',
+                name: 'customerAppeal',
+                component: () => import('@/views/sales-management/customer/customerAppeal/List'),
+                meta: { title: '客户申诉单', keepAlive: false, permission: ['permission'] }
               }
             ]
           },
