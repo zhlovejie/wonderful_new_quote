@@ -3,6 +3,17 @@
   <div class="wdf-custom-list-wrapper">
     <div class="search-wrapper">
       <a-range-picker v-model="sDate" style="width:300px;" :allowClear="true" />
+      <a-select
+        v-if="activeKey === 0"
+        placeholder="审批状态"
+        :allowClear="true"
+        v-model="approveState"
+        style="width: 120px"
+      >
+        <a-select-option :value="1">待审批</a-select-option>
+        <a-select-option :value="2">通过</a-select-option>
+        <a-select-option :value="3">不通过</a-select-option>
+      </a-select>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <a-button
         class="a-button"
@@ -119,6 +130,7 @@ export default {
   data() {
     return {
       approval_status: undefined,
+      approveState:undefined,
       activeKey: 0,
       sDate:[undefined,undefined],
       columns: columns,
@@ -140,7 +152,8 @@ export default {
       return {
         startDate,
         endDate,
-        searchStatus: that.activeKey
+        searchStatus: that.activeKey,
+        approveState: that.approveState
       }
     }
   },
