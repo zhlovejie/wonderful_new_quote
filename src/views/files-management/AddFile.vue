@@ -15,7 +15,8 @@
           :label-col="formItemLayout.labelCol"
           :wrapper-col="formItemLayout.wrapperCol"
         >
-          <UploadFile ref="uploadFile" style="width:100%;" />
+          <template v-if="isView">{{record.record.fileName}}</template>
+          <UploadFile v-else ref="uploadFile" style="width:100%;" />
         </a-form-item>
         <a-form-item
           label="查看权限"
@@ -27,10 +28,10 @@
             style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
-            placeholder="选择权限"
             tree-checkable
             :show-checked-strategy="SHOW_PARENT"
-            :load-data="onLoadData"
+            :load-data="onLoadData" 
+            :disabled="isView"
           />
         </a-form-item>
       </a-form>
@@ -78,6 +79,9 @@ export default {
     }
   },
   computed: {
+    isView(){
+      return this.type === 'view'
+    },
     isAdd() {
       return this.type === 'add'
     },
@@ -85,7 +89,8 @@ export default {
       return this.type === 'edit'
     },
     modalTitle() {
-      return `${this.isAdd ? '添加' : '修改'}文件`
+      let t = this.isView ? '查看' : (this.isAdd ? '添加' : '修改')
+      return `${t}文件`
     }
   },
   methods: {
@@ -119,7 +124,7 @@ export default {
 
       that.$refs.uploadFile && that.$refs.uploadFile.setFiles([])
 
-      if (that.isEdit) {
+      if (!that.isAdd) {
         that.$refs.uploadFile &&
           that.$refs.uploadFile.setFiles([
             {

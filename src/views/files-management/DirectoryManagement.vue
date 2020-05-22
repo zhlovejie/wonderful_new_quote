@@ -49,7 +49,11 @@
         >
           <div slot="action" slot-scope="text, record">
             <template v-if="$auth('files-management-list:viewFile')">
-              <a type="primary" @click="doAction('view',record)">预览</a>
+              <a type="primary" @click="doAction('view',record)">查看</a>
+            </template>
+            <template v-if="$auth('files-management-list:downloadFile')">
+              <a-divider type="vertical" />
+              <a target="_blank" :href="record.filePath">下载</a>
             </template>
             <template v-if="$auth('files-management-list:editFile')">
               <a-divider type="vertical" />
@@ -156,10 +160,6 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      if (type === 'view') {
-        that.$refs.xdocView.query(record.filePath)
-        return
-      }
       if (type === 'del') {
         docFileDelete(`id=${record.id}`).then(res => {
           that.$message.info(res.msg)
@@ -195,7 +195,7 @@ export default {
         })
         return
       }
-      if (type === 'add' || type === 'edit') {
+      if (type === 'add' || type === 'edit' || type === 'view') {
         that.$refs.addFile.query(type, {
           dir: { ...that.dir },
           record: { ...(record || {}) }
