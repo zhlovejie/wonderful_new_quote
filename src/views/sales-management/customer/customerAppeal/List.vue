@@ -30,7 +30,7 @@
         <template v-if="$auth('customerAppeal:all')">
           <a-tab-pane tab="全部" key="3" />
         </template>
-        <template v-if="$auth('customerAppeal:one')">
+        <template v-else>
           <a-tab-pane tab="全部" key="0" />
         </template>
         
