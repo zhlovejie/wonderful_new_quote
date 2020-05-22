@@ -9,7 +9,7 @@
   >
     <div class="customer-list-wrapper">
       <div class="search-wrapper">
-        <a-input placeholder="系列产品名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
+        <a-input placeholder="产品名称，型号模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
         <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       </div>
       <div class="main-wrapper">
