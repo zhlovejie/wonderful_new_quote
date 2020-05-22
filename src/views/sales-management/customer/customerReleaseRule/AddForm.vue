@@ -69,7 +69,6 @@
               <a-form-item>
                 <a-month-picker 
                   style="width:100%;" 
-                  :disabled-date="disabledDate" 
                   placeholder="开始时间"
                   v-decorator="['startTime',{rules: [{required: true,message: '请输入开始时间'}]}]"
                 />
@@ -82,7 +81,6 @@
               <a-form-item>
                 <a-month-picker 
                   style="width:100%;" 
-                  :disabled-date="disabledDate" 
                   placeholder="结束时间"
                   v-decorator="['endTime',{rules: [{required: true,message: '请输入结束时间'}]}]"
                 />
