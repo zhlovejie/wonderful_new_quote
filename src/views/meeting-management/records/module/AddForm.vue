@@ -191,12 +191,12 @@
                 >
                   <div style="text-align:left;" v-if="oaMeetingJoinList.length > 0">
                     <a-tag
-                      v-for="(item,index) in oaMeetingJoinList"
-                      :key="index"
+                      v-for="item in oaMeetingJoinList"
+                      :key="item._key"
                       style="margin-top:7px;"
                       :closable="!item.__root" 
                       :color="item.__root ? 'red' :''"
-                      @close="removeTag(item,index)"
+                      @close="removeTag(item)"
                     >{{item.trueName}}</a-tag>
                   </div>
                   <div v-else>暂无参与人员</div>
@@ -208,7 +208,7 @@
           <tr v-if="isView">
             <td class="wdf-column">会议启动时间</td>
             <td>
-              <a-form-item>{{detail.beginTime}}</a-form-item>
+              <a-form-item>{{detail.startTime || '尚未启动'}}</a-form-item>
             </td>
             <td class="wdf-column">会议完结时间</td>
             <td>
@@ -252,7 +252,9 @@ import { getPositionManager } from '@/api/personnelManagement'
 import { getDictionaryList } from '@/api/workBox'
 import { meetingRecordDetail, meetingRecordSaveOrUpdate } from '@/api/meetingManagement'
 import moment from 'moment'
-
+function makeUUID(){
+  return Math.random().toString(32).slice(-10)
+}
 export default {
   name: 'AddForm',
   components: {},
@@ -395,6 +397,7 @@ export default {
 
         that.oaMeetingJoinList = result.oaMeetingJoinList.map(item => {
           return {
+            _key:makeUUID(),
             id: item.userId,
             trueName: item.userName,
             ...item
@@ -419,8 +422,8 @@ export default {
     resetValues() {
       let that = this
     },
-    removeTag(item, index) {
-      this.oaMeetingJoinList = this.oaMeetingJoinList.filter(p => p.id !== item.id)
+    removeTag(item) {
+      this.oaMeetingJoinList = this.oaMeetingJoinList.filter(p => p._key !== item._key)
     },
     personChange(val) {
       let target = this.personJoinList.find(item => +item.id === +val)
@@ -439,9 +442,9 @@ export default {
           that.$message.info(`会议参与人员已包括【${that.currentPerson.trueName}】,不能重复添加`)
           return
         }
-        that.oaMeetingJoinList.push(Object.assign({}, that.currentPerson))
+        that.oaMeetingJoinList.push(Object.assign({}, that.currentPerson,{_key:makeUUID()}))
       } else if (type === 'reset') {
-        that.oaMeetingJoinList = []
+        that.oaMeetingJoinList = that.oaMeetingJoinList.filter(item => item.__root)
       }
     },
     meetingDateChange() {
@@ -462,7 +465,7 @@ export default {
       const that = this
       let _person = that.personList.find(p => +p.id === +pid)
       if(_person){
-        that.oaMeetingJoinList = [Object.assign({},_person,{__root:true}),...that.oaMeetingJoinList.filter(p => !p.__root)]
+        that.oaMeetingJoinList = [Object.assign({},_person,{__root:true,_key:makeUUID()},),...that.oaMeetingJoinList.filter(p => !p.__root)]
       }
     }
   }
