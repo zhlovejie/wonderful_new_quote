@@ -100,7 +100,7 @@ const columns = [
   {
     align: 'center',
     title: '提交时间',
-    dataIndex: 'createTime'
+    dataIndex: 'createdTime'
   },
   {
     align: 'center',
