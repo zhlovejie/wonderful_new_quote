@@ -43,12 +43,12 @@
         >{{item.trueName}}</a-select-option>
       </a-select>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
-      <a-button
+      <!-- <a-button
         class="a-button"
         type="primary"
         icon="download"
         @click="doAction('download',null)"
-      >下载</a-button>
+      >下载</a-button> -->
       <a-button
         class="a-button"
         style="float:right;"

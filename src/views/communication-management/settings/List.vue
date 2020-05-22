@@ -7,7 +7,7 @@
         @change="depChangeHandler"
         v-model="searchParam.departmentId"
         :allowClear="true"
-        style="width: 200px"
+        style="width: 140px"
       >
         <a-select-option
           v-for="item in depSelectDataSource"
@@ -20,7 +20,7 @@
         placeholder="选择岗位"
         v-model="searchParam.stationId"
         :allowClear="true"
-        style="width: 200px"
+        style="width: 140px"
       >
         <a-select-option
           v-for="item in postSelectDataSource"
@@ -35,7 +35,7 @@
         :placeholder="item.txt"
         v-model="searchParam[item.key]"
         :allowClear="true"
-        style="width: 100px"
+        style="width: 120px"
       >
         <a-select-option v-for="opt in item.options" :key="opt.id" :value="opt.id">{{opt.name}}</a-select-option>
       </a-select>
@@ -89,7 +89,9 @@
       :visible="visible"
       :footer="null"
       @cancel="visible = false"
-    >{{packageDetail}}</a-modal>
+    >
+    <div v-html="packageDetail" />
+    </a-modal>
   </div>
 </template>
 <script>
@@ -318,7 +320,7 @@ export default {
         return
       }
       if (type === 'packageDetail') {
-        that.packageDetail = record.packageDetail
+        that.packageDetail = record.packageDetail.split('\n').map(v => `<p>${v}</p>`).join('')
         that.visible = true
         return
       }
