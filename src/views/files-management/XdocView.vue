@@ -64,6 +64,7 @@ export default {
         //优先使用 方式一 功能更强大
         let baseUrl = 'http://view.officeapps.live.com/op/view.aspx?src='
         //let baseUrl = 'http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=1&_xdoc='
+        //let baseUrl = 'http://dcsapi.com/?k=47059337881216614469472&url='
         this.xdocUrl = baseUrl + encodeURIComponent(String(xdocUrl))
         this.visible = true
         this.spinning = true

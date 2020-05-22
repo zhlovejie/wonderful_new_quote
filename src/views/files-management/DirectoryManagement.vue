@@ -195,11 +195,16 @@ export default {
         })
         return
       }
-      if (type === 'add' || type === 'edit' || type === 'view') {
+      if (type === 'add' || type === 'edit' ) {
         that.$refs.addFile.query(type, {
           dir: { ...that.dir },
           record: { ...(record || {}) }
         })
+        return
+      }
+      if(type === 'view'){
+        that.$refs.xdocView.query(record.filePath)
+        return
       }
     },
     handleMenuClick(event){

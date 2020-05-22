@@ -67,8 +67,7 @@
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval',record)">审批</a>
           </template>
-
-          <template v-if="+activeKey === 0 && +userInfo.id === +record.createdId">
+          <template v-if="(+activeKey === 0 || +activeKey === 3) && +userInfo.id === +record.createdId">
             <a-divider type="vertical" />
             <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
               <a>删除</a>

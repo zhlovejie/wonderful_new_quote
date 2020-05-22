@@ -143,12 +143,26 @@
             
             <td>
               <a-form-item>
-                <a-input :disabled="isView" :allowClear="true" v-decorator="[`infoEmailList[${index}].account`,{initialValue:item.account,rules: [{required: false,message: '输入邮箱账户名称'}]}]" placeholder="输入邮箱账户名称"/>
+                <a-input 
+                  :disabled="isView" 
+                  :allowClear="true" 
+                  v-decorator="[
+                    `infoEmailList[${index}].account`,
+                    {initialValue:item.account,rules: [{required: false,message: '输入邮箱账户名称'}]}]" 
+                  placeholder="输入邮箱账户名称"
+                  @change="inputChange('infoEmailList',index,'account',$event)"
+                />
               </a-form-item>
             </td>
             <td>
               <a-form-item>
-                <a-input :disabled="isView" :allowClear="true" v-decorator="[`infoEmailList[${index}].accountName`,{initialValue:item.accountName,rules: [{required: false,message: '输入邮箱账号'}]}]" placeholder="输入邮箱账号"/>
+                <a-input 
+                  :disabled="isView" 
+                  :allowClear="true" 
+                  v-decorator="[`infoEmailList[${index}].accountName`,{initialValue:item.accountName,rules: [{required: false,message: '输入邮箱账号'}]}]" 
+                  @change="inputChange('infoEmailList',index,'accountName',$event)"
+                  placeholder="输入邮箱账号"
+                />
               </a-form-item>
             </td>
             
@@ -171,12 +185,22 @@
           <tr v-for="(item ,index) in infoPostList" :key="item.__key">
             <td>
               <a-form-item>
-                <a-input :disabled="isView" :allowClear="true" v-decorator="[`infoPostList[${index}].account`,{initialValue:item.account,rules: [{required: false,message: '输入岗位名称'}]}]" placeholder="输入岗位名称"/>
+                <a-input 
+                  :disabled="isView" 
+                  :allowClear="true" v-decorator="[`infoPostList[${index}].account`,{initialValue:item.account,rules: [{required: false,message: '输入岗位名称'}]}]" 
+                  placeholder="输入岗位名称"
+                  @change="inputChange('infoPostList',index,'account',$event)"
+                />
               </a-form-item>
             </td>
             <td>
               <a-form-item>
-                <a-input :disabled="isView" :allowClear="true" v-decorator="[`infoPostList[${index}].accountName`,{initialValue:item.accountName,rules: [{required: false,message: '输入岗位账号'}]}]" placeholder="输入岗位账号"/>
+                <a-input 
+                  :disabled="isView" 
+                  :allowClear="true" v-decorator="[`infoPostList[${index}].accountName`,{initialValue:item.accountName,rules: [{required: false,message: '输入岗位账号'}]}]" 
+                  @change="inputChange('infoPostList',index,'accountName',$event)"
+                  placeholder="输入岗位账号"
+                />
               </a-form-item>
             </td>
             <td v-if="!isView">
@@ -229,6 +253,24 @@ export default {
       detail: {},
       infoEmailList:[],
       infoPostList:[]
+    }
+  },
+  watch:{
+    infoEmailList(){
+      let obj = {}
+      this.infoEmailList.map((item,index) =>{
+        obj[`infoEmailList[${index}].account`] = item.account
+        obj[`infoEmailList[${index}].accountName`] = item.accountName
+      })
+      this.form.setFieldsValue(obj)
+    },
+    infoPostList(){
+      let obj = {}
+      this.infoPostList.map((item,index) =>{
+        obj[`infoPostList[${index}].account`] = item.account
+        obj[`infoPostList[${index}].accountName`] = item.accountName
+      })
+      this.form.setFieldsValue(obj)
     }
   },
   computed: {
@@ -382,6 +424,11 @@ export default {
         })
       }
     },
+    inputChange(type,idx,key,event){
+      let source = [...this[type]]
+      source[idx][key] = event.target.value
+      this[type] = source
+    }
   }
 }
 </script>
