@@ -45,7 +45,7 @@
                   <a-select
                     style="width:165px;"
                     placeholder="选择人员"
-                    v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]" 
+                    v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]"
                     @change="chargePersonChange"
                   >
                     <a-select-option
@@ -194,7 +194,7 @@
                       v-for="item in oaMeetingJoinList"
                       :key="item._key"
                       style="margin-top:7px;"
-                      :closable="!item.__root" 
+                      :closable="!item.__root"
                       :color="item.__root ? 'red' :''"
                       @close="removeTag(item)"
                     >{{item.trueName}}</a-tag>
@@ -252,8 +252,10 @@ import { getPositionManager } from '@/api/personnelManagement'
 import { getDictionaryList } from '@/api/workBox'
 import { meetingRecordDetail, meetingRecordSaveOrUpdate } from '@/api/meetingManagement'
 import moment from 'moment'
-function makeUUID(){
-  return Math.random().toString(32).slice(-10)
+function makeUUID() {
+  return Math.random()
+    .toString(32)
+    .slice(-10)
 }
 export default {
   name: 'AddForm',
@@ -353,20 +355,20 @@ export default {
       that.oaMeetingJoinList = []
       await that.form.resetFields()
       await that.init()
-      
+
       //填充数据
-      if(that.isStart){
+      if (that.isStart) {
         await that.depChangeHandler(that.record.departmentId)
         let obj = {
-          eventId:that.record.eventId,
-          meetingNum:that.record.meetingNum,
-          typeDicName:that.record.typeDicName,
-          departmentId:+that.record.departmentId,
-          chargePersonId:+that.record.chargePersonId,
-          name:that.record.name,
-          checkFlag:that.record.checkFlag
+          eventId: that.record.eventId,
+          meetingNum: that.record.meetingNum,
+          typeDicName: that.record.typeDicName,
+          departmentId: +that.record.departmentId,
+          chargePersonId: +that.record.chargePersonId,
+          name: that.record.name,
+          checkFlag: that.record.checkFlag
         }
-        that.$nextTick(() =>that.form.setFieldsValue(obj))
+        that.$nextTick(() => that.form.setFieldsValue(obj))
 
         that.setRootPerson(that.record.chargePersonId)
         return
@@ -397,7 +399,7 @@ export default {
 
         that.oaMeetingJoinList = result.oaMeetingJoinList.map(item => {
           return {
-            _key:makeUUID(),
+            _key: makeUUID(),
             id: item.userId,
             trueName: item.userName,
             ...item
@@ -442,7 +444,7 @@ export default {
           that.$message.info(`会议参与人员已包括【${that.currentPerson.trueName}】,不能重复添加`)
           return
         }
-        that.oaMeetingJoinList.push(Object.assign({}, that.currentPerson,{_key:makeUUID()}))
+        that.oaMeetingJoinList.push(Object.assign({}, that.currentPerson, { _key: makeUUID() }))
       } else if (type === 'reset') {
         that.oaMeetingJoinList = that.oaMeetingJoinList.filter(item => item.__root)
       }
@@ -458,14 +460,17 @@ export default {
         }
       })
     },
-    chargePersonChange(pid){
+    chargePersonChange(pid) {
       this.setRootPerson(pid)
     },
-    setRootPerson(pid){
+    setRootPerson(pid) {
       const that = this
       let _person = that.personList.find(p => +p.id === +pid)
-      if(_person){
-        that.oaMeetingJoinList = [Object.assign({},_person,{__root:true,_key:makeUUID()},),...that.oaMeetingJoinList.filter(p => !p.__root)]
+      if (_person) {
+        that.oaMeetingJoinList = [
+          Object.assign({}, _person, { __root: true, _key: makeUUID() }),
+          ...that.oaMeetingJoinList.filter(p => !p.__root)
+        ]
       }
     }
   }
