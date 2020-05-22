@@ -290,18 +290,6 @@ export const asyncRouterMap = [
                 name: 'customer_delay_record',
                 component: () => import('@/views/sales-management/customer/customer_delay_record/CustomerDelayRecordList'),
                 meta: { title: '客户延时', keepAlive: false, permission: ['permission'] }
-              },
-              {
-                path: '/sales-management/customer/customer-release-rule',
-                name: 'customerReleaseRule',
-                component: () => import('@/views/sales-management/customer/customerReleaseRule/List'),
-                meta: { title: '客户释放规则', keepAlive: false, permission: ['permission'] }
-              },
-              {
-                path: '/sales-management/customer/customer-appeal',
-                name: 'customerAppeal',
-                component: () => import('@/views/sales-management/customer/customerAppeal/List'),
-                meta: { title: '客户申诉单', keepAlive: false, permission: ['permission'] }
               }
             ]
           },
@@ -1060,6 +1048,34 @@ export const asyncRouterMap = [
             name: 'communication-management-group-leader',
             component: () => import('@/views/communication-management/group-leader/List'),
             meta: { title: '群主管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          }
+        ]
+      },
+      {
+        //食堂菜单管理
+        path: '/canteen-menu-management',
+        name: 'canteen-menu-management',
+        component: PageView,
+        meta: { title: '食堂菜单管理', icon: 'shop', permission: ['permission'] },
+        redirect: '/canteen-menu-management/config',
+        children:[
+          {
+            path: '/canteen-menu-management/config',
+            name: 'canteen-menu-management-config',
+            component: () => import('@/views/canteen-menu-management/config/List'),
+            meta: { title: '食堂菜单', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/canteen-menu-management/record',
+            name: 'canteen-menu-management-record',
+            component: () => import('@/views/canteen-menu-management/record/List'),
+            meta: { title: '菜单记录', icon: 'profile', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/canteen-menu-management/evaluate',
+            name: 'canteen-menu-management-evaluate',
+            component: () => import('@/views/canteen-menu-management/evaluate/List'),
+            meta: { title: '满意度调查', icon: 'file-done', keepAlive: false, permission: ['permission'] },
           }
         ]
       }
