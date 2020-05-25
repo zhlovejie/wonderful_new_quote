@@ -20,8 +20,8 @@
         style="float:right;"
         type="primary"
         icon="plus"
-        @click="doAction('add',null)" 
-        v-if="$auth('canteen-menu-management-config:add')" 
+        @click="doAction('add',null)"
+        v-if="$auth('canteen-menu-management-config:add')"
       >新增</a-button>
     </div>
     <div class="main-wrapper">
@@ -63,7 +63,7 @@
               <a-divider type="vertical"  />
               <a href="javascript:void(0);" @click="doAction('publish',record)">发布</a>
             </template>
-            <template v-if="$auth('canteen-menu-management-config:revocation') && record.approveState === 1 && record.withdrawState === 0">
+            <template v-if="$auth('canteen-menu-management-config:revocation') && record.approveState === 1 && record.withdrawState === 0 && record.createdId ===userInfo.id">
               <a-divider type="vertical"  />
               <a href="javascript:void(0);" @click="doAction('revocation',record)">撤回</a>
             </template>
@@ -129,6 +129,7 @@ export default {
   },
   data() {
     return {
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       approval_status: undefined,
       approveState:undefined,
       activeKey: 0,
