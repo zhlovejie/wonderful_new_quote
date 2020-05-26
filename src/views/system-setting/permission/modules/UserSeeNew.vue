@@ -561,6 +561,13 @@ export default {
       that.type = type
       that.record = Object.assign({},record)
       that.form.resetFields()
+      that.stationInfoRequire = {
+        email:false,
+        mobile:false,
+        phone:false,
+        qqNum:false,
+        wxNum:false,
+      }
       if(type === 'view' || type === 'ruzhi' || type === 'edit'){
         //人员状态：默认为0浏览，1试用期，2试用期不通过，3在职，4离职
         //0为入职前，其他的都为入职后
