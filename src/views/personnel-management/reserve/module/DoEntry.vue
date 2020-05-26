@@ -613,7 +613,7 @@ export default {
 
         let stationId = values.stationId
 
-        comManageSettingsGetSettingsByStationId({id:stationId}).then(res =>{
+        await comManageSettingsGetSettingsByStationId({id:stationId}).then(res =>{
           console.log(res)
           that.stationInfoRequire = {
             email:!!res.data.email,
