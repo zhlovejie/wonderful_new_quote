@@ -56,7 +56,8 @@
                 placeholder="是否配置"
                 :disabled="isView"
                 v-decorator="['phone',{initialValue:detail.phone,rules: [{required: true,message: '是否配置'}]}]"
-                :allowClear="true"
+                :allowClear="true" 
+                
               >
                 <a-select-option :value="1">是</a-select-option>
                 <a-select-option :value="0">否</a-select-option>
@@ -64,13 +65,14 @@
             </a-form-item>
           </a-col>
 
-          <a-col :span="12">
+          <a-col :span="12" >
             <a-form-item label="手机号">
               <a-select
                 placeholder="是否配置"
                 :disabled="isView"
                 v-decorator="['mobile',{initialValue:detail.mobile,rules: [{required: true,message: '是否配置'}]}]"
-                :allowClear="true"
+                :allowClear="true" 
+                @change="phoneChange"
               >
                 <a-select-option :value="1">是</a-select-option>
                 <a-select-option :value="0">否</a-select-option>
@@ -78,7 +80,7 @@
             </a-form-item>
           </a-col>
 
-          <a-col :span="24">
+          <a-col :span="24" v-if="isSettingMobile">
             <a-form-item label="手机套餐">
               <a-input-number
                 style="width:100%;"
@@ -89,7 +91,7 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="24">
+          <a-col :span="24" v-if="isSettingMobile">
             <a-form-item label="套餐详情">
               <a-textarea
                 :disabled="isView"
@@ -165,7 +167,8 @@ export default {
       spinning: false,
       type: 'view',
       record: {},
-      detail: {}
+      detail: {},
+      isSettingMobile:false
     }
   },
   computed: {
@@ -201,6 +204,7 @@ export default {
               .then(() => {
                 that.spinning = false
                 that.detail = { ...res.data }
+                that.isSettingMobile = !!that.detail.mobile
                 that.form.setFieldsValue({
                   departmentId:res.data.departmentId,
                   stationId:res.data.stationId
@@ -254,6 +258,9 @@ export default {
       that.form.setFieldsValue({stationId:undefined })
       that.postSelectDataSource = []
       return getStationList({ id: dep_id }).then(res => (that.postSelectDataSource = res.data))
+    },
+    phoneChange(val){
+      this.isSettingMobile = +val === 1
     }
   }
 }
