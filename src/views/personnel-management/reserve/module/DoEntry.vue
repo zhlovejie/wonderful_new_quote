@@ -462,7 +462,13 @@ export default {
       loading: false,
       imageUrl: '',
       spinning:false,
-      stationInfoRequire:{} //判断该岗位是否配置公司 控制显示 手机号，微信，qq，邮箱 默认不显示
+      stationInfoRequire:{
+        email:false,
+        mobile:false,
+        phone:false,
+        qqNum:false,
+        wxNum:false,
+      } //判断该岗位是否配置公司 控制显示 手机号，微信，qq，邮箱 默认不显示
     }
   },
   computed:{
@@ -613,14 +619,16 @@ export default {
 
         let stationId = values.stationId
 
-        comManageSettingsGetSettingsByStationId({id:stationId}).then(res =>{
+        await comManageSettingsGetSettingsByStationId({id:stationId}).then(res =>{
           console.log(res)
-          that.stationInfoRequire = {
-            email:!!res.data.email,
-            mobile:!!res.data.mobile,
-            phone:!!res.data.phone,
-            qqNum:!!res.data.qqNum,
-            wxNum:!!res.data.wxNum
+          if(res && res.data){
+            that.stationInfoRequire = {
+              email:!!res.data.email,
+              mobile:!!res.data.mobile,
+              phone:!!res.data.phone,
+              qqNum:!!res.data.qqNum,
+              wxNum:!!res.data.wxNum
+            }
           }
         })
 
