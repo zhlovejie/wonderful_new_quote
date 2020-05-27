@@ -225,13 +225,13 @@ export default {
       canteenMenuDetail({ id: that.record.id }).then(res => {
         console.log(res)
         let data = res.data
-        let weekMap = ["日", "一", "二", "三", "四", "五", "六"];
+        let weekMap = ["", "一", "二", "三", "四", "五", "六","日"];
         that.sDate = [that.moment(data.startDate),that.moment(data.endDate)]
         data.detailList.map(item =>{
           that.recipeList.push({
             key: that.makeUUID(),
             date: item.menuDate,
-            week: `星期${weekMap[that.moment(item.menuDate).weekday()]}`,
+            week: `星期${weekMap[that.moment(item.menuDate).isoWeekday()]}`,
             recipes: ['menuOne','menuTwo','menuThree','menuFour'].map(m => {
               return {
                 key: that.makeUUID(),
@@ -276,9 +276,9 @@ export default {
       let that = this
     },
     initDate() {
-      const weekDay = this.moment().weekday();
-      const sDate = this.moment().add({ days: 7 - weekDay + 1 });
-      const eDate = this.moment(sDate).add({ days: 6 });
+      let m = this.moment().startOf('isoweek') //当前周 周一
+      const sDate = this.moment(m.add({days:7})) //下周 周一
+      const eDate = this.moment(sDate).add({ days: 6 }) // 下周 周日
       return [sDate, eDate];
     },
     makeUUID() {
