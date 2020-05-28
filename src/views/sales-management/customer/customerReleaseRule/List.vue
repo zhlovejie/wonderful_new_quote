@@ -71,6 +71,11 @@ const columns = [
   },
   {
     align: 'center',
+    title: '上次统计结束时间',
+    dataIndex: 'lastEndTime'
+  },
+  {
+    align: 'center',
     title: '原销售提取限制(天)',
     dataIndex: 'intervalTime'
   },
