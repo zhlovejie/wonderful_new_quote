@@ -25,6 +25,13 @@
         <a-form-item label="联系人名">
           <a-input v-model.trim="queryParam.linkmanName" placeholder="根据联系人名模糊查询"/>
         </a-form-item>
+        <a-form-item label="是否需要申诉">
+          <a-select style="width:200px;" v-model="queryParam.needAppeal" placeholder="请选择是否需要申诉" >
+            <a-select-option value="0">不需要</a-select-option>
+            <a-select-option value="1">需要</a-select-option>
+            <a-select-option value="2">申诉中</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="所属销售" v-if="allSalesman.length > 0">
           <a-select style="width:200px;" v-model.trim="queryParam.userId" placeholder="请选择所属销售" default-value="">
             <a-select-option v-for="salesMan in allSalesman" :key="salesMan.index" :value="salesMan.userId">{{ salesMan.salesmanName }}</a-select-option>
@@ -124,7 +131,9 @@ export default {
   data () {
     return {
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        needAppeal:'0'
+      },
       // 表头
       columns: [
         {
