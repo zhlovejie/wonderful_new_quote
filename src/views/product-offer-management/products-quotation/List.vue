@@ -40,11 +40,14 @@
       <div style="text-align:center;margin-top:10px;">
           <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>
           <a-button type="primary" @click="doAction('price-view')" style="margin:0 10px;">预览</a-button>
+          <a-button type="primary" @click="doAction('price-form')" style="margin:0 10px;">新增报价单</a-button>
       </div>
     </a-modal>
 
     <SelectProductView ref="selectProductView" :dataSource="viewDataSource" />
-
+    <PriceForm ref="priceForm" >
+      <SelectProductView ref="selectProductView" :dataSource="viewDataSource" />
+    </PriceForm>
   </div>
 </template>
 
@@ -52,12 +55,14 @@
 import SelectProduct from './module/SelectProduct' 
 import SelectProductView from './module/SelectProductView'
 import ProductConfig from './module/ProductConfig'
+import PriceForm from './module/PriceForm'
 export default {
   name: 'products-quotation',
   components: {
     SelectProduct,
     SelectProductView,
-    ProductConfig
+    ProductConfig,
+    PriceForm
   },
   data() {
     return {
@@ -101,13 +106,14 @@ export default {
       }else if(type === 'price-view'){
         this.makeViewDataSource()
         this.showModule('selectProductView')
+      }else if(type === 'price-form'){
+        this.showModule('selectProductView')
       }
     },
     showModule(key) {
       this.$refs[key].query()
     },
     calcCostPrice(){
-      debugger
       let mainPrice = this.$refs.productConfigMain.costPrice
       let subPrice = this.$refs.productConfigSub.costPrice
 
@@ -150,7 +156,8 @@ export default {
       if(main){
         main.__config = {
           showTitle:true,
-          prefix:'产品系列-'
+          prefix:'产品系列-',
+          costPrice:{...that.costPrice} //总的产品评估报价
         }
       }
       let sub = makeProducts('productConfigSub')

@@ -69,6 +69,7 @@ function handleWindowPrint (ele, title) {
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
     <style type="text/css" media="print">
+    body {-webkit-print-color-adjust：exact; font-family：Arial; }
     h1,h2,h3,h4,h5,h6{
       font-family: Arial !important;
       font-size: 10pt !important;
@@ -326,10 +327,13 @@ function handleWindowPrint (ele, title) {
   `
   oIframe.contentDocument.body.innerHTML = document.querySelector(ele).outerHTML
   
+  
   console.log(document.querySelector(ele).outerHTML)
-  oScript.innerHTML = 'window.print()'
+  oScript.innerHTML = '(function(){setTimeout(function(){window.print()},500)})()'
   oIframe.contentDocument.body.appendChild(oScript)
-  document.body.removeChild(oIframe)
+  setTimeout(function(){
+    document.body.removeChild(oIframe)
+  },700)
   document.head.getElementsByTagName('title')[0].innerText = titleText
 }
 

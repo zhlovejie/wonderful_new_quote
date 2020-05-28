@@ -13,8 +13,29 @@
       <table class="custom-table custom-table-border" v-if="productInfo.__config.showTitle">
         <caption>产品参数</caption>
         <tr>
+          <td rowspan="3" style="width:150px;">
+            <img style="width:100%;height:auto;overflow:hidden;" :src="productInfo.optInfo.productPic" alt=""/>
+          </td>
           <td style="width:150px;">产品系列</td>
           <td>{{productInfo.optInfo.name}}</td>
+        </tr>
+        <tr>
+          <td style="width:150px;">产品型号</td>
+          <td>{{productInfo.optInfo.model}}</td>
+        </tr>
+        <tr>
+          <td style="width:150px;">产品价格</td>
+          <td>
+            <a-select
+              style="width:100%;"
+              placeholder="选择产品价格"
+            >
+              <a-select-option value="aprice">A价</a-select-option>
+              <a-select-option value="bprice">B价</a-select-option>
+              <a-select-option value="cprice">C价</a-select-option>
+              <a-select-option value="retailPrice">市场价</a-select-option>
+            </a-select>
+          </td>
         </tr>
       </table>
       <table class="custom-table custom-table-border" v-if="productInfo.optStand.length > 0">
@@ -24,7 +45,7 @@
             <div class="bottom-line"></div>
             <table class="custom-table custom-table-border" style="margin-bottom:0;">
               <tr>
-                <th style="width:100px;">序号</th>
+                <th style="width:150px;">序号</th>
                 <th>配置名称</th>
               </tr>
               <tr v-for="(item,index) in productInfo.optStand" :key="index" >
