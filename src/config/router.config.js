@@ -972,6 +972,46 @@ export const asyncRouterMap = [
             meta: { title: '月报', icon: 'setting', keepAlive: false, permission: ['permission'] },
           },
         ]
+      },
+      {
+        //通讯管理
+        path: '/communication-management',
+        name: 'communication-management',
+        component: PageView,
+        meta: { title: '通讯管理', icon: 'phone', permission: ['permission'] },
+        redirect: '/communication-management',
+        children:[
+          {
+            path: '/communication-management/settings',
+            name: 'communication-management-settings',
+            component: () => import('@/views/communication-management/settings/List'),
+            meta: { title: '通讯设置', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/phone-number',
+            name: 'communication-management-phone-number',
+            component: () => import('@/views/communication-management/phone-number/List'),
+            meta: { title: '手机号管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/consume',
+            name: 'communication-management-consume',
+            component: () => import('@/views/communication-management/consume/List'),
+            meta: { title: '消费详情', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/account',
+            name: 'communication-management-account',
+            component: () => import('@/views/communication-management/account/List'),
+            meta: { title: '账号管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/communication-management/group-leader',
+            name: 'communication-management-group-leader',
+            component: () => import('@/views/communication-management/group-leader/List'),
+            meta: { title: '群主管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          }
+        ]
       }
     ]
   }

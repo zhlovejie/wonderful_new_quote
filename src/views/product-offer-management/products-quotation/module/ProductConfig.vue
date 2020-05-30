@@ -1,5 +1,5 @@
 <template>
-  
+
     <div class="product-config-wrapper" style="width:1000px;margin:0 auto;">
       <table class="custom-table custom-table-border c-stand-color" v-if="optStand.length > 0">
         <tr>
@@ -65,26 +65,26 @@
                 <tr v-for="(item,index) in controlResult.optChoice" :key="index">
                   <td>{{index + 1}}</td>
                   <td>
-                    <a-select 
-                      style="width:100%;" 
-                      placeholder="选择选配项"  
-                      :defaultValue="item.dataSource[0].id" 
+                    <a-select
+                      style="width:100%;"
+                      placeholder="选择选配项"
+                      :defaultValue="item.dataSource[0].id"
                       @change="controlResultOptChoiceDataSourceChange(index,$event)"
                     >
-                      <a-select-option 
-                        v-for="(subItem,index) in item.dataSource" 
+                      <a-select-option
+                        v-for="(subItem,index) in item.dataSource"
                         :key="index"
-                        :value="subItem.id" 
+                        :value="subItem.id"
                       >
                       {{subItem.itemName}}
                       </a-select-option>
                     </a-select>
                   </td>
                   <td>
-                    <a-checkbox 
-                      :disabled="item.target.isRequire" 
-                      :checked="item.target.checked || item.target.isRequire" 
-                      @change="controlResultOptChoiceCheckChange(index,$event)" 
+                    <a-checkbox
+                      :disabled="item.target.isRequire"
+                      :checked="item.target.checked || item.target.isRequire"
+                      @change="controlResultOptChoiceCheckChange(index,$event)"
                     />
                   </td>
                 </tr>
@@ -92,8 +92,8 @@
                   <td>{{controlResult.optChoice.length + index + 1}}</td>
                   <td>{{item.itemName}}</td>
                   <td>
-                    <a-checkbox 
-                      :checked="item.checked || false" 
+                    <a-checkbox
+                      :checked="item.checked || false"
                       @change="controlResultOptSelectCheckChange(item.id,$event)"
                     />
                   </td>
@@ -119,26 +119,26 @@
               <tr v-for="(item,index) in optChoice" :key="index">
                 <td>{{index + 1}}</td>
                 <td>
-                  <a-select 
-                    style="width:100%;" 
-                    placeholder="选择选配项"  
-                    :defaultValue="item.dataSource[0].id" 
+                  <a-select
+                    style="width:100%;"
+                    placeholder="选择选配项"
+                    :defaultValue="item.dataSource[0].id"
                     @change="optChoiceDataSourceChange(index,$event)"
                   >
-                    <a-select-option 
-                      v-for="(subItem,index) in item.dataSource" 
+                    <a-select-option
+                      v-for="(subItem,index) in item.dataSource"
                       :key="index"
-                      :value="subItem.id" 
+                      :value="subItem.id"
                     >
                     {{subItem.itemName}}
                     </a-select-option>
                   </a-select>
                 </td>
                 <td>
-                  <a-checkbox 
-                    :disabled="item.target.isRequire" 
-                    :checked="item.target.checked || item.target.isRequire" 
-                    @change="optChoiceCheckChange(index,$event)" 
+                  <a-checkbox
+                    :disabled="item.target.isRequire"
+                    :checked="item.target.checked || item.target.isRequire"
+                    @change="optChoiceCheckChange(index,$event)"
                   />
                 </td>
               </tr>
@@ -146,8 +146,8 @@
                 <td>{{optChoice.length + index + 1}}</td>
                 <td>{{item.itemName}}</td>
                 <td>
-                  <a-checkbox 
-                    :checked="item.checked || false" 
+                  <a-checkbox
+                    :checked="item.checked || false"
                     @change="optSelectCheckChange(item.id,$event)"
                   />
                 </td>
@@ -157,14 +157,14 @@
         </tr>
       </table>
     </div>
-  
+
 </template>
 
 <script>
 import {
   priceAdjustProductConfigDetail,
   priceAdjustZktConfigDetail
-} from '@/api/productOfferManagement' 
+} from '@/api/productOfferManagement'
 
 export default {
   name: 'product-config',
@@ -222,14 +222,15 @@ export default {
   },
   methods: {
     optChoiceDataSourceChange(index,val){
+      debugger
       let _optChoice = [...this.optChoice]
       let target = _optChoice[index].dataSource.find(item => item.id === val)
       if(target){
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        target.checked = _optChoice[index].target.checked
-        _optChoice[index].target = {...target}
+        target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        _optChoice[index].target = target
         this.optChoice = [..._optChoice]
       }
       this.$emit('extendProductChange',Object.assign({},target))
@@ -260,6 +261,7 @@ export default {
       }
     },
     controlResultOptChoiceDataSourceChange(index,val){
+      debugger
       let controlResult = {...this.controlResult}
       let _optChoice = controlResult.optChoice
       let target = _optChoice[index].dataSource.find(item => item.id === val)
@@ -267,8 +269,8 @@ export default {
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        target.checked = _optChoice[index].target.checked
-        //target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        //target.checked = target.isRequire
+        target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
         _optChoice[index].target = {...target}
         this.controlResult = controlResult
       }
@@ -302,7 +304,7 @@ export default {
     selectedHandler(result) {
       let that = this
       that.$emit('extendProductChange',null)
-      
+
       let {
         name,
         model,
@@ -353,7 +355,7 @@ export default {
       that.optControl = __optControl
       that.optControlSelectedDefault = __optControlSelectedDefault
       that.controlChangeHandler(that.optControlSelectedDefault)
-      //console.log(result)
+      console.log(result)
     },
     controlChangeHandler(controlID){
       let that = this
@@ -371,7 +373,7 @@ export default {
       priceAdjustZktConfigDetail({ id: controlID ,isPrice:true}).then(res => {
         if(res.code !== 200){
           that.$message.info(res.msg)
-          return 
+          return
         }
         let {name,model,type,price,remarks,sysConfigList,aprice,bprice,cprice,retailPrice} = res.data
         let { optStandData, optSelectData, optChoiceData } = that.controlFormatData(sysConfigList)
@@ -489,7 +491,7 @@ export default {
         .sort((a, b) => a.orderNo - b.orderNo)
 
       let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5].includes(item.type))
-      
+
       let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
       groups.map(groupId => {
@@ -513,14 +515,14 @@ export default {
       let optSelect = this.optSelect.map(item =>Object.assign({},item)).filter(item => item.checked)
       let optChoice = this.optChoice.map(item => Object.assign({},item.target)).filter(item => item.checked)
 
-      let control_optStand = this.controlResult.optStand 
-        ? this.controlResult.optStand.map(item =>Object.assign({},item)) 
+      let control_optStand = this.controlResult.optStand
+        ? this.controlResult.optStand.map(item =>Object.assign({},item))
         : []
-      let control_optSelect = this.controlResult.optSelect 
+      let control_optSelect = this.controlResult.optSelect
         ? this.controlResult.optSelect.map(item =>Object.assign({},item)).filter(item => item.checked)
         : []
-      let control_optChoice = this.controlResult.optChoice 
-        ? this.controlResult.optChoice.map(item => Object.assign({},item.target)).filter(item => item.checked) 
+      let control_optChoice = this.controlResult.optChoice
+        ? this.controlResult.optChoice.map(item => Object.assign({},item.target)).filter(item => item.checked)
         :[]
       return {
         optInfo:Object.assign({},that.optInfo),
@@ -534,6 +536,7 @@ export default {
       }
     },
     calcItems(){
+      debugger
       let {
         optInfo,
         optStand,
@@ -549,7 +552,6 @@ export default {
       optChoice = optChoice.filter(o =>!o.isProduct)
 
       let result = [...optSelect,...optChoice,...control_optSelect,...control_optChoice].flat()
-
       let priceResult = {
         price:0,
         aprice:0,
@@ -586,6 +588,7 @@ export default {
       }
 
       console.log(priceResult)
+      //console.log(`totalPrice:${totalPrice}`)
       return priceResult
     },
     query(id){
@@ -596,7 +599,7 @@ export default {
 
         if(res.code !== 200){
           that.$message.info(res.msg)
-          return 
+          return
         }
 
         let { optStandData, optSelectData, optChoiceData ,optControlData} = that.productFormatData(res.data.sysConfigList)
