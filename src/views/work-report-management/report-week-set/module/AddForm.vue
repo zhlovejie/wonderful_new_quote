@@ -20,7 +20,7 @@
           <tr>
             <td style="width:150px;">编号</td>
             <td style="width:300px;">
-              <span>{{reportNum || '系统自动生成'}}</span>
+              <span>{{reportNum || ''}}</span>
             </td>
             <td>部门</td>
             <td>{{departmentName}}</td>

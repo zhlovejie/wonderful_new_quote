@@ -19,7 +19,7 @@
             <a-form-item label="部门">
               <a-select
                 placeholder="选择部门"
-                :disabled="isView"
+                :disabled="isView || isEdit"
                 v-decorator="['departmentId',{initialValue:detail.departmentId,rules: [{required: true,message: '请选择部门'}]}]"
                 @change="depChangeHandler"
                 :allowClear="true"
@@ -36,7 +36,7 @@
             <a-form-item label="岗位">
               <a-select
                 placeholder="选择岗位"
-                :disabled="isView"
+                :disabled="isView || isEdit"
                 v-decorator="['stationId',{initialValue:detail.stationId,rules: [{required: true,message: '请选择岗位'}]}]"
                 :allowClear="true"
               >
@@ -53,43 +53,45 @@
           <a-col :span="12">
             <a-form-item label="手机">
               <a-select
-                placeholder="选择手机"
+                placeholder="是否配置"
                 :disabled="isView"
-                v-decorator="['phone',{initialValue:detail.phone,rules: [{required: true,message: '请选择手机'}]}]"
-                :allowClear="true"
+                v-decorator="['phone',{initialValue:detail.phone,rules: [{required: true,message: '是否配置'}]}]"
+                :allowClear="true" 
+                
               >
-                <a-select-option :value="1">有</a-select-option>
-                <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="1">是</a-select-option>
+                <a-select-option :value="0">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
 
-          <a-col :span="12">
+          <a-col :span="12" >
             <a-form-item label="手机号">
               <a-select
-                placeholder="选择手机号"
+                placeholder="是否配置"
                 :disabled="isView"
-                v-decorator="['mobile',{initialValue:detail.mobile,rules: [{required: true,message: '请选择手机号'}]}]"
-                :allowClear="true"
+                v-decorator="['mobile',{initialValue:detail.mobile,rules: [{required: true,message: '是否配置'}]}]"
+                :allowClear="true" 
+                @change="phoneChange"
               >
-                <a-select-option :value="1">有</a-select-option>
-                <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="1">是</a-select-option>
+                <a-select-option :value="0">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
 
-          <a-col :span="24">
+          <a-col :span="24" v-if="isSettingMobile">
             <a-form-item label="手机套餐">
               <a-input-number
                 style="width:100%;"
                 :min="0"
                 :step="1"
-                :precision="4"
+                :precision="2"
                 v-decorator="['mobilePackage', { initialValue:detail.mobilePackage,rules: [{ required: true, message: '请输入手机套餐' }]}]"
               />
             </a-form-item>
           </a-col>
-          <a-col :span="24">
+          <a-col :span="24" v-if="isSettingMobile">
             <a-form-item label="套餐详情">
               <a-textarea
                 :disabled="isView"
@@ -102,39 +104,39 @@
           <a-col :span="12">
             <a-form-item label="公司邮箱">
               <a-select
-                placeholder="选择公司邮箱"
+                placeholder="是否配置"
                 :disabled="isView"
-                v-decorator="['email',{initialValue:detail.email,rules: [{required: true,message: '请选择公司邮箱'}]}]"
+                v-decorator="['email',{initialValue:detail.email,rules: [{required: true,message: '是否配置'}]}]"
                 :allowClear="true"
               >
-                <a-select-option :value="1">有</a-select-option>
-                <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="1">是</a-select-option>
+                <a-select-option :value="0">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="公司微信号">
               <a-select
-                placeholder="选择公司微信号"
+                placeholder="是否配置"
                 :disabled="isView"
-                v-decorator="['wxNum',{initialValue:detail.wxNum,rules: [{required: true,message: '请选择公司微信号'}]}]"
+                v-decorator="['wxNum',{initialValue:detail.wxNum,rules: [{required: true,message: '是否配置'}]}]"
                 :allowClear="true"
               >
-                <a-select-option :value="1">有</a-select-option>
-                <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="1">是</a-select-option>
+                <a-select-option :value="0">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="公司QQ号">
               <a-select
-                placeholder="选择公司QQ号"
+                placeholder="是否配置"
                 :disabled="isView"
-                v-decorator="['qqNum',{initialValue:detail.qqNum,rules: [{required: true,message: '请选择公司QQ号'}]}]"
+                v-decorator="['qqNum',{initialValue:detail.qqNum,rules: [{required: true,message: '是否配置'}]}]"
                 :allowClear="true"
               >
-                <a-select-option :value="1">有</a-select-option>
-                <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="1">是</a-select-option>
+                <a-select-option :value="0">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -165,7 +167,8 @@ export default {
       spinning: false,
       type: 'view',
       record: {},
-      detail: {}
+      detail: {},
+      isSettingMobile:false
     }
   },
   computed: {
@@ -188,8 +191,9 @@ export default {
       that.visible = true
       that.type = type
       that.record = Object.assign({}, record)
-      that.form.resetFields()
       await that.initData()
+      that.detail = {}
+      that.form.resetFields()
       if (type === 'view' || type === 'edit') {
         that.spinning = true
         comManageSettingsDetail({ id: record.id })
@@ -200,6 +204,11 @@ export default {
               .then(() => {
                 that.spinning = false
                 that.detail = { ...res.data }
+                that.isSettingMobile = !!that.detail.mobile
+                that.form.setFieldsValue({
+                  departmentId:res.data.departmentId,
+                  stationId:res.data.stationId
+                })
               })
               .catch(err => {
                 that.spinning = false
@@ -246,8 +255,12 @@ export default {
     },
     depChangeHandler(dep_id) {
       let that = this
+      that.form.setFieldsValue({stationId:undefined })
       that.postSelectDataSource = []
       return getStationList({ id: dep_id }).then(res => (that.postSelectDataSource = res.data))
+    },
+    phoneChange(val){
+      this.isSettingMobile = +val === 1
     }
   }
 }

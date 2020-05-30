@@ -124,6 +124,10 @@ export default {
               .then(() => {
                 that.spinning = false
                 that.detail = { ...res.data }
+                that.form.setFieldsValue({
+                  departmentId:res.data.departmentId,
+                  userId:res.data.userId
+                })
               })
               .catch(err => {
                 that.spinning = false
@@ -174,6 +178,7 @@ export default {
     },
     depChangeHandler(dep_id) {
       let that = this
+      that.form.setFieldsValue({userId:undefined })
       that.personSelectDataSource = []
       return getUserByDep({ departmentId: dep_id }).then(res => (this.personSelectDataSource = res.data))
     }

@@ -2,10 +2,10 @@
 <template>
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-month-picker v-model="searchParam.startMonth" />
+      <a-month-picker v-model="startMonth" />
       <span>~</span>
-      <a-month-picker v-model="searchParam.endMonth" />
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-month-picker v-model="endMonth" />
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <a-button
         class="a-button"
         type="primary"
@@ -43,6 +43,7 @@ import {
 
 import AddForm from './AddFile'
 import XdocView from './XdocView'
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
@@ -103,12 +104,20 @@ export default {
         current: 1
       },
       loading: false,
-      searchParam: {},
+      startMonth:undefined,
+      endMonth:undefined,
       visible: false,
       exportFilePath: comManageSpendDetailExportExcel()
     }
   },
-  computed: {},
+  computed: {
+    searchParam(){
+      return {
+        startMonth:this.startMonth instanceof moment ? this.startMonth.format('YYYY-MM') : undefined,
+        endMonth:this.endMonth instanceof moment ? this.endMonth.format('YYYY-MM') : undefined
+      }
+    }
+  },
   watch: {
     $route: {
       handler: function(to, from) {

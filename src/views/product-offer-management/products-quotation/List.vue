@@ -24,17 +24,19 @@
 
     <a-modal
       title="产品评估"
-      :width="600"
+      :width="450"
       :visible="visible"
       @cancel="handleCancel"
       :maskClosable="false"
       :footer="null"
     >
       <!-- <p>成本价：{{parseInt(costPrice.price) | moneyFormatNumber}}</p> -->
-      <p>A价：{{parseInt(costPrice.aprice) | moneyFormatNumber}}</p>
-      <p>B价：{{parseInt(costPrice.bprice) | moneyFormatNumber}}</p>
-      <p>C价：{{parseInt(costPrice.cprice) | moneyFormatNumber}}</p>
-      <p>市场价：{{parseInt(costPrice.retailPrice) | moneyFormatNumber}}</p>
+      <div class="price-wrapper">
+        <p>A价：{{parseInt(costPrice.aprice) | moneyFormatNumber}}</p>
+        <p>B价：{{parseInt(costPrice.bprice) | moneyFormatNumber}}</p>
+        <p>C价：{{parseInt(costPrice.cprice) | moneyFormatNumber}}</p>
+        <p>市场价：{{parseInt(costPrice.retailPrice) | moneyFormatNumber}}</p>
+      </div>
       <div style="text-align:center;margin-top:10px;">
           <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>
           <a-button type="primary" @click="doAction('price-view')" style="margin:0 10px;">预览</a-button>
@@ -180,5 +182,10 @@ export default {
 .customer-list-wrapper {
     background-color: #fff;
     padding: 10px 20px;
+  }
+  .price-wrapper{
+    text-align: center;
+    font-size: 125%;
+    font-weight: bold;
   }
 </style>
