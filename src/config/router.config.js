@@ -948,6 +948,12 @@ export const asyncRouterMap = [
             name: 'pom-products-quotation',
             component: () => import('@/views/product-offer-management/products-quotation/List'),
             meta: { title: '产品报价', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/product-offer-management/priceAdjustProductQuote',
+            name: 'pom-products-quotation-list',
+            component: () => import('@/views/product-offer-management/products-quotation/QuoteList'),
+            meta: { title: '产品报价列表', icon: 'setting', keepAlive: false, permission: ['permission'] },
           }
         ]
       },

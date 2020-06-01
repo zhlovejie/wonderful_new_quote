@@ -177,3 +177,55 @@ export function priceAdjustPricingRecordPricingChangList (parameter) {
   })
 }
 //---------------------产品价格配置-END--------
+
+//---------------------报价单------------
+/**系列产品报价列表 */
+export function priceAdjustProductQuoteList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductQuote/getProductQuoteList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**系列产品报价详情 */
+export function priceAdjustProductQuoteDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductQuote/getProductQuoteDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/**系列产品报价删除 */
+export function priceAdjustProductQuoteDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductQuote/delProductQuote',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**系列产品报价预览下载 */
+export function priceAdjustProductQuoteDownload (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductQuote/previewDownload',
+    method: 'post',
+    responseType:'blob',
+    data: parameter
+  })
+}
+
+/**系列产品报价新增和修改 */
+export function priceAdjustProductQuoteAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductQuote/addAndUpdateProductQuote',
+    method: 'post',
+    data: parameter
+  })
+}
+//---------------------报价单-END--------
+
