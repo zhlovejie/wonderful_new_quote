@@ -71,6 +71,9 @@
                   @click="selectCustomer"
                 />
               </a-form-item>
+              <a-form-item hidden>
+                <a-input v-decorator="['customerId']" />
+              </a-form-item>
             </td>
             <td>对应销售</td>
             <td>
@@ -309,7 +312,8 @@ export default {
       console.log(record)
       if (record) {
         that.form.setFieldsValue({
-          customerName: record.name
+          customerName: record.name,
+          customerId:record.id
         })
       }
     },
@@ -330,7 +334,8 @@ export default {
       that.contractId = data.id
       that.form.setFieldsValue({
         contractNum: data.contractNum,
-        customerName: data.customerName
+        customerName: data.customerName,
+        customerId:data.customerId
       })
     },
     filterSalersOption(input, option) {
@@ -344,7 +349,8 @@ export default {
         that.contractId = undefined
         that.form.setFieldsValue({
           contractNum: undefined,
-          customerName: undefined
+          customerName: undefined,
+          customerId:undefined
         })
       } else {
         let obj = {}

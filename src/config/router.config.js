@@ -649,6 +649,13 @@ export const asyncRouterMap = [
               //   meta: { title: '赠送订单', permission: ['permission'] }
               // },
               {
+                path: '/sale/present-order/List',
+                name: 'presentOrder',
+                hidden: true,
+                component: () => import('@/views/sale/present-order/List'),
+                meta: { title: '赠送订单', permission: ['permission'] }
+              },
+              {
                 path: '/sale/income/List',
                 name: 'incomeReceipt',
                 hidden: true,
@@ -978,6 +985,12 @@ export const asyncRouterMap = [
             name: 'pom-products-quotation',
             component: () => import('@/views/product-offer-management/products-quotation/List'),
             meta: { title: '产品报价', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
+            path: '/product-offer-management/priceAdjustProductQuote',
+            name: 'pom-products-quotation-list',
+            component: () => import('@/views/product-offer-management/products-quotation/QuoteList'),
+            meta: { title: '产品报价列表', icon: 'setting', keepAlive: false, permission: ['permission'] },
           }
         ]
       },

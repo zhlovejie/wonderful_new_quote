@@ -308,6 +308,7 @@ export default {
       let {
         name,
         model,
+        productPic,
         type,
         price,
         aprice,
@@ -320,6 +321,7 @@ export default {
       that.optInfo = {
         name,
         model,
+        productPic,
         type,
         price,
         aprice,
@@ -358,6 +360,7 @@ export default {
       console.log(result)
     },
     controlChangeHandler(controlID){
+      //debugger
       let that = this
       that.controlResult = {
         optStand:[],
@@ -375,12 +378,13 @@ export default {
           that.$message.info(res.msg)
           return
         }
-        let {name,model,type,price,remarks,sysConfigList,aprice,bprice,cprice,retailPrice} = res.data
+        let {name,model,productPic,type,price,remarks,sysConfigList,aprice,bprice,cprice,retailPrice} = res.data
         let { optStandData, optSelectData, optChoiceData } = that.controlFormatData(sysConfigList)
         that.controlResult = {
           optInfo:{
             name,
             model,
+            productPic,
             type,
             price,
             aprice,
@@ -536,7 +540,6 @@ export default {
       }
     },
     calcItems(){
-      debugger
       let {
         optInfo,
         optStand,
@@ -606,6 +609,7 @@ export default {
         that.selectedHandler({
           name: res.data.name,
           model: res.data.model,
+          productPic:res.data.productPic,
           type: res.data.type,
           remarks: res.data.remarks,
           price:res.data.price,

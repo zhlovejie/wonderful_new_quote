@@ -1,7 +1,7 @@
 <template>
   <div class="wdf-module-wrapper">
     <div class="top-ation">
-      <a-form layout="inline" :form="form">
+      <a-form layout="inline">
         <a-form-item label="客户名称">
           <a-input v-model="customerName"/>
         </a-form-item>
@@ -29,35 +29,36 @@
       <span slot="contractNum" slot-scope="text, record">
         <a @click="clickVue(record)">{{ text }}</a>
       </span>
+      <span slot="presentNum" slot-scope="text, record">
+        <a @click="clickVue(record)">{{ text }}</a>
+      </span>
+      
       <div slot="contractDetail" slot-scope="text, record, index">
         <a href="javascript:void(0);" @click="viewContractDetail(record)">查看</a>
       </div>
     </s-table>
-    <ContractInfo ref='contractInfo' />
+    <PresentOrderDetail ref='contractInfo' />
   </div>
 </template>
 
 <script>
 import { STable } from '@/components'
-import { invoiceSaleContract } from '@/api/invoice'
+import { presentOrderPageList } from '@/api/receipt'
 import { listUserBySale } from '@/api/systemSetting'
-import ContractInfo from '@/components/CustomerList/ContractInfo'
+import PresentOrderDetail from '@/views/sale/present-order/AddForm'
 export default {
-  name: 'InvoiceSaleContract',
+  name: 'invoicePresentOrder',
   components: {
     STable,
-    ContractInfo
+    PresentOrderDetail
   },
   data () {
     return {
       visible: false,
-      form: this.$form.createForm(this),
-      mdl: {},
       queryParam: {},
       customerName: '',
-      loading: true,
-      saleUsers: [],
       userId: 0,
+      saleUsers: [],
       columns: [
         {
           align: 'center',
@@ -67,17 +68,18 @@ export default {
           scopedSlots: { customRender: 'order' }
         },
         {
-          title: '合同编号',
-          dataIndex: 'contractNum',
-          scopedSlots: { customRender: 'contractNum' }
+          title: '赠送单编号',
+          dataIndex: 'presentNum',
+          scopedSlots: { customRender: 'presentNum' }
         },
+        
         {
           title: '客户名称',
           dataIndex: 'customerName'
         },
         {
           title: '对应销售',
-          dataIndex: 'userName'
+          dataIndex: 'saleUserName'
         },
         {
           title:'合同详情',
@@ -88,14 +90,14 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         console.log('开始加载列表数据')
-        return invoiceSaleContract(Object.assign(parameter, {documentType:1},this.queryParam))
+        return presentOrderPageList(Object.assign(parameter,this.queryParam))
           .then(res => {
             return res
           })
       }
     }
   },
-  mounted:function(){
+  mounted(){
     this.init()
   },
   methods: {
@@ -113,7 +115,8 @@ export default {
       this.$emit('change', data)
     },
     viewContractDetail(record){
-      this.$refs.contractInfo.init(record.contractId)
+      console.log(record)
+      this.$refs.contractInfo.query('view',record)
     }
   }
 }
