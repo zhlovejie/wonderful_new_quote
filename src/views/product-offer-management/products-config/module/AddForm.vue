@@ -32,6 +32,10 @@
             <a-select-option v-for="item in productPriceCoefficientList" :value="item.id" :key="item.id" >{{ item.name }}</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="图片">
+          <UploadFile ref="uploadFile" txt="上传图片"/>
+          <a-input hidden v-decorator="['productPic',{rules: [{ required: true, message: '请上传产品图片'}]}]" />
+        </a-form-item>
         <a-form-item label="是否为产品">
           <a-radio-group v-decorator="['type',{initialValue: 1}]">
             <a-radio :value="0">是</a-radio>
@@ -136,12 +140,14 @@ import {
 import {productPriceCoefficientListWithoutPage} from '@/api/workBox' 
 import TableOptChoice from './TableOptChoice'
 import OptList from './OptList'
+import UploadFile from './UploadFile'
 export default {
   name: 'AddForm',
   components: {
     vuedraggable,
     TableOptChoice,
-    OptList
+    OptList,
+    UploadFile
   },
   data() {
     return {
@@ -199,6 +205,11 @@ export default {
         that.handleCancel()
         return
       }
+      let files = that.$refs.uploadFile.getFiles()
+      if(files.length > 0){
+        that.form.setFieldsValue({productPic:files[0].url})
+      }
+
       this.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {
@@ -305,7 +316,7 @@ export default {
       that.optControl = []
       that.optSelect = []
       that.optChoice = []
-
+      that.$refs.uploadFile && that.$refs.uploadFile.setFiles([])
       await that.init()
       that.visible = true
 
@@ -314,19 +325,25 @@ export default {
       }
 
       priceAdjustProductConfigDetail({ id: record.id }).then(res => {
+        res.data.productPic && that.$refs.uploadFile && that.$refs.uploadFile.setFiles([{
+          name:res.data.productPic,
+          url:res.data.productPic
+        }])
         //debugger
         that.form.setFieldsValue({
           name: res.data.name,
           model: res.data.model,
           type: res.data.type,
           remarks: res.data.remarks,
-          priceCoefficientId:+res.data.priceCoefficientId
+          priceCoefficientId:+res.data.priceCoefficientId,
+          productPic:res.data.productPic || undefined
         })
         let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData
         that.optSelect = optSelectData
         that.optChoice = optChoiceData
         that.optControl = optControlData
+
       })
     },
     ShowModule(key, index) {

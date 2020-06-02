@@ -17,16 +17,7 @@
       rowKey="id"
     >
       <span slot="source" slot-scope="text">
-        <span v-if="text == 1">人工分配</span>
-        <span v-if="text == 2">初次未联系</span>
-        <span v-if="text == 3">提取</span>
-        <span v-if="text == 4">未维护</span>
-        <span v-if="text == 5">申请</span>
-        <span v-if="text == 6">部门独立来源</span>
-        <span v-if="text == 7">自动分配</span>
-        <span v-if="text == 8">放弃</span>
-        <span v-if="text == 9">直接录入</span>
-        <span v-if="text == 10">未完善信息</span>
+        {{getSourceTxt(text)}}
       </span>
       <span slot="pool" slot-scope="text">
         <span v-if="text == 1">公共客户池</span>
@@ -98,6 +89,23 @@ export default {
     },
     handleCancel () { // 关闭
       this.visible = false
+    },
+    getSourceTxt(source){
+      let m = {
+        1:'人工分配',
+        2:'初次未联系',
+        3:'提取',
+        4:'未维护',
+        5:'申请',
+        6:'部门独立来源',
+        7:'自动分配',
+        8:'放弃',
+        9:'直接录入',
+        10:'未完善信息',
+        11:'客服再分配',
+        12:'被释放'
+      }
+      return m[source] || '未知'
     }
   }
 }

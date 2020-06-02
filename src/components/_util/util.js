@@ -69,6 +69,7 @@ function handleWindowPrint (ele, title) {
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
     <style type="text/css" media="print">
+    body {-webkit-print-color-adjust：exact; font-family：Arial; }
     h1,h2,h3,h4,h5,h6{
       font-family: Arial !important;
       font-size: 10pt !important;
@@ -261,6 +262,7 @@ function handleWindowPrint (ele, title) {
       border: 1px solid #d8d8d8;
       padding: 10pt;
       text-align: center;
+      font-size:10pt;
     }
 
     .invoice-approval-wrapper-print .custom-table-border td.print-w150{
@@ -322,14 +324,103 @@ function handleWindowPrint (ele, title) {
       background-color: #fff;*/
     }
     /*产品报价预览 END*/
+
+
+    #price-print-form-wrapper{
+      background-color: #fff;
+    }
+    #price-print-form-wrapper .ant-table{padding:0;}
+    #price-print-form-wrapper .custom-table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom:0 !important;
+    }
+    #price-print-form-wrapper .custom-table-border caption{
+        text-align: center;
+        padding: 10pt 0;
+        font-size: 125%;
+        font-weight: bold;
+        caption-side:initial;
+        color: inherit;
+    }
+
+    #price-print-form-wrapper .custom-table-border th,td{
+      border: 1px solid #d8d8d8;
+      padding: 10pt;
+      text-align: center;
+    }
+    #price-print-form-wrapper .header {
+  display: flex;
+  align-items: center;
+  padding: 0 0 10px 0;
+  overflow: hidden;
+}
+#price-print-form-wrapper .header .header_logo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+#price-print-form-wrapper .header .header_logo .header_logo_txt {
+  margin-left: 10pt;
+}
+
+#price-print-form-wrapper .header_info {
+  display: flex;
+  justify-content: space-between;
+}
+
+#price-print-form-wrapper .custom_info {
+  color: #fff !important;
+  background-color: #757882;
+  font-size: 110%;
+}
+#price-print-form-wrapper .custom_info p {
+  margin-bottom: 20px;
+}
+#price-print-form-wrapper .custom_info .custom_info_sell,
+#price-print-form-wrapper .custom_info .custom_info_buy {
+  position: relative;
+  margin: 25% 0 0 20px;
+}
+#price-print-form-wrapper .custom_info .custom_info_sell::before,
+#price-print-form-wrapper .custom_info .custom_info_buy::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 30%;
+  height: 4px;
+  background-color: #d4e8f7;
+}
+
+#price-print-form-wrapper .custom_info .__ele-english i {
+  color: #fff !important;
+}
+#price-print-form-wrapper .custom-table-border th,
+#price-print-form-wrapper .custom-table-border td {
+  padding: 5px 10px;
+}
+
+#price-print-form-wrapper >>> .custom-table-border .__table-thead {
+  background-color: #d4e8f7;
+}
+
+#price-print-form-wrapper .add-form__bd-item {
+  padding: 15px 0;
+}
+
     </style>
   `
   oIframe.contentDocument.body.innerHTML = document.querySelector(ele).outerHTML
   
-  console.log(document.querySelector(ele).outerHTML)
-  oScript.innerHTML = 'window.print()'
+  
+  //console.log(document.querySelector(ele).outerHTML)
+  oScript.innerHTML = '(function(){setTimeout(function(){window.print()},500)})()'
   oIframe.contentDocument.body.appendChild(oScript)
-  document.body.removeChild(oIframe)
+  setTimeout(function(){
+    document.body.removeChild(oIframe)
+  },700)
   document.head.getElementsByTagName('title')[0].innerText = titleText
 }
 

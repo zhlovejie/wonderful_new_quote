@@ -248,30 +248,30 @@
             </a-form-item>
           </td>
         </tr>
-        <tr>
-          <td>手机(公)</td>
-          <td>
+        <tr >
+          <td v-if="stationInfoRequire.mobile">手机(公)</td>
+          <td v-if="stationInfoRequire.mobile">
             <a-form-item>
               <a-input :disabled="isView" v-decorator="['mobile',{rules: [{required: false,message: '输入手机'},{pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}]" placeholder="输入手机"/>
             </a-form-item>
           </td>
-          <td>QQ(公)</td>
-          <td>
+          <td v-if="stationInfoRequire.qqNum">QQ(公)</td>
+          <td v-if="stationInfoRequire.qqNum">
             <a-form-item>
               <a-input :disabled="isView" v-decorator="['qqNum',{rules: [{required: false,message: '输入QQ'},{max:30,message:'最多可输入30个字符'}]}]" placeholder="输入QQ"/>
             </a-form-item>
           </td>
         </tr>
 
-        <tr>
-          <td>微信(公)</td>
-          <td>
+        <tr >
+          <td v-if="stationInfoRequire.wxNum">微信(公)</td>
+          <td v-if="stationInfoRequire.wxNum">
             <a-form-item>
               <a-input :disabled="isView" v-decorator="['wxNum',{rules: [{required: false,message: '输入微信'},{max:30,message:'最多可输入30个字符'}]}]" placeholder="输入微信"/>
             </a-form-item>
           </td>
-          <td>邮箱(公)</td>
-          <td>
+          <td v-if="stationInfoRequire.email">邮箱(公)</td>
+          <td v-if="stationInfoRequire.email">
             <a-form-item>
               <a-input :disabled="isView" v-decorator="['email',{rules: [{required: false,message: '输入邮箱'},{pattern:/^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/,message:'请填写正确电子邮箱'},{max:50,message:'最多可输入50个字符'}]}]" placeholder="输入邮箱"/>
             </a-form-item>
@@ -408,6 +408,7 @@ import {
   departmentList,//所有部门
   getStationList, //获取所有岗位
 } from '@/api/systemSetting'
+import {comManageSettingsGetSettingsByStationId} from '@/api/communicationManagement'
 import moment from 'moment'
 
 import {
@@ -460,7 +461,14 @@ export default {
       //个人印章END
       loading: false,
       imageUrl: '',
-      spinning:false
+      spinning:false,
+      stationInfoRequire:{
+        email:false,
+        mobile:false,
+        phone:false,
+        qqNum:false,
+        wxNum:false,
+      } //判断该岗位是否配置公司 控制显示 手机号，微信，qq，邮箱 默认不显示
     }
   },
   computed:{
@@ -562,6 +570,13 @@ export default {
       that.type = type
       that.record = Object.assign({},record)
       that.form.resetFields()
+      that.stationInfoRequire = {
+        email:false,
+        mobile:false,
+        phone:false,
+        qqNum:false,
+        wxNum:false,
+      }
       if(type === 'view' || type === 'ruzhi' || type === 'edit'){
         //人员状态：默认为0浏览，1试用期，2试用期不通过，3在职，4离职
         //0为入职前，其他的都为入职后
@@ -610,6 +625,20 @@ export default {
         
 
         let stationId = values.stationId
+
+        await comManageSettingsGetSettingsByStationId({id:stationId}).then(res =>{
+          console.log(res)
+          if(res && res.data){
+            that.stationInfoRequire = {
+              email:!!res.data.email,
+              mobile:!!res.data.mobile,
+              phone:!!res.data.phone,
+              qqNum:!!res.data.qqNum,
+              wxNum:!!res.data.wxNum
+            }
+          }
+        })
+
         delete values.birthplace
 
 
