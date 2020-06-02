@@ -34,14 +34,29 @@
         </a-form-item>
         <a-form-item label="文件" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
+            v-if="type === 1||type ===2||type ===3"
             accept=".docx,.doc,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             name="files"
             :multiple="true"
             :action="this.uploadPath"
             :fileList="fileList"
             @change="handleChange">
-            <a-button>
+            <a-button >
               <a-icon type="upload" /> 上传（.docx、.doc类型）
+            </a-button>
+            <a-modal :visible="previewVisible" :footer="null" @cancel="previewCancel">
+            </a-modal>
+          </a-upload>
+          <a-upload
+            v-if="type === 4||type ===5"
+            accept="image/*,.pdf"
+            name="files"
+            :multiple="true"
+            :action="this.uploadPath"
+            :fileList="fileList"
+            @change="handleChange">
+            <a-button>
+              <a-icon type="upload" /> 上传（.pdf、.png类型）
             </a-button>
             <a-modal :visible="previewVisible" :footer="null" @cancel="previewCancel">
             </a-modal>
@@ -78,6 +93,7 @@ export default {
       fileList: [],
       fileName: '',
       fileUrl: '',
+      type: 0,
       id: 0,
       uploadPath: getUploadPath()
     }
@@ -94,6 +110,7 @@ export default {
     add: function (type) {
       this.visible = true
       this.addOredit = 'save'
+      this.type = type
       this.$nextTick(() => {
         this.form.setFieldsValue({
           type: type

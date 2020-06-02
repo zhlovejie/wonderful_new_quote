@@ -6,20 +6,21 @@
         <a-form-item label="名称">
           <a-input v-model.trim="queryParam.title" placeholder="根据名称模糊查询"/>
         </a-form-item>
-        <template v-if="$auth('video:list')">
+        <template v-if="$auth('ProductPromotionVideo:list')">
           <a-form-item>
             <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           </a-form-item>
         </template>
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
-            <template v-if="$auth('video:add')">
+            <template v-if="$auth('ProductPromotionVideo:add')">
               <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
             </template>
           </a-form-item>
         </div>
       </a-form>
     </div>
+
         <s-table
           ref="table"
           size="default"
@@ -32,26 +33,27 @@
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('video:edit')">
+            <template v-if="$auth('ProductPromotionVideo:edit')">
               <a @click="handleEdit(record)">编辑</a>
             </template>
-            <template v-if="$auth('video:del')">
+            <template v-if="$auth('ProductPromotionVideo:del')">
               <a-divider type="vertical"/>
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="record.url != undefined && record.url != '' && record.url.length > 0 && $auth('video:one')">
+            <template v-if="record.url != undefined && record.url != '' && record.url.length > 0 && $auth('ProductPromotionVideo:one')">
               <a-divider type="vertical"/>
               <a target="_blank" :href="record.url">预览</a>
             </template>
           </span>
         </s-table>
+
     <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <modal ref="editModal" @ok="handleSaveOk" @close="handleSaveClose"/>
   </a-card>
 </template>
 
 <script>
-import { getEnterpriseVideoList, delInformation } from '@/api/enterpriseInformation'
+import { getProductPromotionVideoList, delInformation } from '@/api/enterpriseInformation'
 import { STable } from '@/components'
 import Modal from '../modules/Video'
 
@@ -89,7 +91,7 @@ const columns = [
   }]
 
 export default {
-  name: 'EnterpriseSynopsis',
+  name: 'ProductPromotionVideo',
   components: {
     STable,
     Modal
@@ -103,7 +105,7 @@ export default {
       // 初始化加载 必须为 Promise 对象
       loadData: parameter => {
         console.log('页面开始加载数据。。。', parameter, this.queryParam)
-        return getEnterpriseVideoList(Object.assign(parameter, this.queryParam))
+        return getProductPromotionVideoList(Object.assign(parameter, this.queryParam))
           .then(res => {
             return res
           }).catch(error => {
@@ -116,7 +118,7 @@ export default {
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add(2)
+      this.$refs.modal.add(3)
     },
     // 修改详情
     handleEdit (e) {
