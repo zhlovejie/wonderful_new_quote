@@ -42,7 +42,7 @@
           <template v-if="$auth('manual:one')">
             <a target="_blank" :href="url+record.fileUrl">查看</a>
           </template>
-          <template v-if="$auth('case:edit')">
+          <template v-if="$auth('manual:one')">
             <a-divider type="vertical" />
             <!-- <a target="_blank" :href="record.fileUrl">预览</a> -->
             <a target="_blank" :href="record.fileUrl">下载</a>

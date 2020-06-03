@@ -78,6 +78,7 @@ export default {
       visible: false,
       confirmLoading: false,
       addOredit: 'save',
+      informationType:0,
       queryBoolean: false,
       previewVisible: false, // 图片预览框是否可见
       previewImage: '', //  预览图片的src值
@@ -95,8 +96,9 @@ export default {
     this.form = this.$form.createForm(this)
   },
   methods: {
-    add () {
+    add (type) {
       this.visible = true
+      this.informationType = type
       this.addOredit = 'save'
     },
     edit (record) {
@@ -138,7 +140,7 @@ export default {
             _this.$set(values, 'Authorization', _this.$store.getters.token)
             _this.$set(values, 'informationContent', _this.getUEContent())
             _this.$set(values, 'informationContentTxt', _this.getUEContentTxt())
-            _this.$set(values, 'informationType', 1)
+            _this.$set(values, 'informationType', this.informationType)
             saveInformation(values).then((data) => {
               console.log('date', data)
               if (data.code == 200) {
