@@ -43,11 +43,10 @@
         </a-col>
         <a-col :lg="12" :md="12" :sm="24">
           <a-form-item label="客户意向" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input read-only="read-only" v-if="customer.intention == 1" value="有意向"/>
-            <a-input read-only="read-only" v-if="customer.intention == 2" value="无意向"/>
-            <a-input read-only="read-only" v-if="customer.intention == 3" value="无效客户"/>
-            <a-input read-only="read-only" v-if="customer.intention == 4" value="竞争对手"/>
-            <a-input read-only="read-only" v-if="customer.intention == 5" value="黑名单客户"/>
+            <a-input read-only="read-only" v-if="customer.intention == 1" value="有效客户"/>
+            <a-input read-only="read-only" v-if="customer.intention == 2" value="无效客户"/>
+            <a-input read-only="read-only" v-if="customer.intention == 3" value="竞争对手"/>
+            <a-input read-only="read-only" v-if="customer.intention == 4" value="黑名单客户"/>
           </a-form-item>
         </a-col>
       </a-row>

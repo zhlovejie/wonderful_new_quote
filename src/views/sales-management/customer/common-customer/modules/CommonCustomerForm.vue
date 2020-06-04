@@ -219,7 +219,7 @@ export default {
       sources: [], // 所有录入渠道
       customerTypes: [], // 所有客户类型
       learns: [], // 客户所有的获知渠道
-      intentions: [{ key: '有意向', value: 1 }, { key: '无意向', value: 2 }, { key: '无效客户', value: 3 }, { key: '竞争对手', value: 4 }, { key: '黑名单客户', value: 5 }], // 客户意向度
+      intentions: [{ key: '有效客户', value: 1 }, { key: '无效客户', value: 2 }, { key: '竞争对手', value: 3 }, { key: '黑名单客户', value: 4 }],
       pools: [{ key: '待分配', value: 3 }, { key: '公共', value: 1 }], // 客户池
       provinces: [], // 省下拉框数据
       citys: [], // 城市下拉框数据

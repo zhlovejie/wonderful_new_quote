@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新增销售人员"
+    :title="formTitle"
     :width="640"
     :visible="visible"
     :destroyOnClose="true"
@@ -11,6 +11,9 @@
   >
     <div>
       <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;">
+        <a-form-item hidden>
+          <a-input v-decorator="['id']"/>
+        </a-form-item>
         <a-form-item label="选择销售人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             showSearch
@@ -37,24 +40,27 @@
         </a-form-item>
 
         <a-form-item label="被分配权" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeDstb()"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cdsc" @change="changeDstb"/>
           <a-input type="hidden" v-decorator="['canDistribute', {rules: [{required: true,message: '请选择被分配权！'}],initialValue:1}]"/>
         </a-form-item>
         <a-form-item label="提取客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeExtc()"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cesc" @change="changeExtc"/>
           <a-input type="hidden" v-decorator="['canExtract', {rules: [{required: true,message: '请选择提取客户权限！'}],initialValue:1}]"/>
         </a-form-item>
         <a-form-item label="录入部门客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeEtdp()"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cedsc" @change="changeEtdp"/>
           <a-input type="hidden" v-decorator="['canEnterDep', {rules: [{required: true,message: '请选择录入部门客户权限！'}],initialValue:1}]"/>
         </a-form-item>
         <a-form-item label="给其他人员录入客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeEtoh()"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="ceosc" @change="changeEtoh"/>
           <a-input type="hidden" v-decorator="['canEnterOther', {rules: [{required: true,message: '请选择给其他人员录入客户权限！'}],initialValue:1}]"/>
         </a-form-item>
         <a-form-item label="录入公共客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" defaultChecked @change="changeRtcm()"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cecsc" @change="changeRtcm"/>
           <a-input type="hidden" v-decorator="['canEnterCommon', {rules: [{required: true,message: '请选择录入公共客户权限！'}],initialValue:1}]"/>
+        </a-form-item>
+        <a-form-item label="可拥有客户最多数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['maximum', {rules: [{required: true,message: '可拥有客户最多数量'}],initialValue:230}]"/>
         </a-form-item>
       </a-form>
     </div>
@@ -63,7 +69,7 @@
 
 <script>
 import ATextarea from 'ant-design-vue/es/input/TextArea'
-import { getAllUser, addSalesman, getOneSalesman } from '@/api/customer/salesman'
+import { getAllUser, addSalesman, getOneSalesman, editSalesman } from '@/api/customer/salesman'
 
 export default {
   name: 'AddSalesman',
@@ -80,12 +86,15 @@ export default {
       },
       form: this.$form.createForm(this), // 只有这样注册后，才能通过表单拉取数据
       visible: false, // 表单对话框是否可见
+      formTitle: '新增销售人员',
       confirmLoading: false, // 确定按钮后是否显示加载图 loading
-      layout: 'inline', // 表单布局方式
       allUser: [],
-      showMsg: false, // 是否显示提示框
-      message: '', // 提示信息
-      messageType: '' // 提示类型
+      subType: 'add',
+      cdsc: true,
+      cesc: true,
+      cedsc: true,
+      ceosc: true,
+      cecsc: true
     }
   },
   created () {
@@ -147,10 +156,39 @@ export default {
     userFilter (input, option) { // 下拉框搜索
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    showForm () {
+    showForm (record) {
       this.visible = true
+      if (record.id != null){
+        this.subType = 'edit'
+        this.formTitle = '修改销售人员'
+        this.$nextTick(() => {
+          this.form.setFieldsValue({
+            id: record.id,
+            userId: record.userId,
+            leader: record.leader,
+            canDistribute: record.canDistribute,
+            canExtract: record.canExtract,
+            canEnterDep: record.canEnterDep,
+            canEnterOther: record.canEnterOther,
+            canEnterCommon: record.canEnterCommon,
+            maximum: record.maximum
+          })
+        })
+        this.cdsc = record.canDistribute === 1 ? true : false
+        this.cesc = record.canExtract === 1 ? true : false
+        this.cedsc = record.canEnterDep === 1 ? true : false
+        this.ceosc = record.canEnterOther === 1 ? true : false
+        this.cecsc = record.canEnterCommon === 1 ? true : false
+      }
     },
     handleCancel () {
+      this.subType = 'add'
+      this.formTitle = '新增销售人员'
+      this.cdsc =true
+      this.cesc =true
+      this.cedsc = true
+      this.ceosc = true
+      this.cecsc = true
       this.form.resetFields() // 清空表
       this.visible = false
     },
@@ -161,14 +199,25 @@ export default {
       // 执行this.form.resetFields()，则会将表单清空。
       validateFields((errors, values) => {
         if (!errors) {
-          addSalesman(values).then(res => {
-            if (res.code === 200) {
-              this.visible = false
-              this.$emit('ok')// 刷新父组件
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
+          if(this.subType === 'add') {
+            addSalesman(values).then(res => {
+              if (res.code === 200) {
+                this.visible = false
+                this.$emit('ok')// 刷新父组件
+              } else {
+                this.$message.error(res.msg)
+              }
+            }) 
+          } else if(this.subType === 'edit') {
+            editSalesman(values).then(res => {
+              if (res.code === 200) {
+                this.visible = false
+                this.$emit('ok')// 刷新父组件
+              } else {
+                this.$message.error(res.msg)
+              }
+            })
+          }
         }
         this.confirmLoading = false
       })

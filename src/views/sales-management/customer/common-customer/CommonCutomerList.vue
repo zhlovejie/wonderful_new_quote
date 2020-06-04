@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false">
+  <a-card :bordered="false" class="depcustomer-list-wrapper">
     <!--搜索模块-->
     <div class="common-cutomer-list-search-wrapper">
       <a-form layout="inline">
@@ -15,11 +15,10 @@
 
             <a-form-item label="客户意向度">
               <a-select style="width:200px;" v-model.trim="queryParam.intention" placeholder="请选择客户意向度">
-                <a-select-option value="1">有意向</a-select-option>
-                <a-select-option value="2">无意向</a-select-option>
-                <a-select-option value="3">无效客户</a-select-option>
-                <a-select-option value="4">竞争对手</a-select-option>
-                <a-select-option value="5">黑名单客户</a-select-option>
+                <a-select-option value="1">有效客户</a-select-option>
+                <a-select-option value="2">无效客户</a-select-option>
+                <a-select-option value="3">竞争对手</a-select-option>
+                <a-select-option value="4">黑名单客户</a-select-option>
               </a-select>
             </a-form-item>
 
@@ -67,16 +66,16 @@
       rowKey="id"
       :columns="columns"
       :data="loadData"
+      :pagination="pagination"
     >
       <span slot="serial" slot-scope="text,record,index">
         {{ index + 1 }}
       </span>
       <span slot="intention" slot-scope="text">
-        <span v-if="text == 1">有意向</span>
-        <span v-if="text == 2">无意向</span>
-        <span v-if="text == 3">无效客户</span>
-        <span v-if="text == 4">竞争对手</span>
-        <span v-if="text == 5">黑名单客户</span>
+        <span v-if="text == 1">有效客户</span>
+        <span v-if="text == 2">无效客户</span>
+        <span v-if="text == 3">竞争对手</span>
+        <span v-if="text == 4">黑名单客户</span>
       </span>
       <span slot="pool" slot-scope="text">
         <span v-if="text == 1">公共客户池</span>
@@ -88,7 +87,7 @@
       </span>
       <span slot="action" slot-scope="text,record">
         <template>
-          <a-popconfirm v-if="salesJurisdiction.canExtract == 1 && record.pool == 1 && record.intention != 5" title="确认提取此客户？" @confirm="extract(record.id)" okText="是" cancelText="否">
+          <a-popconfirm v-if="salesJurisdiction.canExtract == 1 && record.pool == 1 && record.intention != 4" title="确认提取此客户？" @confirm="extract(record.id)" okText="是" cancelText="否">
             <a href="#">提取</a>
           </a-popconfirm>
           <template v-if="$auth('commonCustomer:one') && (salesJurisdiction.top || salesJurisdiction.service)">
@@ -198,6 +197,9 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      pagination: {
+        showTotal: total=> '共' + total +'条数据'
+      },
       customerTypes: [],
       salesJurisdiction: {}, // 当前用户销售权限
       allSalesman: [], // 所有销售人员
@@ -295,3 +297,9 @@ export default {
   }
 }
 </script>
+
+<style  scoped>
+  .depcustomer-list-wrapper >>> .ant-pagination-total-text{
+    color: red;
+  }
+</style>

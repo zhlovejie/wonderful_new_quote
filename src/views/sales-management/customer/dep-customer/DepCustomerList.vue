@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false">
+  <a-card :bordered="false" class="depcustomer-list-wrapper">
     <!--搜索模块-->
     <div class="depcustomer-list-search-wrapper">
       <a-form layout="inline">
@@ -13,10 +13,10 @@
         </a-form-item>
         <a-form-item label="客户意向度">
           <a-select style="width:200px;" v-model.trim="queryParam.intention" placeholder="请选择客户意向度" default-value="">
-            <a-select-option value="1">有意向</a-select-option>
-            <a-select-option value="2">无意向</a-select-option>
-            <a-select-option value="3">无效客户</a-select-option>
-            <a-select-option value="4">竞争对手</a-select-option>
+            <a-select-option value="1">有效客户</a-select-option>
+            <a-select-option value="2">无效客户</a-select-option>
+            <a-select-option value="3">竞争对手</a-select-option>
+            <a-select-option value="4">黑名单客户</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="联系人手机号">
@@ -26,7 +26,7 @@
           <a-input v-model.trim="queryParam.linkmanName" placeholder="根据联系人名模糊查询"/>
         </a-form-item>
         <a-form-item label="是否需要申诉">
-          <a-select style="width:200px;" v-model="queryParam.needAppeal" placeholder="请选择是否需要申诉" >
+          <a-select style="width:200px;" v-model.trim="queryParam.needAppeal" placeholder="请选择是否需要申诉" default-value="">
             <a-select-option value="0">不需要</a-select-option>
             <a-select-option value="1">需要</a-select-option>
             <a-select-option value="2">申诉中</a-select-option>
@@ -53,14 +53,13 @@
         </div>
       </a-form>
     </div>
-
-
     <s-table
       ref="table"
       size="default"
       rowKey="id"
       :columns="columns"
       :data="loadData"
+      :pagination="pagination"
     >
       <span slot="serial" slot-scope="text,record,index">
         {{ index + 1 }}
@@ -75,10 +74,10 @@
       <!--        <span v-else-if="record.perfectState != 2 && record.perfectState != 6">{{record.perfectTime}}</span>-->
       <!--      </span>-->
       <span slot="intention" slot-scope="text">
-        <span v-if="text == 1">有意向</span>
-        <span v-if="text == 2">无意向</span>
-        <span v-if="text == 3">无效客户</span>
-        <span v-if="text == 4">竞争对手</span>
+        <span v-if="text == 1">有效客户</span>
+        <span v-if="text == 2">无效客户</span>
+        <span v-if="text == 3">竞争对手</span>
+        <span v-if="text == 4">黑名单客户</span>
       </span>
       <span slot="action" slot-scope="text,record">
         <template v-if="$auth('depCustomer:one')">
@@ -131,9 +130,7 @@ export default {
   data () {
     return {
       // 查询参数
-      queryParam: {
-        needAppeal:'0'
-      },
+      queryParam: {},
       // 表头
       columns: [
         {
@@ -190,6 +187,9 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      pagination: {
+        showTotal: total=> '共' + total +'条数据'
+      },
       customerTypes: [],
       salesJurisdiction: {}, // 当前用户销售权限
       allSalesman: [], // 所有销售人员
@@ -256,16 +256,8 @@ export default {
 }
 </script>
 
-
-<style>
-  .table-page-search-wrapper{
-    padding: 20px;
-    background-color: #fafafa;
-    border-radius: 3px;
-    margin-bottom: 20px;
+<style  scoped>
+  .depcustomer-list-wrapper >>> .ant-pagination-total-text{
+    color: red;
   }
-  .table-page-search-wrapper .ant-form-item-label{
-    text-align: left !important;
-  }
-
 </style>
