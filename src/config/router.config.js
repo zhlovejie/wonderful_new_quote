@@ -773,7 +773,7 @@ export const asyncRouterMap = [
         name: 'production',
         component: PageView,
         meta: { title: '生产管理', icon: 'build', permission: ['permission'] },
-        redirect: '/production',
+        redirect: '/production/retrospect',
         children: [
           {
             path: '/production/retrospect',
@@ -812,6 +812,32 @@ export const asyncRouterMap = [
                 name: 'eventList',
                 component: () => import('@/views/production/event/EventList'),
                 meta: { title: '质量事件列表', permission: ['permission'] }
+              }
+            ]
+          },
+          {
+            path: '/production/cutCost',
+            name: 'productionCutCost',
+            component: RouteView,
+            meta: { title: '降本', icon: 'select', keepAlive: false, permission: ['permission'] },
+            children: [
+              {
+                path: '/production/cutCostRecord',
+                name: 'cutCostRecord',
+                component: () => import('@/views/production/cut-cost/RecordList'),
+                meta: { title: '降本记录', permission: ['permission'] }
+              },
+              {
+                path: '/production/cutCostRule',
+                name: 'cutCostRule',
+                component: () => import('@/views/production/cut-cost/RuleList'),
+                meta: { title: '考核规则', permission: ['permission'] }
+              },
+              {
+                path: '/production/cutCostRuleRecord',
+                name: 'cutCostRuleRecord',
+                component: () => import('@/views/production/cut-cost/RuleRecordList'),
+                meta: { title: '考核记录', permission: ['permission'] }
               }
             ]
           }
