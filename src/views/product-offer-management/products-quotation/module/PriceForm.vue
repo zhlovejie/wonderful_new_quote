@@ -52,7 +52,8 @@
                   :allowClear="true"
                   v-decorator="['saleUserId',{rules: [{ required: true, message: '请选销售经理'}]} ]"
                   placeholder="请选销售经理"
-                  style="width: 100%;"
+                  style="width: 100%;" 
+                  @change="saleUserChange"
                 >
                   <a-select-option
                     v-for="item in saleUserList"
@@ -62,13 +63,14 @@
                 </a-select>
               </a-form-item>
               <a-form-item label="电话">
-                <a-input v-decorator="['saleUserPhone']" placeholder="电话" :allowClear="true" />
+                <a-input disabled v-decorator="['saleUserPhone']" placeholder="电话" :allowClear="true" />
               </a-form-item>
             </a-col>
             <a-col :span="9" :offset="4">
               <CustomerSelect
                 ref="customerSelect"
-                :options="customerSelectOptions"
+                :options="customerSelectOptions" 
+                :needOptions="needOptions" 
                 @selected="handleCustomerSelected"
               />
               <a-form-item hidden>
@@ -266,6 +268,9 @@ export default {
         inputRequired: true,
         inputAllowClear: true
       },
+      needOptions:{
+        userId:undefined
+      },
       productName:'',
       quoteCode:'',
       productPic: '',
@@ -431,6 +436,7 @@ export default {
       })
     },
     handleCustomerSelected(item) {
+      
       //this.queryParam.customerId = item.id
       this.form.setFieldsValue({ customerId: item && item.id ? item.id : undefined })
     },
@@ -471,6 +477,19 @@ export default {
     },
     taxChange(checked){
       this.hasTax = checked
+    },
+    saleUserChange(saleUserId){ //选择销售人员 填充对应的 微信和邮箱
+      //特殊处理
+      this.needOptions = { userId:saleUserId }
+      this.$refs.customerSelect.handleClear()
+      this.form.setFieldsValue({customerId:undefined,customerName:undefined })
+      //debugger
+      //特殊处理
+      let target = this.saleUserList.find(user =>user.userId === parseInt(saleUserId))
+      console.log(target)
+      if(target){
+        this.form.setFieldsValue({saleUserPhone: target.mobile || target.userInfo.mobile || undefined})
+      }
     }
   }
 }

@@ -593,7 +593,7 @@ export default {
       }
     },
     async fillData(type,resultData){
-
+      
       let that = this
       await this.init()
 
@@ -614,7 +614,7 @@ export default {
         //银行卡
         that.bankInfo = values.bankCardList || []
         //that.$nextTick(() => that.$refs.bankChoice.$forceUpdate())
-        //debugger
+        
         //values.trueName = values.name //姓名
         if(values.name ){
           values.trueName = values.name
@@ -637,7 +637,7 @@ export default {
               wxNum:!!res.data.wxNum
             }
           }
-        })
+        }).catch(err =>console.log(err))
 
         delete values.birthplace
 
@@ -673,6 +673,12 @@ export default {
           delete values.phone
         }
 
+        try{
+          //填充试用期
+          that.isProbationType4 = +values.probationType === 4 ? false : true
+        }catch(err){
+          console.log(err)
+        }
         //填充其他
         that.$nextTick(() => {
           that.form.setFieldsValue(Object.assign({},values))
