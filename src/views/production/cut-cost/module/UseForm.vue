@@ -47,7 +47,7 @@
             </td>
             <td rowspan="2">图片</td>
             <td rowspan="2">
-              <UploadFile key="newPic" ref="newPic" />
+              <UploadFile key="newPicture" ref="newPicture" />
             </td>
           </tr>
           <tr>
@@ -183,7 +183,7 @@ export default {
       if (result) {
         that.detail = { ...result }
         if (result.newPicture) {
-          that.$refs.newPicture.setFiles([{ url: result.newPicture }])
+          that.$refs.newPicture && that.$refs.newPicture.setFiles([{ url: result.newPicture }])
         }
         that.$nextTick(() => that.form.setFieldsValue({ ...result }))
       }

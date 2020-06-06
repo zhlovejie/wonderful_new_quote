@@ -825,7 +825,7 @@ export const asyncRouterMap = [
                 path: '/production/cutCostRecord',
                 name: 'cutCostRecord',
                 component: () => import('@/views/production/cut-cost/RecordList'),
-                meta: { title: '降本记录', permission: ['permission'] }
+                meta: { title: '降本申请记录', permission: ['permission'] }
               },
               {
                 path: '/production/cutCostRule',

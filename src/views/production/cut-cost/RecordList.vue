@@ -52,9 +52,11 @@
               <a type="primary" @click="doAction('back',record)">撤回</a>
             </template>
 
-            <template v-if="+record.approveState === 2 && isSelf(record.createdId)">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('del',record)">删除</a>
+            <template v-if="+record.approveState === 2">
+              <template v-if="isSelf(record.createdId)">
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('del',record)">删除</a>
+              </template>
               <template v-if="+record.isUsed === 0">
                 <a-divider type="vertical" />
                 <a type="primary" @click="doAction('use',record)">应用</a>
