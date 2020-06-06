@@ -223,6 +223,16 @@ export default {
       console.log(err)
     })
   },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'DepCustomerList') {
+          this.$refs.table.refresh()
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
     toAdd () {
       if (!this.salesJurisdiction.top && this.salesJurisdiction.canEnterDep !== 1) { // 没有新增部门客户权限

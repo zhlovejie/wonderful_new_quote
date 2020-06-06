@@ -232,6 +232,16 @@ export default {
       this.allEnter = res.data
     })
   },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'AllCustomerList') {
+          this.$refs.table.refresh()
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
     enterFilter (input, option) { // 下拉框搜索
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0

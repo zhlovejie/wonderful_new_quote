@@ -230,6 +230,16 @@ export default {
       console.log(err)
     })
   },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'CommonCutomerList') {
+          this.$refs.table.refresh()
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
     extract (customerId) { // 提取客户
       extractCustomer({ customerId: customerId }).then(res => {
