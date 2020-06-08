@@ -78,14 +78,14 @@
               </a-form-item>
               <a-form-item label="联系人">
                 <a-input
-                  v-decorator="['customerContacts',{rules: [{ required: true, message: '输入询价方联系人' }]}]"
+                  v-decorator="['customerContacts',{rules: [{ required: false, message: '输入询价方联系人' }]}]"
                   placeholder="询价方联系人"
                   :allowClear="true"
                 />
               </a-form-item>
               <a-form-item label="电话">
                 <a-input
-                  v-decorator="['customerMobile',{rules: [{ required: true, message: '输入询价方电话' }]}]"
+                  v-decorator="['customerMobile',{rules: [{ required: false, message: '输入询价方电话' }]}]"
                   placeholder="询价方电话"
                   :allowClear="true"
                 />
@@ -197,7 +197,7 @@
                     checked-children="含税" 
                     un-checked-children="不含税" 
                     default-checked 
-                    :checked="hasTax" 
+                    v-decorator="['remark', { initialValue:true}]"
                     @change="taxChange"
                   />
                   </template>
@@ -334,16 +334,18 @@ export default {
       if (customerSelectResult.err) {
         return
       }
-      //values.saleCustomerId = customerSelectResult.values.customerId
-      //values.customerName = customerSelectResult.values.customerName
+      
       this.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {
             values.id = that.record.id
           }
 
-          values.productNum = that.qty
-          values.unitPrice = that.unitPrice
+          values.saleCustomerId = customerSelectResult.values.customerId
+          values.customerName = customerSelectResult.values.customerName
+          //values.productNum = that.qty
+          //values.unitPrice = that.unitPrice
+          values.remark = values.remark ? 1 : 0
           values.productPic = that.productPic
           values.quoteTime = values.quoteTime.format('YYYY-MM-DD')
           values.productQuoteChooses = [
@@ -406,13 +408,15 @@ export default {
     editAction(){
       let that = this
       priceAdjustProductQuoteDetail({id:this.record.id}).then(res =>{
+        //res.data.remark = 
         that.form.setFieldsValue({...res.data})
 
         if(res.data.quoteTime){
           that.form.setFieldsValue({quoteTime:that.moment(res.data.quoteTime)})
         }
 
-        that.hasTax = !!res.data.remark
+        that.hasTax = +res.data.remark === 1 ? true : false
+        that.form.setFieldsValue({remark:that.hasTax})
         //quoteTime
         that.$refs.customerSelect.fill({
           name:res.data.customerName,
