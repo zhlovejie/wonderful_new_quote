@@ -4,6 +4,7 @@
     :width="1000"
     :visible="visible"
     @ok="handleOk"
+    okText="下载"
     @cancel="handleCancel"
     :maskClosable="false"
   >
