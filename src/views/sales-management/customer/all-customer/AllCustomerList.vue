@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false">
+  <a-card :bordered="false" class="depcustomer-list-wrapper">
     <!--搜索模块-->
     <div class="all-customer-list-search-wrapper">
       <a-form layout="inline">
@@ -16,10 +16,10 @@
 
         <a-form-item label="客户意向度">
           <a-select style="width:172px;" v-model.trim="queryParam.intention" placeholder="请选择客户意向度">
-            <a-select-option value="1">有意向</a-select-option>
-            <a-select-option value="2">无意向</a-select-option>
-            <a-select-option value="3">无效客户</a-select-option>
-            <a-select-option value="4">竞争对手</a-select-option>
+            <a-select-option value="1">有效客户</a-select-option>
+            <a-select-option value="2">无效客户</a-select-option>
+            <a-select-option value="3">竞争对手</a-select-option>
+            <a-select-option value="4">黑名单客户</a-select-option>
           </a-select>
         </a-form-item>
 
@@ -76,15 +76,16 @@
       rowKey="id"
       :columns="columns"
       :data="loadData"
+      :pagination="pagination"
     >
       <span slot="serial" slot-scope="text,record,index">
         {{ index + 1 }}
       </span>
       <span slot="intention" slot-scope="text">
-        <span v-if="text == 1">有意向</span>
-        <span v-if="text == 2">无意向</span>
-        <span v-if="text == 3">无效客户</span>
-        <span v-if="text == 4">竞争对手</span>
+        <span v-if="text == 1">有效客户</span>
+        <span v-if="text == 2">无效客户</span>
+        <span v-if="text == 3">竞争对手</span>
+        <span v-if="text == 4">黑名单客户</span>
       </span>
       <span slot="pool" slot-scope="text">
         <span v-if="text == 1">公共客户池</span>
@@ -189,6 +190,9 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      pagination: {
+        showTotal: total=> '共' + total +'条数据'
+      },
       customerTypes: [],
       sources: [], // 所有客户录入渠道
       allEnter: [], // 所有的客户录入人员
@@ -228,6 +232,16 @@ export default {
       this.allEnter = res.data
     })
   },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'AllCustomerList') {
+          this.$refs.table.refresh()
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
     enterFilter (input, option) { // 下拉框搜索
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -264,3 +278,9 @@ export default {
   }
 }
 </script>
+
+<style  scoped>
+  .depcustomer-list-wrapper >>> .ant-pagination-total-text{
+    color: red;
+  }
+</style>

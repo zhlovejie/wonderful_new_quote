@@ -3,7 +3,7 @@
     <!--增删模块-->
     <div class="table-operator">
       <template v-if="$auth('salesman:add')">
-        <a-button v-if="salesJurisdiction.top || salesJurisdiction.service" type="primary" icon="plus" @click="toAdd">新增</a-button>
+        <a-button v-if="salesJurisdiction.top || salesJurisdiction.service" type="primary" icon="plus" @click="toForm">新增</a-button>
       </template>
     </div>
 
@@ -75,6 +75,10 @@
             <a href="#">删除</a>
           </a-popconfirm>
         </template>
+        <template v-if="$auth('salesman:edit')">
+          <a-divider type="vertical" />
+          <a v-if="salesJurisdiction.top || salesJurisdiction.service" @click="toForm(record)">修改</a>
+        </template>
       </span>
     </a-table>
     <add-salesman ref="addSalesman" @ok="handleOk"/>
@@ -133,6 +137,10 @@ export default {
           dataIndex: 'distributeNum'
         },
         {
+          title: '可拥有客户最多数量',
+          dataIndex: 'maximum'
+        },
+        {
           title: '创建人',
           dataIndex: 'createName'
         },
@@ -143,7 +151,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: '200px',
+          width: '120px',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -171,16 +179,19 @@ export default {
   },
   methods: {
     handleOk () { // 重新加载数据
+      let that = this
+      that.salesmans =[]
       getAllSalesman().then(res => {
+        console.log('ok==res', res)
         if (res.code === 200) {
-          this.salesmans = res.data
+          this.salesmans = [...res.data]
         } else {
           this.$message.error(res.msg)
         }
       })
     },
-    toAdd () {
-      this.$refs.addSalesman.showForm()
+    toForm (record) {
+      this.$refs.addSalesman.showForm(record)
     },
     changeJurisdiction (text, record, type) {
       let status = 0
