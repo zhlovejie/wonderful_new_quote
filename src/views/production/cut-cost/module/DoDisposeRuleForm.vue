@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { depreciateUserListByApply } from '@/api/production/cutCost'
+import { depreciateUserListByApply ,depreciateRecordUserListByDetail} from '@/api/production/cutCost'
 import moment from 'moment'
 
 const columns = [
@@ -114,35 +114,38 @@ export default {
       await that.init()
       that.visible = true
 
-      if (Array.isArray(record.users)) {
-        that.dataSource = record.users.map(item => {
-          let _item = Object.assign({}, item)
-          _item.key = Math.random()
-            .toString(16)
-            .slice(-10)
-          _item.userName = _item.userName || '-'
-          return _item
-        })
-      } else {
-        // that.spinning = true
-        // depreciateUserListByApply({ applyId: record.id })
-        //   .then(res => {
-        //     that.spinning = false
-        //     console.log(res)
-        //     that.dataSource = res.data.map(item => {
-        //       let _item = Object.assign({}, item)
-        //       _item.key = Math.random()
-        //         .toString(16)
-        //         .slice(-10)
-        //       _item.userName = _item.userName || '-'
-        //       return _item
-        //     })
-        //   })
-        //   .catch(err => {
-        //     console.log(err)
-        //     that.spinning = false
-        //   })
-      }
+      //debugger
+      // if (Array.isArray(record.users)) {
+      //   that.dataSource = record.users.map(item => {
+      //     let _item = Object.assign({}, item)
+      //     _item.key = Math.random()
+      //       .toString(16)
+      //       .slice(-10)
+      //     _item.userName = _item.userName || '-'
+      //     return _item
+      //   })
+      // } else {
+        that.spinning = true
+        let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0 
+            ? depreciateUserListByApply({ applyId: that.record.applyId })
+            : depreciateRecordUserListByDetail({detailId:that.record.id})
+        _api.then(res => {
+            that.spinning = false
+            console.log(res)
+            that.dataSource = res.data.map(item => {
+              let _item = Object.assign({}, item)
+              _item.key = Math.random()
+                .toString(16)
+                .slice(-10)
+              _item.userName = _item.userName || '-'
+              return _item
+            })
+          })
+          .catch(err => {
+            console.log(err)
+            that.spinning = false
+          })
+      //}
     },
 
     priceChange(val, fieldName, record) {

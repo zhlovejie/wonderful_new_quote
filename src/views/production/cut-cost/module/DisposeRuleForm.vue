@@ -180,7 +180,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      return this.isAdd ? '新增' : this.isEdit ? '修改' : '应用'
+      return this.isAdd ? '新增' : this.isEdit ? '修改' : '处理'
     },
     isView() {
       return this.actionType === 'view'
@@ -262,17 +262,17 @@ export default {
           }
 
           let usersQueue = []
-          res.data.detailList.map(item => {
-            //debugger
-            let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0 
-            ? depreciateUserListByApply({ applyId: item.applyId })
-            : depreciateRecordUserListByDetail({detailId:item.id})
-            usersQueue.push(
-              _api.then(_res => {
-                item.users = [..._res.data]
-              })
-            )
-          })
+          // res.data.detailList.map(item => {
+          //   debugger
+          //   let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0 
+          //   ? depreciateUserListByApply({ applyId: item.applyId })
+          //   : depreciateRecordUserListByDetail({detailId:item.id})
+          //   usersQueue.push(
+          //     _api.then(_res => {
+          //       item.users = [..._res.data]
+          //     })
+          //   )
+          // })
           Promise.all(usersQueue).then(() => {
             that.detail = { ...res.data }
             that.dataSource = res.data.detailList.map(item => {
@@ -321,9 +321,13 @@ export default {
         //   this.$message.info(`降本奖励金额为:${record.bonus},禁止操作。`)
         //   return
         // }
+        //debugger
         let _type = this.isView || this.isApproval ? 'view' : 'use'
         //  withdrawState 撤销状态（0未撤销，1已撤销。默认0）
-        this.$refs.doDisposeRuleForm.query(_type, Object.assign({},record,{withdrawState:this.record.withdrawState || 0}))
+        this.$refs.doDisposeRuleForm.query(_type, Object.assign({},record,{
+          withdrawState:this.record.withdrawState || 0,
+          approveState:this.record.approveState || 0
+        }))
       }
     },
     setUsers(inputRecord, users) {

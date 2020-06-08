@@ -57,7 +57,7 @@
                 <a-divider type="vertical" />
                 <a type="primary" @click="doAction('del',record)">删除</a>
               </template>
-              <template v-if="+record.isUsed === 0">
+              <template v-if="+record.isUsed === 0 && $auth('depreciateApply:use')">
                 <a-divider type="vertical" />
                 <a type="primary" @click="doAction('use',record)">应用</a>
               </template>

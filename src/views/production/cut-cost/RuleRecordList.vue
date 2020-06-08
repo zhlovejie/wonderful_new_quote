@@ -42,7 +42,7 @@
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
 
-            <template v-if="+record.approveState === 0 && isSelf(record.createdId)">
+            <template v-if="+record.approveState === 0 && $auth('cutCostRuleRecord:dispose')">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('use',record)">处理</a>
             </template>
