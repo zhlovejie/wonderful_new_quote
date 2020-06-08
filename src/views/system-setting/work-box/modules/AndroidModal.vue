@@ -47,6 +47,22 @@
               }]
             }]"/>
         </a-form-item>
+        <a-form-item
+          label="更新说明"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-textarea
+            :disabled="queryBoolean"
+            placeholder="请输入更新说明"
+            v-decorator="['remark', {
+              rules: [{
+                type: 'string', message: '请输入更新说明!',
+              }, {
+                required: true, message: '请输入更新说明!',
+              }]
+            }]"/>
+        </a-form-item>
         <a-form-item label="文件" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
             accept=".apk,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
