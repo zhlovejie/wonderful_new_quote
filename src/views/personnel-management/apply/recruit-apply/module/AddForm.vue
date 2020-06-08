@@ -265,6 +265,7 @@
             <a-select :disabled="isDisabled"  placeholder="选择婚姻状态" v-decorator="['maritalStatus',{initialValue:0,rules: [{required: false,message: '选择婚姻状态'}]}]">
               <a-select-option :value="0">未婚</a-select-option>
               <a-select-option :value="1">已婚</a-select-option>
+              <a-select-option :value="2">不限</a-select-option>
             </a-select>
           </a-form-item>
         </td>
@@ -274,6 +275,7 @@
             <a-select :disabled="isDisabled"  placeholder="选择生育状态" v-decorator="['fertilityStatus',{initialValue:0,rules: [{required: false,message: '选择生育状态'}]}]">
               <a-select-option :value="0">未育</a-select-option>
               <a-select-option :value="1">已育</a-select-option>
+              <a-select-option :value="2">不限</a-select-option>
             </a-select>
           </a-form-item>
         </td>
@@ -283,7 +285,8 @@
         <td>
           <a-form-item>
             <!-- <a-input :disabled="isDisabled"  v-decorator="['salary',{rules: [{required: false,message: '输入建议薪资'}]}]" placeholder="输入建议薪资"/> -->
-            <a-input-number style="width:100%;" :disabled="isDisabled" :min="0" :step="0.01" :precision=2 v-decorator="['salary', { rules: [{ required: true, message: '输入建议薪资(元)' }] }]"/>
+            <!-- <a-input-number style="width:100%;" :disabled="isDisabled" :min="0" :step="0.01" :precision=2 v-decorator="['salary', { rules: [{ required: true, message: '输入建议薪资(元)' }] }]"/> -->
+            <a-input style="width:100%;" :disabled="isDisabled" v-decorator="['salary', { rules: [{ required: true, message: '输入建议薪资(元)' }] }]"/>
           </a-form-item>
         </td>
         <td colspan="2"></td>

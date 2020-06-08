@@ -387,3 +387,46 @@ export function incomeSaveOrUpdate (data) {
   })
 }
 //----------------------进款单-END------------------
+
+
+//----------------------赠送订单----------------------
+/**赠送订单申请分页列表 */
+export function presentOrderPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salePresent/presentOrder/presentOrderPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**赠送订单详情 */
+export function presentOrderDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salePresent/presentOrder/getPresentOrderDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**下载赠送订单 */
+export function presentOrderDownload (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salePresent/presentOrder/download',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**修改赠送订单 */
+export function presentOrderUpdate (data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salePresent/presentOrder/updatePresentOrderDetail',
+    method: 'post',
+    data: data
+  })
+}
+//----------------------赠送订单-END------------------

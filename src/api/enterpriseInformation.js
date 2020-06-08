@@ -18,6 +18,33 @@ export function getEnterpriseVideoList (parameter) {
     params: parameter
   })
 }
+// 获取产品宣传视频列表
+export function getProductPromotionVideoList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/enterpriseInformation/toList?informationType=3',
+    method: 'get',
+    params: parameter
+  })
+}
+// 获取产品使用教学视频列表
+export function getTeachingVideoOfProductUseList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/enterpriseInformation/toList?informationType=4',
+    method: 'get',
+    params: parameter
+  })
+}
+// 获取产品功能简介列表
+export function getProductFunctionIntroductionList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/enterpriseInformation/toList?informationType=5',
+    method: 'get',
+    params: parameter
+  })
+}
 // 新增简介/视频
 export function saveInformation (data) {
   const token = data.Authorization

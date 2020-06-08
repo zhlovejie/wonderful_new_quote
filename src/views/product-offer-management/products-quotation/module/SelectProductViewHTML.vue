@@ -18,21 +18,19 @@
         <td style="width:150px;">产品价格</td>
         <td>
           <a-row>
-            <a-col :span="6" >
+            <a-col :span="24" >
               <a-select
-                style="width:100%;"
+                style="width:140px;"
                 placeholder="选择产品价格" 
                 @change="priceChange"
               >
                 <a-select-option v-for="(v,idx) in priceList" :value="v" :key="idx">{{v | moneyFormatNumber}}</a-select-option>
                 <a-select-option value="-1">其他</a-select-option>
               </a-select>
-            </a-col>
-            <a-col :span="6" :offset="1">
               <a-input-number 
                 v-if="isOtherPrice"
                 placeholder="手动输入价格"
-                style="width:100%;"
+                style="width:140px;margin-left:10px;"
                 :min="1"
                 :step="1" 
                 @change="otherPriceChange"

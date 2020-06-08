@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="企业简介"
+    :title="modalTitle"
     :width="940"
     :visible="visible"
     @cancel="handleCancel"
@@ -44,13 +44,20 @@ export default {
   data () {
     return {
       visible: false, // 是否显示
+      informationType:1,
       enterpriseSynopsis: {}, // 企业简介信息
       form: this.$form.createForm(this)
+    }
+  },
+  computed: {
+    modalTitle() {
+      return this.informationType === 1 ? '企业简介' : '产品功能简介'
     }
   },
   methods: {
     show (enterpriseSynopsis) {
       this.visible = true
+      this.informationType = enterpriseSynopsis.informationType
       this.enterpriseSynopsis = enterpriseSynopsis
     },
     handleCancel () {

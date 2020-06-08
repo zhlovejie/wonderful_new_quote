@@ -95,7 +95,7 @@
                   <td>{{detail.productNum}}</td>
                   <td>{{detail.unitPrice | moneyFormatNumber}}</td>
                   <td>{{(+detail.unitPrice * +detail.productNum) | moneyFormatNumber}}</td>
-                  <td>{{detail.remark === 0 ? '不含税' : '含税' }}</td>
+                  <td>{{+detail.remark === 1 ? '含税' : '不含税' }}</td>
                 </tr>
               </table>
 
@@ -130,8 +130,9 @@
         <div class="add-form__bd-item" :style="borderImageObj123">
           <p class="__ele-english" data-english="quotation description">报价说明：</p>
           <p
-            style="height:80px;border:1px solid #ddd;padding:10px;border-radius:3px;"
-          >{{detail.quoteExplain}}</p>
+            style="height:auto;border:1px solid #ddd;padding:10px;border-radius:3px;" 
+            v-html="detail.quoteExplainHTML"
+          ></p>
         </div>
       </div>
     </a-spin>
@@ -205,9 +206,14 @@ export default {
         .then(res => {
           that.spinning = false
           that.detail = { ...res.data }
+          let _quoteExplain = that.detail.quoteExplain
+          if(_quoteExplain){
+            that.detail.quoteExplainHTML = _quoteExplain.split('\n').map(p =>`<div>${p}</div>`).join('')
+          }
           let target = that.saleUserList.find(u => u.userId === res.data.saleUserId)
           if (target) {
             that.detail.saleUserName = target.salesmanName
+            that.detail.saleUserPhone= target.mobile || target.userInfo.mobile || ''
           }
           that.viewDataSourceHTMLWithoutTitle = {
             __config: {

@@ -360,6 +360,7 @@ export default {
       console.log(result)
     },
     controlChangeHandler(controlID){
+      //debugger
       let that = this
       that.controlResult = {
         optStand:[],

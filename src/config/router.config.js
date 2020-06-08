@@ -214,6 +214,24 @@ export const asyncRouterMap = [
                 meta: { title: '企业简介', permission: ['permission'] }
               },
               {
+                path: '/system-setting/work-box/companyInformation/ProductPromotionVideo',
+                name: 'ProductPromotionVideo',
+                component: () => import('@/views/system-setting/work-box/companyInformation/ProductPromotionVideo'),
+                meta: { title: '产品宣传视频', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box/companyInformation/TeachingVideoOfProductUse',
+                name: 'TeachingVideoOfProductUse',
+                component: () => import('@/views/system-setting/work-box/companyInformation/TeachingVideoOfProductUse'),
+                meta: { title: '产品使用教学视频', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box/companyInformation/ProductFunctionIntroduction',
+                name: 'ProductFunctionIntroduction',
+                component: () => import('@/views/system-setting/work-box/companyInformation/ProductFunctionIntroduction'),
+                meta: { title: '产品功能简介', permission: ['permission'] }
+              },
+              {
                 path: '/system-setting/work-box/OperationalScheme',
                 name: 'OperationalScheme',
                 component: () => import('@/views/system-setting/work-box/OperationalScheme'),
@@ -230,6 +248,18 @@ export const asyncRouterMap = [
                 name: 'DescriptionDocument',
                 component: () => import('@/views/system-setting/work-box/DescriptionDocument'),
                 meta: { title: '软件说明文档', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box/ElectronicAtlas',
+                name: 'ElectronicAtlas',
+                component: () => import('@/views/system-setting/work-box/ElectronicAtlas'),
+                meta: { title: '电子图册', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box/ProductPoster',
+                name: 'ProductPoster',
+                component: () => import('@/views/system-setting/work-box/ProductPoster'),
+                meta: { title: '产品海报', permission: ['permission'] }
               },
               {
                 path: '/system-setting/work-box/ProjectCaseList',
@@ -618,6 +648,13 @@ export const asyncRouterMap = [
               //   component: () => import('@/views/sale/present-order/List'),
               //   meta: { title: '赠送订单', permission: ['permission'] }
               // },
+              {
+                path: '/sale/present-order/List',
+                name: 'presentOrder',
+                hidden: true,
+                component: () => import('@/views/sale/present-order/List'),
+                meta: { title: '赠送订单', permission: ['permission'] }
+              },
               {
                 path: '/sale/income/List',
                 name: 'incomeReceipt',

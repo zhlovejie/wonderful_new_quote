@@ -150,8 +150,9 @@ export default {
       this.searchAction({current:pagination.current})
     },
     doAction(type,record){
+      let that = this
       if(type === 'view'){
-        this.$refs.priceFormPrint.query(type,record)
+        that.$refs.priceFormPrint.query(type,record)
         return
       }
       if (type === 'del') {

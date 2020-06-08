@@ -48,49 +48,49 @@
           <td>面试评估</td>
           <td colspan="3" >
             <a-row :gutter="16" class="set-pass-score-wrapper">
-              <a-col :span="12" >
+              <a-col :span="24" >
                 <a-form-item label="专业性(最高40分)">
                   <!-- <label>专业性</label>  -->
-                  <a-input-number :disabled="isDisabled"   :min="0" :max="40" :step="1" v-decorator="['results.0.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="40" :step="1" v-decorator="['results.0.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.0.evaluateItem',{initialValue:'专业性'}]" />
                 </a-form-item>
                 <a-form-item></a-form-item>
               </a-col>
-              <a-col :span="12" >
+              <a-col :span="24" >
                 <a-form-item label="稳定性(最高20分)">
                   <!-- <label>稳定性</label>  -->
                   <!-- <a-input :disabled="isDisabled"  v-decorator="['results.1.evaluateScore']" /> -->
-                  <a-input-number :disabled="isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.1.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.1.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.1.evaluateItem',{initialValue:'稳定性'}]" />
                 </a-form-item>
               </a-col>
-              <a-col :span="12" >
+              <a-col :span="24" >
                 <a-form-item label="德行品质(最高20分)">
                   <!-- <label>德行品质</label>  -->
                   <!-- <a-input :disabled="isDisabled"  v-decorator="['results.2.evaluateScore']" /> -->
-                  <a-input-number :disabled="isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.2.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.2.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.2.evaluateItem',{initialValue:'德行品质'}]" />
                 </a-form-item>
               </a-col>
-              <a-col :span="12" >
+              <a-col :span="24" >
                 <a-form-item label="语言表达(最高10分)">
                   <!-- <label>语言表达</label> 
                   <a-input :disabled="isDisabled"  v-decorator="['results.3.evaluateScore']" /> -->
-                  <a-input-number :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.3.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.3.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.3.evaluateItem',{initialValue:'语言表达'}]" />
                 </a-form-item>
               </a-col>
-              <a-col :span="12" >
+              <a-col :span="24" >
                 <a-form-item label="健康情况(最高10分)">
                   <!-- <label>健康情况</label> 
                   <a-input :disabled="isDisabled"  v-decorator="['results.4.evaluateScore']" /> -->
-                  <a-input-number :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.4.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.4.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.4.evaluateItem',{initialValue:'健康情况'}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="24" >
                 <a-form-item label="合计">
-                  <div style="width: 120px;">{{totalCalcScore}}</div>
+                  <span style="float:left;">{{totalCalcScore}}</span>
                 </a-form-item>
               </a-col>
               
@@ -109,6 +109,31 @@
                 v-decorator="['firstEvaluate', { rules: [{ required: false, message: '综合评价' }] }]"
               />
             </a-form-item>
+          </td>
+        </tr>
+
+        <tr>
+          <td>试用期</td>
+          <td colspan="3">
+            <a-row>
+              <a-col :span="10">
+                <a-form-item>
+                  <a-select :disabled="isView" @change="probationTypeChange" v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]" placeholder="选择试用期">
+                    <a-select-option :value="0">无</a-select-option>
+                    <a-select-option :value="1">1个月</a-select-option>
+                    <a-select-option :value="2">2个月</a-select-option>
+                    <a-select-option :value="3">3个月</a-select-option>
+                    <a-select-option :value="4">考察期</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="10" :offset="1" v-if="!isProbationType4">
+                <a-form-item label="考察期(月)">
+                  <!-- <a-input :disabled="isView || isProbationType4" v-decorator="['inspectMoth',{rules: [{required: !isProbationType4,message: '输入考察期限'},{max:10,message:'最多可输入10个字符'}]}]" placeholder="输入考察期限"/> -->
+                  <a-input-number :disabled="isView || isProbationType4" style="width:100%;"  :min="0" :step="1" v-decorator="['inspectMoth', { rules: [{ required: !isProbationType4, message: '输入考察期限(月)' }] }]" placeholder="输入考察期限(月)" />
+                </a-form-item>
+              </a-col>
+            </a-row>
           </td>
         </tr>
 
@@ -288,7 +313,8 @@ export default {
       secondName:'', //复试人员 仅显示用
       secondDate:'',  //复试时间 仅显示用
       totalCalcScore:0,
-      spinning:false
+      spinning:false,
+      isProbationType4:true,
     }
   },
   computed:{
@@ -456,7 +482,8 @@ export default {
         }catch(err){
           console.log(err)
         }
-
+        //填充试用期
+        that.isProbationType4 = +data.probationType === 4 ? false : true
         that.$nextTick(() =>{
           //填充其余数据
           delete data.interviewResult
@@ -486,6 +513,8 @@ export default {
           })
         }
 
+        
+
       })
     },
     secondPassChange(key){
@@ -500,7 +529,14 @@ export default {
           return calc + (item.evaluateScore || 0)
         },0)
       })
-    }
+    },
+    probationTypeChange(e){
+      //考察期需要手动输入
+      this.isProbationType4 = parseInt(e,10) === 4 ? false : true
+      this.form.setFieldsValue({
+        inspectMoth:''
+      })
+    },
   }
 }
 </script>

@@ -198,7 +198,7 @@ export default {
       productTypes: [], // 所有产品类型
       customerTypes: [], // 所有客户类型
       learns: [], // 客户所有的获知渠道
-      intentions: [{ key: '有意向', value: 1 }, { key: '无意向', value: 2 }, { key: '无效客户', value: 3 }, { key: '竞争对手', value: 4 }], // 客户意向度
+      intentions: [{ key: '有效客户', value: 1 }, { key: '无效客户', value: 2 }, { key: '竞争对手', value: 3 }, { key: '黑名单客户', value: 4 }], // 客户意向度
       provinces: [], // 省下拉框数据
       citys: [], // 城市下拉框数据
       areas: [], // 区下拉框数据

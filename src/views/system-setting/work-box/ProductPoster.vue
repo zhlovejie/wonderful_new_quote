@@ -1,23 +1,22 @@
 <template>
   <a-card :bordered="false">
     <!--搜索模块-->
-    <div class="operational-scheme-search-wrapper">
+    <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="名称">
           <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询"/>
         </a-form-item>
-        <template v-if="$auth('scheme:list')">
+        <template v-if="$auth('ProductPoster:list')">
           <a-form-item>
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           </a-form-item>
         </template>
-
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
-          <template v-if="$auth('scheme:add')">
-            <a-button style="margin-left: 8px" type="primary" icon="plus" @click="$refs.modal.add(1)">新增</a-button>
+          <template v-if="$auth('ProductPoster:add')">
+            <a-button style="margin-left: 8px" type="primary" icon="plus" @click="$refs.modal.add(5)">新增</a-button>
           </template>
-          <template v-if="$auth('scheme:list')">
+          <template v-if="$auth('ProductPoster:list')">
             <a-button style="margin-left: 8px" type="primary" icon="download" @click="handleBatchDownload">批量下载</a-button>
           </template>
           </a-form-item>
@@ -39,18 +38,14 @@
       </span>
       <span slot="action" slot-scope="text,record">
         <template>
-          <template v-if="$auth('scheme:one')">
-            <a target="_blank" :href="url+record.fileUrl">查看</a>
+          <template v-if="$auth('ProductPoster:one')">
+            <a target="_blank" :href="record.fileUrl">预览</a>
           </template>
-          <template v-if="$auth('scheme:one')">
-            <a-divider type="vertical" />
-            <a target="_blank" :href="record.fileUrl">下载</a>
-          </template>
-          <template v-if="$auth('scheme:edit')">
+          <template v-if="$auth('ProductPoster:edit')">
             <a-divider type="vertical" />
             <a @click="handleEdit(record)">编辑</a>
           </template>
-          <template v-if="$auth('scheme:del')">
+          <template v-if="$auth('ProductPoster:del')">
             <a-divider type="vertical" />
             <a @click="del(record)">删除</a>
           </template>
@@ -70,7 +65,7 @@ import FileSaver from 'file-saver'
 import Modal from './modules/SchemeModal'
 
 export default {
-  name: 'OperationalScheme',
+  name: 'ProductPoster',
   components: { // 组件
     STable,
     Modal,
@@ -83,7 +78,7 @@ export default {
       selectedRowKeys: [],
       selectedRows: [],
       // 查询参数
-      queryParam: { type: 1 },
+      queryParam: { type: 5 },
       // 表头
       columns: [
         {
@@ -160,7 +155,6 @@ export default {
         }
       })
     },
-
     handleBatchDownload () {
       const data = [] // 需要下载打包的路径, 可以是本地相对路径, 也可以是跨域的全路径
       const selectedRows = this.selectedRows
@@ -173,7 +167,6 @@ export default {
         downloadFile(url)
       }
     },
-
     // handleBatchDownload() {
     //   const data = [] // 需要下载打包的路径, 可以是本地相对路径, 也可以是跨域的全路径
     //   let selectedRows= this.selectedRows;

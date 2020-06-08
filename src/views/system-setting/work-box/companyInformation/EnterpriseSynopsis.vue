@@ -1,15 +1,24 @@
 <template>
   <a-card :bordered="false">
-    <!--div中可以写搜索条件，和功能按键-->
-    <div class="table-operator" style="text-align: right">
-      <template v-if="$auth('synopsis:add')">
-        <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
-      </template>
-      <!--      <a-button type="primary" icon="download" @click="exportToExcel">导出</a-button>-->
+    <div class="description-document-search-wrapper">
+      <a-form layout="inline">
+        <a-form-item label="名称">
+          <a-input v-model.trim="queryParam.title" placeholder="根据名称模糊查询"/>
+        </a-form-item>
+        <template v-if="$auth('document:list')">
+          <a-form-item>
+            <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+          </a-form-item>
+        </template>
+        <div class="action-wrapper" style="float:right;">
+          <a-form-item>
+            <template v-if="$auth('synopsis:add')">
+              <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
+            </template>
+          </a-form-item>
+        </div>
+      </a-form>
     </div>
-    <a-layout>
-      <!--  此处编写表单中的功能按钮    -->
-      <a-layout-content>
         <s-table
           ref="table"
           size="default"
@@ -35,8 +44,6 @@
             </template>
           </span>
         </s-table>
-      </a-layout-content>
-    </a-layout>
     <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <modal ref="editModal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <preview ref="preview" @ok="handleSaveOk"/>
@@ -93,6 +100,8 @@ export default {
     return {
       selectedRowKeys: [],
       selectedRows: [],
+      // 查询参数
+      queryParam: {},
       // 表头
       columns: columns,
       // 初始化加载 必须为 Promise 对象
@@ -110,7 +119,7 @@ export default {
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add()
+      this.$refs.modal.add(1)
     },
     // 修改详情
     handleEdit (e) {

@@ -22,6 +22,15 @@
                 <a-form-item hidden>
                   <a-input v-decorator="[ 'contractId' ]" />
                 </a-form-item>
+                <a-form-item hidden>
+                  <a-input v-decorator="[ 'presentId' ]" />
+                </a-form-item>
+                <a-form-item hidden>
+                  <a-input v-decorator="[ 'presentNum' ]" />
+                </a-form-item>
+                <a-form-item hidden>
+                  <a-input v-decorator="[ 'invoiceType' ]" />
+                </a-form-item>
                 <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
                   <div class="row-item wid-15">发货单编号</div>
                   <div class="row-item wid-35">
@@ -31,14 +40,14 @@
                       v-decorator="['invoiceNum', {}]"
                     />
                   </div>
-                  <div class="row-item wid-15">合同编号</div>
+                  <div class="row-item wid-15">合同/赠送单(编号)</div>
                   <div class="row-item wid-35">
                     <a-form-item style="margin: 0">
                       <a-input
                         read-only="read-only"
-                        placeholder="请选择合同编号"
+                        placeholder="请选择合同编号/赠送单编号"
                         style="height: 30px;border: none;"
-                        v-decorator="['contractNum', {rules: [{required: true, message: '请选择合同编号!',}]}]"
+                        v-decorator="['contractNum', {rules: [{required: true, message: '请选择合同编号/赠送单编号!',}]}]"
                         @click="openModel"
                       />
                     </a-form-item>
@@ -282,14 +291,16 @@
         </div>
       </div>
       <!--获取交款单位弹出层-->
-      <invoice-sale-contract ref="invoiceContract" @custom-change="contractChange"></invoice-sale-contract>
+      <ChoiceOrderFactory ref="invoiceContract" @change="contractChange" />
     </div>
   </a-spin>
 </template>
 
 <script>
 import { getContractOne, getInvoiceNum, save, updateInvoice, getProductById } from '@api/invoice'
-import invoiceSaleContract from './invoiceSaleContract'
+import { presentOrderDetail } from '@/api/receipt'
+//import invoiceSaleContract from './invoiceSaleContract'
+import ChoiceOrderFactory from './ChoiceOrderFactory'
 import moment, { months } from 'moment'
 import { getAreaByParent } from '@/api/common'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
@@ -299,7 +310,7 @@ export default {
   name: 'invoiceModules',
   components: {
     AFormItem,
-    invoiceSaleContract,
+    ChoiceOrderFactory,
     moment
   },
   props: {},
@@ -494,7 +505,6 @@ export default {
         console.log('this.dataSource', this.dataSource)
       })
     },
-
     areaByParent() {
       return getAreaByParent({ pId: 100000 })
         .then(res => {
@@ -522,12 +532,26 @@ export default {
       console.log('openModel click')
       this.$refs.invoiceContract.query()
     },
-    //获取合同
-    contractChange(data) {
+    contractChange(result) {
+      let that = this
+      switch(result.selectedKey){
+        case 'invoiceSaleContract':
+          that.fillContract(result.record)
+          break
+        case 'invoicePresentOrder':
+          that.fillPresentOrder(result.record)
+          break
+        default:
+          break
+      }
+    },
+    //填充合同
+    fillContract(data){
       console.log('data', data)
       this.form.setFieldsValue({ contractNum: data.contractNum })
       this.form.setFieldsValue({ customerName: data.customerName })
       this.form.setFieldsValue({ contractId: data.contractId })
+      that.form.setFieldsValue({ invoiceType: 0 })
       const paramter = { id: data.contractId, type: 0 }
       getContractOne(paramter).then(res => {
         console.log('res.data.product', res.data)
@@ -554,11 +578,39 @@ export default {
         console.log('this.dataSource', this.dataSource)
       })
     },
+    //填充赠送订单
+    fillPresentOrder(data){
+      let that = this
+      presentOrderDetail({ presentId: data.id }).then(res => {
+        let _data = res.data
+        that.form.setFieldsValue({ contractNum: data.presentNum })
+        that.form.setFieldsValue({ presentNum: _data.presentNum })
+        that.form.setFieldsValue({ customerName: _data.customerName })
+        that.form.setFieldsValue({ presentId: _data.id })
+        that.form.setFieldsValue({ invoiceType: 1 })
+        
+        that.dataSource = _data.productList.map(item =>{
+          return {
+            id:item.id,
+            targetName:item.targetName,
+            productType:item.productType,
+            productModel:item.productCode,
+            productName:item.productName,
+            productStandard:item.productStand,
+            company:item.company,
+            invoiceCount:item.remainCount,
+            count:item.count,
+            remainCount:item.remainCount,
+            prevRemainCount:item.remainCount
+          }
+        }).filter(item => item.remainCount > 0)
+        console.log(res)
+      })
+    },
     // 最终全页面提交
     submit() {
       const _this = this
       this.form.validateFields((err, values) => {
-        debugger
         console.log(err, values)
         if (!err) {
           if (_this.selectedRows.length == 0) {
@@ -567,7 +619,6 @@ export default {
           }
           //拼接新的地址
           //values.address = `${values.province};${values.city};${values.area};${values.addressDetail}`
-
           let __addr = []
           values.province && __addr.push(values.province)
           values.city && __addr.push(values.city)
@@ -617,7 +668,7 @@ export default {
       this.$destroy('invoiceModule')
     },
     settlementMethodChange(e) {
-      console.log(e)
+      //console.log(e)
       this.settlementMethod = parseInt(e)
     }
   }

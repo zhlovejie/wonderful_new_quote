@@ -51,7 +51,7 @@
 
           </a-upload>
           <a-input type="hidden" v-decorator="['url', {rules: [{required: true,message: '请选择视频！'}]}]"/>
-          <a-input type="hidden" v-decorator="['showPic', {rules: [{required: false,message: '请选择视频！'}]}]"/>
+          <a-input type="hidden" v-decorator="['showPic', {rules: [{required: false,message: '没有获取到头图！'}]}]"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -100,6 +100,7 @@ export default {
       visible: false,
       confirmLoading: false,
       addOredit: 'save',
+      type:0,
       queryBoolean: false,
       previewVisible: false, // 图片预览框是否可见
       previewImage: '', //  预览图片的src值
@@ -116,7 +117,8 @@ export default {
     }
   },
   methods: {
-    add () {
+    add: function (type){
+      this.type = type
       this.visible = true
       this.addOredit = 'save'
     },
@@ -149,7 +151,7 @@ export default {
           _this.confirmLoading = true
           if (_this.addOredit == 'save') {
             _this.$set(values, 'Authorization', _this.$store.getters.token)
-            _this.$set(values, 'informationType', 2)
+            _this.$set(values, 'informationType', this.type)
             saveInformation(values).then((data) => {
               console.log('date', data)
               if (data.code == 200) {
