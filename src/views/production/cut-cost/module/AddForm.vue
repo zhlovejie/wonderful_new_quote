@@ -297,6 +297,7 @@ import Approval from './Approval'
 function makeUUID() {
   return Math.random().toString(32).slice(-10)
 }
+
 export default {
   name: 'AddForm',
   components: {
@@ -319,7 +320,8 @@ export default {
       meetingLenths: '',
       record: {},
       detail: {},
-      oaMeetingJoinUserStr: ''
+      oaMeetingJoinUserStr: '',
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
@@ -371,7 +373,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           //提交
-
+          //debugger
           try {
             let oldFiles = that.$refs.oldPic.getFiles()
             if (Array.isArray(oldFiles) && oldFiles.length > 0) {
@@ -393,6 +395,8 @@ export default {
           })
           values.depreciatePrice = that.diffPrice
           console.log(values)
+
+          //return
           that.spinning = true
           depreciateApplyAddOrUpdate(values)
             .then(res => {
@@ -428,6 +432,12 @@ export default {
       }
 
       if(that.isAdd){
+        that.oaMeetingJoinList = [{
+          _key:makeUUID(),
+          id:that.userInfo.id,
+          trueName:that.userInfo.trueName,
+          __root:true
+        }]
         return
       }
       //填充数据
@@ -438,19 +448,21 @@ export default {
         that.detail = {...result}
         that.diffPrice = result.depreciatePrice || 0
         that.$nextTick(() => that.form.setFieldsValue({ ...result }))
+
+        //debugger
         that.oaMeetingJoinList = result.users.map(item => {
           return {
             _key: makeUUID(),
             id: item.userId,
             trueName: item.userName,
-            ...item
+            __root:item.userId === that.userInfo.id,
           }
         })
-        that.oaMeetingJoinUserStr = that.oaMeetingJoinList.map(item => item.userName).join(',')
+        that.oaMeetingJoinUserStr = that.oaMeetingJoinList.map(item => item.trueName).join(',')
 
         try{
-          that.isEdit && that.$refs.oldPic && that.$refs.oldPic.setFiles([{url:result.quondamPicture}])
-          that.isEdit && that.$refs.newPic && that.$refs.newPic.setFiles([{url:result.newPicture}])
+          that.isEdit && result.quondamPicture &&that.$refs.oldPic && that.$refs.oldPic.setFiles([{url:result.quondamPicture}])
+          that.isEdit && result.newPicture && that.$refs.newPic && that.$refs.newPic.setFiles([{url:result.newPicture}])
         }catch(err){
 
         }
@@ -469,6 +481,7 @@ export default {
       }
     },
     joinPersonAction(type) {
+      //debugger
       let that = this
       if (type === 'add') {
         if (!that.currentPerson) {

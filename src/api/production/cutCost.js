@@ -116,10 +116,21 @@ export function depreciateDetail (parameter) {
   })
 }
 
+/**根据降本申请单查询参与人员列表  在未处理且未撤销的情况下调用 */
 export function depreciateUserListByApply (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/depreciateUser/listByApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**根据降本考核记录详情查询参与人员列表 其他的情况都调用 */
+export function depreciateRecordUserListByDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/depreciateRecordUser/listByDetail',
     method: 'get',
     params: parameter
   })

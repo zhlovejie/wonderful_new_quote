@@ -99,7 +99,8 @@ import {
   depreciateRecordDetail,
   depreciateRecordDispose,
   depreciateRecordApprove,
-  depreciateUserListByApply
+  depreciateUserListByApply,
+  depreciateRecordUserListByDetail
 } from '@/api/production/cutCost'
 import moment from 'moment'
 import DoDisposeRuleForm from './DoDisposeRuleForm'
@@ -173,7 +174,8 @@ export default {
       spinning: false,
       columns: columns,
       dataSource: [],
-      detail: {}
+      detail: {},
+      record:{}
     }
   },
   computed: {
@@ -261,8 +263,12 @@ export default {
 
           let usersQueue = []
           res.data.detailList.map(item => {
+            //debugger
+            let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0 
+            ? depreciateUserListByApply({ applyId: item.applyId })
+            : depreciateRecordUserListByDetail({detailId:item.id})
             usersQueue.push(
-              depreciateUserListByApply({ applyId: item.id }).then(_res => {
+              _api.then(_res => {
                 item.users = [..._res.data]
               })
             )
@@ -316,7 +322,8 @@ export default {
         //   return
         // }
         let _type = this.isView || this.isApproval ? 'view' : 'use'
-        this.$refs.doDisposeRuleForm.query(_type, record)
+        //  withdrawState 撤销状态（0未撤销，1已撤销。默认0）
+        this.$refs.doDisposeRuleForm.query(_type, Object.assign({},record,{withdrawState:this.record.withdrawState || 0}))
       }
     },
     setUsers(inputRecord, users) {
