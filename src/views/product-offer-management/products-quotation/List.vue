@@ -42,10 +42,10 @@
     >
       <!-- <p>成本价：{{parseInt(costPrice.price) | moneyFormatNumber}}</p> -->
       <div class="price-wrapper">
-        <p>A价：{{parseInt(costPrice.aprice) | moneyFormatNumber}}</p>
-        <p>B价：{{parseInt(costPrice.bprice) | moneyFormatNumber}}</p>
-        <p>C价：{{parseInt(costPrice.cprice) | moneyFormatNumber}}</p>
-        <p>市场价：{{parseInt(costPrice.retailPrice) | moneyFormatNumber}}</p>
+        <p>A价：{{parseInt(costPrice.aprice) | moneyFormatNumber(0)}}</p>
+        <p>B价：{{parseInt(costPrice.bprice) | moneyFormatNumber(0)}}</p>
+        <p>C价：{{parseInt(costPrice.cprice) | moneyFormatNumber(0)}}</p>
+        <p>市场价：{{parseInt(costPrice.retailPrice) | moneyFormatNumber(0)}}</p>
       </div>
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>

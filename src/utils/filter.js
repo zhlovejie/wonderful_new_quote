@@ -13,8 +13,8 @@ Vue.filter('NumberFormat', function (value,precision=0) {
   return Accounting.formatNumber(value,precision)
 })
 
-Vue.filter('moneyFormatNumber',function(value){
-  return Accounting.formatMoney(value,'¥')
+Vue.filter('moneyFormatNumber',function(value,precision=2){
+  return Accounting.formatMoney(value,'¥',precision)
 })
 
 Vue.filter('dayjs', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
