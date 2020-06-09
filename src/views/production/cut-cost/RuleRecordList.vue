@@ -24,7 +24,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="approveState" slot-scope="text, record, index">
-          <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
+          <a @click="approvalPreview(record)">
+            <span>{{ getStateText(text) }}</span>
+            <span v-if="+record.withdrawState === 1">-已撤回</span>
+          </a>
         </div>
         <div slot="totalBonus" slot-scope="text, record, index">{{text | moneyFormatNumber}}</div>
 
@@ -129,12 +132,13 @@ export default {
     return {
       userInfo: this.$store.getters.userInfo, // 当前登录人
       activeKey: 0,
-      sDate: [
-        moment()
-          .startOf('months')
-          .add({ months: -1 }),
-        moment().startOf('months')
-      ],
+      // sDate: [
+      //   moment()
+      //     .startOf('months')
+      //     .add({ months: -1 }),
+      //   moment().startOf('months')
+      // ],
+      sDate:[undefined,undefined],
       columns: columns,
       dataSource: [],
       pagination: {
@@ -148,8 +152,8 @@ export default {
       let startDate = undefined,
         endDate = undefined
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
-        startDate = this.sDate[0].format('YYYY-MM-DD')
-        endDate = this.sDate[1].format('YYYY-MM-DD')
+        startDate = this.sDate[0] ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        endDate = this.sDate[1] ? this.sDate[1].format('YYYY-MM-DD') :undefined
       }
       return {
         startDate: startDate,

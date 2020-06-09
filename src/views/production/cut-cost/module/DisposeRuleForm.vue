@@ -280,6 +280,10 @@ export default {
               _item.key = Math.random()
                 .toString(16)
                 .slice(-10)
+              if(that.isUse){
+                _item.inventoryQuantity = undefined
+                _item.nowPrice = undefined
+              }
               return _item
             })
           })

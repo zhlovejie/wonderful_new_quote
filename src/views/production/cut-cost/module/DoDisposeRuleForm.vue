@@ -115,16 +115,16 @@ export default {
       that.visible = true
 
       //debugger
-      // if (Array.isArray(record.users)) {
-      //   that.dataSource = record.users.map(item => {
-      //     let _item = Object.assign({}, item)
-      //     _item.key = Math.random()
-      //       .toString(16)
-      //       .slice(-10)
-      //     _item.userName = _item.userName || '-'
-      //     return _item
-      //   })
-      // } else {
+      if (Array.isArray(record.users)) {
+        that.dataSource = record.users.map(item => {
+          let _item = Object.assign({}, item)
+          _item.key = Math.random()
+            .toString(16)
+            .slice(-10)
+          _item.userName = _item.userName || '-'
+          return _item
+        })
+      } else {
         that.spinning = true
         let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0 
             ? depreciateUserListByApply({ applyId: that.record.applyId })
@@ -145,7 +145,7 @@ export default {
             console.log(err)
             that.spinning = false
           })
-      //}
+      }
     },
 
     priceChange(val, fieldName, record) {
@@ -165,6 +165,7 @@ export default {
         //降本奖励金额
         item.bonus = (parseInt(item.allocationProportion, 10) / 100) * _bonus
       })
+      this.dataSource = _dataSource
     }
   }
 }

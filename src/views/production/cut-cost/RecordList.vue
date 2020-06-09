@@ -34,7 +34,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="approveState" slot-scope="text, record, index">
-          <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
+          <a @click="approvalPreview(record)">
+            <span>{{ getStateText(text) }}</span>
+            <span v-if="+record.withdrawState === 1">-已撤回</span>
+          </a>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">

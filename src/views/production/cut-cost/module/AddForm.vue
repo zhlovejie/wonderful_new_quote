@@ -125,6 +125,19 @@
         </table>
         <h3>现产品信息</h3>
         <table class="custom-table custom-table-border">
+          
+          <tr v-if="+detail.isUsed === 1">
+            <td class="wdf-column">现物料代码</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-input
+                  :disabled="isDisabled"
+                  v-decorator="['newCode', { rules: [{ required: false, message: '现物料代码' }] }]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+
           <tr>
             <td class="wdf-column">产品名称</td>
             <td>
