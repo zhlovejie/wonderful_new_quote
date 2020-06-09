@@ -6,6 +6,7 @@
     @ok="handleOk"
     @cancel="handleCancel"
     :maskClosable="false"
+    :destroyOnClose="true"
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper" id="add-form-wrapper">
@@ -154,7 +155,7 @@
                 <a-form-item>
                   <a-row>
                     <template v-if="!isView">
-                    <a-col :span="10">
+                    <a-col :span="24">
                       <a-select 
                         style="width:80px;"
                         placeholder="价格"
@@ -166,11 +167,9 @@
                         <a-select-option value="retailPrice">市场价</a-select-option>
                         <a-select-option value="otherPrice">其他</a-select-option>
                       </a-select>
-                    </a-col>
-                    <a-col :span="14">
                       <a-input-number
-                        :disabled="!unitPriceEdit"
-                        style="width:120px;"
+                        v-if="unitPriceEdit"
+                        style="width:120px;margin-left:10px;"
                         :min="0"
                         :step="1"
                         :precision="2"

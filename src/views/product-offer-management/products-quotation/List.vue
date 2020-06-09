@@ -37,6 +37,7 @@
       :visible="visible"
       @cancel="visible = false"
       :maskClosable="false"
+      :destroyOnClose="true"
       :footer="null"
       key="m1"
     >
@@ -63,11 +64,13 @@
       @cancel="visibleView = false"
       :maskClosable="false"
       :footer="null"
+      :destroyOnClose="true"
       key="m2"
     >
       <a-spin :spinning="spinningView">
       <SelectProductViewHTML
-        key="v1"
+        key="v1" 
+        v-if="hackReset" 
         :productInfo="viewDataSourceHTML"
         @priceChange="viewPriceChange"
       />
@@ -78,7 +81,7 @@
       </a-spin>
     </a-modal>
 
-    <PriceForm ref="priceForm" />
+    <PriceForm ref="priceForm" v-if="hackReset" />
   </div>
 </template>
 
@@ -107,7 +110,8 @@ export default {
       costPrice: {},
       viewDataSource: [],
       unitPriceView: null, //预览选择的单价
-      spinningView:false
+      spinningView:false,
+      hackReset:true
     }
   },
   computed: {
@@ -175,7 +179,14 @@ export default {
         this.visible = false
       } else if (type === 'price-view') {
         this.makeViewDataSource()
-        this.visibleView = true
+        this.hackReset = false
+        Promise.resolve()
+        .then(() =>{
+          this.hackReset = true
+        }).then(() =>{
+          this.visibleView = true
+        })
+        
       } else if (type === 'price-form') {
         this.makeViewDataSource()
         let _optInfo = Object.assign({}, this.$refs.productConfigMain.optInfo)
@@ -189,7 +200,14 @@ export default {
           _costPrice: Object.assign({}, this.costPrice),
           _viewDataSource: { ...this.viewDataSourceHTMLWithoutTitle }
         }
-        this.$refs.priceForm.query('add', productInfo)
+
+        this.hackReset = false
+        Promise.resolve()
+        .then(() =>{
+          this.hackReset = true
+        }).then(() =>{
+          this.$refs.priceForm.query('add', productInfo)
+        })
       } else if (type === 'price-view-download') {
         if (!this.unitPriceView) {
           this.$message.info('请选择产品价格')

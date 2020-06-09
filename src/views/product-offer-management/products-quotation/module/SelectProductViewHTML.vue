@@ -5,7 +5,13 @@
       <caption>产品参数</caption>
       <tr>
         <td rowspan="3" style="width:150px;">
-          <img style="width:100%;height:auto;overflow:hidden;" :src="productInfo.optInfo.productPic" alt=""/>
+          <img 
+            v-if="productInfo.optInfo.productPic"
+            style="width:100%;height:auto;overflow:hidden;" 
+            :src="productInfo.optInfo.productPic" 
+            alt="产品图片"
+          />
+          <span v-else>暂未配置图片</span>
         </td>
         <td style="width:150px;">产品系列</td>
         <td>{{productInfo.optInfo.name}}</td>
@@ -22,6 +28,7 @@
               <a-select
                 style="width:140px;"
                 placeholder="选择产品价格" 
+                v-model="priceSelect"
                 @change="priceChange"
               >
                 <a-select-option v-for="(v,idx) in priceList" :value="v" :key="idx">{{v | moneyFormatNumber}}</a-select-option>
@@ -33,6 +40,7 @@
                 style="width:140px;margin-left:10px;"
                 :min="1"
                 :step="1" 
+                v-model="otherPrice"
                 @change="otherPriceChange"
               />
             </a-col>
@@ -70,10 +78,26 @@ export default {
   props:['productInfo'],
   data() {
     return {
-      isOtherPrice:false
+      isOtherPrice:false,
+      otherPrice:undefined,
+      priceSelect:undefined
     }
   },
   mounted(){
+    this.init()
+  },
+  watch:{
+    productInfo(newVal,oldVal){
+      //debugger
+      this.init()
+      // try{
+      //   if(!newVal.optInfo.productPic){
+      //     this.$message.info('该产品暂未配置图片')
+      //   }
+      // }catch(err){
+      //   console.log(err)
+      // }
+    }
   },
   computed:{
     priceList(){
@@ -85,6 +109,11 @@ export default {
     }
   },
   methods: {
+    init(){
+      this.isOtherPrice = false
+      this.otherPrice = undefined
+      this.priceSelect = undefined
+    },
     priceChange(val){
       this.isOtherPrice = val === '-1'
       if(!this.isOtherPrice){
@@ -118,6 +147,9 @@ export default {
       })
       html += '</tr></table>'
       return html
+    },
+    imgLoadAction(){
+      console.log(arguments)
     }
   }
 }
