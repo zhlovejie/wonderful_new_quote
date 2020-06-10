@@ -16,9 +16,9 @@
             <template v-if="$auth('ElectronicAtlas:add')">
               <a-button style="margin-left: 8px" type="primary" icon="plus" @click="$refs.modal.add(4)">新增</a-button>
             </template>
-            <template v-if="$auth('ElectronicAtlas:list')">
+            <!-- <template v-if="$auth('ElectronicAtlas:list')">
               <a-button style="margin-left: 8px" type="primary" icon="download" @click="handleBatchDownload">批量下载</a-button>
-            </template>
+            </template> -->
           </a-form-item>
         </div>
 
