@@ -551,7 +551,7 @@ export default {
       this.form.setFieldsValue({ contractNum: data.contractNum })
       this.form.setFieldsValue({ customerName: data.customerName })
       this.form.setFieldsValue({ contractId: data.contractId })
-      that.form.setFieldsValue({ invoiceType: 0 })
+      this.form.setFieldsValue({ invoiceType: 0 })
       const paramter = { id: data.contractId, type: 0 }
       getContractOne(paramter).then(res => {
         console.log('res.data.product', res.data)
