@@ -52,6 +52,8 @@
         <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>
         <a-button type="primary" @click="doAction('price-view')" style="margin:0 10px;">预览</a-button>
         <a-button type="primary" @click="doAction('price-form')" style="margin:0 10px;">新增报价单</a-button>
+        <a-button type="primary" v-if="$auth('productsQuotation:costPrice')" @click="doAction('price-view-cost')" style="margin:0 10px;">成本价</a-button>
+        
       </div>
     </a-modal>
 
@@ -72,11 +74,12 @@
         key="v1" 
         v-if="hackReset" 
         :productInfo="viewDataSourceHTML"
+        :isPriceViewCost="isPriceViewCost"
         @priceChange="viewPriceChange"
       />
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" @click="visibleView = false" style="margin:0 10px;">关闭</a-button>
-        <a-button type="primary" @click="doAction('price-view-download')" style="margin:0 10px;">下载</a-button>
+        <a-button type="primary" v-if="!isPriceViewCost" @click="doAction('price-view-download')" style="margin:0 10px;">下载</a-button>
       </div>
       </a-spin>
     </a-modal>
@@ -108,10 +111,13 @@ export default {
       visible: false,
       visibleView: false,
       costPrice: {},
+      costPriceAll:{},
       viewDataSource: [],
       unitPriceView: null, //预览选择的单价
       spinningView:false,
-      hackReset:true
+      hackReset:true,
+
+      isPriceViewCost:false //是否点击的 成本价预览
     }
   },
   computed: {
@@ -120,6 +126,7 @@ export default {
         __config: {
           showTitle: true,
           costPrice: Object.assign({}, this.costPrice),
+          costPriceAll:Object.assign({}, this.costPriceAll),
         },
         optInfo: {},
         optStand: [],
@@ -154,7 +161,30 @@ export default {
       return result
     }
   },
+  watch:{
+    '$route':{
+      handler:function(to,from) {
+        if(to.name === 'pom-products-quotation'){
+          this.init()
+        }
+      },
+      immediate:true
+    }
+  },
   methods: {
+    init(){
+      this.optInfo =  {}
+      this.visible =  false
+      this.visibleView =  false
+      this.costPrice =  {}
+      this.viewDataSource =  []
+      this.unitPriceView =  null //预览选择的单价
+      this.spinningView = false
+      this.hackReset = true
+      this.isPriceViewCost = false
+
+      this.$nextTick(() =>this.reset())
+    },
     extendProductChange(record) {
       if (record && record.isProduct && record.checked) {
         this.$refs.productConfigSub.query(record.id)
@@ -177,7 +207,9 @@ export default {
         this.reset()
       } else if (type === 'price-ok') {
         this.visible = false
-      } else if (type === 'price-view') {
+      } else if (['price-view','price-view-cost'].includes(type)) {
+
+        that.isPriceViewCost = type === 'price-view-cost'
         this.makeViewDataSource()
         this.hackReset = false
         Promise.resolve()
@@ -280,40 +312,62 @@ export default {
       this.$refs[key].query()
     },
     calcCostPrice() {
-      let mainPrice = this.$refs.productConfigMain.costPrice
-      let subPrice = this.$refs.productConfigSub.costPrice
-
+      let mainPrice = this.$refs.productConfigMain.costPriceAll
+      let subPrice = this.$refs.productConfigSub.costPriceAll
       let priceResult = {
-        price: 0,
-        aprice: 0,
-        bprice: 0,
-        cprice: 0,
-        retailPrice: 0
+        totalPrice:{
+          price: 0,
+          aprice: 0,
+          bprice: 0,
+          cprice: 0,
+          retailPrice: 0
+        },
+        standPrice:{
+          price: 0,
+          aprice: 0,
+          bprice: 0,
+          cprice: 0,
+          retailPrice: 0
+        },
+        unStandPrice:{
+          price: 0,
+          aprice: 0,
+          bprice: 0,
+          cprice: 0,
+          retailPrice: 0
+        }
       }
-      let arr = [Object.assign({}, mainPrice), Object.assign({}, subPrice)]
-      arr.reduce((calc, item) => {
+      let totalPrice = [Object.assign({}, mainPrice.totalPrice), Object.assign({}, subPrice.totalPrice)]
+      let standPrice = [Object.assign({}, mainPrice.standPrice), Object.assign({}, subPrice.standPrice)]
+      let unStandPrice = [Object.assign({}, mainPrice.unStandPrice), Object.assign({}, subPrice.unStandPrice)]
+      totalPrice.reduce((calc, item) => {
         calc.price += parseFloat(item.price) || 0
         calc.aprice += parseFloat(item.aprice) || 0
         calc.bprice += parseFloat(item.bprice) || 0
         calc.cprice += parseFloat(item.cprice) || 0
         calc.retailPrice += parseFloat(item.retailPrice) || 0
         return calc
-      }, priceResult)
+      }, priceResult.totalPrice)
 
-      //最终的钱 最后一位 保证是0  低于5不进 高于5进1
-      let formatPrice = n => {
-        let _n = Math.round(parseFloat(n))
-        if (_n < 10) return _n
-        return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
-      }
+      standPrice.reduce((calc, item) => {
+        calc.price += parseFloat(item.price) || 0
+        calc.aprice += parseFloat(item.aprice) || 0
+        calc.bprice += parseFloat(item.bprice) || 0
+        calc.cprice += parseFloat(item.cprice) || 0
+        calc.retailPrice += parseFloat(item.retailPrice) || 0
+        return calc
+      }, priceResult.standPrice)
 
-      for (let key in priceResult) {
-        if (priceResult.hasOwnProperty(key)) {
-          priceResult[key] = formatPrice(priceResult[key])
-        }
-      }
-
-      this.costPrice = { ...priceResult }
+      unStandPrice.reduce((calc, item) => {
+        calc.price += parseFloat(item.price) || 0
+        calc.aprice += parseFloat(item.aprice) || 0
+        calc.bprice += parseFloat(item.bprice) || 0
+        calc.cprice += parseFloat(item.cprice) || 0
+        calc.retailPrice += parseFloat(item.retailPrice) || 0
+        return calc
+      }, priceResult.unStandPrice)
+      this.costPriceAll = {...priceResult}
+      this.costPrice = { ...priceResult.totalPrice }
     },
     makeViewDataSource() {
       let that = this

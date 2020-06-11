@@ -200,6 +200,9 @@ export default {
   },
   computed:{
     costPrice(){
+      return this.costPriceAll.totalPrice
+    },
+    costPriceAll(){
       return this.calcItems()
     },
     viewDataSource(){
@@ -555,13 +558,26 @@ export default {
       optChoice = optChoice.filter(o =>!o.isProduct)
 
       let result = [...optSelect,...optChoice,...control_optSelect,...control_optChoice].flat()
-      let priceResult = {
+      let priceResult = { //总价格
+        price:0,
+        aprice:0,
+        bprice:0,
+        cprice:0,
+        retailPrice:0
+      },standPrice = { //标配总价
+        price:0,
+        aprice:0,
+        bprice:0,
+        cprice:0,
+        retailPrice:0
+      },unStandPrice = { //非标配总价
         price:0,
         aprice:0,
         bprice:0,
         cprice:0,
         retailPrice:0
       }
+
       result.reduce((calc,item) =>{
         console.log(`${item.itemName} 成本价：${item.price} A价：${item.aprice} B价：${item.bprice} C价：${item.cprice} 销售价：${item.retailPrice}`)
         calc.price += (parseFloat(item.price) || 0)
@@ -571,6 +587,9 @@ export default {
         calc.retailPrice += (parseFloat(item.retailPrice) || 0)
         return calc
       },priceResult)
+
+      unStandPrice = Object.assign({},priceResult)
+
 
       if(optStand.length > 0){
         console.log(`【标配】 ${optInfo.name} 成本价：${optInfo.price} A价：${optInfo.aprice} B价：${optInfo.bprice} C价：${optInfo.cprice} 销售价：${optInfo.retailPrice}`)
@@ -590,9 +609,39 @@ export default {
         priceResult.retailPrice += (parseFloat(control_optInfo.retailPrice) || 0)
       }
 
-      console.log(priceResult)
-      //console.log(`totalPrice:${totalPrice}`)
-      return priceResult
+      standPrice = {
+        price:parseFloat(priceResult.price - unStandPrice.price),
+        aprice:parseFloat(priceResult.aprice - unStandPrice.aprice),
+        bprice:parseFloat(priceResult.bprice - unStandPrice.bprice),
+        cprice:parseFloat(priceResult.cprice - unStandPrice.cprice),
+        retailPrice:parseFloat(priceResult.retailPrice - unStandPrice.retailPrice)
+      }
+
+      let formatPrice = n => {
+        let _n = Math.round(parseFloat(n))
+        if (_n < 10) return _n
+        return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
+      }
+      
+
+      Object.keys(priceResult).map(k =>{
+        priceResult[k] = formatPrice(priceResult[k])
+      })
+      Object.keys(standPrice).map(k =>{
+        priceResult[k] = formatPrice(priceResult[k])
+      })
+      Object.keys(unStandPrice).map(k =>{
+        priceResult[k] = formatPrice(priceResult[k])
+      })
+
+      console.log('总价：',priceResult)
+      console.log('标配总价：',standPrice)
+      console.log('非标配总价',unStandPrice)
+      return {
+        totalPrice:priceResult,
+        standPrice:standPrice,
+        unStandPrice:unStandPrice
+      }
     },
     query(id){
       let that = this

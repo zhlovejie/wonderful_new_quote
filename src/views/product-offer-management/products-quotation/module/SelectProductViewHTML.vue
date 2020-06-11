@@ -24,7 +24,7 @@
         <td style="width:150px;">产品价格</td>
         <td>
           <a-row>
-            <a-col :span="24" >
+            <a-col :span="24" v-if="!isPriceViewCost">
               <a-select
                 style="width:140px;"
                 placeholder="选择产品价格" 
@@ -44,9 +44,13 @@
                 @change="otherPriceChange"
               />
             </a-col>
+            <a-col :span="24" v-else>
+              <span style="margin:0 5px;">A价:{{priceAll.totalPrice.aprice | moneyFormatNumber(0)}}</span>
+              <span style="margin:0 5px;">B价:{{priceAll.totalPrice.bprice | moneyFormatNumber(0)}}</span>
+              <span style="margin:0 5px;">C价:{{priceAll.totalPrice.cprice | moneyFormatNumber(0)}}</span>
+              <span style="margin:0 5px;">市场价:{{priceAll.totalPrice.retailPrice | moneyFormatNumber(0)}}</span>
+            </a-col>
           </a-row>
-          
-          
         </td>
       </tr>
     </table>
@@ -57,6 +61,10 @@
         </td>
         <td style="padding:0;" v-html="optStandHTML()"></td>
       </tr>
+      <tr v-if="isPriceViewCost">
+        <td class="__table-thead" style="width:80px;">成本价</td>
+        <td >{{priceAll.standPrice.price | moneyFormatNumber(0)}}</td>
+      </tr>
     </table>
 
     <table class="custom-table custom-table-border" v-if="productInfo.optSelect && productInfo.optSelect.length > 0">
@@ -66,7 +74,12 @@
         </td>
         <td style="padding:0;" v-html="optSelectHTML()"></td>
       </tr>
+      <tr v-if="isPriceViewCost">
+        <td class="__table-thead" style="width:80px;">成本价</td>
+        <td >{{priceAll.unStandPrice.price | moneyFormatNumber(0)}}</td>
+      </tr>
     </table>
+    <p style="padding:10px;font-size:125%;background-color:#f5f5f5;" v-if="isPriceViewCost">总成本价：{{priceAll.totalPrice.price | moneyFormatNumber(0)}}</p>
     </div>
   </div>
 </template>
@@ -75,7 +88,7 @@
 
 export default {
   name: 'select-product-view',
-  props:['productInfo'],
+  props:['productInfo','isPriceViewCost'],
   data() {
     return {
       isOtherPrice:false,
@@ -106,6 +119,16 @@ export default {
         return [p.aprice,p.bprice,p.cprice,p.retailPrice]
       }
       return []
+    },
+    priceAll(){
+      if(this.productInfo && this.productInfo.__config && this.productInfo.__config.costPriceAll){
+        return {...this.productInfo.__config.costPriceAll}
+      }
+      return {
+        totalPrice:{},
+        standPrice:{},
+        unStandPrice:{}
+      }
     }
   },
   methods: {
