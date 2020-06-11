@@ -44,6 +44,10 @@
         <span v-if="text == 0">禁用</span>
         <span v-if="text == 1">启用</span>
       </span>
+      <div slot="createTime" slot-scope="text,record">
+        创建时间：{{record.createTime || '无'}}<br/>
+        修改时间：{{record.updateTime || '无'}}
+      </div>
       <span slot="action" slot-scope="text,record">
         <template>
           <template v-if="$auth('code:edit')">
@@ -97,11 +101,13 @@ export default {
       columns: [
         {
           title: '产品代码',
-          dataIndex: 'codeName'
+          dataIndex: 'codeName',
+          width:'120px'
         },
         {
           title: '产品名称',
-          dataIndex: 'productName'
+          dataIndex: 'productName',
+          width:'300px'
         },
         {
           title: '父代码',
@@ -126,24 +132,25 @@ export default {
           dataIndex: 'creater'
         },
         {
-          title: '创建时间',
+          title: '时间',
           width: '200px',
-          dataIndex: 'createTime'
+          dataIndex: 'createTime',
+          scopedSlots: { customRender: 'createTime' }
         },
         {
           title: '修改人',
           width: '100px',
           dataIndex: 'updater'
         },
-        {
-          title: '修改时间',
-          width: '200px',
-          dataIndex: 'updateTime'
-        },
+        // {
+        //   title: '修改时间',
+        //   width: '150px',
+        //   dataIndex: 'updateTime'
+        // },
         {
           title: '操作',
           dataIndex: 'action',
-          width: '150px',
+          width: '120px',
           scopedSlots: { customRender: 'action' }
         }
       ],

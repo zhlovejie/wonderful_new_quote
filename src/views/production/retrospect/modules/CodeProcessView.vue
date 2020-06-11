@@ -12,6 +12,7 @@
       :columns="columns"
       :dataSource="process"
       :pagination="false"
+      size="small"
       rowKey="cpId"
     >
     </a-table>
