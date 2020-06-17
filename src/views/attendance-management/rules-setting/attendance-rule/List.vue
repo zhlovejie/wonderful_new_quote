@@ -63,7 +63,13 @@
             }}
           </span>
         </div>
-        
+        <div slot="attanceUsers" slot-scope="text">
+          <a-tooltip v-if="String(text).length > 10">
+            <template slot="title">{{text}}</template>
+            {{ String(text).slice(0,10) }}...
+          </a-tooltip>
+          <span v-else>{{text}}</span>
+        </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('paiban',record)">排班</a>
@@ -129,7 +135,8 @@ const columns = [
   {
     align: 'center',
     title: '考勤组人员',
-    dataIndex: 'attanceUsers'
+    dataIndex: 'attanceUsers',
+    scopedSlots: { customRender: 'attanceUsers' }
   },
   {
     align: 'center',

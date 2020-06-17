@@ -276,12 +276,34 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           let _auth = that.makeAuth()
-          if(_auth.length === 0){
+          if(_auth.length === 0 && that.isAdd){
             that.$message.info('请选择考勤组人员')
             return
           }
           console.log(_auth)
-          values.workDays = Array.isArray(values.workDays) ? values.workDays.join('') : ''
+          if(that.isAdd){
+            let userList = []
+            _auth.map(item =>{
+              if(item.users.length === 0){
+                userList.push({
+                  bindingId:item.departmentId,
+                  bindingType:1,
+                  attanceId:that.detail.id
+                })
+              }else{
+                item.users.split(',').map(u =>{
+                  userList.push({
+                    bindingId:u,
+                    bindingType:2,
+                    attanceId:that.detail.id
+                  })
+                })
+              }
+            })
+            values.userList = userList
+            values.workDays = Array.isArray(values.workDays) ? values.workDays.join(',') : ''
+          }
+
           console.log('Received values of form: ', values)
           that.spinning = true 
 
