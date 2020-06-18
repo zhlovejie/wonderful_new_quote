@@ -158,7 +158,8 @@ export default {
             ids += '&ids=' + selectedRowKeys[i]
           }
         }
-        window.open(system.baseURL + '/projectCase/dunload' + ids);
+        let __url = system.baseURL + '/projectCase/dunload' + ids
+        window.open(__url);
       }
       // dunloadProjectCase(param).then(res => {
       //   console.log('res===========', res)
