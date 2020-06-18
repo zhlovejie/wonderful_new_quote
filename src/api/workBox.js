@@ -439,4 +439,11 @@ export function productPriceCoefficientList (parameter) {
   })
 }
 //---------------------产品价格系数------------------
-
+//工具箱-工程案例 批量下载专用
+export function WorkBoxBatchDownload (url) {
+  return axios({
+    url: url,
+    method: 'get',
+    responseType:'blob'
+  })
+}

@@ -70,7 +70,7 @@
 import { STable } from '@/components'
 import ProjectCaseForm from './modules/ProjectCaseForm'
 import Preview from './modules/ProjectCaseView'
-import { projectCaseList, delProjectCase, dunloadProjectCase } from '@/api/workBox'
+import { projectCaseList, delProjectCase, dunloadProjectCase ,WorkBoxBatchDownload} from '@/api/workBox'
 import system from '@/config/defaultSettings'
 
 export default {
@@ -145,6 +145,7 @@ export default {
       this.selectedRowKeys = selectedRowKeys
     },
     handleBatchDownload () { // 批量下载
+      let that = this
       const selectedRowKeys = this.selectedRowKeys
       if (selectedRowKeys === undefined || selectedRowKeys.length < 1) {
         this.$message.error('请选择下载信息！')
@@ -159,7 +160,36 @@ export default {
           }
         }
         let __url = system.baseURL + '/projectCase/dunload' + ids
-        window.open(__url);
+        const messageHandler = this.$message.loading('文件批量下载中，请稍候...', 0);
+        WorkBoxBatchDownload(__url).then(res => {
+          messageHandler()
+          let that = this
+          if(res instanceof Blob){
+            let action = {
+              isFile:res.type === 'application/octet-stream',
+              isJson:res.type === 'application/json'
+            }
+            if(action.isFile){
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement("a")
+              document.body.appendChild(a)
+              a.style = "display: none"
+              a.href = objectUrl
+              a.download = 'case.zip'
+              a.click()
+              document.body.removeChild(a)
+              return
+            }
+          }else{
+            console.log('未知错误：')
+            console.log('类型：'+typeof res)
+            console.log(res)
+          }
+        }).catch(function (err) {
+          that.$message.error('文件下载失败，请稍候再试.')
+          messageHandler()
+          console.log(err)
+        })
       }
       // dunloadProjectCase(param).then(res => {
       //   console.log('res===========', res)
