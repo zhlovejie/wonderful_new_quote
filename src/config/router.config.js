@@ -1200,6 +1200,12 @@ export const asyncRouterMap = [
                 meta: { title: '出勤规则设置', icon: 'setting', keepAlive: false, permission: ['permission'] }
               },
               {
+                path: '/attendance-management/rules-setting/attendance-rule-edit',
+                name: 'attendance-rules-setting-attendance-rule-edit',
+                component: () => import('@/views/attendance-management/rules-setting/attendance-rule/ListEdit'),
+                meta: { title: '出勤规则修改审批', icon: 'setting', keepAlive: false, permission: ['permission'] }
+              },
+              {
                 path: '/attendance-management/rules-setting/vacation-rule',
                 name: 'attendance-rules-setting-vacation-rule',
                 component: () => import('@/views/attendance-management/rules-setting/vacation-rule/List'),

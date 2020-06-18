@@ -28,7 +28,7 @@
             <td>
               <a-form-item>
                 <a-select 
-                  v-if="isAdd"
+                  v-if="isAdd || isEdit"
                   placeholder="班次"
                   v-decorator="['classId',{initialValue:detail.classId || (banciList.length ? banciList[0].id : undefined),rules: [{required: true,message: '请选择班次'}]}]"
                   :allowClear="true" 
@@ -47,6 +47,7 @@
               <a-form-item>
                 <span>按</span>
                 <a-select 
+                  v-if="isAdd || isEdit"
                   placeholder="考勤类型"
                   v-decorator="['attanceType',{initialValue:detail.attanceType,rules: [{required: true,message: '请考勤类型'}]}]"
                   :allowClear="true" 
@@ -57,6 +58,9 @@
                   <a-select-option :value="2">排班制</a-select-option>
                   <a-select-option :value="3">自由工时</a-select-option>
                 </a-select>
+                <span v-else>
+                  【{{ {1:'固定班制',2:'排班制',3:'自由工时'}[detail.attanceType] }}】
+                </span>
                 <span>计为调休时长</span>
               </a-form-item>
             </td>
@@ -66,6 +70,7 @@
             <td>
               <a-form-item>
                 <a-select 
+                  v-if="isAdd || isEdit"
                   placeholder="选择最小加班单位"
                   v-decorator="['workDays',{initialValue:detail.workDays,rules: [{required: true,message: '请选择最小加班单位'}]}]"
                   :allowClear="true" 
@@ -79,6 +84,7 @@
                   <a-select-option :value="6">周六</a-select-option>
                   <a-select-option :value="7">周日</a-select-option>
                 </a-select>
+                <span v-else>{{workDaysFormat(detail.workDays)}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -87,6 +93,7 @@
             <td>
               <a-form-item>
                 <a-select 
+                  v-if="isAdd || isEdit"
                   style="width: 150px" 
                   placeholder="时长处理" 
                   v-decorator="['isFreeType',{initialValue:detail.isFreeType,rules: [{required: true,message: '请选择加班时长处理'}]}]"
@@ -95,6 +102,7 @@
                   <a-select-option :value="0">不计入调休</a-select-option>
                   <a-select-option :value="1">计入调休</a-select-option>
                 </a-select>
+                <span v-else>{{{0:'不计入调休',1:'计入调休'}[detail.isFreeType]}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -104,6 +112,7 @@
               <div style="display:flex;">
               <a-form-item>
                 <a-select 
+                  v-if="isAdd || isEdit"
                   style="width: 150px" 
                   placeholder="规则类型" 
                   v-decorator="['caculatorHousType',{initialValue:detail.caculatorHousType,rules: [{required: isFreeClass,message: '请选择规则类型'}]}]"
@@ -113,16 +122,19 @@
                   <a-select-option :value="2">按周</a-select-option>
                   <a-select-option :value="3">按日</a-select-option>
                 </a-select>
+                <span v-else>{{{1:'按月',2:'按周',3:'按日'}[detail.caculatorHousType]}}</span>
                 
               </a-form-item>
               <a-form-item>
                 <span style="margin:0 10px;">低于</span>
-                <a-input-number
+                <a-input-number 
+                  v-if="isAdd || isEdit"
                   style="width:100px;margin:0 10px;"
                   :min="0"
                   :step="1"
                   v-decorator="['caculatorHous', {initialValue:detail.caculatorHous,rules: [{ required: isFreeClass, message: '请输入限制时间' }]}]"
                 />
+                <span v-else>【{{detail.caculatorHous}}】</span>
                 <span>小时</span>
               </a-form-item>
               </div>
@@ -133,7 +145,7 @@
             <td>
               <a-form-item>
                 <a-tree-select 
-                  v-if="isAdd"
+                  v-if="isAdd || isEdit"
                   v-model="authoritySaveBoList"
                   style="width: 100%"
                   :dropdown-style="{ maxHeight: '280px', overflow: 'auto' }"
@@ -261,10 +273,46 @@ export default {
         attenceDutyRuleDetail({id:record.id}).then(res =>{
           //debugger
           that.detail = {...res.data}
-          if(that.detail.workDays){
-            that.detail.workDays = that.detail.workDays.split(',').map(v =>+v)
-          }else{
-            that.detail.workDays = []  
+          if(that.isEdit){
+            if(that.detail.workDays){
+              that.detail.workDays = that.detail.workDays.split(',').map(v =>+v)
+            }else{
+              that.detail.workDays = []  
+            }
+
+            let authoritySaveBoList = [...res.data.userList]
+            let queue = []
+            let __authoritySaveBoList = []
+            authoritySaveBoList.map(auth => {
+              let target = that.treeData.find(item => item.id === auth.departmentId)
+              if (target) {
+                queue.push(
+                  that.onLoadData({
+                    dataRef: {
+                      id: target.id,
+                      value: target.value
+                    }
+                  })
+                )
+              }
+            })
+            await Promise.all(queue)
+            authoritySaveBoList.map(auth => {
+              let target = that.treeData.find(item => item.id === auth.departmentId)
+              if (auth.stationIds) {
+                auth.stationIds.split(',').map(v => {
+                  let _target = target.children.find(item => +item.id === +v)
+                  if (_target) {
+                    __authoritySaveBoList.push(_target.value)
+                  }
+                })
+              } else {
+                __authoritySaveBoList.push(target.value)
+              }
+            })
+            that.authoritySaveBoList = __authoritySaveBoList
+
+
           }
           that.attanceType = that.detail.attanceType
           console.log(res)
@@ -301,8 +349,9 @@ export default {
               }
             })
             values.userList = userList
-            values.workDays = Array.isArray(values.workDays) ? values.workDays.join(',') : ''
           }
+          values.classId = values.classId || that.detail.classId
+          values.workDays = Array.isArray(values.workDays) ? values.workDays.join(',') : ''
 
           console.log('Received values of form: ', values)
           that.spinning = true 
@@ -403,6 +452,11 @@ export default {
         });
       })(array);
       return flattend;
+    },
+    workDaysFormat(strs){
+      let w = ['','周一','周二','周三','周四','周五','周六','周日']
+      let str = ''
+      return strs.split(',').map(s =>w[s]).join(',')
     }
   }
 }
