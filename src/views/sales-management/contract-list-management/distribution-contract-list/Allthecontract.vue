@@ -450,11 +450,13 @@ export default {
     },
     createPdf(record) {
       // 保存信息成功之后，调取生成合同PDF的接口，留作列表页导出使用
+      const _this = this
       const paramsc = {
         id: record.id
       }
       buildCreateWork(paramsc)
       .then(res => {
+        _this.$message.success('生成pdf成功')
         console.log('调取生成合同PDF的接口，留作列表页导出使用', res)
       })
       .catch(error => {
