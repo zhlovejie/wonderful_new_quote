@@ -89,6 +89,10 @@
           <a-divider  type="vertical" />
           <a type="primary" @click="deleteCurrentContract(record)">删除</a>
         </template>
+        <template v-if="userInfo.id === 1">
+          <a-divider  type="vertical" />
+          <a type="primary" @click="createPdf(record)">生成pdf</a>
+        </template>
 
       </div>
     </a-table>
@@ -119,7 +123,7 @@
 </template>
 
 <script>
-import { getSalesList, getsaveAdditionalClause, editContract,startSaleContractProcess, deleteContract ,copyContract} from '../../../../api/contractListManagement'
+import { buildCreateWork, getSalesList, getsaveAdditionalClause, editContract,startSaleContractProcess, deleteContract ,copyContract} from '../../../../api/contractListManagement'
 import { getCustomerInfo } from '../../../../api/pricingModule'
 import UploadPhoto from './UploadPhoto'
 import PhotoView from './PhotoView'
@@ -268,6 +272,7 @@ export default {
   },
   data () {
     return {
+      userInfo: this.$store.getters.userInfo,
       data: [],
       columns: columns,
       priewColumns: priewColumns,
@@ -442,6 +447,19 @@ export default {
           this.loading = false
           console.error(error)
         })
+    },
+    createPdf(record) {
+      // 保存信息成功之后，调取生成合同PDF的接口，留作列表页导出使用
+      const paramsc = {
+        id: record.id
+      }
+      buildCreateWork(paramsc)
+      .then(res => {
+        console.log('调取生成合同PDF的接口，留作列表页导出使用', res)
+      })
+      .catch(error => {
+        console.error(error)
+      })
     },
     // 审批预览弹出层
     approvalPreview (record) {
