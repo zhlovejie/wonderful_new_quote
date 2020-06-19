@@ -45,9 +45,15 @@
         </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <template v-if="+activeKey === 1">
+            <a type="primary" @click="doAction('approval',record)">审批</a>
+          </template>
+          <template v-else>
+            <a type="primary" @click="doAction('view',record)">查看</a>
+          </template>
+          
+          <!-- <a-divider type="vertical" /> -->
+          <!-- <a type="primary" @click="doAction('edit',record)">修改</a> -->
         </div>
       </a-table>
     </div>
@@ -171,8 +177,11 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if(['view','edit'].includes(actionType)){
-        that.$refs.addForm.query(actionType,record)
+      if(['view','approval'].includes(actionType)){
+        this.$refs.editView.initDetailForView(record.id).then(result =>{
+          //为了显示修改后的内容
+          that.$refs.addForm.query(actionType,{id:record.attanceId,approvalId:record.id,__detail:{...result}})
+        })
       }else if(actionType === 'editView'){
         this.$refs.editView.init(record.id)
       }

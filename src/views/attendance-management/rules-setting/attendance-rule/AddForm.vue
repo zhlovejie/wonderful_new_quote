@@ -4,10 +4,19 @@
     :width="600"
     :visible="visible"
     :destroyOnClose="true"
-    @ok="handleSubmit"
     @cancel="handleCancel"
     :maskClosable="false"
   >
+    <template slot="footer">
+      <template v-if="isApproval">
+        <a-button key="back" icon="close" @click="noPassAction" >不通过</a-button>
+        <a-button key="submit" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
+      </template>
+      <template v-else>
+        <a-button key="back" @click="handleCancel">取消</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleSubmit">确定</a-button>
+      </template>
+    </template>
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline"  class="wdf-custom-add-form-wrapper">
         <a-form-item hidden>
@@ -161,6 +170,7 @@
         </table>
       </a-form>
     </a-spin>
+    <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
 </template>
 <script>
@@ -169,14 +179,16 @@ import {
   getStationList, //获取部门下面的岗位
   getUserByDep //获取人员
 } from '@/api/systemSetting'
-import {classRuleList,attenceDutyRuleDetail , attenceDutyRuleAddAndUpdate} from '@/api/attendanceManagement'
+import {classRuleList,attenceDutyRuleDetail , attenceDutyRuleAddAndUpdate ,attenceChangeApproveApprove} from '@/api/attendanceManagement'
 import { TreeSelect } from 'ant-design-vue'
+import Approval from './Approval'
 import moment from 'moment'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name:'over-time-rule-add',
+  components:{Approval},
   data(){
     return {
       form: this.$form.createForm(this),
@@ -184,6 +196,7 @@ export default {
       spinning:false,
       actionType:'view',
       detail:{},
+      record:{},
       spinning:false,
       
       authoritySaveBoList: [],
@@ -196,7 +209,8 @@ export default {
   },
   computed:{
     modalTitle(){
-      return `${this.isView ? '查看' : this.isAdd ? '新增' : '修改'}出勤规则`
+      let obj = {'view':'查看','add':'新增','edit':'修改','approval':'审批'}
+      return `${obj[this.actionType]}出勤规则`
     },
     isView(){
       return this.actionType === 'view'
@@ -257,9 +271,11 @@ export default {
       return Promise.all(queue)
     },
     async query(type,record){
+      debugger
       let that = this
       
       that.actionType = type,
+      that.record = Object.assign({},record)
       that.detail = Object.assign({},record)
       that.form.resetFields()
       that.authoritySaveBoList = []
@@ -270,6 +286,11 @@ export default {
         return
       }
       if(record){
+        if(record.__detail){
+          that.detail = {...record.__detail}
+          that.attanceType = that.detail.attanceType
+          return
+        }
         attenceDutyRuleDetail({id:record.id}).then(res =>{
           //debugger
           that.detail = {...res.data}
@@ -279,40 +300,23 @@ export default {
             }else{
               that.detail.workDays = []  
             }
-
-            let authoritySaveBoList = [...res.data.userList]
-            let queue = []
-            let __authoritySaveBoList = []
-            authoritySaveBoList.map(auth => {
-              let target = that.treeData.find(item => item.id === auth.departmentId)
-              if (target) {
-                queue.push(
-                  that.onLoadData({
-                    dataRef: {
-                      id: target.id,
-                      value: target.value
-                    }
-                  })
-                )
-              }
-            })
-            await Promise.all(queue)
-            authoritySaveBoList.map(auth => {
-              let target = that.treeData.find(item => item.id === auth.departmentId)
-              if (auth.stationIds) {
-                auth.stationIds.split(',').map(v => {
-                  let _target = target.children.find(item => +item.id === +v)
-                  if (_target) {
-                    __authoritySaveBoList.push(_target.value)
-                  }
-                })
-              } else {
-                __authoritySaveBoList.push(target.value)
-              }
-            })
-            that.authoritySaveBoList = __authoritySaveBoList
-
-
+            //回显出勤人员
+              let queue = []
+              that.treeData.map(item => {
+                queue.push(that.onLoadData({dataRef: {id: item.id,value: item.trueName}}))
+              })
+              Promise.all(queue).then(() =>{
+                //debugger
+                let result = []
+                let userList = [...res.data.userList]
+                let deps = userList.filter(item => +item.bindingType === 1).map(item => item.bindingId)
+                let usrs = userList.filter(item => +item.bindingType === 2).map(item => item.bindingId)
+                let target_deps = that.treeData.filter(item => deps.includes(item.id)).map(item => item.value)
+                let allUsers = that.flatten(that.treeData.map(item => [...item.children]))
+                let target_usrs = allUsers.filter(item =>usrs.includes(item.id)).map(item => item.value)
+                that.authoritySaveBoList = [...target_deps,...target_usrs]
+              })
+            //回显出勤人员 END
           }
           that.attanceType = that.detail.attanceType
           console.log(res)
@@ -329,7 +333,7 @@ export default {
             return
           }
           console.log(_auth)
-          if(that.isAdd){
+          if(that.isAdd || that.isEdit){
             let userList = []
             _auth.map(item =>{
               if(item.users.length === 0){
@@ -457,7 +461,36 @@ export default {
       let w = ['','周一','周二','周三','周四','周五','周六','周日']
       let str = ''
       return strs.split(',').map(s =>w[s]).join(',')
-    }
+    },
+    submitAction(opt) {
+      let that = this
+      let values = Object.assign({}, opt || {}, { approveId: that.record.approvalId })
+      that.spinning = true
+      attenceChangeApproveApprove(values)
+        .then(res => {
+          that.spinning = false
+          console.log(res)
+          that.form.resetFields() // 清空表
+          that.visible = false
+          that.$message.info(res.msg)
+          that.$emit('finish')
+        })
+        .catch(err => (that.spinning = false))
+    },
+    passAction(opt = {}) {
+      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+    },
+    noPassAction() {
+      let that = this
+      that.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion
+      })
+    },
   }
 }
 </script>
