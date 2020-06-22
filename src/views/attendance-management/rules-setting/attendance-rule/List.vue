@@ -72,8 +72,10 @@
         </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('paiban',record)">排班</a>
-          <a-divider type="vertical" />
+          <template v-if="+record.attanceType === 2">
+            <a type="primary" @click="doAction('paiban',record)">排班</a>
+            <a-divider type="vertical" />
+          </template>
           <a type="primary" @click="doAction('edit',record)">修改</a>
           <a-divider type="vertical" />
           <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
@@ -83,12 +85,16 @@
       </a-table>
     </div>
     <AddForm ref="addForm" @finish="searchAction({current:1})" />
+
+    <PaiBan ref="paiBan" @finish="searchAction({current:1})" />
+    
   </div>
 </template>
 
 <script>
 import {attenceDutyRuleList , attenceDutyRuleDel} from '@/api/attendanceManagement'
 import AddForm from './AddForm'
+import PaiBan from './PaiBan'
 import moment from 'moment'
 const columns = [
   {
@@ -159,7 +165,8 @@ const columns = [
 export default {
   name: 'attendance-rule-list',
   components: {
-    AddForm
+    AddForm,
+    PaiBan
   },
   data() {
     return {
@@ -230,6 +237,8 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       }else if(actionType === 'paiban'){
+        
+        that.$refs.paiBan.query(actionType,record)
         return 
       }
     },

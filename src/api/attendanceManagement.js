@@ -221,6 +221,17 @@ export function attenceChangeApproveList (parameter) {
     params: parameter
   })
 }
+
+/**根据出勤规则id和月份获取该规则下所有人员的排班信息 */
+export function attenceArrangeUserList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceArrange/arrangeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /**排班 */
 export function attenceArrangeDoArrange (parameter) {
   return axios({
@@ -232,3 +243,43 @@ export function attenceArrangeDoArrange (parameter) {
 }
 
 //---------------------出勤规则设置--END------------------
+
+//---------------------假期规则设置-----------------------
+
+export function holidayRuleAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/holidayRule/holiday-rule/addAndUpdateHolidayRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+export function holidayRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/holidayRule/holiday-rule/delHolidayRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function holidayRuleList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/holidayRule/holiday-rule/getHolidayRuleList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function holidayRuleDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/holidayRule/holiday-rule/holidayRuleDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------假期规则设置--END------------------
