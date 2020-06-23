@@ -162,6 +162,7 @@
                   tree-checkable
                   :show-checked-strategy="SHOW_PARENT"
                   :load-data="onLoadData" 
+                  @change="treeSelectChange"
                 />
                 <span v-else>{{detail.attanceUsers}}</span>
               </a-form-item>
@@ -179,7 +180,13 @@ import {
   getStationList, //获取部门下面的岗位
   getUserByDep //获取人员
 } from '@/api/systemSetting'
-import {classRuleList,attenceDutyRuleDetail , attenceDutyRuleAddAndUpdate ,attenceChangeApproveApprove} from '@/api/attendanceManagement'
+import {
+  classRuleList,
+  attenceDutyRuleDetail , 
+  attenceDutyRuleAddAndUpdate ,
+  attenceChangeApproveApprove,
+  attenceDutyRuleHaveRule
+} from '@/api/attendanceManagement'
 import { TreeSelect } from 'ant-design-vue'
 import Approval from './Approval'
 import moment from 'moment'
@@ -271,7 +278,7 @@ export default {
       return Promise.all(queue)
     },
     async query(type,record){
-      debugger
+      //debugger
       let that = this
       
       that.actionType = type,
@@ -491,6 +498,29 @@ export default {
         opinion: opinion
       })
     },
+    treeSelectChange(value, label, extra){
+      //console.log(arguments)
+      let that = this
+      //根据绑定类型和绑定的id判断该id是否已经有了出勤规则
+      if(extra.checked === true){
+        let {dataRef} = extra.triggerNode
+        let values = {
+          id:dataRef.id,
+          type:dataRef.isLeaf ? 2 : 1
+        }
+        attenceDutyRuleHaveRule(values).then(res =>{
+          //console.log(res)
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            that.authoritySaveBoList = that.authoritySaveBoList.filter(k => k !== dataRef.value)
+          }
+          //console.log(that.authoritySaveBoList)
+        }).catch(err =>that.$message.error(err))
+      }else{
+        //console.log(that.authoritySaveBoList)
+      }
+      
+    }
   }
 }
 </script>

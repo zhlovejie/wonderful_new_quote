@@ -242,6 +242,16 @@ export function attenceArrangeDoArrange (parameter) {
   })
 }
 
+/**根据绑定类型和绑定的id判断该id是否已经有了出勤规则 */
+export function attenceDutyRuleHaveRule (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceDutyRule/haveRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------出勤规则设置--END------------------
 
 //---------------------假期规则设置-----------------------
