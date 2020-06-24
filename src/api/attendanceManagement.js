@@ -293,3 +293,69 @@ export function holidayRuleDetail (parameter) {
   })
 }
 //---------------------假期规则设置--END------------------
+
+
+//---------------------节假日设置-----------------------
+export function festivalRuleAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/addAndUpdateFestivalRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function festivalRuleApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/approvalFestivalRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function festivalRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/delFestivalRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function festivalRuleDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/getFestivalRuleDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function festivalRuleList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/getFestivalRuleList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**发布 */
+export function festivalRulePublish (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/publishFestivalRule',
+    method: 'get',
+    params: parameter
+  })
+}
+/**撤回 */
+export function festivalRuleWithdraw (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/festivalRule/festival-rule/withdrawFestivalRule',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------节假日设置--END------------------
