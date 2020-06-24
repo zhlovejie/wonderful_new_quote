@@ -56,11 +56,7 @@
         </div>
         <div slot="caculatorHousType" slot-scope="text, record, index">
           <span>
-            {{ 
-              +record.attanceType === 3 
-              ? (+record.caculatorHousType === 1 ? '按月' : +record.caculatorHousType === 2 ? '按周' :'按日') + ' 低于'+record.caculatorHous+'小时'
-              : '空' 
-            }}
+            {{ {1:'按月',2:'按周',3:'按日'}[record.caculatorHousType]+'低于'+record.caculatorHous+'小时' }}
           </span>
         </div>
         <div slot="attanceUsers" slot-scope="text">
