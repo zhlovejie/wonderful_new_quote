@@ -310,7 +310,8 @@ export default {
             //回显出勤人员
               let queue = []
               that.treeData.map(item => {
-                queue.push(that.onLoadData({dataRef: {id: item.id,value: item.trueName}}))
+                //debugger
+                queue.push(that.onLoadData({dataRef: {id: item.id,value: item.value}}))
               })
               Promise.all(queue).then(() =>{
                 //debugger
@@ -383,6 +384,7 @@ export default {
       this.$nextTick(() =>this.visible = false)
     },
     onLoadData(treeNode) {
+      //debugger
       let that = this
       let { id, value } = treeNode.dataRef
       let treeData = [...that.treeData]
@@ -431,6 +433,7 @@ export default {
       //let leafs = this.treeData.map(item => item.children || []).flat(3)
       let leafs = this.flatten(this.treeData.map(item => item.children || []))
       authoritySaveBoList.map(v => {
+        debugger
         let target = leafs.find(n => n.value === v)
         if (target) {
           selectLeafs.push(Object.assign({}, target))
