@@ -84,8 +84,8 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit',record)">修改</a>
             </template>
-            <template v-if="record.status === 2 && record.isPublish === 0">
-              <template v-if="$auth('attendance-rules-setting-vacation-management:publish')">
+            <template v-if="record.status === 2">
+              <template v-if="$auth('attendance-rules-setting-vacation-management:publish') && +record.isPublish !== 1">
                 <a-divider type="vertical" />
                 <a-popconfirm title="确认发布该条数据吗?" @confirm="() => doAction('publish',record)">
                   <a type="primary" href="javascript:;">发布</a>
@@ -99,7 +99,7 @@
               </template>
             </template>
             <template
-              v-if="$auth('attendance-rules-setting-vacation-management:revocation') && record.status === 1 && +record.isReback === 0 && +record.createdId === +userInfo.id"
+              v-if="$auth('attendance-rules-setting-vacation-management:revocation') && record.status === 1 && +record.isReback !== 1 && +record.createdId === +userInfo.id"
             >
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('revocation',record)">

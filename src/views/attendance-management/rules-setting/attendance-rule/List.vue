@@ -59,7 +59,7 @@
             {{ 
               +record.attanceType === 3 
               ? (+record.caculatorHousType === 1 ? '按月' : +record.caculatorHousType === 2 ? '按周' :'按日') + ' 低于'+record.caculatorHous+'小时'
-              : '-' 
+              : '空' 
             }}
           </span>
         </div>

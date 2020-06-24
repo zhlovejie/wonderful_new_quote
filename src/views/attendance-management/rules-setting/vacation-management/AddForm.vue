@@ -191,6 +191,7 @@ export default {
       that.record = Object.assign({},record)
       that.form.resetFields()
       that.changeRestDate = []
+      that.diffDate = 0
       that.detail = {}
       await that.init()
       that.visible = true
@@ -257,7 +258,7 @@ export default {
     },
     submitAction(opt) {
       let that = this
-      let values = Object.assign({}, opt || {}, { approveId: that.record.approvalId })
+      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
       festivalRuleApproval(values)
         .then(res => {
