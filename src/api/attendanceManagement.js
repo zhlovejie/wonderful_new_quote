@@ -359,3 +359,85 @@ export function festivalRuleWithdraw (parameter) {
   })
 }
 //---------------------节假日设置--END------------------
+
+//---------------------加班申请-----------------------
+export function overworkApplyAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/addAndUpdateOverworkApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function overworkApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/approvalOverworkApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function overworkApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/delOverworkApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function overworkApplyDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/getOverworkApplyDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function overworkApplyList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/getOverworkApplyList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function overworkApplyHours (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/overworkHours',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function overworkApplyWithdraw (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/withdrawOverworkApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**
+ * 打卡异常列表的条件查询接口
+ * exceptionType 异常类别查询：1 需要补卡申请的类别（诸如迟到、早退、缺卡） 2 加班时间
+ * userId 	用户id
+ * @param {object} parameter 
+ */
+export function signExceptionByCondition (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/exception/listSignExceptionByCondition',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//---------------------加班申请--END------------------
