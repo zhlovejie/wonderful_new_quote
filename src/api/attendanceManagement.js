@@ -441,3 +441,70 @@ export function signExceptionByCondition (parameter) {
 
 
 //---------------------加班申请--END------------------
+
+
+//---------------------补卡申请-----------------------
+export function resignApplyAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/addAndUpdateResignApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function resignApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/approvalResignApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function resignApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/delResignApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function resignApplyDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/getResignApplyDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function resignApplyList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/getResignApplyList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**根据用户id获取已提交次数 */
+export function resignApplySubmittedCount (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/submittedCount',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function resignApplyWithdraw (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/resignApply/resign-apply/withdrawResignApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------补卡申请--END------------------
