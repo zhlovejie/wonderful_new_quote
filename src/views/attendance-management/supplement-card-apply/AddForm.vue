@@ -196,7 +196,11 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          
+          let target = that.exceptionList.find(item =>+item.id === +values.exceptionId)
+          if(target){
+            //把异常类型也传过去
+            values.exceptionType = target.exceptionType
+          }
           that.spinning = true 
 
           resignApplyAddAndUpdate(values).then(res =>{

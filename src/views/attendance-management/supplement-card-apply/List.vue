@@ -58,7 +58,7 @@
             @click="searchAction({current:1})"
           >查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;" v-if="$auth('overworkApply:add')">
+        <div class="action-wrapper" style="float:right;" v-if="$auth('resignApply:add')">
           <a-form-item>
           <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
           </a-form-item>
@@ -68,7 +68,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('overworkApply:approval')">
+        <template v-if="$auth('resignApply:approval')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
@@ -94,6 +94,10 @@
         <div slot="thingType" slot-scope="text, record">
           {{ {1:'设备异常',2:'忘记打卡',3:'停电',4:'天气异常'}[text] || '未知' }}
         </div>
+        <div slot="exceptionType" slot-scope="text, record">
+          {{ {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退'}[text] || '未知' }}
+        </div>
+        
         <div slot="reason" slot-scope="text, record">
           <a-tooltip v-if="String(text).length > 15">
             <template slot="title">{{text}}</template>
@@ -178,7 +182,8 @@ const columns = [
   {
     align: 'center',
     title: '异常事件',
-    dataIndex:'exceptionId'
+    dataIndex:'exceptionType',
+    scopedSlots: { customRender: 'exceptionType' }
   },
   {
     align: 'center',
