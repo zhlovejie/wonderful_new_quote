@@ -423,6 +423,18 @@ export function overworkApplyWithdraw (parameter) {
     params: parameter
   })
 }
+/**
+ * 填充加班申请的 开始时间和结束时间
+ * @param {*} parameter 
+ */
+export function overworkApplyInitTime (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/getOverWorkApplyInitTime',
+    method: 'get',
+    params: parameter
+  })
+}
 
 /**
  * 打卡异常列表的条件查询接口
@@ -508,3 +520,124 @@ export function resignApplyWithdraw (parameter) {
 }
 
 //---------------------补卡申请--END------------------
+
+
+//---------------------出差申请-----------------------
+
+/**添加行程 */
+export function attenceTravelRouteAdd (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelRoute/addRoute',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+export function attenceTravelApplyAddAndUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/addOrUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceTravelApplyApprove (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/approve',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceTravelApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceTravelApplyDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceTravelApply/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**财务完结 */
+export function attenceTravelApplyFinanceFinish (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/financeFinish',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**结束出差 */
+export function attenceTravelApplyFinishTravel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/finishTravel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceTravelApplyList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceTravelApply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**提交出差单 */
+export function attenceTravelApplySubmit (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/submit',
+    method: 'post',
+    data: parameter
+  })
+}
+/**撤回 */
+export function attenceTravelApplyWithdraw (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'attenceTravelApply/withdraw',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//出差申请单里的出差人员接口
+
+/**判断用户是否有未完结的出差，返回true则有，false为无 */
+export function attenceTravelUserCheckUserTravel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceTravelUser/checkUserTravel',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**根据出差单获取该出差单里的所有出差人员 */
+export function attenceTravelUserGetUsersForTravel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceTravelUser/getUsersForTravel',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------出差申请--END------------------

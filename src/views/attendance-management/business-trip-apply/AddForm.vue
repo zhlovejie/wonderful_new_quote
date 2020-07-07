@@ -1,0 +1,630 @@
+<template>
+  <a-modal
+    :title="modalTitle"
+    :width="1000"
+    :visible="visible"
+    :destroyOnClose="true"
+    @cancel="handleCancel"
+    :maskClosable="false"
+  >
+    <template slot="footer">
+      <template v-if="isApproval">
+        <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
+        <a-button
+          key="submit"
+          type="primary"
+          icon="check"
+          :loading="spinning"
+          @click="passAction"
+        >通过</a-button>
+      </template>
+      <template v-else>
+        <a-button key="back" @click="handleCancel">取消</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleSubmit">确定</a-button>
+      </template>
+    </template>
+    <a-spin :spinning="spinning">
+      <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
+        <a-form-item hidden>
+          <a-input v-decorator="['id',{initialValue:detail.id}]" />
+        </a-form-item>
+        <table class="custom-table custom-table-border">
+          <tr>
+            <td style="width:120px;">出差类型</td>
+            <td :colspan="!isSalesman ? 3 : 1">
+              <a-form-item>
+                <a-select
+                  :disabled="isDisabled"
+                  placeholder="选择出差类型"
+                  v-decorator="['travelType',{initialValue:detail.travelType,rules: [{required: true,message: '选择出差类型'}]}]"
+                  :allowClear="true"
+                  style="width:100%;"
+                >
+                  <a-select-option :value="1">出差</a-select-option>
+                  <a-select-option :value="2">公事外出</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+            <td style="width:120px;" v-if="isSalesman">客户名称</td>
+            <td v-if="isSalesman">
+              <a-form-item>
+                <a-input
+                  :disabled="isDisabled"
+                  class="a-input"
+                  style="width:100%;"
+                  title="选择客户名称"
+                  read-only
+                  placeholder="选择客户名称"
+                  @click="handleCustomerClick"
+                  v-decorator="['customerName',{initialValue:detail.customerName,rules: [{ required: true, message: '选择客户名称'}]}]"
+                />
+              </a-form-item>
+              <a-form-item hidden>
+                <a-input v-decorator="['customerId',{initialValue:detail.customerId}]" />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">出发城市</td>
+            <td style="width:355px;">
+              <a-form-item>
+                <AreaCascade
+                  :disabled="isDisabled"
+                  :fill="detail && detail.beginAreaId ? detail.beginAreaId.split(',') : []"
+                  @change="(...args) => {areaCascadeChange('beginAreaId',null,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+            <td style="width:120px;">时长</td>
+            <td><span style="font-size: 125%;color: #f40;font-weight: bold;">{{calcRouteTimeDiff}}</span></td>
+          </tr>
+          <tr>
+            <td style="width:120px;">出差备注</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-textarea
+                  :disabled="isDisabled"
+                  style="width:100%;"
+                  placeholder="出差备注"
+                  :rows="2"
+                  v-decorator="['remark', { initialValue:detail.remark,rules: [{ required: true, message: '请输入出差备注' }] }]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+        </table>
+
+        <table
+          class="custom-table custom-table-border"
+          v-for="(item,idx) in routesList"
+          :key="item._key"
+        >
+          <caption>
+            <div style="display:flex;">
+              <div style="flex:1;text-align:left;">行程{{idx + 1}}</div>
+              <a-popconfirm
+                v-if="!isDisabled && routesList.length > 1"
+                title="确认删除该行程吗?"
+                @confirm="() => routeAction('remove',item._key)"
+              >
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
+            </div>
+          </caption>
+          <tr>
+            <td style="width:120px;">目的城市</td>
+            <td>
+              <a-form-item>
+                <AreaCascade
+                  :disabled="isDisabled"
+                  :fill="item.endAreaId ? item.endAreaId.split(',') : []"
+                  @change="(...args) => {areaCascadeChange('endAreaId',item._key,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+            <td style="width:120px;">交通工具</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  :disabled="isDisabled"
+                  placeholder="选择交通工具"
+                  :value="item.vehicleId"
+                  :allowClear="true"
+                  style="width:100%;"
+                  @change="(val) => { vehicleChange('vehicleId',item._key,val) }"
+                >
+                  <a-select-option
+                    v-for="item in vehicleList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">开始日期</td>
+            <td>
+              <a-form-item>
+                <DateTimePicker
+                  :disabled="isDisabled"
+                  :fill="item.startTime"
+                  @change="(...args) => {dateTimePickerChange('startTime',item._key,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+            <td style="width:120px;">结束日期</td>
+            <td>
+              <a-form-item>
+                <DateTimePicker
+                  :disabled="isDisabled"
+                  :fill="item.endTime"
+                  @change="(...args) => {dateTimePickerChange('endTime',item._key,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">出差事由</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-textarea
+                  :disabled="isDisabled"
+                  style="width:100%;"
+                  placeholder="出差事由"
+                  :rows="2"
+                  :value="item.reason"
+                  @change="reasonChange('reason',item._key,$event)"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">出差负责人</td>
+            <td colspan="3">
+              <a-form-item>
+                <DepUserSelect
+                  :disabled="isDisabled"
+                  :depId="item.chargeUserDepId || userInfo.departmentId"
+                  :userId="item.chargeUserId || userInfo.id"
+                  @change="(...args) => {depUserChange('chargeUserId',item._key,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">出差同行人</td>
+            <td colspan="3">
+              <a-form-item>
+                <DepUserMulSelect
+                  :disabled="isDisabled"
+                  :users="item.users"
+                  @change="(...args) => {depUserMulChange('users',item._key,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+        </table>
+
+        <a-button
+          v-if="!isDisabled"
+          style="width: 100%;"
+          type="dashed"
+          icon="plus"
+          @click="routeAction('add')"
+        >新增行</a-button>
+
+        <table class="custom-table custom-table-border" style="margin-top:20px;">
+          <tr>
+            <td style="width:120px;">使用公车</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  :disabled="isDisabled"
+                  placeholder="选择公车"
+                  v-decorator="['carDicNum',{initialValue:detail.carDicNum ? +detail.carDicNum : undefined,rules: [{required: true,message: '选择公车'}]}]"
+                  :allowClear="true"
+                  style="width:334px;"
+                >
+                  <a-select-option
+                    v-for="item in carList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+            <td style="width:120px;">预支金额(元)</td>
+            <td>
+              <a-form-item>
+                <a-input-number
+                  :disabled="isDisabled"
+                  style="width:334px;"
+                  :min="0"
+                  :max="2000"
+                  :step="1"
+                  v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount,rules: [{ required: true, message: '请输入预支金额' }]}]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+        </table>
+      </a-form>
+    </a-spin>
+    <Approval ref="approval" @opinionChange="opinionChange" />
+    <CustomerList ref="customerList" @selected="handlerCustomerSelected" />
+  </a-modal>
+</template>
+<script>
+import {
+  departmentList, //所有部门
+  getStationList, //获取部门下面的岗位
+  getUserByDep //获取人员
+} from '@/api/systemSetting'
+import { getDictionaryList } from '@/api/workBox'
+import { getAreaByParent } from '@/api/common'
+import { getOneSalesman } from '@/api/customer/salesman'
+import {
+  attenceTravelApplyDetail,
+  attenceTravelApplyAddAndUpdate,
+  attenceTravelApplyApprove
+} from '@/api/attendanceManagement'
+import Approval from './Approval'
+import CustomerList from '@/components/CustomerList/CustomerList'
+import AreaCascade from './AreaCascade'
+import DateTimePicker from './DateTimePicker'
+import DepUserSelect from './DepUserSelect'
+import DepUserMulSelect from './DepUserMulSelect'
+import moment from 'moment'
+
+let uuid = () =>
+  Math.random()
+    .toString(32)
+    .slice(-10)
+
+export default {
+  name: 'business-trip-apply-add',
+  components: {
+    Approval,
+    CustomerList,
+    AreaCascade,
+    DateTimePicker,
+    DepUserSelect,
+    DepUserMulSelect
+  },
+  data() {
+    return {
+      form: this.$form.createForm(this),
+      visible: false,
+      spinning: false,
+      actionType: 'view',
+      detail: {},
+      record: {},
+      spinning: false,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
+
+      vehicleList: [], //交通工具
+      carList: [], //公司车辆
+      beginAreaId: [], //出发城市
+      routesList: [], //出差行程
+      isSalesman: false
+    }
+  },
+  computed: {
+    modalTitle() {
+      let obj = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
+      return `${obj[this.actionType]}出差申请`
+    },
+    isView() {
+      return this.actionType === 'view'
+    },
+    isAdd() {
+      return this.actionType === 'add'
+    },
+    isEdit() {
+      return this.actionType === 'edit'
+    },
+    isApproval() {
+      return this.actionType === 'approval'
+    },
+    isDisabled() {
+      //此状态下表单元素被禁用
+      return this.isView || this.isApproval
+    },
+    calcRouteTimeDiff(){
+      let total = this.routesList.reduce((adder,item,idx,arr) =>{
+        let s1 = moment(item.startTime),e1 = moment(item.endTime)
+        if(s1.isValid() && e1.isValid()){
+          return adder + e1.diff(s1,'minutes')
+        }
+        return adder
+      },0)
+      if(total <= 0){
+        return '-'
+      }
+      debugger
+      let days = parseInt(total / 60 / 24,10)
+      let hours = parseInt((total / 60) - (days * 24),10)
+      let minutes = parseInt(total - (days * 24 * 60) - (hours * 60),10)
+      return `${days ? days+' 天 ' : '' }${hours ? hours +' 小时 ' :''}${minutes > 0 ? minutes+' 分钟 ' : ''}`
+    }
+  },
+  watch: {},
+  methods: {
+    moment,
+    init() {
+      let that = this
+      let queue = []
+      let task1 = getDictionaryList({ parentId: 509 }).then(res => (that.vehicleList = res.data))
+      queue.push(task1)
+      let task2 = getDictionaryList({ parentId: 515 }).then(res => (that.carList = res.data))
+      queue.push(task2)
+      let task3 = that.checkSalesman()
+      queue.push(task3)
+      return Promise.all(queue)
+    },
+    checkSalesman() {
+      let that = this
+      let userId = this.userInfo.id || this.record.createdId
+      return getOneSalesman({ userId }).then(res => {
+        that.isSalesman = res.data.length > 0
+      })
+    },
+    async query(type, record) {
+      let that = this
+      ;(that.actionType = type), (that.record = Object.assign({}, record))
+      that.detail = {}
+      that.routesList = []
+      that.form.resetFields()
+      await that.init()
+      that.visible = true
+      if (that.isAdd) {
+        that.detail = {}
+        that.routeAction('add')
+        return
+      }
+      attenceTravelApplyDetail({ id: record.id }).then(res => {
+        let data = res.data
+        that.detail = { ...data }
+        that.beginAreaId = data.beginAreaId
+        that.routesList = that.detail.routes.map(route => {
+          return {
+            _key: uuid(),
+            endAreaId: route.endAreaId,
+            vehicleId: route.vehicleId,
+            startTime: route.startTime,
+            endTime: route.endTime,
+            reason: route.reason,
+            chargeUserDepId: route.chargeUserDepId,
+            chargeUserId: route.chargeUserId,
+            users: route.users
+              ? route.users.map(u => {
+                  return {
+                    _key: uuid(),
+                    id: u.userId,
+                    trueName: u.userName
+                  }
+                })
+              : []
+          }
+        })
+        console.log(res)
+      })
+    },
+    areaCascadeChange(type, key, arrArea, arrAreaItems) {
+      let that = this
+      if (type === 'beginAreaId') {
+        this.beginAreaId = arrArea.join(',')
+        that.detail = Object.assign({}, that.detail, { beginAreaId: arrArea.join(',') })
+        return
+      }
+      if (type === 'endAreaId') {
+        let _routesList = [...that.routesList]
+        let target = _routesList.find(item => item._key === key)
+        if (target) {
+          target.endAreaId = arrArea.join(',')
+          that.routesList = [..._routesList]
+        }
+      }
+    },
+    dateTimePickerChange(type, key, timeStr) {
+      let _routesList = [...this.routesList]
+      let target = _routesList.find(item => item._key === key)
+      if (target) {
+        target[type] = timeStr
+        this.routesList = [..._routesList]
+      }
+    },
+    reasonChange(type, key, event) {
+      let _routesList = [...this.routesList]
+      let target = _routesList.find(item => item._key === key)
+      if (target) {
+        target[type] = event.target.value
+        this.routesList = [..._routesList]
+      }
+    },
+    depUserChange(type, key, depId, userId) {
+      //chargeUserId
+      let _routesList = [...this.routesList]
+      let target = _routesList.find(item => item._key === key)
+      if (target) {
+        target[type] = userId
+        this.routesList = [..._routesList]
+      }
+    },
+    depUserMulChange(type, key, users) {
+      let _routesList = [...this.routesList]
+      let target = _routesList.find(item => item._key === key)
+      if (target) {
+        target[type] = users.map(id => {
+          return { userId: id }
+        })
+        this.routesList = [..._routesList]
+      }
+    },
+    vehicleChange(type, key, val) {
+      let _routesList = [...this.routesList]
+      let target = _routesList.find(item => item._key === key)
+      if (target) {
+        target[type] = val
+        this.routesList = [..._routesList]
+      }
+    },
+    routeAction(type, key) {
+      let that = this
+      if (type === 'add') {
+        that.routesList.push({
+          _key: uuid(),
+          endAreaId: undefined,
+          vehicleId: undefined,
+          startTime: undefined,
+          endTime: undefined,
+          reason: '',
+          users: []
+        })
+      } else if (type === 'remove') {
+        that.routesList = that.routesList.filter(item => item._key !== key)
+      }
+    },
+    handleCustomerClick() {
+      this.$refs.customerList.init()
+    },
+    handlerCustomerSelected(record) {
+      this.form.setFieldsValue({
+        customerName: record.name,
+        customerId: record.id
+      })
+    },
+    birthplaceCascaderChange(arrSelected) {
+      console.log('birthplaceCascaderChange called...')
+      console.log(arguments)
+    },
+    birthplaceCascaderLoadData(selectedOptions) {
+      let that = this
+      const targetOption = selectedOptions[selectedOptions.length - 1]
+      targetOption.loading = true
+      getAreaByParent({ pId: targetOption.value })
+        .then(res => {
+          //城市
+          targetOption.loading = false
+          targetOption.children = res.data.map(item => {
+            return {
+              label: item.area,
+              value: item.id,
+              isLeaf: item.level === 3 ? true : false
+            }
+          })
+          that.birthplaceOptions = [...that.birthplaceOptions]
+        })
+        .catch(function(err) {
+          console.log(err)
+        })
+    },
+    loadAreaAction(pId) {
+      const that = this
+      return getAreaByParent({ pId: pId })
+        .then(res => {
+          //城市
+          return res.data.map(item => {
+            return {
+              label: item.area,
+              value: item.id,
+              isLeaf: item.level === 3 ? true : false
+            }
+          })
+        })
+        .catch(function(err) {
+          console.log(err)
+          return []
+        })
+    },
+    handleSubmit() {
+      let that = this
+      if (that.isView) {
+        that.handleCancel()
+        return
+      }
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          console.log(that.routesList)
+          //return
+          values.status = that.record.status || 0 //状态待审批
+          values.beginAreaId = that.beginAreaId //外层出发城市
+          values.routes = that.$_.cloneDeep(that.routesList).map(item => {
+            delete item._key
+            return item
+          })
+          that.spinning = true
+          attenceTravelApplyAddAndUpdate(values)
+            .then(res => {
+              that.$message.info(res.msg)
+              that.spinning = false
+              that.handleCancel()
+              that.$emit('finish')
+            })
+            .catch(err => {
+              that.spinning = false
+            })
+        }
+      })
+    },
+    handleCancel() {
+      this.form.resetFields()
+      this.$nextTick(() => (this.visible = false))
+    },
+    submitAction(opt) {
+      let that = this
+      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
+      that.spinning = true
+      attenceTravelApplyApprove(values)
+        .then(res => {
+          that.spinning = false
+          console.log(res)
+          that.form.resetFields() // 清空表
+          that.visible = false
+          that.$message.info(res.msg)
+          that.$emit('finish')
+        })
+        .catch(err => (that.spinning = false))
+    },
+    passAction(opt = {}) {
+      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+    },
+    noPassAction() {
+      let that = this
+      that.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion
+      })
+    }
+  }
+}
+</script>
+<style scoped>
+.wdf-custom-add-form-wrapper >>> .ant-form-item {
+  display: flex;
+  margin: 0;
+}
+
+.ant-form-item >>> .ant-form-item-label {
+  width: 80px;
+}
+.ant-form-item >>> .ant-form-item-control-wrapper {
+  flex: 1;
+}
+.custom-table-border th,
+.custom-table-border td {
+  padding: 5px 10px;
+}
+</style>

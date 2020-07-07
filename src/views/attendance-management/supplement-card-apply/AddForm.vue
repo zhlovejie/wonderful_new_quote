@@ -24,13 +24,13 @@
         </a-form-item>
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width:120px;">选择加班事件</td>
+            <td style="width:120px;">选择异常事件</td>
             <td>
               <a-form-item>
                 <a-select 
                   :disabled="isDisabled"
-                  placeholder="加班事件"
-                  v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择加班事件'}]}]"
+                  placeholder="异常事件"
+                  v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择异常事件'}]}]"
                   :allowClear="true" 
                   style="width:100%;" 
                   @change="exceptionChange"

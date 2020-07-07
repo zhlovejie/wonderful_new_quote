@@ -32,7 +32,8 @@
                   placeholder="加班事件"
                   v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择加班事件'}]}]"
                   :allowClear="true" 
-                  style="width:100%;"
+                  style="width:100%;" 
+                  @change="exceptionChange"
                 >
                   <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">{{item.exceptionName}}</a-select-option>
                 </a-select>
@@ -133,7 +134,8 @@ import {
   overworkApplyAddAndUpdate ,
   overworkApplyApproval,
   signExceptionByCondition,
-  overworkApplyHours
+  overworkApplyHours,
+  overworkApplyInitTime
 } from '@/api/attendanceManagement'
 import Approval from './Approval'
 import moment from 'moment'
@@ -277,6 +279,18 @@ export default {
         }
         that.duration = {...res.data} || {}
       })
+    },
+    exceptionChange(val){
+      let that = this
+      let target = this.exceptionList.find(item => +item.id === +val)
+      if(target){
+        overworkApplyInitTime({
+          userId:that.record.createdId || that.userInfo.id,
+          attanceDate:moment(target.happenDate).format('YYYY-MM-DD')
+        }).then(res =>{
+          console.log(res)
+        })
+      }
     },
     handleSubmit(){
       let that = this
