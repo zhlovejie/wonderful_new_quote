@@ -641,3 +641,94 @@ export function attenceTravelUserGetUsersForTravel (parameter) {
 }
 
 //---------------------出差申请--END------------------
+
+
+//---------------------请假申请-----------------------
+export function attenceLeaveApplyAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/addOrUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceLeaveApplyApprove (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/approve',
+    method: 'post',
+    data: parameter
+  })
+}
+//计算请假时长
+export function attenceLeaveApplyComputeLeaveTime (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/computeLeaveTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function attenceLeaveApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceLeaveApplyDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function attenceLeaveApplyList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function attenceLeaveApplyWithdraw (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/withdraw',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceLeaveApplyAllHoliday (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/getAllHoliday',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+/**
+ * 可调休时长的查询
+ * hourType 请假类型ID
+ * userId
+ */
+export function attenceLeaveApplyUserRestHoursRecord (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/restHoursRecord/rest-hours-record/getUserRestHoursRecord',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------请假申请--END------------------

@@ -139,10 +139,6 @@
               <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
             </template>
 
-
-            <a-divider type="vertical" />
-              <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
-
           </template>
         </div>
       </a-table>
