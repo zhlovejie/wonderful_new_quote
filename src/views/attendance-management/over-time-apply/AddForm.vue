@@ -288,7 +288,32 @@ export default {
           userId:that.record.createdId || that.userInfo.id,
           attanceDate:moment(target.happenDate).format('YYYY-MM-DD')
         }).then(res =>{
-          console.log(res)
+          //console.log(res)
+          if(res && res.data){
+            if('signBeginDateTime' in res.data){
+              let {signBeginDateTime} = res.data
+              that.form.setFieldsValue({
+                s_begin_date:moment(signBeginDateTime),
+                s_begin_time:moment(signBeginDateTime),
+              })
+            }
+            if('signEndDateTime' in res.data){
+              let {signEndDateTime} = res.data
+              that.form.setFieldsValue({
+                s_end_date:moment(signEndDateTime),
+                s_end_time:moment(signEndDateTime)
+              })
+            }
+            if('signBeginDateTime' in res.data && 'signEndDateTime' in res.data){
+              let {signBeginDateTime,signEndDateTime} = res.data
+              that.sDate = {
+                beginDate:moment(signBeginDateTime).format('YYYY-MM-DD'),
+                beginTime:moment(signBeginDateTime).format('HH:mm:ss'),
+                endDate:moment(signEndDateTime).format('YYYY-MM-DD'),
+                endTime:moment(signEndDateTime).format('HH:mm:ss')
+              }
+            }
+          }   
         })
       }
     },

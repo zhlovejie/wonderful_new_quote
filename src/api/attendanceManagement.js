@@ -732,3 +732,38 @@ export function attenceLeaveApplyUserRestHoursRecord (parameter) {
 }
 
 //---------------------请假申请--END------------------
+
+
+//---------------------请假申请-----------------------
+
+/**工作餐统计根据工作餐id获取客户餐详情pc */
+export function getCustomerLunchById (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/orderLunch/order-lunch/getCustomerLunchById',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**工作餐统计带分页pc */
+export function getWorkLunchCensus (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/orderLunch/order-lunch/getWorkLunchCensus',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**工作餐统计pc */
+export function getWorkLunchNum (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/orderLunch/order-lunch/getWorkLunchNum',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------请假申请--END------------------

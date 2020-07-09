@@ -108,6 +108,10 @@
             <a type="primary" @click="doAction('approval',record)">审批</a>
           </template>
 
+          <template v-if="+activeKey === 2">
+            <a type="primary" @click="doAction('view',record)">查看</a>
+          </template>
+
           <template v-if="+activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
             <template v-if="+record.status === 0 && +record.createdId === +userInfo.id">
