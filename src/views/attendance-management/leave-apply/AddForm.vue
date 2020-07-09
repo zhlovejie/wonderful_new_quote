@@ -86,7 +86,7 @@
             <td style="width:120px;">时长</td>
             <td>
               <a-form-item>
-                {{duration}}
+                {{leaveTime}}
               </a-form-item>
             </td>
           </tr>
@@ -118,8 +118,9 @@
           <tr >
             <td style="width:120px;">上传凭证</td>
             <td style="text-align:left;">
-              <div class="clearfix">
-                <a-upload
+              <div class="clearfix" style="width:400px;overflow:auto;">
+                <a-upload 
+                  v-if="!isDisabled"
                   name="file"
                   :action="uploadPath"
                   :multiple="true"
@@ -128,6 +129,12 @@
                 >
                   <a-button type="dashed" icon="upload" v-if="!isView">上传文件</a-button>
                 </a-upload>
+
+                <div v-else>
+                  <div v-for="f in fileList" :key="f.uid">
+                    <a :href="f.url" target="_blank">{{f.name}}</a>
+                  </div>
+                </div>
               </div>
             </td>
           </tr>
@@ -169,14 +176,11 @@ export default {
       detail:{},
       record:{},
       spinning:false,
-      exceptionList:[],
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      sDate:{},
-      duration:{},
       uploadPath: getUploadPath2(),
       fileList: [],
       userRestHours:0, //可调休时长
-      duration:0, //自动计算时长
+      leaveTime:0, //自动计算时长
       holidayList:[]
     }
   },
@@ -202,25 +206,7 @@ export default {
     }
   },
   watch:{
-    sDate(newDate,oldDate){
-      let that = this
-      let {beginDate,beginTime,endDate,endTime} = this.sDate
-      if(beginDate && beginTime && endDate && endTime){
-        let _beginDateStr = `${beginDate} ${beginTime}`
-        let _endDateStr = `${endDate} ${endTime}`
-        let _beginDate = moment(_beginDateStr)
-        let _endDate = moment(_endDateStr)
-        let diff = _endDate.diff(_beginDate,'minutes')
-        if(diff <= 0){
-          that.$message.info('结束时间必须大于开始时间')
-          return
-        }
-        that.fetchOverworkApplyHours({
-          beginTime:_beginDateStr,
-          endTime:_endDateStr
-        })
-      }
-    }
+
   },
   methods:{
     moment,
@@ -238,7 +224,6 @@ export default {
         console.log('获取请假类型失败=>',val)
         return
       }
-      
       attenceLeaveApplyUserRestHoursRecord({
         hourType:target.holidayCode,
         userId:that.record.createdId || that.userInfo.id
@@ -248,7 +233,6 @@ export default {
       })
     },
     datePickerChange(){
-      debugger
       let that = this
       let result = that.form.getFieldsValue(['beginTime','endTime'])
       if(result.beginTime instanceof moment && result.endTime instanceof moment){
@@ -260,7 +244,7 @@ export default {
           userId:that.record.createdId || that.userInfo.id
         }).then(res =>{
           console.log(res)
-          that.duration = res.data || 0
+          that.leaveTime = res.data || 0
         })
       }
     },
@@ -271,8 +255,11 @@ export default {
       that.actionType = type,
       that.record = Object.assign({},record)
       that.detail = {}
-      that.duration = {}
-      that.exceptionList = []
+      that.fileList = []
+      that.userRestHours = 0 //可调休时长
+      that.leaveTime = 0 //自动计算时长
+      that.holidayList = []
+
       that.form.resetFields()
       await that.init()
       that.visible = true
@@ -283,27 +270,20 @@ export default {
       attenceLeaveApplyDetail({id:record.id}).then(res =>{
         //debugger
         let data = res.data
-        let beginTime = moment(data.beginTime)
-        let endTime = moment(data.endTime)
-        that.sDate = {
-          beginDate:beginTime.format('YYYY-MM-DD'),
-          beginTime:beginTime.format('HH:mm:ss'),
-          endDate:endTime.format('YYYY-MM-DD'),
-          endTime:endTime.format('HH:mm:ss'),
-        }
         that.detail = {...data}
-
-        // that.fileList = resultData.annexList.map((item, index) => {
-        //   return {
-        //     uid: String(index + 1),
-        //     name: item.workUrl,
-        //     status: 'done',
-        //     url: item.workUrl
-        //   }
-        // })
-
-        //that.fetchOverworkApplyHours({beginTime,endTime})
-        console.log(res)
+        that.leaveTime = that.detail.leaveTime
+        if(that.detail.docUrl){
+          that.fileList = that.detail.docUrl.split(',').map((url, index) => {
+            let arr = url.split('/')
+            let name = arr[arr.length - 1]
+            return {
+              uid: String(index + 1),
+              name: name,
+              status: 'done',
+              url: url
+            }
+          })
+        }
       })
     },
     handleSubmit(){
@@ -314,29 +294,20 @@ export default {
       }
       this.form.validateFields((err, values) => {
         if (!err) {
+          
+          
+          values.beginTime = values.beginTime.format('YYYY-MM-DD HH:mm:ss')
+          values.endTime = values.endTime.format('YYYY-MM-DD HH:mm:ss')
+
+          let target = that.holidayList.find(item => +item.id === +values.holidayId)
+          if(target){
+            values.holidayName = target.holidayName
+            values.holidayCode = target.holidayCode
+          }
+          values.leaveTime = that.leaveTime
+          values.docUrl = that.fileList.filter(f => f.url).map(f =>f.url).join(',')
           console.log('Received values of form: ', values)
-          delete values.s_begin_date
-          delete values.s_begin_time
-          delete values.s_end_date
-          delete values.s_end_time
-
-          values.beginTime = `${that.sDate.beginDate} ${that.sDate.beginTime}`
-          values.endTime = `${that.sDate.endDate} ${that.sDate.endTime}`
-          
-          if(values.beginTime >= values.endTime){
-            that.$message.info('结束时间必须大于开始时间')
-            return
-          }
-          if('hour' in that.duration && 'isMeal' in that.duration){
-            values.duration = that.duration.hour
-            values.isMeal = that.duration.isMeal
-          }else{
-            that.$message.info('时间范围小于加班最小时长')
-            return
-          }
-          
           that.spinning = true 
-
           attenceLeaveApplyAddOrUpdate(values).then(res =>{
             that.$message.info(res.msg)
             that.spinning = false

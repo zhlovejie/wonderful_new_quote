@@ -55,7 +55,7 @@
             @click="searchAction({current:1})"
           >查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;" v-if="$auth('overworkApply:add')">
+        <div class="action-wrapper" style="float:right;" v-if="$auth('attenceTravelApply:add')">
           <a-form-item>
             <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
           </a-form-item>
@@ -65,7 +65,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('overworkApply:approval')">
+        <template v-if="$auth('attenceTravelApply:approval')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>

@@ -45,7 +45,7 @@
             @click="searchAction({current:1})"
           >查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;" v-if="$auth('overworkApply:add')">
+        <div class="action-wrapper" style="float:right;" v-if="$auth('attenceLeaveApply:add')">
           <a-form-item>
           <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
           </a-form-item>
@@ -55,7 +55,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('overworkApply:approval')">
+        <template v-if="$auth('attenceLeaveApply:approval')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
@@ -83,29 +83,33 @@
         </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
+          
           <template v-if="+activeKey === 1">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval',record)">审批</a>
           </template>
+          <template v-if="+activeKey === 2">
+            <a type="primary" @click="doAction('view',record)">查看</a>
+          </template>
 
           <template v-if="+activeKey === 0">
+            <a type="primary" @click="doAction('view',record)">查看</a>
             <template v-if="+record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw',record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="+record.status === 2">
+            <template v-if="+record.status === 2 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
-            <template v-if="(+record.status === 3 || +record.status === 4) && +record.createdId === +userInfo.id">
+            <!-- <template v-if="(+record.status === 3 || +record.status === 4) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit',record)">修改</a>
-            </template>
+            </template> -->
           </template>
         </div>
       </a-table>
@@ -273,7 +277,7 @@ export default {
       if(['view','add','edit','approval'].includes(actionType)){
         that.$refs.addForm.query(actionType,record || {})
       }else if(actionType === 'del'){
-        attenceLeaveApplyDel({id:record.id})
+        attenceLeaveApplyDel(`id=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -282,7 +286,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       }else if(actionType === 'withdraw'){
-        attenceLeaveApplyWithdraw({id:record.id})
+        attenceLeaveApplyWithdraw(`id=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
