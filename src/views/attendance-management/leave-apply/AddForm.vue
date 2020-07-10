@@ -301,9 +301,13 @@ export default {
 
           let target = that.holidayList.find(item => +item.id === +values.holidayId)
           if(target){
+            console.log('请假类型 =>',target)
             values.holidayName = target.holidayName
             values.holidayCode = target.holidayCode
+          }else{
+            console.log('未找到请假类型')
           }
+
           values.leaveTime = that.leaveTime
           values.docUrl = that.fileList.filter(f => f.url).map(f =>f.url).join(',')
           console.log('Received values of form: ', values)

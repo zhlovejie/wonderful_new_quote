@@ -6,7 +6,7 @@
     @ok="handleOk"
     @cancel="handleCancel"
     :maskClosable="false"
-    :confirmLoading="spinning" 
+    :confirmLoading="spinning"
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper">
@@ -15,10 +15,10 @@
             <td style="width:150px;">离职类别</td>
             <td>
               <a-form-item>
-                <a-select 
-                  :disabled="isDisabled" 
+                <a-select
+                  :disabled="isDisabled"
                   v-decorator="['type', { rules: [{ required: true, message: '选择部门' }] }]"
-                  placeholder="离职类别" 
+                  placeholder="离职类别"
                   @change="typeChange"
                 >
                   <a-select-option :value="1">事故型辞退</a-select-option>
@@ -62,9 +62,9 @@
             <td>部门</td>
             <td>
               <a-form-item>
-                <a-select 
-                  v-if="severanceType === 3" 
-                  :disabled="isDisabled" 
+                <a-select
+                  v-if="severanceType === 3"
+                  :disabled="isDisabled"
                   placeholder="选择部门"
                   @change="depChangeHandler"
                   v-decorator="['depId', { rules: [{ required: true, message: '选择部门' }] }]"
@@ -83,10 +83,10 @@
             <td>岗位</td>
             <td >
               <a-form-item>
-                <a-select 
-                  v-if="severanceType === 3" 
-                  :disabled="isDisabled" 
-                  placeholder="选择岗位" 
+                <a-select
+                  v-if="severanceType === 3"
+                  :disabled="isDisabled"
+                  placeholder="选择岗位"
                   @change="postChangeHandler"
                   v-decorator="['postId', { rules: [{ required: true, message: '选择岗位' }] }]"
                 >
@@ -104,9 +104,9 @@
             <td>人员</td>
             <td >
               <a-form-item>
-                <a-select 
-                  v-if="severanceType === 3" 
-                  :disabled="isDisabled" 
+                <a-select
+                  v-if="severanceType === 3"
+                  :disabled="isDisabled"
                   placeholder="选择人员"
                   v-decorator="['userId', { rules: [{ required: true, message: '选择人员' }] }]"
                 >
@@ -124,9 +124,9 @@
             <td>离职日期</td>
             <td colspan="3">
               <a-form-item>
-                <a-date-picker 
-                  :disabled="isDisabled" 
-                  style="width:100%;" 
+                <a-date-picker
+                  :disabled="isDisabled"
+                  style="width:100%;"
                   v-decorator="['leaveDate',{initialValue:moment(),rules: [{required: true,message: '离职日期'}]}]"
                   format="YYYY-MM-DD"
                 />
@@ -217,16 +217,16 @@ export default {
       this.postSelectDataSource = []
       this.personSelectDataSource = []
       this.form.setFieldsValue({postId:undefined,userId:undefined})
-      
+
       getStationList({ id: depId }).then(res => (this.postSelectDataSource = res.data))
     },
     postChangeHandler(stationId){
       this.personSelectDataSource = []
       this.form.setFieldsValue({userId:undefined})
-      getUserByStation({ stationId: stationId }).then(res => (this.personSelectDataSource = res.data))
+      getUserByStation({ stationId: stationId, showLeaveFlag:1 }).then(res => (this.personSelectDataSource = res.data))
     },
     selectReports(){
-      
+
     },
     selectAgrees(){
 
@@ -283,8 +283,8 @@ export default {
       that.visible = true
       if (that.isAdd) return
       that.severanceType = Number(record.type)
-      
-      
+
+
 
       if(that.severanceType === 1 || that.severanceType === 2){
         that.dutyDepartmentName =that.record.userDepartmentName
@@ -318,7 +318,7 @@ export default {
           Promise.all([
             departmentList().then(res => that.depSelectDataSource = res.data),
             getStationList({ id: that.record.userDepartmentId }).then(res => this.postSelectDataSource = res.data),
-            getUserByStation({ stationId: that.record.userStationId }).then(res => this.personSelectDataSource = res.data)
+            getUserByStation({ stationId: that.record.userStationId, showLeaveFlag:1 }).then(res => this.personSelectDataSource = res.data)
           ]).then(res =>{
             that.form.setFieldsValue({
               depId:that.record.userDepartmentId,
@@ -371,12 +371,12 @@ export default {
       let that = this
       console.log(decoratorKey,record)
       if(record){
-        if(decoratorKey === 'report'){ 
+        if(decoratorKey === 'report'){
           that.form.setFieldsValue({
             reportName:`${record.dutyPersonName}/${record.dutyDepartmentName}/${record.exceptionName}`,
             reportId:record.id
           })
-          //事故调查表人员字段 
+          //事故调查表人员字段
           that.userName = record.dutyPersonName
           that.userId = record.dutyPersonId
         }else if(decoratorKey === 'agree'){
@@ -384,7 +384,7 @@ export default {
             agreeName:`${record.userName}/${record.leaveOfficeCode}`,
             agreeId:record.id
           })
-          //离职协议人员字段 
+          //离职协议人员字段
           that.userName = record.userName
           that.userId = record.userId
         }

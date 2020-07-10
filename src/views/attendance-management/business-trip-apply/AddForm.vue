@@ -226,7 +226,7 @@
             <td>
               <a-form-item>
                 <a-select
-                  :disabled="isDisabled"
+                  :disabled="isDisabled || !isCompanyCar"
                   placeholder="选择公车"
                   v-decorator="['carDicNum',{initialValue:detail.carDicNum ? +detail.carDicNum : undefined,rules: [{required: true,message: '选择公车'}]}]"
                   :allowClear="true"
@@ -313,7 +313,9 @@ export default {
       carList: [], //公司车辆
       beginAreaId: [], //出发城市
       routesList: [], //出差行程
-      isSalesman: false
+      isSalesman: false,
+
+      isCompanyCar:false, //交通工具为公车时，下面的选项才可以选择车牌号
     }
   },
   computed: {
@@ -348,7 +350,6 @@ export default {
       if(total <= 0){
         return '-'
       }
-      debugger
       let days = parseInt(total / 60 / 24,10)
       let hours = parseInt((total / 60) - (days * 24),10)
       let minutes = parseInt(total - (days * 24 * 60) - (hours * 60),10)
@@ -474,6 +475,12 @@ export default {
       if (target) {
         target[type] = val
         this.routesList = [..._routesList]
+      }
+
+      let car = this.vehicleList.find(car => +car.id === +val)
+      this.isCompanyCar = car && String(car.text).trim() === '公车'
+      if(!this.isCompanyCar){
+        this.form.setFieldsValue({carDicNum:undefined})
       }
     },
     routeAction(type, key) {

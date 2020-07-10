@@ -25,7 +25,7 @@
             <a-select-option :value="4">已撤回</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item>
+        <a-form-item hidden>
           <a-select
             placeholder="交通工具"
             v-model="searchParam.vehicleId"
@@ -137,12 +137,9 @@
             </template>
 
             <!--查看 修改:只添加行程 -->
-            <template v-if="+record.status === 2">
-              <a type="primary" @click="doAction('view',record)">查看</a>
-              <template v-if="+record.financeStatus === 0">
-                <a-divider type="vertical" />
-                <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
-              </template>
+            <template v-if="+record.status === 2 && +record.financeStatus === 0">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
             </template>
 
           </template>
@@ -400,10 +397,10 @@ export default {
     rangePickerChange(arrMoment, arrStrs) {
       if (Array.isArray(arrMoment)) {
         if (arrMoment.length === 2) {
-          this.searchParam.beginTime = arrMoment[0].format('YYYY-MM-DD')
+          this.searchParam.startTime = arrMoment[0].format('YYYY-MM-DD')
           this.searchParam.endTime = arrMoment[1].format('YYYY-MM-DD')
         } else {
-          this.searchParam.beginTime = undefined
+          this.searchParam.startTime = undefined
           this.searchParam.endTime = undefined
         }
       }
