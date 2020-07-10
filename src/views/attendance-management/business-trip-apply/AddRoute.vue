@@ -294,13 +294,14 @@ export default {
             return
           }
 
-          values.travelId = that.record.id
-          values.routes = that.$_.cloneDeep(that.routesList).map(item => {
+          //values.travelId = that.record.id
+          let routes = that.$_.cloneDeep(that.routesList).map(item => {
             delete item._key
+            item.travelId = that.record.id
             return item
           })
           that.spinning = true
-          attenceTravelRouteAdd(values)
+          attenceTravelRouteAdd(routes)
             .then(res => {
               that.$message.info(res.msg)
               that.spinning = false

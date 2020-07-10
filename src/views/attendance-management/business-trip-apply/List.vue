@@ -139,8 +139,10 @@
             <!--查看 修改:只添加行程 -->
             <template v-if="+record.status === 2">
               <a type="primary" @click="doAction('view',record)">查看</a>
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
+              <template v-if="+record.financeStatus === 0">
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
+              </template>
             </template>
 
           </template>
