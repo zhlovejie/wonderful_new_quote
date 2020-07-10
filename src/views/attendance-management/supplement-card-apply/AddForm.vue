@@ -175,7 +175,10 @@ export default {
         let data = res.data
         that.detail = {...data}
 
-        data.exceptionId && that.exceptionChange(data.exceptionId)
+        that.exceptionItem = {
+          happenDate:that.detail.happenDate
+        }
+        //data.exceptionId && that.exceptionChange(data.exceptionId)
         console.log(res)
       })
     },
