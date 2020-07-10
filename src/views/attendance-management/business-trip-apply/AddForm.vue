@@ -228,7 +228,7 @@
                 <a-select
                   :disabled="isDisabled || !isCompanyCar"
                   placeholder="选择公车"
-                  v-decorator="['carDicNum',{initialValue:detail.carDicNum ? +detail.carDicNum : undefined,rules: [{required: true,message: '选择公车'}]}]"
+                  v-decorator="['carDicNum',{initialValue:detail.carDicNum ? +detail.carDicNum : undefined,rules: [{required: isCompanyCar,message: '选择公车'}]}]"
                   :allowClear="true"
                   style="width:334px;"
                 >

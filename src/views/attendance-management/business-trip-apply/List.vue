@@ -131,13 +131,14 @@
             </template>
 
             <template v-if="+record.financeStatus === 1 && +record.createdId === +userInfo.id">
+              <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
 
             <!--查看 修改:只添加行程 -->
-            <template v-if="+record.status === 2 && +record.financeStatus === 0">
+            <template v-if="+record.status === 2 && !record.endTime">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
             </template>

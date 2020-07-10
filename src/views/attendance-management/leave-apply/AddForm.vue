@@ -234,19 +234,22 @@ export default {
     },
     datePickerChange(){
       let that = this
-      let result = that.form.getFieldsValue(['beginTime','endTime'])
-      if(result.beginTime instanceof moment && result.endTime instanceof moment){
-        let beginTime = result.beginTime.format('YYYY-MM-DD HH:mm:ss')
-        let endTime = result.endTime.format('YYYY-MM-DD HH:mm:ss')
-        attenceLeaveApplyComputeLeaveTime({
-          beginTime,
-          endTime,
-          userId:that.record.createdId || that.userInfo.id
-        }).then(res =>{
-          console.log(res)
-          that.leaveTime = res.data || 0
-        })
-      }
+      that.$nextTick(() =>{
+        let result = that.form.getFieldsValue(['beginTime','endTime'])
+        if(result.beginTime instanceof moment && result.endTime instanceof moment){
+          let beginTime = result.beginTime.format('YYYY-MM-DD HH:mm:ss')
+          let endTime = result.endTime.format('YYYY-MM-DD HH:mm:ss')
+          attenceLeaveApplyComputeLeaveTime({
+            beginTime,
+            endTime,
+            userId:that.record.createdId || that.userInfo.id
+          }).then(res =>{
+            that.leaveTime = res.data || 0
+          })
+        }else{
+          that.leaveTime = 0
+        }
+      })
     },
     async query(type,record){
       //debugger
