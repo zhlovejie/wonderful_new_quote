@@ -24,9 +24,9 @@ export default {
   //baseURL:'http://192.168.99.108:8999/oa',
   //baseURL:'http://192.168.99.166:8999/oa',
   //baseURL: 'http://192.168.99.118:8999/oa', // 张恒
-  baseURL: 'http://192.168.99.130:8995', // 玉堂
+  //baseURL: 'http://192.168.99.130:8995', // 玉堂
   //baseURL:'http://192.168.99.188:8999/oa',//王利
-  //baseURL:'http://192.168.99.163:8999/oa',//张恒
+  baseURL:'http://192.168.99.163:8999/oa',//张恒
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
   layout: 'sidemenu', // nav menu position: sidemenu or topmenu
