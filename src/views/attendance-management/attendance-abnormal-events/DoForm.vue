@@ -1,6 +1,6 @@
 <template>
 <a-modal
-    title="财务状态"
+    title="处理"
     :width="600"
     :visible="visible"
     @ok="handleOk"
