@@ -42,7 +42,7 @@
         </div>
       </a-table>
     </div>
-    <AddForm ref="addForm" @finish="searchAction" />
+    <AddForm ref="addForm"  />
     <!-- 修改记录 -->
     <ViewUpdateRecord ref="viewUpdateRecord" />
   </div>
