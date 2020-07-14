@@ -3,11 +3,17 @@
   <div class="wdf-custom-wrapper" id="attendance-over-time-apply">
     <div class="search-wrapper">
       <a-form layout="inline">
-          <a-form-item>
-          <a-button-group>
-            <a-button type="primary"  @click="simpleSearch(1)">上月</a-button>
-            <a-button type="primary" @click="simpleSearch(2)">全部</a-button>
-          </a-button-group>
+        <a-form-item>
+          <a-button
+            class="a-button"
+            type="primary"
+            @click="simpleSearch(1)">上月</a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button
+            class="a-button"
+            type="primary"
+            @click="simpleSearch(2)">全部</a-button>
         </a-form-item>
         <a-form-item>
           <a-input
