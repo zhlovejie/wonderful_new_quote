@@ -3,10 +3,18 @@
   <div class="wdf-custom-wrapper" id="attendance-over-time-apply">
     <div class="search-wrapper">
       <a-form layout="inline">
-          <a-form-item>
+        <a-form-item>
           <a-button-group>
-            <a-button type="primary"  @click="simpleSearch(1)">上月</a-button>
-            <a-button type="primary" @click="simpleSearch(2)">全部</a-button>
+            <a-button
+              type="primary"
+              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
+              @click="simpleSearch(1)"
+            >上月</a-button>
+            <a-button
+              type="primary"
+              :class="{currentDayWeekMonth:dayWeekMonth === 2}"
+              @click="simpleSearch(2)"
+            >全部</a-button>
           </a-button-group>
         </a-form-item>
         <a-form-item>
@@ -59,7 +67,6 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
-        :scroll="{ x: 1500,y:300}"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -74,7 +81,7 @@ import {
   departmentList //所有部门
 } from '@/api/systemSetting'
 import { getStatisticsList, downStatisticsList } from '@/api/attendanceManagement'
-import moment from 'moment';
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
@@ -175,28 +182,35 @@ export default {
       loading: false,
       searchParam: {},
       depList: [],
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      userInfo: this.$store.getters.userInfo, // 当前登录人
+      dayWeekMonth: 1
     }
   },
   watch: {
     $route: {
       handler: function(to, from) {
         if (to.name === 'attendance-statistics') {
-            let nowDate=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()+1):new Date().getMonth()+1)
-            this.init({current:1,statiticsMonthDate:nowDate})
+          let nowDate =
+            new Date().getFullYear() +
+            '-' +
+            (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+          this.init({ current: 1, statiticsMonthDate: nowDate })
         }
       },
       immediate: true
     }
   },
   mounted() {
-    let nowDate=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()+1):new Date().getMonth()+1)
-    this.init({current:1,statiticsMonthDate:nowDate})
+    let nowDate =
+      new Date().getFullYear() +
+      '-' +
+      (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+    this.init({ current: 1, statiticsMonthDate: nowDate })
   },
   methods: {
     disabledDate(current) {
       // Can not select days before today and today
-      return current && current > moment().endOf('day');
+      return current && current > moment().endOf('day')
     },
     init(params) {
       let that = this
@@ -235,21 +249,24 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
-     onChange(date, dateString) {
-      if(typeof(dateString)==='string'){
-          this.searchParam.statiticsMonthDate=dateString
+    onChange(date, dateString) {
+      if (typeof dateString === 'string') {
+        this.searchParam.statiticsMonthDate = dateString
       }
     },
-    simpleSearch(num){
-        if(num===1){
-            // 上月
-            let lastMonth=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()):new Date().getMonth())
-            this.init({current:1,statiticsMonthDate:lastMonth})
-        }else if(num===2){
-            // 全部
-            this.init({current:1,statiticsMonthDate:undefined})
-        }
-
+    simpleSearch(num) {
+      this.dayWeekMonth = num
+      if (num === 1) {
+        // 上月
+        let lastMonth =
+          new Date().getFullYear() +
+          '-' +
+          (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
+        this.init({ current: 1, statiticsMonthDate: lastMonth })
+      } else if (num === 2) {
+        // 全部
+        this.init({ current: 1, statiticsMonthDate: undefined })
+      }
     },
     // 下载
     downAction() {
@@ -269,7 +286,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download ='考勤统计列表.xls'
+              a.download = '考勤统计列表.xls'
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
@@ -315,5 +332,8 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>
