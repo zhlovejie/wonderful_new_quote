@@ -1,0 +1,319 @@
+<template>
+  <!-- 人脸打卡记录 -->
+  <div class="wdf-custom-wrapper" id="attendance-over-time-apply">
+    <div class="search-wrapper">
+      <a-form layout="inline">
+          <a-form-item>
+          <a-button-group>
+            <a-button type="primary"  @click="simpleSearch(1)">上月</a-button>
+            <a-button type="primary" @click="simpleSearch(2)">全部</a-button>
+          </a-button-group>
+        </a-form-item>
+        <a-form-item>
+          <a-input
+            placeholder="员工名模糊查询"
+            v-model="searchParam.userName"
+            allowClear
+            style="width:150px;"
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-select
+            placeholder="选择部门"
+            v-model="searchParam.departmentId"
+            :allowClear="true"
+            style="width:150px;"
+          >
+            <a-select-option
+              v-for="item in depList"
+              :key="item.id"
+              :value="item.id"
+            >{{item.departmentName}}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-month-picker
+            @change="onChange"
+            style="width:220px;"
+            :allowClear="true"
+            :disabled-date="disabledDate"
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button
+            class="a-button"
+            type="primary"
+            icon="search"
+            @click="searchAction({current:1})"
+          >查询</a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button class="a-button" type="primary" icon="download" @click="downAction">下载</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+    <div class="main-wrapper">
+      <a-table
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="pagination"
+        :loading="loading"
+        @change="handleTableChange"
+        :scroll="{ x: 1500,y:300}"
+      >
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
+      </a-table>
+    </div>
+  </div>
+</template>
+
+<script>
+import {
+  departmentList //所有部门
+} from '@/api/systemSetting'
+import { getStatisticsList, downStatisticsList } from '@/api/attendanceManagement'
+import moment from 'moment';
+const columns = [
+  {
+    align: 'center',
+    title: '序号',
+    key: 'order',
+    width: '70px',
+    fixed: 'left',
+    scopedSlots: { customRender: 'order' }
+  },
+  {
+    align: 'center',
+    title: '考勤月',
+    dataIndex: 'statiticsMonth',
+    key: 'statiticsMonth'
+  },
+  {
+    align: 'center',
+    title: '工号',
+    dataIndex: 'jobNum',
+    key: 'jobNum'
+  },
+  {
+    align: 'center',
+    title: '姓名',
+    dataIndex: 'userName',
+    key: 'userName'
+  },
+  {
+    align: 'center',
+    title: '部门',
+    dataIndex: 'departmentName'
+  },
+  {
+    align: 'center',
+    title: '工作时长（小时）',
+    dataIndex: 'workHours',
+    key: 'workHours'
+  },
+  {
+    align: 'center',
+    title: '出勤（天）',
+    dataIndex: 'workDayNum',
+    key: 'workDayNum'
+  },
+  {
+    align: 'center',
+    title: '请假（h）',
+    dataIndex: 'leaveHours',
+    key: 'leaveHours'
+  },
+  {
+    align: 'center',
+    title: '加班（h）',
+    key: 'overWorkHours',
+    dataIndex: 'overWorkHours'
+  },
+  {
+    align: 'center',
+    title: '出差（天）',
+    key: 'travelDayNum',
+    dataIndex: 'travelDayNum'
+  },
+  {
+    align: 'center',
+    title: '迟到（h）',
+    dataIndex: 'laterHours',
+    key: 'laterHours'
+  },
+  {
+    align: 'center',
+    title: '早退（h）',
+    dataIndex: 'earlyHours',
+    key: 'earlyHours'
+  },
+  {
+    align: 'center',
+    title: '餐补（次）',
+    dataIndex: 'overLunchNum',
+    key: 'overLunchNum'
+  },
+  {
+    align: 'center',
+    title: '工作餐（天）',
+    dataIndex: 'lunchNum',
+    key: 'lunchNum'
+  }
+]
+
+export default {
+  name: 'attendance-statistics',
+  data() {
+    return {
+      columns: columns,
+      dataSource: [],
+      pagination: {
+        current: 1
+      },
+      loading: false,
+      searchParam: {},
+      depList: [],
+      userInfo: this.$store.getters.userInfo // 当前登录人
+    }
+  },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'attendance-statistics') {
+            let nowDate=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()+1):new Date().getMonth()+1)
+            this.init({current:1,statiticsMonthDate:nowDate})
+        }
+      },
+      immediate: true
+    }
+  },
+  mounted() {
+    let nowDate=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()+1):new Date().getMonth()+1)
+    this.init({current:1,statiticsMonthDate:nowDate})
+  },
+  methods: {
+    disabledDate(current) {
+      // Can not select days before today and today
+      return current && current > moment().endOf('day');
+    },
+    init(params) {
+      let that = this
+      let queue = []
+      let task1 = departmentList().then(res => (that.depList = res.data))
+      queue.push(task1)
+      that.searchAction(params)
+      return Promise.all(queue)
+    },
+    searchAction(opt = {}) {
+      let that = this
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      console.log('执行搜索...', _searchParam)
+      that.loading = true
+      getStatisticsList(_searchParam)
+        .then(res => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
+          that.pagination = pagination
+        })
+        .catch(err => (that.loading = false))
+    },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction({ current: pagination.current })
+    },
+     onChange(date, dateString) {
+      if(typeof(dateString)==='string'){
+          this.searchParam.statiticsMonthDate=dateString
+      }
+    },
+    simpleSearch(num){
+        if(num===1){
+            // 上月
+            let lastMonth=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()):new Date().getMonth())
+            this.init({current:1,statiticsMonthDate:lastMonth})
+        }else if(num===2){
+            // 全部
+            this.init({current:1,statiticsMonthDate:undefined})
+        }
+
+    },
+    // 下载
+    downAction() {
+      const downListParams = Object.assign({}, { ...this.searchParam })
+      this.loading = true
+      downStatisticsList(downListParams)
+        .then(res => {
+          this.loading = false
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            //const isFile = res.type === 'application/msword'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download ='考勤统计列表.xls'
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function(e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch(err => (this.loading = false))
+    }
+  }
+}
+</script>
+
+<style scoped>
+.wdf-custom-wrapper {
+  background-color: #fff;
+  padding: 10px 20px;
+}
+
+.main-wrapper {
+  margin-top: 20px;
+}
+</style>

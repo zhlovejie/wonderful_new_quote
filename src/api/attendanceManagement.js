@@ -768,7 +768,6 @@ export function getWorkLunchNum (parameter) {
 
 //---------------------请假申请--END------------------
 
-
 //---------------------考勤异常事件-----------------------
 export function signExceptionList (parameter) {
   return axios({
@@ -778,6 +777,7 @@ export function signExceptionList (parameter) {
     params: parameter
   })
 }
+
 /**处理 */
 export function signExceptionUpdate (parameter) {
   return axios({
@@ -802,6 +802,7 @@ export function attenceMonthStatiticsExportExcel (parameter) {
     params: parameter
   })
 }
+
 
 /**考勤月统计汇总分页查询 */
 export function attenceMonthStatiticsCollectList (parameter) {
@@ -853,3 +854,114 @@ export function attenceMonthStatiticsChangeAdd (parameter) {
   })
 }
 //---------------------考勤月历--END------------------
+
+//--------------------人脸打卡记录---------------------
+
+/** 打卡记录分页查询 */
+export function getFaceRecordList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/sign-history/listSignHistoryByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 打卡记录下载接口 */
+export function DownFaceRecordList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/sign-history/exportExcel',
+    method: 'get',
+    responseType:'blob',
+    params: parameter
+  })
+}
+
+/** 新增或者修改人脸打卡记录 */
+export function doFaceRecord(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/sign-history/saveOrUpdateSignHistory',
+    method: 'post',
+    data: parameter
+  })
+}
+//-------------------人脸打卡记录--END------------------
+
+//--------------------考勤设备---------------------
+
+/** 通过主板号查询设备信息 */
+export function getDeviceDetailByMainBordNum(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/device-info/getDeviceDetailByMainBordNum',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 设备列表查询接口 */
+export function getDeviceInfoList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/device-info/listDeviceInfoByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 设备修改接口 */
+export function updateDeviceInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/device-info/updateDeviceInfo',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 设备保存接口 */
+export function saveDeviceInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/device-info/saveDeviceInfo',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 设备删除接口 */
+export function removeDeviceInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/device-info/removeDeviceInfo',
+    method: 'post',
+    data: parameter
+  })
+}
+//-------------------考勤设备--END------------------
+
+//--------------------考勤统计---------------------
+
+/** 考勤月统计汇总分页查询 */
+export function getStatisticsList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/listAttenceMonthStatiticsCollectListVoByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 考勤月汇总下载 */
+export function downStatisticsList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/month/exportExcel',
+    method: 'get',
+    responseType:'blob',
+    params: parameter
+  })
+}
+//-------------------考勤统计--END------------------

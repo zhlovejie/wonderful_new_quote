@@ -1282,6 +1282,12 @@ export const asyncRouterMap = [
               },
             ]
           },
+          {
+            path: '/attendance-management/attendance-device',
+            name: 'attendance-device',
+            component: () => import('@/views/attendance-management/attendance-device/List'),
+            meta: { title: '考勤设备', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
         ]
       }
     ]
