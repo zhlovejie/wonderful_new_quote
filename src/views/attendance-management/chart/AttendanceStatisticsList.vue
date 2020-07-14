@@ -4,18 +4,10 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-button-group>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
-              @click="simpleSearch(1)"
-            >上月</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 2}"
-              @click="simpleSearch(2)"
-            >全部</a-button>
-          </a-button-group>
+          <a-button :disabled="disabled" class="a-button" type="primary" @click="simpleSearch(1)">上月</a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button class="a-button" type="primary" @click="simpleSearch(2)">全部</a-button>
         </a-form-item>
         <a-form-item>
           <a-input
@@ -45,6 +37,7 @@
             style="width:220px;"
             :allowClear="true"
             :disabled-date="disabledDate"
+            placeholder="请选择月份"
           />
         </a-form-item>
         <a-form-item>
@@ -174,6 +167,7 @@ export default {
   name: 'attendance-statistics',
   data() {
     return {
+      disabled: false,
       columns: columns,
       dataSource: [],
       pagination: {
@@ -221,6 +215,7 @@ export default {
       return Promise.all(queue)
     },
     searchAction(opt = {}) {
+      this.disabled = false
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
@@ -255,16 +250,33 @@ export default {
       }
     },
     simpleSearch(num) {
-      this.dayWeekMonth = num
       if (num === 1) {
         // 上月
+        this.disabled = true
         let lastMonth =
           new Date().getFullYear() +
           '-' +
           (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
-        this.init({ current: 1, statiticsMonthDate: lastMonth })
+        let that = this
+        that.loading = true
+        getStatisticsList({ current: 1, statiticsMonthDate: lastMonth })
+          .then(res => {
+            that.loading = false
+            that.dataSource = res.data.records.map((item, index) => {
+              item.key = index + 1
+              return item
+            })
+
+            //设置数据总条数
+            const pagination = { ...that.pagination }
+            pagination.total = res.data.total || 0
+            pagination.current = res.data.current || 1
+            that.pagination = pagination
+          })
+          .catch(err => (that.loading = false))
       } else if (num === 2) {
         // 全部
+        this.disabled = false
         this.init({ current: 1, statiticsMonthDate: undefined })
       }
     },
