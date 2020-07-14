@@ -4,16 +4,10 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            @click="simpleSearch(1)">上月</a-button>
+          <a-button :disabled="disabled" class="a-button" type="primary" @click="simpleSearch(1)">上月</a-button>
         </a-form-item>
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            @click="simpleSearch(2)">全部</a-button>
+          <a-button class="a-button" type="primary" @click="simpleSearch(2)">全部</a-button>
         </a-form-item>
         <a-form-item>
           <a-input
@@ -43,6 +37,7 @@
             style="width:220px;"
             :allowClear="true"
             :disabled-date="disabledDate"
+            placeholder="请选择月份"
           />
         </a-form-item>
         <a-form-item>
@@ -80,7 +75,7 @@ import {
   departmentList //所有部门
 } from '@/api/systemSetting'
 import { getStatisticsList, downStatisticsList } from '@/api/attendanceManagement'
-import moment from 'moment';
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
@@ -173,6 +168,7 @@ export default {
   name: 'attendance-statistics',
   data() {
     return {
+      disabled: false,
       columns: columns,
       dataSource: [],
       pagination: {
@@ -188,21 +184,27 @@ export default {
     $route: {
       handler: function(to, from) {
         if (to.name === 'attendance-statistics') {
-            let nowDate=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()+1):new Date().getMonth()+1)
-            this.init({current:1,statiticsMonthDate:nowDate})
+          let nowDate =
+            new Date().getFullYear() +
+            '-' +
+            (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+          this.init({ current: 1, statiticsMonthDate: nowDate })
         }
       },
       immediate: true
     }
   },
   mounted() {
-    let nowDate=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()+1):new Date().getMonth()+1)
-    this.init({current:1,statiticsMonthDate:nowDate})
+    let nowDate =
+      new Date().getFullYear() +
+      '-' +
+      (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+    this.init({ current: 1, statiticsMonthDate: nowDate })
   },
   methods: {
     disabledDate(current) {
       // Can not select days before today and today
-      return current && current > moment().endOf('day');
+      return current && current > moment().endOf('day')
     },
     init(params) {
       let that = this
@@ -213,6 +215,7 @@ export default {
       return Promise.all(queue)
     },
     searchAction(opt = {}) {
+      this.disabled = false
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
@@ -241,21 +244,41 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
-     onChange(date, dateString) {
-      if(typeof(dateString)==='string'){
-          this.searchParam.statiticsMonthDate=dateString
+    onChange(date, dateString) {
+      if (typeof dateString === 'string') {
+        this.searchParam.statiticsMonthDate = dateString
       }
     },
-    simpleSearch(num){
-        if(num===1){
-            // 上月
-            let lastMonth=new Date().getFullYear()+'-'+(new Date().getMonth()+1<10?'0'+(new Date().getMonth()):new Date().getMonth())
-            this.init({current:1,statiticsMonthDate:lastMonth})
-        }else if(num===2){
-            // 全部
-            this.init({current:1,statiticsMonthDate:undefined})
-        }
+    simpleSearch(num) {
+      if (num === 1) {
+        // 上月
+        this.disabled = true
+        let lastMonth =
+          new Date().getFullYear() +
+          '-' +
+          (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
+        let that = this
+        that.loading = true
+        getStatisticsList({ current: 1, statiticsMonthDate: lastMonth })
+          .then(res => {
+            that.loading = false
+            that.dataSource = res.data.records.map((item, index) => {
+              item.key = index + 1
+              return item
+            })
 
+            //设置数据总条数
+            const pagination = { ...that.pagination }
+            pagination.total = res.data.total || 0
+            pagination.current = res.data.current || 1
+            that.pagination = pagination
+          })
+          .catch(err => (that.loading = false))
+      } else if (num === 2) {
+        // 全部
+        this.disabled = false
+        this.init({ current: 1, statiticsMonthDate: undefined })
+      }
     },
     // 下载
     downAction() {
@@ -275,7 +298,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download ='考勤统计列表.xls'
+              a.download = '考勤统计列表.xls'
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
