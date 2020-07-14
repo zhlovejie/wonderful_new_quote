@@ -62,7 +62,8 @@
         <div v-for="item in extColumns" :key="item.dataIndex" :slot="item.dataIndex" slot-scope="text, record, index">
           <a-popover  title="操作" trigger="hover">
             <div slot="content">
-              <template v-if="!['正常','休息'].includes(text)">
+              <!-- <template v-if="!['正常','休息'].includes(text)"> -->
+              <template v-if="hasException(item.dataIndex,record.dayStatiticsList)">
                 <a @click="doAction('edit',record,item.dataIndex)">修改</a>
                 <a-divider type="vertical" />
               </template>
@@ -331,6 +332,11 @@ export default {
           }
         }
       }).catch(err => that.spinning = true)
+    },
+    hasException(dataIndex,dayStatiticsList){
+      let _dayStatiticsList = dayStatiticsList || []
+      let target = _dayStatiticsList.find(item => moment(item.statiticsDate).format('YYYYMMDD') === dataIndex)
+      return target && target.monthExceptionList && Array.isArray(target.monthExceptionList) && target.monthExceptionList.length > 0
     }
   },
   

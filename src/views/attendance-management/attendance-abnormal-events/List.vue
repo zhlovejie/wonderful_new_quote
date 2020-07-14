@@ -83,13 +83,15 @@
         </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
-            <a type="primary" href="javascript:;">删除</a>
-          </a-popconfirm>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确认处理该条数据吗?" @confirm="() => doAction('chuli',record)">
-            <a type="primary" href="javascript:;">处理</a>
-          </a-popconfirm>
+          <template v-if="+record.exceptionType === 6">
+            <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+              <a type="primary" href="javascript:;">删除</a>
+            </a-popconfirm>
+            <a-divider type="vertical" />
+            <a-popconfirm title="确认处理该条数据吗?" @confirm="() => doAction('chuli',record)">
+              <a type="primary" href="javascript:;">处理</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
@@ -102,7 +104,7 @@ import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
 import {
-  signExceptionList
+  signExceptionList,signExceptionDel
 } from '@/api/attendanceManagement'
 
 import DoForm from './DoForm'
@@ -246,16 +248,15 @@ export default {
     doAction(actionType, record) {
       let that = this
       if(actionType === 'del'){
-        that.$message.info('接口尚未实现...')
-        return
-        // overworkApplyDel({id:record.id})
-        //   .then(res => {
-        //     that.$message.info(res.msg)
-        //     that.searchAction()
-        //   })
-        //   .catch(err => {
-        //     that.$message.info(`错误：${err.message}`)
-        //   })
+        signExceptionDel(`id=${record.id}`)
+          .then(res => {
+            that.$message.info(res.msg)
+            that.searchAction()
+          })
+          .catch(err => {
+            that.$message.info(`错误：${err.message}`)
+          })
+          return
       }else if(actionType === 'chuli'){
         that.$refs.doForm.query(actionType,record)
         //signExceptionUpdate

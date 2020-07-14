@@ -788,6 +788,17 @@ export function signExceptionUpdate (parameter) {
   })
 }
 
+/**删除 */
+export function signExceptionDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/exception/removeSignException',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
 //---------------------考勤异常事件--END------------------
 
 //---------------------考勤月历-----------------------

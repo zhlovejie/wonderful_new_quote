@@ -40,6 +40,7 @@
             :step="1"
             :precision="1" 
             :value="item.newHours" 
+            :disabled="+item.modifyType === 2"
             v-if="!item.isDone"
             @change="(val) => eleChange('newHours',item._key,val)"
           />
@@ -48,7 +49,7 @@
         <td>
           <a-textarea 
             style="width:150px;" 
-            placeholder="出差备注" 
+            placeholder="备注" 
             :rows="1" 
             :value="item.modifyReason" 
             v-if="!item.isDone"
@@ -111,6 +112,7 @@ export default {
       let target = exceptionList.find(item => item._key === key)
       if(target){
         let item = Object.assign({},target)
+        item.newHours = item.newHours || 0
         item.oldHours = item.hours
         item.serviceType = item.type
         item.statiticsId = item.id
