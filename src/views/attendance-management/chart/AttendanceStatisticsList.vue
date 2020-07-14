@@ -175,7 +175,8 @@ export default {
         current: 1
       },
       loading: false,
-      searchParam: {},
+      searchParam: {},//查询参数
+      downParam:{}, //下载参数
       depList: [],
       userInfo: this.$store.getters.userInfo // 当前登录人
     }
@@ -211,13 +212,28 @@ export default {
       let queue = []
       let task1 = departmentList().then(res => (that.depList = res.data))
       queue.push(task1)
+      let nowDate =
+        new Date().getFullYear() +
+        '-' +
+        (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+      this.downParam.userName=''
+      this.downParam.statiticsMonthDate=nowDate
+      this.downParam.departmentId=''
       that.getList(params)
       return Promise.all(queue)
     },
+    // // 下载传参
+    // downParamFun(){
+    //   const resultDownParams=Object.assign({},{...this.downParam})
+    //   return resultDownParams
+    // },
     searchAction(opt = {}) {
       this.disabled = false
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
+      this.downParam.userName=_searchParam.userName
+      this.downParam.statiticsMonthDate=_searchParam.statiticsMonthDate
+      this.downParam.departmentId=_searchParam.departmentId
       this.getList(_searchParam)
     },
     // 分页
@@ -260,18 +276,23 @@ export default {
           '-' +
           (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
         this.getList({current : 1,statiticsMonthDate : lastMonth})
-        
+        // 存储上月参数
+        this.downParam.userName=''
+        this.downParam.statiticsMonthDate=lastMonth
+        this.downParam.departmentId=''
       } else if (num === 2) {
         // 全部
         this.disabled = false
+        this.downParam.userName=''
+        this.downParam.statiticsMonthDate=''
+        this.downParam.departmentId=''
         this.init({ current: 1, statiticsMonthDate: undefined })
       }
     },
     // 下载
     downAction() {
-      const downListParams = Object.assign({}, { ...this.searchParam })
       this.loading = true
-      downStatisticsList(downListParams)
+      downStatisticsList(this.downParam)
         .then(res => {
           this.loading = false
           if (res instanceof Blob) {
