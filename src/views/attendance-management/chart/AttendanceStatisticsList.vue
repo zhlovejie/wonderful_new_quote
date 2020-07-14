@@ -211,30 +211,14 @@ export default {
       let queue = []
       let task1 = departmentList().then(res => (that.depList = res.data))
       queue.push(task1)
-      that.searchAction(params)
+      that.getList(params)
       return Promise.all(queue)
     },
     searchAction(opt = {}) {
       this.disabled = false
-      let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
-      that.loading = true
-      getStatisticsList(_searchParam)
-        .then(res => {
-          that.loading = false
-          that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
-            return item
-          })
-
-          //设置数据总条数
-          const pagination = { ...that.pagination }
-          pagination.total = res.data.total || 0
-          pagination.current = res.data.current || 1
-          that.pagination = pagination
-        })
-        .catch(err => (that.loading = false))
+      this.getList(_searchParam)
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -249,6 +233,24 @@ export default {
         this.searchParam.statiticsMonthDate = dateString
       }
     },
+    getList(params){
+      this.loading = true
+      getStatisticsList(params)
+          .then(res => {
+            this.loading = false
+            this.dataSource = res.data.records.map((item, index) => {
+              item.key = index + 1
+              return item
+            })
+
+            //设置数据总条数
+            const pagination = { ...this.pagination }
+            pagination.total = res.data.total || 0
+            pagination.current = res.data.current || 1
+            this.pagination = pagination
+          })
+          .catch(err => (this.loading = false))
+    },
     simpleSearch(num) {
       if (num === 1) {
         // 上月
@@ -257,23 +259,8 @@ export default {
           new Date().getFullYear() +
           '-' +
           (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
-        let that = this
-        that.loading = true
-        getStatisticsList({ current: 1, statiticsMonthDate: lastMonth })
-          .then(res => {
-            that.loading = false
-            that.dataSource = res.data.records.map((item, index) => {
-              item.key = index + 1
-              return item
-            })
-
-            //设置数据总条数
-            const pagination = { ...that.pagination }
-            pagination.total = res.data.total || 0
-            pagination.current = res.data.current || 1
-            that.pagination = pagination
-          })
-          .catch(err => (that.loading = false))
+        this.getList({current : 1,statiticsMonthDate : lastMonth})
+        
       } else if (num === 2) {
         // 全部
         this.disabled = false
