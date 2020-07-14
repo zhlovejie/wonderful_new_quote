@@ -1,5 +1,6 @@
 <template>
   <!-- 考勤月历 -->
+  <a-spin :spinning="spinning">
   <div class="wdf-custom-wrapper" id="attence-months">
     <div class="search-wrapper">
       <a-form layout="inline">
@@ -36,7 +37,8 @@
             class="a-button"
             type="primary"
             icon="download"
-            style="margin-left:10px;"
+            style="margin-left:10px;" 
+            @click="downloadAction"
           >下载</a-button>
         </a-form-item>
       </a-form>
@@ -48,7 +50,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange" 
-        :scroll="{ x: 5000 }"
+        :scroll="{ x: 4500 }"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -73,20 +75,24 @@
     </div>
 
     <EditForm ref="editForm" @finish="searchAction()"/>
+    <RecordForm ref="recordForm" />
   </div>
+  </a-spin>
 </template>
 
 <script>
 import {departmentList} from '@/api/systemSetting'
-import {monthStatiticsList } from '@/api/attendanceManagement'
+import {monthStatiticsList ,attenceMonthStatiticsExportExcel} from '@/api/attendanceManagement'
 import moment from 'moment'
 import EditForm from './EditForm'
+import RecordForm from './RecordForm'
 let uuid = () =>Math.random().toString(32).slice(-10)
 
 export default {
   name: 'attence-months',
   components: {
-    EditForm
+    EditForm,
+    RecordForm
   },
   data() {
     return {
@@ -98,11 +104,10 @@ export default {
       searchParam:{
         statiticsMonthDate:moment()
       },
-      sDate:[undefined,undefined],
-      activeKey:0,
       depList:[],
       bindEnterFn:null,
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      userInfo: this.$store.getters.userInfo, // 当前登录人
+      spinning:false
     }
   },
   watch: {
@@ -189,7 +194,6 @@ export default {
     moment,
     init() {
       let that = this
-      that.searchParam.searchStatus = that.activeKey
       let queue = []
       let task1 = departmentList().then(res => (that.depList = res.data))
       queue.push(task1)
@@ -239,17 +243,19 @@ export default {
     },
     doAction(actionType, record,dataIndex) {
       let that = this
-      if(actionType === 'view'){
-        return
-      }
-      if(actionType === 'edit'){
-        let dayStatiticsList = record.dayStatiticsList
-        let target = dayStatiticsList.find(item => moment(item.statiticsDate).format('YYYYMMDD') === dataIndex)
-        if(target){
-          that.$refs.editForm.query(that.$_.cloneDeep(target || {}))
+      let dayStatiticsList = record.dayStatiticsList
+      let target = dayStatiticsList.find(item => moment(item.statiticsDate).format('YYYYMMDD') === dataIndex)
+      if(target){
+        if(actionType === 'view'){
+          that.$refs.recordForm.query(that.$_.cloneDeep(target || {}))  
+          return
         }
-        return
+        if(actionType === 'edit'){
+          that.$refs.editForm.query(that.$_.cloneDeep(target || {}))  
+          return
+        }
       }
+      return
     },
     initDate(m){ //初始化数据结构 和 列头
       let columns = []
@@ -272,6 +278,60 @@ export default {
     formatHTML(str){
       return str ? str.split(RegExp('\n','g')).join('<br/>') :''
     },
+    downloadAction(){
+      let that = this
+      let searchParam = Object.assign({},this.searchParam)
+      if(searchParam.statiticsMonthDate instanceof moment){
+        searchParam.statiticsMonthDate = searchParam.statiticsMonthDate.format('YYYY-MM')
+      }
+      that.spinning = true
+      attenceMonthStatiticsExportExcel(searchParam).then(res =>{
+        that.spinning = false
+        console.log(res)
+        if (res instanceof Blob) {
+          const isFile = res.type === 'application/vnd.ms-excel'
+          //const isFile = res.type === 'application/msword'
+          const isJson = res.type === 'application/json'
+          if (isFile) {
+            //返回文件 则下载
+            const objectUrl = URL.createObjectURL(res)
+            const a = document.createElement('a')
+            document.body.appendChild(a)
+            a.style = 'display: none'
+            a.href = objectUrl
+            a.download = `考勤月历${searchParam.statiticsMonthDate}.xls`
+            a.click()
+            document.body.removeChild(a)
+            that.$message.info('下载成功')
+            return
+          } else if (isJson) {
+            //返回json处理
+            var reader = new FileReader()
+            reader.onload = function(e) {
+              let _res = null
+              try {
+                _res = JSON.parse(e.target.result)
+              } catch (err) {
+                _res = null
+              }
+              if (_res !== null) {
+                if (_res.code !== 0) {
+                  that.$message.info(_res.message)
+                } else {
+                  that.$message.info('下载成功')
+                }
+              } else {
+                that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                return
+              }
+            }
+            reader.readAsText(res)
+          } else {
+            that.$message.info('不支持的类型:' + res)
+          }
+        }
+      }).catch(err => that.spinning = true)
+    }
   },
   
   beforeDestroy(){

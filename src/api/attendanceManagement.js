@@ -798,6 +798,7 @@ export function attenceMonthStatiticsExportExcel (parameter) {
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/exportExcel',
     method: 'get',
+    responseType:'blob',
     params: parameter
   })
 }
