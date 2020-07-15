@@ -25,4 +25,7 @@ export default {
   #app {
     height: 100%;
   }
+  .myPicker .ant-calendar-ym-select .ant-calendar-year-select{
+  display: none !important;
+}
 </style>
