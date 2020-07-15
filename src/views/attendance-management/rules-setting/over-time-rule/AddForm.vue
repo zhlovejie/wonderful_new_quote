@@ -31,21 +31,21 @@
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">计为调休方式</td>
+            <td style="width:120px;">计为调休比例</td>
             <td>
               <a-form-item>
-                <span>按</span>
+                <span>按照比例&nbsp;1：</span>
                 <a-select 
                   placeholder="选择时长"
                   v-decorator="['exchangeType',{initialValue:detail.exchangeType,rules: [{required: true,message: '请选择时长'}]}]"
                   :allowClear="true" 
                   style="width:120px;margin:0 10px;"
                 >
-                  <a-select-option :value="1">调休0.5小时</a-select-option>
-                  <a-select-option :value="2">调休1小时</a-select-option>
-                  <a-select-option :value="3">调休1.5小时</a-select-option>
+                  <a-select-option :value="1">0.5小时</a-select-option>
+                  <a-select-option :value="2">1小时</a-select-option>
+                  <a-select-option :value="3">1.5小时</a-select-option>
                 </a-select>
-                <span>计为调休时长</span>
+                <!-- <span>计为调休时长</span> -->
               </a-form-item>
             </td>
           </tr>
