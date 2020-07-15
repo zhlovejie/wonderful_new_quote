@@ -50,7 +50,8 @@
                   placeholder="选择假时长方式"
                   v-decorator="['holidayCaculatorType',{initialValue:detail.holidayCaculatorType,rules: [{required: true,message: '请选择假时长方式'}]}]"
                   :allowClear="true"
-                  style="width:100%;"
+                  style="width:100%;" 
+                  @change="holidayCaculatorTypeChange"
                 >
                   <a-select-option :value="1">按工作日计算时长</a-select-option>
                   <a-select-option :value="2">按自然日计算时长</a-select-option>
@@ -58,15 +59,15 @@
               </a-form-item>
             </td>
           </tr>
-          <tr>
-            <td style="width:150px;">法定时长</td>
+          <tr v-if="+holidayCaculatorType === 2">
+            <td style="width:150px;">法定时长(天)</td>
             <td>
               <a-form-item>
                 <a-input-number
                   style="width:100%;"
                   :min="0"
                   :step="1"
-                  v-decorator="['legalDuration', {initialValue:detail.legalDuration,rules: [{ required: true, message: '请输入加班预警' }]}]"
+                  v-decorator="['legalDuration', {initialValue:detail.legalDuration,rules: [{ required: true, message: '请输入法定时长' }]}]"
                 />
               </a-form-item>
             </td>
@@ -93,7 +94,7 @@
                   v-decorator="['balanceIssuingMethod',{initialValue:detail.balanceIssuingMethod,rules: [{required: true,message: '请选择假时长方式'}]}]"
                   :allowClear="true"
                   style="width:100%;"
-                  @change="holidayCaculatorTypeChange"
+                  @change="balanceIssuingMethodChange"
                 >
                   <a-select-option :value="1">按入职时间自动发放</a-select-option>
                   <a-select-option :value="2">加班时长自动计算余额</a-select-option>
@@ -115,6 +116,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.0.workYearsBegin', {rules: [{ required: true, message: '请输入入职年限' }]}]"
+                      @keyup="checkWorkYears"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -125,6 +127,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.0.workYearsEnd', {rules: [{ required: true, message: '请输入入职年限' }]}]"
+                      @keyup="checkWorkYears"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -149,6 +152,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.1.workYearsBegin', {rules: [{ required: true, message: '请输入入职年限' }]}]"
+                      @keyup="checkWorkYears"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -159,6 +163,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.1.workYearsEnd', {rules: [{ required: true, message: '请输入入职年限' }]}]"
+                      @keyup="checkWorkYears"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -183,6 +188,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.2.workYearsBegin', {rules: [{ required: true, message: '请输入入职年限' }]}]"
+                      @keyup="checkWorkYears"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -193,6 +199,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.2.workYearsEnd', {rules: [{ required: true, message: '请输入入职年限' }]}]"
+                      @keyup="checkWorkYears"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -244,7 +251,7 @@ export default {
       actionType: 'view',
       detail: {},
       spinning: false,
-
+      holidayCaculatorType:undefined,
       balanceIssuingMethod: undefined,
       userRemain: false
     }
@@ -288,7 +295,7 @@ export default {
           that.detail = { ...res.data }
           that.userRemain = +res.data.userRemain === 1
           that.balanceIssuingMethod = res.data.balanceIssuingMethod
-
+          that.holidayCaculatorType = res.data.holidayCaculatorType
           if (res.data.holidayProvideRuleList) {
             let obj = {}
             res.data.holidayProvideRuleList.map((item, idx) => {
@@ -308,20 +315,25 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          that.spinning = true
+          
 
           values.userRemain = that.userRemain ? 1 : 0
 
-          holidayRuleAddAndUpdate(values)
-            .then(res => {
-              that.$message.info(res.msg)
-              that.spinning = false
-              that.handleCancel()
-              that.$emit('finish')
-            })
-            .catch(err => {
-              that.spinning = false
-            })
+          that.checkWorkYears().then(res =>{
+            if(res){
+              that.spinning = true
+              holidayRuleAddAndUpdate(values)
+              .then(res => {
+                that.$message.info(res.msg)
+                that.spinning = false
+                that.handleCancel()
+                that.$emit('finish')
+              })
+              .catch(err => {
+                that.spinning = false
+              })
+            }
+          })
         }
       })
     },
@@ -329,7 +341,7 @@ export default {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
-    holidayCaculatorTypeChange(val) {
+    balanceIssuingMethodChange(val) {
       console.log(arguments)
       this.balanceIssuingMethod = +val
     },
@@ -337,6 +349,50 @@ export default {
       console.log(arguments)
       this.userRemain = isUserRemain
       //this.holidayCaculatorType = undefined
+    },
+    holidayCaculatorTypeChange(val){
+      this.holidayCaculatorType = val
+    },
+    checkWorkYears(){
+      //检测输入年假入职年限
+      //规则如下：右侧的必须大于左侧值，下面值必须大于上面的值
+      let that = this
+      return new Promise((resovle,reject) =>{
+        that.$nextTick(() =>{
+          let status = true
+          let res = that.form.getFieldsValue(['holidayProvideRuleList'])
+          if(res && res.holidayProvideRuleList){
+            res.holidayProvideRuleList.length = Object.keys(res.holidayProvideRuleList).length
+            let list = Array.from(res.holidayProvideRuleList)
+            for(let i=0,len = list.length;i<len;i++){
+              let current = list[i]
+              if(
+                current.workYearsBegin !== undefined && 
+                current.workYearsEnd !== undefined &&  
+                +current.workYearsBegin >= +current.workYearsEnd
+              ){
+                status = false
+                break
+              }
+              if(i > 0){
+                let prev = list[i - 1]
+                if(
+                    current.workYearsBegin !== undefined && 
+                    prev.workYearsEnd !== undefined &&
+                    current.workYearsBegin < prev.workYearsEnd
+                ){
+                  status = false
+                  break
+                }
+              }
+            }
+          }
+          if(!status){
+            that.$message.info('入职年限不符合规则')
+          }
+          resovle(status)
+        })
+      })
     }
   }
 }
