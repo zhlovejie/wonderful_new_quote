@@ -28,7 +28,7 @@
             <td>
               <a-form-item>
                 <a-select 
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   placeholder="加班事件"
                   v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择加班事件'}]}]"
                   :allowClear="true" 
@@ -37,6 +37,7 @@
                 >
                   <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">{{item.exceptionName}}</a-select-option>
                 </a-select>
+                <span v-else>{{detail.exceptionName}}</span>
               </a-form-item>
             </td>
           </tr>

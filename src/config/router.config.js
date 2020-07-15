@@ -1238,6 +1238,12 @@ export const asyncRouterMap = [
             meta: { title: '考勤异常事件', icon: 'setting', keepAlive: false, permission: ['permission'] },
           },
           {
+            path: '/attendance-management/attence-months',
+            name: 'attence-months',
+            component: () => import('@/views/attendance-management/attence-months/List'),
+            meta: { title: '考勤月历', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
             path: '/attendance-management/supplement-card-apply',
             name: 'attendance-supplement-card-apply',
             component: () => import('@/views/attendance-management/supplement-card-apply/List'),
@@ -1275,6 +1281,12 @@ export const asyncRouterMap = [
                 meta: { title: '工作餐统计', icon: 'setting', keepAlive: false, permission: ['permission'] }
               },
             ]
+          },
+          {
+            path: '/attendance-management/attendance-device',
+            name: 'attendance-device',
+            component: () => import('@/views/attendance-management/attendance-device/List'),
+            meta: { title: '考勤设备', icon: 'setting', keepAlive: false, permission: ['permission'] },
           },
         ]
       }

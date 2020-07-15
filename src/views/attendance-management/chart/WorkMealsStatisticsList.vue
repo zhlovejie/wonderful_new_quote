@@ -192,7 +192,7 @@ export default {
       })
     },
     simpleSearch(type){
-      this.searchParam = Object.assign({},searchParam,{isToday:+type})
+      this.searchParam = Object.assign({},this.searchParam,{isToday:+type})
       this.searchAction()
     },
     doAction(type,record){
