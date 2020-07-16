@@ -97,13 +97,7 @@
                   @focus="useDepartmentsChange('focus')"
                   :open="useDepartmentsOpen"
                 >
-                  <div slot="dropdownRender" slot-scope="menu">
-                    <div style="padding-left:10px;">
-                      <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">全选</a-checkbox>
-                    </div>
-                      <a-divider style="margin: 4px 0;" />
-                      <v-nodes :vnodes="menu" />
-                  </div>
+                  
 
                   <!-- 管理人员 -->
                   <a-select-opt-group label="管理人员">
