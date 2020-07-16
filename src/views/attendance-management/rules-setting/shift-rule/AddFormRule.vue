@@ -21,6 +21,8 @@
                 format="MM-DD"
                 style="width:100%;"
                 :allowClear="true"
+
+                @change="sdateChange"
               />
             </a-form-item>
           </a-col>
@@ -71,7 +73,11 @@
   </a-modal>
 </template>
 <script>
-import { classRuleConfigDetail, classRuleConfigAddAndUpdate } from '@/api/attendanceManagement'
+import { 
+  classRuleConfigDetail, 
+  classRuleConfigAddAndUpdate,
+  classRuleConfigValidationTime 
+} from '@/api/attendanceManagement'
 import moment from 'moment'
 
 export default {
@@ -83,7 +89,8 @@ export default {
       spinning: false,
       actionType: 'view',
       detail: {},
-      spinning: false
+      spinning: false,
+      validationTimeStatus:true
     }
   },
   computed: {
@@ -122,11 +129,15 @@ export default {
     },
     moment,
     query(type, record) {
-      let that = this;(this.actionType = type), (this.detail = Object.assign({}, record))
-      this.form.resetFields()
+      
+      let that = this
+      that.actionType = type
+      that.detail = Object.assign({}, record)
+      that.form.resetFields()
+      that.validationTimeStatus = true
 
-      this.$nextTick(() => (this.visible = true))
-      if (this.isAdd) {
+      that.$nextTick(() => (that.visible = true))
+      if (that.isAdd) {
         return
       }
       if (record) {
@@ -163,6 +174,11 @@ export default {
     handleSubmit() {
       let that = this
       console.log(this.detail)
+
+      if(!that.validationTimeStatus){
+        that.$message.info('日期范围有重复请重新选择')
+        return
+      }
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
@@ -193,6 +209,26 @@ export default {
     handleCancel() {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
+    },
+    sdateChange(arrMoment,arrStrs){
+      //debugger
+      let that = this
+      if(arrMoment.length === 0){
+        return
+      }
+      classRuleConfigValidationTime({
+        beginDate:arrMoment[0].format('YYYY-MM-DD'),
+        endDate:arrMoment[1].format('YYYY-MM-DD'),
+        ruleId:that.detail.classRuleId,
+        id:that.detail.classRuleDetailId
+      }).then(res =>{
+        console.log(res)
+        that.validationTimeStatus = +res.code === 200
+        if(!that.validationTimeStatus){
+          that.$message.info(res.msg)
+          //that.form.setFieldsValue({sDate:undefined})
+        }
+      })
     }
   }
 }
