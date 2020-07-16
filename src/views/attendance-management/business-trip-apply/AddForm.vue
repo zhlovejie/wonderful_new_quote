@@ -77,7 +77,9 @@
               </a-form-item>
             </td>
             <td style="width:120px;">时长</td>
-            <td><span style="font-size: 125%;color: #f40;font-weight: bold;">{{calcRouteTimeDiff}}</span></td>
+            <td>
+              <span style="font-size: 125%;color: #f40;font-weight: bold;">{{calcRouteTimeDiff}}</span>
+            </td>
           </tr>
           <tr>
             <td style="width:120px;">出差备注</td>
@@ -249,7 +251,7 @@
                   :min="0"
                   :max="2000"
                   :step="1"
-                  v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount,rules: [{ required: true, message: '请输入预支金额' }]}]"
+                  v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount}]"
                 />
               </a-form-item>
             </td>
@@ -315,7 +317,7 @@ export default {
       routesList: [], //出差行程
       isSalesman: false,
 
-      isCompanyCar:false, //交通工具为公车时，下面的选项才可以选择车牌号
+      isCompanyCar: false //交通工具为公车时，下面的选项才可以选择车牌号
     }
   },
   computed: {
@@ -339,21 +341,22 @@ export default {
       //此状态下表单元素被禁用
       return this.isView || this.isApproval
     },
-    calcRouteTimeDiff(){
-      let total = this.routesList.reduce((adder,item,idx,arr) =>{
-        let s1 = moment(item.startTime),e1 = moment(item.endTime)
-        if(s1.isValid() && e1.isValid()){
-          return adder + e1.diff(s1,'minutes')
+    calcRouteTimeDiff() {
+      let total = this.routesList.reduce((adder, item, idx, arr) => {
+        let s1 = moment(item.startTime),
+          e1 = moment(item.endTime)
+        if (s1.isValid() && e1.isValid()) {
+          return adder + e1.diff(s1, 'minutes')
         }
         return adder
-      },0)
-      if(total <= 0){
+      }, 0)
+      if (total <= 0) {
         return '-'
       }
-      let days = parseInt(total / 60 / 24,10)
-      let hours = parseInt((total / 60) - (days * 24),10)
-      let minutes = parseInt(total - (days * 24 * 60) - (hours * 60),10)
-      return `${days ? days+' 天 ' : '' }${hours ? hours +' 小时 ' :''}${minutes > 0 ? minutes+' 分钟 ' : ''}`
+      let days = parseInt(total / 60 / 24, 10)
+      let hours = parseInt(total / 60 - days * 24, 10)
+      let minutes = parseInt(total - days * 24 * 60 - hours * 60, 10)
+      return `${days ? days + ' 天 ' : ''}${hours ? hours + ' 小时 ' : ''}${minutes > 0 ? minutes + ' 分钟 ' : ''}`
     }
   },
   watch: {},
@@ -441,6 +444,7 @@ export default {
         target[type] = timeStr
         this.routesList = [..._routesList]
       }
+      console.log(this.routesList)
     },
     reasonChange(type, key, event) {
       let _routesList = [...this.routesList]
@@ -479,8 +483,8 @@ export default {
 
       let car = this.vehicleList.find(car => +car.id === +val)
       this.isCompanyCar = car && String(car.text).trim() === '公车'
-      if(!this.isCompanyCar){
-        this.form.setFieldsValue({carDicNum:undefined})
+      if (!this.isCompanyCar) {
+        this.form.setFieldsValue({ carDicNum: undefined })
       }
     },
     routeAction(type, key) {
@@ -569,16 +573,25 @@ export default {
             return item
           })
           that.spinning = true
-          attenceTravelApplyAddAndUpdate(values)
-            .then(res => {
-              that.$message.info(res.msg)
-              that.spinning = false
-              that.handleCancel()
-              that.$emit('finish')
-            })
-            .catch(err => {
-              that.spinning = false
-            })
+          // 判断开始日期 1.早于当前时间，给出提示
+          //2.开始时间不能早于当前时间
+          let nowTime = new Date()
+          let valueStartTime = new Date(Date.parse(values.routes[0].startTime.replace(/-/g, '/')))
+          if (valueStartTime < nowTime) {
+            that.spinning = false
+            this.$message.warning('选择时间不能在当前时间之前')
+          } else {
+            attenceTravelApplyAddAndUpdate(values)
+              .then(res => {
+                that.$message.info(res.msg)
+                that.spinning = false
+                that.handleCancel()
+                that.$emit('finish')
+              })
+              .catch(err => {
+                that.spinning = false
+              })
+          }
         }
       })
     },
