@@ -79,6 +79,17 @@ export function classRuleConfigAddAndUpdate (parameter) {
     data: parameter
   })
 }
+
+/**效验时间 */
+export function classRuleConfigValidationTime (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/classRuleConfig/class-rule-config/validationTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------班次设置---END-----------------
 
 //---------------------补卡规则-----------------------
@@ -726,6 +737,20 @@ export function attenceLeaveApplyUserRestHoursRecord (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/restHoursRecord/rest-hours-record/getUserRestHoursRecord',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**
+ * 判断用户当前年度是否有某类型的请假单（返回true则有：false则没有）
+ * @param {string} holidayId
+ * @param {string} userId
+ */
+export function attenceLeaveApplyCheckHolidayUsed (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/checkHolidayUsed',
     method: 'get',
     params: parameter
   })

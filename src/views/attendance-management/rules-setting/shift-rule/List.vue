@@ -156,9 +156,13 @@ export default {
       this.searchAction({ current: pagination.current })
     },
     doAction(actionType, record) {
+      //debugger
       let that = this
       if(['add','edit'].includes(actionType)){
-        that.$refs.addForm.query(actionType,record)
+        that.$refs.addForm.query(
+          actionType,
+          record ? Object.assign({},record,{classRuleId:record.id}) : null
+        )
       }else if(actionType === 'del'){
         classRuleDel({ id: record.id })
           .then(res => {
@@ -169,9 +173,9 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       }else if(actionType === 'add_rule'){
-        that.$refs.addFormRule.query('add',record)
+        that.$refs.addFormRule.query('add',Object.assign({},record,{classRuleId:record.id}))
       }else if(actionType === 'view_rule'){
-        that.$refs.listRule.query('view',record)
+        that.$refs.listRule.query('view',Object.assign({},record,{classRuleId:record.id}))
       }
     }
   }

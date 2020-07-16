@@ -174,6 +174,7 @@ export default {
         current: 1
       },
       loading: false,
+      searchParam: {},
       searchParam: {},//查询参数
       downParam:{}, //下载参数
       depList: [],
@@ -212,6 +213,7 @@ export default {
       let queue = []
       let task1 = departmentList().then(res => (that.depList = res.data))
       queue.push(task1)
+      that.searchAction(params)
       let nowDate =
         new Date().getFullYear() +
         '-' +
@@ -229,8 +231,25 @@ export default {
     // },
     searchAction(opt = {}) {
       this.disabled = false
+      let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
+      that.loading = true
+      getStatisticsList(_searchParam)
+        .then(res => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
+          that.pagination = pagination
+        })
+        .catch(err => (that.loading = false))
       this.downParam.userName=_searchParam.userName
       this.downParam.statiticsMonthDate=_searchParam.statiticsMonthDate
       this.downParam.departmentId=_searchParam.departmentId
@@ -249,6 +268,35 @@ export default {
         this.searchParam.statiticsMonthDate = dateString
       }
     },
+    simpleSearch(num) {
+      if (num === 1) {
+        // 上月
+        this.disabled = true
+        let lastMonth =
+          new Date().getFullYear() +
+          '-' +
+          (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
+        let that = this
+        that.loading = true
+        getStatisticsList({ current: 1, statiticsMonthDate: lastMonth })
+          .then(res => {
+            that.loading = false
+            that.dataSource = res.data.records.map((item, index) => {
+              item.key = index + 1
+              return item
+            })
+
+            //设置数据总条数
+            const pagination = { ...that.pagination }
+            pagination.total = res.data.total || 0
+            pagination.current = res.data.current || 1
+            that.pagination = pagination
+          })
+          .catch(err => (that.loading = false))
+      } else if (num === 2) {
+        // 全部
+        this.disabled = false
+        this.init({ current: 1, statiticsMonthDate: undefined })
     getList(params){
       this.loading = true
       getStatisticsList(params)
@@ -291,7 +339,9 @@ export default {
     },
     // 下载
     downAction() {
+      const downListParams = Object.assign({}, { ...this.searchParam })
       this.loading = true
+      downStatisticsList(downListParams)
       downStatisticsList(this.downParam)
         .then(res => {
           this.loading = false
