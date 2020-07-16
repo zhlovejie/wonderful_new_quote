@@ -175,8 +175,8 @@ export default {
       },
       loading: false,
       searchParam: {},
-      searchParam: {},//查询参数
-      downParam:{}, //下载参数
+      searchParam: {}, //查询参数
+      downParam: {}, //下载参数
       depList: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dayWeekMonth: 1
@@ -218,9 +218,9 @@ export default {
         new Date().getFullYear() +
         '-' +
         (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
-      this.downParam.userName=''
-      this.downParam.statiticsMonthDate=nowDate
-      this.downParam.departmentId=''
+      this.downParam.userName = ''
+      this.downParam.statiticsMonthDate = nowDate
+      this.downParam.departmentId = ''
       that.getList(params)
       return Promise.all(queue)
     },
@@ -250,9 +250,9 @@ export default {
           that.pagination = pagination
         })
         .catch(err => (that.loading = false))
-      this.downParam.userName=_searchParam.userName
-      this.downParam.statiticsMonthDate=_searchParam.statiticsMonthDate
-      this.downParam.departmentId=_searchParam.departmentId
+      this.downParam.userName = _searchParam.userName
+      this.downParam.statiticsMonthDate = _searchParam.statiticsMonthDate
+      this.downParam.departmentId = _searchParam.departmentId
       this.getList(_searchParam)
     },
     // 分页
@@ -297,23 +297,25 @@ export default {
         // 全部
         this.disabled = false
         this.init({ current: 1, statiticsMonthDate: undefined })
-    getList(params){
+      }
+    },
+    getList(params) {
       this.loading = true
       getStatisticsList(params)
-          .then(res => {
-            this.loading = false
-            this.dataSource = res.data.records.map((item, index) => {
-              item.key = index + 1
-              return item
-            })
-
-            //设置数据总条数
-            const pagination = { ...this.pagination }
-            pagination.total = res.data.total || 0
-            pagination.current = res.data.current || 1
-            this.pagination = pagination
+        .then(res => {
+          this.loading = false
+          this.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
           })
-          .catch(err => (this.loading = false))
+
+          //设置数据总条数
+          const pagination = { ...this.pagination }
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
+          this.pagination = pagination
+        })
+        .catch(err => (this.loading = false))
     },
     simpleSearch(num) {
       if (num === 1) {
@@ -323,17 +325,17 @@ export default {
           new Date().getFullYear() +
           '-' +
           (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
-        this.getList({current : 1,statiticsMonthDate : lastMonth})
+        this.getList({ current: 1, statiticsMonthDate: lastMonth })
         // 存储上月参数
-        this.downParam.userName=''
-        this.downParam.statiticsMonthDate=lastMonth
-        this.downParam.departmentId=''
+        this.downParam.userName = ''
+        this.downParam.statiticsMonthDate = lastMonth
+        this.downParam.departmentId = ''
       } else if (num === 2) {
         // 全部
         this.disabled = false
-        this.downParam.userName=''
-        this.downParam.statiticsMonthDate=''
-        this.downParam.departmentId=''
+        this.downParam.userName = ''
+        this.downParam.statiticsMonthDate = ''
+        this.downParam.departmentId = ''
         this.init({ current: 1, statiticsMonthDate: undefined })
       }
     },
