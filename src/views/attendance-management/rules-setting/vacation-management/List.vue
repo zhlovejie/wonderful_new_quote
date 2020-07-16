@@ -72,10 +72,10 @@
           <a
             href="javascript:void(0);"
             @click="approvalPreview(record)"
-          >{{ {1:'待审批',2:'通过',3:'不通过',4:'已撤回',5:'形成完结'}[text] || '未知' }}</a>
+          >{{ {1:'待审批',2:'通过',3:'不通过',4:'已撤回',5:'行程完结'}[text] || '未知' }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <!-- {1:'待审批',2:'通过',3:'不通过',4:'已撤回',5:'形成完结'} -->
+          <!-- {1:'待审批',2:'通过',3:'不通过',4:'已撤回',5:'行程完结'} -->
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
             <template

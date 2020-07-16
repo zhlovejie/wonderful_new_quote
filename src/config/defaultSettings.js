@@ -46,3 +46,4 @@ export default {
     storage: 'local' // storage name session, local, memory
   }
 }
+
