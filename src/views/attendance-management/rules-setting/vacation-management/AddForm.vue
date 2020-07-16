@@ -31,7 +31,7 @@
             <td>
               <a-form-item>
                 <a-input v-if="isAdd || isEdit" v-decorator="['festivalName',{initialValue:detail.festivalName,rules: [{required: true,message: '输入节假日名称'}]}]" :allowClear="true"/>
-                <span v-else>{{detail.festivalName}}</span>
+                <span class="word-break" v-else>{{detail.festivalName}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -39,7 +39,7 @@
             <td style="width:120px;">开始日期</td>
             <td>
               <a-form-item>
-                <a-date-picker v-if="isAdd || isEdit" @change="dateChange"  placeholder="开始日期" v-decorator="['beginDate',{initialValue:moment(detail.beginDate),rules: [{required: true,message: '请选择开始日期'}]}]" style="width:100%;" />
+                <a-date-picker v-if="isAdd || isEdit" @change="dateChange"  placeholder="开始日期" v-decorator="['beginDate',{initialValue:detail.beginDate ? moment(detail.beginDate) : undefined,rules: [{required: true,message: '请选择开始日期'}]}]" style="width:100%;" />
                 <span v-else>{{detail.beginDate}}</span>
               </a-form-item>
             </td>
@@ -48,7 +48,7 @@
             <td style="width:120px;">结束日期</td>
             <td>
               <a-form-item>
-                <a-date-picker v-if="isAdd || isEdit" @change="dateChange" placeholder="结束日期" v-decorator="['endDate',{initialValue:moment(detail.endDate),rules: [{required: true,message: '请选择结束日期'}]}]" style="width:100%;" />
+                <a-date-picker v-if="isAdd || isEdit" @change="dateChange" placeholder="结束日期" v-decorator="['endDate',{initialValue:detail.endDate ? moment(detail.endDate) :undefined,rules: [{required: true,message: '请选择结束日期'}]}]" style="width:100%;" />
                 <span v-else>{{detail.endDate}}</span>
               </a-form-item>
             </td>
@@ -69,7 +69,7 @@
                 <span @click="openDateModel" v-if="isAdd || isEdit">
                   {{changeRestDateTxt || '点击选择日期'}}
                 </span>
-                <span v-else>
+                <span class="word-break" v-else>
                   {{changeRestDateTxt}}
                 </span>
               </a-form-item>
@@ -79,13 +79,16 @@
             <td style="width:120px;">试用部门</td>
             <td>
               <a-form-item>
+                <div style="display:flex;" v-if="isAdd || isEdit">
                 <a-select 
-                  v-if="isAdd || isEdit"
                   mode="multiple"
                   placeholder="选择部门"
                   v-decorator="['useDepartments',{initialValue:detail.useDepartments,rules: [{required: true,message: '请选择部门'}]}]"
                   :allowClear="true" 
-                  style="width:100%;"
+                  style="width:100%;margin-right:10px;"
+                  @blur="useDepartmentsChange('blur')"
+                  @focus="useDepartmentsChange('focus')"
+                  :open="useDepartmentsOpen"
                 >
                   <a-select-option
                     v-for="item in depList"
@@ -93,22 +96,25 @@
                     :value="item.id"
                   >{{item.departmentName}}</a-select-option>
                 </a-select>
-                <span v-else>{{detail.useDepartmentName}}</span>
+                <a-button @click="useDepartmentsCheckAll">全选/反选</a-button>
+                </div>
+                <span class="word-break" v-else>{{detail.useDepartmentName}}</span>
               </a-form-item>
             </td>
           </tr>
           <tr>
             <td style="width:120px;">通知信息</td>
             <td>
-              <a-form-item>
+              <a-form-item >
                 <a-textarea 
                   v-if="isAdd || isEdit"
                   placeholder="通知信息" 
                   :rows="2" 
                   v-decorator="['informContent', {  initialValue:detail.informContent,rules: [{ required: true, message: '请输入通知信息' }] }]"
                 />
-                <span v-else>{{detail.informContent}}</span>
+                <span class="word-break" v-else>{{detail.informContent}}</span>  
               </a-form-item>
+              
             </td>
           </tr>
         </table>
@@ -147,7 +153,9 @@ export default {
       spinning:false,
       depList:[],
       diffDate:0,
-      changeRestDate:[]
+      changeRestDate:[],
+      useDepartmentsOpen:false,
+      useDepartmentsToggleFlag:false
     }
   },
   computed:{
@@ -301,6 +309,16 @@ export default {
     },
     multipleCalendarDatesChange(dateList){
       this.changeRestDate = dateList
+    },
+    useDepartmentsCheckAll(){
+      //this.useDepartmentsOpen = true
+      this.useDepartmentsToggleFlag = !this.useDepartmentsToggleFlag
+      this.form.setFieldsValue({
+        useDepartments:this.useDepartmentsToggleFlag ? this.depList.map(item =>item.id) : []
+      }) 
+    },
+    useDepartmentsChange(type){
+      this.useDepartmentsOpen = type === 'focus'
     }
   }
 }
@@ -321,5 +339,9 @@ export default {
 .custom-table-border td {
   padding: 5px 10px;
   text-align: left;
+}
+
+.word-break{
+  word-break: break-all;
 }
 </style>
