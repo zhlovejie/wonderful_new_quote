@@ -35,10 +35,15 @@
                   style="width:100%;" 
                   @change="exceptionChange"
                 >
-                  <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">{{item.exceptionName}}</a-select-option>
+                  <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">
+                    {{item.exceptionName}}
+                    (
+                      类型：{{{1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[item.exceptionType]}}  
+                      发生时间：{{item.happenDate}}
+                    )
+                  </a-select-option>
                 </a-select>
                 <span v-else>{{detail.exceptionName}}</span>
-                
               </a-form-item>
             </td>
           </tr>
