@@ -97,8 +97,7 @@
                   @focus="useDepartmentsChange('focus')"
                   :open="useDepartmentsOpen"
                 >
-                  
-
+                
                   <!-- 管理人员 -->
                   <a-select-opt-group label="管理人员">
                   <a-select-option
