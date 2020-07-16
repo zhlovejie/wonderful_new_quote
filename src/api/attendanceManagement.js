@@ -79,6 +79,17 @@ export function classRuleConfigAddAndUpdate (parameter) {
     data: parameter
   })
 }
+
+/**效验时间 */
+export function classRuleConfigValidationTime (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/classRuleConfig/class-rule-config/validationTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------班次设置---END-----------------
 
 //---------------------补卡规则-----------------------

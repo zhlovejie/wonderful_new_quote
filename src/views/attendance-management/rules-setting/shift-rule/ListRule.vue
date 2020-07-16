@@ -157,7 +157,17 @@ export default {
     doAction(actionType, record) {
       let that = this
       if(actionType === 'edit'){
-        that.$refs.addFormRule.query(actionType,record)
+        that.$refs.addFormRule.query(
+          actionType,
+          Object.assign(
+            {},
+            record,
+            {
+              classRuleId:that.searchParam.classRuleId,
+              classRuleDetailId:record.id
+            }
+          )
+        )
       }else if(actionType === 'del'){
         classRuleConfigDel(`id=${record.id}`)
           .then(res => {

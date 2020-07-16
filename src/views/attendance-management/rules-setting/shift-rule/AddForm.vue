@@ -34,6 +34,7 @@ export default {
       form: this.$form.createForm(this),
       visible:false,
       spinning:false,
+      actionType:'add'
     }
   },
   computed:{
@@ -53,6 +54,7 @@ export default {
   methods:{
     query(type,record){
       this.visible = true
+      this.actionType = type
       if(record){
         this.$nextTick(() => this.form.setFieldsValue(Object.assign({},record)))
       }

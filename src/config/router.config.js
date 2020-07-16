@@ -1203,7 +1203,7 @@ export const asyncRouterMap = [
                 path: '/attendance-management/rules-setting/attendance-rule-edit',
                 name: 'attendance-rules-setting-attendance-rule-edit',
                 component: () => import('@/views/attendance-management/rules-setting/attendance-rule/ListEdit'),
-                meta: { title: '出勤规则修改审批', icon: 'setting', keepAlive: false, permission: ['permission'] }
+                meta: { title: '出勤规则修改记录', icon: 'setting', keepAlive: false, permission: ['permission'] }
               },
               {
                 path: '/attendance-management/rules-setting/vacation-rule',
@@ -1272,7 +1272,7 @@ export const asyncRouterMap = [
                 path: '/attendance-management/chart/attendance-statistics',
                 name: 'attendance-chart-attendance-statistics',
                 component: () => import('@/views/attendance-management/chart/AttendanceStatisticsList'),
-                meta: { title: '考勤统计列表', icon: 'setting', keepAlive: false, permission: ['permission'] }
+                meta: { title: '考勤统计', icon: 'setting', keepAlive: false, permission: ['permission'] }
               },
               {
                 path: '/attendance-management/chart/work-meals-statistics',
