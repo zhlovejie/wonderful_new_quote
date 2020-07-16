@@ -28,7 +28,7 @@
             <td>
               <a-form-item>
                 <a-select 
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   placeholder="请假类型"
                   v-decorator="['holidayId',{initialValue:detail.holidayId,rules: [{required: true,message: '请选择请假类型'}]}]"
                   :allowClear="true" 
@@ -37,6 +37,7 @@
                 >
                   <a-select-option v-for="item in holidayList" :key="item.id" :value="item.id">{{item.holidayName}}</a-select-option>
                 </a-select>
+                <span v-else>{{detail.holidayName}}</span>
               </a-form-item>
             </td>
           </tr>
