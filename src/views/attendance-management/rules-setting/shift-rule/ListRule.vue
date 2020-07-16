@@ -18,7 +18,12 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        
+        <div slot="beginDate" slot-scope="text, record, index">
+          <span>{{ record.beginDate }}~{{ record.endDate }}</span>
+        </div>
+        <div slot="lunchBeginTime" slot-scope="text, record, index">
+          <span>{{ record.lunchBeginTime }}~{{ record.lunchEndTime }}</span>
+        </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
             <a type="primary" href="javascript:;">删除</a>
@@ -28,7 +33,7 @@
         </div>
       </a-table>
     </a-spin>
-    <AddFormRule ref="addFormRule" />
+    <AddFormRule ref="addFormRule" @finish="finish"/>
   </a-modal>
 </template>
 <script>
@@ -112,6 +117,9 @@ export default {
     }
   },
   methods:{
+    finish(){
+      this.searchAction()
+    },
     searchAction(opt = {}) {
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)

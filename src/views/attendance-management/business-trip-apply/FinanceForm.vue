@@ -57,7 +57,7 @@ export default {
       let that = this
       that.visible = true
       that.record = that.$_.cloneDeep(record || {})
-
+      that.userFinanceStatus = []
       attenceTravelUserGetUsersForTravel({travelId:that.record.id}).then(res =>{
         that.userFinanceStatus = res.data.map(u =>{
           let item = Object.assign({},u,{key:uuid()})
@@ -73,8 +73,10 @@ export default {
       let queue = []
       that.userFinanceStatus.map(u =>{
         if(u.canUpdate &&  +u.financeStatus === 1){
+          //let values = {id:that.record.id,userId:u.userId}
+          let values = `id=${that.record.id}&userId=${u.userId}`
           queue.push(
-            attenceTravelApplyFinanceFinish({id:that.record.id,userId:u.userId}).then(res =>{
+            attenceTravelApplyFinanceFinish(values).then(res =>{
               console.log({id:that.record.id,userId:u.userId},'==>',res)
               return {
                 input:Object.assign({},u),
@@ -89,6 +91,8 @@ export default {
           if(res.every(item => item.out.code === 200)){
             that.$message.info('操作成功')
             that.handleCancel()
+            that.$emit('finish')
+            return
           }else{
             const h = that.$createElement
             let msgNodes = []

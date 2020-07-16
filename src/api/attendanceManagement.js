@@ -768,6 +768,104 @@ export function getWorkLunchNum (parameter) {
 
 //---------------------请假申请--END------------------
 
+//---------------------考勤异常事件-----------------------
+export function signExceptionList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/exception/listSignExceptionByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**处理 */
+export function signExceptionUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/exception/updateSignException',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**删除 */
+export function signExceptionDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/exception/removeSignException',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+//---------------------考勤异常事件--END------------------
+
+//---------------------考勤月历-----------------------
+
+/**考勤月历下载 */
+export function attenceMonthStatiticsExportExcel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/exportExcel',
+    method: 'get',
+    responseType:'blob',
+    params: parameter
+  })
+}
+
+
+/**考勤月统计汇总分页查询 */
+export function attenceMonthStatiticsCollectList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/listAttenceMonthStatiticsCollectListVoByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**考勤月历分页查询 */
+export function monthStatiticsList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/listMonthStatiticsByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**考勤月汇总下载 */
+export function attenceMonthStatiticsMonthExportExcel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/month/exportExcel',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**考勤月历修改记录分页查询 */
+export function attenceMonthStatiticsChangeUpdateList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/attenceMonthChange/listAttenceMonthStatiticsChangeListByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**考勤月历修改记录的新增 */
+export function attenceMonthStatiticsChangeAdd (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/attenceMonthChange/saveAttenceMonthStatiticsChange',
+    method: 'post',
+    data: parameter
+  })
+}
+//---------------------考勤月历--END------------------
+
 //--------------------人脸打卡记录---------------------
 
 /** 打卡记录分页查询 */

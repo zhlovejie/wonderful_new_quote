@@ -9,21 +9,29 @@
     :maskClosable="false"
   >
     <a-spin :spinning="spinning">
-      <a-form :form="form" layout="inline"  class="wdf-custom-add-form-wrapper">
+      <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item label="时间范围">
-              <a-range-picker v-decorator="['sDate',{rules: [{required: true,message: '选择时间范围'}]}]" format="MM-DD" style="width:100%;" :allowClear="true"/>
+              <a-range-picker
+              dropdownClassName='myPicker'
+                v-decorator="['sDate',{rules: [{required: true,message: '选择时间范围'},{
+                validator:this.checkDate}]
+                }]"
+                format="MM-DD"
+                style="width:100%;"
+                :allowClear="true"
+              />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item label="上班时间">
-              <a-time-picker 
+              <a-time-picker
                 style="width:100%;"
-                format="HH:mm:ss" 
-                v-decorator="['workBeginTime',{rules: [{required: true,message: '输入上班时间'}]}]" 
+                format="HH:mm:ss"
+                v-decorator="['workBeginTime',{rules: [{required: true,message: '输入上班时间'}]}]"
                 placeholder="输入上班时间"
               />
             </a-form-item>
@@ -32,15 +40,15 @@
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item label="午休时间">
-              <a-time-picker 
-                format="HH:mm:ss" 
-                v-decorator="['lunchBeginTime',{rules: [{required: true,message: '输入午休开始时间'}]}]" 
+              <a-time-picker
+                format="HH:mm:ss"
+                v-decorator="['lunchBeginTime',{rules: [{required: true,message: '输入午休开始时间'}]}]"
                 placeholder="开始时间"
               />
               <span style="margin:0 10px;">~</span>
-              <a-time-picker  
-                format="HH:mm:ss" 
-                v-decorator="['lunchEndTime',{rules: [{required: true,message: '输入午休结束时间'}]}]" 
+              <a-time-picker
+                format="HH:mm:ss"
+                v-decorator="['lunchEndTime',{rules: [{required: true,message: '输入午休结束时间'}]}]"
                 placeholder="结束时间"
               />
             </a-form-item>
@@ -49,10 +57,10 @@
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item label="下班时间">
-              <a-time-picker 
+              <a-time-picker
                 style="width:100%;"
-                format="HH:mm:ss" 
-                v-decorator="['workEndTime',{rules: [{required: true,message: '输入下班时间'}]}]" 
+                format="HH:mm:ss"
+                v-decorator="['workEndTime',{rules: [{required: true,message: '输入下班时间'}]}]"
                 placeholder="输入下班时间"
               />
             </a-form-item>
@@ -63,56 +71,67 @@
   </a-modal>
 </template>
 <script>
-import {classRuleConfigDetail , classRuleConfigAddAndUpdate} from '@/api/attendanceManagement'
+import { classRuleConfigDetail, classRuleConfigAddAndUpdate } from '@/api/attendanceManagement'
 import moment from 'moment'
+
 export default {
-  name:'shift-rule-list-add',
-  data(){
+  name: 'shift-rule-list-add',
+  data() {
     return {
       form: this.$form.createForm(this),
-      visible:false,
-      spinning:false,
-      actionType:'view',
-      detail:{},
-      spinning:false
+      visible: false,
+      spinning: false,
+      actionType: 'view',
+      detail: {},
+      spinning: false
     }
   },
-  computed:{
-    modalTitle(){
+  computed: {
+    modalTitle() {
       return `${this.isView ? '查看' : this.isAdd ? '新增' : '修改'}规则`
     },
-    isView(){
+    isView() {
       return this.actionType === 'view'
     },
-    isAdd(){
+    isAdd() {
       return this.actionType === 'add'
     },
-    isEdit(){
+    isEdit() {
       return this.actionType === 'edit'
     },
-    isApproval(){
+    isApproval() {
       return this.actionType === 'approval'
     },
-    isDisabled(){ //此状态下表单元素被禁用
+    isDisabled() {
+      //此状态下表单元素被禁用
       return this.isView || this.isApproval
     }
   },
-  methods:{
+  methods: {
+    checkDate(rule, value, callback) {
+      if(value){
+        const moment1 = value[0]._d.toLocaleDateString()
+        const moment2 = value[1]._d.toLocaleDateString()
+        if (moment1 === moment2) {
+          callback('时间范围不能重复')
+        } 
+        callback()
+      }else{
+        callback()
+      }
+    },
     moment,
-    query(type,record){
-      let that = this
-      
-      this.actionType = type,
-      this.detail = Object.assign({},record)
+    query(type, record) {
+      let that = this;(this.actionType = type), (this.detail = Object.assign({}, record))
       this.form.resetFields()
 
-      this.$nextTick(() => this.visible = true)
-      if(this.isAdd){
+      this.$nextTick(() => (this.visible = true))
+      if (this.isAdd) {
         return
       }
-      if(record){
+      if (record) {
         //this.form.setFieldsValue({className:record.className})
-        classRuleConfigDetail({id:record.id}).then(res =>{
+        classRuleConfigDetail({ id: record.id }).then(res => {
           //debugger
 
           let obj = {}
@@ -122,34 +141,34 @@ export default {
           //console.log('2020-'+res.data.beginDate+' 00:00:00')
           //console.log('2020-'+res.data.endDate+' 00:00:00')
           obj.sDate = [
-            that.moment('2020-'+res.data.beginDate+' 00:00:00'),
-            that.moment('2020-'+res.data.endDate+' 00:00:00')
+            that.moment('2020-' + res.data.beginDate + ' 00:00:00'),
+            that.moment('2020-' + res.data.endDate + ' 00:00:00')
           ]
 
-          obj.workBeginTime = that.moment(tmpYear+res.data.workBeginTime)
-          obj.workEndTime = that.moment(tmpYear+res.data.workEndTime)
-          obj.lunchBeginTime = that.moment(tmpYear+res.data.lunchBeginTime)
-          obj.lunchEndTime = that.moment(tmpYear+res.data.lunchEndTime)
+          obj.workBeginTime = that.moment(tmpYear + res.data.workBeginTime)
+          obj.workEndTime = that.moment(tmpYear + res.data.workEndTime)
+          obj.lunchBeginTime = that.moment(tmpYear + res.data.lunchBeginTime)
+          obj.lunchEndTime = that.moment(tmpYear + res.data.lunchEndTime)
           that.form.setFieldsValue(obj)
-            // "beginDate": "06-16",
-            // "endDate": "06-30",
-            // "workBeginTime": "17:50:05",
-            // "workEndTime": "19:52:06",
-            // "lunchBeginTime": "17:50:05",
-            // "lunchEndTime": "17:51:07"
+          // "beginDate": "06-16",
+          // "endDate": "06-30",
+          // "workBeginTime": "17:50:05",
+          // "workEndTime": "19:52:06",
+          // "lunchBeginTime": "17:50:05",
+          // "lunchEndTime": "17:51:07"
           console.log(res)
         })
       }
     },
-    handleSubmit(){
+    handleSubmit() {
       let that = this
+      console.log(this.detail)
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          that.spinning = true 
-
-
-          values.classRuleId = that.detail.id
+          that.spinning = true
+          values.id=this.actionType==='edit'?this.detail.id:''
+          values.classRuleId =this.actionType==='add'?that.detail.id:undefined
           values.beginDate = values.sDate[0].format('MM-DD')
           values.endDate = values.sDate[1].format('MM-DD')
 
@@ -158,34 +177,36 @@ export default {
           values.workBeginTime = values.workBeginTime.format('HH:mm:ss')
           values.workEndTime = values.workEndTime.format('HH:mm:ss')
 
-
-          classRuleConfigAddAndUpdate(values).then(res =>{
-            that.$message.info(res.msg)
-            that.spinning = false
-            that.handleCancel()
-            that.$emit('finish')
-          }).catch(err =>{
-            that.spinning = false
-          })
+          classRuleConfigAddAndUpdate(values)
+            .then(res => {
+              that.$message.info(res.msg)
+              that.spinning = false
+              that.handleCancel()
+              that.$emit('finish')
+            })
+            .catch(err => {
+              that.spinning = false
+            })
         }
       })
     },
-    handleCancel(){
+    handleCancel() {
       this.form.resetFields()
-      this.$nextTick(() =>this.visible = false)
+      this.$nextTick(() => (this.visible = false))
     }
   }
 }
 </script>
 <style scoped>
-.wdf-custom-add-form-wrapper >>> .ant-form-item{
-  display:flex;
+.wdf-custom-add-form-wrapper >>> .ant-form-item {
+  display: flex;
 }
 
-.ant-form-item >>> .ant-form-item-label{
-  width:80px;
+.ant-form-item >>> .ant-form-item-label {
+  width: 80px;
 }
-.ant-form-item >>> .ant-form-item-control-wrapper{
-  flex:1;
+.ant-form-item >>> .ant-form-item-control-wrapper {
+  flex: 1;
 }
+
 </style>

@@ -95,7 +95,7 @@
           {{ {1:'设备异常',2:'忘记打卡',3:'停电',4:'天气异常'}[text] || '未知' }}
         </div>
         <div slot="exceptionType" slot-scope="text, record">
-          {{ {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退'}[text] || '未知' }}
+          {{ {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[text] || '未知' }}
         </div>
         
         <div slot="reason" slot-scope="text, record">

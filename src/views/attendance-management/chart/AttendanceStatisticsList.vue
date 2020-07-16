@@ -60,7 +60,6 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
-        :scroll="{ x: 1500,y:300}"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -178,7 +177,8 @@ export default {
       searchParam: {},//查询参数
       downParam:{}, //下载参数
       depList: [],
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      userInfo: this.$store.getters.userInfo, // 当前登录人
+      dayWeekMonth: 1
     }
   },
   watch: {
@@ -352,5 +352,8 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>
