@@ -7,14 +7,14 @@
           <a-input placeholder="考勤组名称" v-model="searchParam.attanceName" allowClear style="width:150px;" />
         </a-form-item>
         <a-form-item>
-          <a-select style="width: 150px" placeholder="考勤类型" v-model="searchParam.attanceType">
+          <a-select style="width: 150px" placeholder="考勤类型" :allowClear="true" v-model="searchParam.attanceType">
             <a-select-option :value="1">固定班制</a-select-option>
             <a-select-option :value="2">排班制</a-select-option>
             <a-select-option :value="3">自由工时</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-select style="width: 150px" placeholder="时长处理" v-model="searchParam.isFreeType">
+          <a-select style="width: 150px" placeholder="时长处理" :allowClear="true" v-model="searchParam.isFreeType">
             <a-select-option :value="0">不计入调休</a-select-option>
             <a-select-option :value="1">计入调休</a-select-option>
           </a-select>

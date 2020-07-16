@@ -80,8 +80,8 @@
               <a-form-item>
                 <a-select 
                   v-if="isAdd || isEdit"
-                  placeholder="选择最小加班单位"
-                  v-decorator="['workDays',{initialValue:detail.workDays,rules: [{required: true,message: '请选择最小加班单位'}]}]"
+                  placeholder="选择工作日"
+                  v-decorator="['workDays',{initialValue:detail.workDays,rules: [{required: true,message: '请选择工作日'}]}]"
                   :allowClear="true" 
                   mode="multiple"
                 >

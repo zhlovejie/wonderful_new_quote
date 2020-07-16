@@ -37,16 +37,24 @@
             <td style="width:65px;">{{item.userName}}</td>
             <td 
               style="width:36px;" 
-              :class="{'setting-default':+item[col.key]['type'] === 1,'setting-xiu':+item[col.key]['type'] === 2,'setting-empty':+item[col.key]['type'] === 0}" 
+              :class="{
+                'setting-default':+item[col.key]['type'] === 1,
+                'setting-xiu':+item[col.key]['type'] === 2,
+                'setting-empty':+item[col.key]['type'] === 0,
+                'setting-disabled':item[col.key]['disabled']
+              }" 
               v-for="col in columns" 
               :key="`${item.key} + ${col._key}`"
             >
-              <a-popover title="设置班次" trigger="click">
+              <a-popover title="设置班次" trigger="click" v-if="!item[col.key]['disabled']">
                 <a slot="content" >
                   <a-radio-group :options="plainOptions" @change="settingPaiBan(col.key,index,$event)" />
                 </a>
                 {{ {1:'默认班次',2:'休',0:'空'}[item[col.key]['type']]}}  
               </a-popover>
+              <span v-else>
+                {{ {1:'默认班次',2:'休',0:'空'}[item[col.key]['type']]}}  
+              </span>
             </td>
           </tr>
         </table>
@@ -150,7 +158,7 @@ export default {
       })
     },
     renderPaiBan(){
-      //debugger
+      
       let that = this
       let result = []
       if(that.arrangeMonth){
@@ -159,6 +167,12 @@ export default {
         that.users.map((u,idx) =>{
           let _pbObj = JSON.parse(JSON.stringify(pb.obj))
 
+          //小于当前天数的日期会被禁用
+          let _nowDate = moment().startOf('days')
+          Object.keys(_pbObj).map(k =>{
+            let _date = moment(_pbObj[k]._ymd)
+            _pbObj[k].disabled = _nowDate.diff(_date,'days') > 0
+          })
           //修改回显
           let restDays = (u.restDays || '').split(',') //休息日列表
           .map(str => {
@@ -198,7 +212,8 @@ export default {
         obj[_date] = {
           date:_date,
           week:_week,
-          type:['六','日'].includes(_week) ? 2 : 1
+          type:['六','日'].includes(_week) ? 2 : 1,
+          _ymd:m.format('YYYY-MM-DD')
         }
         columns.push({
           _key:uuid(),
@@ -241,5 +256,9 @@ export default {
 .setting-empty{
   /* background: #; */
   color: #f43;
+}
+.setting-disabled{
+  opacity: .5;
+  cursor: not-allowed !important;
 }
 </style>
