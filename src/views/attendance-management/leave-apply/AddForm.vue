@@ -90,7 +90,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr >
+          <tr v-if="isYearHolidayOrLeaveHoliday">
             <td style="width:120px;">剩余可调休时间(小时)</td>
             <td>
               <a-form-item>
@@ -157,7 +157,8 @@ import {
   attenceLeaveApplyApprove,
   attenceLeaveApplyAllHoliday,
   attenceLeaveApplyUserRestHoursRecord,
-  attenceLeaveApplyComputeLeaveTime
+  attenceLeaveApplyComputeLeaveTime,
+  attenceLeaveApplyCheckHolidayUsed
 } from '@/api/attendanceManagement'
 import Approval from './Approval'
 import moment from 'moment'
@@ -181,7 +182,10 @@ export default {
       fileList: [],
       userRestHours:0, //可调休时长
       leaveTime:0, //自动计算时长
-      holidayList:[]
+      holidayList:[],
+
+      isHolidayUsed:false,
+      isYearHolidayOrLeaveHoliday:false, //年假或调休
     }
   },
   computed:{
@@ -222,15 +226,40 @@ export default {
       let target = that.holidayList.find(item => +item.id === +val)
       if(!target){
         console.log('获取请假类型失败=>',val)
+
+        that.isHolidayUsed = false
+        that.isYearHolidayOrLeaveHoliday = false
         return
       }
-      attenceLeaveApplyUserRestHoursRecord({
-        hourType:target.holidayCode,
-        userId:that.record.createdId || that.userInfo.id
-      }).then(res =>{
-        console.log(res)
-        that.userRestHours = res.data ? res.data.remainHours : 0
-      })
+      
+      if(+target.holidayType === 0){
+        attenceLeaveApplyCheckHolidayUsed({
+          holidayId:target.id,
+          userId:that.record.createdId || that.userInfo.id
+        }).then(res =>{
+          console.log(res)
+          that.isHolidayUsed = res.data
+          if(that.isHolidayUsed){
+            that.$message.info('系统检测到您有该类型的请假单，禁止操作')
+          }
+        })
+      }
+      
+      //年假 调休
+      if(['年假','调休'].includes(target.holidayName)){
+        that.isYearHolidayOrLeaveHoliday = true
+        let hourType = {'年假':'2','调休':'1' }
+        attenceLeaveApplyUserRestHoursRecord({
+          hourType: hourType[target.holidayName],
+          userId:that.record.createdId || that.userInfo.id
+        }).then(res =>{
+          console.log(res)
+          that.userRestHours = res.data ? res.data.remainHours : 0
+        })
+      }else{
+        that.isYearHolidayOrLeaveHoliday = false
+      }
+
     },
     datePickerChange(){
       let that = this
@@ -262,6 +291,8 @@ export default {
       that.userRestHours = 0 //可调休时长
       that.leaveTime = 0 //自动计算时长
       that.holidayList = []
+      that.isHolidayUsed = false
+      that.isYearHolidayOrLeaveHoliday = false //年假或调休
 
       that.form.resetFields()
       await that.init()
@@ -274,6 +305,9 @@ export default {
         //debugger
         let data = res.data
         that.detail = {...data}
+
+        that.isYearHolidayOrLeaveHoliday = ['年假','调休'].includes(that.detail.holidayName)
+
         that.leaveTime = that.detail.leaveTime
         if(that.detail.docUrl){
           that.fileList = that.detail.docUrl.split(',').map((url, index) => {
@@ -295,6 +329,13 @@ export default {
         that.handleCancel()
         return
       }
+
+      
+      if(that.isHolidayUsed){
+        that.$message.info('系统检测到您有该类型的请假单，禁止操作')
+        return
+      }
+
       this.form.validateFields((err, values) => {
         if (!err) {
           
@@ -306,7 +347,7 @@ export default {
           if(target){
             console.log('请假类型 =>',target)
             values.holidayName = target.holidayName
-            values.holidayCode = target.holidayCode
+            //values.holidayCode = target.holidayCode
           }else{
             console.log('未找到请假类型')
           }

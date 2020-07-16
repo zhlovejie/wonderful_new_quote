@@ -731,6 +731,20 @@ export function attenceLeaveApplyUserRestHoursRecord (parameter) {
   })
 }
 
+/**
+ * 判断用户当前年度是否有某类型的请假单（返回true则有：false则没有）
+ * @param {string} holidayId
+ * @param {string} userId
+ */
+export function attenceLeaveApplyCheckHolidayUsed (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/checkHolidayUsed',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------请假申请--END------------------
 
 
