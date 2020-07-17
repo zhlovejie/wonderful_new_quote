@@ -81,6 +81,21 @@
         <div slot="emergentLevel" slot-scope="text, record, index">
           {{ getEmergentLevelText(text) }}
         </div>
+
+        <div slot="isEnd" slot-scope="text, record, index">
+          <template v-if="$auth('recruitApply:isEnd') && +record.status === 1">
+            <a-popconfirm title="是否要完结该记录？" @confirm="changeStatus(record)">
+              <a href="javascript:void(0);">{{ {0:'未完结',1:'已完结'}[text] }}</a>
+            </a-popconfirm>
+          </template>
+          <template v-else>
+            {{ {0:'未完结',1:'已完结'}[text] }}
+          </template>
+        </div>
+
+        
+
+        <!-- recruitApply:isEnd -->
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
@@ -107,7 +122,7 @@ import {
   departmentList,//所有部门
   getStationList, //获取部门下面的岗位
 } from '@/api/systemSetting'
-import {pageList} from '@/api/personnelManagement'
+import {pageList,updateIsEnd} from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 
@@ -159,6 +174,14 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' }
+  },
+
+  {
+    align: 'center',
+    title: '是否完结',
+    key: 'isEnd',
+    dataIndex: 'isEnd',
+    scopedSlots: { customRender: 'isEnd' }
   },
 
   {
@@ -301,6 +324,16 @@ export default {
     approvalPreview(record){
       this.$refs.approveInfoCard.init(record.instanceId)
     },
+    changeStatus(record){
+      let that = this
+      updateIsEnd({id:record.id}).then(res =>{
+        debugger
+        that.$message.info(res.msg)
+        if(+res.code === 200){
+          that.searchAction()
+        }
+      })
+    }
   }
 }
 </script>

@@ -209,6 +209,15 @@ export function pageList (parameter) {
     params: parameter
   })
 }
+
+export function updateIsEnd (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personAdvert/updateIsEnd',
+    method: 'get',
+    params: parameter
+  })
+}
 //----------------------招聘申请END
 
 
