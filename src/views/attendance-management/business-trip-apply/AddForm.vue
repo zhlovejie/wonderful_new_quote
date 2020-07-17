@@ -90,7 +90,7 @@
                   style="width:100%;"
                   placeholder="出差备注"
                   :rows="2"
-                  v-decorator="['remark', { initialValue:detail.remark,rules: [{ required: true, message: '请输入出差备注' }] }]"
+                  v-decorator="['remark', { initialValue:detail.remark,rules: [{ required: false, message: '请输入出差备注' }] }]"
                 />
               </a-form-item>
             </td>
@@ -185,20 +185,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr>
-            <td style="width:120px;">出差负责人</td>
-            <td colspan="3">
-              <a-form-item>
-                <DepUserSelect
-                  :disabled="isDisabled"
-                  :depId="item.chargeUserDepId || userInfo.departmentId"
-                  :userId="item.chargeUserId || userInfo.id"
-                  @change="(...args) => {depUserChange('chargeUserId',item._key,...args)}"
-                  style="width:100%;"
-                />
-              </a-form-item>
-            </td>
-          </tr>
+          
           <tr>
             <td style="width:120px;">出差同行人</td>
             <td colspan="3">
@@ -207,6 +194,20 @@
                   :disabled="isDisabled"
                   :users="item.users"
                   @change="(...args) => {depUserMulChange('users',item._key,...args)}"
+                  style="width:100%;"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr v-show="item.users && item.users.length > 0">
+            <td style="width:120px;">出差负责人</td>
+            <td colspan="3">
+              <a-form-item>
+                <DepUserSelect
+                  :disabled="isDisabled"
+                  :depId="item.chargeUserDepId || userInfo.departmentId"
+                  :userId="item.chargeUserId || userInfo.id"
+                  @change="(...args) => {depUserChange('chargeUserId',item._key,...args)}"
                   style="width:100%;"
                 />
               </a-form-item>
