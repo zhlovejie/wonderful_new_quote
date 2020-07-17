@@ -3,11 +3,18 @@
   <div class="wdf-custom-wrapper" id="attendance-over-time-apply">
     <div class="search-wrapper">
       <a-form layout="inline">
-        <a-form-item>
+        <!-- <a-form-item>
           <a-button :disabled="disabled" class="a-button" type="primary" @click="simpleSearch(1)">上月</a-button>
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" @click="simpleSearch(2)">全部</a-button>
+        </a-form-item> -->
+        <a-form-item>
+          <a-button-group>
+            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 1}" @click="simpleSearch(1)">上月</a-button>
+            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 2}" @click="simpleSearch(2)">本月</a-button>
+            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 3}" @click="simpleSearch(3)">全部</a-button>
+          </a-button-group>
         </a-form-item>
         <a-form-item>
           <a-input
@@ -175,60 +182,33 @@ export default {
       },
       loading: false,
       searchParam: {},
-      searchParam: {}, //查询参数
-      downParam: {}, //下载参数
       depList: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      dayWeekMonth: 1
+      dayWeekMonth: 2
     }
   },
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'attendance-statistics') {
-          let nowDate =
-            new Date().getFullYear() +
-            '-' +
-            (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
-          this.init({ current: 1, statiticsMonthDate: nowDate })
+        if (to.name === 'attendance-chart-attendance-statistics') {
+          this.init().then(() => this.simpleSearch(2))
         }
       },
       immediate: true
     }
-  },
-  mounted() {
-    let nowDate =
-      new Date().getFullYear() +
-      '-' +
-      (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
-    this.init({ current: 1, statiticsMonthDate: nowDate })
   },
   methods: {
     disabledDate(current) {
       // Can not select days before today and today
       return current && current > moment().endOf('day')
     },
-    init(params) {
+    init() {
       let that = this
       let queue = []
       let task1 = departmentList().then(res => (that.depList = res.data))
       queue.push(task1)
-      that.searchAction(params)
-      let nowDate =
-        new Date().getFullYear() +
-        '-' +
-        (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
-      this.downParam.userName = ''
-      this.downParam.statiticsMonthDate = nowDate
-      this.downParam.departmentId = ''
-      that.getList(params)
       return Promise.all(queue)
     },
-    // // 下载传参
-    // downParamFun(){
-    //   const resultDownParams=Object.assign({},{...this.downParam})
-    //   return resultDownParams
-    // },
     searchAction(opt = {}) {
       this.disabled = false
       let that = this
@@ -250,10 +230,6 @@ export default {
           that.pagination = pagination
         })
         .catch(err => (that.loading = false))
-      this.downParam.userName = _searchParam.userName
-      this.downParam.statiticsMonthDate = _searchParam.statiticsMonthDate
-      this.downParam.departmentId = _searchParam.departmentId
-      this.getList(_searchParam)
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -265,86 +241,24 @@ export default {
     },
     onChange(date, dateString) {
       if (typeof dateString === 'string') {
-        this.searchParam.statiticsMonthDate = dateString
+        this.searchParam = Object.assign({},this.searchParam,{statiticsMonthDate:dateString})
       }
     },
     simpleSearch(num) {
-      if (num === 1) {
-        // 上月
-        this.disabled = true
-        let lastMonth =
-          new Date().getFullYear() +
-          '-' +
-          (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
-        let that = this
-        that.loading = true
-        getStatisticsList({ current: 1, statiticsMonthDate: lastMonth })
-          .then(res => {
-            that.loading = false
-            that.dataSource = res.data.records.map((item, index) => {
-              item.key = index + 1
-              return item
-            })
-
-            //设置数据总条数
-            const pagination = { ...that.pagination }
-            pagination.total = res.data.total || 0
-            pagination.current = res.data.current || 1
-            that.pagination = pagination
-          })
-          .catch(err => (that.loading = false))
-      } else if (num === 2) {
-        // 全部
-        this.disabled = false
-        this.init({ current: 1, statiticsMonthDate: undefined })
+      this.dayWeekMonth = num
+      let m = {
+        1:moment().add(-1,'months').format('YYYY-MM'),
+        2:moment().format('YYYY-MM'),
+        3:undefined
       }
-    },
-    getList(params) {
-      this.loading = true
-      getStatisticsList(params)
-        .then(res => {
-          this.loading = false
-          this.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
-            return item
-          })
-
-          //设置数据总条数
-          const pagination = { ...this.pagination }
-          pagination.total = res.data.total || 0
-          pagination.current = res.data.current || 1
-          this.pagination = pagination
-        })
-        .catch(err => (this.loading = false))
-    },
-    simpleSearch(num) {
-      if (num === 1) {
-        // 上月
-        this.disabled = true
-        let lastMonth =
-          new Date().getFullYear() +
-          '-' +
-          (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
-        this.getList({ current: 1, statiticsMonthDate: lastMonth })
-        // 存储上月参数
-        this.downParam.userName = ''
-        this.downParam.statiticsMonthDate = lastMonth
-        this.downParam.departmentId = ''
-      } else if (num === 2) {
-        // 全部
-        this.disabled = false
-        this.downParam.userName = ''
-        this.downParam.statiticsMonthDate = ''
-        this.downParam.departmentId = ''
-        this.init({ current: 1, statiticsMonthDate: undefined })
-      }
+      this.searchParam = Object.assign({},this.searchParam,{statiticsMonthDate:m[num]})
+      this.searchAction({current:1})
     },
     // 下载
     downAction() {
       const downListParams = Object.assign({}, { ...this.searchParam })
       this.loading = true
       downStatisticsList(downListParams)
-      downStatisticsList(this.downParam)
         .then(res => {
           this.loading = false
           if (res instanceof Blob) {
