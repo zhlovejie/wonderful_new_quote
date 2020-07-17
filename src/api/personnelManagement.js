@@ -64,6 +64,18 @@ export function getProbationEvaluationByProbationSurveyId (parameter) {
   })
 }
 
+//查询本月出勤天数
+export function getAttenceMonthStatiticsCollect (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sign/monthDayStatitics/getAttenceMonthStatiticsCollect',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
 //---------------------试用期调查表-END-------------------
 
 // 人员储备新增或修改
