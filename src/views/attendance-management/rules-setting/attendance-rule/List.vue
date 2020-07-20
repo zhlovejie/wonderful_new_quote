@@ -55,9 +55,10 @@
           <span>{{ +text === 1 ? '计入调休' : '不计入调休' }}</span>
         </div>
         <div slot="caculatorHousType" slot-scope="text, record, index">
-          <span>
+          <span v-if="record.caculatorHousType && +record.caculatorHous >= 0">
             {{ {1:'按月',2:'按周',3:'按日'}[record.caculatorHousType]+'低于'+record.caculatorHous+'小时' }}
           </span>
+          <span v-else></span>
         </div>
         <div slot="attanceUsers" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">

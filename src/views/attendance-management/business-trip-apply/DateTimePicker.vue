@@ -1,7 +1,7 @@
 <template>
   <div class="data-time-picker-wrapper">
     <a-form-item>
-      <a-date-picker :disabled="disabled" v-model="sDate" @openChange="handleStartOpenChange"/>
+      <a-date-picker :disabled="disabled" v-model="sDate" @openChange="handleStartOpenChange" @change="datePickerChange"/>
     </a-form-item>
     <a-form-item style="margin-left:10px;">
       <a-time-picker 
@@ -72,6 +72,13 @@ export default {
       if(sDate !== null && sTime !== null){
         let d_str = `${sDate.format('YYYY-MM-DD')} ${sTime.format('HH:mm:ss')}`
         this.$emit('change',d_str)
+      }
+    },
+    datePickerChange(momentInstance,dateStr){
+      if(momentInstance === null){
+        this.sDate = null
+        this.sTime = null
+        this.$emit('change',null)
       }
     }
   }

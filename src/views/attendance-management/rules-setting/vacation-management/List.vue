@@ -23,7 +23,7 @@
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
             <a-select-option :value="4">已撤回</a-select-option>
-            <a-select-option :value="5">行程完结</a-select-option>
+            <!-- <a-select-option :value="5">行程完结</a-select-option> -->
           </a-select>
         </a-form-item>
         <a-form-item label="时间">

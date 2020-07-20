@@ -6,6 +6,7 @@
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
+    :class="{'ant-modal_no_footer':isView}"
   >
     <template slot="footer">
       <template v-if="isApproval">
@@ -132,7 +133,7 @@
                   :rows="2"
                   v-decorator="['informContent', {  initialValue:detail.informContent,rules: [{ required: true, message: '请输入通知信息' }] }]"
                 />
-                <span class="word-break" v-else>{{detail.informContent}}</span>  
+                <div v-else class="word-break" v-html="formatHTML(detail.informContent)" ></div>  
               </a-form-item>
               
             </td>
@@ -341,14 +342,27 @@ export default {
       this.changeRestDate = dateList
     },
     useDepartmentsCheckAll(){
-      //this.useDepartmentsOpen = true
-      this.useDepartmentsToggleFlag = !this.useDepartmentsToggleFlag
-      this.form.setFieldsValue({
-        useDepartments:this.useDepartmentsToggleFlag ? this.depList.map(item =>item.id) : []
-      }) 
+      let that = this
+      that.useDepartmentsToggleFlag = !that.useDepartmentsToggleFlag
+      that.$nextTick(() =>{
+        let useDepartments = that.form.getFieldValue('useDepartments') || []
+        let all = that.depList.map(item =>item.id)
+        let unAll = all.filter(val => !useDepartments.includes(val))
+        that.form.setFieldsValue({
+          useDepartments:that.useDepartmentsToggleFlag ? all : unAll
+        }) 
+      })
     },
     useDepartmentsChange(type){
       this.useDepartmentsOpen = type === 'focus'
+    },
+    formatHTML(htmlStr){
+      if(typeof htmlStr !== 'string') {
+        return ''
+      }
+      htmlStr = htmlStr.replace(/[\n\r]/g,'<br/>')
+      htmlStr = htmlStr.replace(/\s+/g,'&nbsp;')
+      return htmlStr
     }
   }
 }

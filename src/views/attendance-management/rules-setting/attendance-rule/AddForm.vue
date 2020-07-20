@@ -6,6 +6,7 @@
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
+    :class="{'ant-modal_no_footer':isView}"
   >
     <template slot="footer">
       <template v-if="isApproval">
@@ -131,7 +132,7 @@
                   <a-select-option :value="2">按周</a-select-option>
                   <a-select-option :value="3">按日</a-select-option>
                 </a-select>
-                <span v-else>{{{1:'按月',2:'按周',3:'按日'}[detail.caculatorHousType]}}</span>
+                <span v-else>{{detail.caculatorHousType ? {1:'按月',2:'按周',3:'按日'}[detail.caculatorHousType] : ''}}</span>
                 
               </a-form-item>
               <a-form-item>
@@ -143,7 +144,7 @@
                   :step="1"
                   v-decorator="['caculatorHous', {initialValue:detail.caculatorHous,rules: [{ required: isFreeClass, message: '请输入限制时间' }]}]"
                 />
-                <span v-else>【{{detail.caculatorHous}}】</span>
+                <span v-else>{{detail.caculatorHous >= 0 ? '【'+detail.caculatorHous+'】' : ''}}</span>
                 <span>小时</span>
               </a-form-item>
               </div>

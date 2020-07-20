@@ -103,8 +103,8 @@ export default {
             attanceType: _attanceType[result.beforeAttanceType],
             workDays: that.workDaysFormat(result.beforeWorkDays),
             isFreeType: _isFreeType[result.beforeIsFreeType],
-            caculatorHousType: _caculatorHousType[result.beforeCaculatorHousType],
-            caculatorHous: '低于' + result.beforeCaculatorHous + '小时',
+            caculatorHousType: result.beforeCaculatorHousType ? _caculatorHousType[result.beforeCaculatorHousType] : '',
+            caculatorHous: +result.beforeCaculatorHous >= 0 ? '低于' + result.beforeCaculatorHous + '小时' : '',
             attanceUser: result.beforeAttanceUser
           })
           arr.push({

@@ -443,6 +443,8 @@ export default {
       let target = _routesList.find(item => item._key === key)
       if (target) {
         target[type] = timeStr
+        target['__dateStatus'] = target['endTime'] > target['startTime']
+
         this.routesList = [..._routesList]
       }
       console.log(this.routesList)
@@ -566,6 +568,35 @@ export default {
         if (!err) {
           console.log('Received values of form: ', values)
           console.log(that.routesList)
+          if(!that.beginAreaId || (Array.isArray(that.beginAreaId) && that.beginAreaId.length === 0)){
+            that.$message.info('请选择出发城市')
+            return
+          }
+
+          for(let i =0,len = that.routesList.length;i<len;i++){
+            let route = that.routesList[i]
+            if(!route.endAreaId){
+              that.$message.info(`请选择行程${i + 1}内的 目的城市`)
+              return
+            }
+            if(!route.vehicleId){
+              that.$message.info(`请选择行程${i + 1}内的 交通工具`)
+              return
+            }
+            if(!route.startTime){
+              that.$message.info(`请选择行程${i + 1}内的 开始日期`)
+              return
+            }
+            if(!route.endTime){
+              that.$message.info(`请选择行程${i + 1}内的 结束日期`)
+              return
+            }
+            if(!route.__dateStatus){
+              that.$message.info(`行程${i + 1}内的 结束日期 必须大于 开始时间`)
+              return
+            }
+          }
+
           //return
           values.status = that.record.status || 0 //状态待审批
           values.beginAreaId = that.beginAreaId //外层出发城市
@@ -573,6 +604,10 @@ export default {
             delete item._key
             return item
           })
+
+
+
+
           that.spinning = true
           // 判断开始日期 1.早于当前时间，给出提示
           //2.开始时间不能早于当前时间

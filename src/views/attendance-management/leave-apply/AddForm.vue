@@ -5,7 +5,8 @@
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
-    :maskClosable="false"
+    :maskClosable="false" 
+    :class="{'ant-modal_no_footer':isView}"
   >
     <template slot="footer">
       <template v-if="isApproval">
@@ -226,7 +227,7 @@ export default {
   },
   watch: {
     isLeaveTimeThanUserRestHours(res) {
-      if (res) {
+      if (res && (this.isAdd || this.isEdit)) {
         this.$message.info('请假时长大于可以调休时长，禁止操作')
       }
     }
