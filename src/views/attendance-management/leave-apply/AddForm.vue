@@ -313,7 +313,8 @@ export default {
           attenceLeaveApplyComputeLeaveTime({
             beginTime,
             endTime,
-            userId: that.record.createdId || that.userInfo.id
+            holidayCaculatorType:that.holidayTarget.holidayCaculatorType,
+            holidayUnitType:that.holidayTarget.holidayUnitType,
           }).then(res => {
             that.leaveTime = res.data || 0
           })
@@ -347,6 +348,11 @@ export default {
         let data = res.data
         that.detail = { ...data }
 
+        let holidayTarget = that.holidayList.find(item => +item.id === +that.detail.holidayId)
+        if(holidayTarget){
+          that.holidayTarget = Object.assign({},holidayTarget)
+        }
+        
         that.isYearHolidayOrLeaveHoliday = ['年假', '调休'].includes(that.detail.holidayName)
 
         that.leaveTime = that.detail.leaveTime
