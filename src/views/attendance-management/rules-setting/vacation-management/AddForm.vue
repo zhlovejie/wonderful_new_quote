@@ -100,21 +100,21 @@
                   
 
                   <!-- 管理人员 -->
-                  <a-select-opt-group label="管理人员">
+                  <!-- <a-select-opt-group label="管理人员">
                   <a-select-option
                     v-for="item in depList.filter(item=>item.parentId===4)"
                     :key="item.id"
                     :value="item.id"
                   >{{item.departmentName}}</a-select-option>
-                  </a-select-opt-group>
+                  </a-select-opt-group> -->
                   <!-- 车间人员 -->
-                  <a-select-opt-group label="车间人员">
+                  <!-- <a-select-opt-group label="车间人员"> -->
                   <a-select-option
-                    v-for="item in depList.filter(item=>item.parentId!==4)"
+                    v-for="item in depList"
                     :key="item.id"
                     :value="item.id"
                   >{{item.departmentName}}</a-select-option>
-                  </a-select-opt-group>
+                  <!-- </a-select-opt-group> -->
                 </a-select>
                 <a-button @click="useDepartmentsCheckAll">全选/反选</a-button>
                 </div>
