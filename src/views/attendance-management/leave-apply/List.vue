@@ -81,7 +81,9 @@
         <div slot="userName" slot-scope="text, record">
           {{record.createdName}}
         </div>
-        
+        <div slot="leaveTime" slot-scope="text, record">
+          {{text}} {{{1:'天',3:'小时'}[text] || ''}}
+        </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           
           <template v-if="+activeKey === 1">
@@ -172,7 +174,8 @@ const columns = [
   {
     align: 'center',
     title: '请假时长',
-    dataIndex:'leaveTime'
+    dataIndex:'leaveTime',
+    scopedSlots: { customRender: 'leaveTime' }
   },
   {
     align: 'center',

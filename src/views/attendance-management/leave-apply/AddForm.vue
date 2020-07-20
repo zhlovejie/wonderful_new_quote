@@ -97,7 +97,7 @@
           <tr>
             <td style="width:120px;">时长</td>
             <td>
-              <a-form-item>{{leaveTime}}</a-form-item>
+              <a-form-item>{{leaveTime}}{{holidayTarget ? {1:'天',3:'小时'}[holidayTarget.holidayUnitType] || '' : ''}}</a-form-item>
             </td>
           </tr>
           <tr v-if="isYearHolidayOrLeaveHoliday">
@@ -335,7 +335,7 @@ export default {
       that.holidayList = []
       that.isHolidayUsed = false
       that.isYearHolidayOrLeaveHoliday = false //年假或调休
-
+      that.holidayTarget = null
       that.form.resetFields()
       await that.init()
       that.visible = true
