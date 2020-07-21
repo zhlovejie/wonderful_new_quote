@@ -229,7 +229,7 @@ export default {
         },
         {
           align: 'center',
-          title: '完结时间',
+          title: '结束时间',
           dataIndex: 'endTime'
         },
         {

@@ -91,6 +91,8 @@ export default {
       return attenceChangeApproveDetail({ id: id })
         .then(res => {
           console.log(res)
+          let isEmpty = obj => obj === null || obj === undefined
+          //debugger
           let _attanceType = { 1: '固定班制', 2: '排班制', 3: '自由工时' }
           let _isFreeType = { 0: '不计入调休', 1: '计入调休' }
           let _caculatorHousType = { 1: '按月', 2: '按周', 3: '按日' }
@@ -103,8 +105,8 @@ export default {
             attanceType: _attanceType[result.beforeAttanceType],
             workDays: that.workDaysFormat(result.beforeWorkDays),
             isFreeType: _isFreeType[result.beforeIsFreeType],
-            caculatorHousType: result.beforeCaculatorHousType ? _caculatorHousType[result.beforeCaculatorHousType] : '',
-            caculatorHous: +result.beforeCaculatorHous >= 0 ? '低于' + result.beforeCaculatorHous + '小时' : '',
+            caculatorHousType: !isEmpty(result.beforeCaculatorHousType) ? _caculatorHousType[result.beforeCaculatorHousType] : '',
+            caculatorHous: !isEmpty(result.beforeCaculatorHous) ? '低于' + result.beforeCaculatorHous + '小时' : '',
             attanceUser: result.beforeAttanceUser
           })
           arr.push({
@@ -114,8 +116,8 @@ export default {
             attanceType: _attanceType[result.afterAttanceType],
             workDays: that.workDaysFormat(result.afterWorkDays),
             isFreeType: _isFreeType[result.afterIsFreeType],
-            caculatorHousType: _caculatorHousType[result.afterCaculatorHousType],
-            caculatorHous: '低于' + result.afterCaculatorHous + '小时',
+            caculatorHousType: !isEmpty(result.afterCaculatorHousType) ? _caculatorHousType[result.afterCaculatorHousType] : '',
+            caculatorHous: !isEmpty(result.afterCaculatorHous) ? '低于' + result.afterCaculatorHous + '小时' : '',
             attanceUser: result.afterAttanceUser
           })
           return arr

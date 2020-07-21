@@ -663,6 +663,29 @@ export default {
         isAdopt: 1,
         opinion: opinion
       })
+    },
+    async getAreaTextByIds(ids){
+      let _ids = ids.split(',')
+      let arr = []
+
+      let getAreaText = async (pId,key) => {
+        let res = await getAreaByParent({pId:pId})
+        let target = res.data.find(item => String(item.id) === String(key))
+        return target ? target.area : ''
+      }
+
+      let initKey = '100000',findKey = ''
+      for(let i=0,len = _ids.length;i<len;i++){
+        findKey = _ids[i]
+        let res = await getAreaText(initKey,findKey)
+        arr.push(res)
+        initKey = findKey
+      }
+
+      console.log(arr)
+      return arr
+
+
     }
   }
 }
