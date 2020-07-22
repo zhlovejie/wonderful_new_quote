@@ -129,8 +129,8 @@ export default {
     searchForm() {},
     // 发卡日期
     startDateChange(date, dateString){
-      console.log(date)
-      console.log(dateString)
+      // console.log(date)
+      // console.log(dateString)
     },
   }
 }
