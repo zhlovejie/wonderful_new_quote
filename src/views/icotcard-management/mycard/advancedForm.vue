@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="高级筛选"
-    :width="800"
+    :width="600"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
@@ -24,6 +24,7 @@
           <a-select
             placeholder="卡状态"
             v-model="form.cardState"
+            style="width: 160px"
           >
             <a-select-option
               v-for="item in ddd"
@@ -35,13 +36,57 @@
         <a-form-item label="运营商">
           <a-select
             placeholder="运营商"
-            v-model="form.cardState">
+            v-model="form.cardState"
+            style="width:160px">
             <a-select-option
               v-for="item in kkk"
               :key="item.id"
               :value="item.id"
             >{{item.stationName}}</a-select-option>
           </a-select>
+        </a-form-item>
+        <a-form-item label="活动状态">
+          <a-select
+            placeholder="活动状态"
+            v-model="form.activeState"
+            style="width:160px">
+          <a-select-option
+            v-for="item in jjj"
+            :key="item.id"
+            :value="item.id"
+          >{{item.state}}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="发卡日期">
+          <a-range-picker @change="startDateChange" />
+        </a-form-item>
+        <a-form-item label="激活日期">
+          <a-range-picker @change="startDateChange" />
+        </a-form-item>
+        <a-form-item label="服务期止">
+          <a-range-picker @change="startDateChange" />
+        </a-form-item>
+         <h3 style="font-weight:600">卡流量信息</h3>
+        <a-form-item label="是否超量">
+          <a-select
+            placeholder="是否超量"
+            v-model="form.activeState"
+            style="width:160px">
+          <a-select-option>是</a-select-option>
+          </a-select>
+        </a-form-item>
+        <h3 style="font-weight:600">卡所属信息</h3>
+        <a-form-item label="所属机构">
+          <a-input placeholder="机构名称模糊查询" v-model="form.cardNum" />
+        </a-form-item>
+        <a-form-item label="所属设备">
+          <a-input placeholder="主板号模糊查询" v-model="form.cardNum" />
+        </a-form-item>
+        <a-form-item label="出厂日期">
+          <a-range-picker @change="startDateChange" />
+        </a-form-item>
+        <a-form-item label="SIM卡有限期">
+          <a-range-picker @change="startDateChange" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -64,6 +109,10 @@ export default {
             {id:1,service:'中国电信'},
             {id:2,service:'中国联通'},
             {id:3,service:'中国移动'},
+        ],
+        jjj:[
+          {id:1,state:'已激活'},
+          {id:2,state:'未激活'},
         ]
     }
   },
@@ -77,7 +126,12 @@ export default {
     // 重置
     resetForm() {},
     // 查询
-    searchForm() {}
+    searchForm() {},
+    // 发卡日期
+    startDateChange(date, dateString){
+      console.log(date)
+      console.log(dateString)
+    },
   }
 }
 </script>

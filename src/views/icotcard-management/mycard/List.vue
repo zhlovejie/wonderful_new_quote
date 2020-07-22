@@ -49,6 +49,8 @@
       </a-table>
     </div>
     <AdvancedForm ref="advancedForm" />
+    <AddForm />
+    <Detail />
   </div>
 </template>
 <script>
@@ -62,7 +64,9 @@
 //   comManageMobileManageExportExcel,
 //   comManageMobileManageDelete
 // } from '@/api/communicationManagement'
-import AdvancedForm from './advancedForm'
+import AdvancedForm from './AdvancedForm'
+import AddForm from './AddForm'
+import Detail from './Detail'
 const columns = [
   {
     align: 'center',
@@ -137,7 +141,9 @@ const columns = [
 export default {
   name: 'communication-management-phone-number',
   components: {
-    AdvancedForm
+    AdvancedForm,
+    AddForm,
+    Detail
   },
   data() {
     return {
