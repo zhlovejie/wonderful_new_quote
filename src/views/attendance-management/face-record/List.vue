@@ -60,6 +60,9 @@
         <div slot="signBeginResult" slot-scope="text, record, index">
           {{{1:'正常',2:'迟到',3:'缺卡',4:'加班'}[text] }}
         </div>
+        <div slot="signEndResult" slot-scope="text, record, index">
+          {{{1:'正常',2:'早退',3:'缺卡',4:'加班'}[text] }}
+        </div>
       </a-table>
     </div>
   </div>
@@ -137,7 +140,7 @@ const columns = [
     title: '打卡结果',
     dataIndex: 'signEndResult',
     key: 'signEndResult',
-    scopedSlots: { customRender: 'signBeginResult' }
+    scopedSlots: { customRender: 'signEndResult' }
   },
   {
     align: 'center',
