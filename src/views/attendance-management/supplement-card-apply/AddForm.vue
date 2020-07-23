@@ -29,6 +29,7 @@
               <a-form-item>
                 <a-select 
                   v-if="!isDisabled"
+                  :disabled="isEdit"
                   placeholder="异常事件"
                   v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择异常事件'}]}]"
                   :allowClear="true" 
@@ -38,7 +39,7 @@
                   <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">
                     {{item.exceptionName}}
                     (
-                      类型：{{{1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[item.exceptionType]}}  
+                      类型：{{getExceptionTypeTxt(item.exceptionType)}}  
                       发生时间：{{item.happenDate}}
                     )
                   </a-select-option>
@@ -61,7 +62,7 @@
             <td>
               <a-form-item>
                 <a-select 
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   placeholder="异常类型"
                   v-decorator="['thingType',{initialValue:detail.thingType,rules: [{required: true,message: '选择异常类型'}]}]"
                   :allowClear="true" 
@@ -72,6 +73,9 @@
                   <a-select-option :value="3">停电</a-select-option>
                   <a-select-option :value="4">天气异常</a-select-option>
                 </a-select>
+                <span v-else>
+                  {{ {1:'设备异常',2:'忘记打卡',3:'停电',4:'天气异常'}[detail.thingType] }}
+                </span>
               </a-form-item>
             </td>
           </tr>
@@ -180,14 +184,35 @@ export default {
       resignApplyDetail({id:record.id}).then(res =>{
         //debugger
         let data = res.data
-        that.detail = {...data}
+
+        //异常事件修改的时候，已经使用掉，列表中已经没有该条异常事件 这里加上
+        if(that.isEdit){
+          let target = that.exceptionList.find(item => +item.id === +data.exceptionId)
+          if(!target){
+            let _exceptionList = [...that.exceptionList]
+            _exceptionList.push({
+              id:data.exceptionId,
+              exceptionName:data.exceptionName,
+              happenDate:data.happenDate,
+              exceptionType:data.exceptionType
+            })
+            _exceptionList.sort((a,b) => a.happenDate > b.happenDate)
+            that.exceptionList = _exceptionList
+          }
+          
+        }
 
         that.exceptionItem = {
-          happenDate:that.detail.happenDate
+          happenDate:data.happenDate
         }
+
+        that.$nextTick(() => that.detail = {...data})
         //data.exceptionId && that.exceptionChange(data.exceptionId)
         console.log(res)
       })
+    },
+    getExceptionTypeTxt(type){
+      return {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[type] || '未知'
     },
     fetchSignExceptionByCondition(userId){
       return signExceptionByCondition({exceptionType:1,userId:userId}).then(res =>{

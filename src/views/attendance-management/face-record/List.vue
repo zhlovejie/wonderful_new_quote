@@ -28,8 +28,9 @@
         <a-form-item>
           <a-range-picker
             v-model="sDate"
+            :placeholder="['考勤开始日期','考勤结束日期']"
             @change="rangePickerChange"
-            style="width:220px;"
+            style="width:280px;"
             :allowClear="true"
           />
         </a-form-item>

@@ -53,7 +53,7 @@
         style="text-align:left;"
         v-else-if="disabled && joinList.length > 0"
       >{{joinList.map(u =>u.trueName).join(',')}}</div>
-      <div v-else>无人员</div>
+      <div v-else></div>
     </div>
   </div>
 </template>

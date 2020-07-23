@@ -30,11 +30,20 @@
         </a-form-item>
         <table class="custom-table custom-table-border">
           <tr>
+            <td style="width:120px;">出差人</td>
+            <td colspan="3">
+              <a-form-item>
+                {{detail.createdUserName || userInfo.trueName}}
+              </a-form-item>
+            </td>
+          </tr>
+
+          <tr>
             <td style="width:120px;">出差类型</td>
             <td :colspan="!isSalesman ? 3 : 1">
               <a-form-item>
                 <a-select
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   placeholder="选择出差类型"
                   v-decorator="['travelType',{initialValue:detail.travelType,rules: [{required: true,message: '选择出差类型'}]}]"
                   :allowClear="true"
@@ -43,13 +52,16 @@
                   <a-select-option :value="1">出差</a-select-option>
                   <a-select-option :value="2">公事外出</a-select-option>
                 </a-select>
+                <span v-else>
+                  {{ {1:'出差',2:'公事外出'}[detail.travelType] }}
+                </span>
               </a-form-item>
             </td>
             <td style="width:120px;" v-if="isSalesman">客户名称</td>
             <td v-if="isSalesman">
               <a-form-item>
                 <a-input
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   class="a-input"
                   style="width:100%;"
                   title="选择客户名称"
@@ -58,6 +70,7 @@
                   @click="handleCustomerClick"
                   v-decorator="['customerName',{initialValue:detail.customerName,rules: [{ required: true, message: '选择客户名称'}]}]"
                 />
+                <span v-else>{{detail.customerName}}</span>
               </a-form-item>
               <a-form-item hidden>
                 <a-input v-decorator="['customerId',{initialValue:detail.customerId}]" />
@@ -69,16 +82,19 @@
             <td style="width:355px;">
               <a-form-item>
                 <AreaCascade
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   :fill="detail && detail.beginAreaId ? detail.beginAreaId.split(',') : []"
                   @change="(...args) => {areaCascadeChange('beginAreaId',null,...args)}"
                   style="width:100%;"
                 />
+                <span v-else>{{detail.beginAreaName}}</span>
               </a-form-item>
             </td>
             <td style="width:120px;">时长</td>
             <td>
-              <span style="font-size: 125%;color: #f40;font-weight: bold;">{{calcRouteTimeDiff}}</span>
+              <a-form-item>
+                <span>{{calcRouteTimeDiff}}</span>
+              </a-form-item>
             </td>
           </tr>
           <tr>
@@ -86,12 +102,13 @@
             <td colspan="3">
               <a-form-item>
                 <a-textarea
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   style="width:100%;"
                   placeholder="出差备注"
                   :rows="2"
                   v-decorator="['remark', { initialValue:detail.remark,rules: [{ required: false, message: '请输入出差备注' }] }]"
                 />
+                <span v-else>{{detail.remark}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -119,18 +136,19 @@
             <td>
               <a-form-item>
                 <AreaCascade
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   :fill="item.endAreaId ? item.endAreaId.split(',') : []"
                   @change="(...args) => {areaCascadeChange('endAreaId',item._key,...args)}"
                   style="width:100%;"
                 />
+                <span v-else>{{item.endAreaName}}</span>
               </a-form-item>
             </td>
             <td style="width:120px;">交通工具</td>
             <td>
               <a-form-item>
                 <a-select
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   placeholder="选择交通工具"
                   :value="item.vehicleId"
                   :allowClear="true"
@@ -143,6 +161,9 @@
                     :value="item.id"
                   >{{item.text}}</a-select-option>
                 </a-select>
+                <span v-else>
+                  {{item.vehicle}}
+                </span>
               </a-form-item>
             </td>
           </tr>
@@ -151,22 +172,24 @@
             <td>
               <a-form-item>
                 <DateTimePicker
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   :fill="item.startTime"
                   @change="(...args) => {dateTimePickerChange('startTime',item._key,...args)}"
                   style="width:100%;"
                 />
+                <span v-else>{{item.startTime}}</span>
               </a-form-item>
             </td>
             <td style="width:120px;">结束日期</td>
             <td>
               <a-form-item>
                 <DateTimePicker
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   :fill="item.endTime"
                   @change="(...args) => {dateTimePickerChange('endTime',item._key,...args)}"
                   style="width:100%;"
                 />
+                <span v-else>{{item.endTime}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -175,13 +198,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-textarea
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   style="width:100%;"
                   placeholder="出差事由"
                   :rows="2"
                   :value="item.reason"
                   @change="reasonChange('reason',item._key,$event)"
                 />
+                <span v-else>{{item.reason}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -191,11 +215,12 @@
             <td colspan="3">
               <a-form-item>
                 <DepUserMulSelect
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   :users="item.users"
                   @change="(...args) => {depUserMulChange('users',item._key,...args)}"
                   style="width:100%;"
                 />
+                <span>{{ item.users.map(u =>u.trueName).join(',') }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -204,12 +229,13 @@
             <td colspan="3">
               <a-form-item>
                 <DepUserSelect
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   :depId="item.chargeUserDepId || userInfo.departmentId"
                   :userId="item.chargeUserId || userInfo.id"
                   @change="(...args) => {depUserChange('chargeUserId',item._key,...args)}"
                   style="width:100%;"
                 />
+                <span v-else>{{item.chargeUserName}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -226,10 +252,11 @@
         <table class="custom-table custom-table-border" style="margin-top:20px;">
           <tr>
             <td style="width:120px;">使用公车</td>
-            <td>
+            <td style="width:355px;">
               <a-form-item>
                 <a-select
-                  :disabled="isDisabled || !isCompanyCar"
+                  v-if="!isDisabled"
+                  :disabled="!isCompanyCar"
                   placeholder="选择公车"
                   v-decorator="['carDicNum',{initialValue:detail.carDicNum ? +detail.carDicNum : undefined,rules: [{required: isCompanyCar,message: '选择公车'}]}]"
                   :allowClear="true"
@@ -241,21 +268,62 @@
                     :value="item.id"
                   >{{item.text}}</a-select-option>
                 </a-select>
+                <span v-else>{{detail.carDicNumTxt}}</span>
               </a-form-item>
             </td>
             <td style="width:120px;">预支金额(元)</td>
-            <td>
+            <td style="width:355px;">
               <a-form-item>
                 <a-input-number
-                  :disabled="isDisabled"
+                  v-if="!isDisabled"
                   style="width:334px;"
                   :min="0"
                   :max="2000"
                   :step="1"
                   v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount}]"
                 />
+                <span v-else>
+                  {{detail.overdraftAmount | moneyFormatNumber}}
+                </span>
               </a-form-item>
             </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">银行卡号</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-input
+                  v-if="!isDisabled"
+                  style="width:100%;"
+                  placeholder="银行卡号"
+                  v-decorator="['bankAccount', {initialValue:detail.bankAccount,rules: [{pattern: /^\d{15,20}$/, message: '请输入正确银行账号' }]}]"
+                />
+                <span v-else>
+                  {{detail.bankAccount}}
+                </span>
+              </a-form-item>
+            </td>
+          </tr>
+
+
+        </table>
+
+        <table class="custom-table custom-table-border" style="margin-top:20px;" v-if="+detail.status === 2">
+          <tr>
+            <td style="width:120px;">提交人</td>
+            <td style="width:355px;">{{detail.createdUserName}}</td>
+            <td style="width:120px;">提交时间</td>
+            <td style="width:355px;">{{detail.createdTime}}</td>
+          </tr>
+          <tr>
+            <td>审批人</td>
+            <td>{{lastApprovedNode.userName}}</td>
+            <td>审批结果</td>
+            <td>{{lastApprovedNode.code}}</td>
+          </tr>
+          <tr>
+            <td>审批时间</td>
+            <td colspan="3">{{lastApprovedNode.createTime}}</td>
           </tr>
         </table>
       </a-form>
@@ -276,8 +344,10 @@ import { getOneSalesman } from '@/api/customer/salesman'
 import {
   attenceTravelApplyDetail,
   attenceTravelApplyAddAndUpdate,
-  attenceTravelApplyApprove
+  attenceTravelApplyApprove,
+  attenceTravelApplyGetNewstAccount
 } from '@/api/attendanceManagement'
+import {findApprovedNodeList} from '@/api/common'
 import Approval from './Approval'
 import CustomerList from '@/components/CustomerList/CustomerList'
 import AreaCascade from './AreaCascade'
@@ -315,10 +385,12 @@ export default {
       vehicleList: [], //交通工具
       carList: [], //公司车辆
       beginAreaId: [], //出发城市
+      beginAreaName:'',
       routesList: [], //出差行程
       isSalesman: false,
 
-      isCompanyCar: false //交通工具为公车时，下面的选项才可以选择车牌号
+      isCompanyCar: false, //交通工具为公车时，下面的选项才可以选择车牌号
+      lastApprovedNode:{} //取最后一个审批节点信息
     }
   },
   computed: {
@@ -389,25 +461,43 @@ export default {
       that.form.resetFields()
       await that.init()
       that.visible = true
+
+
+
       if (that.isAdd) {
         that.detail = {}
+        attenceTravelApplyGetNewstAccount().then(res =>{
+          if(res && res.data && res.data.bankAccount){
+            that.detail = Object.assign({},that.detail,{bankAccount:res.data.bankAccount})
+          }
+        })
         that.routeAction('add')
         return
       }
       attenceTravelApplyDetail({ id: record.id }).then(res => {
         let data = res.data
+        
+        data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
+        //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
         that.detail = { ...data }
+
+        that.isCompanyCar = !!that.carList.find(item => String(item.label) === '公车')
+
         that.beginAreaId = data.beginAreaId
+        that.beginAreaName = data.beginAreaName
         that.routesList = that.detail.routes.map(route => {
           return {
             _key: uuid(),
             endAreaId: route.endAreaId,
+            endAreaName: route.endAreaName || '',
             vehicleId: route.vehicleId,
+            vehicle:route.vehicle,
             startTime: route.startTime,
             endTime: route.endTime,
             reason: route.reason,
             chargeUserDepId: route.chargeUserDepId,
             chargeUserId: route.chargeUserId,
+            chargeUserName:route.chargeUserName,
             users: route.users
               ? route.users.map(u => {
                   return {
@@ -419,14 +509,30 @@ export default {
               : []
           }
         })
-        console.log(res)
+
+        if(+data.status === 2){
+          that.fetchApprovedNode(data.instanceId)
+        }
       })
     },
+    fetchApprovedNode(instanceId){
+      let that = this
+      findApprovedNodeList({instanceId: instanceId})
+      .then(res => {
+        if(Array.isArray(res.data) && res.data.length > 0)
+        that.lastApprovedNode = res.data[res.data.length - 1]
+      })
+    },
+    
     areaCascadeChange(type, key, arrArea, arrAreaItems) {
+      //debugger
       let that = this
       if (type === 'beginAreaId') {
         this.beginAreaId = arrArea.join(',')
-        that.detail = Object.assign({}, that.detail, { beginAreaId: arrArea.join(',') })
+        that.detail = Object.assign({}, that.detail, { 
+          beginAreaId: arrArea.join(','),
+          beginAreaName: arrAreaItems.map(item =>item.label).join('/')
+        })
         return
       }
       if (type === 'endAreaId') {
@@ -434,6 +540,7 @@ export default {
         let target = _routesList.find(item => item._key === key)
         if (target) {
           target.endAreaId = arrArea.join(',')
+          target.endAreaName = arrAreaItems.map(item =>item.label).join('/')
           that.routesList = [..._routesList]
         }
       }
@@ -507,7 +614,7 @@ export default {
       }
     },
     handleCustomerClick() {
-      this.$refs.customerList.init()
+      this.$refs.customerList.init({userId:this.userInfo.id})
     },
     handlerCustomerSelected(record) {
       this.form.setFieldsValue({
@@ -599,7 +706,8 @@ export default {
 
           //return
           values.status = that.record.status || 0 //状态待审批
-          values.beginAreaId = that.beginAreaId //外层出发城市
+          values.beginAreaId = that.beginAreaId || that.detail.beginAreaId //外层出发城市
+          values.beginAreaName = that.beginAreaName || that.detail.beginAreaName
           values.routes = that.$_.cloneDeep(that.routesList).map(item => {
             delete item._key
             return item
@@ -664,6 +772,13 @@ export default {
         opinion: opinion
       })
     },
+    getCarDicNumTxt(id){
+      let target = this.carList.find(item => +item.id === +id)
+      if(target){
+        return target.text
+      }
+      return ''
+    },
     async getAreaTextByIds(ids){
       let _ids = ids.split(',')
       let arr = []
@@ -683,9 +798,7 @@ export default {
       }
 
       console.log(arr)
-      return arr
-
-
+      return arr.join('/')
     }
   }
 }
@@ -705,5 +818,6 @@ export default {
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;
+  text-align: left;
 }
 </style>

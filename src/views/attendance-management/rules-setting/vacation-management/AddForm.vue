@@ -117,7 +117,7 @@
                   >{{item.departmentName}}</a-select-option>
                   <!-- </a-select-opt-group> -->
                 </a-select>
-                <a-button @click="useDepartmentsCheckAll">全选/反选</a-button>
+                <a-button @click="useDepartmentsCheckAll">全选</a-button>
                 </div>
                 <span class="word-break" v-else>{{detail.useDepartmentName}}</span>
               </a-form-item>
@@ -328,10 +328,15 @@ export default {
       let that = this
       that.$nextTick(() => {
         let { beginDate, endDate } = that.form.getFieldsValue(['beginDate', 'endDate'])
+        if(beginDate > endDate){
+          that.$message.info('结束时间必须大于开始时间')
+          that.form.setFieldsValue({endDate:undefined})
+          return
+        }
         if (beginDate instanceof moment && endDate instanceof moment) {
           let s = moment(beginDate.format('YYYY-MM-DD'))
           let e = moment(endDate.format('YYYY-MM-DD'))
-          that.diffDate = e.diff(s, 'days')
+          that.diffDate = e.diff(s, 'days') + 1
         }
       })
     },
@@ -343,13 +348,13 @@ export default {
     },
     useDepartmentsCheckAll(){
       let that = this
-      that.useDepartmentsToggleFlag = !that.useDepartmentsToggleFlag
+      //that.useDepartmentsToggleFlag = !that.useDepartmentsToggleFlag
       that.$nextTick(() =>{
         let useDepartments = that.form.getFieldValue('useDepartments') || []
         let all = that.depList.map(item =>item.id)
-        let unAll = all.filter(val => !useDepartments.includes(val))
+        //let unAll = all.filter(val => !useDepartments.includes(val))
         that.form.setFieldsValue({
-          useDepartments:that.useDepartmentsToggleFlag ? all : unAll
+          useDepartments:all
         }) 
       })
     },

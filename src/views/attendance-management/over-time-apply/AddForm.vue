@@ -29,13 +29,19 @@
               <a-form-item>
                 <a-select 
                   v-if="!isDisabled"
+                  :disabled="isEdit"
                   placeholder="加班事件"
                   v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择加班事件'}]}]"
                   :allowClear="true" 
                   style="width:100%;" 
                   @change="exceptionChange"
                 >
-                  <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">{{item.exceptionName}}</a-select-option>
+                  <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">
+                    {{item.exceptionName}}
+                    (
+                      发生时间：{{item.happenDate}}
+                    )
+                  </a-select-option>
                 </a-select>
                 <span v-else>{{detail.exceptionName}}</span>
               </a-form-item>
@@ -239,7 +245,23 @@ export default {
           endDate:endTime.format('YYYY-MM-DD'),
           endTime:endTime.format('HH:mm:ss'),
         }
-        that.detail = {...data}
+
+        //异常事件修改的时候，已经使用掉，列表中已经没有该条异常事件 这里加上
+        if(that.isEdit){
+          let target = that.exceptionList.find(item => +item.id === +data.exceptionId)
+          if(!target){
+            let _exceptionList = [...that.exceptionList]
+            _exceptionList.push({
+              id:data.exceptionId,
+              exceptionName:data.exceptionName,
+              happenDate:moment(data.beginTime).format('YYYY-MM-DD')
+            })
+            _exceptionList.sort((a,b) => a.happenDate > b.happenDate)
+            that.exceptionList = _exceptionList
+          }
+        }
+
+        that.$nextTick(() => that.detail = {...data})
         //that.fetchOverworkApplyHours({beginTime,endTime})
         console.log(res)
       })

@@ -83,9 +83,9 @@
         </div>
 
         <div slot="isEnd" slot-scope="text, record, index">
-          <template v-if="$auth('recruitApply:isEnd') && +record.status === 1">
+          <template v-if="$auth('recruitApply:isEnd') && +record.status === 1 && +record.isEnd === 0">
             <a-popconfirm title="是否要完结该记录？" @confirm="changeStatus(record)">
-              <a href="javascript:void(0);">{{ {0:'未完结',1:'已完结'}[text] }}</a>
+              <a href="javascript:void(0);">未完结</a>
             </a-popconfirm>
           </template>
           <template v-else>

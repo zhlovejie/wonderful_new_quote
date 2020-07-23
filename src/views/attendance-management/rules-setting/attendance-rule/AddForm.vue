@@ -137,7 +137,7 @@
                 </span>
                 
               </a-form-item>
-              <a-form-item>
+              <a-form-item v-if="detail.caculatorHous > 0">
                 <span style="margin:0 10px;">低于</span>
                 <a-input-number 
                   v-if="isAdd || isEdit"

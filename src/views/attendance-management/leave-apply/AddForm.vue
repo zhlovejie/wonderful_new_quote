@@ -59,12 +59,8 @@
               <a-form-item>
                 <a-date-picker
                   v-if="!isDisabled"
-                  format="YYYY-MM-DD HH:mm:ss"
-                  :show-time="{ 
-                    defaultValue: moment('00:00:00', 'HH:mm:ss'),
-                    minuteStep:30,
-                    secondStep:60
-                  }"
+                  :format="dateFormat"
+                  :show-time="showTime"
                   v-decorator="['beginTime',{initialValue:detail.beginTime ? moment(detail.beginTime) : undefined,rules: [{required: true,message: '请选择开始时间'}]}]"
                   @change="datePickerChange"
                   style="width:100%;"
@@ -79,13 +75,9 @@
               <a-form-item>
                 <a-date-picker
                   v-if="!isDisabled"
-                  format="YYYY-MM-DD HH:mm:ss"
+                  :format="dateFormat"
                   :disabled-date="disabledDate"
-                  :show-time="{ 
-                    defaultValue: moment('00:00:00', 'HH:mm:ss'),
-                    minuteStep:30,
-                    secondStep:60
-                  }"
+                  :show-time="showTime"
                   v-decorator="['endTime',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择结束时间'}]}]"
                   style="width:100%;"
                   @change="datePickerChange"
@@ -125,12 +117,12 @@
           <tr>
             <td style="width:120px;">上传凭证</td>
             <td style="text-align:left;">
-              <div class="clearfix" style="width:400px;overflow:auto;">
+              <div class="clearfix" style="width:400px;overflow:hidden;">
                 <a-upload
                   v-if="!isDisabled"
                   name="file"
                   :action="uploadPath"
-                  :multiple="true"
+                  :multiple="false"
                   :fileList="fileList"
                   @change="handleChange"
                 >
@@ -139,7 +131,11 @@
 
                 <div v-else>
                   <div v-for="f in fileList" :key="f.uid">
-                    <a :href="f.url" target="_blank">{{f.name}}</a>
+                    <!-- <a :href="f.url" target="_blank">{{f.name}}</a> -->
+                    <img @click="() => previewVisible = true" alt="上传凭证" class="picture-card" :src="f.url" />
+                    <a-modal :visible="previewVisible" :footer="null" @cancel="() => previewVisible = false">
+                      <img alt="上传凭证" style="width: 100%" :src="f.url" />
+                    </a-modal>
                   </div>
                 </div>
               </div>
@@ -148,6 +144,8 @@
         </table>
       </a-form>
     </a-spin>
+
+    
     <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
 </template>
@@ -197,6 +195,7 @@ export default {
       isHolidayUsed: false, //是否已有该类型的请假单
       isYearHolidayOrLeaveHoliday: false, //年假或调休
       requireUpload:false, //婚假必须上次结婚证书
+      previewVisible:false
     }
   },
   computed: {
@@ -223,6 +222,31 @@ export default {
     isLeaveTimeThanUserRestHours() {
       //年假 调休 请假时长大于 可以调休时长
       return this.isYearHolidayOrLeaveHoliday && this.leaveTime > this.userRestHours
+    },
+    showTime(){
+      if(this.holidayTarget){
+        if(+this.holidayTarget.holidayCaculatorType === 2){
+          return false
+        }else if(+this.holidayTarget.holidayCaculatorType === 1){
+          return { 
+            defaultValue: moment('00:00:00', 'HH:mm:ss'),
+            minuteStep:30,
+            secondStep:60
+          }
+        }
+      }
+      return false
+    },
+    dateFormat(){
+      if(this.holidayTarget){
+        debugger
+        if(+this.holidayTarget.holidayCaculatorType === 2){
+          return 'YYYY-MM-DD'
+        }else if(+this.holidayTarget.holidayCaculatorType === 1){
+          return 'YYYY-MM-DD HH:mm:ss'
+        }
+      }
+      return 'YYYY-MM-DD'
     }
   },
   watch: {
@@ -251,7 +275,7 @@ export default {
         this.holidayTarget.legalDuration > 0 
       ){
 
-        return current < beginTime || current >= beginTime.clone().add(+this.holidayTarget.legalDuration,'days')
+        return current <= beginTime || current >= beginTime.clone().add(+this.holidayTarget.legalDuration,'days')
       }
       return false
     },
@@ -262,6 +286,7 @@ export default {
         endTime: undefined
       })
       that.leaveTime = 0
+      that.userRestHours = 0
 
       let target = that.holidayList.find(item => +item.id === +val)
       if (!target) {
@@ -274,9 +299,10 @@ export default {
       }
 
       that.holidayTarget = Object.assign({},target)
-
+      //目前婚假需要上传凭证
       that.requireUpload = that.holidayTarget.holidayName === '婚假'
 
+      //4、法定假日（只能请一次）
       if (+target.holidayType === 4) {
         attenceLeaveApplyCheckHolidayUsed({
           holidayId: target.id,
@@ -290,8 +316,8 @@ export default {
         })
       }
 
-      //年假 调休
-      if ([1,2].includes(+target.holidayType)) {
+      //是否启用假期余额
+      if (+target.userRemain === 1) {
         that.isYearHolidayOrLeaveHoliday = true
         attenceLeaveApplyUserRestHoursRecord({
           hourType: target.holidayType,
@@ -396,8 +422,11 @@ export default {
 
           let target = that.holidayList.find(item => +item.id === +values.holidayId)
           if (target) {
+            debugger
             console.log('请假类型 =>', target)
             values.holidayName = target.holidayName
+            values.holidayType = target.holidayType
+            values.holidayUnitType = target.holidayUnitType
             //values.holidayCode = target.holidayCode
           } else {
             console.log('未找到请假类型')
@@ -467,6 +496,7 @@ export default {
     handleChange(info) {
       console.log(arguments)
       let fileList = [...info.fileList]
+      fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
@@ -494,5 +524,16 @@ export default {
 .custom-table-border td {
   padding: 5px 10px;
   text-align: left;
+}
+
+
+.picture-card{
+  position: relative;
+  height: 66px;
+  padding: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #ddd;
 }
 </style>
