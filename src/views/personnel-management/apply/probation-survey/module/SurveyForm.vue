@@ -309,9 +309,33 @@ export default {
         statiticsMonthDate:this.moment().format("YYYY-MM"),
         userId:that.record.userId,
       }).then(res =>{
-        that.form.setFieldsValue({
-          workDays: res.data || undefined
-        })
+        /*
+        {
+          "code": 200,
+          "msg": "操作成功",
+          "data": {
+            "jobNum": "10042",
+            "userName": "庞洁",
+            "departmentName": "人力资源部",
+            "userId": 113,
+            "statiticsMonth": "2020-07",
+            "workHours": 20,
+            "workDayNum": 4,
+            "leaveHours": 0,
+            "overWorkHours": 3.5,
+            "travelDayNum": 0,
+            "laterHours": 5,
+            "earlyHours": 2.5,
+            "overLunchNum": 1,
+            "lunchNum": 0
+          }
+        }
+        */
+        if(res && res.data){
+          that.form.setFieldsValue({
+            workDays: res.data.workDayNum || undefined
+          })
+        }
       })
     },
     handleOk(){
