@@ -531,7 +531,7 @@ export default {
         this.beginAreaId = arrArea.join(',')
         that.detail = Object.assign({}, that.detail, { 
           beginAreaId: arrArea.join(','),
-          beginAreaName: arrAreaItems.map(item =>item.label).join('/')
+          beginAreaName: arrAreaItems.map(item =>item.label).join('')
         })
         return
       }
@@ -540,7 +540,7 @@ export default {
         let target = _routesList.find(item => item._key === key)
         if (target) {
           target.endAreaId = arrArea.join(',')
-          target.endAreaName = arrAreaItems.map(item =>item.label).join('/')
+          target.endAreaName = arrAreaItems.map(item =>item.label).join('')
           that.routesList = [..._routesList]
         }
       }
