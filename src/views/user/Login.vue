@@ -26,7 +26,7 @@
               size="large"
               type="text"
               placeholder="账号为手机号"
-              v-decorator="['username', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }]}]"
+              v-decorator="['username', {rules: [{ required: true, pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}]"
             >
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
