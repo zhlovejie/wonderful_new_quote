@@ -370,7 +370,7 @@ export default {
         that.detail = {}
         return
       }
-      attenceLeaveApplyDetail({ id: record.id }).then(res => {
+      await attenceLeaveApplyDetail({ id: record.id }).then(res => {
         //debugger
         let data = res.data
         that.detail = { ...data }
@@ -393,6 +393,16 @@ export default {
               status: 'done',
               url: url
             }
+          })
+        }
+
+        if(data.userRemain && data.userRemain === 1){
+          attenceLeaveApplyUserRestHoursRecord({
+            hourType: that.holidayTarget.holidayType,
+            userId: that.record.createdId || that.userInfo.id
+          }).then(res => {
+            console.log(res)
+            that.userRestHours = res.data ? res.data.remainHours : 0
           })
         }
       })
