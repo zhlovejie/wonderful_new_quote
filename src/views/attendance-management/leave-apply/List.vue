@@ -84,13 +84,13 @@
 
         
         <div slot="beginTime" slot-scope="text, record">
-          {{ record.holidayCaculatorType === 1 ? text : text.slice(0,10) }}
+          {{ +record.holidayCaculatorType === 1 ? text : text.slice(0,10) }}
         </div>
         <div slot="endTime" slot-scope="text, record">
-          {{ record.holidayCaculatorType === 1 ? text : text.slice(0,10) }}
+          {{ +record.holidayCaculatorType === 1 ? text : text.slice(0,10) }}
         </div>
         <div slot="leaveTime" slot-scope="text, record">
-          {{text}} {{{1:'天',3:'小时'}[record.holidayUnitType] || ''}}
+          {{text}}{{{1:'天',3:'小时'}[record.holidayUnitType] || ''}}
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           

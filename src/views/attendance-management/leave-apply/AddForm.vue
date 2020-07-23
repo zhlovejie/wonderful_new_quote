@@ -65,7 +65,7 @@
                   @change="datePickerChange"
                   style="width:100%;"
                 />
-                <span v-else>{{detail.beginTime}}</span>
+                <span v-else>{{+detail.holidayUnitType === 1 ? detail.beginTime.slice(0,10) : detail.beginTime}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -82,7 +82,7 @@
                   style="width:100%;"
                   @change="datePickerChange"
                 />
-                <span v-else>{{detail.endTime}}</span>
+                <span v-else>{{+detail.holidayUnitType === 1 ? detail.endTime.slice(0,10) : detail.endTime}}</span>
               </a-form-item>
             </td>
           </tr>
