@@ -39,8 +39,13 @@
                   :allowClear="true"
                   style="width:100%;"
                 >
-                  <a-select-option :value="1">可以多次申请</a-select-option>
-                  <a-select-option :value="0">不可以多次申请</a-select-option>
+                  <!-- <a-select-option :value="1">可以多次申请</a-select-option>
+                  <a-select-option :value="0">不可以多次申请</a-select-option> -->
+                  <a-select-option :value="1">调休</a-select-option>
+                  <a-select-option :value="2">年假</a-select-option>
+                  <a-select-option :value="3">事假</a-select-option>
+                  <a-select-option :value="4">法定假日(只能请一次)</a-select-option>
+                  <a-select-option :value="5">法定假日(能请多次)</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
