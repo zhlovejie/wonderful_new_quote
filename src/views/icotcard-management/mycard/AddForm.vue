@@ -1,14 +1,4 @@
 <template>
-<!-- <a-input
-                  :disabled="isDisabled"
-                  class="a-input"
-                  style="width:100%;"
-                  title="选择客户名称"
-                  read-only
-                  placeholder="选择客户名称"
-                  @click="handleCustomerClick"
-                  v-decorator="['customerName',{initialValue:detail.customerName,rules: [{ required: true, message: '选择客户名称'}]}]"
-                /> -->
   <a-modal
     title="新增"
     :width="700"
@@ -23,6 +13,7 @@
         <a-button
           key="submit"
           type="primary"
+          @click="handleSubmit"
           :loading="spinning"
         >保存</a-button>
       </template>
@@ -35,20 +26,9 @@
             <td>
               <a-form-item>
                 <a-input 
-                  v-model="form.menuType"
+                  v-decorator="['cardno',{initialValue:form.cardno}]"
                   placeholder="卡号"
                 />
-
-                <!-- <a-select
-                  :disabled="isDisabled"
-                  placeholder="选择出差类型"
-                  v-decorator="['travelType',{initialValue:detail.travelType,rules: [{required: true,message: '选择出差类型'}]}]"
-                  :allowClear="true"
-                  style="width:100%;"
-                >
-                  <a-select-option :value="1">出差</a-select-option>
-                  <a-select-option :value="2">公事外出</a-select-option>
-                </a-select> -->
               </a-form-item>
             </td>
           </tr>
@@ -56,15 +36,10 @@
              <td style="width:120px;">运营商</td>
             <td>
               <a-form-item>
-                <a-select
+                <a-input
+                  v-decorator="['operatortype',{initialValue:form.operatortype}]"
                   placeholder="运营商"
-                  :allowClear="true"
-                  style="width:100%;"
-                >
-                  <a-select-option :value="1">中国移动</a-select-option>
-                  <a-select-option :value="2">中国联通</a-select-option>
-                  <a-select-option :value="3">中国电信</a-select-option>
-                </a-select>
+                />
               </a-form-item>
             </td>
           </tr>
@@ -72,23 +47,7 @@
             <td style="width:120px;">发卡日期</td>
             <td>
               <a-form-item>
-                 <a-date-picker @change="changeStartDate" />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td style="width:120px;">服务期限（年）</td>
-            <td>
-              <a-form-item>
-                <a-select 
-                  placeholder="服务期限（年）"
-                  :allowClear="true"
-                  style="width:100%"
-                >
-                  <a-select-option :value="1">1</a-select-option>
-                  <a-select-option :value="2">2</a-select-option>
-                  <a-select-option :value="3">3</a-select-option>
-                </a-select>
+                 <a-date-picker @change='changeStartDate' />
               </a-form-item>
             </td>
           </tr>
@@ -96,7 +55,7 @@
             <td style="width:120px;">服务器止</td>
             <td>
               <a-form-item>
-                123
+                 <a-date-picker @change='changeEndDate' />
               </a-form-item>
             </td>
           </tr>
@@ -105,8 +64,8 @@
             <td>
               <a-form-item>
                 <a-input 
-                  v-model="form.menuType"
-                  placeholder="输入"
+                  v-decorator="['flowPackages',{initialValue:form.flowPackages}]"
+                  placeholder="输入流量套餐"
                 />
               </a-form-item>
             </td>
@@ -117,19 +76,7 @@
   </a-modal>
 </template>
 <script>
-import {
-  departmentList, //所有部门
-  getStationList, //获取部门下面的岗位
-  getUserByDep //获取人员
-} from '@/api/systemSetting'
-import { getDictionaryList } from '@/api/workBox'
-import { getAreaByParent } from '@/api/common'
-import { getOneSalesman } from '@/api/customer/salesman'
-import {
-  attenceTravelApplyDetail,
-  attenceTravelApplyAddAndUpdate,
-  attenceTravelApplyApprove
-} from '@/api/attendanceManagement'
+import { addAndUpdateSimInformation } from '@/api/simCard'
 
 import moment from 'moment'
 
@@ -140,6 +87,8 @@ export default {
       form: this.$form.createForm(this),
       visible: false,
       spinning: false,
+      saledate:undefined,
+      validdate:undefined,
       detail: {},
       record: {},
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -147,53 +96,39 @@ export default {
   },
   methods: {
     moment,
-    handlerCustomerSelected(record) {
-      this.form.setFieldsValue({
-        customerName: record.name,
-        customerId: record.id
-      })
-    },
     showAddForm(){
       this.visible=true
+      this.form.resetFields()
     },
-    changeStartDate(){
-
+    changeStartDate(data,dataStr){
+      this.saledate=dataStr
+    },
+    changeEndDate(data,dataStr){
+      this.validdate=dataStr
     },
     handleSubmit() {
-      let that = this
+      this.spinning=true
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
-          console.log(that.routesList)
-          //return
-          values.status = that.record.status || 0 //状态待审批
-          values.beginAreaId = that.beginAreaId //外层出发城市
-          values.routes = that.$_.cloneDeep(that.routesList).map(item => {
-            delete item._key
-            return item
+          values['saledate']=this.saledate
+          values['validdate']=this.validdate
+          addAndUpdateSimInformation(values).then(res=>{
+            if(res.code==200){
+              this.$message.success(res.msg);
+              this.spinning=false
+              this.visible=false
+            }else{
+              this.spinning=false
+              this.$message.success(res.msg);
+            }
           })
-          that.spinning = true
         }
       })
+      
     },
     handleCancel() {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
-    },
-    submitAction(opt) {
-      let that = this
-      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
-      that.spinning = true
-      attenceTravelApplyApprove(values)
-        .then(res => {
-          that.spinning = false
-          console.log(res)
-          that.form.resetFields() // 清空表
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch(err => (that.spinning = false))
     },
   }
 }

@@ -19,13 +19,13 @@
     </template>
     <a-tabs type="card" default-active-key="1">
       <a-tab-pane key="1" tab="基本信息">
-        <BaseDetail />
+        <BaseInfo ref="baseInfo" />
       </a-tab-pane>
       <a-tab-pane key="2" tab="消费详情">
-        <ChargeDetail />
+        <ChargeInfo />
       </a-tab-pane>
       <a-tab-pane key="3" tab="扣费信息">
-        <ConsumeDetail />
+        <ConsumeInfo />
       </a-tab-pane>
     </a-tabs>
 
@@ -33,11 +33,11 @@
 </template>
 
 <script>
-import BaseDetail from './BaseDetail'
-import ConsumeDetail from './ConsumeDetail'
-import ChargeDetail from './ChargeDetail'
+import BaseInfo from './BaseInfo'
+import ConsumeInfo from './ConsumeInfo'
+import ChargeInfo from './ChargeInfo'
 export default {
-    name: 'icotcard-management-mycard-detail',
+    name: 'icotcard-management-mycard-info',
     data(){
         return {
             visible:false,
@@ -47,14 +47,20 @@ export default {
         }
     },
     components:{
-        BaseDetail,
-        ConsumeDetail,
-        ChargeDetail
+        BaseInfo,
+        ConsumeInfo,
+        ChargeInfo
     },
     methods:{
         handleCancel(){
-
+          this.visible=false
         },
+        showInfo(iccid){
+          this.visible=true
+          this.$nextTick(()=>{
+            this.$refs.baseInfo.init(iccid)
+          })
+        }
     }
 }
 </script>

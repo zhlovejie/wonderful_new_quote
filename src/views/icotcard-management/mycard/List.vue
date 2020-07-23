@@ -4,19 +4,17 @@
     <div class="search-wrapper">
       <a-input placeholder="卡号模糊查询" style="width: 160px" v-model="searchParam.cardNum" />
 
-      <!-- <a-select
+      <a-select
         placeholder="卡状态" 
         @change="postChangeHandler"
         v-model="searchParam.stationId"
         :allowClear="true"
         style="width: 160px"
       >
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.stationName}}</a-select-option>
-      </a-select> -->
+        <a-select-option value="正常">正常</a-select-option>
+        <a-select-option value="未激活">未激活</a-select-option>
+        <a-select-option value="停机">停机</a-select-option>
+      </a-select>
 
       <a-input placeholder="所属机构模糊查询" style="width: 160px" v-model="searchParam.belondCompany" />
       <a-input placeholder="主板号模糊查询" style="width: 160px" v-model="searchParam.beloneDevice" />
@@ -32,8 +30,8 @@
     </div>
     <br />
     <div style="float:right;margin-bottom:20px;">
-      <a-button class="a-button" type="primary" @click="updateSimInfo" style="margin-right:20px;">更新SIM卡信息</a-button>
-      <a-button class="a-button" type="primary" @click="inportInfo" style="margin-right:20px;">导入</a-button>
+      <a-button class="a-button" type="primary" @click="updateSimInfo" style="margin-right:10px;">更新SIM卡信息</a-button>
+      <a-button class="a-button" type="primary" @click="inportInfo" style="margin-right:10px;">导入</a-button>
       <a-button class="a-button" type="primary" @click="addInfo">新增</a-button>
     </div>
     <div class="main-wrapper">
@@ -45,34 +43,25 @@
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('edit',record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
-            <a href="javascript:void(0);">删除</a>
-          </a-popconfirm>
+        <div slot="iccid" slot-scope="text, record">
+          <a-button type="link" @click="showInfo(record)">{{text}}</a-button>
         </div>
       </a-table>
     </div>
     <AdvancedForm ref="advancedForm" />
     <AddForm ref="addForm"/>
-    <Detail />
+    <Inport />
+    <Info ref='info' />
   </div>
 </template>
 <script>
-// import {
-//   departmentList, //所有部门
-//   getStationList, //获取部门下面的岗位
-//   getUserByStation //获取岗位下人员
-// } from '@/api/systemSetting'
-// import {
-//   comManageMobileManagePage,
-//   comManageMobileManageExportExcel,
-//   comManageMobileManageDelete
-// } from '@/api/communicationManagement'
 import AdvancedForm from './AdvancedForm'
 import AddForm from './AddForm'
-import Detail from './Detail'
+import Info from './Info'
+import Inport from './inport'
+
+import {getSimInformationList} from '@/api/simCard'
+
 const columns = [
   {
     align: 'center',
@@ -84,53 +73,54 @@ const columns = [
   {
     align: 'center',
     title: '卡号',
-    dataIndex: 'cardNum'
+    dataIndex: 'cardno',
+    scopedSlots: { customRender: 'cardno' }
   },
   {
     align: 'center',
     title: 'iccid',
-    dataIndex: 'iccid'
+    dataIndex: 'iccid',
+    scopedSlots: { customRender: 'iccid' }
   },
   {
     align: 'center',
     title: '卡状态',
-    dataIndex: 'cardState'
+    dataIndex: 'status',
   },
   {
     align: 'center',
     title: '活动状态',
-    dataIndex: 'activityState'
+    dataIndex: 'activestatus',
   },
   {
     align: 'center',
     title: '运营商',
-    dataIndex: 'service',
+    dataIndex: 'operatortype',
   },
   {
     align: 'center',
     title: '发卡日期',
-    dataIndex: 'startDate',
+    dataIndex: 'saledate',
   },
   {
     align: 'center',
     title: '激活日期',
-    dataIndex: 'usedDate',
+    dataIndex: 'activationdate',
   },
   {
     align: 'center',
     title: '服务期止',
-    dataIndex: 'endDate'
+    dataIndex: 'validdate'
   },
   {
     align: 'center',
     title: '所属机构',
-    dataIndex: 'belondCompany'
+    dataIndex: 'orgName'
   },
   {
     align: 'center',
     title: '所属设备',
-    dataIndex: 'beloneDevice',
-    // scopedSlots: { customRender: 'remarks' }
+    dataIndex: 'manId',
   },
   {
     align: 'center',
@@ -140,7 +130,7 @@ const columns = [
   {
     align:'center',
     title:'SIM卡有限期',
-    dataIndex:'simLife'
+    dataIndex:'beOverdueTime'
   }
 ]
 
@@ -149,7 +139,8 @@ export default {
   components: {
     AdvancedForm,
     AddForm,
-    Detail
+    Info,
+    Inport
   },
   data() {
     return {
@@ -183,19 +174,19 @@ export default {
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = false
-      // comManageMobileManagePage(_searchParam)
-      //   .then(res => {
-      //     that.loading = false
-      //     that.dataSource = res.data.records.map((item, index) => {
-      //       item.key = index + 1
-      //       return item
-      //     })
-      //     //设置数据总条数
-      //     const pagination = { ...that.pagination }
-      //     pagination.total = res.data.total
-      //     that.pagination = pagination
-      //   })
-      //   .catch(err => (that.loading = false))
+      getSimInformationList(_searchParam)
+        .then(res => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+        })
+        .catch(err => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -224,6 +215,9 @@ export default {
     // 新增
     addInfo(){
       this.$refs.addForm.showAddForm()
+    },
+    showInfo(record){
+      this.$refs.info.showInfo(record.iccid)
     }
   }
 }
