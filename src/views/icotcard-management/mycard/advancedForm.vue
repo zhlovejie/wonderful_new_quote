@@ -6,6 +6,7 @@
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
+    class="icotcard-advanced"
   >
     <template slot="footer">
       <template>
@@ -17,10 +18,10 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline">
         <h3 style="font-weight:600">卡账号信息</h3>
-        <a-form-item label="卡号">
+        <a-form-item label="卡号" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
           <a-input placeholder="卡号模糊查询" v-model="form.cardNum" />
         </a-form-item>
-        <a-form-item label="卡状态">
+        <a-form-item label="卡状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
           <a-select
             placeholder="卡状态"
             v-model="form.cardState"
@@ -33,7 +34,7 @@
             >{{item.cardState}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="运营商">
+        <a-form-item label="运营商" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
           <a-select
             placeholder="运营商"
             v-model="form.cardState"
@@ -45,7 +46,7 @@
             >{{item.stationName}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="活动状态">
+        <a-form-item label="活动状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
           <a-select
             placeholder="活动状态"
             v-model="form.activeState"
@@ -72,7 +73,7 @@
             placeholder="是否超量"
             v-model="form.activeState"
             style="width:160px">
-          <a-select-option>是</a-select-option>
+          <a-select-option value=1>是</a-select-option>
           </a-select>
         </a-form-item>
         <h3 style="font-weight:600">卡所属信息</h3>
@@ -100,7 +101,7 @@ export default {
     return {
       visible: false,
       spinning: false,
-      form: this.$form.createForm(this, { name: 'advancedForm' })
+      form: this.$form.createForm(this)
         ,ddd:[
             {id:1,cardState:'激活'},
             {id:2,cardState:'未激活'},
@@ -136,5 +137,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.icotcard-advanced >>> .ant-form-item-label {
+  width:120px;
+}
 </style>

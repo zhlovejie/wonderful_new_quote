@@ -30,6 +30,12 @@
         @click="doAction('download',null)"
       >下载</a-button>
     </div>
+    <br />
+    <div style="float:right;margin-bottom:20px;">
+      <a-button class="a-button" type="primary" @click="updateSimInfo" style="margin-right:20px;">更新SIM卡信息</a-button>
+      <a-button class="a-button" type="primary" @click="inportInfo" style="margin-right:20px;">导入</a-button>
+      <a-button class="a-button" type="primary" @click="addInfo">新增</a-button>
+    </div>
     <div class="main-wrapper">
       <a-table
         :columns="columns"
@@ -49,7 +55,7 @@
       </a-table>
     </div>
     <AdvancedForm ref="advancedForm" />
-    <AddForm />
+    <AddForm ref="addForm"/>
     <Detail />
   </div>
 </template>
@@ -139,7 +145,7 @@ const columns = [
 ]
 
 export default {
-  name: 'communication-management-phone-number',
+  name: 'icotcard-management-mycard',
   components: {
     AdvancedForm,
     AddForm,
@@ -207,6 +213,18 @@ export default {
       this.personSelectDataSource = []
       // getUserByStation({ stationId: stationId }).then(res => (this.personSelectDataSource = res.data))
     },
+    // 更新SIM卡
+    updateSimInfo(){
+
+    },
+    // 导入
+    inportInfo(){
+      this.$refs.inportInfo.showInport()
+    },
+    // 新增
+    addInfo(){
+      this.$refs.addForm.showAddForm()
+    }
   }
 }
 </script>
