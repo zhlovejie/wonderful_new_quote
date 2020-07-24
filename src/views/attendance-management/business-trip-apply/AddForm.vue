@@ -209,7 +209,7 @@
               </a-form-item>
             </td>
           </tr>
-          
+
           <tr>
             <td style="width:120px;">出差同行人</td>
             <td colspan="3">
@@ -268,7 +268,7 @@
                     :value="item.id"
                   >{{item.text}}</a-select-option>
                 </a-select>
-                <span v-else>{{detail.carDicNumTxt}}</span>
+                <span v-else>{{detail.carDicNum}}</span>
               </a-form-item>
             </td>
             <td style="width:120px;">预支金额(元)</td>
@@ -476,7 +476,7 @@ export default {
       }
       attenceTravelApplyDetail({ id: record.id }).then(res => {
         let data = res.data
-        
+
         data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
         //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
         that.detail = { ...data }
@@ -523,13 +523,13 @@ export default {
         that.lastApprovedNode = res.data[res.data.length - 1]
       })
     },
-    
+
     areaCascadeChange(type, key, arrArea, arrAreaItems) {
       //debugger
       let that = this
       if (type === 'beginAreaId') {
         this.beginAreaId = arrArea.join(',')
-        that.detail = Object.assign({}, that.detail, { 
+        that.detail = Object.assign({}, that.detail, {
           beginAreaId: arrArea.join(','),
           beginAreaName: arrAreaItems.map(item =>item.label).join('')
         })
