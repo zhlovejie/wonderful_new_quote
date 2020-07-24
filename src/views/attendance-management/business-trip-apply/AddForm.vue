@@ -268,7 +268,7 @@
                     :value="item.id"
                   >{{item.text}}</a-select-option>
                 </a-select>
-                <span v-else>{{detail.carDicNum}}</span>
+                <span v-else>{{detail.carDicNumTxt}}</span>
               </a-form-item>
             </td>
             <td style="width:120px;">预支金额(元)</td>
