@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     moment,
-    showAddForm() {
+    showInport() {
       this.visible = true
     },
     handleSubmit() {

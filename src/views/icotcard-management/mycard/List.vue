@@ -50,7 +50,7 @@
     </div>
     <AdvancedForm ref="advancedForm" />
     <AddForm ref="addForm"/>
-    <Inport />
+    <Inport ref="inportInfo" />
     <Info ref='info' />
   </div>
 </template>

@@ -19,13 +19,13 @@
           <a-input v-model="form.status" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="发卡日期">
-          <a-date-picker @change="startDateChange" v-model="form.saledate" style="width:170px"/>
+          <a-date-picker @change="startDateChange" v-model="form.saledate" style="width:170px" ref='startDate'/>
         </a-form-item>
         <a-form-item label="激活日期">
           <a-input style="width:170px" v-model="form.activationdate" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="服务期止">
-          <a-date-picker @change="startDateChange" v-model="form.validdate" style="width:170px" />
+          <a-date-picker @change="endDateChange" v-model="form.validdate" style="width:170px" ref='endDate' />
         </a-form-item>
         <a-form-item label="活动状态">
           <a-input v-model="form.activestatus" :readOnly="formreadOnly" style="width:170px" />
@@ -62,6 +62,11 @@
         <a-form-item label="SIM卡有限期">
           <a-input v-model="form.beOverdueTime" :readOnly="formreadOnly" />
         </a-form-item>
+        <a-form-item style="float:right">
+            <a-button type="primary" v-if="showBtn" @click="updateSimInfo">
+              保存
+            </a-button>
+        </a-form-item>
       </a-form>
     </a-spin>
   </div>
@@ -75,22 +80,52 @@ export default {
       spinning: false,
       formreadOnly:true,
       form: {},
+      // 发卡日期
+      saledate:undefined,
+      // 截止日期
+      validdate:undefined,
+      showBtn:false,
+      iccId:'',
     }
   },
   methods:{
     init(iccId){
+      this.iccId=iccId
       crrQueryCard({iccId}).then(res=>{
-        this.form=res.data
+        if(res.code==200){
+          this.form=res.data
+        }else{
+          this.$message.warning(res.msg)
+        }
       })
     },
-    startDateChange(){
-
+    startDateChange(data,dataStr){
+      this.saledate=dataStr
+    },
+    endDateChange(data,dataStr){
+      this.validdate=dataStr
     },
     //修改
     changeForm(){
-      
+      this.$refs.startDate.focus()
+      this.showBtn=true
+    },
+    updateSimInfo(){
+      const params={}
+      params.iccid=this.iccId
+      params.saledate=this.saledate
+      params.validdate=this.validdate
+      this.spinning=true
+      addAndUpdateSimInformation(params).then(res=>{
+        if(res.code==200){
+          this.$message.success(res.msg)
+        }else{
+          this.$message.warning(res.msg)
+        }
+        this.spinning=false
+        this.showBtn=false
+      })
     }
-
   }
 }
 </script>
