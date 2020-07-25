@@ -103,13 +103,15 @@
         >{{ Array.isArray(record.users) ? record.users.map(item =>item.userName).join(',') : '-'}}</div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          
+
           <template v-if="+activeKey === 1">
             <a type="primary" @click="doAction('approval',record)">审批</a>
           </template>
 
           <template v-if="+activeKey === 2">
             <a type="primary" @click="doAction('view',record)">查看</a>
+            <a-divider type="vertical" />
+            <a type="primary" target="_blank" :href="record.travelUrl">下载pdf</a>
           </template>
 
           <template v-if="+activeKey === 0">
@@ -150,7 +152,7 @@
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction({current:1})" />
     <AddRoute ref="addRoute" />
-    
+
     <FinanceForm ref="financeForm" @finish="searchAction({current:1})" />
   </div>
 </template>
