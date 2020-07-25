@@ -110,8 +110,6 @@
 
           <template v-if="+activeKey === 2">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a type="primary" target="_blank" :href="record.travelUrl">下载pdf</a>
           </template>
 
           <template v-if="+activeKey === 0">
@@ -144,6 +142,13 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
             </template>
+
+            <!--查看 修改:只添加行程 -->
+            <template v-if="+record.status === 2">
+              <a-divider type="vertical" />
+              <a type="primary" target="_blank" :href="record.travelUrl">下载pdf</a>
+            </template>
+
 
           </template>
         </div>
