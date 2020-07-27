@@ -249,6 +249,9 @@ export default {
               } else {
                 _this.$message.error(res.msg)
               }
+            }).catch(err =>{
+              console.log(err)
+              _this.$router.push({ name: _this.routeParams.from ,params:{ ..._this.routeParams} })
             })
 
             // const splitParams = {contractId:_this.queryonedata.id}
