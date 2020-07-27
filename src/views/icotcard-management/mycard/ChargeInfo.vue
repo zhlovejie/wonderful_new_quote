@@ -14,7 +14,7 @@
           class="a-button"
           type="primary"
           icon="search"
-          @click="searchAction({current:1})"
+          @click="searchAction({iccId:iccid,current:1})"
         >查询</a-button>
       </a-form-item>
       <a-form-item>
@@ -23,8 +23,9 @@
     </a-form>
     <h3 style="font-weight:600">
       累计流量用量：
-      <span>200.00MB</span> 当前流量用量：
-      <span>23.00MB</span>
+      <span>{{accrueUsedAmount}}MB</span> 
+      当前流量用量：
+      <span>{{usedAmount}}MB</span>
     </h3>
     <a-table
       :columns="columns"
@@ -41,7 +42,7 @@
 </template>
 
 <script>
-import {getDeductionDetailList, getDeductionDetailExportList} from '@/api/simCard'
+import {getSimInformationFlow,consumeDetailList, getSimInformationExportList} from '@/api/simCard'
 const columns = [
   {
     align: 'center',
@@ -57,55 +58,53 @@ const columns = [
   },
   {
     align: 'center',
-    title: '运营商',
-    dataIndex: 'operatortype'
-  },
-  {
-    align: 'center',
-    title: '扣费周期',
-    dataIndex: 'deductionDate'
+    title: '使用日期',
+    dataIndex: 'usedDate'
   },
   {
     align: 'center',
     title: '流量用量（MB）',
     dataIndex: 'usedAmount'
   },
-  {
-    align: 'center',
-    title: '套餐外流量（MB）',
-    dataIndex: 'outPackage'
-  },
-    {
-    align: 'center',
-    title: '总金额',
-    dataIndex: 'cardaccount'
-  }
 ]
 export default {
   data() {
     return {
+      columns:columns,
       searchParam: {},
       sDate: [undefined, undefined],
       iccid:'',
+      usedAmount:0,
+      accrueUsedAmount:0,
       dataSource: [],
       pagination: {
         current: 1
       },
       loading: false,
-      userInfo: this.$store.getters.userInfo // 当前登录人
     }
   },
   methods: {
     init(iccid) {
       this.iccid=iccid
-      this.searchAction({iccid})
+      this.searchAction({iccId:iccid,current:1})
+      // 获取流量详情
+      getSimInformationFlow({iccId:iccid}).then(res=>{
+        if(res.code==200){
+          // 当前
+          this.usedAmount=res.data.usedAmount
+          // 累计
+          this.accrueUsedAmount=res.data.accrueUsedAmount
+        }else{
+          this.$message.warning(res.msg)
+        }
+      })
     },
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = false
-      getDeductionDetailList(_searchParam)
+      consumeDetailList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -127,9 +126,61 @@ export default {
       this.pagination = pager
       this.searchAction()
     },
-    sDateChange() {},
-    outPort() {},
-    handleTableChange() {}
+    sDateChange(data,dataStr) {
+      this.searchParam.beginDate=dataStr[0]
+      this.searchParam.endDate=dataStr[1]
+    },
+    // 导出
+    outPort() {
+      const downListParams=Object.assign({}, { ...this.searchParam },{iccId:this.iccid})
+       getSimInformationExportList(downListParams)
+        .then(res => {
+          this.loading = false
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            //const isFile = res.type === 'application/msword'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = '消费详情.xls'
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function(e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch(err => (this.loading = false))
+    },
   }
 }
 </script>

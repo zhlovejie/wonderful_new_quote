@@ -19,7 +19,7 @@
       <a-input placeholder="所属机构模糊查询" style="width: 160px" v-model="searchParam.orgName" />
       <a-input placeholder="所属设备模糊查询" style="width: 160px" v-model="searchParam.manId" />
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <a-button class="a-button" type="primary" icon="search" @click="advancedFilter">高级筛选</a-button>
       <a-button
         class="a-button"
@@ -30,7 +30,7 @@
     </div>
     <br />
     <div style="float:right;margin-bottom:20px;">
-      <a-button class="a-button" type="primary" @click="updateSimInfo" style="margin-right:10px;">更新SIM卡信息</a-button>
+      <!-- <a-button class="a-button" type="primary" @click="updateSimInfo" style="margin-right:10px;">更新SIM卡信息</a-button> -->
       <a-button class="a-button" type="primary" @click="inportInfo" style="margin-right:10px;">导入</a-button>
       <a-button class="a-button" type="primary" @click="addInfo">新增</a-button>
     </div>
@@ -182,7 +182,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
-      that.loading = false
+      that.loading = true
       getSimInformationList(_searchParam)
         .then(res => {
           that.loading = false

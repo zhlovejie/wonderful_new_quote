@@ -44,6 +44,7 @@ export default {
             detailFooter:null,
             showDetailFooter:false,
             spinning:false,
+            iccid:'',
         }
     },
     components:{
@@ -56,6 +57,7 @@ export default {
           this.visible=false
         },
         showInfo(iccid){
+          this.iccid=iccid
           this.visible=true
           this.$nextTick(()=>{
             this.$refs.baseInfo.init(iccid)
@@ -65,20 +67,21 @@ export default {
           switch (key) {
             case '1':
               // 基本信息
-              console.log('基本信息')
-              this.$refs.baseInfo.init(iccid)
+              this.$nextTick(()=>{
+                this.$refs.baseInfo.init(this.iccid)
+              })
               break;
             case '2':
               // 消费详情
-              console.log('消费信息')
-              this.$refs.chargeInfo.init(iccid)
-
+              this.$nextTick(()=>{
+                this.$refs.chargeInfo.init(this.iccid)
+              })
               break;
             case '3':
               // 扣费信息
-              console.log('扣费信息')
-              this.$refs.consumeInfo.init(iccid)
-
+              this.$nextTick(()=>{
+                this.$refs.consumeInfo.init(this.iccid)
+              })
               break;
           }
         },

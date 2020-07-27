@@ -18,7 +18,7 @@ export function addAndUpdateSimInformation (parameter) {
     baseURL: system.baseURL,
     url: '/SimInformation/sim-information/addAndUpdateSimInformation',
     method: 'post',
-    data: parameter
+    params: parameter
   })
 }
 
@@ -38,6 +38,7 @@ export function getSimInformationExportList (parameter) {
     baseURL: system.baseURL,
     url: '/consumptionDetail/consumption-detail/getSimInformationExportList',
     method: 'get',
+    responseType:'blob',
     params: parameter
   })
 }
@@ -68,6 +69,7 @@ export function getDeductionDetailExportList (parameter) {
     baseURL: system.baseURL,
     url: '/deductionDetail/deduction-detail/getDeductionDetailExportList',
     method: 'get',
+    responseType:'blob',
     params: parameter
   })
 }
@@ -79,5 +81,15 @@ export function getDeductionDetailList (parameter) {
     url: '/deductionDetail/deduction-detail/getDeductionDetailList',
     method: 'get',
     params: parameter
+  })
+}
+
+// 上传导入
+export function importSimCard (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/SimInformation/sim-information/importSimCard',
+    method: 'post',
+    data: parameter,
   })
 }

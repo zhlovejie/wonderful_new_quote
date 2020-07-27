@@ -7,32 +7,32 @@
     @cancel="handleCancel"
     :maskClosable="false"
   >
-    <div>
-      <span>文件:</span>
+    <template slot="footer">
+      <template>
+        <a-button key="back">取消</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="uploadHandle">上传</a-button>
+        <a-button key="down" type="primary" ><a href="https://www.delanshi.cn/images/cloud/20200727/物联网卡导入模板d358f92a-6ea8-47ae-a06b-7d2ff5cdea74.xls">下载模板</a></a-button>
+      </template>
+    </template>
+    <div class='uploadDiv'>
       <a-upload
         name="file"
-        :action="uploadUrl"
         :multiple="false"
+        uploading:false,
         :beforeUpload="beforeUpload"
         :fileList="fileList"
         class="uploadBtn"
       >
-        <a-button  type=primary block>
+        <a-button type="primary" >
           <a-icon type="upload" />点击上传文件
         </a-button>
       </a-upload>
     </div>
-    <template slot="footer">
-      <template>
-        <a-button key="back">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="uploadHandle" >上传</a-button>
-        <a-button key="down" type="primary"  @click="downMuban" >下载模板</a-button>
-      </template>
-    </template>
   </a-modal>
 </template>
 <script>
 import moment from 'moment'
+import { importSimCard } from '@/api/simCard'
 
 export default {
   name: 'icotcard-management-mycard-import',
@@ -41,11 +41,15 @@ export default {
       form: this.$form.createForm(this),
       visible: false,
       spinning: false,
-      uploadUrl:'',
       detail: {},
       record: {},
-      fileList:[],
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      fileList: [],
+      aceptFileTypes: [
+        '.xls',
+        '.xlsx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel',
+      ],
     }
   },
   methods: {
@@ -53,45 +57,40 @@ export default {
     showInport() {
       this.visible = true
     },
-    handleSubmit() {
-      let that = this
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-          //return
-          values.status = that.record.status || 0 //状态待审批
-          values.beginAreaId = that.beginAreaId //外层出发城市
-          values.routes = that.$_.cloneDeep(that.routesList).map(item => {
-            delete item._key
-            return item
-          })
-          that.spinning = true
-        }
-      })
-    },
     handleCancel() {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
     // 上传之前的钩子
-    beforeUpload(file){
-      this.fileList = [...this.fileList, file];
-      return false;
-    },
-    downMuban(){
-
-    },
-    uploadHandle(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList)
+    beforeUpload(file) {
+      let _aceptFileTypes = this.aceptFileTypes
+      const isDocType = _aceptFileTypes.includes(file.type)
+      if (!isDocType) {
+        this.$message.error('只支持上传.xls,.xlsx的Excel!')
       }
-      if (info.file.status === 'done') {
-        this.$message.success(`${info.file.name} file uploaded successfully`)
-      } else if (info.file.status === 'error') {
-        this.$message.error(`${info.file.name} file upload failed.`)
-      }
-    }
-  }
+      this.fileList = [file]
+      return false
+    },
+    downMuban() {},
+    uploadHandle() {
+      const { fileList } = this
+      const formData = new FormData()
+      fileList.forEach((file) => {
+        formData.append('file', file)
+      })
+      this.spinning = true
+      importSimCard(formData)
+      .then(res => {
+        this.fileList = [];
+        this.spinning = false;
+        this.$message.success(res.msg);
+      })
+      .catch((err) =>{
+        this.spinning = false
+        this.$message.success(res.msg)
+      })
+    },
+  },
 }
 </script>
 <style scoped>
@@ -110,9 +109,8 @@ export default {
 .custom-table-border td {
   padding: 5px 10px;
 }
-.uploadBtn{
-  position: absolute;
-  left:50%;
-  transform: translateX(-50%);
+.uploadDiv{
+  display: flex;
+  justify-content: center;
 }
 </style>

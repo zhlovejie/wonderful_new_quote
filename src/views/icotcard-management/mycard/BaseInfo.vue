@@ -7,60 +7,55 @@
           <a-button type="link" style="display:inline-block;" @click='changeForm'>修改</a-button>
         </div>
         <a-form-item label="卡号" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }" style="width：200px">
-          <a-input v-model="form.cardmsg.cardno" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['cardno',{initialValue:cardmsg.cardno}]" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="iccid" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-model="form.cardmsg.iccid" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['iccid',{initialValue:cardmsg.iccid}]" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="运营商" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-model="form.cardmsg.operatortype" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['operatortype',{initialValue:cardmsg.operatortype}]" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="卡状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-model="form.cardmsg.status" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['status',{initialValue:cardmsg.status}]" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="发卡日期">
-          <a-date-picker @change="startDateChange" :default-value="moment(form.cardmsg.saledate,'YYYY-MM-DD')" style="width:170px" ref='startDate'/>
+          <!-- :default-value="moment(cardmsg.saledate,'YYYY-MM-DD')" -->
+          <a-date-picker @change="startDateChange" v-decorator="['saledate',{initialValue:cardmsg.saledate ? moment(cardmsg.saledate,'YYYY-MM-DD') : undefined}]"   style="width:170px" ref='startDate'/>
         </a-form-item>
         <a-form-item label="激活日期">
-          <a-input style="width:170px"  v-model="form.cardmsg.activationdate" :readOnly="formreadOnly" />
+          <a-input style="width:170px"  v-model="cardmsg.activationdate" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="服务期止">
-          <a-date-picker @change="endDateChange" :default-value="moment(form.cardmsg.validdate,'YYYY-MM-DD')" style="width:170px" ref='endDate' />
+          <!-- :default-value="moment(cardmsg.validdate,'YYYY-MM-DD')" -->
+          <a-date-picker @change="endDateChange" v-decorator="['validdate',{initialValue:cardmsg.validdate ? moment(cardmsg.validdate,'YYYY-MM-DD') : undefined}]" style="width:170px" ref='endDate' />
         </a-form-item>
         <a-form-item label="活动状态">
-          <a-input v-model="form.cardmsg.activestatus" :readOnly="formreadOnly" style="width:170px" />
+          <a-input v-decorator="['activestatus',{initialValue:cardmsg.activestatus}]" :readOnly="formreadOnly" style="width:170px" />
         </a-form-item>
         <a-form-item label="卡内余额（元）">
-          <a-input placeholder="卡内余额" v-model="form.cardmsg.cardaccount" style="width:170px" :readOnly="formreadOnly" />
+          <a-input placeholder="卡内余额" v-decorator="['cardaccount',{initialValue:cardmsg.cardaccount}]" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <h3 style="font-weight:600">套餐信息</h3>
-        <table class='baseDetail-table'>
-          <tr>
-            <td>套餐名称</td>
-            <td>类型</td>
-            <td>开始时间</td>
-            <td>结束时间</td>
-          </tr>
-          <tr>
-            <td>200M/</td>
-            <td>流量</td>
-            <td>开始时间</td>
-            <td>结束时间</td>
-          </tr>
-        </table>
-        <a-progress :strokeWidth=8 :percent="30" style="margin:20px 0"/>
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="false"
+        >
+        <div slot="packType">流量</div>
+        </a-table>
+        <a-progress :strokeWidth=8 :percent="usedNo" style="margin:20px 0"/>
         <h3 style="font-weight:600">卡所属信息</h3>
         <a-form-item label="所属机构">
-          <a-input v-model="form.cardmsg.orgName" :readOnly="formreadOnly" />
+          <a-input v-decorator="['orgName',{initialValue:cardmsg.orgName}]" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="所属设备">
-          <a-input v-model="form.cardmsg.manId" :readOnly="formreadOnly" />
+          <a-input v-decorator="['manId',{initialValue:cardmsg.manId}]" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="出厂日期">
-          <a-input v-model="form.cardmsg.outTime" :readOnly="formreadOnly" />
+          <a-input v-decorator="['outTime',{initialValue:cardmsg.outTime}]" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="SIM卡有限期">
-          <a-input v-model="form.cardmsg.beOverdueTime" :readOnly="formreadOnly" />
+          <a-input v-decorator="['beOverdueTime',{initialValue:cardmsg.beOverdueTime}]" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item style="float:right">
             <a-button type="primary" v-if="showBtn" @click="updateSimInfo">
@@ -75,33 +70,71 @@
 <script>
 import {addAndUpdateSimInformation,basicInformation} from '@/api/simCard'
 import moment from 'moment';
+const columns=[
+  {
+    align: 'center',
+    title: '套餐名称',
+    dataIndex: 'ptype',
+  },
+  {
+    align: 'center',
+    title: '类型',
+    dataIndex: 'packType',
+    scopedSlots: { customRender: 'packType' }
+  },
+  {
+    align: 'center',
+    title: '开始时间',
+    dataIndex: 'enableTime',
+  },
+  {
+    align: 'center',
+    title: '结束时间',
+    dataIndex: 'failureTime',
+  },
+]
 export default {
   data() {
     return {
       spinning: false,
       formreadOnly:true,
-      form: {},
+      columns: columns,
+      dataSource: [],
+      form: this.$form.createForm(this),
+      cardmsg:{},
       // 发卡日期
-      saledate:undefined,
+      saledate:'',
+      defaultStart:moment(this.saledate, 'YYYY-MM-DD'),
       // 截止日期
-      validdate:undefined,
+      validdate:'',
       showBtn:false,
       iccid:'',
+      usedNo:0,
     }
   },
   methods:{
+    // 流量使用占比 a使用量 b总量
+    usedFlow(a,b){
+      return a/b*100
+    },
     moment,
     init(iccid){
       this.iccid=iccid
+      this.spinning=true
       basicInformation({iccid}).then(res=>{
         if(res.code==200){
-          const result=res.data
-          if(result.cardmsg===null){
-            this.form=Object.assign({})
-          }else{
-            this.form=result
-          }
+          this.spinning=false
+          const packagemsg=res.data.packagemsg
+          this.cardmsg=res.data.cardmsg
+          this.saledate=res.data.cardmsg.saledate
+          this.validdate=res.data.cardmsg.validdate
+          this.dataSource=packagemsg.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          this.usedNo=this.usedFlow(packagemsg.used,packagemsg.total)
         }else{
+          this.spinning=false
           this.$message.warning(res.msg)
         }
       })
