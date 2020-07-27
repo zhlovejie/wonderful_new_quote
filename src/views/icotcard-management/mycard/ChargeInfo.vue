@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import {getDeductionDetailList, getDeductionDetailExportList} from '@/api/simCard'
 const columns = [
   {
     align: 'center',
@@ -51,33 +52,33 @@ const columns = [
   },
   {
     align: 'center',
-    title: '卡号',
-    dataIndex: 'cardNum'
+    title: 'iccid',
+    dataIndex: 'iccid'
   },
   {
     align: 'center',
     title: '运营商',
-    dataIndex: 'beginDate'
+    dataIndex: 'operatortype'
   },
   {
     align: 'center',
     title: '扣费周期',
-    dataIndex: 'endDate'
+    dataIndex: 'deductionDate'
   },
   {
     align: 'center',
     title: '流量用量（MB）',
-    dataIndex: 'endDate'
+    dataIndex: 'usedAmount'
   },
   {
     align: 'center',
     title: '套餐外流量（MB）',
-    dataIndex: 'endDate'
+    dataIndex: 'outPackage'
   },
     {
     align: 'center',
     title: '总金额',
-    dataIndex: 'endDate'
+    dataIndex: 'cardaccount'
   }
 ]
 export default {
@@ -85,6 +86,7 @@ export default {
     return {
       searchParam: {},
       sDate: [undefined, undefined],
+      iccid:'',
       dataSource: [],
       pagination: {
         current: 1
@@ -94,6 +96,37 @@ export default {
     }
   },
   methods: {
+    init(iccid) {
+      this.iccid=iccid
+      this.searchAction({iccid})
+    },
+    searchAction(opt) {
+      let that = this
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
+      console.log('执行搜索...', _searchParam)
+      that.loading = false
+      getDeductionDetailList(_searchParam)
+        .then(res => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+        })
+        .catch(err => (that.loading = false))
+    },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction()
+    },
     sDateChange() {},
     outPort() {},
     handleTableChange() {}

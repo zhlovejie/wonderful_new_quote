@@ -2,12 +2,12 @@
 <template>
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="卡号模糊查询" style="width: 160px" v-model="searchParam.cardNum" />
+      <a-input placeholder="卡号/iccid模糊查询" style="width: 160px" v-model="cardnoOrIccid" :allowClear="true" />
 
       <a-select
         placeholder="卡状态" 
         @change="postChangeHandler"
-        v-model="searchParam.stationId"
+        v-model="searchParam.status"
         :allowClear="true"
         style="width: 160px"
       >
@@ -16,8 +16,8 @@
         <a-select-option value="停机">停机</a-select-option>
       </a-select>
 
-      <a-input placeholder="所属机构模糊查询" style="width: 160px" v-model="searchParam.belondCompany" />
-      <a-input placeholder="主板号模糊查询" style="width: 160px" v-model="searchParam.beloneDevice" />
+      <a-input placeholder="所属机构模糊查询" style="width: 160px" v-model="searchParam.orgName" />
+      <a-input placeholder="所属设备模糊查询" style="width: 160px" v-model="searchParam.manId" />
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
       <a-button class="a-button" type="primary" icon="search" @click="advancedFilter">高级筛选</a-button>
@@ -25,7 +25,7 @@
         class="a-button"
         type="primary"
         icon="download"
-        @click="doAction('download',null)"
+        @click="down"
       >下载</a-button>
     </div>
     <br />
@@ -43,7 +43,7 @@
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
-        <div slot="iccid" slot-scope="text, record">
+        <div slot="cardno" slot-scope="text, record">
           <a-button type="link" @click="showInfo(record)">{{text}}</a-button>
         </div>
       </a-table>
@@ -80,7 +80,6 @@ const columns = [
     align: 'center',
     title: 'iccid',
     dataIndex: 'iccid',
-    scopedSlots: { customRender: 'iccid' }
   },
   {
     align: 'center',
@@ -152,6 +151,7 @@ export default {
       loading: false,
       searchParam: {},
       visible: false,
+      cardnoOrIccid:'',
     }
   },
   computed: {},
@@ -171,6 +171,15 @@ export default {
     },
     searchAction(opt) {
       let that = this
+      //  判断是卡号还是iccid
+      if(this.cardnoOrIccid){
+        if(this.cardnoOrIccid.length>13){
+          this.searchParam.iccid=this.cardnoOrIccid
+          this.searchParam.cardno=''
+        }else{
+          this.searchParam.cardno=this.cardnoOrIccid
+        }
+      }
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = false
@@ -207,6 +216,10 @@ export default {
     // 更新SIM卡
     updateSimInfo(){
 
+    },
+    // 下载
+    down(){
+      
     },
     // 导入
     inportInfo(){

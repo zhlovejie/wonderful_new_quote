@@ -7,31 +7,31 @@
           <a-button type="link" style="display:inline-block;" @click='changeForm'>修改</a-button>
         </div>
         <a-form-item label="卡号" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }" style="width：200px">
-          <a-input v-model="form.cardno" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.cardno" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="iccid" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-model="form.iccid" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.iccid" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="运营商" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-model="form.operatortype" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.operatortype" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="卡状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-model="form.status" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.status" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="发卡日期">
-          <a-date-picker @change="startDateChange" v-model="form.saledate" style="width:170px" ref='startDate'/>
+          <a-date-picker @change="startDateChange" :default-value="moment(form.cardmsg.saledate,'YYYY-MM-DD')" style="width:170px" ref='startDate'/>
         </a-form-item>
         <a-form-item label="激活日期">
-          <a-input style="width:170px" v-model="form.activationdate" :readOnly="formreadOnly" />
+          <a-input style="width:170px"  v-model="form.cardmsg.activationdate" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="服务期止">
-          <a-date-picker @change="endDateChange" v-model="form.validdate" style="width:170px" ref='endDate' />
+          <a-date-picker @change="endDateChange" :default-value="moment(form.cardmsg.validdate,'YYYY-MM-DD')" style="width:170px" ref='endDate' />
         </a-form-item>
         <a-form-item label="活动状态">
-          <a-input v-model="form.activestatus" :readOnly="formreadOnly" style="width:170px" />
+          <a-input v-model="form.cardmsg.activestatus" :readOnly="formreadOnly" style="width:170px" />
         </a-form-item>
         <a-form-item label="卡内余额（元）">
-          <a-input placeholder="卡内余额" v-model="form.cardaccount" style="width:170px" :readOnly="formreadOnly" />
+          <a-input placeholder="卡内余额" v-model="form.cardmsg.cardaccount" style="width:170px" :readOnly="formreadOnly" />
         </a-form-item>
         <h3 style="font-weight:600">套餐信息</h3>
         <table class='baseDetail-table'>
@@ -51,16 +51,16 @@
         <a-progress :strokeWidth=8 :percent="30" style="margin:20px 0"/>
         <h3 style="font-weight:600">卡所属信息</h3>
         <a-form-item label="所属机构">
-          <a-input v-model="form.orgName" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.orgName" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="所属设备">
-          <a-input v-model="form.manId" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.manId" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="出厂日期">
-          <a-input v-model="form.outTime" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.outTime" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="SIM卡有限期">
-          <a-input v-model="form.beOverdueTime" :readOnly="formreadOnly" />
+          <a-input v-model="form.cardmsg.beOverdueTime" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item style="float:right">
             <a-button type="primary" v-if="showBtn" @click="updateSimInfo">
@@ -73,7 +73,8 @@
 </template>
 
 <script>
-import {addAndUpdateSimInformation,crrQueryCard} from '@/api/simCard'
+import {addAndUpdateSimInformation,basicInformation} from '@/api/simCard'
+import moment from 'moment';
 export default {
   data() {
     return {
@@ -85,15 +86,21 @@ export default {
       // 截止日期
       validdate:undefined,
       showBtn:false,
-      iccId:'',
+      iccid:'',
     }
   },
   methods:{
-    init(iccId){
-      this.iccId=iccId
-      crrQueryCard({iccId}).then(res=>{
+    moment,
+    init(iccid){
+      this.iccid=iccid
+      basicInformation({iccid}).then(res=>{
         if(res.code==200){
-          this.form=res.data
+          const result=res.data
+          if(result.cardmsg===null){
+            this.form=Object.assign({})
+          }else{
+            this.form=result
+          }
         }else{
           this.$message.warning(res.msg)
         }
@@ -112,7 +119,7 @@ export default {
     },
     updateSimInfo(){
       const params={}
-      params.iccid=this.iccId
+      params.iccid=this.iccid
       params.saledate=this.saledate
       params.validdate=this.validdate
       this.spinning=true

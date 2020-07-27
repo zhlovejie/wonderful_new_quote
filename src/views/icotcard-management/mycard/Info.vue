@@ -17,15 +17,15 @@
         >保存</a-button>
       </template>
     </template>
-    <a-tabs type="card" default-active-key="1">
+    <a-tabs type="card" default-active-key="1" @change=changeTabs>
       <a-tab-pane key="1" tab="基本信息">
         <BaseInfo ref="baseInfo" />
       </a-tab-pane>
       <a-tab-pane key="2" tab="消费详情">
-        <ChargeInfo />
+        <ChargeInfo ref="chargeInfo" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="扣费信息">
-        <ConsumeInfo />
+        <ConsumeInfo ref="consumeInfo" />
       </a-tab-pane>
     </a-tabs>
 
@@ -60,7 +60,28 @@ export default {
           this.$nextTick(()=>{
             this.$refs.baseInfo.init(iccid)
           })
-        }
+        },
+        changeTabs(key){
+          switch (key) {
+            case '1':
+              // 基本信息
+              console.log('基本信息')
+              this.$refs.baseInfo.init(iccid)
+              break;
+            case '2':
+              // 消费详情
+              console.log('消费信息')
+              this.$refs.chargeInfo.init(iccid)
+
+              break;
+            case '3':
+              // 扣费信息
+              console.log('扣费信息')
+              this.$refs.consumeInfo.init(iccid)
+
+              break;
+          }
+        },
     }
 }
 </script>

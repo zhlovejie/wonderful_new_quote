@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import {getSimInformationExportList, consumeDetailList} from '@/api/simCard'
+
 const columns = [
   {
     align: 'center',
@@ -51,18 +53,18 @@ const columns = [
   },
   {
     align: 'center',
-    title: '卡号',
-    dataIndex: 'cardNum'
+    title: 'iccid',
+    dataIndex: 'iccid'
   },
   {
     align: 'center',
     title: '使用日期',
-    dataIndex: 'beginDate'
+    dataIndex: 'usedDate'
   },
   {
     align: 'center',
     title: '流量用量（MB）',
-    dataIndex: 'endDate'
+    dataIndex: 'usedAmount'
   }
 ]
 export default {
@@ -74,11 +76,43 @@ export default {
       pagination: {
         current: 1
       },
+      iccid:'',
       loading: false,
       userInfo: this.$store.getters.userInfo // 当前登录人
     }
   },
   methods: {
+    init(iccid) {
+      this.iccid=iccid
+      this.searchAction({iccid})
+    },
+    searchAction(opt) {
+      let that = this
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
+      console.log('执行搜索...', _searchParam)
+      that.loading = false
+      consumeDetailList(_searchParam)
+        .then(res => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+        })
+        .catch(err => (that.loading = false))
+    },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction()
+    },
     sDateChange() {},
     outPort() {},
     handleTableChange() {}
