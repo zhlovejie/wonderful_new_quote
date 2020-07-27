@@ -6,6 +6,7 @@
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
+    :class="{'ant-modal_no_footer':isView}"
   >
     <template slot="footer">
       <template v-if="isApproval">
@@ -99,23 +100,23 @@
                 >
                 
                   <!-- 管理人员 -->
-                  <a-select-opt-group label="管理人员">
+                  <!-- <a-select-opt-group label="管理人员">
                   <a-select-option
                     v-for="item in depList.filter(item=>item.parentId===4)"
                     :key="item.id"
                     :value="item.id"
                   >{{item.departmentName}}</a-select-option>
-                  </a-select-opt-group>
+                  </a-select-opt-group> -->
                   <!-- 车间人员 -->
-                  <a-select-opt-group label="车间人员">
+                  <!-- <a-select-opt-group label="车间人员"> -->
                   <a-select-option
-                    v-for="item in depList.filter(item=>item.parentId!==4)"
+                    v-for="item in depList"
                     :key="item.id"
                     :value="item.id"
                   >{{item.departmentName}}</a-select-option>
-                  </a-select-opt-group>
+                  <!-- </a-select-opt-group> -->
                 </a-select>
-                <a-button @click="useDepartmentsCheckAll">全选/反选</a-button>
+                <a-button @click="useDepartmentsCheckAll">全选</a-button>
                 </div>
                 <span class="word-break" v-else>{{detail.useDepartmentName}}</span>
               </a-form-item>
@@ -131,7 +132,7 @@
                   :rows="2"
                   v-decorator="['informContent', {  initialValue:detail.informContent,rules: [{ required: true, message: '请输入通知信息' }] }]"
                 />
-                <span class="word-break" v-else>{{detail.informContent}}</span>  
+                <div v-else class="word-break" v-html="formatHTML(detail.informContent)" ></div>  
               </a-form-item>
               
             </td>
@@ -326,10 +327,15 @@ export default {
       let that = this
       that.$nextTick(() => {
         let { beginDate, endDate } = that.form.getFieldsValue(['beginDate', 'endDate'])
+        if(beginDate > endDate){
+          that.$message.info('结束时间必须大于开始时间')
+          that.form.setFieldsValue({endDate:undefined})
+          return
+        }
         if (beginDate instanceof moment && endDate instanceof moment) {
           let s = moment(beginDate.format('YYYY-MM-DD'))
           let e = moment(endDate.format('YYYY-MM-DD'))
-          that.diffDate = e.diff(s, 'days')
+          that.diffDate = e.diff(s, 'days') + 1
         }
       })
     },
@@ -340,14 +346,27 @@ export default {
       this.changeRestDate = dateList
     },
     useDepartmentsCheckAll(){
-      //this.useDepartmentsOpen = true
-      this.useDepartmentsToggleFlag = !this.useDepartmentsToggleFlag
-      this.form.setFieldsValue({
-        useDepartments:this.useDepartmentsToggleFlag ? this.depList.map(item =>item.id) : []
-      }) 
+      let that = this
+      //that.useDepartmentsToggleFlag = !that.useDepartmentsToggleFlag
+      that.$nextTick(() =>{
+        let useDepartments = that.form.getFieldValue('useDepartments') || []
+        let all = that.depList.map(item =>item.id)
+        //let unAll = all.filter(val => !useDepartments.includes(val))
+        that.form.setFieldsValue({
+          useDepartments:all
+        }) 
+      })
     },
     useDepartmentsChange(type){
       this.useDepartmentsOpen = type === 'focus'
+    },
+    formatHTML(htmlStr){
+      if(typeof htmlStr !== 'string') {
+        return ''
+      }
+      htmlStr = htmlStr.replace(/[\n\r]/g,'<br/>')
+      htmlStr = htmlStr.replace(/\s+/g,'&nbsp;')
+      return htmlStr
     }
   }
 }

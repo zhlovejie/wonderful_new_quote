@@ -7,6 +7,7 @@
     @ok="handleSubmit"
     @cancel="handleCancel"
     :maskClosable="false"
+    :class="{'ant-modal_no_footer':isView}"
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
@@ -38,8 +39,13 @@
                   :allowClear="true"
                   style="width:100%;"
                 >
-                  <a-select-option :value="1">可以多次申请</a-select-option>
-                  <a-select-option :value="0">不可以多次申请</a-select-option>
+                  <!-- <a-select-option :value="1">可以多次申请</a-select-option>
+                  <a-select-option :value="0">不可以多次申请</a-select-option> -->
+                  <a-select-option :value="1">调休</a-select-option>
+                  <a-select-option :value="2">年假</a-select-option>
+                  <a-select-option :value="3">事假</a-select-option>
+                  <a-select-option :value="4">法定假日(只能请一次)</a-select-option>
+                  <a-select-option :value="5">法定假日(能请多次)</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -140,7 +146,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.0.workYearsBegin', {rules: [{ required: true, message: '请输入入职年限' }]}]"
-                      @keyup="checkWorkYears"
+                      @keyup="checkWorkYearsDebounce"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -152,7 +158,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.0.workYearsEnd', {rules: [{ required: true, message: '请输入入职年限' }]}]"
-                      @keyup="checkWorkYears"
+                      @keyup="checkWorkYearsDebounce"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -179,7 +185,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.1.workYearsBegin', {rules: [{ required: true, message: '请输入入职年限' }]}]"
-                      @keyup="checkWorkYears"
+                      @keyup="checkWorkYearsDebounce"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -191,7 +197,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.1.workYearsEnd', {rules: [{ required: true, message: '请输入入职年限' }]}]"
-                      @keyup="checkWorkYears"
+                      @keyup="checkWorkYearsDebounce"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -218,7 +224,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.2.workYearsBegin', {rules: [{ required: true, message: '请输入入职年限' }]}]"
-                      @keyup="checkWorkYears"
+                      @keyup="checkWorkYearsDebounce"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -230,7 +236,7 @@
                       :max="100"
                       :step="1"
                       v-decorator="['holidayProvideRuleList.2.workYearsEnd', {rules: [{ required: true, message: '请输入入职年限' }]}]"
-                      @keyup="checkWorkYears"
+                      @keyup="checkWorkYearsDebounce"
                     />
                   </a-form-item>
                   <a-form-item>
@@ -286,8 +292,12 @@ export default {
       spinning: false,
       holidayCaculatorType:undefined,
       balanceIssuingMethod: undefined,
-      userRemain: false
+      userRemain: false,
+      checkWorkYearsDebounce:null
     }
+  },
+  mounted(){
+    this.checkWorkYearsDebounce = this.$_.debounce(this.checkWorkYears,500)
   },
   computed: {
     modalTitle() {
@@ -387,11 +397,13 @@ export default {
       this.holidayCaculatorType = val
     },
     checkWorkYears(){
+      
       //检测输入年假入职年限
       //规则如下：右侧的必须大于左侧值，下面值必须大于上面的值
       let that = this
       return new Promise((resovle,reject) =>{
         that.$nextTick(() =>{
+          debugger
           let status = true
           let res = that.form.getFieldsValue(['holidayProvideRuleList'])
           if(res && res.holidayProvideRuleList){
@@ -400,8 +412,8 @@ export default {
             for(let i=0,len = list.length;i<len;i++){
               let current = list[i]
               if(
-                current.workYearsBegin !== undefined && 
-                current.workYearsEnd !== undefined &&  
+                current.workYearsBegin !== null && 
+                current.workYearsEnd !== null &&  
                 +current.workYearsBegin >= +current.workYearsEnd
               ){
                 status = false
@@ -410,8 +422,8 @@ export default {
               if(i > 0){
                 let prev = list[i - 1]
                 if(
-                    current.workYearsBegin !== undefined && 
-                    prev.workYearsEnd !== undefined &&
+                    current.workYearsBegin !== null && 
+                    prev.workYearsEnd !== null &&
                     current.workYearsBegin < prev.workYearsEnd
                 ){
                   status = false
@@ -426,7 +438,7 @@ export default {
           resovle(status)
         })
       })
-    }
+    },
   }
 }
 </script>

@@ -21,7 +21,7 @@
                 format="MM-DD"
                 style="width:100%;"
                 :allowClear="true"
-
+                :disabledDate="disabledDate"
                 @change="sdateChange"
               />
             </a-form-item>
@@ -128,6 +128,11 @@ export default {
       }
     },
     moment,
+    disabledDate(currentDate){
+      let startDate = moment().startOf('year')
+      let endDate = moment().endOf('year')
+      return currentDate < startDate || currentDate > endDate
+    },
     query(type, record) {
       
       let that = this

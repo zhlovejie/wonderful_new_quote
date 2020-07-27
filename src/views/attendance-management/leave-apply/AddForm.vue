@@ -5,7 +5,8 @@
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
-    :maskClosable="false"
+    :maskClosable="false" 
+    :class="{'ant-modal_no_footer':isView}"
   >
     <template slot="footer">
       <template v-if="isApproval">
@@ -58,17 +59,13 @@
               <a-form-item>
                 <a-date-picker
                   v-if="!isDisabled"
-                  format="YYYY-MM-DD HH:mm:ss"
-                  :show-time="{ 
-                    defaultValue: moment('00:00:00', 'HH:mm:ss'),
-                    minuteStep:30,
-                    secondStep:60
-                  }"
+                  :format="dateFormat"
+                  :show-time="showTime"
                   v-decorator="['beginTime',{initialValue:detail.beginTime ? moment(detail.beginTime) : undefined,rules: [{required: true,message: '请选择开始时间'}]}]"
                   @change="datePickerChange"
                   style="width:100%;"
                 />
-                <span v-else>{{detail.beginTime}}</span>
+                <span v-else>{{+detail.holidayUnitType === 1 ? detail.beginTime.slice(0,10) : detail.beginTime}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -78,18 +75,14 @@
               <a-form-item>
                 <a-date-picker
                   v-if="!isDisabled"
-                  format="YYYY-MM-DD HH:mm:ss"
+                  :format="dateFormat"
                   :disabled-date="disabledDate"
-                  :show-time="{ 
-                    defaultValue: moment('00:00:00', 'HH:mm:ss'),
-                    minuteStep:30,
-                    secondStep:60
-                  }"
+                  :show-time="showTime"
                   v-decorator="['endTime',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择结束时间'}]}]"
                   style="width:100%;"
                   @change="datePickerChange"
                 />
-                <span v-else>{{detail.endTime}}</span>
+                <span v-else>{{+detail.holidayUnitType === 1 ? detail.endTime.slice(0,10) : detail.endTime}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -97,7 +90,7 @@
           <tr>
             <td style="width:120px;">时长</td>
             <td>
-              <a-form-item>{{leaveTime}}</a-form-item>
+              <a-form-item>{{leaveTime}}{{holidayTarget ? {1:'天',3:'小时'}[holidayTarget.holidayUnitType] || '' : ''}}</a-form-item>
             </td>
           </tr>
           <tr v-if="isYearHolidayOrLeaveHoliday">
@@ -124,12 +117,12 @@
           <tr>
             <td style="width:120px;">上传凭证</td>
             <td style="text-align:left;">
-              <div class="clearfix" style="width:400px;overflow:auto;">
+              <div class="clearfix" style="width:400px;overflow:hidden;">
                 <a-upload
                   v-if="!isDisabled"
                   name="file"
                   :action="uploadPath"
-                  :multiple="true"
+                  :multiple="false"
                   :fileList="fileList"
                   @change="handleChange"
                 >
@@ -138,7 +131,11 @@
 
                 <div v-else>
                   <div v-for="f in fileList" :key="f.uid">
-                    <a :href="f.url" target="_blank">{{f.name}}</a>
+                    <!-- <a :href="f.url" target="_blank">{{f.name}}</a> -->
+                    <img @click="() => previewVisible = true" alt="上传凭证" class="picture-card" :src="f.url" />
+                    <a-modal :visible="previewVisible" :footer="null" @cancel="() => previewVisible = false">
+                      <img alt="上传凭证" style="width: 100%" :src="f.url" />
+                    </a-modal>
                   </div>
                 </div>
               </div>
@@ -147,6 +144,8 @@
         </table>
       </a-form>
     </a-spin>
+
+    
     <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
 </template>
@@ -196,6 +195,7 @@ export default {
       isHolidayUsed: false, //是否已有该类型的请假单
       isYearHolidayOrLeaveHoliday: false, //年假或调休
       requireUpload:false, //婚假必须上次结婚证书
+      previewVisible:false
     }
   },
   computed: {
@@ -222,11 +222,36 @@ export default {
     isLeaveTimeThanUserRestHours() {
       //年假 调休 请假时长大于 可以调休时长
       return this.isYearHolidayOrLeaveHoliday && this.leaveTime > this.userRestHours
+    },
+    showTime(){
+      if(this.holidayTarget){
+        if(+this.holidayTarget.holidayCaculatorType === 2){
+          return false
+        }else if(+this.holidayTarget.holidayCaculatorType === 1){
+          return { 
+            defaultValue: moment('00:00:00', 'HH:mm:ss'),
+            minuteStep:30,
+            secondStep:60
+          }
+        }
+      }
+      return false
+    },
+    dateFormat(){
+      if(this.holidayTarget){
+        debugger
+        if(+this.holidayTarget.holidayCaculatorType === 2){
+          return 'YYYY-MM-DD'
+        }else if(+this.holidayTarget.holidayCaculatorType === 1){
+          return 'YYYY-MM-DD HH:mm:ss'
+        }
+      }
+      return 'YYYY-MM-DD'
     }
   },
   watch: {
     isLeaveTimeThanUserRestHours(res) {
-      if (res) {
+      if (res && (this.isAdd || this.isEdit)) {
         this.$message.info('请假时长大于可以调休时长，禁止操作')
       }
     }
@@ -250,7 +275,7 @@ export default {
         this.holidayTarget.legalDuration > 0 
       ){
 
-        return current < beginTime || current >= beginTime.clone().add(+this.holidayTarget.legalDuration,'days')
+        return current <= beginTime || current >= beginTime.clone().add(+this.holidayTarget.legalDuration,'days')
       }
       return false
     },
@@ -261,6 +286,7 @@ export default {
         endTime: undefined
       })
       that.leaveTime = 0
+      that.userRestHours = 0
 
       let target = that.holidayList.find(item => +item.id === +val)
       if (!target) {
@@ -273,9 +299,10 @@ export default {
       }
 
       that.holidayTarget = Object.assign({},target)
-
+      //目前婚假需要上传凭证
       that.requireUpload = that.holidayTarget.holidayName === '婚假'
 
+      //4、法定假日（只能请一次）
       if (+target.holidayType === 4) {
         attenceLeaveApplyCheckHolidayUsed({
           holidayId: target.id,
@@ -289,8 +316,8 @@ export default {
         })
       }
 
-      //年假 调休
-      if ([1,2].includes(+target.holidayType)) {
+      //是否启用假期余额
+      if (+target.userRemain === 1) {
         that.isYearHolidayOrLeaveHoliday = true
         attenceLeaveApplyUserRestHoursRecord({
           hourType: target.holidayType,
@@ -313,7 +340,8 @@ export default {
           attenceLeaveApplyComputeLeaveTime({
             beginTime,
             endTime,
-            userId: that.record.createdId || that.userInfo.id
+            holidayCaculatorType:that.holidayTarget.holidayCaculatorType,
+            holidayUnitType:that.holidayTarget.holidayUnitType,
           }).then(res => {
             that.leaveTime = res.data || 0
           })
@@ -334,7 +362,7 @@ export default {
       that.holidayList = []
       that.isHolidayUsed = false
       that.isYearHolidayOrLeaveHoliday = false //年假或调休
-
+      that.holidayTarget = null
       that.form.resetFields()
       await that.init()
       that.visible = true
@@ -342,11 +370,16 @@ export default {
         that.detail = {}
         return
       }
-      attenceLeaveApplyDetail({ id: record.id }).then(res => {
+      await attenceLeaveApplyDetail({ id: record.id }).then(res => {
         //debugger
         let data = res.data
         that.detail = { ...data }
 
+        let holidayTarget = that.holidayList.find(item => +item.id === +that.detail.holidayId)
+        if(holidayTarget){
+          that.holidayTarget = Object.assign({},holidayTarget)
+        }
+        
         that.isYearHolidayOrLeaveHoliday = ['年假', '调休'].includes(that.detail.holidayName)
 
         that.leaveTime = that.detail.leaveTime
@@ -360,6 +393,16 @@ export default {
               status: 'done',
               url: url
             }
+          })
+        }
+
+        if(data.userRemain && data.userRemain === 1){
+          attenceLeaveApplyUserRestHoursRecord({
+            hourType: that.holidayTarget.holidayType,
+            userId: that.record.createdId || that.userInfo.id
+          }).then(res => {
+            console.log(res)
+            that.userRestHours = res.data ? res.data.remainHours : 0
           })
         }
       })
@@ -389,8 +432,11 @@ export default {
 
           let target = that.holidayList.find(item => +item.id === +values.holidayId)
           if (target) {
+            debugger
             console.log('请假类型 =>', target)
             values.holidayName = target.holidayName
+            values.holidayType = target.holidayType
+            values.holidayUnitType = target.holidayUnitType
             //values.holidayCode = target.holidayCode
           } else {
             console.log('未找到请假类型')
@@ -460,6 +506,7 @@ export default {
     handleChange(info) {
       console.log(arguments)
       let fileList = [...info.fileList]
+      fileList = fileList.slice(-1)
       fileList = fileList.map(file => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
@@ -487,5 +534,16 @@ export default {
 .custom-table-border td {
   padding: 5px 10px;
   text-align: left;
+}
+
+
+.picture-card{
+  position: relative;
+  height: 66px;
+  padding: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #ddd;
 }
 </style>

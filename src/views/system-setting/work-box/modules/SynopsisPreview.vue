@@ -7,7 +7,11 @@
     :footer="null"
     :maskClosable="false"
   >
-    <a-button @click="getPDF()" type="primary">导出成PDF</a-button>
+    <a-row>
+      <a-col :span="24">
+        <a-button style="float:right;" @click="getPDF()" type="primary">导出成PDF</a-button>
+      </a-col>
+    </a-row>
     <div class="table-page-search-wrapper" id="pdfDom">
       <a-form :form="form">
         <a-row :gutter="24">
@@ -26,7 +30,7 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :md="24" :sm="24">
-            <a-form-item label="图片" style="text-align: right;">
+            <a-form-item label="图片">
               <img style="width: 25%;max-width:128px;" :src="enterpriseSynopsis.url" />
             </a-form-item>
           </a-col>

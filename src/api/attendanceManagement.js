@@ -535,6 +535,17 @@ export function resignApplyWithdraw (parameter) {
 
 //---------------------出差申请-----------------------
 
+/**查询当前登录人最新的卡号 */
+export function attenceTravelApplyGetNewstAccount (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceTravelApply/getNewstAccount',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 /**添加行程 */
 export function attenceTravelRouteAdd (parameter) {
   return axios({

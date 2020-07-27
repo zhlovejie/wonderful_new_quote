@@ -87,7 +87,7 @@
           <a
             href="javascript:void(0);"
             @click="approvalPreview(record)"
-          >{{ {0:'待提交',1:'待审批',2:'通过',3:'不通过',4:'已撤回'}[text] || '未知' }}</a>
+          >{{ {0:'待提交',1:'待审批',2:'通过',3:'不通过',4:'已作废'}[text] || '未知' }}</a>
         </div>
         <div slot="financeStatus" slot-scope="text, record">
           <a
@@ -103,7 +103,7 @@
         >{{ Array.isArray(record.users) ? record.users.map(item =>item.userName).join(',') : '-'}}</div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          
+
           <template v-if="+activeKey === 1">
             <a type="primary" @click="doAction('approval',record)">审批</a>
           </template>
@@ -143,6 +143,13 @@
               <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
             </template>
 
+            <!--查看 修改:只添加行程 -->
+            <template v-if="+record.status === 2">
+              <a-divider type="vertical" />
+              <a type="primary" target="_blank" :href="record.travelUrl">下载pdf</a>
+            </template>
+
+
           </template>
         </div>
       </a-table>
@@ -150,7 +157,7 @@
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction({current:1})" />
     <AddRoute ref="addRoute" />
-    
+
     <FinanceForm ref="financeForm" @finish="searchAction({current:1})" />
   </div>
 </template>
@@ -173,59 +180,6 @@ import AddRoute from './AddRoute'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { getDictionaryList } from '@/api/workBox'
-const columns = [
-  {
-    align: 'center',
-    title: '序号',
-    key: 'order',
-    width: '70px',
-    scopedSlots: { customRender: 'order' }
-  },
-  {
-    align: 'center',
-    title: '出差人员',
-    scopedSlots: { customRender: 'travelUsers' }
-  },
-  {
-    align: 'center',
-    title: '出差类型',
-    dataIndex: 'travelType',
-    scopedSlots: { customRender: 'travelType' }
-  },
-  {
-    align: 'center',
-    title: '开始时间',
-    dataIndex: 'startTime'
-  },
-  {
-    align: 'center',
-    title: '完结时间',
-    dataIndex: 'endTime'
-  },
-  {
-    align: 'center',
-    title: '出发城市',
-    dataIndex: 'beginAreaName'
-  },
-  {
-    align: 'center',
-    title: '审批状态',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
-  },
-  {
-    align: 'center',
-    title: '财务状态',
-    dataIndex: 'financeStatus',
-    scopedSlots: { customRender: 'financeStatus' }
-  },
-  {
-    align: 'center',
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
-]
 
 export default {
   name: 'business-trip-apply-list',
@@ -237,7 +191,6 @@ export default {
   },
   data() {
     return {
-      columns: columns,
       dataSource: [],
       pagination: {
         current: 1
@@ -250,6 +203,72 @@ export default {
       vehicleList: [],
       bindEnterFn: null,
       userInfo: this.$store.getters.userInfo // 当前登录人
+    }
+  },
+  computed:{
+    isFinance(){
+      return this.userInfo.departmentName && this.userInfo.departmentName.includes('财务')
+    },
+    columns(){
+      let columns = [
+        {
+          align: 'center',
+          title: '序号',
+          key: 'order',
+          width: '70px',
+          scopedSlots: { customRender: 'order' }
+        },
+        {
+          align: 'center',
+          title: '出差人员',
+          scopedSlots: { customRender: 'travelUsers' }
+        },
+        {
+          align: 'center',
+          title: '出差类型',
+          dataIndex: 'travelType',
+          scopedSlots: { customRender: 'travelType' }
+        },
+        {
+          align: 'center',
+          title: '开始时间',
+          dataIndex: 'startTime'
+        },
+        {
+          align: 'center',
+          title: '结束时间',
+          dataIndex: 'endTime'
+        },
+        {
+          align: 'center',
+          title: '出发城市',
+          dataIndex: 'beginAreaName'
+        },
+        {
+          align: 'center',
+          title: '审批状态',
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' }
+        },
+        {
+          align: 'center',
+          title: '操作',
+          key: 'action',
+          scopedSlots: { customRender: 'action' }
+        }
+      ]
+
+      let financeColumn = {
+        align: 'center',
+        title: '财务状态',
+        dataIndex: 'financeStatus',
+        scopedSlots: { customRender: 'financeStatus' }
+      }
+
+      if(this.isFinance){ //财务人员 显示财务状态列
+        columns.splice(columns.length - 1 ,0,financeColumn)
+      }
+      return columns
     }
   },
   watch: {
@@ -346,7 +365,7 @@ export default {
                   </p>
                 </div>
               ),
-              width: 600,
+              width: 450,
               onOk: () => {
                 console.log('11')
                 that.$refs.addForm.query(actionType, record || {})
