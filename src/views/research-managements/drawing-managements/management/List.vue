@@ -1,97 +1,71 @@
 <template>
-  <!-- 图纸管理 -->
-  <div class="wdf-custom-wrapper">
-    <div class="search-wrapper">
-      <template v-if="parseInt(activeKey,10) === 2">
-      <a-select
-        placeholder="选择部门"
-        @change="depChangeHandler"
-        v-model="depId"
-        :allowClear="true"
-        style="width: 150px"
-      >
-        <a-select-option
-          v-for="item in depSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.departmentName}}</a-select-option>
-      </a-select>
-
-      <a-select placeholder="选择岗位" v-model="stationId" :allowClear="true" style="width: 180px">
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.stationName}}</a-select-option>
-      </a-select>
-      <a-input placeholder="姓名模糊查询" v-model="userName" allowClear style="width:160px;" />
-      </template>
-
-
-      <a-range-picker v-model="sDate" style="width:240px;" :allowClear="true" />
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
-    </div>
-    <div class="main-wrapper">
-      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" @change="tabChange">
-        <a-tab-pane tab="我提交的" key="1" />
-        <a-tab-pane tab="我的团队" key="2" />
-      </a-tabs>
-      <a-table
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="pagination"
-        :loading="loading"
-        @change="handleTableChange"
-      >
-        <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
+<!-- 图纸管理 -->
+  <a-card :bordered="false">
+    <a-row :gutter="24">
+      <a-col :span="4">
+        <div class="menu-tree-list-wrapper" style="width:100%;overflow:auto;box-shadow: 7px 0px 7px -7px #ddd;height: 600px;">
+          <a-tree 
+            :treeData="orgTree" 
+            :replaceFields="replaceFields" 
+            :defaultExpandedKeys="[0,1,3]"
+            @select="handleClick" 
+            :showLine="true"
+          />
         </div>
+      </a-col>
+      <a-col :span="20">
+        <div class="search-wrapper">
+          <a-input placeholder="名称" v-model="searchParam.name" allowClear style="width:160px;margin-right:10px;" />
+          <a-input placeholder="代码" v-model="searchParam.code" allowClear style="width:160px;margin-right:10px;" />
+          <a-input placeholder="备注信息" v-model="searchParam.remark" allowClear style="width:160px;margin-right:10px;;" />
 
-        <div slot="rebackFlag" slot-scope="text, record, index">
-          <span>{{ record.rebackFlag === 0 ? '已提交' : '已撤回' }}</span>
+          <a-button style="position:relative;top:-1px;" class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
+          <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
         </div>
+        <div class="main-wrapper">
+          <a-table
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="pagination"
+            :loading="loading"
+            @change="handleTableChange"
+          >
+            <div slot="order" slot-scope="text, record, index">
+              <span>{{ index + 1 }}</span>
+            </div>
 
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
-          <template v-if="parseInt(activeKey,10) === 1">
-            <template v-if="record.rebackFlag === 0">
-              <a-divider type="vertical" />
-              <a-popconfirm title="确定要撤回该日报吗？" @confirm="doAction('back',record)">
-                <a>撤回</a>
-              </a-popconfirm>
-            </template>
-            <template v-else>
+            <div slot="stationNames" slot-scope="text, record, index" style="text-align:center;">
+              <div class="__station_names">{{text}}</div>
+            </div>
+
+            <div class="action-btns" slot="action" slot-scope="text, record">
+              <a type="primary" @click="doAction('view',record)">查看</a>
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit',record)">修改</a>
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('back',record)">反馈记录</a>
               <a-divider type="vertical" />
               <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
                 <a>删除</a>
               </a-popconfirm>
-            </template>
-          </template>
+            </div>
+          </a-table>
         </div>
-      </a-table>
-    </div>
+      </a-col>
+    </a-row>
 
-    <AddForm ref="addForm" @finish="searchAction()" />
-  </div>
+  </a-card>
 </template>
 
 <script>
 import {
-  departmentList, //所有部门
-  getStationList //获取部门下面的岗位
-} from '@/api/systemSetting'
-import {
-  workReportSetDailyPage,
-  workReportSetDailyDelete,
-  workReportSetDailyRevocation,
-  workReportCheckDocPrivate,
-  reportDailyUserDep
-} from '@/api/workReportManagement'
-import AddForm from './module/AddForm'
-import moment from 'moment'
+  blueprintMenuTreeList,
+  blueprintMenuPageList,
+  blueprintMenuDetail,
+  blueprintMenuDel,
+  blueprintMenuAddOrUpdate
+} from '@/api/researchManagement'
+
 const columns = [
   {
     align: 'center',
@@ -102,114 +76,80 @@ const columns = [
   },
   {
     align: 'center',
-    title: '编号',
-    dataIndex: 'reportNum'
+    title: '名称',
+    dataIndex: 'title'
   },
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName'
-  },
-  {
-    align: 'center',
-    title: '岗位',
-    dataIndex: 'stationName',
-    key: 'stationName'
-  },
-  {
-    align: 'center',
-    title: '状态',
-    dataIndex: 'rebackFlag',
-    key: 'rebackFlag',
-    scopedSlots: { customRender: 'rebackFlag' }
-  },
-  {
-    align: 'center',
-    title: '提交人',
-    key: 'createuserName',
-    dataIndex: 'createuserName'
-  },
-  {
-    align: 'center',
-    title: '提交时间',
-    key: 'createdTime',
-    dataIndex: 'createdTime'
+    title: '备注',
+    dataIndex: 'type'
   },
   {
     align: 'center',
     title: '操作',
-    key: 'action',
+    dataIndex: 'id',
+    width: '150px',
     scopedSlots: { customRender: 'action' }
   }
 ]
 
 export default {
-  name: 'reportDailySet',
+  name: 'research-managements-drawing-managements-management',
   components: {
-    AddForm: AddForm
+
   },
-  data() {
+  data () {
     return {
-      activeKey: 1,
-      depId: undefined,
-      stationId: undefined,
-      userName: undefined,
-      sDate: [undefined, undefined],
+      searchParam:{},
       columns: columns,
       dataSource: [],
-      depSelectDataSource: [],
-      postSelectDataSource: [],
       pagination: {
         current: 1
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-    }
-  },
-  computed: {
-    searchParam() {
-      let beginDate = undefined,
-        endDate = undefined
-      if (Array.isArray(this.sDate) && this.sDate.length === 2) {
-        beginDate = this.sDate[0] instanceof this.moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        endDate = this.sDate[1] instanceof this.moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
-      }
-      return {
-        listType: this.activeKey,
-        userName: this.userName,
-        beginDate: beginDate,
-        endDate: endDate,
-        departmentId: this.depId,
-        stationId: this.stationId
-      }
+      superiorId: 0, // 父id
+
+      orgTree: [],
+      selectedRowKeys: [],
+      selectedRows: [],
+      replaceFields:{
+        key:'id',
+        title:'menuName',
+        children:'subList'
+      },
+
+      currentItem:null, //当前选择的项
     }
   },
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'wrm-report-daily-set') {
+        if (to.name === 'research-managements-drawing-managements-management') {
           this.init()
         }
       },
       immediate: true
     }
   },
+  created () {
+    
+  },
   methods: {
-    moment,
-    init() {
-      let that = this
-      reportDailyUserDep().then(res => {
-        that.depSelectDataSource = res.data
-      })
+    init(){
+      this.initTreeData()
       this.searchAction()
+    },
+    initTreeData(){
+      return blueprintMenuTreeList({superiorId:this.superiorId}).then(res => {
+        this.orgTree = [res.data]
+      })
     },
     searchAction(opt = {}) {
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
-      console.log('执行搜索...', _searchParam)
       that.loading = true
-      workReportSetDailyPage(_searchParam)
+      blueprintMenuPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -232,78 +172,42 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
-    doAction(actionType, record) {
-      let that = this
-      if (actionType === 'view') {
-        this.$refs.addForm.query(actionType, record)
-      }else if(actionType === 'add'){
-        workReportCheckDocPrivate({docType:1}).then(res =>{
-          if(res.code === 200){
-            that.$refs.addForm.query(actionType, record)
-          }else{
-            that.$message.info(res.msg)
-          }
-        })
-      } else if (actionType === 'del') {
-        console.log(record)
-        workReportSetDailyDelete({ id: record.id })
-          .then(res => {
-            that.$message.info(res.msg)
-            that.searchAction()
-          })
-          .catch(err => {
-            that.$message.info(`错误：${err.message}`)
-          })
-      } else if (actionType === 'back') {
-        if(that.userInfo.id !== record.createdId){
-          that.$message.info('您没有权限撤回该日报')
-          return 
-        }
-        workReportSetDailyRevocation({ id: record.id })
-          .then(res => {
-            that.$message.info(res.msg)
-            if (res.code === 200) {
-              that.searchAction()
-            }
-          })
-          .catch(err => {
-            that.$message.info(`错误：${err.message}`)
-          })
-      } else if (actionType === 'edit') {
-        that.$refs.addForm.query(actionType, record)
-      } else {
-        this.$message.info('功能尚未实现！')
-      }
-    },
-    depChangeHandler(dep_id) {
-      let that = this
-      that.postSelectDataSource = []
-      return getStationList({ id: dep_id }).then(res => {
-        that.postSelectDataSource = res.data
+    handleClick (selectedKeys,nodes) { // 点击树结构菜单
+      this.currentItem = Object.assign({},nodes.node.dataRef)
+
+      console.log(arguments)
+      this.searchAction({
+        current:1,
+        superiorId:this.currentItem.id
       })
     },
-    tabChange(tagKey) {
-      this.activeKey = parseInt(tagKey)
-      if(this.activeKey === 1){
-        this.depId = undefined
-        this.stationId = undefined
-        this.userName = undefined
-      }
-      this.searchAction()
+    del (row) {
+      const _this = this
+      this.$confirm({
+        title: '警告',
+        content: `真的要删除 ${row.title} 吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk () {
+          // 在这里调用删除接口
+          blueprintMenuDel(`id=${row.id}`).then(res => {
+            if (res.code === 200) {
+              // _this.$refs.table.refresh(true)
+              // _this.$nextTick(() => {
+              //   routeTreeList().then(res => {
+              //     _this.orgTree = res.data
+              //   })
+              // })
+            } else {
+              _this.$message.error(res.msg)
+            }
+          })
+        }
+      })
     }
   }
 }
 </script>
 
-<style scoped>
-.wdf-custom-wrapper {
-  background-color: #fff;
-  padding: 10px 20px;
-}
-.wdf-custom-wrapper .search-wrapper * {
-  margin: 10px 15px 0 0;
-}
-.main-wrapper {
-  margin-top: 20px;
-}
-</style>
+

@@ -39,8 +39,8 @@
           <span>{{ index + 1 }}</span>
         </div>
 
-        <div slot="rebackFlag" slot-scope="text, record, index">
-          <span>{{ record.rebackFlag === 0 ? '已提交' : '已撤回' }}</span>
+        <div slot="stationNames" slot-scope="text, record, index" style="text-align:center;">
+          <div class="__station_names">{{text}}</div>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -53,7 +53,7 @@
       </a-table>
     </div>
 
-    <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
+    <AddForm ref="addForm" @finish="searchAction()" />
   </div>
 </template>
 
@@ -63,13 +63,10 @@ import {
   getStationList //获取部门下面的岗位
 } from '@/api/systemSetting'
 import {
-  workReportSetDailyPage,
-  workReportSetDailyDelete,
-  workReportSetDailyRevocation,
-  workReportCheckDocPrivate,
-  reportDailyUserDep
-} from '@/api/workReportManagement'
-// import AddForm from './module/AddForm'
+  blueprintPermissionList,
+  blueprintPermissionDel,
+} from '@/api/researchManagement'
+import AddForm from './AddForm'
 import moment from 'moment'
 const columns = [
   {
@@ -82,19 +79,18 @@ const columns = [
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'reportNum'
+    dataIndex: 'permissionName'
   },
   {
     align: 'center',
     title: '权限岗位',
-    dataIndex: 'departmentName',
-    key: 'departmentName'
+    dataIndex: 'stationNames',
+    scopedSlots: { customRender: 'stationNames' }
   },
   {
     align: 'center',
     title: '备注',
-    dataIndex: 'remarks',
-    key: 'remarks'
+    dataIndex: 'remark'
   },
   {
     align: 'center',
@@ -137,7 +133,7 @@ export default {
     moment,
     init() {
       let that = this
-      reportDailyUserDep().then(res => {
+      departmentList().then(res => {
         that.depSelectDataSource = res.data
       })
       this.searchAction()
@@ -147,7 +143,7 @@ export default {
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      workReportSetDailyPage(_searchParam)
+      blueprintPermissionList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -172,19 +168,10 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if (actionType === 'view') {
-        this.$refs.addForm.query(actionType, record)
-      }else if(actionType === 'add'){
-        workReportCheckDocPrivate({docType:1}).then(res =>{
-          if(res.code === 200){
-            that.$refs.addForm.query(actionType, record)
-          }else{
-            that.$message.info(res.msg)
-          }
-        })
+      if(['add','edit','view'].includes(actionType)){
+        that.$refs.addForm.query(actionType, record)
       } else if (actionType === 'del') {
-        console.log(record)
-        workReportSetDailyDelete({ id: record.id })
+        blueprintPermissionDel(`id=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -192,23 +179,6 @@ export default {
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
-      } else if (actionType === 'back') {
-        if(that.userInfo.id !== record.createdId){
-          that.$message.info('您没有权限撤回该日报')
-          return 
-        }
-        workReportSetDailyRevocation({ id: record.id })
-          .then(res => {
-            that.$message.info(res.msg)
-            if (res.code === 200) {
-              that.searchAction()
-            }
-          })
-          .catch(err => {
-            that.$message.info(`错误：${err.message}`)
-          })
-      } else if (actionType === 'edit') {
-        that.$refs.addForm.query(actionType, record)
       } else {
         this.$message.info('功能尚未实现！')
       }
@@ -216,6 +186,7 @@ export default {
     depChangeHandler(dep_id) {
       let that = this
       that.postSelectDataSource = []
+      that.searchParam = Object.assign({},that.searchParam,{stationId:undefined})
       return getStationList({ id: dep_id }).then(res => {
         that.postSelectDataSource = res.data
       })
@@ -234,5 +205,11 @@ export default {
 }
 .main-wrapper {
   margin-top: 20px;
+}
+.__station_names{
+  display: inline-block;
+  max-width: 800px;
+  word-break: break-all;
+  text-align: justify;
 }
 </style>

@@ -1169,7 +1169,7 @@ export const asyncRouterMap = [
         name: 'research-managements',
         component: PageView,
         meta: { title: '研发管理', icon: 'shop', permission: ['permission'] },
-        redirect: '/research-managements/drawing-permissions',
+        redirect: '/research-managements/drawing-managements/permissions',
         children:[
           {
             path: '/research-managements/drawing-managements',

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="980"
+    :width="650"
     :visible="visible"
     :destroyOnClose="true"
     @ok="handleSubmit"
@@ -13,108 +13,69 @@
       <a-form :form="form">
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width:150px;">名称</td>
-            <td style="width:300px;">
+            <td style="width:120px;">名称</td>
+            <td>
               <a-form-item>
                 <a-input 
                   placeholder="名称" 
                   allowClear style="width:100%;" 
-                  v-decorator="['name', {initialValue:'', rules: [{ required: true, message: '输入名称' }] }]" 
+                  v-decorator="['permissionName', {initialValue:detail.permissionName, rules: [{ required: true, message: '输入名称' }] }]" 
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>岗位</td>
-            <td>{{stationName}}</td>
-            <td>姓名</td>
-            <td>{{trueName}}</td>
+            <td>权限岗位</td>
+            <td>
+              <a-form-item hasFeedback :validateStatus="depPostTreeValidateStatus" :help="depPostTreeHelp">
+                <DepPostTree :fillPost="detail.stations ? detail.stations : []" @change="depPostTreeChange" />
+              </a-form-item>
+            </td>
           </tr>
-        </table>
-        <h3>今日工作内容</h3>
-        <table class="custom-table custom-table-border">
           <tr>
-            <th style="width:150px;">序号</th>
-            <th>
-              <i class="wdf-required"></i>工作内容
-            </th>
-            <th style="width:100px;">
-              <i class="wdf-required"></i>工作进度(%)
-            </th>
-            <th style="width:70px;" v-if="!isView">操作</th>
-          </tr>
-          <tr v-for="(item ,index) in todayList" :key="index">
-            <td style="width:150px;">{{index + 1}}</td>
+            <td>备注</td>
             <td>
               <a-form-item>
                 <a-textarea
-                  :disabled="isView"
                   placeholder=""
                   :rows="2"
-                  v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: true, message: '输入工作内容' }] }]"
-                />
-              </a-form-item>
-            </td>
-            <td style="width:100px;">
-              <a-form-item>
-                <a-input-number
-                  :disabled="isView"
-                  placeholder=""
-                  v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
-                  :min="0"
-                  :max="100"
-                  style="width: 120px"
+                  v-decorator="['remark', {initialValue:detail.remark, rules: [{ required: false, message: '输入备注' }] }]"
                 />
               </a-form-item>
             </td>
           </tr>
         </table>
-
+        
       </a-form>
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { workReportSetDailyDetail, workReportSetDailySaveAndUpdate } from '@/api/workReportManagement'
+import {blueprintPermissionAddOrUpdate } from '@/api/researchManagement'
 import moment from 'moment'
-import { mapGetters } from 'vuex'
-import { getUploadPath2 } from '@/api/common'
+import DepPostTree from './DepPostTree'
+import { values } from 'mockjs2'
+
 export default {
   name: 'AddForm',
+  components:{
+    DepPostTree
+  },
   data() {
     return {
       form: this.$form.createForm(this),
       visible: false,
       spinning: false,
       type: 'view',
-      departmentName: undefined,
-      stationName: undefined,
-      trueName: undefined,
-      reportNum: undefined,
-      record: {},
-      todayList: [],
-      planList: [],
-      uploadPath: getUploadPath2(),
-      fileList: []
+      detail: {},
+      depPostList:[],
+      depPostTreeValidateStatus:null,
+      depPostTreeHelp:''
     }
   },
   computed: {
-    ...mapGetters(['userInfo']),
     modalTitle() {
-      return `${this.isView ? '查看' : (this.isAdd ? '新增' : '编辑')}日报`
-    },
-    headerTitle() {
-      if (this.isAdd) {
-        let depName = this.departmentName
-        let _date = moment().format('YYYY年MM月DD号')
-        let _type = '日报'
-        return `${depName}${_date}${_type}`
-      } else {
-        let depName = this.record.departmentName
-        let _date = moment(this.record.createdTime).format('YYYY年MM月DD号')
-        let _type = '日报'
-        return `${depName}${_date}${_type}`
-      }
+      return `${this.isView ? '查看' : (this.isAdd ? '新增' : '编辑')}图纸权限`
     },
     isView() {
       return this.type === 'view'
@@ -124,119 +85,48 @@ export default {
     },
     isAdd() {
       return this.type === 'add'
-    }
+    },
   },
   methods: {
-    addItem(key) {
-      this[key].push({
-        content: undefined,
-        progress: undefined
-      })
-    },
-    delItem(key, index) {
-      let _d = [...this[key]]
-      _d.splice(index, 1)
-      this[key] = [..._d]
-    },
     async query(type, record) {
       let that = this
-      that.visible = true
-      that.dataReset()
-      that.type = type
-      console.log(that)
-      that.record = Object.assign({}, record)
+      that.depPostTreeValidateStatus = null
+      that.depPostList = []
       that.form.resetFields()
+      that.type = type
+      that.detail = Object.assign({}, record)
       await that.initData()
-
-      if (that.isView || that.isEdit) {
-        workReportSetDailyDetail({ id: that.record.id }).then(res => {
-          that.fillData(res.data)
-        })
-      } else {
-        that.departmentName = that.userInfo.departmentName
-        that.stationName = that.userInfo.stationName
-        that.trueName = that.userInfo.trueName
-        that.addItem('todayList')
-        that.addItem('todayList')
-        that.addItem('todayList')
-        that.addItem('planList')
-      }
+      that.visible = true
     },
     initData() {
       let that = this
       let queue = []
       return Promise.all(queue)
     },
-    async fillData(resultData) {
-      let that = this
-
-      that.reportNum = resultData.dailyNum
-      that.departmentName = resultData.departmentName
-      that.stationName = resultData.stationName
-      that.trueName = resultData.userName
-      that.todayList = resultData.todayList || []
-      that.planList = resultData.planList || []
-      if (Array.isArray(resultData.annexList)) {
-        that.fileList = resultData.annexList.map((item, index) => {
-          return {
-            uid: String(index + 1),
-            name: item.workUrl,
-            status: 'done',
-            url: item.workUrl
-          }
-        })
-      }
-    },
     handleSubmit() {
       let that = this
-
       if(that.isView){
         that.handleCancel()
         return
       }
-      if (that.todayList.length === 0) {
-        that.$message.info('请填写今日工作内容')
-        return
-      }
-      if (that.planList.length === 0) {
-        that.$message.info('请填写明日工作计划')
-        return
-      }
-
+      that.depPostTreeValidateStatus = that.depPostList.length > 0 ? null : 'error'
+      that.depPostTreeHelp = that.depPostList.length > 0 ? '' : '请选择权限岗位'
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
-          let _values = {}
-          let { todayList, planList } = values
-          todayList = todayList.map((item, index) => {
-            item.orderNum = index + 1
-            return item
-          })
-
-          planList = planList.map((item, index) => {
-            item.orderNum = index + 1
-            return item
-          })
-          let annexList = that.fileList.map((item, index) => {
-            return {
-              orderNum: index + 1,
-              workUrl: item.url
-            }
-          })
-
-          // _values.dailyNum = ''
-          // _values.departmentId = ''
-          // _values.stationId = ''
-
-          _values.todayList = todayList
-          _values.planList = planList
-          _values.annexList = annexList
-
           if (that.isEdit) {
-            _values.id = that.record.id
+            values.id = that.detail.id
           }
+          if(that.depPostList.length === 0){
+            return
+          }
+          values.stationNames = that.depPostList.map(val => val.name).join(',')
+          values.stations = that.depPostList.map(val =>{
+            return {stationId:val.id}
+          })
+          console.log('Received values of form: ', values)
           that.spinning = true
-          workReportSetDailySaveAndUpdate(_values)
+          
+          blueprintPermissionAddOrUpdate(values)
             .then(res => {
               that.spinning = false
               if (res.code === 200) {
@@ -255,33 +145,18 @@ export default {
       })
     },
     handleCancel() {
-      this.dataReset()
       this.$nextTick(() => (this.visible = false))
     },
-    dataReset() {
-      this.form.resetFields()
-      this.todayList = []
-      this.planList = []
-      this.fileList = []
-    },
-    handleChange(info) {
-      console.log(arguments)
-      let fileList = [...info.fileList]
-      fileList = fileList.map(file => {
-        if (file.response && file.response.code === 200) {
-          file.url = file.response.data
-        }
-        return file
-      })
-      this.fileList = fileList
+    depPostTreeChange(depPostList){
+      //{id:xx,name:''}
+      this.depPostList = depPostList || []
+      this.depPostTreeValidateStatus = this.depPostList.length > 0 ? null : 'error'
+      this.depPostTreeHelp = this.depPostList.length > 0 ? '' : '请选择权限岗位'
     }
   }
 }
 </script>
 <style scoped>
-.report-day-header h2 {
-  text-align: center;
-}
 .custom-table-border th,
 .custom-table-border td {
   padding: 10px;
@@ -289,14 +164,5 @@ export default {
 .custom-table-border >>> .ant-form-item {
   margin-bottom: 0;
 }
-i.wdf-required::before {
-  display: inline-block;
-  margin-right: 4px;
-  color: #f5222d;
-  font-size: 14px;
-  font-family: SimSun, sans-serif;
-  font-style: normal;
-  line-height: 1;
-  content: '*';
-}
+
 </style>
