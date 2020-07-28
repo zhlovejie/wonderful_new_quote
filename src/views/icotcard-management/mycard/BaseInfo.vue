@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import {addAndUpdateSimInformation,basicInformation} from '@/api/simCard'
+import {addAndUpdateSimInformation,basicInformation,getSimInformationFlow} from '@/api/simCard'
 import moment from 'moment';
 const columns=[
   {
@@ -134,7 +134,9 @@ export default {
             item.key = index + 1
             return item
           })
-          this.usedNo=this.usedFlow(packagemsg.used,packagemsg.total)
+          let len=packagemsg.length-1
+          this.usedNo=(this.usedFlow(packagemsg[len].used,packagemsg[len].total)).toFixed(1)
+          console.log(this.usedNo)
         }else{
           this.spinning=false
           this.$message.warning(res.msg)
