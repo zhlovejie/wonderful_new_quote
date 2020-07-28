@@ -23,9 +23,9 @@
     </a-form>
     <h3 style="font-weight:600">
       累计流量用量：
-      <span>{{accrueUsedAmount}}KB</span> 
+      <span>{{accrueUsedAmount}}MB</span> 
       当前流量用量：
-      <span>{{usedAmount}}KB</span>
+      <span>{{usedAmount}}MB</span>
     </h3>
     <a-table
       :columns="columns"
@@ -63,7 +63,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '流量用量（KB）',
+    title: '流量用量（MB）',
     dataIndex: 'usedAmount'
   },
 ]
@@ -84,6 +84,9 @@ export default {
     }
   },
   methods: {
+    transMb(kb){
+      return kb/1024
+    },
     init(iccid) {
       this.iccid=iccid
       this.searchAction({iccId:iccid,current:1})
@@ -91,9 +94,9 @@ export default {
       getSimInformationFlow({iccId:iccid}).then(res=>{
         if(res.code==200){
           // 当前
-          this.usedAmount=res.data.usedAmount
+          this.usedAmount=(this.transMb(res.data.usedAmount)).toFixed(2)
           // 累计
-          this.accrueUsedAmount=res.data.accrueUsedAmount
+          this.accrueUsedAmount=(this.transMb(res.data.accrueUsedAmount)).toFixed(2)
         }else{
           this.$message.warning(res.msg)
         }
@@ -109,6 +112,7 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.usedAmount=item.usedAmount==0?0:(item.usedAmount/1024).toFixed(2)
             return item
           })
           //设置数据总条数

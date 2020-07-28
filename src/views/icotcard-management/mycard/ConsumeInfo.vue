@@ -72,12 +72,12 @@ const columns = [
   },
   {
     align: 'center',
-    title: '流量用量（KB）',
+    title: '流量用量（MB）',
     dataIndex: 'usedAmount'
   },
   {
     align: 'center',
-    title: '套餐外流量（KB）',
+    title: '套餐外流量（MB）',
     dataIndex: 'outPackage'
   },
   {
@@ -116,6 +116,8 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.usedAmount=item.usedAmount==0?0:(item.usedAmount/1024).toFixed(2)
+            item.outPackage=item.outPackage==0?0:(item.outPackage/1024).toFixed(2)
             return item
           })
           //设置数据总条数

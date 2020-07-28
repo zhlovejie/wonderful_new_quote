@@ -46,7 +46,7 @@
             <a-progress :strokeWidth=20 :percent="usedNo" style="margin:20px 0"/>
           </div>
           <div style="display:inline-block;width:47%;margin-left:3%">
-             共 {{packageTotal}}KB,已使用 {{packageUsed}}KB,剩余 {{packageAllowance}}KB
+             共 {{packageTotal}}MB,已使用 {{packageUsed}}MB,剩余 {{packageAllowance}}MB
           </div>
         <h3 style="font-weight:600">卡所属信息</h3>
         <a-form-item label="所属机构">
@@ -121,6 +121,10 @@ export default {
     usedFlow(a,b){
       return a/b*100
     },
+    // 流量kb转换Mb
+    transMb(kb){
+      return kb/1024
+    },
     moment,
     init(record){
       this.record=record
@@ -139,11 +143,14 @@ export default {
           })
           let len=packagemsg.length-1
           //流量总量
-          this.packageTotal=packagemsg[len].total
+          let packtotal=(this.transMb(packagemsg[len].total)).toFixed(2)
+          this.packageTotal=packtotal==0?0:packtotal
           // 已使用
-          this.packageUsed=packagemsg[len].used
+          let packused=(this.transMb(packagemsg[len].used)).toFixed(2)
+          this.packageUsed=packused==0?0:packused
           // 剩余
-          this.packageAllowance=packagemsg[len].allowance
+          let packallow=(this.transMb(packagemsg[len].allowance)).toFixed(2)
+          this.packageAllowance=packallow==0?0:packallow
           this.usedNo=1*((this.usedFlow(this.packageUsed,this.packageTotal)).toFixed(2))
         }else{
           this.spinning=false

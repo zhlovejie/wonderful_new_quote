@@ -216,7 +216,6 @@ export default {
     updateSimInfo() {},
     // 高级筛选
     advancedForm(params) {
-      console.log(params)
       this.searchAction(params)
     },
     // 下载
