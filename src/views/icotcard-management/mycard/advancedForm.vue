@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="高级筛选"
-    :width="600"
+    :width="700"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
@@ -16,30 +16,29 @@
     </template>
 
     <a-spin :spinning="spinning">
-      <a-form :form="form" layout="inline">
+      <a-form :form="form" >
         <h3 style="font-weight:600">卡账号信息</h3>
-        <a-form-item label="iccid" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
+        <a-form-item label="iccid" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-input placeholder="iccid查询" v-model="form.iccid" />
         </a-form-item>
-        <a-form-item label="卡状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
+        <a-form-item label="卡状态" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-select
             placeholder="卡状态"
             v-model="form.status"
-            style="width: 160px"
+            style="margin-bottom:6px"
           >
             <a-select-option value="正常">正常</a-select-option>
             <a-select-option value="未激活">未激活</a-select-option>
             <a-select-option value="停机">停机</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="运营商" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
+        <a-form-item label="运营商" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-input
             placeholder="运营商"
-            v-model="form.operatortype"
-            style="width:160px">
+            v-model="form.operatortype">
           </a-input>
         </a-form-item>
-        <a-form-item label="活动状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
+        <a-form-item label="活动状态" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-select
             placeholder="活动状态"
             v-model="form.activeState"
@@ -48,17 +47,17 @@
           <a-select-option value="关机">关机</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="发卡日期">
+        <a-form-item label="发卡日期" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-range-picker @change="saleDateChange" v-model="saleDate" />  <!--beginSaledate endSaledate-->
         </a-form-item>
-        <a-form-item label="激活日期">
+        <a-form-item label="激活日期" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-range-picker @change="activeDateChange" v-model="activeDate" /> <!--beginActivationdate endActivationdate-->
         </a-form-item>
-        <a-form-item label="服务期止">
+        <a-form-item label="服务期止" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-range-picker @change="validDateChange" v-model="validDate" />  <!--beginValiddate endValiddate-->
         </a-form-item>
          <h3 style="font-weight:600">卡流量信息</h3>
-        <a-form-item label="是否超量">
+        <a-form-item label="是否超量" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-select
             placeholder="是否超量"
             v-model="form.isExcessive"
@@ -68,16 +67,16 @@
           </a-select>
         </a-form-item>
         <h3 style="font-weight:600">卡所属信息</h3>
-        <a-form-item label="所属机构">
+        <a-form-item label="所属机构" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-input placeholder="机构名称模糊查询" v-model="form.orgName" />
         </a-form-item>
-        <a-form-item label="所属设备">
+        <a-form-item label="所属设备" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-input placeholder="主板号模糊查询" v-model="form.manId" />
         </a-form-item>
-        <a-form-item label="出厂日期">
+        <a-form-item label="出厂日期" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-range-picker @change="outDateChange" v-model="outDate" />  <!--beginOutTime endOutTime-->
         </a-form-item>
-        <a-form-item label="SIM卡有限期">
+        <a-form-item label="SIM卡有限期" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-range-picker @change="beOverDateChange" v-model="beOverDate" />  <!--beginBeOverdueTime endBeOverdueTime-->
         </a-form-item>
       </a-form>
@@ -119,6 +118,7 @@ export default {
     },
     // 查询
     searchForm() {
+      this.form.current=1
       this.$emit('advancedForm',this.form)
       this.visible = false
     },

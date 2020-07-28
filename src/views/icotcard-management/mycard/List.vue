@@ -49,8 +49,8 @@
     </div>
     <AdvancedForm ref="advancedForm" @advancedForm="advancedForm" />
     <AddForm ref="addForm" />
-    <Inport ref="inportInfo" />
-    <Info ref="info" />
+    <Inport ref="inportInfo" @finish="finish" />
+    <Info ref="info"  />
   </div>
 </template>
 <script>
@@ -216,22 +216,8 @@ export default {
     updateSimInfo() {},
     // 高级筛选
     advancedForm(params) {
-      this.loading = true
-      let _searchParam = Object.assign({}, params)
-      console.log('执行搜索...', _searchParam)
-      getSimInformationList(_searchParam)
-        .then((res) => {
-          this.loading = false
-          this.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
-            return item
-          })
-          //设置数据总条数
-          const pagination = { ...this.pagination }
-          pagination.total = res.data.total
-          this.pagination = pagination
-        })
-        .catch((err) => (this.loading = false))
+      console.log(params)
+      this.searchAction(params)
     },
     // 下载
     down() {
@@ -301,6 +287,9 @@ export default {
         this.$message.warning('本条数据没有iccid，无法查询基本信息')
       }
     },
+    finish(){
+      this.searchAction({current:1})
+    }
   },
 }
 </script>

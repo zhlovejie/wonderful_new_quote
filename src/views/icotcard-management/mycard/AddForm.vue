@@ -33,6 +33,17 @@
             </td>
           </tr>
           <tr>
+            <td style="width:120px;">iccid</td>
+            <td>
+              <a-form-item>
+                <a-input 
+                  v-decorator="['iccid',{initialValue:form.iccid}]"
+                  placeholder="iccid"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
              <td style="width:120px;">运营商</td>
             <td>
               <a-form-item>

@@ -84,10 +84,12 @@ export default {
         this.fileList = [];
         this.spinning = false;
         this.$message.success(res.msg);
+        this.$emit('finish')
+        this.visible=false
       })
       .catch((err) =>{
         this.spinning = false
-        this.$message.success(res.msg)
+        this.$message.warning(res.msg)
       })
     },
   },

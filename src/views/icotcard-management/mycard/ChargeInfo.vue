@@ -23,9 +23,9 @@
     </a-form>
     <h3 style="font-weight:600">
       累计流量用量：
-      <span>{{accrueUsedAmount}}MB</span> 
+      <span>{{accrueUsedAmount}}KB</span> 
       当前流量用量：
-      <span>{{usedAmount}}MB</span>
+      <span>{{usedAmount}}KB</span>
     </h3>
     <a-table
       :columns="columns"
@@ -63,7 +63,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '流量用量（MB）',
+    title: '流量用量（KB）',
     dataIndex: 'usedAmount'
   },
 ]

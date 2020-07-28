@@ -6,34 +6,34 @@
           <h3 style="font-weight:600;display:inline-block;">卡账号信息</h3>
           <a-button type="link" style="display:inline-block;" @click='changeForm'>修改</a-button>
         </div>
-        <a-form-item label="卡号" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }" style="width：200px">
-          <a-input v-decorator="['cardno',{initialValue:cardmsg.cardno}]" style="width:170px" :readOnly="formreadOnly" />
+        <a-form-item label="卡号" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }" >
+          <a-input v-decorator="['cardno',{initialValue:cardmsg.cardno}]" style="width:200px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="iccid" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-decorator="['iccid',{initialValue:cardmsg.iccid}]" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['iccid',{initialValue:cardmsg.iccid}]" style="width:200px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="运营商" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-decorator="['operatortype',{initialValue:cardmsg.operatortype}]" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['operatortype',{initialValue:cardmsg.operatortype}]" style="width:200px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="卡状态" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-          <a-input v-decorator="['status',{initialValue:cardmsg.status}]" style="width:170px" :readOnly="formreadOnly" />
+          <a-input v-decorator="['status',{initialValue:cardmsg.status}]" style="width:200px" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="发卡日期">
           <!-- :default-value="moment(cardmsg.saledate,'YYYY-MM-DD')" -->
-          <a-date-picker @change="startDateChange" v-decorator="['saledate',{initialValue:cardmsg.saledate ? moment(cardmsg.saledate,'YYYY-MM-DD') : undefined}]"   style="width:170px" ref='startDate'/>
+          <a-date-picker @change="startDateChange" v-decorator="['saledate',{initialValue:cardmsg.saledate ? moment(cardmsg.saledate,'YYYY-MM-DD') : undefined}]"   style="width:200px" ref='startDate'/>
         </a-form-item>
         <a-form-item label="激活日期">
-          <a-input style="width:170px"  v-model="cardmsg.activationdate" :readOnly="formreadOnly" />
+          <a-input style="width:200px"  v-model="cardmsg.activationdate" :readOnly="formreadOnly" />
         </a-form-item>
         <a-form-item label="服务期止">
           <!-- :default-value="moment(cardmsg.validdate,'YYYY-MM-DD')" -->
-          <a-date-picker @change="endDateChange" v-decorator="['validdate',{initialValue:cardmsg.validdate ? moment(cardmsg.validdate,'YYYY-MM-DD') : undefined}]" style="width:170px" ref='endDate' />
+          <a-date-picker @change="endDateChange" v-decorator="['validdate',{initialValue:cardmsg.validdate ? moment(cardmsg.validdate,'YYYY-MM-DD') : undefined}]" style="width:200px" ref='endDate' />
         </a-form-item>
         <a-form-item label="活动状态">
-          <a-input v-decorator="['activestatus',{initialValue:cardmsg.activestatus}]" :readOnly="formreadOnly" style="width:170px" />
+          <a-input v-decorator="['activestatus',{initialValue:cardmsg.activestatus}]" :readOnly="formreadOnly" style="width:200px" />
         </a-form-item>
         <a-form-item label="卡内余额（元）">
-          <a-input placeholder="卡内余额" v-decorator="['cardaccount',{initialValue:cardmsg.cardaccount}]" style="width:170px" :readOnly="formreadOnly" />
+          <a-input placeholder="卡内余额" v-decorator="['cardaccount',{initialValue:cardmsg.cardaccount}]" style="width:200px" :readOnly="formreadOnly" />
         </a-form-item>
         <h3 style="font-weight:600">套餐信息</h3>
         <a-table
@@ -41,9 +41,13 @@
           :dataSource="dataSource"
           :pagination="false"
         >
-        <div slot="packType">流量</div>
         </a-table>
-        <a-progress :strokeWidth=8 :percent="usedNo" style="margin:20px 0"/>
+          <div style="display:inline-block;width:50%;">
+            <a-progress :strokeWidth=20 :percent="usedNo" style="margin:20px 0"/>
+          </div>
+          <div style="display:inline-block;width:47%;margin-left:3%">
+             共 {{packageTotal}}KB,已使用 {{packageUsed}}KB,剩余 {{packageAllowance}}KB
+          </div>
         <h3 style="font-weight:600">卡所属信息</h3>
         <a-form-item label="所属机构">
           <a-input v-decorator="['orgName',{initialValue:cardmsg.orgName}]" :readOnly="formreadOnly" />
@@ -78,12 +82,6 @@ const columns=[
   },
   {
     align: 'center',
-    title: '类型',
-    dataIndex: 'packType',
-    scopedSlots: { customRender: 'packType' }
-  },
-  {
-    align: 'center',
     title: '开始时间',
     dataIndex: 'enableTime',
   },
@@ -104,13 +102,18 @@ export default {
       cardmsg:{},
       // 发卡日期
       saledate:'',
-      defaultStart:moment(this.saledate, 'YYYY-MM-DD'),
       // 截止日期
       validdate:'',
       showBtn:false,
       iccid:'',
       usedNo:0,
       record:{},
+       //流量总量
+      packageTotal:0,
+          // 已使用
+      packageUsed:0,
+          // 剩余
+      packageAllowance:0
     }
   },
   methods:{
@@ -128,15 +131,20 @@ export default {
           this.spinning=false
           const packagemsg=res.data.packagemsg
           this.cardmsg=res.data.cardmsg
-          this.saledate=res.data.cardmsg.saledate
-          this.validdate=res.data.cardmsg.validdate
+          this.saledate=res.data.cardmsg.saledate.substr(0,10)
+          this.validdate=res.data.cardmsg.validdate.substr(0,10)
           this.dataSource=packagemsg.map((item, index) => {
             item.key = index + 1
             return item
           })
           let len=packagemsg.length-1
-          this.usedNo=(this.usedFlow(packagemsg[len].used,packagemsg[len].total)).toFixed(1)
-          console.log(this.usedNo)
+          //流量总量
+          this.packageTotal=packagemsg[len].total
+          // 已使用
+          this.packageUsed=packagemsg[len].used
+          // 剩余
+          this.packageAllowance=packagemsg[len].allowance
+          this.usedNo=1*((this.usedFlow(this.packageUsed,this.packageTotal)).toFixed(2))
         }else{
           this.spinning=false
           this.$message.warning(res.msg)

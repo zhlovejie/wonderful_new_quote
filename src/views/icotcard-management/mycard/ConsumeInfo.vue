@@ -33,6 +33,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
+      :scroll="{ x: 1200 }"
     >
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
@@ -50,11 +51,13 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
+    fixed: 'left',
     scopedSlots: { customRender: 'order' }
   },
   {
     align: 'center',
     title: 'iccid',
+    fixed: 'left',
     dataIndex: 'iccid'
   },
   {
@@ -69,12 +72,12 @@ const columns = [
   },
   {
     align: 'center',
-    title: '流量用量（MB）',
+    title: '流量用量（KB）',
     dataIndex: 'usedAmount'
   },
   {
     align: 'center',
-    title: '套餐外流量（MB）',
+    title: '套餐外流量（KB）',
     dataIndex: 'outPackage'
   },
   {

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="信息"
-    :width="700"
+    :width="800"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
