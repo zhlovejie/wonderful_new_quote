@@ -32,6 +32,17 @@ export function basicInformation (parameter) {
   })
 }
 
+// list页面导出
+export function formationExportList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/SimInformation/sim-information/getSimInformationExportList',
+    method: 'get',
+    responseType:'blob',
+    params: parameter
+  })
+}
+
 // 消费详情不带分页列表 导出使用
 export function getSimInformationExportList (parameter) {
   return axios({

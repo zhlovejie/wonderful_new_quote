@@ -110,6 +110,7 @@ export default {
       showBtn:false,
       iccid:'',
       usedNo:0,
+      record:{},
     }
   },
   methods:{
@@ -118,10 +119,11 @@ export default {
       return a/b*100
     },
     moment,
-    init(iccid){
-      this.iccid=iccid
+    init(record){
+      this.record=record
+      this.iccid=record.iccid
       this.spinning=true
-      basicInformation({iccid}).then(res=>{
+      basicInformation({iccid:this.iccid}).then(res=>{
         if(res.code==200){
           this.spinning=false
           const packagemsg=res.data.packagemsg
@@ -152,7 +154,7 @@ export default {
     },
     updateSimInfo(){
       const params={}
-      params.iccid=this.iccid
+      params.id=this.record.id
       params.saledate=this.saledate
       params.validdate=this.validdate
       this.spinning=true

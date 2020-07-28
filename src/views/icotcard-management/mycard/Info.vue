@@ -45,6 +45,7 @@ export default {
             showDetailFooter:false,
             spinning:false,
             iccid:'',
+            record:{},
         }
     },
     components:{
@@ -56,11 +57,12 @@ export default {
         handleCancel(){
           this.visible=false
         },
-        showInfo(iccid){
-          this.iccid=iccid
+        showInfo(record){
+          this.record=record
+          this.iccid=record.iccid
           this.visible=true
           this.$nextTick(()=>{
-            this.$refs.baseInfo.init(iccid)
+            this.$refs.baseInfo.init(record)
           })
         },
         changeTabs(key){
@@ -68,7 +70,7 @@ export default {
             case '1':
               // 基本信息
               this.$nextTick(()=>{
-                this.$refs.baseInfo.init(this.iccid)
+                this.$refs.baseInfo.init(this.record)
               })
               break;
             case '2':

@@ -2,11 +2,15 @@
 <template>
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="卡号/iccid模糊查询" style="width: 160px" v-model="cardnoOrIccid" :allowClear="true" />
+      <a-input
+        placeholder="卡号/iccid模糊查询"
+        style="width: 160px"
+        v-model="cardnoOrIccid"
+        :allowClear="true"
+      />
 
       <a-select
-        placeholder="卡状态" 
-        @change="postChangeHandler"
+        placeholder="卡状态"
         v-model="searchParam.status"
         :allowClear="true"
         style="width: 160px"
@@ -16,17 +20,12 @@
         <a-select-option value="停机">停机</a-select-option>
       </a-select>
 
-      <a-input placeholder="所属机构模糊查询" style="width: 160px" v-model="searchParam.orgName" />
-      <a-input placeholder="所属设备模糊查询" style="width: 160px" v-model="searchParam.manId" />
+      <a-input placeholder="所属机构查询" style="width: 160px" v-model="searchParam.orgName" allowClear />
+      <a-input placeholder="所属设备查询" style="width: 160px" v-model="searchParam.manId" allowClear />
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <a-button class="a-button" type="primary" icon="search" @click="advancedFilter">高级筛选</a-button>
-      <a-button
-        class="a-button"
-        type="primary"
-        icon="download"
-        @click="down"
-      >下载</a-button>
+      <a-button class="a-button" type="primary" icon="download" @click="down">下载</a-button>
     </div>
     <br />
     <div style="float:right;margin-bottom:20px;">
@@ -48,10 +47,10 @@
         </div>
       </a-table>
     </div>
-    <AdvancedForm ref="advancedForm" />
-    <AddForm ref="addForm"/>
+    <AdvancedForm ref="advancedForm" @advancedForm="advancedForm" />
+    <AddForm ref="addForm" />
     <Inport ref="inportInfo" />
-    <Info ref='info' />
+    <Info ref="info" />
   </div>
 </template>
 <script>
@@ -60,7 +59,7 @@ import AddForm from './AddForm'
 import Info from './Info'
 import Inport from './inport'
 
-import {getSimInformationList} from '@/api/simCard'
+import { getSimInformationList, formationExportList } from '@/api/simCard'
 
 const columns = [
   {
@@ -68,13 +67,13 @@ const columns = [
     title: '序号',
     width: '70px',
     dataIndex: 'order',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '卡号',
     dataIndex: 'cardno',
-    scopedSlots: { customRender: 'cardno' }
+    scopedSlots: { customRender: 'cardno' },
   },
   {
     align: 'center',
@@ -109,12 +108,12 @@ const columns = [
   {
     align: 'center',
     title: '服务期止',
-    dataIndex: 'validdate'
+    dataIndex: 'validdate',
   },
   {
     align: 'center',
     title: '所属机构',
-    dataIndex: 'orgName'
+    dataIndex: 'orgName',
   },
   {
     align: 'center',
@@ -124,13 +123,13 @@ const columns = [
   {
     align: 'center',
     title: '出厂日期',
-    dataIndex:'outDate',
+    dataIndex: 'outDate',
   },
   {
-    align:'center',
-    title:'SIM卡有限期',
-    dataIndex:'beOverdueTime'
-  }
+    align: 'center',
+    title: 'SIM卡有限期',
+    dataIndex: 'beOverdueTime',
+  },
 ]
 
 export default {
@@ -139,31 +138,31 @@ export default {
     AdvancedForm,
     AddForm,
     Info,
-    Inport
+    Inport,
   },
   data() {
     return {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
       searchParam: {},
       visible: false,
-      cardnoOrIccid:'',
+      cardnoOrIccid: '',
     }
   },
   computed: {},
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'icotcard-management-mycard') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     init() {
@@ -172,19 +171,23 @@ export default {
     searchAction(opt) {
       let that = this
       //  判断是卡号还是iccid
-      if(this.cardnoOrIccid){
-        if(this.cardnoOrIccid.length>13){
-          this.searchParam.iccid=this.cardnoOrIccid
-          this.searchParam.cardno=''
-        }else{
-          this.searchParam.cardno=this.cardnoOrIccid
+      if (this.cardnoOrIccid) {
+        if (this.cardnoOrIccid.length > 13) {
+          this.searchParam.iccid = this.cardnoOrIccid
+          this.searchParam.cardno =null
+        } else {
+          this.searchParam.cardno = this.cardnoOrIccid
         }
+      } else {
+        this.searchParam.cardno = null
+        this.searchParam.iccid = null
       }
+      console.log(this.searchParam)
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getSimInformationList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -192,10 +195,11 @@ export default {
           })
           //设置数据总条数
           const pagination = { ...that.pagination }
-          pagination.total = res.data.total
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -203,36 +207,102 @@ export default {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
-      this.searchAction()
+      this.searchAction({ current: pagination.current })
     },
     // 高级筛选
-    advancedFilter(){
+    advancedFilter() {
       this.$refs.advancedForm.showAdvancedForm()
     },
-    postChangeHandler(stationId){
-      this.personSelectDataSource = []
-      // getUserByStation({ stationId: stationId }).then(res => (this.personSelectDataSource = res.data))
-    },
     // 更新SIM卡
-    updateSimInfo(){
-
+    updateSimInfo() {},
+    // 高级筛选
+    advancedForm(params) {
+      this.loading = true
+      let _searchParam = Object.assign({}, params)
+      console.log('执行搜索...', _searchParam)
+      getSimInformationList(_searchParam)
+        .then((res) => {
+          this.loading = false
+          this.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...this.pagination }
+          pagination.total = res.data.total
+          this.pagination = pagination
+        })
+        .catch((err) => (this.loading = false))
     },
     // 下载
-    down(){
-      
+    down() {
+      this.loading=true
+      let that=this
+      let downParams = Object.assign({}, { ...this.searchParam })
+      console.log('下载表格参数', downParams)
+      formationExportList(downParams).then((res) => {
+        this.loading = false
+        if (res instanceof Blob) {
+          const isFile = res.type === 'application/vnd.ms-excel'
+          //const isFile = res.type === 'application/msword'
+          const isJson = res.type === 'application/json'
+          if (isFile) {
+            //返回文件 则下载
+            const objectUrl = URL.createObjectURL(res)
+            const a = document.createElement('a')
+            document.body.appendChild(a)
+            a.style = 'display: none'
+            a.href = objectUrl
+            a.download = '物联网卡列表.xls'
+            a.click()
+            document.body.removeChild(a)
+            that.$message.info('下载成功')
+            return
+          } else if (isJson) {
+            //返回json处理
+            var reader = new FileReader()
+            reader.onload = function (e) {
+              let _res = null
+              try {
+                _res = JSON.parse(e.target.result)
+              } catch (err) {
+                _res = null
+              }
+              if (_res !== null) {
+                if (_res.code !== 0) {
+                  that.$message.info(_res.message)
+                } else {
+                  that.$message.info('下载成功')
+                }
+              } else {
+                that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                return
+              }
+            }
+            reader.readAsText(res)
+          } else {
+            that.$message.info('不支持的类型:' + res)
+          }
+        }
+      })
     },
     // 导入
-    inportInfo(){
+    inportInfo() {
       this.$refs.inportInfo.showInport()
     },
     // 新增
-    addInfo(){
+    addInfo() {
       this.$refs.addForm.showAddForm()
     },
-    showInfo(record){
-      this.$refs.info.showInfo(record.iccid)
-    }
-  }
+    showInfo(record) {
+      console.log('record',record)
+      if(record.iccid){
+        this.$refs.info.showInfo(record)
+      }else{
+        this.$message.warning('本条数据没有iccid，无法查询基本信息')
+      }
+    },
+  },
 }
 </script>
 <style scoped>

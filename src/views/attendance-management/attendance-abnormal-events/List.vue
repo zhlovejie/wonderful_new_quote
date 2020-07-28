@@ -208,6 +208,7 @@ export default {
   },
   methods: {
     init() {
+      console.log(111)
       let that = this
       that.searchParam.searchStatus = that.activeKey
       let queue = []

@@ -49,13 +49,13 @@
           </a-select>
         </a-form-item>
         <a-form-item label="发卡日期">
-          <a-range-picker @change="startDateChange" />  <!--beginSaledate endSaledate-->
+          <a-range-picker @change="saleDateChange" v-model="saleDate" />  <!--beginSaledate endSaledate-->
         </a-form-item>
         <a-form-item label="激活日期">
-          <a-range-picker @change="startDateChange" /> <!--beginActivationdate endActivationdate-->
+          <a-range-picker @change="activeDateChange" v-model="activeDate" /> <!--beginActivationdate endActivationdate-->
         </a-form-item>
         <a-form-item label="服务期止">
-          <a-range-picker @change="startDateChange" />  <!--beginValiddate endValiddate-->
+          <a-range-picker @change="validDateChange" v-model="validDate" />  <!--beginValiddate endValiddate-->
         </a-form-item>
          <h3 style="font-weight:600">卡流量信息</h3>
         <a-form-item label="是否超量">
@@ -75,10 +75,10 @@
           <a-input placeholder="主板号模糊查询" v-model="form.manId" />
         </a-form-item>
         <a-form-item label="出厂日期">
-          <a-range-picker @change="startDateChange" />  <!--beginOutTime endOutTime-->
+          <a-range-picker @change="outDateChange" v-model="outDate" />  <!--beginOutTime endOutTime-->
         </a-form-item>
         <a-form-item label="SIM卡有限期">
-          <a-range-picker @change="startDateChange" />  <!--beginBeOverdueTime endBeOverdueTime-->
+          <a-range-picker @change="beOverDateChange" v-model="beOverDate" />  <!--beginBeOverdueTime endBeOverdueTime-->
         </a-form-item>
       </a-form>
     </a-spin>
@@ -92,24 +92,100 @@ export default {
     return {
       visible: false,
       spinning: false,
-      form: this.$form.createForm(this),
+      form: {},
+      saleDate:[undefined,undefined],
+      activeDate:[undefined,undefined],
+      validDate:[undefined,undefined],
+      outDate:[undefined,undefined],
+      beOverDate:[undefined,undefined],
     }
   },
   methods: {
     showAdvancedForm() {
       this.visible = true
+      this.resetForm()
     },
     handleCancel() {
       this.visible = false
     },
     // 重置
-    resetForm() {},
+    resetForm() {
+      this.form={}
+      this.saleDate=[undefined,undefined]
+      this.activeDate=[undefined,undefined]
+      this.validDate=[undefined,undefined]
+      this.outDate=[undefined,undefined]
+      this.beOverDate=[undefined,undefined]
+    },
     // 查询
-    searchForm() {},
+    searchForm() {
+      this.$emit('advancedForm',this.form)
+      this.visible = false
+    },
     // 发卡日期
-    startDateChange(date, dateString){
-      // console.log(date)
-      // console.log(dateString)
+    saleDateChange(date, dateString){
+      if (Array.isArray(date)) {
+        if (date.length === 2) {
+          this.saleDate=date
+          this.form.beginSaledate = date[0].format('YYYY-MM-DD')
+          this.form.endSaledate = date[1].format('YYYY-MM-DD')
+        } else {
+          this.form.beginSaledate = undefined
+          this.form.endSaledate = undefined
+        }
+      }
+    },
+    // 激活日期
+    activeDateChange(date, dateString){
+      if (Array.isArray(date)) {
+        if (date.length === 2) {
+          this.activeDate=date
+          this.form.beginActivationdate = date[0].format('YYYY-MM-DD')
+          this.form.endActivationdate = date[1].format('YYYY-MM-DD')
+        } else {
+          this.form.beginActivationdate = undefined
+          this.form.endActivationdate = undefined
+        }
+      }
+    },
+    // 服务日期
+    validDateChange(date, dateString){
+      if (Array.isArray(date)) {
+        if (date.length === 2) {
+          this.validDate=date
+          this.form.beginValiddate = date[0].format('YYYY-MM-DD')
+          this.form.endValiddate = date[1].format('YYYY-MM-DD')
+        } else {
+          this.form.beginValiddate = undefined
+          this.form.endValiddate = undefined
+        }
+      }
+    },
+    // 出厂日期
+    outDateChange(date, dateString){
+      if (Array.isArray(date)) {
+        if (date.length === 2) {
+          this.outDate=date
+          this.form.beginOutTime = date[0].format('YYYY-MM-DD')
+          this.form.endOutTime = date[1].format('YYYY-MM-DD')
+        } else {
+          this.form.beginOutTime = undefined
+          this.form.endOutTime = undefined
+        }
+      }
+    },
+    // sim卡有效期日期
+    beOverDateChange(date, dateString){
+      if (Array.isArray(date)) {
+        if (date.length === 2) {
+          this.beOverDate=date
+          this.form.beginBeOverdueTime = date[0].format('YYYY-MM-DD')
+          this.form.endBeOverdueTime = date[1].format('YYYY-MM-DD')
+        } else {
+          this.form.beginBeOverdueTime = undefined
+          this.form.endBeOverdueTime = undefined
+        }
+      }
     },
   }
 }
