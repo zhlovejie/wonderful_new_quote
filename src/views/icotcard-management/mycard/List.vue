@@ -182,7 +182,6 @@ export default {
         this.searchParam.cardno = null
         this.searchParam.iccid = null
       }
-      console.log(this.searchParam)
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
