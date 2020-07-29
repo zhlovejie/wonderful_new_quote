@@ -65,8 +65,8 @@ export function blueprintMenuDel (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/blueprintMenu/delete',
-    method: 'get',
-    params: parameter
+    method: 'post',
+    data: parameter
   })
 }
 
@@ -78,4 +78,57 @@ export function blueprintMenuAddOrUpdate (parameter) {
     data: parameter
   })
 }
+
+// 获取上传图片的路径
+export function getUploadPath () {
+  return system.baseURL + '/RDFileUpload/uploadFile'
+}
+
+
+export function blueprintFileAdd (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/add',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function blueprintFileAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/addOrUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function blueprintFileDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function blueprintFileDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function blueprintFilePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 //---------------------图纸管理 END-----------------------
