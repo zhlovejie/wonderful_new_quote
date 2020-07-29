@@ -16,7 +16,12 @@
         >{{item.departmentName}}</a-select-option>
       </a-select>
 
-      <a-select placeholder="选择岗位" v-model="searchParam.stationId" :allowClear="true" style="width: 180px">
+      <a-select
+        placeholder="选择岗位"
+        v-model="searchParam.stationId"
+        :allowClear="true"
+        style="width: 180px"
+      >
         <a-select-option
           v-for="item in postSelectDataSource"
           :key="item.id"
@@ -60,12 +65,9 @@
 <script>
 import {
   departmentList, //所有部门
-  getStationList //获取部门下面的岗位
+  getStationList, //获取部门下面的岗位
 } from '@/api/systemSetting'
-import {
-  blueprintPermissionList,
-  blueprintPermissionDel,
-} from '@/api/researchManagement'
+import { blueprintPermissionList, blueprintPermissionDel } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import moment from 'moment'
 const columns = [
@@ -74,46 +76,46 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'permissionName'
+    dataIndex: 'permissionName',
   },
   {
     align: 'center',
     title: '权限岗位',
     dataIndex: 'stationNames',
-    scopedSlots: { customRender: 'stationNames' }
+    scopedSlots: { customRender: 'stationNames' },
   },
   {
     align: 'center',
     title: '备注',
-    dataIndex: 'remark'
+    dataIndex: 'remark',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'research-managements-drawing-managements-permissions',
   components: {
-    AddForm: AddForm
+    AddForm: AddForm,
   },
   data() {
     return {
-      searchParam:{},
+      searchParam: {},
       columns: columns,
       dataSource: [],
       depSelectDataSource: [],
       postSelectDataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -121,19 +123,19 @@ export default {
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'research-managements-drawing-managements-permissions') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     moment,
     init() {
       let that = this
-      departmentList().then(res => {
+      departmentList().then((res) => {
         that.depSelectDataSource = res.data
       })
       this.searchAction()
@@ -144,7 +146,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       blueprintPermissionList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -156,7 +158,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -168,15 +170,15 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if(['add','edit','view'].includes(actionType)){
+      if (['add', 'edit', 'view'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record)
       } else if (actionType === 'del') {
         blueprintPermissionDel(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
       } else {
@@ -186,12 +188,12 @@ export default {
     depChangeHandler(dep_id) {
       let that = this
       that.postSelectDataSource = []
-      that.searchParam = Object.assign({},that.searchParam,{stationId:undefined})
-      return getStationList({ id: dep_id }).then(res => {
+      that.searchParam = Object.assign({}, that.searchParam, { stationId: undefined })
+      return getStationList({ id: dep_id }).then((res) => {
         that.postSelectDataSource = res.data
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -206,7 +208,7 @@ export default {
 .main-wrapper {
   margin-top: 20px;
 }
-.__station_names{
+.__station_names {
   display: inline-block;
   max-width: 800px;
   word-break: break-all;

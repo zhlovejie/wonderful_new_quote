@@ -102,6 +102,7 @@ export default {
       })
     },
     handleClick (selectedKeys,nodes) { // 点击树结构菜单
+      debugger
       let that = this
       that.selectedKeys = selectedKeys
       that.currentItem = Object.assign({},nodes.node.dataRef)
@@ -116,6 +117,9 @@ export default {
         if(n && Array.isArray(n.subList) && n.subList.length > 0){
           for(let _n of n.subList){
             _n.superiorId = n.id
+            if(+_n.type === 2){  //产品层 禁止选择
+              _n.selectable = false
+            }
             fillParentId(_n)
           }
         }

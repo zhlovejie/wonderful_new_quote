@@ -7,7 +7,7 @@
             <td>上级</td>
             <td>
               <a-form-item>
-                <a-input 
+                <a-input
                   v-if="!isView"
                   disabled
                   style="width:100%;"
@@ -15,9 +15,6 @@
                 />
                 <span v-else>{{detail.permissionName}}</span>
               </a-form-item>
-              <!-- <a-form-item hidden>
-                <a-input v-decorator="['superiorId',{initialValue:detail.superiorId}]" />
-              </a-form-item> -->
               <a-form-item hidden>
                 <a-input v-decorator="['menuId',{initialValue:detail.menuId}]" />
               </a-form-item>
@@ -30,7 +27,7 @@
             <td style="width:120px;">名称</td>
             <td>
               <a-form-item>
-                <a-input 
+                <a-input
                   v-if="!isView"
                   placeholder="名称"
                   allowClear
@@ -46,12 +43,12 @@
             <td style="width:120px;">代码</td>
             <td>
               <a-form-item>
-                <a-input 
+                <a-input
                   v-if="!isView"
                   placeholder="产品代码"
                   allowClear
                   style="width:100%;"
-                  v-decorator="['productCode', {initialValue:detail.productCode, rules: [{ required: true, message: '输入产品代码' }] }]"
+                  v-decorator="['productCode', {initialValue:detail.productCode, rules: [{ required: false, message: '输入产品代码' }] }]"
                 />
                 <span v-else>{{detail.productCode}}</span>
               </a-form-item>
@@ -62,7 +59,10 @@
             <td style="width:120px;">类型</td>
             <td>
               <a-form-item>
-                <a-radio-group v-if="!isView" v-decorator="['fileType',{initialValue: detail.fileType}]">
+                <a-radio-group
+                  v-if="!isView"
+                  v-decorator="['fileType',{initialValue: detail.fileType}]"
+                >
                   <a-radio :value="1">研发图纸</a-radio>
                   <a-radio :value="2">工艺图纸</a-radio>
                 </a-radio-group>
@@ -87,7 +87,14 @@
                   </a-upload>
                 </div>
                 <div v-else>
-                  <img v-if="detail.fileUrl" :src="detail.fileUrl" style="width:48px;height:auto;overflow:hidden;" alt="">
+                  <template v-if="detail.fileUrl">
+                    <img
+                      @click="showImg(detail.fileUrl)"
+                      alt="文件图片"
+                      :src="detail.fileUrl"
+                      style="width:48px;height:auto;overflow:hidden;"
+                    />
+                  </template>
                   <span v-else>无</span>
                 </div>
               </a-form-item>
@@ -97,12 +104,12 @@
             <td style="width:120px;">图号</td>
             <td>
               <a-form-item>
-                <a-input 
+                <a-input
                   v-if="!isView"
                   placeholder="产品图号"
                   allowClear
                   style="width:100%;"
-                  v-decorator="['pictureNum', {initialValue:detail.pictureNum, rules: [{ required: true, message: '输入产品图号' }] }]"
+                  v-decorator="['pictureNum', {initialValue:detail.pictureNum, rules: [{ required: false, message: '输入产品图号' }] }]"
                 />
                 <span v-else>{{detail.pictureNum}}</span>
               </a-form-item>
@@ -112,7 +119,7 @@
             <td>备注</td>
             <td>
               <a-form-item>
-                <a-textarea 
+                <a-textarea
                   v-if="!isView"
                   placeholder
                   :rows="2"
@@ -129,26 +136,27 @@
         </div>
       </a-form>
     </a-spin>
+    <ImgView ref="imgView" />
   </div>
 </template>
 <script>
 import { blueprintFileDetail, blueprintFileAddOrUpdate, getUploadPath } from '@/api/researchManagement'
 import moment from 'moment'
-
+import ImgView from '@/components/CustomerList/ImgView'
 let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'AddForm',
-  components: {},
-  props:{
-    param:{
-      type:Object,
-      default:() => {}
+  components: { ImgView },
+  props: {
+    param: {
+      type: Object,
+      default: () => {},
     },
-    action:{
-      type:String,
-      default:''
-    }
+    action: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -160,6 +168,8 @@ export default {
       record: {},
       uploadPath: getUploadPath,
       fileList: [],
+      previewVisible: false,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
@@ -176,8 +186,8 @@ export default {
       return this.type === 'add'
     },
   },
-  created(){
-    this.query(this.action,this.param)
+  created() {
+    this.query(this.action, this.param)
   },
   methods: {
     async query(type, record) {
@@ -196,7 +206,12 @@ export default {
 
       if (that.isAdd) {
         let { id, superiorId, menuName } = that.record.params
-        that.detail = { permissionId:id, menuId:superiorId, permissionName: menuName }
+        that.detail = {
+          permissionId: id,
+          menuId: superiorId,
+          permissionName: menuName,
+          fileType: that.userInfo.departmentName.includes('工艺') ? 2 : 1,
+        }
       } else {
         let task1 = blueprintFileDetail({ id: that.record.record.id }).then((res) => {
           that.detail = res.data
@@ -228,13 +243,12 @@ export default {
           } else {
             //values.id = that.record.params.id || 0
           }
-          if (that.fileList.length > 0) {
-            values.fileUrl = that.fileList[0].url
+          if(that.fileList.length === 0){
+            that.$message.info('请上传文件')
+            return
           }
-          //values.superiorId = that.detail.id
-          //values.type = that.detail.type || that.record.params.type
-          //values.type = 2
-          console.log('Received values of form: ', values)
+          values.fileUrl = that.fileList[0].url
+          //console.log('Received values of form: ', values)
           that.spinning = true
 
           blueprintFileAddOrUpdate(values)
@@ -269,9 +283,17 @@ export default {
       })
       this.fileList = fileList
     },
-    formatHTML(str){
-      return str
-    }
+    formatHTML(htmlStr) {
+      if (typeof htmlStr !== 'string') {
+        return ''
+      }
+      htmlStr = htmlStr.replace(/[\n\r]/g, '<br/>')
+      htmlStr = htmlStr.replace(/\s+/g, '&nbsp;')
+      return htmlStr
+    },
+    showImg(url) {
+      this.$refs.imgView && this.$refs.imgView.show(url)
+    },
   },
 }
 </script>

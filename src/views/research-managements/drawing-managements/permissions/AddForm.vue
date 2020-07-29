@@ -16,10 +16,11 @@
             <td style="width:120px;">名称</td>
             <td>
               <a-form-item>
-                <a-input 
-                  placeholder="名称" 
-                  allowClear style="width:100%;" 
-                  v-decorator="['permissionName', {initialValue:detail.permissionName, rules: [{ required: true, message: '输入名称' }] }]" 
+                <a-input
+                  placeholder="名称"
+                  allowClear
+                  style="width:100%;"
+                  v-decorator="['permissionName', {initialValue:detail.permissionName, rules: [{ required: true, message: '输入名称' }] }]"
                 />
               </a-form-item>
             </td>
@@ -27,8 +28,15 @@
           <tr>
             <td>权限岗位</td>
             <td>
-              <a-form-item hasFeedback :validateStatus="depPostTreeValidateStatus" :help="depPostTreeHelp">
-                <DepPostTree :fillPost="detail.stations ? detail.stations : []" @change="depPostTreeChange" />
+              <a-form-item
+                hasFeedback
+                :validateStatus="depPostTreeValidateStatus"
+                :help="depPostTreeHelp"
+              >
+                <DepPostTree
+                  :fillPost="detail.stations ? detail.stations : []"
+                  @change="depPostTreeChange"
+                />
               </a-form-item>
             </td>
           </tr>
@@ -37,7 +45,7 @@
             <td>
               <a-form-item>
                 <a-textarea
-                  placeholder=""
+                  placeholder
                   :rows="2"
                   v-decorator="['remark', {initialValue:detail.remark, rules: [{ required: false, message: '输入备注' }] }]"
                 />
@@ -45,21 +53,20 @@
             </td>
           </tr>
         </table>
-        
       </a-form>
     </a-spin>
   </a-modal>
 </template>
 <script>
-import {blueprintPermissionAddOrUpdate } from '@/api/researchManagement'
+import { blueprintPermissionAddOrUpdate } from '@/api/researchManagement'
 import moment from 'moment'
 import DepPostTree from './DepPostTree'
 import { values } from 'mockjs2'
 
 export default {
   name: 'AddForm',
-  components:{
-    DepPostTree
+  components: {
+    DepPostTree,
   },
   data() {
     return {
@@ -68,14 +75,14 @@ export default {
       spinning: false,
       type: 'view',
       detail: {},
-      depPostList:[],
-      depPostTreeValidateStatus:null,
-      depPostTreeHelp:''
+      depPostList: [],
+      depPostTreeValidateStatus: null,
+      depPostTreeHelp: '',
     }
   },
   computed: {
     modalTitle() {
-      return `${this.isView ? '查看' : (this.isAdd ? '新增' : '编辑')}图纸权限`
+      return `${this.isView ? '查看' : this.isAdd ? '新增' : '编辑'}图纸权限`
     },
     isView() {
       return this.type === 'view'
@@ -90,6 +97,7 @@ export default {
   methods: {
     async query(type, record) {
       let that = this
+      that.depPostTreeHelp = ''
       that.depPostTreeValidateStatus = null
       that.depPostList = []
       that.form.resetFields()
@@ -105,7 +113,7 @@ export default {
     },
     handleSubmit() {
       let that = this
-      if(that.isView){
+      if (that.isView) {
         that.handleCancel()
         return
       }
@@ -116,18 +124,18 @@ export default {
           if (that.isEdit) {
             values.id = that.detail.id
           }
-          if(that.depPostList.length === 0){
+          if (that.depPostList.length === 0) {
             return
           }
-          values.stationNames = that.depPostList.map(val => val.name).join(',')
-          values.stations = that.depPostList.map(val =>{
-            return {stationId:val.id}
+          values.stationNames = that.depPostList.map((val) => val.name).join(',')
+          values.stations = that.depPostList.map((val) => {
+            return { stationId: val.id }
           })
           console.log('Received values of form: ', values)
           that.spinning = true
-          
+
           blueprintPermissionAddOrUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.handleCancel()
@@ -137,7 +145,7 @@ export default {
                 that.$message.warning(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               that.spinning = false
               that.$message.error('操作失败')
             })
@@ -147,13 +155,13 @@ export default {
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
     },
-    depPostTreeChange(depPostList){
+    depPostTreeChange(depPostList) {
       //{id:xx,name:''}
       this.depPostList = depPostList || []
       this.depPostTreeValidateStatus = this.depPostList.length > 0 ? null : 'error'
       this.depPostTreeHelp = this.depPostList.length > 0 ? '' : '请选择权限岗位'
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
@@ -164,5 +172,4 @@ export default {
 .custom-table-border >>> .ant-form-item {
   margin-bottom: 0;
 }
-
 </style>

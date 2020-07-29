@@ -132,3 +132,24 @@ export function blueprintFilePageList (parameter) {
 
 
 //---------------------图纸管理 END-----------------------
+
+
+//---------------------图纸反馈记录 --------------------------
+export function blueprintFeedbackDispose (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFeedback/dispose',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function blueprintFeedbackPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFeedback/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------图纸反馈记录 END-----------------------

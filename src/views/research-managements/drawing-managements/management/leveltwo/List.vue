@@ -21,7 +21,7 @@
         </div>
 
         <div slot="url" slot-scope="text">
-          <img v-if="text" :src="text" alt="产品图片" style="width:48px;height:auto;">
+          <img v-if="text" @click="showImg(text)" :src="text" alt="产品图片" style="width:48px;height:auto;">
           <span v-else>无</span>
         </div>
 
@@ -33,14 +33,15 @@
           </a-popconfirm>
         </div>
       </a-table>
-    </div>
 
+    </div>
+    <ImgView ref="imgView" />
     <AddForm ref="addForm" @finish="() => { searchAction(),$emit('finish') }" />
   </div>
 </template>
 
 <script>
-
+import ImgView from '@/components/CustomerList/ImgView'
 import {
   blueprintMenuPageList,
   blueprintMenuDetail,
@@ -92,7 +93,8 @@ const columns = [
 export default {
   name: 'drawing-managements-management-level-2',
   components: {
-    AddForm: AddForm
+    AddForm,
+    ImgView
   },
   props:{
     params:{
@@ -211,6 +213,9 @@ export default {
         return null
       }
       return fNode(node)
+    },
+    showImg(url){
+      this.$refs.imgView && this.$refs.imgView.show(url)
     }
   }
 }

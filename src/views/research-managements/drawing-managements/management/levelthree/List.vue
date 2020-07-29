@@ -22,7 +22,13 @@
         <div slot="fileType" slot-scope="text, record, index">
           <span>{{ {1:'研发图纸',2:'工艺图纸'}[text] }}</span>
         </div>
-        
+        <div slot="remark" slot-scope="text, record, index">
+          <a-tooltip v-if="String(text).length > 10">
+            <template slot="title">{{text}}</template>
+            {{ String(text).slice(0,10) }}...
+          </a-tooltip>
+          <span v-else>{{text}}</span>
+        </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
           <a-divider type="vertical" />
@@ -38,6 +44,7 @@
     </div>
 
     <AddForm ref="addForm" @finish="() => { searchAction(),$emit('finish') }" />
+    <DisposeForm ref="disposeForm" />
   </div>
 </template>
 
@@ -51,6 +58,7 @@ import {
   blueprintFileAddOrUpdate
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
+import DisposeForm from './DisposeForm'
 import moment from 'moment'
 
 const columns = [
@@ -85,7 +93,8 @@ const columns = [
   {
     align: 'center',
     title: '备注',
-    dataIndex: 'remark'
+    dataIndex: 'remark',
+    scopedSlots: { customRender: 'remark' }
   },
   {
     align: 'center',
@@ -115,7 +124,8 @@ const columns = [
 export default {
   name: 'drawing-managements-management-level-3',
   components: {
-    AddForm: AddForm
+    AddForm,
+    DisposeForm
   },
   props:{
     params:{
@@ -191,7 +201,6 @@ export default {
       this.searchAction({ current: pagination.current })
     },
     doAction(actionType, record={}) {
-      debugger
       let that = this
       if(['add','edit','view'].includes(actionType)){
         that.$refs.addForm.query(actionType, {
@@ -213,7 +222,10 @@ export default {
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
-      } else {
+      } else if(actionType === 'back'){
+        that.$refs.disposeForm.query(actionType,record)
+      }
+      else {
         this.$message.info('功能尚未实现！')
       }
     },

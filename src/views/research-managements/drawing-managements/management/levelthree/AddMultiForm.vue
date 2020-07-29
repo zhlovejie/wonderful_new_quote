@@ -13,9 +13,6 @@
                   v-decorator="['permissionName',{initialValue:detail.permissionName}]"
                 />
               </a-form-item>
-              <!-- <a-form-item hidden>
-                <a-input v-decorator="['superiorId',{initialValue:detail.superiorId}]" />
-              </a-form-item> -->
               <a-form-item hidden>
                 <a-input v-decorator="['menuId',{initialValue:detail.menuId}]" />
               </a-form-item>
@@ -56,31 +53,44 @@
           </tr>
         </table>
 
-
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="false"
-          size="small"
-        >
+        <a-table :columns="columns" :dataSource="dataSource" :pagination="false" size="small">
+          <span slot="customTitle">
+            <a href="javascript:void(0);" title="清空全部内容" @click="clearAll">清空</a>
+          </span>
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="uploadFileName" slot-scope="text, record, index">
             <span style="display:inline-block;width:100px;word-break: break-all;">{{text}}</span>
           </div>
-          
+
           <div slot="pictureNum" slot-scope="text, record">
-            <a-input placeholder="图号" :value="record.pictureNum" @change="inputChange(record.key,'pictureNum',$event)"/>
+            <a-input
+              placeholder="图号"
+              :value="record.pictureNum"
+              @change="inputChange(record.key,'pictureNum',$event)"
+            />
           </div>
           <div slot="fileName" slot-scope="text, record">
-            <a-input placeholder="文件名称" :value="record.fileName" @change="inputChange(record.key,'fileName',$event)"/>
+            <a-input
+              placeholder="文件名称"
+              :value="record.fileName"
+              @change="inputChange(record.key,'fileName',$event)"
+            />
           </div>
           <div slot="productCode" slot-scope="text, record">
-            <a-input placeholder="代码" :value="record.productCode" @change="inputChange(record.key,'productCode',$event)"/>
+            <a-input
+              placeholder="代码"
+              :value="record.productCode"
+              @change="inputChange(record.key,'productCode',$event)"
+            />
           </div>
           <div slot="remark" slot-scope="text, record">
-            <a-input placeholder="备注" :value="record.remark" @change="inputChange(record.key,'remark',$event)"/>
+            <a-input
+              placeholder="备注"
+              :value="record.remark"
+              @change="inputChange(record.key,'remark',$event)"
+            />
           </div>
           <div slot="action" slot-scope="text, record">
             <a type="primary" @click="doRemoveAction(record.key)">删除</a>
@@ -106,58 +116,58 @@ let columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '文件',
     dataIndex: 'uploadFileName',
-    scopedSlots: { customRender: 'uploadFileName' }
+    scopedSlots: { customRender: 'uploadFileName' },
   },
   {
     align: 'center',
     title: '图号',
     dataIndex: 'pictureNum',
-    scopedSlots: { customRender: 'pictureNum' }
+    scopedSlots: { customRender: 'pictureNum' },
   },
   {
     align: 'center',
     title: '名称',
     dataIndex: 'fileName',
-    scopedSlots: { customRender: 'fileName' }
+    scopedSlots: { customRender: 'fileName' },
   },
   {
     align: 'center',
     title: '代码',
     dataIndex: 'productCode',
-    scopedSlots: { customRender: 'productCode' }
+    scopedSlots: { customRender: 'productCode' },
   },
   {
     align: 'center',
     title: '备注',
     dataIndex: 'remark',
-    scopedSlots: { customRender: 'remark' }
+    scopedSlots: { customRender: 'remark' },
   },
   {
     align: 'center',
-    title: '清空',
-    scopedSlots: { customRender: 'action' }
+    //title: '清空',
+    slots: { title: 'customTitle' },
+    scopedSlots: { customRender: 'action' },
   },
 ]
-
 
 export default {
   name: 'AddForm',
   components: {},
-  props:{
-    param:{
-      type:Object,
-      default:() => {}
+  props: {
+    param: {
+      type: Object,
+      default: () => {},
     },
-    action:{
-      type:String,
-      default:''
-    }
+    action: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -170,7 +180,8 @@ export default {
       record: {},
       uploadPath: getUploadPath,
       fileList: [],
-      dataSource:[]
+      dataSource: [],
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
@@ -187,56 +198,56 @@ export default {
       return this.type === 'add'
     },
   },
-  created(){
-    this.query(this.action,this.param)
+  created() {
+    this.query(this.action, this.param)
   },
-  watch:{
-    fileList(val){
+  watch: {
+    fileList(val) {
       let that = this
       let dataSource = []
-      let getFile = (f) => that.dataSource.find(item => item.__url === f.url)
-      val.map(f =>{
-        if(f.url){
+      let getFile = (f) => that.dataSource.find((item) => item.__url === f.url)
+      val.map((f) => {
+        if (f.url) {
           let item = getFile(f)
-          if(item){
-            dataSource.push(Object.assign({},item))
-          }else{
+          if (item) {
+            dataSource.push(Object.assign({}, item))
+          } else {
             let pictureNum = ''
-            try{
+            try {
               pictureNum = f.name.match(/(\d+)/g)[0]
-            }catch(err){
+            } catch (err) {
               pictureNum = ''
             }
             dataSource.push({
-              uploadFileName:f.name,
-              pictureNum:pictureNum,
-              fileName:'',
-              productCode:'',
-              remark:'',
-              __url:f.url
+              key: uuid(),
+              uploadFileName: f.name,
+              pictureNum: pictureNum,
+              fileName: '',
+              productCode: '',
+              remark: '',
+              fileUrl: f.url,
+              __url: f.url,
             })
           }
         }
       })
       that.dataSource = dataSource
-    }
+    },
   },
   methods: {
-    inputChange(key,field,event){
+    inputChange(key, field, event) {
       let that = this
       let dataSource = [...that.dataSource]
-      let target = dataSource.find(item => item.key === key)
-      if(target){
+      let target = dataSource.find((item) => item.key === key)
+      if (target) {
         target[field] = event.target.value
         that.dataSource = dataSource
       }
     },
     async query(type, record) {
-      //debugger
       let that = this
       that.form.resetFields()
       that.type = type
-      //that.detail = Object.assign({}, record)
       that.record = { ...record }
       await that.initData()
       that.visible = true
@@ -247,9 +258,13 @@ export default {
 
       if (that.isAdd) {
         let { id, superiorId, menuName } = that.record.params
-        that.detail = { permissionId:id, menuId:superiorId, permissionName: menuName }
+        that.detail = {
+          permissionId: id,
+          menuId: superiorId,
+          permissionName: menuName,
+          fileType: that.userInfo.departmentName.includes('工艺') ? 2 : 1,
+        }
       } else {
-        
       }
       return Promise.all(queue)
     },
@@ -263,19 +278,15 @@ export default {
         if (!err) {
           if (that.isEdit) {
             values.id = that.detail.id
-          } else {
-            //values.id = that.record.params.id || 0
+          } 
+
+          if(!that.checkFiles()){
+            return 
           }
-          if (that.fileList.length > 0) {
-            values.url = that.fileList[0].url
-          }
-          values.superiorId = that.detail.id
-          //values.type = that.detail.type || that.record.params.type
-          values.type = 2
+
+          values.files = that.dataSource
           console.log('Received values of form: ', values)
           that.spinning = true
-
-          return
           blueprintFileAdd(values)
             .then((res) => {
               that.spinning = false
@@ -294,11 +305,21 @@ export default {
         }
       })
     },
+    checkFiles(){ //目前只检测 文件名称字段
+      let that = this
+      let isEmpty = (obj) => obj === '' || obj === undefined || obj === null
+      for(let item of that.dataSource){
+        if(isEmpty(item.fileName)){
+          that.$message.info('请完善文件名称')
+          return false
+        }
+      }
+      return true
+    },
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
     },
     handleChange(info) {
-      console.log(arguments)
       let fileList = [...info.fileList]
       fileList = fileList.map((file) => {
         if (file.response && file.response.code === 200) {
@@ -308,11 +329,22 @@ export default {
       })
       this.fileList = fileList
     },
-    doRemoveAction(key){
-      let target = this.dataSource.find(item => item.key === key)
-      if(target){
-        this.fileList = this.fileList.filter(f => f.url !== target.__url)
+    doRemoveAction(key) {
+      let target = this.dataSource.find((item) => item.key === key)
+      if (target) {
+        this.fileList = this.fileList.filter((f) => f.url !== target.__url)
       }
+    },
+    clearAll(){
+      let dataSource = [...this.dataSource]
+      dataSource.map(item =>{
+        item.pictureNum = ''
+        item.fileName = ''
+        item.productCode = ''
+        item.remark = ''
+        return item
+      })
+      this.dataSource = dataSource
     }
   },
 }
