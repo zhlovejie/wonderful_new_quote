@@ -41,7 +41,7 @@
         <a-form-item label="活动状态" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-select
             placeholder="活动状态"
-            v-model="form.activeState">
+            v-model="form.activestatus">
           <a-select-option value="开机">开机</a-select-option>
           <a-select-option value="关机">关机</a-select-option>
           </a-select>
@@ -116,7 +116,6 @@ export default {
     },
     // 查询
     searchForm() {
-      this.form.current=1
       this.$emit('advancedForm',this.form)
       this.visible = false
     },

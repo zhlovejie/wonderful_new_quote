@@ -23,7 +23,7 @@
       <a-input placeholder="所属机构查询" style="width: 160px" v-model="searchParam.orgName" allowClear />
       <a-input placeholder="所属设备查询" style="width: 160px" v-model="searchParam.manId" allowClear />
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchHandle">查询</a-button>
       <a-button class="a-button" type="primary" icon="search" @click="advancedFilter">高级筛选</a-button>
       <a-button class="a-button" type="primary" icon="download" @click="down">下载</a-button>
     </div>
@@ -48,7 +48,7 @@
       </a-table>
     </div>
     <AdvancedForm ref="advancedForm" @advancedForm="advancedForm" />
-    <AddForm ref="addForm" />
+    <AddForm ref="addForm" @finish="finish" />
     <Inport ref="inportInfo" @finish="finish" />
     <Info ref="info"  />
   </div>
@@ -151,6 +151,7 @@ export default {
       searchParam: {},
       visible: false,
       cardnoOrIccid: '',
+      advancedParams:{},
     }
   },
   computed: {},
@@ -167,6 +168,10 @@ export default {
   methods: {
     init() {
       this.searchAction()
+    },
+    searchHandle(){
+      this.advancedParams={}
+      this.searchAction({current:1})
     },
     searchAction(opt) {
       let that = this
@@ -206,7 +211,11 @@ export default {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      if(JSON.stringify(this.advancedParams) == "{}"){
+        this.searchAction({ current: pagination.current })
+      }else{
+        this.searchAction({ current: this.pagination.current,...this.advancedParams},)
+      }
     },
     // 高级筛选
     advancedFilter() {
@@ -216,7 +225,8 @@ export default {
     updateSimInfo() {},
     // 高级筛选
     advancedForm(params) {
-      this.searchAction(params)
+      this.advancedParams=params
+      this.searchAction({current:1,...params})
     },
     // 下载
     down() {

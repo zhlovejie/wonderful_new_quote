@@ -13,7 +13,6 @@
         <a-button
           key="submit"
           type="primary"
-          :loading="spinning"
         >保存</a-button>
       </template>
     </template>
@@ -43,7 +42,6 @@ export default {
             visible:false,
             detailFooter:null,
             showDetailFooter:false,
-            spinning:false,
             iccid:'',
             record:{},
         }

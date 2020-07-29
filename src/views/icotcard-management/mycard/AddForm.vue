@@ -126,6 +126,7 @@ export default {
           addAndUpdateSimInformation(values).then(res=>{
             if(res.code==200){
               this.$message.success(res.msg);
+              this.$emit('finish')
               this.spinning=false
               this.visible=false
             }else{
