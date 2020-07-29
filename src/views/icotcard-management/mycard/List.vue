@@ -35,6 +35,7 @@
     </div>
     <div class="main-wrapper">
       <a-table
+        :scroll="{ x: 2000 }"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -67,17 +68,20 @@ const columns = [
     title: '序号',
     width: '70px',
     dataIndex: 'order',
+    fixed:'left',
     scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '卡号',
     dataIndex: 'cardno',
+    fixed:'left',
     scopedSlots: { customRender: 'cardno' },
   },
   {
     align: 'center',
     title: 'iccid',
+    fixed:'left',
     dataIndex: 'iccid',
   },
   {
@@ -123,7 +127,7 @@ const columns = [
   {
     align: 'center',
     title: '出厂日期',
-    dataIndex: 'outDate',
+    dataIndex: 'outTime',
   },
   {
     align: 'center',
