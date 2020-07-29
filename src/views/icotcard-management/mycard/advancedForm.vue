@@ -41,8 +41,7 @@
         <a-form-item label="活动状态" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-select
             placeholder="活动状态"
-            v-model="form.activeState"
-            style="width:160px">
+            v-model="form.activeState">
           <a-select-option value="开机">开机</a-select-option>
           <a-select-option value="关机">关机</a-select-option>
           </a-select>
@@ -60,8 +59,7 @@
         <a-form-item label="是否超量" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" style="margin-bottom:6px">
           <a-select
             placeholder="是否超量"
-            v-model="form.isExcessive"
-            style="width:160px">
+            v-model="form.isExcessive">
           <a-select-option value=0>未超</a-select-option>
           <a-select-option value=1>已超</a-select-option>
           </a-select>
