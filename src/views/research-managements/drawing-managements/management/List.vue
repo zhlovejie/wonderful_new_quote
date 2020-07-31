@@ -26,14 +26,14 @@
           ref="levelOne"
           :params="currentItem"
           @finish="() => { initTreeData('refresh') }"
-        /> -->
+        />-->
         <LevelThree
           key="l1"
           v-if="+currentItem.type === 0"
           ref="levelThree"
-          :params="currentItem" 
+          :params="currentItem"
           :globalSearch="true"
-          @finish="() => { initTreeData('refresh') }" 
+          @finish="() => { initTreeData('refresh') }"
           @rowhover="rowhoverChange"
         />
         <LevelTwo
@@ -94,7 +94,7 @@ export default {
 
       currentItem: {}, //当前选择的项
       cacheExpandedKeys: [],
-      cacheSelectedKeys:[]
+      cacheSelectedKeys: [],
     }
   },
   watch: {
@@ -127,16 +127,16 @@ export default {
         if (actionType !== 'refresh') {
           //展开根目录
           //that.$nextTick(() => {
-            let rootKey = that.orgTree[0].key
-            let levelOneKey = that.orgTree[0].subList.map((node) => node.key)
-            let expandedKeys = [rootKey, ...levelOneKey]
+          let rootKey = that.orgTree[0].key
+          let levelOneKey = that.orgTree[0].subList.map((node) => node.key)
+          let expandedKeys = [rootKey, ...levelOneKey]
 
-            that.expandedKeys = expandedKeys
-            that.selectedKeys = [rootKey]
-            that.currentItem = that.orgTree[0]
+          that.expandedKeys = expandedKeys
+          that.selectedKeys = [rootKey]
+          that.currentItem = that.orgTree[0]
 
-            that.cacheSelectedKeys = that.orgTree[0]
-            that.cacheExpandedKeys = that.expandedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
+          that.cacheSelectedKeys = that.orgTree[0]
+          that.cacheExpandedKeys = that.expandedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
           //})
         } else {
           that.expandedKeys = that.cacheExpandedKeys
@@ -156,7 +156,7 @@ export default {
       that.selectedKeys = selectedKeys
       that.currentItem = Object.assign({}, nodes.node.dataRef)
 
-      that.cacheSelectedKeys = that.selectedKeys.map(key => that.findNodeByKey(that.orgTree[0],key))
+      that.cacheSelectedKeys = that.selectedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
 
       that.$nextTick(() => {
         that.$refs.levelOne && that.$refs.levelOne.searchAction()
@@ -219,45 +219,38 @@ export default {
       }
       return fNode(node)
     },
-    getNodePath(node,id){
+    getNodePath(node, id) {
       let that = this
       let res = []
       let pid = id
-      while(pid !== null){
-        let target = that.findNode(that.orgTree[0],pid)
-        if(target){
-          res.shift(target)
+      while (pid !== null) {
+        let target = that.findNode(that.orgTree[0], pid)
+        if (target) {
+          res.unshift(target)
           pid = target.superiorId
-        }else{
+        } else {
           break
         }
       }
       return res
     },
-    rowhoverChange(record){
+    rowhoverChange(record) {
       let that = this
-      let {menuId,permissionId} = record
-      that.initTreeData().then(() =>{
-        let node = that.findNode(that.orgTree[0],menuId)
-        //if(!that.expandedKeys.includes(node.key)){
-          //that.expandedKeys = [...that.expandedKeys,node.key]
-          //that.cacheExpandedKeys = [...that.cacheExpandedKeys,node]
-
-          that.expandedKeys = [that.orgTree[0].key,node.key]
-          that.cacheExpandedKeys = [that.orgTree[0],node]
-
-          if(Array.isArray(node.subList)){
-            let targetNode = node.subList.find(n => +n.id === +permissionId)
-            if(targetNode){
-              that.selectedKeys = [targetNode.key]
-              that.cacheSelectedKeys = [targetNode]
-            }
+      let { menuId, permissionId } = record
+      that.initTreeData().then(() => {
+        let nodePaths = that.getNodePath(that.orgTree[0], menuId)
+        that.expandedKeys = nodePaths.map((node) => node.key)
+        that.cacheExpandedKeys = [...nodePaths]
+        let node = nodePaths[nodePaths.length - 1]
+        if (Array.isArray(node.subList)) {
+          let targetNode = node.subList.find((n) => +n.id === +permissionId)
+          if (targetNode) {
+            that.selectedKeys = [targetNode.key]
+            that.cacheSelectedKeys = [targetNode]
           }
-        //}
+        }
       })
-      
-      
-    }
+    },
   },
 }
 </script>
