@@ -214,7 +214,7 @@ export default {
           } else {
             let pictureNum = ''
             try {
-              pictureNum = f.name.match(/(\d+)/g)[0]
+              pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
             } catch (err) {
               pictureNum = ''
             }

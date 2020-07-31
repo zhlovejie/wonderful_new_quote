@@ -3,7 +3,6 @@
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="名称" v-model="searchParam.name" allowClear style="width:160px;margin-right:10px;" />
-      <a-input placeholder="代码" v-model="searchParam.code" allowClear style="width:160px;margin-right:10px;" />
       <a-input placeholder="备注信息" v-model="searchParam.remark" allowClear style="width:160px;margin-right:10px;;" />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
@@ -151,7 +150,6 @@ export default {
       this.searchAction({ current: pagination.current })
     },
     doAction(actionType, record={}) {
-      debugger
       let that = this
       if(['add','edit','view'].includes(actionType)){
         that.$refs.addForm.query(actionType, {

@@ -132,6 +132,7 @@ export default {
       let that = this
       that.form.resetFields()
       that.type = type
+      that.fileList = []
       //that.detail = Object.assign({}, record)
       that.record = {...record}
       await that.initData()

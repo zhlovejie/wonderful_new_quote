@@ -2,11 +2,14 @@
   <!-- 图纸权限管理 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="名称" v-model="searchParam.name" allowClear style="width:160px;margin-right:10px;" />
-      <a-input placeholder="代码" v-model="searchParam.code" allowClear style="width:160px;margin-right:10px;" />
+      <a-input placeholder="名称" v-model="searchParam.fileName" allowClear style="width:160px;margin-right:10px;" />
+      <a-input placeholder="代码" v-model="searchParam.productCode" allowClear style="width:160px;margin-right:10px;" />
+      <a-input placeholder="图号" v-model="searchParam.pictureNum" allowClear style="width:160px;margin-right:10px;" />
+      <a-input placeholder="提交人" v-model="searchParam.createdName" allowClear style="width:160px;margin-right:10px;" />
       <a-input placeholder="备注信息" v-model="searchParam.remark" allowClear style="width:160px;margin-right:10px;;" />
+
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <a-button v-if="!globalSearch" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -14,7 +17,9 @@
         :dataSource="dataSource"
         :pagination="pagination"
         :loading="loading"
-        @change="handleTableChange"
+        @change="handleTableChange" 
+        size="middle" 
+        :customRow="customRowFunction"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -29,8 +34,15 @@
           </a-tooltip>
           <span v-else>{{text}}</span>
         </div>
+
+        <div slot="createdTime" slot-scope="text, record, index">
+          <div>创建时间：{{text}}</div>
+          <div v-if="record.modifyTime">修改时间：{{record.modifyTime}}</div>
+        </div>
+        
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
+          <!-- <a type="primary" @click="doAction('view',record)">查看</a> -->
+          <a type="primary" target="_blank" :href="record.fileUrl" >查看</a>
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('edit',record)">修改</a>
           <a-divider type="vertical" />
@@ -45,6 +57,7 @@
 
     <AddForm ref="addForm" @finish="() => { searchAction(),$emit('finish') }" />
     <DisposeForm ref="disposeForm" />
+    <XdocView ref="xdocView" />
   </div>
 </template>
 
@@ -59,63 +72,49 @@ import {
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import DisposeForm from './DisposeForm'
+import XdocView from './XdocView'
 import moment from 'moment'
 
 const columns = [
   {
-    align: 'center',
     title: '序号',
     key: 'order',
-    width: '70px',
     scopedSlots: { customRender: 'order' }
   },
   {
-    align: 'center',
     title: '名称',
     dataIndex: 'fileName'
   },
   {
-    align: 'center',
     title: '代码',
     dataIndex: 'productCode'
   },
   {
-    align: 'center',
     title: '图号',
     dataIndex: 'pictureNum'
   },
   {
-    align: 'center',
     title: '类型',
     dataIndex: 'fileType',
     scopedSlots: { customRender: 'fileType' }
   },
   {
-    align: 'center',
     title: '备注',
     dataIndex: 'remark',
     scopedSlots: { customRender: 'remark' }
   },
   {
-    align: 'center',
     title: '提交人',
     dataIndex: 'createdName'
   },
   {
-    align: 'center',
-    title: '提交时间',
-    dataIndex: 'createdTime'
+    title: '时间',
+    dataIndex: 'createdTime',
+    scopedSlots: { customRender: 'createdTime' }
   },
   {
-    align: 'center',
-    title: '修改时间',
-    dataIndex: 'modifyTime'
-  },
-  {
-    align: 'center',
     title: '操作',
     dataIndex: 'id',
-    width: '150px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -125,7 +124,8 @@ export default {
   name: 'drawing-managements-management-level-3',
   components: {
     AddForm,
-    DisposeForm
+    DisposeForm,
+    XdocView
   },
   props:{
     params:{
@@ -138,6 +138,10 @@ export default {
           menuName:'图纸管理'
         }
       }
+    },
+    globalSearch:{
+      type:Boolean,
+      default:false
     }
   },
   data() {
@@ -166,10 +170,17 @@ export default {
     init() {
       this.inputParam = Object.assign({},this.params)
       let {id,superiorId} = this.inputParam
-      this.searchParam = Object.assign({},this.searchParam,{
-        menuId:superiorId,
-        permissionId:id
-      })
+      if(this.globalSearch){
+        this.searchParam = Object.assign({},this.searchParam,{
+          menuId:undefined,
+          permissionId:undefined
+        })
+      }else{
+        this.searchParam = Object.assign({},this.searchParam,{
+          menuId:superiorId,
+          permissionId:id
+        })
+      }
       this.searchAction({current:1})
     },
     searchAction(opt = {}) {
@@ -200,14 +211,29 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
+    customRowFunction(record,index){
+      let that = this
+      return {
+        on:{
+          click:(event)=>{
+            console.log(record)
+            that.$emit('rowhover',Object.assign({},record))
+          }
+        }
+      }
+    },
     doAction(actionType, record={}) {
       let that = this
-      if(['add','edit','view'].includes(actionType)){
+      if(['add','edit'].includes(actionType)){
         that.$refs.addForm.query(actionType, {
           params:{...that.inputParam},
           record:{...record}
         })
-      } else if (actionType === 'del') {
+      }else if(actionType === 'view'){
+        that.$refs.xdocView.query(record.fileUrl)
+        return 
+      } 
+      else if (actionType === 'del') {
         let node = that.findNode(that.inputParam,record.id)
         if(node && Array.isArray(node.subList) && node.subList.length > 0){
           that.$message.info('该目录下有文件，无法执行删除操作')

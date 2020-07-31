@@ -186,6 +186,20 @@ export default {
       return this.type === 'add'
     },
   },
+  watch: {
+    fileList(val) {
+      let file = val.find(f => f.url)
+      if(file){
+        let pictureNum = ''
+        try {
+          pictureNum = file.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
+        } catch (err) {
+          pictureNum = ''
+        }
+        this.$nextTick(() => this.form.setFieldsValue({pictureNum:pictureNum}))
+      }
+    }
+  },
   created() {
     this.query(this.action, this.param)
   },
