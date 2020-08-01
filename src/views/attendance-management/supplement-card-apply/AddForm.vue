@@ -27,19 +27,19 @@
             <td style="width:120px;">选择异常事件</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="!isDisabled"
                   :disabled="isEdit"
                   placeholder="异常事件"
                   v-decorator="['exceptionId',{initialValue:detail.exceptionId,rules: [{required: true,message: '请选择异常事件'}]}]"
-                  :allowClear="true" 
-                  style="width:100%;" 
+                  :allowClear="true"
+                  style="width:100%;"
                   @change="exceptionChange"
                 >
                   <a-select-option v-for="item in exceptionList" :key="item.id" :value="item.id">
                     {{item.exceptionName}}
                     (
-                      类型：{{getExceptionTypeTxt(item.exceptionType)}}  
+                      类型：{{getExceptionTypeTxt(item.exceptionType)}}
                       发生时间：{{item.happenDate}}
                     )
                   </a-select-option>
@@ -48,7 +48,7 @@
               </a-form-item>
             </td>
           </tr>
-          
+
           <tr>
             <td style="width:120px;">日期</td>
             <td>
@@ -61,11 +61,11 @@
             <td style="width:120px;">异常类型</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="!isDisabled"
                   placeholder="异常类型"
                   v-decorator="['thingType',{initialValue:detail.thingType,rules: [{required: true,message: '选择异常类型'}]}]"
-                  :allowClear="true" 
+                  :allowClear="true"
                   style="width:100%;"
                 >
                   <a-select-option :value="1">设备异常</a-select-option>
@@ -83,11 +83,11 @@
             <td style="width:120px;">缺卡原因</td>
             <td>
               <a-form-item>
-                <a-textarea 
+                <a-textarea
                   v-if="!isDisabled"
                   style="width:100%;"
-                  placeholder="缺卡原因" 
-                  :rows="2" 
+                  placeholder="缺卡原因"
+                  :rows="2"
                   v-decorator="['reason', { initialValue:detail.reason,rules: [{ required: true, message: '请输入缺卡原因' }] }]"
                 />
                 <span v-else>
@@ -109,7 +109,7 @@ import {
   getUserByDep //获取人员
 } from '@/api/systemSetting'
 import {
-  resignApplyDetail , 
+  resignApplyDetail ,
   resignApplyAddAndUpdate ,
   resignApplyApproval,
   signExceptionByCondition,
@@ -168,7 +168,7 @@ export default {
     async query(type,record){
       //debugger
       let that = this
-      
+
       that.actionType = type,
       that.record = Object.assign({},record)
       that.detail = {}
@@ -199,7 +199,7 @@ export default {
             _exceptionList.sort((a,b) => a.happenDate > b.happenDate)
             that.exceptionList = _exceptionList
           }
-          
+
         }
 
         that.exceptionItem = {
@@ -212,7 +212,7 @@ export default {
       })
     },
     getExceptionTypeTxt(type){
-      return {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[type] || '未知'
+      return {1:'上班未打卡',2:'下班未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[type] || '未知'
     },
     fetchSignExceptionByCondition(userId){
       return signExceptionByCondition({exceptionType:1,userId:userId}).then(res =>{
@@ -236,7 +236,7 @@ export default {
             //把异常类型也传过去
             values.exceptionType = target.exceptionType
           }
-          that.spinning = true 
+          that.spinning = true
 
           resignApplyAddAndUpdate(values).then(res =>{
             that.$message.info(res.msg)
