@@ -40,7 +40,7 @@
         :dataSource="dataSource"
         :pagination="pagination"
         :loading="loading"
-        @change="handleTableChange"
+        @change="handleTableChange" 
       >
         <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
         <div slot="cardno" slot-scope="text, record">
@@ -74,6 +74,7 @@ const columns = [
   {
     align: 'center',
     title: '卡号',
+    width: '180px',
     dataIndex: 'cardno',
     fixed:'left',
     scopedSlots: { customRender: 'cardno' },
@@ -81,6 +82,7 @@ const columns = [
   {
     align: 'center',
     title: 'iccid',
+    width: '220px',
     fixed:'left',
     dataIndex: 'iccid',
   },
