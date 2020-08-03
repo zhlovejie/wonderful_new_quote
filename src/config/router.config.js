@@ -169,19 +169,6 @@ export const asyncRouterMap = [
             name: 'workBox',
             meta: { title: '工具箱', icon: 'hdd', keepAlive: false, permission: ['permission'] },
             children: [
-
-              {
-                path: '/system-setting/work-box/ProductList',
-                name: 'productList',
-                component: () => import('@/views/system-setting/work-box/ProductList'),
-                meta: { title: '产品信息', keepAlive: false, permission: ['permission'] }
-              },
-              {
-                path: '/system-setting/work-box/ProductPrice',
-                name: 'ProductPrice',
-                component: () => import('@/views/system-setting/work-box/ProductPrice'),
-                meta: { title: '产品价格', permission: ['permission'] }
-              },
               {
                 path: '/system-setting/work-box/SoftwareProductList',
                 name: 'SoftwareProductList',
@@ -801,7 +788,19 @@ export const asyncRouterMap = [
                 meta: { title: '部门业绩分析', permission: ['permission'] }
               }
             ]
-          }
+          },
+          {
+            path: '/system-setting/work-box/ProductList',
+            name: 'productList',
+            component: () => import('@/views/system-setting/work-box/ProductList'),
+            meta: { title: '产品信息', keepAlive: false, permission: ['permission'] }
+          },
+          {
+            path: '/system-setting/work-box/ProductPrice',
+            name: 'ProductPrice',
+            component: () => import('@/views/system-setting/work-box/ProductPrice'),
+            meta: { title: '产品价格', permission: ['permission'] }
+          },
         ]
       },
       // 生产管理
