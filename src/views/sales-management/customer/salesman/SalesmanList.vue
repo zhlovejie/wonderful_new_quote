@@ -61,7 +61,17 @@
             checkedChildren="有"
             :defaultChecked="(text === 1) ? true : false"
             unCheckedChildren="无"
-            @change="changeJurisdiction(text,record, 'EnterCommon')"/>
+            @change="changeJurisdiction(text,record, 'enterCommon')"/>
+        </template>
+      </span>
+      <span slot="overduePunish" slot-scope="text,record">
+        <template v-if="$auth('salesman:edit')">
+          <a-switch
+            :disabled="!salesJurisdiction.top && !salesJurisdiction.service"
+            checkedChildren="有"
+            :defaultChecked="(text === 1) ? true : false"
+            unCheckedChildren="无"
+            @change="changeJurisdiction(text,record, 'overduePunish')"/>
         </template>
       </span>
       <span slot="action" slot-scope="text,record">
@@ -123,7 +133,7 @@ export default {
           scopedSlots: { customRender: 'canEnterDep' }
         },
         {
-          title: '给其他人员录入客户权限',
+          title: '给他人录入客户权限',
           dataIndex: 'canEnterOther',
           scopedSlots: { customRender: 'canEnterOther' }
         },
@@ -133,12 +143,21 @@ export default {
           scopedSlots: { customRender: 'canEnterCommon' }
         },
         {
-          title: '分配时的排序序号',
+          title: '未维护处罚',
+          dataIndex: 'overduePunish',
+          scopedSlots: { customRender: 'overduePunish' }
+        },
+        {
+          title: '分配序号',
           dataIndex: 'distributeNum'
         },
         {
-          title: '可拥有客户最多数量',
+          title: '客户上限',
           dataIndex: 'maximum'
+        },
+        {
+          title: '再获取间隔时间',
+          dataIndex: 'recoverTime'
         },
         {
           title: '创建人',
@@ -206,8 +225,10 @@ export default {
         this.$set(record, 'canEnterDep', status)
       } else if (type === 'enterOther') {
         this.$set(record, 'canEnterOther', status)
-      } else if (type === 'EnterCommon') {
+      } else if (type === 'enterCommon') {
         this.$set(record, 'canEnterCommon', status)
+      } else if (type === 'overduePunish') {
+        this.$set(record, 'overduePunish', status)
       }
       editSalesman(record).then(res => {
         if (res.code === 200) {

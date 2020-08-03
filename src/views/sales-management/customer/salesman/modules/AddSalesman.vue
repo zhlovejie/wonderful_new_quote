@@ -56,11 +56,18 @@
           <a-input type="hidden" v-decorator="['canEnterOther', {rules: [{required: true,message: '请选择给其他人员录入客户权限！'}],initialValue:1}]"/>
         </a-form-item>
         <a-form-item label="录入公共客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cecsc" @change="changeRtcm"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cecsc" @change="changeEtcm"/>
           <a-input type="hidden" v-decorator="['canEnterCommon', {rules: [{required: true,message: '请选择录入公共客户权限！'}],initialValue:1}]"/>
         </a-form-item>
+        <a-form-item label="未维护处罚" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="op" @change="changeOP"/>
+          <a-input type="hidden" v-decorator="['overduePunish', {rules: [{required: true,message: '请选择未维护处罚！'}],initialValue:0}]"/>
+        </a-form-item>
         <a-form-item label="可拥有客户最多数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['maximum', {rules: [{required: true,message: '可拥有客户最多数量'}],initialValue:230}]"/>
+          <a-input v-decorator="['maximum', {rules: [{required: true,message: '请填写可拥有客户最多数量！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:230}]"/>
+        </a-form-item>
+        <a-form-item label="再获取客户间隔时间（天）" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['recoverTime', {rules: [{required: true, message: '请填写再获取客户间隔时间！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:180}]"/>
         </a-form-item>
       </a-form>
     </div>
@@ -94,7 +101,8 @@ export default {
       cesc: true,
       cedsc: true,
       ceosc: true,
-      cecsc: true
+      cecsc: true,
+      op: true
     }
   },
   created () {
@@ -146,12 +154,19 @@ export default {
         this.form.setFieldsValue({ 'canEnterOther': 0 })
       }
     },
-    changeRtcm (checked) {
+    changeEtcm (checked) {
       if (checked) {
         this.form.setFieldsValue({ 'canEnterCommon': 1 })
       } else {
         this.form.setFieldsValue({ 'canEnterCommon': 0 })
       }
+    },
+    changeOP (checked) {
+      if (checked) {
+        this.form.setFieldsValue({ 'overduePunish': 1 })
+      } else {
+        this.form.setFieldsValue({ 'overduePunish': 0 })
+      }    
     },
     userFilter (input, option) { // 下拉框搜索
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -171,7 +186,9 @@ export default {
             canEnterDep: record.canEnterDep,
             canEnterOther: record.canEnterOther,
             canEnterCommon: record.canEnterCommon,
-            maximum: record.maximum
+            overduePunish: record.overduePunish,
+            maximum: record.maximum,
+            recoverTime: record.recoverTime
           })
         })
         this.cdsc = record.canDistribute === 1 ? true : false
@@ -179,6 +196,7 @@ export default {
         this.cedsc = record.canEnterDep === 1 ? true : false
         this.ceosc = record.canEnterOther === 1 ? true : false
         this.cecsc = record.canEnterCommon === 1 ? true : false
+        this.op = record.overduePunish === 1 ? true : false
       }
     },
     handleCancel () {
@@ -189,6 +207,7 @@ export default {
       this.cedsc = true
       this.ceosc = true
       this.cecsc = true
+      this.op = true
       this.form.resetFields() // 清空表
       this.visible = false
     },
