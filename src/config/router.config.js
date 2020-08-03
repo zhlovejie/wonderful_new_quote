@@ -259,6 +259,18 @@ export const asyncRouterMap = [
                 name: 'ToolPostExplain',
                 component: () => import('@/views/system-setting/work-box/ToolPostExplain'),
                 meta: { title: '岗位说明书', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box/SalesSkill',
+                name: 'SalesSkil',
+                component: () => import('@/views/system-setting/work-box/SalesSkillList'),
+                meta: { title: '销售技巧', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box/ProductDescription',
+                name: 'ProductDescription',
+                component: () => import('@/views/system-setting/work-box/ProductDescriptionList'),
+                meta: { title: '产品说明书', permission: ['permission'] }
               }
             ]
           }
