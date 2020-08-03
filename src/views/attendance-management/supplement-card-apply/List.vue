@@ -3,12 +3,12 @@
   <div class="wdf-custom-wrapper" id="attendance-supplement-card-apply">
     <div class="search-wrapper">
       <a-form layout="inline">
-        
+
         <a-form-item>
-          <a-select 
+          <a-select
             placeholder="选择部门"
             v-model="searchParam.depId"
-            :allowClear="true" 
+            :allowClear="true"
             style="width:180px;"
           >
             <a-select-option
@@ -22,10 +22,10 @@
           <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width:200px;" />
         </a-form-item>
         <a-form-item>
-          <a-select 
+          <a-select
             placeholder="异常类型"
             v-model="searchParam.thingType"
-            :allowClear="true" 
+            :allowClear="true"
             style="width:140px;"
           >
             <a-select-option :value="1">设备异常</a-select-option>
@@ -35,10 +35,10 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-select 
+          <a-select
             placeholder="选择审批状态"
             v-model="searchParam.status"
-            :allowClear="true" 
+            :allowClear="true"
             style="width:140px;"
           >
             <a-select-option :value="1">待审批</a-select-option>
@@ -95,9 +95,9 @@
           {{ {1:'设备异常',2:'忘记打卡',3:'停电',4:'天气异常'}[text] || '未知' }}
         </div>
         <div slot="exceptionType" slot-scope="text, record">
-          {{ {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[text] || '未知' }}
+          {{ {1:'上班未打卡',2:'下班未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[text] || '未知' }}
         </div>
-        
+
         <div slot="reason" slot-scope="text, record">
           <a-tooltip v-if="String(text).length > 15">
             <template slot="title">{{text}}</template>
@@ -105,7 +105,7 @@
           </a-tooltip>
           <span v-else>{{text}}</span>
         </div>
-        
+
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
           <template v-if="+activeKey === 1">
@@ -148,7 +148,7 @@ import {
   resignApplyApproval,
   resignApplyDel,
   resignApplyDetail,
-  resignApplyList, 
+  resignApplyList,
   resignApplySubmittedCount,
   resignApplyWithdraw
 } from '@/api/attendanceManagement'
@@ -342,7 +342,7 @@ export default {
   beforeDestroy(){
     let that = this
     let ele = document.querySelector('#attendance-supplement-card-apply')
-    ele && that.bindEnterFn && ele.removeEventListener('keyup',that.bindEnterFn) 
+    ele && that.bindEnterFn && ele.removeEventListener('keyup',that.bindEnterFn)
   }
 }
 </script>

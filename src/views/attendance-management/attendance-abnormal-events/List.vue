@@ -3,12 +3,12 @@
   <div class="wdf-custom-wrapper" id="attendance-abnormal-events">
     <div class="search-wrapper">
       <a-form layout="inline">
-        
+
         <a-form-item>
-          <a-select 
+          <a-select
             placeholder="选择部门"
             v-model="searchParam.departmentId"
-            :allowClear="true" 
+            :allowClear="true"
             style="width:160px;"
           >
             <a-select-option
@@ -28,8 +28,8 @@
             :allowClear="true"
             style="width:120px;"
           >
-            <a-select-option :value="1">上午未打卡</a-select-option>
-            <a-select-option :value="2">下午未打卡</a-select-option>
+            <a-select-option :value="1">上班未打卡</a-select-option>
+            <a-select-option :value="2">下班未打卡</a-select-option>
             <a-select-option :value="3">迟到</a-select-option>
             <a-select-option :value="4">早退</a-select-option>
             <a-select-option :value="5">加班</a-select-option>
@@ -72,7 +72,7 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="exceptionType" slot-scope="text, record">
-          {{ {1:'上午未打卡',2:'下午未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[text] || '未知' }}
+          {{ {1:'上班未打卡',2:'下班未打卡',3:'迟到',4:'早退',5:'加班',6:'人脸识别异常'}[text] || '未知' }}
         </div>
         <div slot="status" slot-scope="text">
           {{ {0:'待处理',1:'已处理'}[text] || '未知' }}
@@ -81,7 +81,7 @@
           <img v-if="record.faceUrl" :src="text" style="width:48px;height:auto;overflow:hidden;" alt="">
           <span v-else>无</span>
         </div>
-        
+
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="+record.exceptionType === 6">
             <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
@@ -281,7 +281,7 @@ export default {
   beforeDestroy(){
     let that = this
     let ele = document.querySelector('#attendance-abnormal-events')
-    ele && that.bindEnterFn && ele.removeEventListener('keyup',that.bindEnterFn) 
+    ele && that.bindEnterFn && ele.removeEventListener('keyup',that.bindEnterFn)
   }
 }
 </script>
