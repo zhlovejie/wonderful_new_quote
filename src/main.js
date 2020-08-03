@@ -6,7 +6,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store/'
 import { VueAxios } from './utils/request'
-
+import _ from 'lodash'
 // mock
 //import './mock'
 
@@ -29,6 +29,7 @@ Vue.prototype.$message.config({
   maxCount:1 //最大显示数
 })
 
+Vue.prototype.$_ = _
 // import vuePrint from 'vue-print-nb'
 require('video.js/dist/video-js.css')
 require('vue-video-player/src/custom-theme.css')

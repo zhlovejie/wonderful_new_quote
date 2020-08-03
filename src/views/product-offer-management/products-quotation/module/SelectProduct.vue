@@ -4,7 +4,7 @@
     :width="600"
     :visible="visible"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
     :footer="null"
   >
     <div class="customer-list-wrapper">
@@ -17,8 +17,8 @@
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
-          :loading="loading" 
-          @change="handleTableChange" 
+          :loading="loading"
+          @change="handleTableChange"
           size="middle"
         >
           <div slot="order" slot-scope="text, record, index">
@@ -57,6 +57,12 @@ const columns = [
     title: '系列产品型号',
     dataIndex: 'model',
     scopedSlots: { customRender: 'model' },
+  },
+  {
+    align: 'center',
+    title: '产品竞争力',
+    dataIndex: 'priceCoefficientName',
+    scopedSlots: { customRender: 'priceCoefficientName' },
   }
 ]
 
@@ -157,7 +163,7 @@ export default {
             order: index + 1,
             serialNum: index + 1,
             productId: item.productId,
-            price:item.price 
+            price:item.price
           }
           if ([4, 5].includes(item.type)) {
             _item.isRequire = item.type === 4 ? true : false
@@ -176,7 +182,7 @@ export default {
         .sort((a, b) => a.orderNo - b.orderNo)
 
       let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5].includes(item.type))
-      
+
       let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
       groups.map(groupId => {

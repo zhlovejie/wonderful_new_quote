@@ -112,6 +112,12 @@ const columns = [
   },
   {
     align: 'center',
+    title: '面试时间',
+    dataIndex: 'firstDatetime',
+  },
+  
+  {
+    align: 'center',
     title: '初试结果',
     dataIndex: 'firstResult',
     key: 'firstResult',

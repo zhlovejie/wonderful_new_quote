@@ -49,7 +49,17 @@
           <td >本月出勤情况(天)</td>
           <td >
             <a-form-item>
-              <a-input :disabled="isView" v-decorator="['workDays', { rules: [{ required: false, message: '请输入本月出勤情况' }] }]"/>
+              <!-- <a-input :disabled="isView" v-decorator="['workDays', { rules: [{ required: false, message: '请输入本月出勤情况' }] }]"/> -->
+
+              <a-input-number
+                :disabled="isView"
+                style="width:100%;"
+                :min="0"
+                :max="10000"
+                :step="1"
+                v-decorator="['workDays', { rules: [{ required: false, message: '请输入本月出勤情况' }] }]"
+              />
+
             </a-form-item>
           </td>
           <td colspan="2"></td>
@@ -204,7 +214,8 @@
 import moment from 'moment' 
 import {
   handleProbationSurvey, //详情
-  saveHandleProbationSurvey //提交
+  saveHandleProbationSurvey, //提交
+  getAttenceMonthStatiticsCollect //获取出勤天数
 } from '@/api/personnelManagement'
 export default {
   name:'SurveyForm',
@@ -284,8 +295,47 @@ export default {
         this.s4 = obj.userExecution
         this.s5 = obj.userEfficiency
         this.s6 = obj.userAccuracy
+
+        //待提交 自动填充 出勤天数
+        this.record.state === 0 && this.fillWorkDays()
       }).catch(err =>{
+        console.log(err)
         that.spinning = false
+      })
+    },
+    fillWorkDays(){
+      let that = this
+      getAttenceMonthStatiticsCollect({
+        statiticsMonthDate:this.moment().format("YYYY-MM"),
+        userId:that.record.userId,
+      }).then(res =>{
+        /*
+        {
+          "code": 200,
+          "msg": "操作成功",
+          "data": {
+            "jobNum": "10042",
+            "userName": "庞洁",
+            "departmentName": "人力资源部",
+            "userId": 113,
+            "statiticsMonth": "2020-07",
+            "workHours": 20,
+            "workDayNum": 4,
+            "leaveHours": 0,
+            "overWorkHours": 3.5,
+            "travelDayNum": 0,
+            "laterHours": 5,
+            "earlyHours": 2.5,
+            "overLunchNum": 1,
+            "lunchNum": 0
+          }
+        }
+        */
+        if(res && res.data){
+          that.form.setFieldsValue({
+            workDays: res.data.workDayNum || undefined
+          })
+        }
       })
     },
     handleOk(){
@@ -309,7 +359,7 @@ export default {
             saveHandleProbationSurvey(values).then(res =>{
               that.spinning = false
               console.log(res)
-              that.form.resetFields() // 清空表
+              //that.form.resetFields() // 清空表
               that.visible = false 
               that.$message.info(res.msg)
               that.$emit('finish')
