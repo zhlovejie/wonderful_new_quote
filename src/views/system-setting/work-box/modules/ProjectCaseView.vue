@@ -10,16 +10,16 @@
     <div class="table-page-search-wrapper">
       <a-form :form="form">
         <a-row :gutter="24">
-          <a-col :md="12" :sm="24">
+          <a-col :md="24" :sm="24">
             <a-form-item label="案例名称">
               {{ projectCase.caseName }}
             </a-form-item>
           </a-col>
-          <a-col :md="12" :sm="24">
+          <!-- <a-col :md="12" :sm="24">
             <a-form-item label="小区名称">
               {{ projectCase.unitName }}
             </a-form-item>
-          </a-col>
+          </a-col> -->
         </a-row>
         <a-row :gutter="24">
           <a-col :md="24" :sm="24">

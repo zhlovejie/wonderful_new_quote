@@ -235,7 +235,7 @@ export const asyncRouterMap = [
                 path: '/system-setting/work-box/OperationalScheme',
                 name: 'OperationalScheme',
                 component: () => import('@/views/system-setting/work-box/OperationalScheme'),
-                meta: { title: '运行方案', permission: ['permission'] }
+                meta: { title: '技术参数', permission: ['permission'] }
               },
               {
                 path: '/system-setting/work-box/GuidanceManual',

@@ -3,7 +3,7 @@
     <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="名称">
-          <a-input v-model.trim="queryParam.title" placeholder="根据名称模糊查询"/>
+          <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询" :allowClear="true" />
         </a-form-item>
         <template v-if="$auth('document:list')">
           <a-form-item>
@@ -13,7 +13,7 @@
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
             <template v-if="$auth('synopsis:add')">
-              <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
+              <a-button type="primary" icon="plus" @click="handleAction('add',null)">新增</a-button>
             </template>
           </a-form-item>
         </div>
@@ -32,29 +32,37 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('synopsis:one')">
-              <a @click="$refs.preview.show(record)">预览</a>
+              <a target="_blank" :href="viewFormat(record)">预览</a>
             </template>
             <template v-if="$auth('synopsis:edit')">
               <a-divider type="vertical"/>
-              <a @click="handleEdit(record)">编辑</a>
+              <a @click="handleAction('edit',record)">编辑</a>
             </template>
             <template v-if="$auth('synopsis:del')">
               <a-divider type="vertical"/>
-              <a class="delete" @click="() => del(record)">删除</a>
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del',record)">
+                <a href="javascript:;">删除</a>
+              </a-popconfirm>
             </template>
           </span>
         </s-table>
-    <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
+    <!-- <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <modal ref="editModal" @ok="handleSaveOk" @close="handleSaveClose"/>
-    <preview ref="preview" @ok="handleSaveOk"/>
+    <preview ref="preview" @ok="handleSaveOk"/> -->
+    <ToolBoxCommonUploadForm ref="toolBoxCommonUploadForm" @ok="handleSaveOk"/>
   </a-card>
 </template>
 
 <script>
-import { getEnterpriseSynopsisList, delInformation } from '@/api/enterpriseInformation'
+//import { getEnterpriseSynopsisList, delInformation } from '@/api/enterpriseInformation'
+
+import { getFileManagementList, downloadFile, delFileManagement } from '@/api/OperationalScheme'
+
 import { STable } from '@/components'
-import Modal from '../modules/Synopsis'
-import Preview from '../modules/SynopsisPreview'
+//import Modal from '../modules/Synopsis'
+//import Preview from '../modules/SynopsisPreview'
+import ToolBoxCommonUploadForm from '../modules/ToolBoxCommonUploadForm'
+
 
 const columns = [
   {
@@ -66,21 +74,18 @@ const columns = [
   },
   {
     align: 'center',
-    title: '简介',
-    key: 'title',
-    dataIndex: 'title'
+    title: '名称',
+    dataIndex: 'fileName'
   },
   {
     align: 'center',
     title: '操作人',
-    key: 'modifier',
-    dataIndex: 'modifier'
+    dataIndex: 'modifierName'
   },
   {
     align: 'center',
     title: '操作时间',
-    key: 'modifyTime',
-    dataIndex: 'modifyTime'
+    dataIndex: 'modifierTime'
   },
   {
     align: 'center',
@@ -93,20 +98,23 @@ export default {
   name: 'EnterpriseSynopsis',
   components: {
     STable,
-    Modal,
-    Preview
+    //Modal,
+    //Preview,
+    ToolBoxCommonUploadForm
   },
   data () {
     return {
       selectedRowKeys: [],
       selectedRows: [],
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        type:6
+      },
       // 表头
       columns: columns,
       // 初始化加载 必须为 Promise 对象
       loadData: parameter => {
-        return getEnterpriseSynopsisList(Object.assign(parameter, this.queryParam))
+        return getFileManagementList(Object.assign(parameter, this.queryParam))
           .then(res => {
             return res
           }).catch(error => {
@@ -117,43 +125,27 @@ export default {
     }
   },
   methods: {
-    // 新增
-    handleAdd () {
-      this.$refs.modal.add(1)
-    },
-    // 修改详情
-    handleEdit (e) {
-      this.$refs.editModal.edit(e)
-    },
-    // 详情
-    query (e) {
-      this.$refs.queryModal.query(e)
-    },
-    // 删除
-    del (row) {
-      const _this = this
-      this.$confirm({ title: '警告',
-        content: `真的要删除 ${row.title} 吗?`,
-        okText: '删除',
-        okType: 'danger',
-        cancelText: '取消',
-        onOk () {
-          // 在这里调用删除接口
-          delInformation({ 'id': row.id }).then(data => {
-            if (data.code == 200) {
-              _this.$message.success('删除成功')
-              _this.$refs.table.refresh(true)
-            } else {
-              _this.$message.error(data.msg)
-            }
-          }).catch(() => {
-            // Do something
-          })
-        },
-        onCancel () {
-          console.log('Cancel')
-        }
-      })
+    handleAction(type,record){
+      const that = this
+      if(['add','edit'].includes(type)){
+        let _record = record ? {
+          id:record.id,
+          fileName:record.fileName,
+          fileUrl:record.fileUrl
+        } : {}
+        that.$refs.toolBoxCommonUploadForm.query(type,_record,6)  
+      }else if(type === 'del'){
+        delFileManagement({ 'id': record.id }).then(data => {
+          if (data.code == 200) {
+            that.$message.success('删除成功')
+            that.$refs.table.refresh(true)
+          } else {
+            that.$message.error(data.msg)
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
     },
     handleSaveOk () {
       this.$refs.table.refresh(true)
@@ -168,6 +160,20 @@ export default {
       console.log('onSelectChange 点击了')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    viewFormat(record){
+      let url = record.fileUrl
+      let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
+      let isPdf = url => url.endsWith('.pdf')
+      let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
+      if(url){
+        if(isPdf(url) || isImage(url)){
+          return url
+        }else if(isWord){
+          return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+        }
+      }
+      return '#'
     }
   }
 }
