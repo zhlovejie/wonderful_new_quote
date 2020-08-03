@@ -25,18 +25,20 @@
           <a-col :md="24" :sm="24">
             <a-form-item label="图片">
               <template v-for="url in urls">
-                <img :key="url.index" style="width:200px;higth:200px" :src="url"/>
+                <img :key="url.index" class="img" @click="showImg(url)" title="点击查看大图" :src="url"/>
               </template>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
     </div>
+    <ImgView ref="imgView" />
   </a-modal>
 </template>
 <script>
-
+import ImgView from '@/components/CustomerList/ImgView'
 export default {
+  components: { ImgView },
   data () {
     return {
       visible: false, // 是否显示
@@ -58,7 +60,21 @@ export default {
       this.urls = []
       this.form.resetFields() // 清空表
       this.visible = false
-    }
+    },
+    showImg(url) {
+      this.$refs.imgView && this.$refs.imgView.show(url)
+    },
   }
 }
 </script>
+
+<style scoped>
+  .img{
+    max-width: 200px;
+    height: auto;
+    margin-right: 10px;
+    box-shadow: 0 3px 3px #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+</style>
