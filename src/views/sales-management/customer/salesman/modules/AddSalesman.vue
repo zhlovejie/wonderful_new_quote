@@ -63,11 +63,11 @@
           <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="op" @change="changeOP"/>
           <a-input type="hidden" v-decorator="['overduePunish', {rules: [{required: true,message: '请选择未维护处罚！'}],initialValue:0}]"/>
         </a-form-item>
-        <a-form-item label="可拥有客户最多数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['maximum', {rules: [{required: true,message: '请填写可拥有客户最多数量！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:230}]"/>
+        <a-form-item label="客户上限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['maximum', {rules: [{required: true,message: '请填写客户上限！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:230}]"/>
         </a-form-item>
-        <a-form-item label="再获取客户间隔时间（天）" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['recoverTime', {rules: [{required: true, message: '请填写再获取客户间隔时间！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:180}]"/>
+        <a-form-item label="提取周期（天）" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['recoverTime', {rules: [{required: true, message: '请填写提取周期！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:180}]"/>
         </a-form-item>
       </a-form>
     </div>
@@ -175,7 +175,7 @@ export default {
       this.visible = true
       if (record.id != null){
         this.subType = 'edit'
-        this.formTitle = '修改销售人员'
+        this.formTitle = '修改权限分配'
         this.$nextTick(() => {
           this.form.setFieldsValue({
             id: record.id,

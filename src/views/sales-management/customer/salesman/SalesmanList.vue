@@ -156,7 +156,7 @@ export default {
           dataIndex: 'maximum'
         },
         {
-          title: '再获取间隔时间',
+          title: '提取周期',
           dataIndex: 'recoverTime'
         },
         {
