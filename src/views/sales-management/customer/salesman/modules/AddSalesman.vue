@@ -10,7 +10,7 @@
     :maskClosable="false"
   >
     <div>
-      <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;">
+      <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;" class="sForm">
         <a-form-item hidden>
           <a-input v-decorator="['id']"/>
         </a-form-item>
@@ -246,5 +246,7 @@ export default {
 </script>
 
 <style scoped>
-
+.sForm >>> .ant-form-item-label{
+  text-align: left;
+}
 </style>
