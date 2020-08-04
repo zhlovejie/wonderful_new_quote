@@ -118,9 +118,10 @@ export default {
     this.form = this.$form.createForm(this)
   },
   methods: {
-    add () {
+    add (obj = {}) {
       this.addOredit = 'save'
       this.titleType = '新增'
+      this.toolType = obj.toolType || '0'
       this.visible = true
     },
     edit (record) {
@@ -153,6 +154,7 @@ export default {
           _this.confirmLoading = true
           if (_this.addOredit == 'save') {
             _this.$set(values, 'Authorization', _this.$store.getters.token)
+            values.toolType = _this.toolType || 0
             saveBank(values).then((data) => {
               console.log('date', data)
               if (data.code == 200) {

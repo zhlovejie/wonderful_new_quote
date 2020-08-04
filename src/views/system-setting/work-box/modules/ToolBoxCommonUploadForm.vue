@@ -16,6 +16,9 @@
         <a-form-item label="type" hidden>
           <a-input v-decorator="['type',{initialValue:detail.type}]" />
         </a-form-item>
+        <a-form-item label="type" hidden>
+          <a-input v-decorator="['toolType',{initialValue:detail.toolType}]" />
+        </a-form-item>
         <a-form-item label="文件名称">
           <a-input
             placeholder="请输入文件名称"
@@ -82,13 +85,13 @@ export default {
     },
   },
   methods: {
-    query(actionType, record, fileType) {
+    query(actionType, record, fileType,toolType=0) {
       let that = this
       that.form.resetFields()
       that.fileList = []
       that.visible = true
       that.actionType = actionType
-      that.detail = Object.assign({},record || {},{ type: fileType })
+      that.detail = Object.assign({},record || {},{ type: fileType ,toolType:toolType})
       //that.form.setFieldsValue({ type: fileType })
 
       if (that.isEdit) {

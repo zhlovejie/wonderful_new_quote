@@ -273,6 +273,88 @@ export const asyncRouterMap = [
                 meta: { title: '产品说明书', permission: ['permission'] }
               }
             ]
+          },
+          {
+
+            path: '/system-setting/work-box-foreign-trade',
+            component: RouteView,
+            name: 'workBoxForeignTrade',
+            redirect: '/system-setting/work-box-foreign-trade/Qualification',
+            meta: { title: '外贸工具箱', icon: 'hdd', keepAlive: false, permission: ['permission'] },
+            children: [
+              {
+                path: '/system-setting/work-box-foreign-trade/Qualification',
+                name: 'ForeignTradeQualification',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/Qualification'),
+                meta: { title: '资质认证', keepAlive: false ,permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/AccountBank',
+                name: 'ForeignTradeAccountBank',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/AccountBank'),
+                meta: { title: '公司账户', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/EnterpriseVideo',
+                name: 'ForeignTradeEnterpriseVideo',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/EnterpriseVideo'),
+                meta: { title: '企业视频', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/EnterpriseSynopsis',
+                name: 'ForeignTradeEnterpriseSynopsis',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/EnterpriseSynopsis'),
+                meta: { title: '企业简介', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/OperationalScheme',
+                name: 'ForeignTradeOperationalScheme',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/OperationalScheme'),
+                meta: { title: '技术参数', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/DescriptionDocument',
+                name: 'ForeignTradeDescriptionDocument',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/DescriptionDocument'),
+                meta: { title: '软件说明文档', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/ProductPromotionVideo',
+                name: 'ForeignTradeProductPromotionVideo',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/ProductPromotionVideo'),
+                meta: { title: '产品宣传视频', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/TeachingVideoOfProductUse',
+                name: 'ForeignTradeTeachingVideoOfProductUse',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/TeachingVideoOfProductUse'),
+                meta: { title: '产品使用教学视频', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/ElectronicAtlas',
+                name: 'ForeignTradeElectronicAtlas',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/ElectronicAtlas'),
+                meta: { title: '电子图册', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/ProductPoster',
+                name: 'ForeignTradeProductPoster',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/ProductPoster'),
+                meta: { title: '产品海报', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/ProductDescription',
+                name: 'ForeignTradeProductDescription',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/ProductDescription'),
+                meta: { title: '产品使用说明书', permission: ['permission'] }
+              },
+              {
+                path: '/system-setting/work-box-foreign-trade/ClassifiedPublicityVideo',
+                name: 'ForeignTradeClassifiedPublicityVideo',
+                component: () => import('@/views/system-setting/work-box-foreign-trade/ClassifiedPublicityVideo'),
+                meta: { title: '分类宣传小视频', permission: ['permission'] }
+              }
+            ]
           }
         ]
       },

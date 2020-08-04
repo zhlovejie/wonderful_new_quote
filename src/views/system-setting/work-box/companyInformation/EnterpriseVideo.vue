@@ -90,6 +90,16 @@ const columns = [
 
 export default {
   name: 'EnterpriseSynopsis',
+  props:{
+    toolType:{
+      type:String,
+      default:'0'
+    },
+    informationType:{
+      type:String,
+      default:'2'
+    }
+  },
   components: {
     STable,
     Modal
@@ -113,10 +123,17 @@ export default {
       }
     }
   },
+  created(){
+    this.queryParam = Object.assign(
+      {},
+      this.queryParam,
+      {toolType:this.toolType,informationType:this.informationType}
+    )
+  },
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add(2)
+      this.$refs.modal.add({type:this.informationType || 2,toolType:this.toolType})
     },
     // 修改详情
     handleEdit (e) {

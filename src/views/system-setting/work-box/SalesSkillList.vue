@@ -108,7 +108,8 @@ export default {
       selectedRows: [],
       // 查询参数
       queryParam: {
-        type:7
+        type:7,
+        toolType:0
       },
       // 表头
       columns: columns,
@@ -133,7 +134,7 @@ export default {
           fileName:record.fileName,
           fileUrl:record.fileUrl
         } : {}
-        that.$refs.toolBoxCommonUploadForm.query(type,_record,7)  
+        that.$refs.toolBoxCommonUploadForm.query(type,_record,7,0)  
       }else if(type === 'del'){
         delFileManagement({ 'id': record.id }).then(data => {
           if (data.code == 200) {

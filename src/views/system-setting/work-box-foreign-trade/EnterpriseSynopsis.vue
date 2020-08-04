@@ -61,7 +61,7 @@ import { getFileManagementList, downloadFile, delFileManagement } from '@/api/Op
 import { STable } from '@/components'
 //import Modal from '../modules/Synopsis'
 //import Preview from '../modules/SynopsisPreview'
-import ToolBoxCommonUploadForm from './modules/ToolBoxCommonUploadForm'
+import ToolBoxCommonUploadForm from '@/views/system-setting/work-box/modules/ToolBoxCommonUploadForm'
 
 
 const columns = [
@@ -108,8 +108,8 @@ export default {
       selectedRows: [],
       // 查询参数
       queryParam: {
-        type:8,
-        toolType:0
+        type:6,
+        toolType:1
       },
       // 表头
       columns: columns,
@@ -134,7 +134,7 @@ export default {
           fileName:record.fileName,
           fileUrl:record.fileUrl
         } : {}
-        that.$refs.toolBoxCommonUploadForm.query(type,_record,8,0)  
+        that.$refs.toolBoxCommonUploadForm.query(type,_record,6,1)  
       }else if(type === 'del'){
         delFileManagement({ 'id': record.id }).then(data => {
           if (data.code == 200) {

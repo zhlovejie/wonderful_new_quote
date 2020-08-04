@@ -1,10 +1,10 @@
 <template>
-  <BaseEnterpriseVideo ref="baseEnterpriseVideo" :toolType="'0'" :informationType="'4'" />
+  <BaseEnterpriseVideo ref="baseEnterpriseVideo" :toolType="'1'" :informationType="'3'" />
 </template>
 <script>
 import BaseEnterpriseVideo from '@/views/system-setting/work-box/companyInformation/EnterpriseVideo'
 export default {
-  name:'TeachingVideoOfProductUse',
+  name:'ForeignTradeProductPromotionVideo',
   components:{BaseEnterpriseVideo},
   data(){
     return {
@@ -14,7 +14,7 @@ export default {
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'TeachingVideoOfProductUse') {
+        if (to.name === 'ForeignTradeProductPromotionVideo') {
           this.init()
         }
       },

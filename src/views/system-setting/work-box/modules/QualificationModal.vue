@@ -86,7 +86,8 @@ export default {
       config: {
         initialFrameWidth: null,
         initialFrameHeight: 200
-      }
+      },
+      toolType:'0'
     }
   },
   beforeCreate () {
@@ -98,9 +99,10 @@ export default {
     })
   },
   methods: {
-    add () {
+    add (obj = {}) {
       this.visible = true
       this.addOredit = 'save'
+      this.toolType = obj.toolType || '0'
     },
     edit (record) {
       console.log('record', record)
@@ -136,6 +138,7 @@ export default {
           _this.confirmLoading = true
           if (_this.addOredit == 'save') {
             _this.$set(values, 'Authorization', _this.$store.getters.token)
+            values.toolType = _this.toolType || 0
             saveQualification(values).then((data) => {
               console.log('date', data)
               if (data.code == 200) {

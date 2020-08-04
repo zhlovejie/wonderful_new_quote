@@ -120,6 +120,12 @@ const columns = [
 
 export default {
   name: 'Qualification',
+  props:{
+    toolType:{
+      type:String,
+      default:'0'
+    }
+  },
   components: {
     STable,
     Modal,
@@ -162,6 +168,7 @@ export default {
     }
   },
   created () { // 初始化钩子,获取所有产品类型
+    this.queryParam = Object.assign({},this.queryParam,{toolType:this.toolType})
     getQualificationType({ text: '资质类型' }).then(res => {
       this.qualificationTypes = res.data
     })
@@ -169,7 +176,7 @@ export default {
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add()
+      this.$refs.modal.add({toolType:this.toolType})
     },
     // 修改详情
     handleEdit (e) {
