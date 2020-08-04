@@ -1159,6 +1159,22 @@ export const asyncRouterMap = [
             meta: { title: '满意度调查', icon: 'file-done', keepAlive: false, permission: ['permission'] },
           }
         ]
+      },
+      {
+        //人力资源
+        path: '/human_Resources',
+        name: 'human_Resources',
+        component: PageView,
+        meta: { title: '人力资源', icon: 'user', permission: ['permission'] },
+        redirect: '/human_Resources/notice',
+        children:[
+          {
+            path: '/human_Resources/notice',
+            name: 'human_Resources_notice',
+            component: () => import('@/views/human_Resources/notice/Notice-List'),
+            meta: { title: '公告管理', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          }
+        ]
       }
     ]
   }
