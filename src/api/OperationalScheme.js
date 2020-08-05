@@ -58,3 +58,19 @@ export const downloadFile = (url) => {
     iframe.remove()
   }, 5 * 60 * 1000)
 }
+
+//企业资质预览下载
+export function enterpriseQualificationDownload (parameter,timeout = 1000 * 120) {
+  return axios({
+    baseURL: system.baseURL, // 服务器ip和端口
+    url: '/qualification/qualificationDownload',
+    method: 'post',
+    data: parameter,
+    timeout:timeout
+  })
+}
+//生成下载链接
+export function makeDownloadUrl(url){
+  return `${system.baseURL}/FileManagement/fileDownload?path=${encodeURIComponent(url)}`
+}
+

@@ -271,7 +271,13 @@ export const asyncRouterMap = [
                 name: 'ProductDescription',
                 component: () => import('@/views/system-setting/work-box/ProductDescriptionList'),
                 meta: { title: '产品说明书', permission: ['permission'] }
-              }
+              },
+              {
+                path: '/system-setting/work-box/companyInformation/EnterpriseQualification',
+                name: 'EnterpriseQualification',
+                component: () => import('@/views/system-setting/work-box/companyInformation/EnterpriseQualification'),
+                meta: { title: '企业资质', permission: ['permission'] }
+              },
             ]
           },
           {
