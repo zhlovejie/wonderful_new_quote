@@ -14,7 +14,7 @@
         <template v-if="$auth('qualification:list')">
           <a-form-item>
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-          <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+          <a-button style="margin-left: 8px" @click="resetAction">重置</a-button>
           <!-- <a-button style="margin-left: 8px" @click="exportToExcel">全部导出</a-button> -->
           <a :href="exportProductCode" target="_blank" style="margin-left: 8px" class="ant-btn">全部导出</a>
           </a-form-item>
@@ -221,6 +221,12 @@ export default {
       console.log('onSelectChange 点击了')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    resetAction(){
+      this.queryParam = Object.assign({},this.queryParam,{
+        qualificationType:undefined,
+        qualificationName:undefined
+      })
     }
   }
 }

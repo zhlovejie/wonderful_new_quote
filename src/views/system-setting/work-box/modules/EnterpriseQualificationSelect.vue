@@ -18,6 +18,7 @@
               v-model.trim="queryParam.qualificationType"
               placeholder="请选择资质类型"
               default-value
+              :allowClear="true"
             >
               <a-select-option
                 v-for="qtype in qualificationTypes"
@@ -27,10 +28,10 @@
             </a-select>
           </a-form-item>
           <a-form-item label="资质名称">
-            <a-input v-model.trim="queryParam.qualificationName" placeholder="根据名称模糊查询" />
+            <a-input v-model.trim="queryParam.qualificationName" placeholder="根据名称模糊查询" :allowClear="true" />
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+            <a-button type="primary" @click="searchAction">查询</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -119,9 +120,18 @@ export default {
   },
   methods: {
     query() {
+      this.queryParam = Object.assign({},this.queryParam,{
+        qualificationType:undefined,
+        qualificationName:undefined
+      })
       this.selectedRowKeys = []
       this.selectedRows = []
       this.visible = true
+
+      this.searchAction()
+    },
+    searchAction(){
+      this.$refs.table.refresh(true)
     },
     handleOk() {
       this.$emit('select', [...this.selectedRows])

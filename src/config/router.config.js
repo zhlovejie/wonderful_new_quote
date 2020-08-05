@@ -288,12 +288,12 @@ export const asyncRouterMap = [
             redirect: '/system-setting/work-box-foreign-trade/Qualification',
             meta: { title: '外贸工具箱', icon: 'hdd', keepAlive: false, permission: ['permission'] },
             children: [
-              {
-                path: '/system-setting/work-box-foreign-trade/Qualification',
-                name: 'ForeignTradeQualification',
-                component: () => import('@/views/system-setting/work-box-foreign-trade/Qualification'),
-                meta: { title: '资质认证', keepAlive: false ,permission: ['permission'] }
-              },
+              // {
+              //   path: '/system-setting/work-box-foreign-trade/Qualification',
+              //   name: 'ForeignTradeQualification',
+              //   component: () => import('@/views/system-setting/work-box-foreign-trade/Qualification'),
+              //   meta: { title: '资质认证', keepAlive: false ,permission: ['permission'] }
+              // },
               {
                 path: '/system-setting/work-box-foreign-trade/AccountBank',
                 name: 'ForeignTradeAccountBank',

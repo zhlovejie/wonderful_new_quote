@@ -44,7 +44,20 @@ export default {
       spinningTip:'正在生成word文档...'
     }
   },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'EnterpriseQualification') {
+          this.init()
+        }
+      },
+      immediate: true
+    }
+  },
   methods:{
+    init(){
+      this.selectedRows = []
+    },
     showModule(key){
       this.$refs[key] && this.$refs[key].query()
     },
