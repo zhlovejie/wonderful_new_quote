@@ -1,5 +1,5 @@
 <template>
-  <!-- 调岗调薪申请 -->
+  <!--公告管理 -->
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="标题" v-model="person_name" allowClear style="width: 200px;margin-right:10px;"/>
@@ -14,8 +14,8 @@
          <a-range-picker @change="dateChange" style="width:400px ;margin-right:10px;" />
       <a-button class="a-button" type="primary" style="position: relative;top:-1px;" icon="search" @click="searchAction">查询</a-button>
       <a-dropdown  style="float:right;" v-if="$auth('adjustApply:add')">
-        <a-button type="primary">
-          <a-icon type="plus" />新增 
+        <a-button type="primary"  @click="doAction('add',null)">
+          <a-icon type="plus"/>新增 
         </a-button>
       </a-dropdown>
     </div>
@@ -39,7 +39,24 @@
         </div>
         
         <div slot="status" slot-scope="text, record, index">
-          <a  @click="approvalPreview(record)" >{{ getStatusText(text) }}</a>
+          <template v-if="record.status === 1">
+              <span >待审批</span>
+            </template>
+             <template v-if="record.status === 2">
+              <span >审核通过</span>
+            </template>
+             <template v-if="record.status === 3">
+              <span >审核未通过</span>
+            </template>
+             <template v-if="record.status === 4">
+              <span >已发布</span>
+            </template>
+             <template v-if="record.status === 5">
+              <span >已撤回</span>
+            </template>
+             <template v-if="record.status === 6">
+              <span >已撤回</span>
+            </template>
         </div>
         <div slot="operationStatus" slot-scope="text, record, index">
           <a href="javascript:void(0)" >{{ getOperationStatus(text) }}</a>
@@ -48,16 +65,32 @@
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <template v-if="$auth('adjustApply:edit') && record.status === 2 && record.showModifyButtonFlag === 1">
+            <template v-if="$auth('adjustApply:edit') && record.status === 1">
+                 <a-divider type="vertical" />
+            <a type="primary">撤回</a>
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('edit',record)">审核</a>
+            </template>
+            <template v-if="$auth('adjustApply:edit') && record.status === 2">
+                 <a-divider type="vertical" />
+              <a type="primary">发布</a>
+            </template>
+            <template v-if="$auth('adjustApply:edit') && record.status === 3&&record.status === 5">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit',record)">修改</a>
+              <a type="primary" >删除</a>
+            </template>
+            <template v-if="$auth('adjustApply:edit') && record.status === 4">
+              <a-divider type="vertical" />
+              <a type="primary">撤回</a>
             </template>
           </template>
 
-          <template v-if="activeKey === 1">
+          <template v-if="activeKey === 1 && record.status === 1 ">
             <a type="primary" @click="doAction('view',record)"></a>
+              <a type="primary" @click="doAction('approval',record)">查看</a>
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('approval',record)">审批</a>
+            <a type="primary" @click="doAction('approval',record)">审核</a>
           </template>
 
           <template v-if="activeKey === 2">
@@ -67,13 +100,13 @@
       </a-table>
     </div>
     <!-- <ApproveInfo ref="approveInfoCard" /> -->
-    <!-- <AddForm ref="addForm" @finish="searchAction()"/> -->
+    <AddForm ref="addForm" @finish="searchAction()"/>
   </div>
 </template>
 <script>
 
 import {NoticeList} from '@/api/humanResources'
-// import AddForm from './module/AddForm'
+import AddForm from './module/AddForm'
 // import ApproveInfo from '@/components/CustomerList/ApproveInfo' 
 const columns = [
   {
@@ -100,6 +133,7 @@ const columns = [
     title: '公告状态',
     key: 'status',
     dataIndex: 'status',
+    scopedSlots: { customRender: 'status' }
   },
   {
     align: 'center',
@@ -130,7 +164,7 @@ const columns = [
 export default {
   name:'NoticeList',
   components:{
-    // AddForm:AddForm,
+    AddForm:AddForm,
     // ApproveInfo:ApproveInfo
   },
   data(){
@@ -151,8 +185,8 @@ export default {
   computed:{
     searchParam(){
       return {
-        operationStatus:this.operation_status,
-        applyUserName:this.person_name,
+        status:this.operation_status,
+        title:this.person_name,
         status:this.approval_status
       }
     }
@@ -179,7 +213,7 @@ export default {
     searchAction(opt){
       let that = this
       let _searchParam = Object.assign({},{...this.searchParam},{...this.pagination},opt || {},{searchStatus:that.activeKey})
-      // console.log('执行搜索...',_searchParam)
+      console.log('执行搜索...',_searchParam)
       that.loading = true
       NoticeList(_searchParam).then(res => {
         that.loading = false
@@ -201,27 +235,12 @@ export default {
       this.pagination = pager
       this.searchAction()
     },
+
     doAction(type,record){
       console.log(type)
       console.log(record)
       this.$refs.addForm.query(type,record)
       //this.$message.info('功能尚未实现...')
-    },
-    getStatusText(state){
-      let stateMap = {
-        0:'待审批',
-        1:'通过',
-        2:'不通过'
-      }
-      return stateMap[state] || `未知状态:${state}`
-    },
-    getOperationStatus(flag){
-      let flagMap = {
-        0:'调岗',
-        1:'调薪',
-        2:'调岗调薪'
-      }
-      return flagMap[flag] || `未知:${flag}`
     },
     tabChange(tagKey){
       this.activeKey = parseInt(tagKey)
@@ -231,9 +250,7 @@ export default {
       //this.$message.info('全部，待审批，审批尚未实现')
       this.searchAction({current:1,searchStatus:this.activeKey})
     },
-    approvalPreview(record){
-      this.$refs.approveInfoCard.init(record.instanceId)
-    },
+
   }
 }
 </script>
