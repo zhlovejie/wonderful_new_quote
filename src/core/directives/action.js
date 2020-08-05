@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import store from '@/store'
 
+import system from '@/config/defaultSettings'
+
 /**
  * Action 权限指令
  * 指令用法：
@@ -28,6 +30,14 @@ const action = Vue.directive('action', {
         el.parentNode && el.parentNode.removeChild(el) || (el.style.display = 'none')
       }
     })
+  }
+})
+
+//新增下载文件指令 工具箱专用
+//使用 v-download="url"
+Vue.directive('download', {
+  inserted: function (el, binding, vnode) {
+    el.href = `${system.baseURL}/FileManagement/fileDownload?path=${encodeURIComponent(binding.value)}`
   }
 })
 

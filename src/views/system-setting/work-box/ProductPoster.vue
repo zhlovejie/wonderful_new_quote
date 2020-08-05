@@ -49,6 +49,9 @@
             <a-divider type="vertical" />
             <a @click="del(record)">删除</a>
           </template>
+          <a-divider type="vertical" />
+          <a v-download="record.fileUrl">下载</a>
+          
         </template>
       </span>
     </s-table>

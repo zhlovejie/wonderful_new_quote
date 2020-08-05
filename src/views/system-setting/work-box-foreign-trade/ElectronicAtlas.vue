@@ -44,6 +44,8 @@
                 <a href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
+            <a-divider type="vertical" />
+            <a v-download="record.fileUrl">下载</a>
           </span>
         </s-table>
     <!-- <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
