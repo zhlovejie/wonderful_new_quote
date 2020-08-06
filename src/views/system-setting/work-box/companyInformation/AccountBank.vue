@@ -102,6 +102,12 @@ const columns = [
 ]
 export default {
   name: 'AccountBank',
+  props:{
+    toolType:{
+      type:String,
+      default:'0'
+    }
+  },
   components: {
     STable,
     Modal
@@ -110,6 +116,7 @@ export default {
     return {
       selectedRowKeys: [],
       selectedRows: [],
+      queryParam:{},
       // 表头
       columns: columns,
       // 初始化加载 必须为 Promise 对象
@@ -125,10 +132,13 @@ export default {
       }
     }
   },
+  created(){
+    this.queryParam = Object.assign({},this.queryParam,{toolType:this.toolType})
+  },
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add()
+      this.$refs.modal.add({toolType:this.toolType})
     },
     // 修改详情
     handleEdit (e) {

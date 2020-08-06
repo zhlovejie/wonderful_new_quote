@@ -101,6 +101,7 @@ export default {
       confirmLoading: false,
       addOredit: 'save',
       type:0,
+      toolType:0,
       queryBoolean: false,
       previewVisible: false, // 图片预览框是否可见
       previewImage: '', //  预览图片的src值
@@ -117,8 +118,9 @@ export default {
     }
   },
   methods: {
-    add: function (type){
-      this.type = type
+    add: function (obj = {}){
+      this.type = obj.type
+      this.toolType = obj.toolType
       this.visible = true
       this.addOredit = 'save'
     },
@@ -152,6 +154,7 @@ export default {
           if (_this.addOredit == 'save') {
             _this.$set(values, 'Authorization', _this.$store.getters.token)
             _this.$set(values, 'informationType', this.type)
+            values.toolType = _this.toolType
             saveInformation(values).then((data) => {
               console.log('date', data)
               if (data.code == 200) {

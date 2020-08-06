@@ -4,7 +4,7 @@
     <div class="operational-scheme-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="名称">
-          <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询"/>
+          <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询" :allowClear="true" />
         </a-form-item>
         <template v-if="$auth('scheme:list')">
           <a-form-item>

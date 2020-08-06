@@ -13,29 +13,38 @@ export function getEnterpriseSynopsisList (parameter) {
 export function getEnterpriseVideoList (parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/enterpriseInformation/toList?informationType=2',
+    url: '/enterpriseInformation/toList',
     method: 'get',
     params: parameter
   })
 }
+
+// export function getEnterpriseVideoList (parameter) {
+//   return axios({
+//     baseURL: system.baseURL,
+//     url: '/enterpriseInformation/toList?informationType=2',
+//     method: 'get',
+//     params: parameter
+//   })
+// }
 // 获取产品宣传视频列表
-export function getProductPromotionVideoList (parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/enterpriseInformation/toList?informationType=3',
-    method: 'get',
-    params: parameter
-  })
-}
+// export function getProductPromotionVideoList (parameter) {
+//   return axios({
+//     baseURL: system.baseURL,
+//     url: '/enterpriseInformation/toList?informationType=3',
+//     method: 'get',
+//     params: parameter
+//   })
+// }
 // 获取产品使用教学视频列表
-export function getTeachingVideoOfProductUseList (parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/enterpriseInformation/toList?informationType=4',
-    method: 'get',
-    params: parameter
-  })
-}
+// export function getTeachingVideoOfProductUseList (parameter) {
+//   return axios({
+//     baseURL: system.baseURL,
+//     url: '/enterpriseInformation/toList?informationType=4',
+//     method: 'get',
+//     params: parameter
+//   })
+// }
 // 获取产品功能简介列表
 export function getProductFunctionIntroductionList (parameter) {
   return axios({

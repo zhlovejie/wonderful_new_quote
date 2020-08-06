@@ -43,6 +43,8 @@
               <a-divider type="vertical"/>
               <a target="_blank" :href="record.url">预览</a>
             </template>
+            <a-divider type="vertical" />
+            <a v-download="record.url">下载</a>
           </span>
         </s-table>
     <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
@@ -90,6 +92,16 @@ const columns = [
 
 export default {
   name: 'EnterpriseSynopsis',
+  props:{
+    toolType:{
+      type:String,
+      default:'0'
+    },
+    informationType:{
+      type:String,
+      default:'2'
+    }
+  },
   components: {
     STable,
     Modal
@@ -113,10 +125,17 @@ export default {
       }
     }
   },
+  created(){
+    this.queryParam = Object.assign(
+      {},
+      this.queryParam,
+      {toolType:this.toolType,informationType:this.informationType}
+    )
+  },
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add(2)
+      this.$refs.modal.add({type:this.informationType || 2,toolType:this.toolType})
     },
     // 修改详情
     handleEdit (e) {

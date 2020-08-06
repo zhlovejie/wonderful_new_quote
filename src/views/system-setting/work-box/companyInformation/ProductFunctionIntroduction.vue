@@ -43,6 +43,8 @@
               <a-divider type="vertical"/>
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
+            <a-divider type="vertical" />
+            <a v-download="record.url">下载</a>
           </span>
         </s-table>
     <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>

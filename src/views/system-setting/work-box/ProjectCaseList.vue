@@ -12,7 +12,7 @@
         <a-form-item label="录入人">
           <a-input v-model.trim="queryParam.createdName" placeholder="根据录入人人名查询" style="width: 100%"/>
         </a-form-item>
-        <template v-if="$auth('product:list')">
+        <template v-if="$auth('case:list')">
           <a-form-item>
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
@@ -20,10 +20,10 @@
         </template>
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
-          <template v-if="$auth('product:add')">
+          <template v-if="$auth('case:add')">
             <a-button type="primary" icon="plus" @click="$refs.formModal.add()">新增</a-button>
           </template>
-          <template v-if="$auth('product:list')">
+          <template v-if="$auth('case:list')">
             <a-button style="margin-left: 8px" type="primary" icon="download" @click="handleBatchDownload">批量下载</a-button>
           </template>
           </a-form-item>
@@ -45,14 +45,14 @@
       </span>
       <span slot="action" slot-scope="text,record">
         <template>
-          <template v-if="$auth('product:one')">
+          <template v-if="$auth('case:one')">
             <a @click="$refs.previewModal.show(record)">预览</a>
           </template>
-          <template v-if="$auth('product:edit')">
+          <template v-if="$auth('case:edit')">
             <a-divider type="vertical" />
             <a @click="$refs.formModal.edit(record)">修改</a>
           </template>
-          <template v-if="$auth('product:del')">
+          <template v-if="$auth('case:del')">
             <a-divider type="vertical" />
             <a-popconfirm title="确认删除这条数据？" @confirm="confirm(record.id)" okText="是" cancelText="否">
               <a href="#">删除</a>

@@ -14,7 +14,7 @@
         <template v-if="$auth('qualification:list')">
           <a-form-item>
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-          <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+          <a-button style="margin-left: 8px" @click="resetAction">重置</a-button>
           <!-- <a-button style="margin-left: 8px" @click="exportToExcel">全部导出</a-button> -->
           <a :href="exportProductCode" target="_blank" style="margin-left: 8px" class="ant-btn">全部导出</a>
           </a-form-item>
@@ -120,6 +120,12 @@ const columns = [
 
 export default {
   name: 'Qualification',
+  props:{
+    toolType:{
+      type:String,
+      default:'0'
+    }
+  },
   components: {
     STable,
     Modal,
@@ -162,6 +168,7 @@ export default {
     }
   },
   created () { // 初始化钩子,获取所有产品类型
+    this.queryParam = Object.assign({},this.queryParam,{toolType:this.toolType})
     getQualificationType({ text: '资质类型' }).then(res => {
       this.qualificationTypes = res.data
     })
@@ -169,7 +176,7 @@ export default {
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add()
+      this.$refs.modal.add({toolType:this.toolType})
     },
     // 修改详情
     handleEdit (e) {
@@ -214,6 +221,12 @@ export default {
       console.log('onSelectChange 点击了')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    resetAction(){
+      this.queryParam = Object.assign({},this.queryParam,{
+        qualificationType:undefined,
+        qualificationName:undefined
+      })
     }
   }
 }
