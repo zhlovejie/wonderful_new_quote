@@ -146,7 +146,7 @@
             <!--查看 修改:只添加行程 -->
             <template v-if="+record.status === 2">
               <a-divider type="vertical" />
-              <a type="primary" target="_blank" :href="record.travelUrl">下载pdf</a>
+              <a type="primary" target="_blank" :href="record.travelUrl">下载</a>
             </template>
 
 
