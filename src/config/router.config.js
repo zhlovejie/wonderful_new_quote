@@ -273,6 +273,12 @@ export const asyncRouterMap = [
                 meta: { title: '产品说明书', permission: ['permission'] }
               },
               {
+                path: '/system-setting/work-box/ClassifiedPublicityVideo',
+                name: 'ClassifiedPublicityVideo',
+                component: () => import('@/views/system-setting/work-box/ClassifiedPublicityVideo'),
+                meta: { title: '分类宣传小视频', permission: ['permission'] }
+              },
+              {
                 path: '/system-setting/work-box/companyInformation/EnterpriseQualification',
                 name: 'EnterpriseQualification',
                 component: () => import('@/views/system-setting/work-box/companyInformation/EnterpriseQualification'),
