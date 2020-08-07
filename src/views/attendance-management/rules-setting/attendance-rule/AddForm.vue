@@ -116,7 +116,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr>
+          <tr v-if="isFreeClass">
             <td style="width:120px;">扣除规则</td>
             <td>
               <div style="display:flex;">
@@ -137,7 +137,7 @@
                 </span>
                 
               </a-form-item>
-              <a-form-item v-if="detail.caculatorHous > 0">
+              <a-form-item >
                 <span style="margin:0 10px;">低于</span>
                 <a-input-number 
                   v-if="isAdd || isEdit"
@@ -289,6 +289,7 @@ export default {
       that.detail = Object.assign({},record)
       that.form.resetFields()
       that.authoritySaveBoList = []
+      that.attanceType = undefined
       await that.init()
       that.visible = true
       if(that.isAdd){
