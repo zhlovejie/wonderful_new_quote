@@ -9,28 +9,13 @@
     :confirmLoading="spinning"
   >
     <template slot="footer">
-      <template v-if="isApproval">
-        <a-button
-          class="a-button"
-          type="primary"
-          icon="close"
-          @click="noPassAction(recordDetails)"
-        >不通过</a-button>
-        <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
-      </template>
-      <template v-else>
+      <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
         <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
       </template>
     </template>
 
     <a-spin :spinning="spinning">
-      <!-- <a-row :gutter="16" v-if="isApproval">
-        <a-col :span="24" style="text-align: right;">
-          <a-button class="a-button" style="margin-right: 8px;" type="primary" icon="check" @click="passAction">通过</a-button>
-          <a-button class="a-button" type="primary" icon="close" @click="noPassAction">不通过</a-button>
-        </a-col>
-      </a-row>-->
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
@@ -89,7 +74,7 @@
           </tr>
         </table>
       </a-form>
-      <Approval ref="approval" @opinionChange="opinionChange" />
+      <!-- <Approval ref="approval" @opinionChange="opinionChange" /> -->
     </a-spin>
   </a-modal>
 </template>
@@ -98,14 +83,14 @@ import { departmentList } from '@/api/systemSetting' //所有部门
 import { NoticeDetails, NoticeAdd, NoticeApproval } from '@/api/humanResources'
 // import moment from 'moment'
 
-import Approval from './Approval'
+// import Approval from './Approval'
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
 export default {
   name: 'BecomingForm',
   components: {
-    Approval: Approval,
+    // Approval: Approval,
   },
   data() {
     return {
@@ -125,22 +110,14 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改公告信息'
+        return '保险配置'
       }
-      let txt = this.isView ? '查看' : this.isEdit ? '审核' : '新增'
-      return `${txt}公告信息`
+      let txt = this.isView ? '查看' : this.isEditSalary ? '修改' : '新增'
+      return `${txt}保险配置`
     },
     isView() {
       //查看
       return this.type === 'view'
-    },
-    isEdit() {
-      //审核
-      return this.type === 'edit'
-    },
-    isApproval() {
-      //通过不通过
-      return this.type === 'edit'
     },
     isEditSalary() {
       //修改
@@ -273,18 +250,7 @@ export default {
         })
         .catch((err) => (that.spinning = false))
     },
-    passAction() {
-      this.submitAction({
-        isAdopt: 0,
-        // opinion: '通过',
-      })
-    },
-    noPassAction() {
-      let that = this
-      //that.opinion = ''
-      that.$refs.approval.query()
-      console.log(that.$refs.approval.query())
-    },
+
     opinionChange(opinion) {
       //审批意见
       this.submitAction({
