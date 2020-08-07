@@ -1796,7 +1796,7 @@ export const asyncRouterMap = [
                 name: 'human_Resources_Insurance',
                 component: () => import('@/views/human_Resources/security/Insurance/Insurance_List'),
                 meta: {
-                  title: '保险管理',
+                  title: '保险配置',
                   icon: 'audit',
                   permission: ['permission']
                 },

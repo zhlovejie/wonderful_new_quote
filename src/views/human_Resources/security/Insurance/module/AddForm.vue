@@ -19,50 +19,53 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>标题</td>
+            <td>部门</td>
             <td colspan="3">
               <a-form-item>
-                <a-textarea
+                <a-select
+                  style="width:400px;"
+                  @change=" depChangeHandler"
+                  v-decorator="['departmentId',{ rules: [{ required: true, message: '选择部门' }] }, ]"
                   :disabled="isDisabled"
-                  placeholder="标题"
-                  :rows="3"
-                  v-decorator="['title', { rules: [{ required: false, message: '标题' }] }]"
-                />
+                  placeholder="请选择部门"
+                >
+                  <a-select-option
+                    v-for="item in departmentList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{ item.departmentName }}</a-select-option>
+                </a-select>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>消息</td>
+            <td>岗位</td>
             <td colspan="3">
               <a-form-item>
-                <a-textarea
+                <a-select
+                  style="width:400px;"
+                  :allowClear="true"
+                  v-decorator="['stationId',{ rules: [{ required: true, message: '选择岗位' }] },]"
                   :disabled="isDisabled"
-                  placeholder="消息"
-                  :rows="3"
-                  v-decorator="['content', { rules: [{ required: false, message: '消息' }] }]"
-                />
+                  placeholder="请选择岗位"
+                >
+                  <a-select-option
+                    v-for="item in postSelectDataSource"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.stationName}}</a-select-option>
+                </a-select>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>发布范围</td>
-            <td colspan="3">
-              <a-form-item>
-                <a-checkbox-group v-decorator="['releaseRange']" :disabled="isDisabled">
-                  <a-checkbox value="1">公告栏</a-checkbox>
-                  <a-checkbox value="2">app消息</a-checkbox>
-                  <a-checkbox value="3">短信通知</a-checkbox>
-                </a-checkbox-group>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>选择人员</td>
+            <td>试用期时间</td>
             <td colspan="3">
               <a-form-item>
                 <a-tree-select
-                  v-decorator="['deptId']"
-                  style="width: 100%"
+                  v-decorator="['insuranceInfoList',{ rules: [{ required: true, message: '试用期时间' }] },]"
+                  placeholder="请选择试用期时间"
+                  style="width: 400px"
                   :tree-data="treeData"
                   tree-checkable
                   :show-checked-strategy="SHOW_PARENT"
@@ -72,15 +75,79 @@
               </a-form-item>
             </td>
           </tr>
+          <tr>
+            <td>入职空挡期</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-select
+                  style="width:400px;"
+                  v-decorator="['neutral',{ rules: [{ required: true, message: '选择入职空挡期' }] },]"
+                  :disabled="isDisabled"
+                  placeholder="请选择入职空档期"
+                >
+                  <a-select-option
+                    v-for="item in InsuranceList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{ item.text }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>试用期保险</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-select
+                  style="width:400px;"
+                  v-decorator="['probationPeriod',{ rules: [{ required: true, message: '选择试用期保险' }] },]"
+                  :disabled="isDisabled"
+                  placeholder="请选择试用期保险"
+                >
+                  <a-select-option
+                    v-for="item in InsuranceList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{ item.text }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>转正保险</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-select
+                  style="width:400px;"
+                  v-decorator="['turnJust',{ rules: [{ required: true, message: '选择转正保险' }] },]"
+                  :disabled="isDisabled"
+                  placeholder="请选择转正保险"
+                >
+                  <a-select-option
+                    v-for="item in InsuranceList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{ item.text }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
         </table>
       </a-form>
+
+      <div>注：</div>
+      <div>入职空档期：每月20号后，次月10号前，人员购买保险；</div>
+      <div>试用期保险：每月10号后，10号前，人员购买保险；</div>
+      <div>转正保险：每月27号前，次月6号后，人员购买保险；</div>
       <!-- <Approval ref="approval" @opinionChange="opinionChange" /> -->
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { departmentList } from '@/api/systemSetting' //所有部门
-import { NoticeDetails, NoticeAdd, NoticeApproval } from '@/api/humanResources'
+// import { departmentList } from '@/api/systemSetting' //所有部门
+import { getDevisionList, getStationList } from '@/api/systemSetting'
+import { getDictionaryList } from '@/api/workBox'
+import { securityInsurance_Add, securityInsurance_Details } from '@/api/humanResources'
 // import moment from 'moment'
 
 // import Approval from './Approval'
@@ -94,9 +161,13 @@ export default {
   },
   data() {
     return {
-      value: [],
+      // 部门列表
+      departmentList: [],
+      // 岗位列表
+      postSelectDataSource: [],
       treeData: [],
-      depSelectDataSource: [],
+      InsuranceList: [],
+
       SHOW_PARENT,
       visible: false,
       spinning: false,
@@ -117,15 +188,13 @@ export default {
     },
     isView() {
       //查看
-      return this.type === 'view'
+      return this.type === 'edit'
     },
     isEditSalary() {
       //修改
       return this.type === 'edit-salary'
     },
-    // disabled() {
-    //   return this.isView || this.isApproval || this.isEditSalary
-    // },
+
     isDisabled() {
       return this.isView || this.isEdit
     },
@@ -133,29 +202,44 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_notice') {
+        if (to.name === 'human_Resources_Insurance') {
           this.init()
         }
       },
       immediate: true,
     },
   },
+  created() {
+    getDevisionList().then((res) => {
+      this.departmentList = res.data
+    })
+
+    // 社保数据字典
+    getDictionaryList({ parentId: 518 }).then((res) => (this.InsuranceList = res.data))
+  },
   methods: {
+    depChangeHandler(dep_id) {
+      let that = this
+      that.postSelectDataSource = []
+      return getStationList({ id: dep_id }).then((res) => {
+        that.postSelectDataSource = res.data
+      })
+    },
     init() {
       let that = this
       let queue = []
-      let task1 = departmentList().then((res) => {
+      let task1 = getDictionaryList({ parentId: 517 }).then((res) => {
         that.treeData = res.data.map((item) => {
           return {
             id: item.id,
             key: item.id,
             value: item.id,
-            title: item.departmentName,
+            title: item.text,
             isLeaf: false,
           }
         })
       })
-
+      console.log(that.treeData)
       queue.push(task1)
     },
     elementChange(key, val) {
@@ -167,6 +251,7 @@ export default {
     },
     // moment:moment,
     query(type, record) {
+      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -180,16 +265,23 @@ export default {
       let id = {
         id: this.record.id,
       }
-      NoticeDetails(id).then((res) => {
+      securityInsurance_Details(id).then((res) => {
         that.recordDetails = res.data
-        that.form.setFieldsValue({
-          title: res.data.title,
-          releaseRange: res.data.releaseRangeList,
-          content: res.data.content,
-          deptId: res.data.deptList,
-
-          // 'applyUserName':res.data.trueName
+        let arr = []
+        res.data.insuranceInfoList.map((item) => {
+          return arr.push(item.dictId)
         })
+        that.form.setFieldsValue({
+          departmentId: res.data.departmentId,
+          stationId: res.data.stationId,
+          insuranceInfoList: arr,
+          neutral: res.data.neutral,
+          probationPeriod: res.data.probationPeriod,
+          turnJust: res.data.turnJust,
+        })
+        if (that.record !== null) {
+          this.depChangeHandler(res.data.departmentId)
+        }
       })
     },
 
@@ -203,12 +295,15 @@ export default {
       } else if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            values.deptId = values.deptId.toString()
-            values.releaseRange = values.releaseRange.toString()
+            values.insuranceInfoList = values.insuranceInfoList.map((item, index) => {
+              return {
+                dictId: item,
+              }
+            })
             if (that.type === 'edit-salary') {
               values.id = that.recordDetails.id
             }
-            NoticeAdd(values)
+            securityInsurance_Add(values)
               .then((res) => {
                 that.spinning = false
                 console.log(res)
@@ -230,33 +325,6 @@ export default {
     handleCancel() {
       this.form.resetFields() // 清空表
       this.visible = false
-    },
-    submitAction(opt) {
-      let that = this
-      let values = {
-        approveId: this.recordDetails.id,
-        isAdopt: opt.isAdopt,
-        opinion: opt.opinion,
-      }
-      console.log(values)
-      that.spinning = true
-      NoticeApproval(values)
-        .then((res) => {
-          that.spinning = false
-          that.form.resetFields() // 清空表
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch((err) => (that.spinning = false))
-    },
-
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion,
-      })
     },
   },
 }

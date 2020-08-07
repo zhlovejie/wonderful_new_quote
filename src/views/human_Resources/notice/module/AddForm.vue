@@ -25,12 +25,6 @@
     </template>
 
     <a-spin :spinning="spinning">
-      <!-- <a-row :gutter="16" v-if="isApproval">
-        <a-col :span="24" style="text-align: right;">
-          <a-button class="a-button" style="margin-right: 8px;" type="primary" icon="check" @click="passAction">通过</a-button>
-          <a-button class="a-button" type="primary" icon="close" @click="noPassAction">不通过</a-button>
-        </a-col>
-      </a-row>-->
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>

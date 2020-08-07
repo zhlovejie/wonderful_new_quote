@@ -29,7 +29,14 @@
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
-        <s-table ref="table" size="default" :columns="columns" :data="loadData" :alert="false">
+        <s-table
+          ref="table"
+          size="default"
+          :columns="columns"
+          :rowKey="loadData.id"
+          :data="loadData"
+          :alert="false"
+        >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -39,7 +46,14 @@
               <a-divider type="vertical" />
               <a @click="handle('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
-              <a @click="deleteRoleInfo(record)">删除</a>
+              <a-popconfirm
+                title="是否删除"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="deleteRoleInfo(record)"
+              >
+                <a type="primary">删除</a>
+              </a-popconfirm>
             </template>
           </span>
         </s-table>
@@ -52,7 +66,7 @@
 <script>
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
 
-import { securityInsurance_List } from '@/api/humanResources'
+import { securityInsurance_List, securityInsurance_Delete } from '@/api/humanResources'
 import { STable } from '@/components'
 import AddForm from './module/AddForm'
 
@@ -141,10 +155,10 @@ export default {
       ],
       // 初始化加载 必须为 Promise 对象
       loadData: (parameter) => {
-        console.log('页面开始加载数据。。。', parameter, this.queryParam)
+        // console.log('页面开始加载数据。。。', parameter, this.queryParam)
         return securityInsurance_List(Object.assign(parameter, this.queryParam)).then((res) => {
-          console.log(res.data)
           return res
+          console.log(res.data)
         })
       },
       selectedRowKeys: [],
@@ -157,12 +171,29 @@ export default {
     }
   },
   // 初始化搜索条件钩子函数
-  created() {
-    getDevisionList().then((res) => {
-      this.departmentList = res.data
-    })
+  created() {},
+  watch: {
+    $route: {
+      handler: function (to, from) {
+        if (to.name === 'human_Resources_Insurance') {
+          this.init()
+        }
+      },
+      immediate: true,
+    },
   },
   methods: {
+    init() {
+      let that = this
+      getDevisionList().then((res) => {
+        this.departmentList = res.data
+      })
+      this.searchAction()
+    },
+    // 获取列表
+    searchAction() {
+      this.$refs.table && this.$refs.table.refresh(true)
+    },
     depChangeHandler(dep_id) {
       let that = this
       that.postSelectDataSource = []
@@ -170,27 +201,7 @@ export default {
         that.postSelectDataSource = res.data
       })
     },
-    // 获取部门角色联动
-    // handleProvinceChange(value) {
-    //   if (value != undefined) {
-    //     // 获取部门下的角色
-    //     queryRoleListById({ departmentId: value })
-    //       .then((rs) => {
-    //         this.roleList = rs.data
-    //         this.$set(this.queryParam, 'id', undefined)
-    //       })
-    //       .catch((error) => {
-    //         console.error(error)
-    //       })
-    //   } else {
-    //     this.$set(this.queryParam, 'id', undefined)
-    //     this.roleList = []
-    //   }
-    // },
-    // // 改变select
-    // handleChange(value) {
-    //   console.log(`selected ${value}`)
-    // },
+
     // 清空、重置
     emptyQueryParam() {
       this.queryParam = {}
@@ -201,61 +212,17 @@ export default {
       this.$refs.addForm.query(type, record)
       //   this.$refs.modal.add()
     },
+    // 删除
     deleteRoleInfo(record) {
-      const that = this
-      // 删除角色角色
-      deleteRole({ id: record.id })
-        .then((res) => {
-          if (res && res.code && parseInt(res.code) === 500) {
-            that.$message.error(res.msg)
-            return
-          } else {
-            that.$message.success('删除成功')
-            that.$refs.table.refresh(true)
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    handleMenu(record) {
-      // 获取权限数组
-      queryRoleMenu({ id: record.id }).then((res) => {
-        this.$refs.role.setCheckedNodes(res.data, record.id)
+      let that = this
+      securityInsurance_Delete({ id: record.id }).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          _this.$message.error(res.msg)
+        }
       })
-    },
-    handleCopy(record) {},
-    // 修改状态
-    checkStates(text, record) {
-      this.$set(record, 'Authorization', this.$store.getters.token)
-      if (text == 0) {
-        record.status = 1
-      } else if (text == 1) {
-        record.status = 0
-      }
-      editRole(record).then((res) => {
-        this.$refs.table.refresh(true)
-      })
-    },
-    searchLog() {
-      this.$router.push({ name: 'sysLog' })
-      // this.$router.push('sysLog')
-    },
-    // 修改详情
-    handleEdit(e) {
-      this.$refs.editModal.edit(e)
-    },
-    handleSaveOk() {
-      this.$refs.table.refresh(true)
-    },
-    handleSaveClose() {},
-    handleEditOk() {
-      this.$refs.table.refresh(false)
-    },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      console.log('onSelectChange 点击了')
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
     },
   },
 }

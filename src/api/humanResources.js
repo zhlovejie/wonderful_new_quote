@@ -82,3 +82,32 @@ export function securityInsurance_List(parameter) {
     params: parameter
   })
 }
+
+// 保险配置模新增 
+export function securityInsurance_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/insurance/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 保险配置模详情
+export function securityInsurance_Details(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/insurance/getInsuranceId',
+    method: 'get',
+    params: parameter
+  })
+}
+// 保险配置模删除
+export function securityInsurance_Delete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/insurance/delInsurance',
+    method: 'get',
+    params: parameter
+  })
+}
