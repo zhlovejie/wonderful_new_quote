@@ -111,3 +111,49 @@ export function securityInsurance_Delete(parameter) {
     params: parameter
   })
 }
+
+// 社保列表接口
+export function securitySocial_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/social-security/getSocialSecurityList',
+    method: 'get',
+    params: parameter
+  })
+}
+// 社保新增修改接口
+export function securitySocial_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/social-security/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+// 社保详情接口
+export function securitySocial_Details(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/social-security/getSocialSecurityId',
+    method: 'get',
+    params: parameter
+  })
+}
+// 社保删除接口
+export function securitySocial_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/social-security/delSocialSecurity',
+    method: 'get',
+    params: parameter
+  })
+}
+// 社保查看接口
+export function securitySocial_See(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/socialSecurity/social-security-info/getSocialSecurityInfoList',
+    method: 'get',
+    params: parameter
+  })
+}

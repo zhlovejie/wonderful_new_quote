@@ -1,122 +1,111 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-date-picker style="width:300px;" @change="onChange" />
-      <!-- <a-select
-        style="width:200px;"
-        v-model="queryParam.departmentId"
-        @change="handleProvinceChange"
-        placeholder="请选择部门"
-      >
-        <a-select-option :value="undefined">请选择部门</a-select-option>
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
-      </a-select>-->
-      <a-button style="margin-left:10px;" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+      <a-month-picker style="width:300px;" v-model="queryParam.Dates" />
+
+      <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('role:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd">新增</a-button>
+        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <!-- <a-layout-content> -->
-      <a-table :columns="columns" :data-source="data">
+      <a-table :columns="columns" :data-source="dataSource">
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
         <span slot="action" slot-scope="text, record">
-          <a>查看</a>
+          <a @click="handleSee('e',record)">查看</a>
           <a-divider type="vertical" />
-          <a>修改</a>
+          <a @click="handleAdd('edit-salary',record)">修改</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link">下载</a>
+          <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link">删除</a>
+          <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
         </span>
       </a-table>
       <!-- </a-layout-content> -->
+      <AddForm ref="addForm" @finish="searchAction()" />
+      <See ref="See" @finish="searchAction()" />
     </a-layout>
   </a-card>
 </template>
 
 <script>
+import moment from 'moment'
+import system from '@/config/defaultSettings'
+import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
+import AddForm from './module/AddForm'
+import See from './module/See'
+
 const columns = [
   {
     dataIndex: 'name',
     title: '序号',
     key: 'name',
-    slots: { title: 'customTitle' },
+    align: 'center',
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '台账年月',
-    dataIndex: 'age',
-    key: 'age',
+    dataIndex: 'accountDate',
+    key: 'accountDate',
+    align: 'center',
   },
   {
     title: '人数',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'peopleNumber',
+    key: 'peopleNumber',
+    align: 'center',
   },
   {
     title: '公司缴费金额（元）',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'companyPay',
+    key: 'companyPay',
+    align: 'center',
   },
   {
     title: '个人缴费金额（元）',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'personalPay',
+    key: 'personalPay',
+    align: 'center',
   },
   {
     title: '提交人',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'createdName',
+    key: 'createdName',
+    align: 'center',
   },
   {
     title: '提交时间',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
+    align: 'center',
   },
 
   {
     title: '操作',
     key: 'action',
     scopedSlots: { customRender: 'action' },
-  },
-]
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
+    align: 'center',
   },
 ]
 export default {
   name: 'RoleManagement',
-  components: {},
+  components: {
+    AddForm: AddForm,
+    See: See,
+  },
   data() {
     return {
-      data,
+      urls: system.baseURL + '/socialSecurity/social-security-info/socialSecurityInfo/exportExcel?id=',
+      dataSource: [],
       columns,
-      // openKeys: ['id'],
-      // parentId: 0,
+      pagination: {
+        current: 1,
+      },
+      queryParam: {},
       hiddenBoolean: false,
 
       selectedRowKeys: [],
@@ -130,9 +119,71 @@ export default {
   },
   // 初始化搜索条件钩子函数
   created() {},
+  computed: {},
+  watch: {
+    $route: {
+      handler: function (to, from) {
+        if (to.name === 'human_Resources_social') {
+          this.init()
+        }
+      },
+      immediate: true,
+    },
+  },
   methods: {
+    moment: moment,
+    init() {
+      let that = this
+      this.searchAction()
+    },
+    check() {
+      let that = this
+      console.log(12312)
+    },
+    searchAction(opt) {
+      let that = this
+      that.loading = true
+      if (this.queryParam.Dates) {
+        let date = that.queryParam.Dates.format('YYYYMM')
+        this.queryParam.accountDate = date
+      }
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
+      securitySocial_List(_searchParam)
+        .then((res) => {
+          that.loading = false
+          this.queryParam.accountDate = ''
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+        })
+        .catch((err) => (that.loading = false))
+    },
     onChange(date, dateString) {
       console.log(date, dateString)
+    },
+    delete_list(id) {
+      let that = this
+      securitySocial_del({ id: id }).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          that.$message.error(res.msg)
+        }
+      })
+    },
+    //新增 修改
+    handleAdd(type, record) {
+      this.$refs.addForm.query(type, record)
+    },
+    // 查看
+    handleSee(type, record) {
+      this.$refs.See.query(type, record)
     },
   },
 }
