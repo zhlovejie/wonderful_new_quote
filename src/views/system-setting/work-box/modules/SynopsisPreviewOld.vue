@@ -17,46 +17,34 @@
         <a-row :gutter="24">
           <a-col :md="24" :sm="24">
             <a-form-item label="标题">
-              {{ enterpriseSynopsis.itemName }}
+              {{ enterpriseSynopsis.title }}
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24">
           <a-col :md="24" :sm="24">
             <a-form-item label="内容">
-              <div v-html="formatHTML(enterpriseSynopsis.introduction)" />
+              <span v-html="enterpriseSynopsis.informationContent"></span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24">
           <a-col :md="24" :sm="24">
             <a-form-item label="图片">
-              <template v-if="enterpriseSynopsis && enterpriseSynopsis.pictureUrl">
-              <img 
-                v-for="(url,idx) in enterpriseSynopsis.pictureUrl.split(',')" 
-                :key="idx" 
-                style="width: 25%;max-width:128px;margin-right:10px;" 
-                :src="url" 
-                @click="showImg(url)"
-              />
-              </template>
+              <img style="width: 25%;max-width:128px;" :src="enterpriseSynopsis.url" />
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
     </div>
-    <ImgView ref="imgView" />
   </a-modal>
 </template>
 
 <script>
 import util from '@/components/_util/util'
-import ImgView from '@/components/CustomerList/ImgView'
+
 export default {
   name: 'SynopsisPreview',
-  components:{
-    ImgView
-  },
   data () {
     return {
       visible: false, // 是否显示
@@ -83,18 +71,7 @@ export default {
     },
     getPDF () {
       util.handleWindowPrint('#pdfDom', this.enterpriseSynopsis.title)
-    },
-    formatHTML(htmlStr){
-      if(typeof htmlStr !== 'string') {
-        return ''
-      }
-      htmlStr = htmlStr.replace(/[\n\r]/g,'<br/>')
-      htmlStr = htmlStr.replace(/\s+/g,'&nbsp;')
-      return htmlStr
-    },
-    showImg(url) {
-      this.$refs.imgView && this.$refs.imgView.show(url)
-    },
+    }
   }
 }
 </script>
