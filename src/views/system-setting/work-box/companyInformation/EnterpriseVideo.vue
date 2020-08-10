@@ -43,8 +43,10 @@
               <a-divider type="vertical"/>
               <a target="_blank" :href="record.url">预览</a>
             </template>
-            <a-divider type="vertical" />
-            <a v-download="record.url">下载</a>
+            <template v-if="$auth('video:download')">
+              <a-divider type="vertical" />
+              <a v-download="record.url">下载</a>
+            </template>
           </span>
         </s-table>
     <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
