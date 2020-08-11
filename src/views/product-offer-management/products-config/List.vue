@@ -174,6 +174,12 @@ export default {
     ViewUpdateRecord,
     ViewOption
   },
+  props:{
+    productType:{
+      type:Number,
+      default:0
+    }
+  },
   data(){
     return {
       itemName:undefined,
@@ -190,7 +196,8 @@ export default {
     searchParam(){
       return {
         name:this.itemName,
-        isSale:this.isSale
+        isSale:this.isSale,
+        productType:this.productType
       }
     }
   },
@@ -244,7 +251,7 @@ export default {
         })
         return
       }else if(type === 'editRecord'){
-        this.$refs.viewUpdateRecord.query({
+        that.$refs.viewUpdateRecord.query({
           id:record.id,
           //mainBody 配置主体：1 中控系统 2 产品 3 系列产品
           //type  产品类型：0 产品 1 系列产品
@@ -252,19 +259,19 @@ export default {
         })
         return 
       }else if(type === 'viewOptStand'){
-        this.$refs.viewOption.query({
+        that.$refs.viewOption.query({
           id:record.id,
           type:1
         })
         return
       }else if(type === 'viewOptSelect'){
-        this.$refs.viewOption.query({
+        that.$refs.viewOption.query({
           id:record.id,
           type:2
         })
         return
       }else if(type === 'add' || type === 'edit'){
-        this.$refs.addForm.query(type,record)
+        that.$refs.addForm.query(type,Object.assign({},record || {},{productType:that.productType}))
         return
       }else{
         console.log(`不支持的type参数：${type}`)

@@ -1100,6 +1100,12 @@ export const asyncRouterMap = [
             meta: { title: '系列产品配置', icon: 'setting', keepAlive: false, permission: ['permission'] },
           },
           {
+            path: '/product-offer-management/products-config2d0',
+            name: 'pom-products-config2d0',
+            component: () => import('@/views/product-offer-management/products-config/List2'),
+            meta: { title: '2.0系列产品配置', icon: 'setting', keepAlive: false, permission: ['permission'] },
+          },
+          {
             path: '/product-offer-management/products-price',
             name: 'pom-products-price',
             component: () => import('@/views/product-offer-management/products-price/List'),
@@ -1122,6 +1128,12 @@ export const asyncRouterMap = [
             name: 'productPriceCoefficient',
             component: () => import('@/views/system-setting/work-box/productPriceCoefficient/List'),
             meta: { title: '4.0产品价格系数', permission: ['permission'] }
+          },
+          {
+            path: '/system-setting/work-box/productPriceCoefficient2d0',
+            name: 'productPriceCoefficient2d0',
+            component: () => import('@/views/system-setting/work-box/productPriceCoefficient/List2'),
+            meta: { title: '2.0产品价格系数', permission: ['permission'] }
           },
         ]
       },

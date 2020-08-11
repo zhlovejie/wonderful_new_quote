@@ -104,6 +104,12 @@ export default {
   components: {
     AddForm: AddForm
   },
+  props:{
+    type:{ // 0是 4.0报价系数 1是 2.0报价系数
+      type:Number,
+      default:0
+    }
+  },
   data() {
     return {
       columns: columns,
@@ -116,7 +122,9 @@ export default {
   },
   computed: {
     searchParam() {
-      return {}
+      return {
+        type:this.type
+      }
     }
   },
   watch: {
@@ -176,7 +184,7 @@ export default {
           })
         return
       }
-      this.$refs.addForm.query(type, record)
+      this.$refs.addForm.query(type, Object.assign({},record || {},{type:that.type}))
     }
   }
 }

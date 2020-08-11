@@ -253,10 +253,10 @@ export default {
           productPic: __viewDataSourceHTML.optInfo.productPic,
           unitPrice: this.unitPriceView,
           standardItem: __viewDataSourceHTML.optStand.map(p => {
-            return { itemName: p.itemName, type: 1 }
+            return { itemName: p.itemName, type: 1 ,introduction:p.introduction}
           }),
           optionalItem: __viewDataSourceHTML.optSelect.map(p => {
-            return { itemName: p.itemName, type: 2 }
+            return { itemName: p.itemName, type: 2 ,introduction:p.introduction}
           })
         }
         that.spinningView = true

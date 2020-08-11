@@ -200,7 +200,7 @@ export default {
     init() {
       let that = this
       let queue = []
-      queue.push(productPriceCoefficientListWithoutPage().then(res =>{
+      queue.push(productPriceCoefficientListWithoutPage({type:that.record.productType}).then(res =>{
         that.productPriceCoefficientList = res.data
       }))
       return Promise.all(queue)
@@ -288,6 +288,7 @@ export default {
             })
 
           values.priceSysConfigBoList = priceSysConfigBoList
+          values.productType = that.record.productType
           console.log('Received values of form: ', values)
           that.spinning = true
           priceAdjustProductConfigAddAndUpdate(values)
