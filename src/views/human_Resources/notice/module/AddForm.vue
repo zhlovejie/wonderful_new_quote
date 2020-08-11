@@ -73,6 +73,7 @@
                   v-decorator="['deptId']"
                   style="width: 100%"
                   :tree-data="treeData"
+                  :dropdownStyle="{ maxHeight: '300px'}"
                   tree-checkable
                   :show-checked-strategy="SHOW_PARENT"
                   search-placeholder="Please select"

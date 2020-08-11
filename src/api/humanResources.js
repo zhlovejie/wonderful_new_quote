@@ -157,3 +157,23 @@ export function securitySocial_See(parameter) {
     params: parameter
   })
 }
+
+
+// 团建列表接口
+export function leagueBuilding_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+// 团建新增修改接口
+export function leagueBuilding_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/saveOrUpdateLeagueDetail',
+    method: 'post',
+    data: parameter
+  })
+}

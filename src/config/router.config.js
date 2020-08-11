@@ -1812,7 +1812,18 @@ export const asyncRouterMap = [
                 },
               },
             ]
-          }
+          },
+          {
+            path: '/human_Resources/leagueBuilding',
+            name: 'human_Resources_leagueBuilding',
+            component: () => import('@/views/human_Resources/leagueBuilding/leagueBuilding_List'),
+            meta: {
+              title: '团建管理',
+              icon: 'usergroup-delete',
+              keepAlive: false,
+              permission: ['permission']
+            },
+          },
         ]
       }
     ]
