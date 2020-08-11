@@ -479,7 +479,8 @@ export default {
             bprice:item.bprice,
             cprice:item.cprice,
             retailPrice:item.retailPrice,
-            isProduct:item.isProduct === 1 ? true : false
+            isProduct:item.isProduct === 1 ? true : false,
+            introduction:item.introduction || ''
           }
           if ([4, 5].includes(item.type)) {
             _item.isRequire = item.type === 4 ? true : false

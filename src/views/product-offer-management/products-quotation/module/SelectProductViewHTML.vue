@@ -147,29 +147,55 @@ export default {
       debugger
       this.$emit('priceChange',v)
     },
-    optStandHTML(){
+    optStandHTML(){ //增加简介
       let html = '<table class="custom-table">'
       html += '<tr>'
       this.productInfo.optStand.map((p,idx) =>{
-        html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
-        if((idx+1) % 3 === 0){
-          html += '</tr><tr>'
-        }
+        html += `
+          <tr>
+            <td style="padding:5px 0;width:50%;">${p.itemName}</td>
+            <td style="padding:5px 0;width:50%;">${p.introduction || ''}</td>
+          </tr>
+        `
       })
-      html += '</tr></table>'
+      html += '</table>'
       return html
+
+      // let html = '<table class="custom-table">'
+      // html += '<tr>'
+      // this.productInfo.optStand.map((p,idx) =>{
+      //   html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
+      //   if((idx+1) % 3 === 0){
+      //     html += '</tr><tr>'
+      //   }
+      // })
+      // html += '</tr></table>'
+      // return html
     },
     optSelectHTML(){
       let html = '<table class="custom-table">'
       html += '<tr>'
       this.productInfo.optSelect.map((p,idx) =>{
-        html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
-        if((idx+1) % 3 === 0){
-          html += '</tr><tr>'
-        }
+        html += `
+        <tr>
+          <td style="padding:5px 0;width:50%;">${p.itemName}</td>
+          <td style="padding:5px 0;width:50%;">${p.introduction || ''}</td>
+        </tr>
+        `
       })
-      html += '</tr></table>'
+      html += '</table>'
       return html
+
+      // let html = '<table class="custom-table">'
+      // html += '<tr>'
+      // this.productInfo.optSelect.map((p,idx) =>{
+      //   html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
+      //   if((idx+1) % 3 === 0){
+      //     html += '</tr><tr>'
+      //   }
+      // })
+      // html += '</tr></table>'
+      // return html
     },
     imgLoadAction(){
       console.log(arguments)

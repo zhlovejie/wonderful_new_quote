@@ -3,6 +3,15 @@
   <div class="customer-list-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="系列产品名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
+      <a-select
+        placeholder="状态"
+        v-model="isSale"
+        :allowClear="true"
+        style="width: 150px"
+      >
+        <a-select-option :value="0">在售</a-select-option>
+        <a-select-option :value="1">停产</a-select-option>
+      </a-select>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
       <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
@@ -23,6 +32,16 @@
         <div slot="type" slot-scope="text, record, index">
           {{record.type === 0 ? '是' : '否'}}
         </div>
+
+        <div slot="isSale" slot-scope="text, record, index">
+          <a-switch
+            :checked="+text === 0"
+            checkedChildren="在售"
+            unCheckedChildren="停产"
+            @change="changeSale(record,$event)"
+          />
+        </div>
+
         <div slot="model" slot-scope="text, record, index">
           <a-tooltip v-if="String(text).length > 15">
             <template slot="title">{{text}}</template>
@@ -71,7 +90,8 @@
 
 import {
   priceAdjustProductConfigList,
-  priceAdjustProductConfigDelete
+  priceAdjustProductConfigDelete,
+  priceAdjustProductConfigChangeIsSale
 } from '@/api/productOfferManagement'
 import AddForm from './module/AddForm'
 import ViewUpdateRecord from './module/ViewUpdateRecord'
@@ -118,6 +138,12 @@ const columns = [
   },
   {
     align: 'center',
+    title: '是否在售',
+    dataIndex: 'isSale',
+    scopedSlots: { customRender: 'isSale' },
+  },
+  {
+    align: 'center',
     title: '备注',
     dataIndex: 'remarks',
     scopedSlots: { customRender: 'remarks' },
@@ -151,6 +177,7 @@ export default {
   data(){
     return {
       itemName:undefined,
+      isSale:undefined,
       columns:columns,
       dataSource:[],
       pagination:{
@@ -162,7 +189,8 @@ export default {
   computed:{
     searchParam(){
       return {
-        name:this.itemName
+        name:this.itemName,
+        isSale:this.isSale
       }
     }
   },
@@ -241,6 +269,13 @@ export default {
       }else{
         console.log(`不支持的type参数：${type}`)
       }
+    },
+    changeSale(record,event){
+      console.log(arguments)
+      let that = this
+      priceAdjustProductConfigChangeIsSale({id:record.id}).then(res =>{
+        that.searchAction()
+      })
     }
   }
 }

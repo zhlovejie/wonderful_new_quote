@@ -342,7 +342,8 @@ export default {
           type: res.data.type,
           remarks: res.data.remarks,
           priceCoefficientId:+res.data.priceCoefficientId,
-          productPic:res.data.productPic || undefined
+          productPic:res.data.productPic || undefined,
+          isSale:res.data.isSale
         })
         let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData

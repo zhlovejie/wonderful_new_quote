@@ -14,6 +14,17 @@
             <a-select-option v-for="ptype in productTypes" :key="ptype.index" :value="ptype.id">{{ ptype.text }}</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="是否在售">
+        <a-select
+          placeholder="状态"
+          v-model="queryParam.isSale"
+          :allowClear="true"
+          style="width: 150px"
+        >
+          <a-select-option :value="0">在售</a-select-option>
+          <a-select-option :value="1">停产</a-select-option>
+        </a-select>
+        </a-form-item>
         <template v-if="$auth('product:list')">
           <a-form-item>
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
@@ -45,6 +56,9 @@
       <span slot="productPic" slot-scope="text">
         <img style="height: 70px;lenght:70px" :src="text" />
       </span>
+      <div slot="isSale" slot-scope="text, record, index">
+        {{+text === 0 ? '在售' : '停产'}}
+      </div>
       <span slot="status" slot-scope="text,record">
         <template v-if="$auth('product:edit')">
           <a-switch checkedChildren="启用" :defaultChecked="(text === 0) ? true : false" unCheckedChildren="禁用" @change="changestatus(text,record)" />
@@ -137,6 +151,12 @@ export default {
           title: '图片',
           dataIndex: 'productPic',
           scopedSlots: { customRender: 'productPic' }
+        },
+        {
+          align: 'center',
+          title: '是否在售',
+          dataIndex: 'isSale',
+          scopedSlots: { customRender: 'isSale' },
         },
         {
           title: '状态',

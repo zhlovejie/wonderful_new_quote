@@ -125,12 +125,6 @@ export const asyncRouterMap = [
                 meta: { title: '数据字典', permission: ['permission'] }
               },
               {
-                path: '/system-setting/work-box/productPriceCoefficient',
-                name: 'productPriceCoefficient',
-                component: () => import('@/views/system-setting/work-box/productPriceCoefficient/List'),
-                meta: { title: '产品价格系数', permission: ['permission'] }
-              },
-              {
                 path: '/system-setting/work-box/CommonSeal',
                 name: 'CommonSeal',
                 component: () => import('@/views/system-setting/work-box/CommonSeal'),
@@ -1122,7 +1116,13 @@ export const asyncRouterMap = [
             name: 'pom-products-quotation-list',
             component: () => import('@/views/product-offer-management/products-quotation/QuoteList'),
             meta: { title: '产品报价列表', icon: 'setting', keepAlive: false, permission: ['permission'] },
-          }
+          },
+          {
+            path: '/system-setting/work-box/productPriceCoefficient',
+            name: 'productPriceCoefficient',
+            component: () => import('@/views/system-setting/work-box/productPriceCoefficient/List'),
+            meta: { title: '4.0产品价格系数', permission: ['permission'] }
+          },
         ]
       },
       {
