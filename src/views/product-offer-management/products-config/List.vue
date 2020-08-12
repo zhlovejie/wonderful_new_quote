@@ -204,7 +204,7 @@ export default {
   watch:{
     '$route':{
       handler:function(to,from) {
-        if(to.name === 'pom-products-config'){
+        if(to.name === 'pom-products-config4d0'){
           this.init()
         }
       },

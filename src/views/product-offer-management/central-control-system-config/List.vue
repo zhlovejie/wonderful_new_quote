@@ -153,7 +153,7 @@ export default {
   watch:{
     '$route':{
       handler:function(to,from) {
-        if(to.name === 'pom-central-control-system-config'){
+        if(to.name === 'pom-central-control-system-config4d0'){
           this.init()
         }
       },

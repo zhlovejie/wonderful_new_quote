@@ -1,6 +1,11 @@
 <template>
   <div class="customer-list-wrapper">
+    <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" type="card" @change="tabChange">
+      <a-tab-pane tab="2.0产品报价" key="1" />
+      <a-tab-pane tab="4.0产品报价" key="2" />
+    </a-tabs>
     <div class="main-wrapper" style="width:1000px;margin:0 auto;">
+      
       <table class="custom-table custom-table-border" style="margin-bottom:0;">
         <tr>
           <td style="width:150px;">产品系列</td>
@@ -18,10 +23,15 @@
       <ProductConfig
         ref="productConfigMain"
         @extendProductChange="extendProductChange"
-        prefix="产品系列-"
+        prefix="产品系列-" 
+        :modelType="{is2d0:is2d0,is4d0:is4d0}"
       />
 
-      <ProductConfig ref="productConfigSub" prefix="产品-" />
+      <ProductConfig 
+        ref="productConfigSub" 
+        prefix="产品-" 
+        :modelType="{is2d0:is2d0,is4d0:is4d0}"
+      />
 
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" icon="check" @click="doAction('ok')" style="margin:0 10px;">确定</a-button>
@@ -107,6 +117,7 @@ export default {
   },
   data() {
     return {
+      activeKey:1,
       optInfo: {},
       visible: false,
       visibleView: false,
@@ -159,6 +170,19 @@ export default {
       }
       result.__config.showTitle = false
       return result
+    },
+    // modelType(){ //报价类型
+    //   const m = {
+    //     '1':'2d0', //2.0报价参数标志
+    //     '2':'4d0'  //4.0报价参数标志
+    //   }
+    //   return m[this.activeKey]
+    // },
+    is2d0(){
+      return +this.activeKey === 1
+    },
+    is4d0(){
+      return +this.activeKey === 2
     }
   },
   watch:{
@@ -312,8 +336,12 @@ export default {
       this.$refs[key].query()
     },
     calcCostPrice() {
-      let mainPrice = this.$refs.productConfigMain.costPriceAll
-      let subPrice = this.$refs.productConfigSub.costPriceAll
+      //let mainPrice = this.$refs.productConfigMain.costPriceAll
+      //let subPrice = this.$refs.productConfigSub.costPriceAll
+
+      let mainPrice = this.$refs.productConfigMain.calcItems(this.modelType)
+      let subPrice = this.$refs.productConfigSub.calcItems(this.modelType)
+
       let priceResult = {
         totalPrice:{
           price: 0,
@@ -404,6 +432,10 @@ export default {
     viewPriceChange(val) {
       console.log(val)
       this.unitPriceView = val
+    },
+    tabChange(tagKey){
+      this.activeKey = parseInt(tagKey)
+      this.reset()
     }
   }
 }

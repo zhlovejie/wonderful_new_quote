@@ -130,7 +130,7 @@ export default {
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'productPriceCoefficient') {
+        if (to.name === 'productPriceCoefficient4d0') {
           this.init()
         }
       },
