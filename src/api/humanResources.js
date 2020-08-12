@@ -169,10 +169,49 @@ export function leagueBuilding_List(parameter) {
   })
 }
 // 团建新增修改接口
-export function leagueBuilding_Detail(parameter) {
+export function leagueBuilding_add(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/OaLeagueApply/league-apply/saveOrUpdateLeagueDetail',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 团建列表接口
+export function leagueBuilding_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/getLeagueDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 团建申请撤回
+export function leagueBuilding_Apply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/withdrawLeagueApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 团建审批接口 */
+export function leagueBuildingApproval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/approvalLeagueApply',
+    method: 'post',
+    data: parameter
+  })
+}
+/** 团建照片上传接口 */
+export function leagueBuildingUpload(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/uploadPicLeagueApply',
     method: 'post',
     data: parameter
   })

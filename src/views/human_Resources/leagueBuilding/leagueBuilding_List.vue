@@ -82,8 +82,15 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <a type="primary" @click="doAction('view',record)">查看</a>
-            <template v-if="$auth('adjustApply:edit') && record.status === 1">
+            <template v-if="$auth('adjustApply:edit') && record.status === 5">
+              <a type="primary" @click="doAction('view5',record)">查看</a>
+            </template>
+            <template v-else>
+              <a type="primary" @click="doAction('view',record)">查看</a>
+            </template>
+            <template
+              v-if="$auth('adjustApply:edit') && record.status === 1 && +record.createdId  === +userInfo.id"
+            >
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -94,18 +101,15 @@
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="$auth('adjustApply:edit') && record.status === 2">
+            <template
+              v-if="$auth('adjustApply:edit') && record.status === 2 && +record.createdId  === +userInfo.id"
+            >
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定发布"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmRelease(record)"
-              >
-                <a type="primary">上传</a>
-              </a-popconfirm>
+              <a type="primary" @click="uploadImg(record)">上传</a>
             </template>
-            <template v-if="$auth('adjustApply:edit') && record.status === 3||record.status === 5">
+            <template
+              v-if="$auth('adjustApply:edit') && record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
@@ -118,24 +122,13 @@
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
-            <template v-if="$auth('adjustApply:edit') && record.status === 4">
-              <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否撤回"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="confirmWithdraw(record)"
-              >
-                <a type="primary">撤回</a>
-              </a-popconfirm>
-            </template>
           </template>
 
           <template v-if="activeKey === 1 && record.status === 1 ">
             <a type="primary" @click="doAction('edit',record)">审核</a>
           </template>
 
-          <template v-if="activeKey === 2">
+          <template v-if="activeKey === 2 && (record.status === 1 ||record.status ===3)">
             <a type="primary" @click="doAction('view',record)">查看</a>
           </template>
         </div>
@@ -143,12 +136,14 @@
     </div>
     <AddForm ref="addForm" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
+    <UploadImgs ref="uploadImgs" @finish="searchAction()" />
   </div>
 </template>
 <script>
 import { getDevisionList } from '../../../api/systemSetting'
-import { leagueBuilding_List, NoticeDelete, NoticeRelease, NoticeWithdraw } from '@/api/humanResources'
+import { leagueBuilding_List, leagueBuilding_Apply } from '@/api/humanResources'
 import AddForm from './module/FormAdd'
+import UploadImgs from './module/uploadImgs'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
   {
@@ -233,6 +228,7 @@ export default {
   components: {
     AddForm: AddForm,
     ApproveInfo: ApproveInfo,
+    UploadImgs: UploadImgs,
   },
   data() {
     return {
@@ -245,6 +241,7 @@ export default {
       depSelectDataSource: [],
       columns: columns,
       dataSource: [],
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       pagination: {
         current: 1,
       },
@@ -304,15 +301,18 @@ export default {
         1: '待审批',
         2: '审核通过',
         3: '审核未通过',
-        4: '已发布',
-        5: '已撤回',
-        6: '已撤回',
+        4: '已撤回',
+        5: '已完结',
       }
       return stateMap[state] || `未知状态:${state}`
     },
     //审批流组件
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    uploadImg(record) {
+      let that = this
+      that.$refs.uploadImgs.query(record.id)
     },
     // 发布
     confirmRelease(record) {
@@ -329,7 +329,8 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      NoticeWithdraw({ id: record.id }).then((res) => {
+      // console.log(record.id)
+      leagueBuilding_Apply(`id=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })

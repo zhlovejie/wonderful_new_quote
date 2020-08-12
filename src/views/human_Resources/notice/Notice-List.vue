@@ -59,28 +59,12 @@
         </div>
 
         <div slot="status" slot-scope="text, record, index">
-          <template v-if="record.status === 1">
-            <span>待审批</span>
-          </template>
-          <template v-if="record.status === 2">
-            <span>审核通过</span>
-          </template>
-          <template v-if="record.status === 3">
-            <span>审核未通过</span>
-          </template>
-          <template v-if="record.status === 4">
-            <span>已发布</span>
-          </template>
-          <template v-if="record.status === 5">
-            <span>已撤回</span>
-          </template>
-          <template v-if="record.status === 6">
-            <span>已撤回</span>
-          </template>
+          <a
+            href="javascript:void(0)"
+            @click="approvalPreview(record)"
+          >{{ getleagueTypeText(text) }}</a>
         </div>
-        <div slot="operationStatus" slot-scope="text, record, index">
-          <a href="javascript:void(0)">{{ getOperationStatus(text) }}</a>
-        </div>
+
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
@@ -143,14 +127,14 @@
         </div>
       </a-table>
     </div>
-    <!-- <ApproveInfo ref="approveInfoCard" /> -->
     <AddForm ref="addForm" @finish="searchAction()" />
+    <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
 <script>
 import { NoticeList, NoticeDelete, NoticeRelease, NoticeWithdraw } from '@/api/humanResources'
 import AddForm from './module/AddForm'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
   {
     align: 'center',
@@ -208,7 +192,7 @@ export default {
   name: 'NoticeList',
   components: {
     AddForm: AddForm,
-    // ApproveInfo:ApproveInfo
+    ApproveInfo: ApproveInfo,
   },
   data() {
     return {
@@ -247,6 +231,21 @@ export default {
       this.$set(this.queryParam, 'rangeDate', date)
       this.$set(this.queryParam, 'beginTime', dateString[0])
       this.$set(this.queryParam, 'endTime', dateString[1])
+    },
+    getleagueTypeText(state) {
+      let stateMap = {
+        1: '待审批',
+        2: '审核通过',
+        3: '审核未通过',
+        4: '已发布',
+        5: '已撤回',
+        6: '已完结',
+      }
+      return stateMap[state] || `未知状态:${state}`
+    },
+    //审批流组件
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId)
     },
     // 删除
     confirmDelete(record) {

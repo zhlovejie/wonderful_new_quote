@@ -1781,7 +1781,7 @@ export const asyncRouterMap = [
             },
           },
           {
-            path: '/human_Resources/security/Insurance',
+            path: '/human_Resources/security',
             name: 'human_Resources_security',
             component: RouteView,
             meta: {
@@ -1798,6 +1798,7 @@ export const asyncRouterMap = [
                 meta: {
                   title: '保险配置',
                   icon: 'audit',
+                  keepAlive: false,
                   permission: ['permission']
                 },
               },
@@ -1808,6 +1809,7 @@ export const asyncRouterMap = [
                 meta: {
                   title: '社保',
                   icon: 'audit',
+                  keepAlive: false,
                   permission: ['permission']
                 },
               },

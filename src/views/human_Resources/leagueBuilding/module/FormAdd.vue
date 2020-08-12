@@ -16,7 +16,7 @@
           icon="close"
           @click="noPassAction(recordDetails)"
         >不通过</a-button>
-        <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
+        <a-button class="a-button" type="primary" icon="check" @click="passAction()">通过</a-button>
       </template>
       <template v-else>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -24,7 +24,172 @@
       </template>
     </template>
 
-    <a-spin :spinning="spinning">
+    <template v-if="this.type==='view5'">
+      <a-tabs default-active-key="1">
+        <a-tab-pane key="1" tab="详情">
+          <a-form :form="form" class="becoming-form-wrapper">
+            <table class="custom-table custom-table-border">
+              <tr>
+                <td>团建类别</td>
+                <td>
+                  <a-form-item>
+                    <a-select
+                      @change="department"
+                      style="width: 350px;"
+                      :allowClear="true"
+                      :disabled="isDisabled"
+                      placeholder="请选择团建类别"
+                      v-decorator="['leagueType',{ rules: [{ required: true, message: '请选择团建类别' }] },]"
+                    >
+                      <a-select-option :value="1">部门团建</a-select-option>
+                      <a-select-option :value="2">公司团建</a-select-option>
+                      <a-select-option :value="3">管理层团建</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </td>
+                <td>部门</td>
+                <td>
+                  <a-form-item>
+                    <a-tree-select
+                      v-decorator="['departmentIds']"
+                      style="width: 100%"
+                      :tree-data="treeData"
+                      tree-checkable
+                      search-placeholder="选择部门"
+                      :disabled="isDisabled"
+                      :dropdownStyle="{ maxHeight: '300px'}"
+                    />
+                  </a-form-item>
+                </td>
+              </tr>
+              <tr>
+                <td>开始时间</td>
+                <td style="width: 400px;">
+                  <div style="display:flex;" v-if="!isDisabled">
+                    <a-form-item>
+                      <a-date-picker
+                        v-decorator="['s_begin_date',{initialValue:detail.beginTime ? moment(detail.beginTime) : undefined,rules: [{required: true,message: '请选择日期'}]}]"
+                        @change="dateBeginPickerChange"
+                      />
+                    </a-form-item>
+                    <a-form-item style="margin-left:10px;">
+                      <a-time-picker
+                        :minute-step="5"
+                        :second-step="60"
+                        v-decorator="['s_begin_time',{initialValue:detail.beginTime ? moment(detail.beginTime) :undefined,rules: [{required: true,message: '请选择时间'}]}]"
+                        @change="dateBeginTimeChange"
+                      />
+                    </a-form-item>
+                  </div>
+                  <a-form-item v-else>{{detail.beginTime}}</a-form-item>
+                </td>
+                <td>结束时间</td>
+                <td style="width: 350px;">
+                  <div style="display:flex;" v-if="!isDisabled">
+                    <a-form-item>
+                      <a-date-picker
+                        v-decorator="['s_end_date',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择日期'}]}]"
+                        @change="dateEndPickerChange"
+                      />
+                    </a-form-item>
+                    <a-form-item style="margin-left:10px;">
+                      <a-time-picker
+                        :minute-step="5"
+                        :second-step="60"
+                        v-decorator="['s_end_time',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择时间'}]}]"
+                        @change="dateEndTimeChange"
+                      />
+                    </a-form-item>
+                  </div>
+                  <a-form-item v-else>{{detail.endTime}}</a-form-item>
+                </td>
+              </tr>
+              <tr>
+                <td>时长</td>
+                <td>
+                  <a-form-item>
+                    <template
+                      v-if="duration.hour !== undefined"
+                    >{{duration.hour + '小时'+duration.minute+'分钟'}}</template>
+                  </a-form-item>
+                </td>
+                <td>团建地点</td>
+                <td colspan="1">
+                  <a-form-item>
+                    <a-input
+                      :disabled="isDisabled"
+                      placeholder="团建地址"
+                      :rows="3"
+                      v-decorator="['address', { rules: [{ required: true, message: '请输入团建地址' }] }]"
+                    />
+                  </a-form-item>
+                </td>
+              </tr>
+              <tr>
+                <td>团建费用(元)</td>
+                <td colspan="3">
+                  <a-form-item>
+                    <a-input
+                      :disabled="isDisabled"
+                      placeholder="请输入费用"
+                      :rows="3"
+                      v-decorator="['expense', { rules: [{ required: true, message: '请输入费用' }] }]"
+                    />
+                  </a-form-item>
+                </td>
+              </tr>
+              <tr>
+                <td>方案</td>
+                <td colspan="3">
+                  <a-form-item v-if="type==='add'||type==='edit-salary'">
+                    <a-upload
+                      v-decorator="['planUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                      name="file"
+                      :action="uploadUrl"
+                    >
+                      <a-button>
+                        <a-icon type="upload" />上传方案
+                      </a-button>
+                    </a-upload>
+                  </a-form-item>
+                  <template v-else>
+                    <a type="primary" key="back" @click="doAction(recordDetails.planUrl)">查看</a>
+                  </template>
+                </td>
+              </tr>
+              <tr>
+                <td>备注</td>
+                <td colspan="3">
+                  <a-form-item>
+                    <a-textarea
+                      :disabled="isDisabled"
+                      placeholder="备注"
+                      :rows="3"
+                      v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+                    />
+                  </a-form-item>
+                </td>
+              </tr>
+            </table>
+          </a-form>
+          <XdocView ref="xdocView" />
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="团队风采" force-render>
+          <div class="clearfix">
+            <a-upload
+              list-type="picture-card"
+              :file-list="fileList"
+              @preview="handlePreview"
+              @change="handleChange"
+            ></a-upload>
+            <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel10">
+              <img alt="example" style="width: 100%" :src="previewImage" />
+            </a-modal>
+          </div>
+        </a-tab-pane>
+      </a-tabs>
+    </template>
+    <a-spin :spinning="spinning" v-else>
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
@@ -35,6 +200,7 @@
                   @change="department"
                   style="width: 350px;"
                   :allowClear="true"
+                  :disabled="isDisabled"
                   placeholder="请选择团建类别"
                   v-decorator="['leagueType',{ rules: [{ required: true, message: '请选择团建类别' }] },]"
                 >
@@ -138,7 +304,7 @@
           <tr>
             <td>方案</td>
             <td colspan="3">
-              <a-form-item>
+              <a-form-item v-if="type==='add'||type==='edit-salary'">
                 <a-upload
                   v-decorator="['planUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
                   name="file"
@@ -149,6 +315,9 @@
                   </a-button>
                 </a-upload>
               </a-form-item>
+              <template v-else>
+                <a type="primary" key="back" @click="doAction(recordDetails.planUrl)">查看</a>
+              </template>
             </td>
           </tr>
           <tr>
@@ -166,24 +335,35 @@
           </tr>
         </table>
       </a-form>
-      <!-- <Approval ref="approval" @opinionChange="opinionChange" /> -->
+
+      <Approval ref="approval" @opinionChange="opinionChange" />
+      <XdocView ref="xdocView" />
     </a-spin>
   </a-modal>
 </template>
 <script>
 import { getDevisionList } from '@/api/systemSetting' //所有部门
 import { getUploadPath2 } from '@/api/common'
-import { leagueBuilding_Detail } from '@/api/humanResources'
+import { leagueBuilding_add, leagueBuilding_Detail, leagueBuildingApproval } from '@/api/humanResources'
 import moment from 'moment'
-
-// import Approval from './Approval'
+import XdocView from './XdocView'
+import Approval from './Approval'
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'BecomingForm',
   components: {
-    // Approval: Approval,
+    XdocView: XdocView,
+    Approval: Approval,
   },
   data() {
     return {
@@ -204,19 +384,33 @@ export default {
       recordDetails: {},
       record: {},
       isModified: false, //财务人员为 true
+      fileList: [
+        {
+          uid: '-1',
+          name: 'image.png',
+          status: 'done',
+          url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        },
+      ],
+      previewVisible: false,
+      previewImage: '',
     }
   },
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改公告信息'
+        return '修改团建信息'
       }
-      let txt = this.isView ? '查看' : this.isEdit ? '审核' : '新增'
-      return `${txt}公告信息`
+      let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
+      return `${txt}团结信息`
     },
     isView() {
       //查看
       return this.type === 'view'
+    },
+    isView5() {
+      //查看
+      return this.type === 'view5'
     },
     isEdit() {
       //审核
@@ -234,7 +428,7 @@ export default {
     //   return this.isView || this.isApproval || this.isEditSalary
     // },
     isDisabled() {
-      return this.isView || this.isEdit
+      return this.isView || this.isEdit || this.isView5
     },
   },
   watch: {
@@ -281,7 +475,10 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (record !== null) {
+      if (record === null) {
+        this.detail = {}
+        this.duration = {}
+      } else {
         this.fillData()
       }
     },
@@ -289,20 +486,55 @@ export default {
     fillData() {
       let that = this
       let id = {
-        id: this.record.id,
+        leagueId: this.record.id,
       }
-      NoticeDetails(id).then((res) => {
+      leagueBuilding_Detail(id).then((res) => {
+        // console.log(res)
         that.recordDetails = res.data
-        that.form.setFieldsValue({
-          title: res.data.title,
-          releaseRange: res.data.releaseRangeList,
-          content: res.data.content,
-          deptId: res.data.deptList,
 
-          // 'applyUserName':res.data.trueName
+        let beginTime = moment(res.data.beginTime)
+        let endTime = moment(res.data.endTime)
+        that.sDate = {
+          beginDate: beginTime.format('YYYY-MM-DD'),
+          beginTime: beginTime.format('HH:mm:ss'),
+          endDate: endTime.format('YYYY-MM-DD'),
+          endTime: endTime.format('HH:mm:ss'),
+        }
+        if (res.data.leagueType === 1) {
+          this.department(1)
+          that.form.setFieldsValue({
+            departmentIds: res.data.departmentIds.split(','),
+          })
+        }
+        that.form.setFieldsValue({
+          leagueType: res.data.leagueType,
+          address: res.data.address,
+          expense: res.data.expense,
+          remark: res.data.remark,
+          planUrl: res.data.planUrl,
         })
+        that.$nextTick(() => (that.detail = { ...res.data }))
       })
     },
+    // 文件预览
+    doAction(idurl) {
+      this.$refs.xdocView.query(idurl)
+    },
+    //查看图片
+    handleCancel10() {
+      this.previewVisible = false
+    },
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    handleChange({ fileList }) {
+      this.fileList = fileList
+    },
+
     //上传
     normFile(e) {
       console.log('Upload event:', e)
@@ -342,7 +574,7 @@ export default {
       let timeData = moment(endTime).diff(moment(beginTime), 'minutes')
       that.duration.hour = parseInt(timeData / 60)
       that.duration.minute = parseInt(timeData % 60)
-      console.log(that.duration.hour, that.duration.minute)
+      // console.log(that.duration.hour, that.duration.minute)
     },
     dateBeginPickerChange(date, dateStr) {
       let sDate = { ...this.sDate }
@@ -389,11 +621,13 @@ export default {
           if (values.departmentIds) {
             values.departmentIds = values.departmentIds.toString()
           }
-          values.planUrl = values.planUrl.fileList[0].response.data
-          if (that.type === 'edit-salary') {
-            values.id = that.recordDetails.id
+          if (that.type === 'add') {
+            values.planUrl = values.planUrl.fileList[0].response.data
           }
-          leagueBuilding_Detail(values)
+          if (that.type === 'edit-salary') {
+            values.id = that.record.id
+          }
+          leagueBuilding_add(values)
             .then((res) => {
               that.spinning = false
               values.planUrl = {}
@@ -418,15 +652,15 @@ export default {
       this.visible = false
     },
     submitAction(opt) {
+      console.log(1231)
       let that = this
       let values = {
-        approveId: this.recordDetails.id,
+        approveId: this.record.id,
         isAdopt: opt.isAdopt,
         opinion: opt.opinion,
       }
-      console.log(values)
       that.spinning = true
-      NoticeApproval(values)
+      leagueBuildingApproval(values)
         .then((res) => {
           that.spinning = false
           that.form.resetFields() // 清空表
@@ -437,6 +671,7 @@ export default {
         .catch((err) => (that.spinning = false))
     },
     passAction() {
+      console.log('tongguo')
       this.submitAction({
         isAdopt: 0,
         // opinion: '通过',
@@ -444,9 +679,7 @@ export default {
     },
     noPassAction() {
       let that = this
-      //that.opinion = ''
       that.$refs.approval.query()
-      console.log(that.$refs.approval.query())
     },
     opinionChange(opinion) {
       //审批意见
