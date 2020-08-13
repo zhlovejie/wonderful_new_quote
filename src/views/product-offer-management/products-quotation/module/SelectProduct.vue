@@ -103,6 +103,12 @@ export default {
   name:'SelectProduct',
   components:{
   },
+  props:{
+    productType:{
+      type:Number,
+      default:0
+    }
+  },
   data(){
     return {
       itemName:undefined,
@@ -123,7 +129,8 @@ export default {
     searchParam(){
       return {
         name:this.itemName,
-        isSale:this.isSale
+        isSale:this.isSale,
+        productType:this.productType
       }
     }
   },
@@ -234,6 +241,10 @@ export default {
         optControlData: formatDataItem(optControlData),
         optChoiceData: res
       }
+    },
+
+    resetCurrent(page=1){
+      this.pagination = Object.assign({},this.pagination,{current:page})
     }
   }
 }

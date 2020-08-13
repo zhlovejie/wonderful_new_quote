@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <SelectProduct ref="selectProduct" @selected="selectedHandler" />
+    <SelectProduct ref="selectProduct" @selected="selectedHandler" :productType="+this.activeKey === 1 ? 1 : 0" />
 
     <a-modal
       title="产品评估"
@@ -61,9 +61,8 @@
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>
         <a-button type="primary" @click="doAction('price-view')" style="margin:0 10px;">预览</a-button>
-        <a-button type="primary" @click="doAction('price-form')" style="margin:0 10px;">新增报价单</a-button>
-        <a-button type="primary" v-if="$auth('productsQuotation:costPrice')" @click="doAction('price-view-cost')" style="margin:0 10px;">成本价</a-button>
-        
+        <a-button type="primary" v-if="is4d0" @click="doAction('price-form')" style="margin:0 10px;">新增报价单</a-button>
+        <a-button type="primary" v-if="$auth('productsQuotation2d0:costPrice') | $auth('productsQuotation4.0:costPrice')" @click="doAction('price-view-cost')" style="margin:0 10px;">成本价</a-button>
       </div>
     </a-modal>
 
@@ -171,13 +170,13 @@ export default {
       result.__config.showTitle = false
       return result
     },
-    // modelType(){ //报价类型
-    //   const m = {
-    //     '1':'2d0', //2.0报价参数标志
-    //     '2':'4d0'  //4.0报价参数标志
-    //   }
-    //   return m[this.activeKey]
-    // },
+    modelType(){ //报价类型
+      const m = {
+        '1':'2d0', //2.0报价参数标志
+        '2':'4d0'  //4.0报价参数标志
+      }
+      return m[this.activeKey]
+    },
     is2d0(){
       return +this.activeKey === 1
     },
@@ -428,6 +427,8 @@ export default {
           console.log(err)
         }
       })
+
+      that.$refs.selectProduct && that.$refs.selectProduct.resetCurrent()
     },
     viewPriceChange(val) {
       console.log(val)

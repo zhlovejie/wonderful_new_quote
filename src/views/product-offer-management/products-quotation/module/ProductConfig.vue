@@ -133,6 +133,9 @@
               <tr>
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
+                <template v-if="modelType['is2d0']">
+                <th style="width:150px;">产品价格(元)</th>
+                </template>
                 <th style="width:100px;">配置</th>
               </tr>
               <tr v-for="(item,index) in optChoice" :key="index">
@@ -153,6 +156,15 @@
                     </a-select-option>
                   </a-select>
                 </td>
+                <template v-if="modelType['is2d0']">
+                <td>
+                  <div>
+                    A价：{{item.target.aprice | moneyFormatNumber}}<br/>
+                    B价：{{item.target.bprice | moneyFormatNumber}}<br/>
+                    C价：{{item.target.cprice | moneyFormatNumber}}
+                  </div>
+                </td>
+                </template>
                 <td>
                   <a-checkbox
                     :disabled="item.target.isRequire"
@@ -164,6 +176,15 @@
               <tr v-for="(item,index) in optSelect" :key="item.id" >
                 <td>{{optChoice.length + index + 1}}</td>
                 <td>{{item.itemName}}</td>
+                <template v-if="modelType['is2d0']">
+                <td>
+                  <div>
+                    A价：{{item.aprice | moneyFormatNumber}}<br/>
+                    B价：{{item.bprice | moneyFormatNumber}}<br/>
+                    C价：{{item.cprice | moneyFormatNumber}}
+                  </div>
+                </td>
+                </template>
                 <td>
                   <a-checkbox
                     :checked="item.checked || false"
