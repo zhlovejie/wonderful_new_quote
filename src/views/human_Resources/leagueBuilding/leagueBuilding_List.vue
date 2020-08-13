@@ -141,7 +141,7 @@
 </template>
 <script>
 import { getDevisionList } from '../../../api/systemSetting'
-import { leagueBuilding_List, leagueBuilding_Apply } from '@/api/humanResources'
+import { leagueBuilding_List, leagueBuilding_Apply, leagueBuildingRemove } from '@/api/humanResources'
 import AddForm from './module/FormAdd'
 import UploadImgs from './module/uploadImgs'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -269,7 +269,7 @@ export default {
     // 删除
     confirmDelete(record) {
       let that = this
-      NoticeDelete({ id: record.id }).then((res) => {
+      leagueBuildingRemove(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)

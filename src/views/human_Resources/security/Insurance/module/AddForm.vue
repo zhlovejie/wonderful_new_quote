@@ -42,19 +42,33 @@
             <td>岗位</td>
             <td colspan="3">
               <a-form-item>
-                <a-select
-                  style="width:400px;"
-                  :allowClear="true"
-                  v-decorator="['stationId',{ rules: [{ required: true, message: '选择岗位' }] },]"
-                  :disabled="isDisabled"
-                  placeholder="请选择岗位"
-                >
-                  <a-select-option
-                    v-for="item in postSelectDataSource"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.stationName}}</a-select-option>
-                </a-select>
+                <template v-if="this.type==='add'">
+                  <a-tree-select
+                    v-decorator="['stationIds',{ rules: [{ required: true, message: '选择岗位' }] }]"
+                    style="width: 400px"
+                    :tree-data="postSelectDataSource"
+                    :dropdownStyle="{ maxHeight: '300px'}"
+                    tree-checkable
+                    :show-checked-strategy="SHOW_PARENT"
+                    search-placeholder="Please select"
+                    :disabled="isDisabled"
+                  />
+                </template>
+                <template v-else>
+                  <a-select
+                    style="width:400px;"
+                    :allowClear="true"
+                    v-decorator="['stationId',{ rules: [{ required: true, message: '选择岗位' }] },]"
+                    :disabled="isDisabled"
+                    placeholder="请选择岗位"
+                  >
+                    <a-select-option
+                      v-for="item in SingleChoice"
+                      :key="item.id"
+                      :value="item.id"
+                    >{{item.stationName}}</a-select-option>
+                  </a-select>
+                </template>
               </a-form-item>
             </td>
           </tr>
@@ -165,6 +179,8 @@ export default {
       departmentList: [],
       // 岗位列表
       postSelectDataSource: [],
+      //单选列表
+      SingleChoice: [],
       treeData: [],
       InsuranceList: [],
 
@@ -222,7 +238,16 @@ export default {
       let that = this
       that.postSelectDataSource = []
       return getStationList({ id: dep_id }).then((res) => {
-        that.postSelectDataSource = res.data
+        that.SingleChoice = res.data
+        that.postSelectDataSource = res.data.map((item) => {
+          return {
+            id: item.id,
+            key: item.id,
+            value: item.id,
+            title: item.stationName,
+            isLeaf: false,
+          }
+        })
       })
     },
     init() {

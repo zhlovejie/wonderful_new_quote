@@ -41,8 +41,10 @@
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('role:edit')">
+            <template>
               <a @click="handle('edit',record)">查看</a>
+            </template>
+            <template v-if="+record.createdId  === +userInfo.id">
               <a-divider type="vertical" />
               <a @click="handle('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
@@ -80,6 +82,7 @@ export default {
     return {
       openKeys: ['id'],
       parentId: 0,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       hiddenBoolean: false,
       stationId: undefined,
       options: [],
@@ -209,6 +212,7 @@ export default {
     },
 
     handle(type, record) {
+      console.log(this.userInfo.id)
       this.$refs.addForm.query(type, record)
       //   this.$refs.modal.add()
     },

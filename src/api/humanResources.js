@@ -216,3 +216,13 @@ export function leagueBuildingUpload(parameter) {
     data: parameter
   })
 }
+
+/** 团建申请删除接口 */
+export function leagueBuildingRemove(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/OaLeagueApply/league-apply/removeLeagueApply',
+    method: 'post',
+    data: parameter
+  })
+}

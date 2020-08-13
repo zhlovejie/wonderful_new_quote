@@ -181,6 +181,7 @@
               :file-list="fileList"
               @preview="handlePreview"
               @change="handleChange"
+              :disabled="isDisabled"
             ></a-upload>
             <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel10">
               <img alt="example" style="width: 100%" :src="previewImage" />
@@ -384,14 +385,7 @@ export default {
       recordDetails: {},
       record: {},
       isModified: false, //财务人员为 true
-      fileList: [
-        {
-          uid: '-1',
-          name: 'image.png',
-          status: 'done',
-          url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-      ],
+      fileList: [],
       previewVisible: false,
       previewImage: '',
     }
@@ -491,7 +485,14 @@ export default {
       leagueBuilding_Detail(id).then((res) => {
         // console.log(res)
         that.recordDetails = res.data
-
+        that.fileList = res.data.annexList.map((item) => {
+          return {
+            uid: item.id,
+            name: 'image.png',
+            status: 'done',
+            url: item.url,
+          }
+        })
         let beginTime = moment(res.data.beginTime)
         let endTime = moment(res.data.endTime)
         that.sDate = {

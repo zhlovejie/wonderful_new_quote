@@ -18,11 +18,13 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleSee('e',record)">查看</a>
           <a-divider type="vertical" />
-          <a @click="handleAdd('edit-salary',record)">修改</a>
-          <a-divider type="vertical" />
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+          <template v-if="+record.createdId  === +userInfo.id">
+            <a @click="handleAdd('edit-salary',record)">修改</a>
+            <a-divider type="vertical" />
+            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+          </template>
         </span>
       </a-table>
       <!-- </a-layout-content> -->
@@ -100,6 +102,7 @@ export default {
   data() {
     return {
       urls: system.baseURL + '/socialSecurity/social-security-info/socialSecurityInfo/exportExcel?id=',
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
       pagination: {
