@@ -47,14 +47,14 @@
           </td>
         </tr>
         <tr>
-          
+
           <td>身份证号</td>
           <td>
             <a-form-item>
-              <a-input 
-              :disabled="isView" 
-              @blur="validateIdentityCard"  
-              v-decorator="['identityCard',{rules: [{required: true,message: '输入身份证号'}]}]" 
+              <a-input
+              :disabled="isView"
+              @blur="validateIdentityCard"
+              v-decorator="['identityCard',{rules: [{required: true,message: '输入身份证号'}]}]"
               placeholder="输入身份证号"
             />
             </a-form-item>
@@ -66,7 +66,7 @@
                 disabled
                 style="width:100%;"
                 v-decorator="['birthDate',{rules: [{required: false,message: '输入出生日期'}]}]"
-                format="YYYY-MM-DD" 
+                format="YYYY-MM-DD"
                 title="根据身份证号码自动填充出生日期"
               />
             </a-form-item>
@@ -338,10 +338,11 @@
             <a-form-item>
               <a-select :disabled="isView" @change="probationTypeChange" v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]" placeholder="选择试用期">
                 <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="5">7天</a-select-option>
                 <a-select-option :value="1">1个月</a-select-option>
                 <a-select-option :value="2">2个月</a-select-option>
                 <a-select-option :value="3">3个月</a-select-option>
-                <a-select-option :value="4">考察期</a-select-option>
+<!--                <a-select-option :value="4">考察期</a-select-option>-->
               </a-select>
             </a-form-item>
           </td>
@@ -593,7 +594,7 @@ export default {
       }
     },
     async fillData(type,resultData){
-      
+
       let that = this
       await this.init()
 
@@ -614,7 +615,7 @@ export default {
         //银行卡
         that.bankInfo = values.bankCardList || []
         //that.$nextTick(() => that.$refs.bankChoice.$forceUpdate())
-        
+
         //values.trueName = values.name //姓名
         if(values.name ){
           values.trueName = values.name
@@ -622,7 +623,7 @@ export default {
         values.birthDate = values.birthDate ? moment(values.birthDate) : moment()
         values.entryDate = values.entryDate ? moment(values.entryDate) : moment()
 
-        
+
 
         let stationId = values.stationId
 
@@ -852,15 +853,15 @@ export default {
     getBirthDay(cardNo,format='YYYY-MM-DD'){
       if(typeof cardNo !== 'string'){
         console.log('cardNo参数必须是字符串')
-        return 
+        return
       }
       if(cardNo.length !== 15 && cardNo.length !== 18){
         console.log('cardNo参数必须是15位或18位')
-        return 
+        return
       }
       let is15 = cardNo.length === 15 ? true : false
-      let reg = is15 
-        ? /\d{6}(\d{2})(\d{2})(\d{2})\d*/ 
+      let reg = is15
+        ? /\d{6}(\d{2})(\d{2})(\d{2})\d*/
         : /\d{6}(\d{4})(\d{2})(\d{2})\d*/
       let result = cardNo.match(reg)
       if(result){
@@ -870,7 +871,7 @@ export default {
         let day = result[3]
         return format.replace('YYYY',year).replace('MM',month).replace('DD',day)
       }
-      return 
+      return
     }
   }
 }

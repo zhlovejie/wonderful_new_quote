@@ -5,7 +5,7 @@
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
     :confirmLoading="spinning"
   >
   <a-spin :spinning="spinning">
@@ -16,17 +16,17 @@
           <td >姓名</td>
           <td >
             <a-form-item>
-              <a-input 
+              <a-input
                 :disabled="isView"
-                v-decorator="['trueName', { rules: [{ required: true, message: '请输入姓名' },{max:20,message:'最多可输入20个字符'}] }]" 
+                v-decorator="['trueName', { rules: [{ required: true, message: '请输入姓名' },{max:20,message:'最多可输入20个字符'}] }]"
               />
             </a-form-item>
           </td>
           <td>性别</td>
           <td >
             <a-form-item>
-              <a-select 
-                :disabled="isView" 
+              <a-select
+                :disabled="isView"
                 v-decorator="['sex',{initialValue:0,rules: [{required: false,message: '选择性别'}]}]" placeholder="选择性别">
                 <a-select-option :value="1">男</a-select-option>
                 <a-select-option :value="0">女</a-select-option>
@@ -36,12 +36,12 @@
           <td>籍贯</td>
           <td>
             <a-form-item >
-              <a-cascader :disabled="isView" 
+              <a-cascader :disabled="isView"
                 v-decorator="['birthplace',{rules: [{required: false,message: '输入籍贯'}]}]"
-                :options="birthplaceOptions" 
-                @change="birthplaceCascaderChange" 
-                :loadData="birthplaceCascaderLoadData" 
-                placeholder="输入籍贯" 
+                :options="birthplaceOptions"
+                @change="birthplaceCascaderChange"
+                :loadData="birthplaceCascaderLoadData"
+                placeholder="输入籍贯"
               />
             </a-form-item>
           </td>
@@ -50,10 +50,10 @@
           <td>出生日期</td>
           <td>
             <a-form-item>
-              <a-date-picker 
-                :disabled="isView" 
-                style="width:100%;" 
-                v-decorator="['birthDate',{rules: [{required: false,message: '输入出生日期'}]}]" 
+              <a-date-picker
+                :disabled="isView"
+                style="width:100%;"
+                v-decorator="['birthDate',{rules: [{required: false,message: '输入出生日期'}]}]"
                 format="YYYY-MM-DD"
               />
             </a-form-item>
@@ -201,7 +201,7 @@
             </a-form-item>
             <a-form-item >
               <div class="clearfix">
-                <a-upload 
+                <a-upload
                   :disabled="isView"
                   accept="multiple"
                   name="files"
@@ -307,10 +307,10 @@
           <td>入职日期</td>
           <td>
             <a-form-item>
-              <a-date-picker 
-                style="width:100%;" 
-                :disabled="isView" 
-                v-decorator="['entryDate',{initialValue:moment(),rules: [{required: true,message: '输入入职日期'}]}]" 
+              <a-date-picker
+                style="width:100%;"
+                :disabled="isView"
+                v-decorator="['entryDate',{initialValue:moment(),rules: [{required: true,message: '输入入职日期'}]}]"
                 format="YYYY-MM-DD"
               />
             </a-form-item>
@@ -332,10 +332,11 @@
             <a-form-item>
               <a-select :disabled="isView" @change="probationTypeChange" v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]" placeholder="选择试用期">
                 <a-select-option :value="0">无</a-select-option>
+                <a-select-option :value="5">7天</a-select-option>
                 <a-select-option :value="1">1个月</a-select-option>
                 <a-select-option :value="2">2个月</a-select-option>
                 <a-select-option :value="3">3个月</a-select-option>
-                <a-select-option :value="4">考察期</a-select-option>
+<!--                <a-select-option :value="4">考察期</a-select-option>-->
               </a-select>
             </a-form-item>
           </td>
@@ -365,7 +366,7 @@
           <td >
             <a-form-item >
               <div class="clearfix">
-                <a-upload 
+                <a-upload
                   :disabled="isView"
                   accept="multiple"
                   name="files"
@@ -401,7 +402,7 @@ import {getDictionaryList} from '@/api/workBox'
 import {
   departmentList,//所有部门
   getStationList, //获取所有岗位
-} from '@/api/systemSetting' 
+} from '@/api/systemSetting'
 import {comManageSettingsGetSettingsByStationId} from '@/api/communicationManagement'
 import moment from 'moment'
 
@@ -411,7 +412,7 @@ import {
   getFaceNo, //获取人脸识别码
   getEntityBeforeDetail, //入职操作时，回显之前储备的用户信息
   reserveUpdateEntity,
-  reserveAddOrUpdate 
+  reserveAddOrUpdate
 } from '@/api/reserveApi'
 
 import BankChoice from './BankChoice'
@@ -496,7 +497,7 @@ export default {
             headUrl:file.response.data[0].url
           })
         }
-      } 
+      }
       this.fileList = fileList // 展示照片墙
     },
 
@@ -523,7 +524,7 @@ export default {
       //所有省
       let task1 = function(){
         return new Promise((resolve,reject) =>{
-          getAreaByParent({ pId: 100000 }).then(res => { 
+          getAreaByParent({ pId: 100000 }).then(res => {
             that.birthplaceOptions = res.data.map(item =>{
               return {
                 label:item.area,
@@ -539,7 +540,7 @@ export default {
       let task2 = function(){
         return new Promise((resolve,reject) =>{
           getDictionaryList({parentId:1}).then(res =>{
-            that.education = res.data 
+            that.education = res.data
             resolve('done')
           })
         })
@@ -557,7 +558,7 @@ export default {
     },
     async query(type,record){
       let that = this
-      that.visible = true 
+      that.visible = true
       that.type = type
       that.record = Object.assign({},record)
       that.form.resetFields()
@@ -588,7 +589,7 @@ export default {
 
       let that = this
       await this.init()
-      
+
       //before 入职前填充 after 入职后填充
       //if(type === 'before'){
 
@@ -601,7 +602,7 @@ export default {
         //     that.form.setFieldsValue({faceCode:that.faceCode})
         //   })
         // }
-        
+
         let values = {...resultData}
 
         //银行卡
@@ -614,9 +615,9 @@ export default {
         }
         values.birthDate = values.birthDate ? moment(values.birthDate) : moment()
         values.entryDate = values.entryDate ? moment(values.entryDate) : moment()
-        
-        
-        
+
+
+
         let stationId = values.stationId
         await comManageSettingsGetSettingsByStationId({id:stationId}).then(res =>{
           console.log(res)
@@ -631,7 +632,7 @@ export default {
           }
         })
         delete values.birthplace
-        
+
 
         if(values.headUrl){
           const url = values.headUrl
@@ -663,7 +664,7 @@ export default {
           delete values.email
           delete values.phone
         }
-        
+
         //填充其他
         that.$nextTick(() => that.form.setFieldsValue(Object.assign({},values)))
         //填充岗位
@@ -672,7 +673,7 @@ export default {
             that.form.setFieldsValue({stationId:stationId})
           })
         }
-        
+
         //that.$nextTick(() => that.bankInfo = values.bankCardList || [] )
         //填充籍贯
         let areaIds = values.areaIds
@@ -690,7 +691,7 @@ export default {
         }
     },
     async handleOk(){
-      let that = this 
+      let that = this
       if(that.isView){
         that.visible = false
         return
@@ -708,11 +709,11 @@ export default {
           }
 
           values.bankCardList = _bankChoiceResult.values.bank || []
-          //values.nativePlace = '江苏徐州' 
+          //values.nativePlace = '江苏徐州'
           if(values.entryDate){
             values.entryDate = values.entryDate.format('YYYY-MM-DD')
           }
-          
+
           if(values.birthDate){
             values.birthDate = values.birthDate.format('YYYY-MM-DD')
             values.birthDate = values.birthDate.slice(0,10)
@@ -744,7 +745,7 @@ export default {
                 that.photoUrls = ''
                 that.fileListSeal = []
                 that.previewCancelSeal = ''
-                that.visible = false 
+                that.visible = false
 
                 that.$message.success('操作成功')
                 that.$emit('finish')
@@ -755,13 +756,13 @@ export default {
           }else if(that.type === 'ruzhi'){
             if(!isDoEntryBefore){
               that.$message.info('该人员已经办理入职了')
-              return 
+              return
             }
             that.spinning = true
             reserveDoEntry(values).then(res => {
               that.spinning = false
               if(res.code === 200){
-                that.visible = false 
+                that.visible = false
                 that.$message.success('操作成功')
                 that.$emit('finish')
               }else{
@@ -769,7 +770,7 @@ export default {
               }
             }).catch(err =>that.spinning = false)
           }
-          
+
         }
       })
     },
