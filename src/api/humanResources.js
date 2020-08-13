@@ -226,3 +226,22 @@ export function leagueBuildingRemove(parameter) {
     data: parameter
   })
 }
+
+/** 岗位配置列表接口 */
+export function postAllocation_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function postAllocation_Version(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractForm/contract-form/pageListNerVersion',
+    method: 'get',
+    params: parameter
+  })
+}

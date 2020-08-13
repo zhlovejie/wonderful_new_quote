@@ -1826,6 +1826,41 @@ export const asyncRouterMap = [
               permission: ['permission']
             },
           },
+          {
+            path: '/human_Resources/labor_contract',
+            name: 'human_Resources_contract',
+            component: RouteView,
+            meta: {
+              title: '劳动合同管理',
+              icon: 'solution',
+              keepAlive: false,
+              permission: ['permission']
+            },
+            redirect: '/human_Resources/labor_contract/post_allocation',
+            children: [{
+                path: '/human_Resources/labor_contract/post_allocation',
+                name: 'human_Resources_allocation',
+                component: () => import('@/views/human_Resources/labor_contract/post_allocation/post_allocation_List'),
+                meta: {
+                  title: '岗位配置',
+                  icon: 'container',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/labor_contract/contractAgreement',
+                name: 'human_Resources_contractAgreement',
+                component: () => import('@/views/human_Resources/labor_contract/contractAgreement/contractAgreement_List'),
+                meta: {
+                  title: '合同协议管理',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+            ]
+          },
         ]
       }
     ]

@@ -7,7 +7,6 @@
         @change=" depChangeHandler"
         placeholder="请选择部门"
       >
-        <a-select-option :value="undefined">请选择部门</a-select-option>
         <a-select-option
           v-for="item in departmentList"
           :key="item.id"
@@ -29,13 +28,11 @@
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
-        <s-table
-          ref="table"
-          size="default"
+        <a-table
           :columns="columns"
-          :rowKey="loadData.id"
-          :data="loadData"
-          :alert="false"
+          :data-source="this.dataSource"
+          :pagination="pagination"
+          @change="handleTableChange"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -58,7 +55,7 @@
               </a-popconfirm>
             </template>
           </span>
-        </s-table>
+        </a-table>
       </a-layout-content>
     </a-layout>
     <AddForm ref="addForm" @finish="searchAction()" />
@@ -67,16 +64,13 @@
 
 <script>
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
-
-import { securityInsurance_List, securityInsurance_Delete } from '@/api/humanResources'
-import { STable } from '@/components'
+import { postAllocation_list } from '@/api/humanResources'
 import AddForm from './module/AddForm'
 
 export default {
   name: 'RoleManagement',
   components: {
     AddForm,
-    STable,
   },
   data() {
     return {
@@ -85,12 +79,13 @@ export default {
       userInfo: this.$store.getters.userInfo, // 当前登录人
       hiddenBoolean: false,
       stationId: undefined,
-      options: [],
-      Selected: '',
       queryParam: {},
       postSelectDataSource: [], //
       recordResult: {},
       queryRecord: {},
+      pagination: {
+        current: 1,
+      },
       // 表头
       columns: [
         {
@@ -114,34 +109,9 @@ export default {
         },
         {
           align: 'center',
-          title: '试用期时间',
-          dataIndex: 'probationPeriodTime',
-          key: 'probationPeriodTime',
-          //   scopedSlots: { customRender: 'status' },
-        },
-        {
-          align: 'center',
-          title: '入职空挡期',
-          key: 'neutralName',
-          dataIndex: 'neutralName',
-        },
-        {
-          align: 'center',
-          title: '试用期保险',
-          key: 'probationPeriodName',
-          dataIndex: 'probationPeriodName',
-        },
-        {
-          align: 'center',
-          title: '转正保险',
-          key: 'turnJustName',
-          dataIndex: 'turnJustName',
-        },
-        {
-          align: 'center',
           title: '提交人',
-          key: 'createdName',
-          dataIndex: 'createdName',
+          dataIndex: 'createdUserName',
+          key: 'createdUserName',
         },
         {
           align: 'center',
@@ -151,21 +121,19 @@ export default {
         },
         {
           align: 'center',
+          title: '修改时间',
+          key: 'modifyTime',
+          dataIndex: 'modifyTime',
+        },
+        {
+          align: 'center',
           title: '操作',
           key: 'action',
           scopedSlots: { customRender: 'action' },
         },
       ],
-      // 初始化加载 必须为 Promise 对象
-      loadData: (parameter) => {
-        // console.log('页面开始加载数据。。。', parameter, this.queryParam)
-        return securityInsurance_List(Object.assign(parameter, this.queryParam)).then((res) => {
-          return res
-          console.log(res.data)
-        })
-      },
-      selectedRowKeys: [],
-      selectedRows: [],
+      //列表数据
+      dataSource: [],
 
       // 部门列表
       departmentList: [],
@@ -178,7 +146,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_Insurance') {
+        if (to.name === 'human_Resources_allocation') {
           this.init()
         }
       },
@@ -195,7 +163,36 @@ export default {
     },
     // 获取列表
     searchAction() {
-      this.$refs.table && this.$refs.table.refresh(true)
+      let that = this
+      console.log(123)
+      that.loading = true
+      let _searchParam = Object.assign(
+        { socialSecurityId: that.recordId },
+        { ...this.queryParam },
+        { ...this.pagination }
+      )
+      postAllocation_list(_searchParam)
+        .then((res) => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+        })
+        .catch((err) => (that.loading = false))
+      //   this.$refs.table && this.$refs.table.refresh(true)
+    },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      // console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchActionsee()
     },
     depChangeHandler(dep_id) {
       let that = this

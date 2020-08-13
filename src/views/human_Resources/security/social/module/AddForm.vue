@@ -41,7 +41,7 @@
                   v-decorator="['companyPay', {rules: [ {required: true,  message: '请输入公司缴费金额!'},
               {
                 max:10,
-                message: '数字长度不能超过10',
+                message: '金额不能超过10位',
               }]}]"
                 />
               </a-form-item>
@@ -58,7 +58,7 @@
                   v-decorator="['personalPay', {rules: [{required: true,message: '请输入个人缴费金额!',},
               {
                 max:10,
-                message: '数字长度不能超过10',
+                message: '金额不能超过10位',
               }]}]"
                 />
               </a-form-item>
