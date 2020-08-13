@@ -33,7 +33,7 @@
       <a-table
         :columns="columns"
         :data-source="this.dataSource"
-        :scroll="{ x: 2000, y: 300 }"
+        :scroll="{ x: 2800, y: 300 }"
         :pagination="pagination"
         @change="handleTableChange"
       ></a-table>
@@ -45,10 +45,10 @@ import { securitySocial_See } from '@/api/humanResources'
 const columns = [
   //   { title: '序号', width: 100, dataIndex: 'name', key: 'name' },
   { title: '台账年月', width: 100, dataIndex: 'accountDate', key: 'accountDate', align: 'center', fixed: 'left' },
-  { title: '姓名', dataIndex: 'userName', key: 'userName', align: 'center', fixed: 'left' },
-  { title: '费款所属期', dataIndex: 'periodPayment', key: 'periodPayment', align: 'center', fixed: 'left', width: 100 },
-  { title: '个人编号', dataIndex: 'personalNumber', align: 'center', key: 'personalNumber' },
-  { title: '公民身份证号码', dataIndex: 'cardId', align: 'center', key: 'cardId' },
+  { title: '姓名', dataIndex: 'userName', key: 'userName', align: 'center', fixed: 'left', width: 100 },
+  { title: '费款所属期', dataIndex: 'periodPayment', key: 'periodPayment', align: 'center', fixed: 'left', width: 130 },
+  { title: '个人编号', dataIndex: 'personalNumber', align: 'center', key: 'personalNumber', width: 150 },
+  { title: '公民身份证号码', dataIndex: 'cardId', align: 'center', key: 'cardId', width: 200 },
   { title: '养老基数', dataIndex: 'pensionBase', align: 'center', key: 'pensionBase' },
   { title: '失业基数', dataIndex: 'unemploymentBase', align: 'center', key: 'unemploymentBase' },
   { title: '医疗保险基数', dataIndex: 'medicalInsuranceBase', align: 'center', key: 'medicalInsuranceBase' },
