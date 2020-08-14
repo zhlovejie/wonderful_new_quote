@@ -9,7 +9,8 @@
       <a-input placeholder="备注信息" v-model="searchParam.remark" allowClear style="width:160px;margin-right:10px;;" />
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
-      <a-button v-if="!globalSearch" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <!-- <a-button v-if="!globalSearch" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
+      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
