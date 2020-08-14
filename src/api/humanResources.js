@@ -237,10 +237,61 @@ export function postAllocation_list(parameter) {
   })
 }
 
+// 岗位配置下拉点击选择接口
 export function postAllocation_Version(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaContractForm/contract-form/pageListNerVersion',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 岗位配置新增接口 */
+export function postAllocation_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/saveContractStationMap',
+    method: 'post',
+    data: parameter
+  })
+}
+// 岗位配置详情接口
+export function postAllocation_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/listContractFormListDetailVoByCondition',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 岗位配置修改接口 */
+export function postAllocation_Update(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/updateContractStationMap',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 岗位配置删除接口 */
+export function postAllocation_Remove(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/removeContractStationMapByStation',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+/** 合同协议列表接口 */
+export function contractAgreement_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractForm/contract-form/pageList',
     method: 'get',
     params: parameter
   })

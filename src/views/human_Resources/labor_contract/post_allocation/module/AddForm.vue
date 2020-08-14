@@ -15,35 +15,39 @@
           <tr>
             <td>部门</td>
             <td>
-              <a-select
-                style="width:200px; margin-right: 10px;"
-                v-decorator="['departmentId']"
-                :disabled="isDisabled"
-                @change=" depChangeHandler"
-                placeholder="请选择部门"
-              >
-                <a-select-option
-                  v-for="item in departmentList"
-                  :key="item.id"
-                  :value="item.id"
-                >{{ item.departmentName }}</a-select-option>
-              </a-select>
+              <a-form-item>
+                <a-select
+                  style="width:200px; margin-right: 10px;"
+                  v-decorator="['departmentId',{ rules: [{ required: true, message: '请选择部门' }]}]"
+                  :disabled="!isAdd"
+                  @change=" depChangeHandler"
+                  placeholder="请选择部门"
+                >
+                  <a-select-option
+                    v-for="item in departmentList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{ item.departmentName }}</a-select-option>
+                </a-select>
+              </a-form-item>
             </td>
             <td>岗位</td>
             <td>
-              <a-select
-                placeholder="选择岗位"
-                v-decorator="['stationId']"
-                :disabled="isDisabled"
-                :allowClear="true"
-                style="width: 200px"
-              >
-                <a-select-option
-                  v-for="item in postSelectDataSource"
-                  :key="item.id"
-                  :value="item.id"
-                >{{item.stationName}}</a-select-option>
-              </a-select>
+              <a-form-item>
+                <a-select
+                  placeholder="选择岗位"
+                  v-decorator="['stationId',{ rules: [{ required: true, message: '请选择合岗位' }]}]"
+                  :disabled="!isAdd"
+                  :allowClear="true"
+                  style="width: 200px"
+                >
+                  <a-select-option
+                    v-for="item in postSelectDataSource"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.stationName}}</a-select-option>
+                </a-select>
+              </a-form-item>
             </td>
           </tr>
         </table>
@@ -54,14 +58,14 @@
             <td>
               <a-form-item>
                 <a-input
-                  :disabled="isView"
+                  :disabled="isDisabled"
                   placeholder
-                  v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: true, message: '请选择合同协议' }] }]"
-                  @click="selectCustomer"
+                  v-decorator="[`todayList.${index}.contractName`, {initialValue:todayList[index].contractName, rules: [{ required: true, message: '请选择合同协议' }] }]"
+                  @click="selectCustomer('todayList',index)"
                 />
               </a-form-item>
             </td>
-            <td style="width:70px;" v-if="!isView">
+            <td style="width:70px;" v-if="!isEdit">
               <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
               </a-form-item>
@@ -69,7 +73,7 @@
           </tr>
         </table>
         <a-button
-          v-if="!isView"
+          :disabled="isDisabled"
           style="width:100%;"
           type="dashed"
           icon="plus"
@@ -82,13 +86,14 @@
             <td>
               <a-form-item>
                 <a-input
-                  :disabled="isView"
+                  :disabled="isDisabled"
                   placeholder
-                  v-decorator="[`planList.${index}.content`, {initialValue:planList[index].content, rules: [{ required: true, message: '请选择合同协议' }] }]"
+                  v-decorator="[`planList.${index}.contractName`, {initialValue:planList[index].contractName, rules: [{ required: true, message: '请选择合同协议' }] }]"
+                  @click="selectCustomer('planList',index)"
                 />
               </a-form-item>
             </td>
-            <td style="width:70px;" v-if="!isView">
+            <td style="width:70px;" v-if="!isEdit">
               <a-form-item>
                 <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
               </a-form-item>
@@ -96,7 +101,7 @@
           </tr>
         </table>
         <a-button
-          v-if="!isView"
+          :disabled="isDisabled"
           style="width:100%;"
           type="dashed"
           icon="plus"
@@ -108,7 +113,7 @@
   </a-modal>
 </template>
 <script>
-// import { workReportSetDailyDetail, workReportSetDailySaveAndUpdate } from '@/api/workReportManagement'
+import { postAllocation_Add, postAllocation_Detail, postAllocation_Update } from '@/api/humanResources'
 // 部门岗位接口
 import { getDevisionList, getStationList } from '@/api/systemSetting'
 import moment from 'moment'
@@ -125,16 +130,13 @@ export default {
       // 部门列表
       departmentList: [],
       postSelectDataSource: [], //岗位接口
-      departmentId: '', //要删
-      stationId: '', //要删
       form: this.$form.createForm(this),
       visible: false,
       spinning: false,
+      todayListId: '',
+      todayListName: '',
       type: 'view',
-      // departmentName: undefined,
-      // stationName: undefined,
-      // trueName: undefined,
-      // reportNum: undefined,
+      contractArr: [],
       record: {},
       todayList: [],
       planList: [],
@@ -143,7 +145,7 @@ export default {
   computed: {
     ...mapGetters(['userInfo']),
     modalTitle() {
-      return `${this.isView ? '查看' : this.isAdd ? '新增' : '编辑'}岗位`
+      return `${this.isView ? '修改' : this.isAdd ? '新增' : '查看'}岗位配置`
     },
     isView() {
       return this.type === 'view'
@@ -155,7 +157,7 @@ export default {
       return this.type === 'add'
     },
     isDisabled() {
-      return this.isView || this.isEdit
+      return this.isEdit
     },
   },
   created() {
@@ -173,22 +175,29 @@ export default {
       })
     },
     //点击显示列表组件
-    selectCustomer() {
+    selectCustomer(key, index) {
+      this.todayListId = index
+      this.todayListName = key
       this.$refs.receiptContract.query({ type: 1 })
     },
     contractChange(data) {
-      const that = this
-      console.log(data)
-      that.contractId = data.id
-      that.form.setFieldsValue({
-        contractNum: data.contractNum,
-        customerName: data.customerName,
-        customerId: data.customerId,
-      })
+      let that = this
+      let obj = {}
+      if (this.todayListName === 'todayList') {
+        obj[`todayList.${that.todayListId}.contractName`] = data.contractName
+        that.todayList[that.todayListId].contractId = data.id
+        that.todayList[that.todayListId].insureType = 1
+      } else {
+        // this.contractArr.push(contract2)
+        obj[`planList.${that.todayListId}.contractName`] = data.contractName
+        that.planList[that.todayListId].contractId = data.id
+        that.planList[that.todayListId].insureType = 2
+      }
+      that.form.setFieldsValue(obj)
     },
     addItem(key) {
       this[key].push({
-        content: undefined,
+        contractName: undefined,
         progress: undefined,
       })
     },
@@ -197,121 +206,126 @@ export default {
       _d.splice(index, 1)
       this[key] = [..._d]
     },
+
     async query(type, record) {
       let that = this
       that.visible = true
       that.dataReset()
       that.type = type
-      console.log(that)
       that.record = Object.assign({}, record)
       that.form.resetFields()
       await that.initData()
 
       if (that.isView || that.isEdit) {
-        workReportSetDailyDetail({ id: that.record.id }).then((res) => {
-          that.fillData(res.data)
-        })
+        postAllocation_Detail({ departmentId: that.record.departmentId, stationId: that.record.stationId }).then(
+          (res) => {
+            that.fillData(res.data)
+            this.depChangeHandler(record.departmentId)
+          }
+        )
       } else {
-        that.departmentName = that.userInfo.departmentName
-        that.stationName = that.userInfo.stationName
-        that.trueName = that.userInfo.trueName
         that.addItem('todayList')
         that.addItem('todayList')
         that.addItem('todayList')
         that.addItem('planList')
       }
     },
+    async fillData(resultData) {
+      let that = this
+      that.form.setFieldsValue({
+        departmentId: that.record.departmentId,
+        stationId: that.record.stationId,
+      })
+      // that.todayList = resultData.haveSueryContractFormList || []
+
+      that.todayList =
+        resultData.haveSueryContractFormList.map((item) => {
+          return { contractId: item.id, insureType: 1, contractName: item.contractName }
+        }) || []
+      that.planList =
+        resultData.noSueryContractFormList.map((item) => {
+          return { contractId: item.id, insureType: 2, contractName: item.contractName }
+        }) || []
+    },
     initData() {
       let that = this
       let queue = []
       return Promise.all(queue)
     },
-    async fillData(resultData) {
-      let that = this
-
-      that.reportNum = resultData.dailyNum
-      that.departmentName = resultData.departmentName
-      that.stationName = resultData.stationName
-      that.trueName = resultData.userName
-      that.todayList = resultData.todayList || []
-      that.planList = resultData.planList || []
-      if (Array.isArray(resultData.annexList)) {
-        that.fileList = resultData.annexList.map((item, index) => {
-          return {
-            uid: String(index + 1),
-            name: item.workUrl,
-            status: 'done',
-            url: item.workUrl,
-          }
-        })
-      }
-    },
     handleSubmit() {
       let that = this
 
-      if (that.isView) {
+      if (that.isEdit) {
         that.handleCancel()
         return
       }
-      if (that.todayList.length === 0) {
-        that.$message.info('请填写今日工作内容')
-        return
-      }
-      if (that.planList.length === 0) {
-        that.$message.info('请填写明日工作计划')
-        return
-      }
+      // if (that.todayList.length === 0) {
+      //   that.$message.info('请填写今日工作内容')
+      //   return
+      // }
+      // if (that.planList.length === 0) {
+      //   that.$message.info('请填写明日工作计划')
+      //   return
+      // }
 
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-          let _values = {}
-          let { todayList, planList } = values
-          todayList = todayList.map((item, index) => {
-            item.orderNum = index + 1
-            return item
-          })
-
-          planList = planList.map((item, index) => {
-            item.orderNum = index + 1
-            return item
-          })
-          let annexList = that.fileList.map((item, index) => {
-            return {
-              orderNum: index + 1,
-              workUrl: item.url,
-            }
-          })
-
-          // _values.dailyNum = ''
-          // _values.departmentId = ''
-          // _values.stationId = ''
-
-          _values.todayList = todayList
-          _values.planList = planList
-          _values.annexList = annexList
-
-          if (that.isEdit) {
-            _values.id = that.record.id
+      if (this.isAdd) {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log('新增')
+            delete values.planList
+            delete values.todayList
+            values.contractStationMapList = [...that.todayList, ...that.planList]
+            console.log('Received values of form: ', values)
+            that.spinning = true
+            postAllocation_Add(values)
+              .then((res) => {
+                that.spinning = false
+                if (res.code === 200) {
+                  that.handleCancel()
+                  that.$message.success('操作成功')
+                  that.$emit('finish')
+                } else {
+                  that.$message.warning(res.msg)
+                }
+              })
+              .catch((err) => {
+                that.spinning = false
+                that.$message.error('操作失败')
+              })
           }
-          that.spinning = true
-          workReportSetDailySaveAndUpdate(_values)
-            .then((res) => {
-              that.spinning = false
-              if (res.code === 200) {
-                that.handleCancel()
-                that.$message.success('操作成功')
-                that.$emit('finish')
-              } else {
-                that.$message.warning(res.msg)
-              }
+        })
+      } else {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log('修改')
+            delete values.planList
+            delete values.todayList
+            let today = that.todayList.map((item) => {
+              return { contractId: item.contractId, insureType: item.insureType }
             })
-            .catch((err) => {
-              that.spinning = false
-              that.$message.error('操作失败')
+            let plan = that.planList.map((item) => {
+              return { contractId: item.contractId, insureType: item.insureType }
             })
-        }
-      })
+            values.contractStationMapList = [...today, ...plan]
+            that.spinning = true
+            postAllocation_Update(values)
+              .then((res) => {
+                that.spinning = false
+                if (res.code === 200) {
+                  that.handleCancel()
+                  that.$message.success('操作成功')
+                  that.$emit('finish')
+                } else {
+                  that.$message.warning(res.msg)
+                }
+              })
+              .catch((err) => {
+                that.spinning = false
+                that.$message.error('操作失败')
+              })
+          }
+        })
+      }
     },
     handleCancel() {
       this.dataReset()
@@ -322,17 +336,6 @@ export default {
       this.todayList = []
       this.planList = []
       this.fileList = []
-    },
-    handleChange(info) {
-      console.log(arguments)
-      let fileList = [...info.fileList]
-      fileList = fileList.map((file) => {
-        if (file.response && file.response.code === 200) {
-          file.url = file.response.data
-        }
-        return file
-      })
-      this.fileList = fileList
     },
   },
 }

@@ -13,14 +13,19 @@
           :value="item.id"
         >{{ item.departmentName }}</a-select-option>
       </a-select>
-      <a-select placeholder="选择岗位" v-model="stationId" :allowClear="true" style="width: 200px">
+      <a-select
+        placeholder="选择岗位"
+        v-model="queryParam.stationId"
+        :allowClear="true"
+        style="width: 200px"
+      >
         <a-select-option
           v-for="item in postSelectDataSource"
           :key="item.id"
           :value="item.id"
         >{{item.stationName}}</a-select-option>
       </a-select>
-      <a-button style="margin-left:10px;" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+      <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
       <template v-if="$auth('role:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
@@ -43,7 +48,7 @@
             </template>
             <template v-if="+record.createdId  === +userInfo.id">
               <a-divider type="vertical" />
-              <a @click="handle('edit-salary',record)">修改</a>
+              <a @click="handle('view',record)">修改</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否删除"
@@ -64,7 +69,7 @@
 
 <script>
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
-import { postAllocation_list } from '@/api/humanResources'
+import { postAllocation_list, postAllocation_Remove } from '@/api/humanResources'
 import AddForm from './module/AddForm'
 
 export default {
@@ -164,7 +169,6 @@ export default {
     // 获取列表
     searchAction() {
       let that = this
-      console.log(123)
       that.loading = true
       let _searchParam = Object.assign(
         { socialSecurityId: that.recordId },
@@ -209,14 +213,12 @@ export default {
     },
 
     handle(type, record) {
-      console.log(this.userInfo.id)
       this.$refs.addForm.query(type, record)
-      //   this.$refs.modal.add()
     },
     // 删除
     deleteRoleInfo(record) {
       let that = this
-      securityInsurance_Delete({ id: record.id }).then((res) => {
+      postAllocation_Remove({ departmentId: record.departmentId, stationId: record.stationId }).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)

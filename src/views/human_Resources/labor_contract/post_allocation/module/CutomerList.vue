@@ -36,13 +36,13 @@ let columns = [
     scopedSlots: { customRender: 'order' },
   },
   {
-    title: '合同编号',
-    dataIndex: 'contractNum',
+    title: '合同协议名称',
+    dataIndex: 'contractName',
     scopedSlots: { customRender: 'contractNum' },
   },
   {
-    title: '客户名称',
-    dataIndex: 'customerName',
+    title: '版本号',
+    dataIndex: 'version',
   },
 ]
 export default {
@@ -66,7 +66,7 @@ export default {
       })
       //   console.log('执行搜索...', _searchParam)
       that.loading = true
-      refundGetApprovedSaleContract(_searchParam)
+      postAllocation_Version(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
