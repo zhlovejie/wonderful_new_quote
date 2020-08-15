@@ -10,7 +10,7 @@
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <!-- <a-button v-if="!globalSearch" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <a-button v-if="$auth('blueprintFile:add')" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -43,13 +43,13 @@
         
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- <a type="primary" @click="doAction('view',record)">查看</a> -->
-          <a type="primary" target="_blank" :href="record.fileUrl" >查看</a>
+          <a v-if="$auth('blueprintFile:detail')" type="primary" target="_blank" :href="record.fileUrl" >查看</a>
           <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <a v-if="$auth('blueprintFile:update')" type="primary" @click="doAction('edit',record)">修改</a>
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('back',record)">反馈记录</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+          <a-popconfirm v-if="$auth('blueprintFile:delete')" title="是否要删除此行？" @confirm="doAction('del',record)">
             <a>删除</a>
           </a-popconfirm>
         </div>
