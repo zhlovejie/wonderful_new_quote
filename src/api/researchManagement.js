@@ -81,7 +81,7 @@ export function blueprintMenuAddOrUpdate (parameter) {
 
 // 获取上传图片的路径
 export function getUploadPath () {
-  return system.baseURL + '/RDFileUpload/uploadFile'
+  return system.baseURL + '/rDFileUpload/uploadFile'
 }
 
 
