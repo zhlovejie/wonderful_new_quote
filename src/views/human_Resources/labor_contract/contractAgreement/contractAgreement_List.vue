@@ -39,11 +39,11 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template>
-              <a @click="handle('edit',record)">查看</a>
+              <a @click="doAction(record.contractUrl)">查看</a>
             </template>
             <template v-if="+record.createdId  === +userInfo.id">
               <a-divider type="vertical" />
-              <a @click="handle('view',record)">修改</a>
+              <a @click="handle('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否删除"
@@ -58,19 +58,22 @@
         </a-table>
       </a-layout-content>
     </a-layout>
-    <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
+    <AddForm ref="addForm" @finish="searchAction()" />
+    <XdocView ref="xdocView" />
   </a-card>
 </template>
 
 <script>
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
-import { contractAgreement_List } from '@/api/humanResources'
-// import AddForm from './module/AddForm'
+import { contractAgreement_List, contractAgreement_Remove } from '@/api/humanResources'
+import AddForm from './module/FormAdd'
+import XdocView from './module/XdocView'
 
 export default {
   name: 'RoleManagement',
   components: {
-    // AddForm,
+    AddForm,
+    XdocView,
   },
   data() {
     return {
@@ -97,15 +100,15 @@ export default {
         },
         {
           align: 'center',
-          title: '部门',
-          key: 'departmentName',
-          dataIndex: 'departmentName',
+          title: '合同协议名称',
+          key: 'contractName',
+          dataIndex: 'contractName',
         },
         {
           align: 'center',
-          title: '岗位',
-          dataIndex: 'stationName',
-          key: 'stationName',
+          title: '版本号',
+          dataIndex: 'version',
+          key: 'version',
         },
         {
           align: 'center',
@@ -118,12 +121,6 @@ export default {
           title: '提交时间',
           key: 'createdTime',
           dataIndex: 'createdTime',
-        },
-        {
-          align: 'center',
-          title: '修改时间',
-          key: 'modifyTime',
-          dataIndex: 'modifyTime',
         },
         {
           align: 'center',
@@ -146,7 +143,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_allocation') {
+        if (to.name === 'human_Resources_contractAgreement') {
           this.init()
         }
       },
@@ -206,19 +203,23 @@ export default {
       this.queryParam = {}
       this.roleList = {}
     },
-
+    // 文件预览
+    doAction(idurl) {
+      this.$refs.xdocView.query(idurl)
+    },
     handle(type, record) {
-      //   this.$refs.addForm.query(type, record)
+      this.$refs.addForm.query(type, record)
     },
     // 删除
     deleteRoleInfo(record) {
       let that = this
-      postAllocation_Remove({ departmentId: record.departmentId, stationId: record.stationId }).then((res) => {
+      console.log(record)
+      contractAgreement_Remove(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
         } else {
-          _this.$message.error(res.msg)
+          this.$message.error(res.msg)
         }
       })
     },

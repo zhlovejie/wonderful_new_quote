@@ -46,11 +46,13 @@
         icon="search"
         @click="searchAction"
       >查询</a-button>
+
       <a-dropdown style="float:right;" v-if="$auth('adjustApply:add')">
         <a-button type="primary" @click="doAction('add',null)">
           <a-icon type="plus" />新增
         </a-button>
       </a-dropdown>
+      <div style="float:right;">12415151513</div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">

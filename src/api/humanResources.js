@@ -296,3 +296,23 @@ export function contractAgreement_List(parameter) {
     params: parameter
   })
 }
+
+/** 合同协议新增修改接口 */
+export function contractAgreement_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractForm/contract-form/saveOrUpdateContractForm',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 合同协议删除接口 */
+export function contractAgreement_Remove(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractForm/contract-form/removeContractForm',
+    method: 'post',
+    data: parameter
+  })
+}

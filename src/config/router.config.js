@@ -1861,6 +1861,63 @@ export const asyncRouterMap = [
               },
             ]
           },
+          {
+            path: '/human_Resources/dormitory',
+            name: 'human_Resources_dormitory',
+            component: RouteView,
+            meta: {
+              title: '宿舍管理',
+              icon: 'solution',
+              keepAlive: false,
+              permission: ['permission']
+            },
+            redirect: '/human_Resources/dormitory/electricity',
+            children: [{
+                path: '/human_Resources/dormitory/electricity',
+                name: 'human_Resources_electricity',
+                component: () => import('@/views/human_Resources/dormitory/electricity/electricity_List'),
+                meta: {
+                  title: '房间管理',
+                  icon: 'container',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/dormitory/personnel',
+                name: 'human_Resources_personnel',
+                component: () => import('@/views/human_Resources/dormitory/personnel/personnel_List'),
+                meta: {
+                  title: '人员管理',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/dormitory/room',
+                name: 'human_Resources_room',
+                component: () => import('@/views/human_Resources/dormitory/room/room_List'),
+                meta: {
+                  title: '电费管理',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/dormitory/securityHealth',
+                name: 'human_Resources_securityHealth',
+                component: () => import('@/views/human_Resources/dormitory/securityHealth/securityHealth_List'),
+                meta: {
+                  title: '安全卫生考核',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+            ]
+          },
         ]
       }
     ]
