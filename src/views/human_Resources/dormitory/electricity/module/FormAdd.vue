@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1005"
+    :width="635"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -19,112 +19,97 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>合同/协议名称</td>
+            <td>房间号</td>
             <td colspan="3">
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  placeholder="输入合同协议名称"
-                  v-decorator="['contractName', {rules: [ {required: true,  message: '输入合同协议名称!'},
-             ]}]"
+                  :disabled="isDisabled"
+                  placeholder="请输入房间号"
+                  v-decorator="['roomCode', {rules: [ {required: true,  message: '请输入房间号'},]}]"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>版本号</td>
+            <td>床位数</td>
             <td colspan="3">
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  placeholder="输入版本号"
-                  v-decorator="['version', {rules: [{required: true,message: '请输入版本号!',},
-             ]}]"
+                  :disabled="isDisabled"
+                  placeholder="请输入房间床位数"
+                  v-decorator="['bedNumber', {rules: [{required: true,message: '请输入房间床位数!',},]}]"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>设备文件</td>
+            <td>电表号</td>
             <td colspan="3">
               <a-form-item>
-                <a-upload
-                  v-decorator="['contractUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
-                  name="file"
-                  :action="uploadUrl"
-                >
-                  <a-button style="width:300px;">
-                    <a-icon type="upload" />
-                  </a-button>
-                </a-upload>
+                <a-input
+                  style="width:300px;"
+                  :disabled="isDisabled"
+                  placeholder="请输入电表号"
+                  v-decorator="['meterCode', {rules: [ {required: true,  message: '请输入房间号'},]}]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>备注</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-textarea
+                  style="width:300px;"
+                  :disabled="isDisabled"
+                  placeholder="请输入备注"
+                  :rows="3"
+                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+                />
               </a-form-item>
             </td>
           </tr>
         </table>
       </a-form>
-
-      <!-- <Approval ref="approval" @opinionChange="opinionChange" /> -->
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { contractAgreement_Add } from '@/api/humanResources'
-import { getUploadPath2 } from '@/api/common'
-import moment from 'moment'
+import { electricity_Add, electricity_Detail } from '@/api/humanResources'
 
 export default {
   name: 'BecomingForm',
-  components: {
-    // Approval: Approval,
-  },
+
   data() {
     return {
       visible: false,
       spinning: false,
-      type: 'View',
+      recordDetails: {},
+      record: {},
+      type: 'add',
       form: this.$form.createForm(this, { name: 'do_becoming' }),
-      uploadUrl: getUploadPath2(),
-      //   上传文件
-      fileList: [],
     }
   },
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改合同协议'
+        return '房间'
       }
-      if (this.isView) {
-        return '新增合同协议'
-      }
-      //   let txt = this.isView ? '新增' : '修改'
-      //   return `${txt}合同协议`
+      let txt = this.isView ? '新增' : '修改'
+      return `${txt}房间`
     },
     isView() {
-      //新增
+      //查看
       return this.type === 'add'
     },
     isEditSalary() {
       //修改
       return this.type === 'edit-salary'
     },
-
-    isDisabled() {
-      return this.isView || this.isEditSalary
-    },
   },
-  watch: {
-    $route: {
-      handler: function (to, from) {
-        if (to.name === 'human_Resources_Insurance') {
-          this.init()
-        }
-      },
-      immediate: true,
-    },
-  },
-  created() {},
   methods: {
-    moment: moment,
     query(type, record) {
       console.log(type, record)
       this.visible = true
@@ -136,11 +121,17 @@ export default {
     },
 
     fillData() {
-      this.$nextTick(() => {
-        this.form.setFieldsValue({
-          contractName: this.record.contractName,
-          version: this.record.version,
-          contractUrl: this.record.contractUrl,
+      let that = this
+      let id = {
+        id: this.record.id,
+      }
+      electricity_Detail(id).then((res) => {
+        that.recordDetails = res.data
+        that.form.setFieldsValue({
+          roomCode: res.data.roomCode,
+          bedNumber: res.data.bedNumber,
+          meterCode: res.data.meterCode,
+          remark: res.data.remark,
         })
       })
     },
@@ -156,14 +147,11 @@ export default {
         that.form.validateFields((err, values) => {
           if (!err) {
             if (that.type !== 'add') {
-              //   formData.append('id', this.record.id)
+              values.id = that.record.id
             }
-            values.contractUrl = values.contractUrl.fileList[0].response.data
-            console.log(values)
-            contractAgreement_Add(values)
+            electricity_Add(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
@@ -178,14 +166,6 @@ export default {
         that.form.resetFields() // 清空表
         that.visible = false
       }
-    },
-    //上传
-    normFile(e) {
-      console.log('Upload event:', e)
-      if (Array.isArray(e)) {
-        return e
-      }
-      return e && e.fileList
     },
     handleCancel() {
       this.fileList = []

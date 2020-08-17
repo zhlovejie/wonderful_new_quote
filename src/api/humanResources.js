@@ -316,3 +316,135 @@ export function contractAgreement_Remove(parameter) {
     data: parameter
   })
 }
+
+/** 房间管理 列表接口 */
+export function electricity_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room/pageRoom',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 房间号 列表接口 */
+export function listRoom(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room/listRoom',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 房间新增接口 */
+export function electricity_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 房间管理详情接口 */
+export function electricity_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room/getRoomInfo',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 房间管理删除接口 */
+export function electricityDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room/delRoom',
+    method: 'delete',
+    params: parameter
+
+  })
+}
+
+
+
+
+/** 人员管理 列表接口 */
+export function personnel_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-user/pageRoomUser',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 部门下人员列表接口 */
+export function queryList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/user/queryList',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 人员新增接口 */
+export function personnel_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-user/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+/** 人员退房接口 */
+export function personnel_Check(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-user/checkOutRoomUser',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 人员删除接口 */
+export function personnel_delete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-user/delRoomUser',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+/** 电费管理 列表接口 */
+export function room_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-electricity-fees/pageRoomElectricityFees',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+/** 电费管理新增接口 */
+export function room_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-electricity-fees/addRoomElectricityFees',
+    method: 'post',
+    data: parameter
+  })
+}
+/** 安全卫生考核列表接口 */
+export function securityHealth_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-examine/page',
+    method: 'get',
+    params: parameter
+  })
+}
