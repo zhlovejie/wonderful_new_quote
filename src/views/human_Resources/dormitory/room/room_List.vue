@@ -1,22 +1,23 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-month-picker placeholder="日期" v-model="faceDate" style="width: 200px ;margin-right:10px;" />
-      <a-select placeholder="房间号" v-model="roomCode" :allowClear="true" style="width: 200px ">
+      <a-month-picker placeholder="日期" @change="onChange" style="width: 200px ;margin-right:10px;" />
+      <a-select
+        placeholder="房间号"
+        v-model="queryParam.roomCode"
+        :allowClear="true"
+        style="width: 200px "
+      >
         <a-select-option
           v-for="item in postSelectDataSource"
           :key="item.id"
-          :value="item.id"
+          :value="item.roomCode"
         >{{item.roomCode}}</a-select-option>
       </a-select>
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <a-button style="margin-left:10px;" type="primary">下载</a-button>
+      <a-button style="margin-left:10px;" type="primary" @click="download()">下载</a-button>
       <template v-if="$auth('role:add')">
-        <a-button
-          style="float:right; margin-left:10px;"
-          type="primary"
-          @click="handle('add',null)"
-        >费用设置</a-button>
+        <a-button style="float:right; margin-left:10px;" type="primary" @click="configures()">费用设置</a-button>
       </template>
       <template v-if="$auth('role:add')">
         <a-button style="float:right  " type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
@@ -38,29 +39,35 @@
       </a-layout-content>
     </a-layout>
     <AddForm ref="addForm" @finish="searchAction()" />
+    <AddConfigure ref="add" @finish="searchAction()" />
   </a-card>
 </template>
 
 <script>
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
 import { room_List, listRoom } from '@/api/humanResources'
+import systemConfig from '@/config/defaultSettings'
 import AddForm from './module/FormAdd'
+import AddConfigure from './module/configure'
 import moment from 'moment'
 
 export default {
   name: 'RoleManagement',
   components: {
     AddForm,
+    AddConfigure,
   },
   data() {
     return {
       openKeys: ['id'],
       parentId: 0,
       userInfo: this.$store.getters.userInfo, // 当前登录人
+      system: systemConfig.baseURL + '/room/room-electricity-fees/roomElectricityFees/exportExcel',
       hiddenBoolean: false,
       stationId: undefined,
       roomCode: '',
       faceDate: {},
+      queryParam: {},
       postSelectDataSource: [], //
       recordResult: {},
       queryRecord: {},
@@ -122,18 +129,6 @@ export default {
       roleList: {},
     }
   },
-  computed: {
-    queryParam() {
-      let surfaceDate = undefined
-      if (this.faceDate) {
-        surfaceDate = this.faceDate instanceof this.moment ? this.faceDate.format('YYYY-MM-DD') : undefined
-      }
-      return {
-        surfaceDate: surfaceDate,
-        roomCode: this.roomCode,
-      }
-    },
-  },
   watch: {
     $route: {
       handler: function (to, from) {
@@ -152,14 +147,13 @@ export default {
       })
       this.searchAction()
     },
+    onChange(date, dateString) {
+      this.queryParam.surfaceDate = dateString
+    },
     // 获取列表
     searchAction() {
       let that = this
       that.loading = true
-      // if (this.queryParam.surfaceDate) {
-      //   this.queryParam.surfaceDate = moment(this.queryParam.surfaceDate).format('YYYY-MM')
-      // }
-
       let _searchParam = Object.assign(
         { socialSecurityId: that.recordId },
         { ...this.queryParam },
@@ -178,7 +172,7 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
-      //   this.$refs.table && this.$refs.table.refresh(true)
+      this.$refs.table && this.$refs.table.refresh(true)
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -195,31 +189,33 @@ export default {
         that.postSelectDataSource = res.data
       })
     },
+    //下载
+    download() {
+      if (this.queryParam) {
+        window.location.href =
+          this.system + `?surfaceDate=${this.queryParam.surfaceDate}` + `&roomCode=${this.queryParam.roomCode}`
+      }
+      if (this.queryParam.surfaceDate) {
+        window.location.href = this.system + `?surfaceDate=${this.queryParam.surfaceDate}`
+      }
+      if (this.queryParam.roomCode) {
+        window.location.href = this.system + `?roomCode=${this.queryParam.roomCode}`
+      }
+      if (this.queryParam.surfaceDate === undefined && this.queryParam.roomCode === undefined) {
+        window.location.href = this.system
+      }
+    },
 
     // 清空、重置
     emptyQueryParam() {
       this.queryParam = {}
       this.roleList = {}
     },
-    // 文件预览
-    doAction(idurl) {
-      this.$refs.xdocView.query(idurl)
+    configures() {
+      this.$refs.add.query()
     },
     handle(type, record) {
       this.$refs.addForm.query(type, record)
-    },
-    // 删除
-    deleteRoleInfo(record) {
-      let that = this
-      console.log(record)
-      contractAgreement_Remove(`id=${record.id}`).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
     },
   },
 }

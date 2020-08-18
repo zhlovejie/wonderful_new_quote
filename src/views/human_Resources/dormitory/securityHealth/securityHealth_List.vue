@@ -3,14 +3,14 @@
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
       <a-select
         style="width:200px; margin-right: 10px;"
-        v-model="queryParam.departmentId"
+        v-model="queryParam.roomCode"
         placeholder="房间号"
       >
         <a-select-option
           v-for="item in departmentList"
           :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
+          :value="item.roomCode"
+        >{{ item.roomCode }}</a-select-option>
       </a-select>
       <a-select
         placeholder="公告状态"
@@ -18,18 +18,10 @@
         :allowClear="true"
         style="width: 200px;margin-right:10px;"
       >
-        <a-select-option :value="1">待审批</a-select-option>
-        <a-select-option :value="2">通过</a-select-option>
-        <a-select-option :value="3">不通过</a-select-option>
-        <a-select-option :value="4">发布</a-select-option>
-        <a-select-option :value="5">审批时撤回</a-select-option>
-        <a-select-option :value="6">发布时撤回</a-select-option>
+        <a-select-option :value="0">待审批</a-select-option>
+        <a-select-option :value="1">完结</a-select-option>
       </a-select>
-      <a-range-picker
-        @change="dateChange"
-        style="width:400px ;margin-right:10px;"
-        v-model="queryParam.rangeDate"
-      />
+      <a-range-picker @change="dateChange" style="width:400px ;margin-right:10px;" />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
       <template v-if="$auth('role:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
@@ -47,43 +39,47 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+          <div slot="status" slot-scope="text, record, index">
+            <template v-if="text===1">
+              <span>完结</span>
+            </template>
+            <template v-else>
+              <span>待处理</span>
+            </template>
+          </div>
           <span slot="action" slot-scope="text, record">
             <template>
-              <a @click="doAction(record.contractUrl)">查看</a>
+              <a @click="inspect('see' ,record)">查看</a>
             </template>
-            <template v-if="+record.createdId  === +userInfo.id">
+            <template v-if="+record.status===1">
               <a-divider type="vertical" />
-              <a @click="handle('edit-salary',record)">修改</a>
+              <a @click="inspect('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否删除"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="deleteRoleInfo(record)"
-              >
-                <a type="primary">删除</a>
-              </a-popconfirm>
+              <a>下载</a>
+            </template>
+            <template v-if="+record.status===0">
+              <a-divider type="vertical" />
+              <a @click="inspect('handle',record)">处理</a>
             </template>
           </span>
         </a-table>
       </a-layout-content>
     </a-layout>
-    <!-- <AddForm ref="addForm" @finish="searchAction()" />
-    <XdocView ref="xdocView" />-->
+    <AddForm ref="addForm" @finish="searchAction()" />
+    <Dormitory ref="dormitory" @finish="searchAction()" />
   </a-card>
 </template>
 
 <script>
-import { getDevisionList, getStationList } from '../../../../api/systemSetting'
-import { securityHealth_List } from '@/api/humanResources'
-// import AddForm from './module/FormAdd'
-// import XdocView from './module/XdocView'
+import { securityHealth_List, listRoom } from '@/api/humanResources'
+import AddForm from './module/FormAdd'
+import Dormitory from './module/Dormitory'
 
 export default {
   name: 'RoleManagement',
   components: {
-    // AddForm,
-    // XdocView,
+    AddForm,
+    Dormitory,
   },
   data() {
     return {
@@ -130,7 +126,7 @@ export default {
           align: 'center',
           title: '状态',
           key: 'status',
-          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' },
         },
         {
           align: 'center',
@@ -154,10 +150,8 @@ export default {
       //列表数据
       dataSource: [],
 
-      // 部门列表
+      // 房间列表
       departmentList: [],
-      // 角色列表
-      roleList: {},
     }
   },
   // 初始化搜索条件钩子函数
@@ -175,16 +169,15 @@ export default {
   methods: {
     init() {
       let that = this
-      getDevisionList().then((res) => {
+      listRoom({}).then((res) => {
         this.departmentList = res.data
       })
       this.searchAction()
     },
     // 获取时间
     dateChange(date, dateString) {
-      this.$set(this.queryParam, 'rangeDate', date)
-      this.$set(this.queryParam, 'beginTime', dateString[0])
-      this.$set(this.queryParam, 'endTime', dateString[1])
+      this.queryParam.startDate = dateString[0]
+      this.queryParam.endDate = dateString[1]
     },
     // 获取列表
     searchAction() {
@@ -224,25 +217,12 @@ export default {
       this.queryParam = {}
       this.roleList = {}
     },
-    // 文件预览
-    doAction(idurl) {
-      this.$refs.xdocView.query(idurl)
-    },
+
     handle(type, record) {
       this.$refs.addForm.query(type, record)
     },
-    // 删除
-    deleteRoleInfo(record) {
-      let that = this
-      console.log(record)
-      contractAgreement_Remove(`id=${record.id}`).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
+    inspect(type, record) {
+      this.$refs.dormitory.query(type, record)
     },
   },
 }

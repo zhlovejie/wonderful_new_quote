@@ -35,7 +35,7 @@
                   :disabled="isDisabled"
                   placeholder="标题"
                   :rows="3"
-                  v-decorator="['title', { rules: [{ required: false, message: '标题' }] }]"
+                  v-decorator="['title', { rules: [{ required: true, message: '标题' }] }]"
                 />
               </a-form-item>
             </td>
@@ -48,7 +48,7 @@
                   :disabled="isDisabled"
                   placeholder="消息"
                   :rows="3"
-                  v-decorator="['content', { rules: [{ required: false, message: '消息' }] }]"
+                  v-decorator="['content', { rules: [{ required: true, message: '消息' }] }]"
                 />
               </a-form-item>
             </td>

@@ -439,6 +439,17 @@ export function room_Add(parameter) {
     data: parameter
   })
 }
+/** 电费配置 接口 */
+export function room_update(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-electricity-fees/update',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 /** 安全卫生考核列表接口 */
 export function securityHealth_List(parameter) {
   return axios({
@@ -446,5 +457,33 @@ export function securityHealth_List(parameter) {
     url: '/room/room-examine/page',
     method: 'get',
     params: parameter
+  })
+}
+
+/** 安全卫生考核新增接口 */
+export function securityHealth_List_Add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-examine/addRoomExamine',
+    method: 'post',
+    data: parameter
+  })
+}
+/** 安全卫生考核详情接口 */
+export function securityHealth_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-examine/getRoomExamineId',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 安全卫生考核处理接口 */
+export function securityHealth_List_update(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-examine/updateRoomExamine',
+    method: 'post',
+    data: parameter
   })
 }
