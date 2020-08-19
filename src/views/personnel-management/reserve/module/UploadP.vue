@@ -1,0 +1,100 @@
+<template>
+  <div class="clearfix">
+    <a-upload
+      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+      list-type="picture-card"
+      :file-list="fileList"
+      @preview="handlePreview"
+      @change="handleChange"
+    >
+      <div v-if="fileList.length < 8">
+        <a-icon type="plus" />
+        <div class="ant-upload-text">Upload</div>
+      </div>
+    </a-upload>
+    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+      <img alt="example" style="width: 100%" :src="previewImage" />
+    </a-modal>
+  </div>
+</template>
+<script>
+import { getUploadPath2 } from '@/api/common'
+export default {
+  name: 'BecomingForm',
+  data() {
+    return {
+      uploadUrl: getUploadPath2(),
+      fileList: [],
+      id: this.msg,
+      tempName: this.name,
+    }
+  },
+  props: ['msg', 'name'],
+  methods: {
+    // query(key) {
+    //   console.log(key)
+    // },
+    handleChange(info) {
+      console.log(arguments)
+      let that = this
+      let fileList = [...info.fileList]
+      fileList = fileList.slice(-1)
+      fileList = fileList.map((file) => {
+        if (file.response && file.response.code === 200) {
+          file.url = file.response.data
+          console.log()
+          let arr = {
+            fileUrl: file.response.data,
+            templateName: that.tempName,
+            fileType: 1,
+          }
+          that.$emit('getmsg', arr)
+        }
+        return file
+      })
+      this.fileList = fileList
+    },
+    //上传
+    normFile(e) {
+      console.log('Upload event:', e)
+      if (Array.isArray(e)) {
+        return e
+      }
+      return e && e.fileList
+    },
+  },
+}
+</script>
+<style scoped>
+/*自定义table样式*/
+.custom-table {
+  margin-bottom: 0;
+}
+
+.custom-table-border th,
+.custom-table-border td {
+  padding: 5px 10px;
+}
+
+.custom-table >>> .custom-table {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: calc(100% + 2px);
+  margin-bottom: -2px;
+}
+.custom-table >>> .custom-table td {
+  text-align: left;
+}
+.becoming-form-wrapper >>> .ant-form-item {
+  margin-bottom: 0;
+}
+
+.bank-card-list-wrapper {
+  display: flex;
+}
+.bank-card-list-wrapper >>> .ant-form-item {
+  display: flex;
+  margin: 0 7px;
+}
+</style>

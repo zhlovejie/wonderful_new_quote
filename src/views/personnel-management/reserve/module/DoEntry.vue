@@ -539,18 +539,32 @@
             <table class="custom-table custom-table-border">
               <tr v-for="(item ,index) in todayList" :key="index">
                 <td>
-                  <a href>{{item.contractName}}</a>
+                  <a :href="item.contractUrl">{{item.contractName}}</a>
                 </td>
-                <td>上传</td>
-                <!-- <td style="width:70px;" v-if="!isEdit">
-                  <a-form-item>
-                    <a href="javascript:void(0);" @click="delItem('todayList',index)">上传</a>
-                  </a-form-item>
-                </td>-->
+                <td>
+                  <Mdeol @getmsg="getChildMsg" :msg="item.id" :name="item.contractName" />
+                </td>
+              </tr>
+            </table>
+            <h3>合同原件</h3>
+            <table class="custom-table custom-table-border">
+              <tr>
+                <th>合同名称</th>
+                <th>操作</th>
+              </tr>
+              <tr v-for="(item ,index) in todauuplate" :key="index">
+                <td>{{item.templateName}}</td>
+                <td>
+                  <a href type="primary">查看</a>
+                  <a-divider type="vertical" />
+                  <a href type="primary">删除</a>
+                </td>
               </tr>
             </table>
           </a-tab-pane>
-          <a-tab-pane key="4" tab="证件信息">Content of Tab Pane 4</a-tab-pane>
+          <a-tab-pane key="4" tab="证件信息">
+            <UploadP />
+          </a-tab-pane>
         </a-tabs>
       </a-form>
     </a-spin>
@@ -565,7 +579,9 @@ import {
   getStationList, //获取所有岗位
 } from '@/api/systemSetting'
 import { comManageSettingsGetSettingsByStationId } from '@/api/communicationManagement'
+import { postAllocation_Version } from '@/api/humanResources'
 import { getReserveCondition } from '@/api/reserveApi'
+
 import moment from 'moment'
 
 import {
@@ -578,6 +594,8 @@ import {
 } from '@/api/reserveApi'
 
 import BankChoice from './BankChoice'
+import Mdeol from './Model'
+import UploadP from './UploadP'
 
 function getBase64(img, callback) {
   const reader = new FileReader()
@@ -589,6 +607,8 @@ export default {
   name: '',
   components: {
     BankChoice: BankChoice,
+    Mdeol,
+    UploadP,
   },
   data() {
     return {
@@ -606,6 +626,7 @@ export default {
       faceCode: '', //人脸识别码
       //上传照片部分
       uploadPath: getUploadPath(), // 上传图片的url
+      insureType: '',
       fileList: [],
       previewVisible: false, // 图片预览框是否可见
       previewImage: '', //  预览图片的src值
@@ -617,9 +638,11 @@ export default {
       previewImageSeal: '',
       //个人印章END
       todayList: [], // 合同模板列表
+      todauuplate: [], //模板上传数组
       loading: false,
       imageUrl: '',
       spinning: false,
+      department: {},
       stationInfoRequire: {
         email: false,
         mobile: false,
@@ -654,7 +677,22 @@ export default {
       this.previewVisible = true
     },
     callback(key) {
-      console.log(key)
+      let that = this
+      if (key === '3') {
+        postAllocation_Version({
+          departmentId: that.department.departmentId,
+          stationId: that.department.stationId,
+        }).then((res) => {
+          that.todayList = res.data.records
+          // console.log(res.data.records)
+        })
+        // that.$refs.model.query()
+      }
+    },
+    // 模板数据接收
+    getChildMsg(data) {
+      console.log('接受到子组件传递过来的数据为：', data)
+      this.todauuplate.push(data)
     },
     previewCancel() {
       this.previewVisible = false
@@ -750,15 +788,10 @@ export default {
         //人员状态：默认为0浏览，1试用期，2试用期不通过，3在职，4离职
         //0为入职前，其他的都为入职后
         // 合同模板接口
-
         let isDoEntryBefore = record.status === 0 ? true : false
         let entryDetailApi = isDoEntryBefore ? getEntityBeforeDetail : reserveGetDetail
-        console.log(isDoEntryBefore ? '入职前' : '入职后')
         entryDetailApi({ reserveId: record.id }).then((res) => {
-          console.log(res)
-          getReserveCondition({ departmentId: res.data.departmentId, stationId: res.data.stationId }).then((res) => {
-            that.todayList = res.data
-          })
+          that.department = res.data
           that.fillData(isDoEntryBefore ? 'before' : 'after', res.data)
         })
       } else {
@@ -889,6 +922,13 @@ export default {
           that.$nextTick(() => that.form.setFieldsValue({ birthplace: arrAreaIds.map((n) => parseInt(n, 10)) }))
         })
       }
+    },
+    normFile(e) {
+      console.log('Upload event:', e)
+      if (Array.isArray(e)) {
+        return e
+      }
+      return e && e.fileList
     },
     async handleOk() {
       let that = this
