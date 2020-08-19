@@ -4,7 +4,7 @@
     <div class="search-wrapper">
       <a-select
         placeholder="团建类别"
-        v-model="queryParam.title"
+        v-model="queryParam.leagueType"
         :allowClear="true"
         @change="department"
         style="width: 200px;margin-right:10px;"
@@ -52,7 +52,7 @@
           <a-icon type="plus" />新增
         </a-button>
       </a-dropdown>
-      <div style="float:right;">12415151513</div>
+      <div style="float:right;"></div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
