@@ -37,7 +37,19 @@ const action = Vue.directive('action', {
 //使用 v-download="url"
 Vue.directive('download', {
   inserted: function (el, binding, vnode) {
-    el.href = `${system.baseURL}/FileManagement/fileDownload?path=${encodeURIComponent(binding.value)}`
+    let tokenItem = localStorage.getItem('pro__Access-Token')
+    let token = ''
+    if(tokenItem){
+      try{
+        token = JSON.parse(tokenItem).value
+      }catch(err){
+        token = ''
+      }
+    }
+    let param = []
+    param.push(`Authorization=${token}`)
+    param.push(`path=${encodeURIComponent(binding.value)}`)
+    el.href = `${system.baseURL}/FileManagement/fileDownload?${param.join('&')}`
   }
 })
 
