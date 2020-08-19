@@ -179,23 +179,16 @@ export default {
 
     handleOk() {
       let that = this
-      if (that.isView) {
-        that.form.resetFields() // 清空表
-        that.visible = false
-        return
-      } else if (that.type === 'add' || that.type === 'edit-salary') {
+      if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
             values.checkInTime = moment(values.checkInTime).format('YYYY-MM-DD HH:mm:ss')
-            // values.accountDate = values.accountDate.format('YYYYMM')
-            console.log(values)
             if (that.type !== 'add') {
               values.id = this.record.id
             }
             personnel_Add(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
@@ -204,11 +197,6 @@ export default {
               .catch((err) => (that.spinning = false))
           }
         })
-      } else if (that.isEditSalary) {
-        // that.updateUserBackCardSalary()
-      } else {
-        that.form.resetFields() // 清空表
-        that.visible = false
       }
     },
 

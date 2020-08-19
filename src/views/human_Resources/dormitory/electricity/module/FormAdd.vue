@@ -24,7 +24,6 @@
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  :disabled="isDisabled"
                   placeholder="请输入房间号"
                   v-decorator="['roomCode', {rules: [ {required: true,  message: '请输入房间号'},]}]"
                 />
@@ -37,7 +36,6 @@
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  :disabled="isDisabled"
                   placeholder="请输入房间床位数"
                   v-decorator="['bedNumber', {rules: [{required: true,message: '请输入房间床位数!',},]}]"
                 />
@@ -50,7 +48,6 @@
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  :disabled="isDisabled"
                   placeholder="请输入电表号"
                   v-decorator="['meterCode', {rules: [ {required: true,  message: '请输入房间号'},]}]"
                 />
@@ -63,7 +60,6 @@
               <a-form-item>
                 <a-textarea
                   style="width:300px;"
-                  :disabled="isDisabled"
                   placeholder="请输入备注"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"

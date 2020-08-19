@@ -367,6 +367,15 @@ export function electricityDelete(parameter) {
   })
 }
 
+/** 房间入住详情接口 */
+export function electricity_PageRoomUser(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room/listRoomUser',
+    method: 'get',
+    params: parameter
+  })
+}
 
 
 

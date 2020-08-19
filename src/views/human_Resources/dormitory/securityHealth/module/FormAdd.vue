@@ -220,18 +220,20 @@ export default {
       console.log('你这是要提交')
       let that = this
       that.form.validateFields((err, values) => {
-        delete values.deptId
-        values.inspectTime = moment(values.inspectTime).format('YYYY-MM-DD')
-        console.log(values)
-        securityHealth_List_Add(values).then((res) => {
-          that.spinning = false
-          console.log(res)
-          that.form.resetFields() // 清空表
-          this.haveProcess = []
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
+        if (!err) {
+          delete values.deptId
+          values.inspectTime = moment(values.inspectTime).format('YYYY-MM-DD')
+          console.log(values)
+          securityHealth_List_Add(values).then((res) => {
+            that.spinning = false
+            console.log(res)
+            that.form.resetFields() // 清空表
+            this.haveProcess = []
+            that.visible = false
+            that.$message.info(res.msg)
+            that.$emit('finish')
+          })
+        }
       })
     },
 

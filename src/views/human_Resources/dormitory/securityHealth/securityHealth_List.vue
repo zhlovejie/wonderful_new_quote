@@ -40,7 +40,7 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="status" slot-scope="text, record, index">
-            <template v-if="text===1">
+            <template v-if="record.status===1">
               <span>完结</span>
             </template>
             <template v-else>
@@ -55,7 +55,7 @@
               <a-divider type="vertical" />
               <a @click="inspect('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
-              <a>下载</a>
+              <a @click="download(record)">下载</a>
             </template>
             <template v-if="+record.status===0">
               <a-divider type="vertical" />
@@ -72,6 +72,7 @@
 
 <script>
 import { securityHealth_List, listRoom } from '@/api/humanResources'
+import systemConfig from '@/config/defaultSettings'
 import AddForm from './module/FormAdd'
 import Dormitory from './module/Dormitory'
 
@@ -85,6 +86,7 @@ export default {
     return {
       openKeys: ['id'],
       parentId: 0,
+      system: systemConfig.baseURL + '/room/room-examine/download/roomExamineDownload',
       userInfo: this.$store.getters.userInfo, // 当前登录人
       hiddenBoolean: false,
       stationId: undefined,
@@ -210,6 +212,10 @@ export default {
       pager.current = pagination.current
       this.pagination = pager
       this.searchActionsee()
+    },
+
+    download(record) {
+      window.location.href = this.system + `?id=${record.id}`
     },
 
     // 清空、重置

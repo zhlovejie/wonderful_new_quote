@@ -25,7 +25,7 @@
         style="width: 200px;margin-right:10px;"
       />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <a-button style="margin-left:10px;" type="primary">入住情况</a-button>
+      <a-button style="margin-left:10px;" type="primary" @click="Occupancys()">入住情况</a-button>
       <template v-if="$auth('role:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
@@ -60,7 +60,7 @@
       </a-layout-content>
     </a-layout>
     <AddForm ref="addForm" @finish="init()" />
-    <!-- <XdocView ref="xdocView" /> -->
+    <Occupancy ref="occupancy" />
   </a-card>
 </template>
 
@@ -68,13 +68,13 @@
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
 import { electricity_List, listRoom, electricityDelete } from '@/api/humanResources'
 import AddForm from './module/FormAdd'
-// import XdocView from './module/XdocView'
+import Occupancy from './module/Occupancy'
 
 export default {
   name: 'RoleManagement',
   components: {
     AddForm,
-    // XdocView,
+    Occupancy,
   },
   data() {
     return {
@@ -199,7 +199,11 @@ export default {
       this.queryParam = {}
       this.roleList = {}
     },
-
+    //打开入住情况
+    Occupancys() {
+      console.log(12312)
+      this.$refs.occupancy.query()
+    },
     handle(type, record) {
       this.$refs.addForm.query(type, record)
     },

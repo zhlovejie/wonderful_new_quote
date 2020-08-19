@@ -14,10 +14,16 @@
         <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
       </template>
     </template>
-    <h1>员工宿舍检查表</h1>
-    <span>检查人:{{this.securityHealthDetail.inspectName}}</span>
-    <span>检查时间 :{{this.securityHealthDetail.inspectTime}}</span>
-    <a-spin :spinning="spinning">
+    <h1 style=" text-align: center;">员工宿舍检查表</h1>
+    <span style="  margin-right: 100px;">
+      <strong>检查人:</strong>
+      {{this.securityHealthDetail.inspectName}}
+    </span>
+    <span>
+      <strong>检查时间 :</strong>
+      {{this.securityHealthDetail.inspectTime}}
+    </span>
+    <a-spin :spinning="spinning" style="margin-top: 10px;">
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
@@ -230,13 +236,13 @@ export default {
         this.securityHealthDetail = res.data.data
         if (this.type === 'see' || this.type === 'edit-salary') {
           this.form.setFieldsValue({
-            electricHighPower: res.data.data.electricHighPower,
-            electricPrivateConnection: res.data.data.electricPrivateConnection,
-            electricProtectDevice: res.data.data.electricProtectDevice,
-            electricTimeClose: res.data.data.electricTimeClose,
-            meritsNoise: res.data.data.meritsNoise,
-            meritsPutNeat: res.data.data.meritsPutNeat,
-            meritsStrictlyProhibit: res.data.data.meritsStrictlyProhibit,
+            electricHighPower: res.data.data.electricHighPower.toString(),
+            electricPrivateConnection: res.data.data.electricPrivateConnection.toString(),
+            electricProtectDevice: res.data.data.electricProtectDevice.toString(),
+            electricTimeClose: res.data.data.electricTimeClose.toString(),
+            meritsNoise: res.data.data.meritsNoise.toString(),
+            meritsPutNeat: res.data.data.meritsPutNeat.toString(),
+            meritsStrictlyProhibit: res.data.data.meritsStrictlyProhibit.toString(),
             remarks: res.data.data.remarks,
           })
         }
@@ -247,16 +253,18 @@ export default {
       console.log('你这是要提交')
       let that = this
       that.form.validateFields((err, values) => {
-        values.id = this.record.id
-        securityHealth_List_update(values).then((res) => {
-          that.spinning = false
-          console.log(res)
-          that.form.resetFields() // 清空表
-          this.haveProcess = []
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
+        if (!err) {
+          values.id = this.record.id
+          securityHealth_List_update(values).then((res) => {
+            that.spinning = false
+            console.log(res)
+            that.form.resetFields() // 清空表
+            this.haveProcess = []
+            that.visible = false
+            that.$message.info(res.msg)
+            that.$emit('finish')
+          })
+        }
       })
     },
 
