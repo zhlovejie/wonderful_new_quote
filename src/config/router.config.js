@@ -2162,6 +2162,61 @@ export const asyncRouterMap = [
         }]
       },
       {
+        path: '/human_Resources',
+        name: 'human_Resources',
+        component: PageView,
+        meta: {
+          title: '人力资源',
+          icon: 'setting',
+          permission: ['permission']
+        },
+        children:[
+          {
+            // 资产管理
+            path: '/human_Resources/asset-management',
+            name: 'asset-management',
+            component: RouteView,
+            meta: {
+              title: '资产管理',
+              icon: 'setting',
+              permission: ['permission']
+            },
+            children: [
+              {
+                path: '/human_Resources/asset-management/mine',
+                name: 'asset-management-mine',
+                component: () => import('@/views/asset-management/mine/List'),
+                meta: {title: '我的资产',icon: 'setting',keepAlive: false,permission: ['permission'] },
+              },
+              {
+                path: '/human_Resources/asset-management/search',
+                name: 'asset-management-search',
+                component: () => import('@/views/asset-management/search/List'),
+                meta: {title: '查询资产',icon: 'setting',keepAlive: false,permission: ['permission'] },
+              },
+              {
+                path: '/human_Resources/asset-management/management',
+                name: 'asset-management-management',
+                component: () => import('@/views/asset-management/management/List'),
+                meta: {title: '管理资产',icon: 'setting',keepAlive: false,permission: ['permission'] },
+              },
+              {
+                path: '/human_Resources/asset-management/record',
+                name: 'asset-management-record',
+                component: () => import('@/views/asset-management/record/List'),
+                meta: {title: '维修申请记录',icon: 'setting',keepAlive: false,permission: ['permission'] },
+              },
+              {
+                path: '/human_Resources/asset-management/inventory-record',
+                name: 'asset-management-inventory-record',
+                component: () => import('@/views/asset-management/inventory-record/List'),
+                meta: {title: '资产盘点记录',icon: 'setting',keepAlive: false,permission: ['permission'] },
+              }
+            ]
+          }
+        ]
+      },
+      {
         // 福利管理
         path: '/welfare-management',
         name: 'welfare-management',

@@ -71,6 +71,18 @@ export function enterpriseQualificationDownload (parameter,timeout = 1000 * 120)
 }
 //生成下载链接
 export function makeDownloadUrl(url){
-  return `${system.baseURL}/FileManagement/fileDownload?path=${encodeURIComponent(url)}`
+  let tokenItem = localStorage.getItem('pro__Access-Token')
+    let token = ''
+    if(tokenItem){
+      try{
+        token = JSON.parse(tokenItem).value
+      }catch(err){
+        token = ''
+      }
+    }
+    let param = []
+    param.push(`Authorization=${token}`)
+    param.push(`path=${encodeURIComponent(url)}`)
+  return `${system.baseURL}/FileManagement/fileDownload?${param.join('&')}`
 }
 
