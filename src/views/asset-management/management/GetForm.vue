@@ -12,7 +12,10 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" class="wdf-custom-add-form-wrapper">
         <a-form-item label="使用人">
-          <DepUserSelect />
+          <DepUserSelect @change="depUserSelectChange"/>
+          
+          <a-input type="hidden" v-decorator="['userId',{rules: [{ required: true, message: '选择使用人' }]}]" />
+          <a-input type="hidden" v-decorator="['departmentId']" />
         </a-form-item>
 
         <a-form-item label="资产归属">
@@ -54,7 +57,8 @@ export default {
   },
   computed: {
     modalTitle() {
-      return this.type === 'add' ? '新增' : '编辑'
+      //return this.type === 'add' ? '新增' : '编辑'
+      return "领取"
     },
     isAdd() {
       return this.type === 'add'
@@ -87,9 +91,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          if (that.isEdit) {
-            values.id = that.record.id
-          }
+          values.assertsId = that.record.id
           that.spinning = true
           oaAssertsInfoAssertsDraw(values)
             .then((res) => {
@@ -113,6 +115,15 @@ export default {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
+    depUserSelectChange(depId,userId){
+      let that = this
+      that.$nextTick(() =>{
+        that.form.setFieldsValue({
+          departmentId:depId,
+          userId:userId
+        })
+      })
+    }
   },
 }
 </script>

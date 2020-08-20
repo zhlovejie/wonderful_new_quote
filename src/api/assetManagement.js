@@ -44,5 +44,142 @@ export function oaAssertsInfoAssertsDraw (parameter) {
   })
 }
 
+/*资产归还*/
+export function oaAssertsInfoAssertsReturn (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-info/returnAssert',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*资产领用分页列表查询*/
+export function oaAssertsInfoHistoryPage (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-receive-history/getAssertsRecieveHistoryByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*确认验收*/
+export function oaAssertsInfoConfirmRecieve (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-info/confirmRecieve',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*报废*/
+export function oaAssertsInfoGiveUpAssert (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-info/giveUpAssert',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*删除*/
+export function oaAssertsInfoRemove (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-info/removeAssert',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*已报废的资产入库接口*/
+export function oaAssertsInfoStockInAssert (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-info/stockInAssert',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*报修 新增或修改*/
+export function oaAssertsInfoRecoveAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/addOrUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*报修 审批*/
+export function oaAssertsInfoRecoveApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+/*报修 完结*/
+export function oaAssertsInfoRecoveConcludeRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/concludeRevocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*报修 审批通过后采购处理*/
+export function oaAssertsInfoRecoveHandleRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/handleRevocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*报修 详情*/
+export function oaAssertsInfoRecoveDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/recoveApplyDetail',
+    method: 'get',
+    params: parameter
+  })
+}
 
 
+/*报修 撤回*/
+export function oaAssertsInfoRecoveRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*报修 处理完成后上传凭证*/
+export function oaAssertsInfoRecoveUpload (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/uploadRevocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*报修 申请分页列表*/
+export function oaAssertsInfoRecoveList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-recove-apply/recoveApplyList',
+    method: 'get',
+    params: parameter
+  })
+}

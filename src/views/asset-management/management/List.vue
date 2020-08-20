@@ -68,58 +68,77 @@
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('fix',record)">报修</a>
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('over',record)">报废</a>
+            <a-popconfirm title="是否要执行报废操作？" @confirm="doAction('over',record)">
+              <a type="primary" >报废</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('get-record',record)">领取记录</a>
           </template>
 
           <template v-if="+record.status === 2">
-            <a type="primary" @click="doAction('return',record)">归还</a>
+            <a-popconfirm title="是否要执行归还操作？" @confirm="doAction('return',record)">
+              <a type="primary" >归还</a>
+            </a-popconfirm>
+
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('fix',record)">报修</a>
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('over',record)">报废</a>
+            <a-popconfirm title="是否要执行报废操作？" @confirm="doAction('over',record)">
+              <a type="primary" >报废</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('get-record',record)">领取记录</a>
           </template>
 
           <template v-if="+record.status === 3">
-            <a type="primary" @click="doAction('accept',record)">确认验收</a>
+            <a-popconfirm title="是否要执行验收操作？" @confirm="doAction('accept',record)">
+              <a type="primary" >确认验收</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('over',record)">报废</a>
+            <a-popconfirm title="是否要执行报废操作？" @confirm="doAction('over',record)">
+              <a type="primary" >报废</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('get-record',record)">领取记录</a>
           </template>
 
           <template v-if="+record.status === 4">
-            <a type="primary" @click="doAction('put',record)">入库</a>
+            <a-popconfirm title="是否要执行入库操作？" @confirm="doAction('put',record)">
+              <a type="primary" >入库</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('del',record)">删除</a>
+            <a-popconfirm title="是否要执行删除操作？" @confirm="doAction('del',record)">
+              <a type="primary" >删除</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('get-record',record)">领取记录</a>
           </template>
-
-
-
-
-          <!-- <template v-if="+record.status === 3">
-            <a-popconfirm title="是否要执行验收操作？" @confirm="doAction('ok',record)">
-              <a>确认验收</a>
-            </a-popconfirm>
-          </template> -->
         </div>
       </a-table>
     </div>
     <AddForm ref="addForm" @finish="searchAction()" />
     <GetForm ref="getForm" @finish="searchAction()" />
+    <RecordForm ref="recordForm" />
+    <FixForm ref="fixForm" @finish="searchAction()" />
   </div>
 </template>
 
 <script>
-import { oaAssertsInfoMyAssertsAllList } from '@/api/assetManagement'
+import { 
+  oaAssertsInfoMyAssertsAllList ,
+  oaAssertsInfoAssertsReturn,
+
+  oaAssertsInfoConfirmRecieve,
+  oaAssertsInfoGiveUpAssert,
+  oaAssertsInfoRemove,
+  oaAssertsInfoStockInAssert
+} from '@/api/assetManagement'
 import { getDictionaryList } from '@/api/workBox'
 import AddForm from './AddForm'
 import GetForm from './GetForm'
+import RecordForm from './RecordForm'
+import FixForm from './FixForm'
+
 const columns = [
   {
     align: 'center',
@@ -182,7 +201,9 @@ export default {
   name: 'asset-management-management',
   components: {
     AddForm,
-    GetForm
+    GetForm,
+    RecordForm,
+    FixForm
   },
   data() {
     return {
@@ -252,6 +273,42 @@ export default {
       }
       if(type === 'get'){
         that.$refs.getForm.query(type,record)
+        return
+      }
+      if(type === 'return'){
+        let {id,assertsInfoid} = record
+        oaAssertsInfoAssertsReturn({id,assertsId:assertsInfoid}).then(res =>{
+          console.log(res)
+          that.$message.info(res.msg)
+          if(res.code === 200){
+            that.searchAction()
+          }
+        })
+        return
+      }
+      if(type === 'get-record'){
+        that.$refs.recordForm.query(type,record)
+        return
+      }
+      if(type === 'fix'){
+        that.$refs.fixForm.query(type,record)
+        return
+      }
+      
+      if(['accept','over','del','put'].includes(type)){
+        let api = {
+          'accept':oaAssertsInfoConfirmRecieve,
+          'over':oaAssertsInfoGiveUpAssert,
+          'del':oaAssertsInfoRemove,
+          'put':oaAssertsInfoStockInAssert
+        }
+        api[type]({assertId:record.id}).then(res =>{
+          console.log(res)
+          that.$message.info(res.msg)
+          if(res.code === 200){
+            that.searchAction()
+          }
+        })
         return
       }
     }
