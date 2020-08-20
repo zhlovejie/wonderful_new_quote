@@ -291,7 +291,7 @@ export default {
         return
       }
       if(type === 'fix'){
-        that.$refs.fixForm.query(type,record)
+        that.$refs.fixForm.query('add',record)
         return
       }
       
@@ -302,7 +302,7 @@ export default {
           'del':oaAssertsInfoRemove,
           'put':oaAssertsInfoStockInAssert
         }
-        api[type]({assertId:record.id}).then(res =>{
+        api[type](`assertId=${record.id}`).then(res =>{
           console.log(res)
           that.$message.info(res.msg)
           if(res.code === 200){

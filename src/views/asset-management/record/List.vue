@@ -45,14 +45,14 @@
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <!-- <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
         <!-- <template v-if="$auth('attenceTravelApply:approval')"> -->
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+        <a-tab-pane tab="待审批" key="1" />
+        <a-tab-pane tab="已审批" key="2" />
         <!-- </template> -->
       </a-tabs>
       <a-table
@@ -65,12 +65,8 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="type" slot-scope="text, record, index">
-          {{ {1:'固定资产',2:'车间设备'}[text] || '未知' }}
-        </div>
-        <div slot="emaeceLevel" slot-scope="text, record, index">
-          {{ {1:'一般',2:'紧急'}[text] || '未知' }}
-        </div>
+        <div slot="type" slot-scope="text, record, index">{{ {1:'固定资产',2:'车间设备'}[text] || '未知' }}</div>
+        <div slot="emaeceLevel" slot-scope="text, record, index">{{ {1:'一般',2:'紧急'}[text] || '未知' }}</div>
         <div slot="status" slot-scope="text, record, index">
           <a
             href="javascript:void(0);"
@@ -78,32 +74,48 @@
           >{{ {1:'待审批',2:'通过',3:'不通过',4:'已撤回',5:'待完结',6:'已完结'}[text] || '未知' }}</a>
         </div>
         <div slot="certificates" slot-scope="text, record, index">
-          <a href="#">查看</a>
+          <a type="primary" @click="doAction('view_file',record)">查看</a>
         </div>
-
-        
         <div class="action-btns" slot="action" slot-scope="text, record">
-          
+          <template v-if="+activeKey === 0">
+            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a-divider type="vertical" />
+            <a-popconfirm title="是否要执行删除操作？" @confirm="doAction('del',record)">
+              <a type="primary">删除</a>
+            </a-popconfirm>
+          </template>
+
+          <template v-if="+activeKey === 1">
+            <a type="primary" @click="doAction('approval',record)">审批</a>
+          </template>
+
+          <template v-if="+activeKey === 2">
+            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('upload',record)">上传凭证</a>
+          </template>
         </div>
       </a-table>
       <ApproveInfo ref="approveInfoCard" />
+      <FixForm ref="fixForm" @finish="searchAction()" />
+      <UploadFileModel ref="uploadFileModel"/>
     </div>
-
   </div>
 </template>
 
 <script>
-import { 
-  oaAssertsInfoRecoveList ,
+import {
+  oaAssertsInfoRecoveList,
   oaAssertsInfoAssertsReturn,
-
   oaAssertsInfoConfirmRecieve,
   oaAssertsInfoGiveUpAssert,
   oaAssertsInfoRemove,
-  oaAssertsInfoStockInAssert
+  oaAssertsInfoStockInAssert,
 } from '@/api/assetManagement'
 import { getDictionaryList } from '@/api/workBox'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import FixForm from '../management/FixForm' 
+import UploadFileModel from './UploadFileModel'
 const columns = [
   {
     align: 'center',
@@ -170,13 +182,15 @@ const columns = [
     title: '操作',
     key: 'action',
     scopedSlots: { customRender: 'action' },
-  }
+  },
 ]
 
 export default {
   name: 'asset-management-record',
   components: {
-    ApproveInfo
+    ApproveInfo,
+    FixForm,
+    UploadFileModel
   },
   data() {
     return {
@@ -186,14 +200,12 @@ export default {
       pagination: {
         current: 1,
       },
-      searchParam:{},
+      searchParam: {},
       loading: false,
-      activeKey:0
+      activeKey: 0,
     }
   },
-  computed: {
-    
-  },
+  computed: {},
   watch: {
     $route: {
       handler: function (to, from) {
@@ -208,7 +220,7 @@ export default {
     init() {
       let that = this
       let task1 = getDictionaryList({ parentId: 532 }).then((res) => (that.assetTypeList = res.data))
-      that.searchAction()
+      that.tabChange(0)
     },
     searchAction(opt = {}) {
       let that = this
@@ -239,51 +251,24 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'add'){
-        that.$refs.addForm.query(type,record)
+      if (['view','edit','approval'].includes(type)) {
+        that.$refs.fixForm.query(type, record)
         return
       }
-      if(type === 'get'){
-        that.$refs.getForm.query(type,record)
-        return
-      }
-      if(type === 'return'){
-        let {id,assertsInfoid} = record
-        oaAssertsInfoAssertsReturn({id,assertsId:assertsInfoid}).then(res =>{
+      if (type === 'del') {
+        oaAssertsInfoRemove({ assertId: record.id }).then((res) => {
           console.log(res)
           that.$message.info(res.msg)
-          if(res.code === 200){
+          if (res.code === 200) {
             that.searchAction()
           }
         })
         return
       }
-      if(type === 'get-record'){
-        that.$refs.recordForm.query(type,record)
-        return
-      }
-      if(type === 'fix'){
-        that.$refs.fixForm.query(type,record)
-        return
-      }
-      
-      if(['accept','over','del','put'].includes(type)){
-        let api = {
-          'accept':oaAssertsInfoConfirmRecieve,
-          'over':oaAssertsInfoGiveUpAssert,
-          'del':oaAssertsInfoRemove,
-          'put':oaAssertsInfoStockInAssert
-        }
-        api[type]({assertId:record.id}).then(res =>{
-          console.log(res)
-          that.$message.info(res.msg)
-          if(res.code === 200){
-            that.searchAction()
-          }
-        })
-        return
+      if(type === 'upload'){
+        that.$refs.uploadFileModel.query(type,record)
       }
     },
     tabChange(tagKey) {
@@ -293,8 +278,8 @@ export default {
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
-    },
-  },
+    }
+  }
 }
 </script>
 

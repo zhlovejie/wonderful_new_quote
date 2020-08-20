@@ -16,7 +16,7 @@
       />
       <a-select
         placeholder="选择资产类型"
-        v-model="searchParam.userLevel"
+        v-model="searchParam.typeDicId"
         :allowClear="true"
         style="width:200px;"
       >
@@ -42,27 +42,26 @@
           {{ {1:'入库',2:'使用中',3:'报修中',4:'报废',5:'缺失'}[text] || '未知' }}
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template v-if="+record.status === 1">
-            <a-popconfirm title="是否要保修此资产？" @confirm="doAction('fix',record)">
-              <a>报修</a>
-            </a-popconfirm>
+          <template v-if="+record.status === 2">
+            <a @click="doAction('fix',record)">报修</a>
           </template>
 
           <template v-if="+record.status === 3">
-            <a-popconfirm title="是否要执行验收操作？" @confirm="doAction('ok',record)">
+            <a-popconfirm title="是否要执行验收操作？" @confirm="doAction('accept',record)">
               <a>确认验收</a>
             </a-popconfirm>
           </template>
         </div>
       </a-table>
+      <FixForm ref="fixForm" @finish="searchAction()" />
     </div>
   </div>
 </template>
 
 <script>
-import { oaAssertsInfoMyAssertsList } from '@/api/assetManagement'
+import { oaAssertsInfoMyAssertsList,oaAssertsInfoConfirmRecieve } from '@/api/assetManagement'
 import { getDictionaryList } from '@/api/workBox'
-
+import FixForm from '../management/FixForm'
 const columns = [
   {
     align: 'center',
@@ -123,7 +122,7 @@ const columns = [
 
 export default {
   name: 'asset-management-mine',
-  components: {},
+  components: {FixForm},
   data() {
     return {
       columns: columns,
@@ -186,20 +185,34 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if (actionType === 'edit' || actionType === 'add') {
-        this.$refs.addForm.query(actionType, record)
-      } else if (actionType === 'del') {
-        caringSettingDel(`id=${record.id}`)
-          .then((res) => {
-            that.$message.info(res.msg)
-            that.searchAction()
-          })
-          .catch((err) => {
-            that.$message.info(`错误：${err.message}`)
-          })
-      } else {
-        this.$message.info('功能尚未实现！')
+      if(actionType === 'fix'){
+        that.$refs.fixForm.query('add',record)
+        return
       }
+      if(actionType === 'accept'){
+        oaAssertsInfoConfirmRecieve(`assertId=${record.id}`).then(res =>{
+          console.log(res)
+          that.$message.info(res.msg)
+          if(res.code === 200){
+            that.searchAction()
+          }
+        })
+        return
+      }
+      // if (actionType === 'edit' || actionType === 'add') {
+      //   this.$refs.addForm.query(actionType, record)
+      // } else if (actionType === 'del') {
+      //   caringSettingDel(`id=${record.id}`)
+      //     .then((res) => {
+      //       that.$message.info(res.msg)
+      //       that.searchAction()
+      //     })
+      //     .catch((err) => {
+      //       that.$message.info(`错误：${err.message}`)
+      //     })
+      // } else {
+      //   this.$message.info('功能尚未实现！')
+      // }
     }
   },
 }

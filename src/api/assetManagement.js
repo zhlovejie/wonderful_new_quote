@@ -183,3 +183,32 @@ export function oaAssertsInfoRecoveList (parameter) {
     params: parameter
   })
 }
+
+/*资产盘点记录*/
+/*根据ids盘点id可以是多个用逗号分隔*/
+export function oaAssertsInfoInventory (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory/inventory',
+    method: 'get',
+    params: parameter
+  })
+}
+/*盘点记录列表*/
+export function oaAssertsInfoInventoryList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory/inventoryList',
+    method: 'get',
+    params: parameter
+  })
+}
+/*更改缺失*/
+export function oaAssertsInfoInventoryMissing (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory/missingInventory',
+    method: 'get',
+    params: parameter
+  })
+}

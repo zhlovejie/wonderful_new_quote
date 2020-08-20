@@ -22,7 +22,7 @@
       />
       <a-select
         placeholder="选择资产类型"
-        v-model="searchParam.userLevel"
+        v-model="searchParam.typeDicId"
         :allowClear="true"
         style="width:160px;"
       >
