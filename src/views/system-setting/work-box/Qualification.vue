@@ -16,7 +16,7 @@
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           <a-button style="margin-left: 8px" @click="resetAction">重置</a-button>
           <!-- <a-button style="margin-left: 8px" @click="exportToExcel">全部导出</a-button> -->
-          <a :href="exportProductCode" target="_blank" style="margin-left: 8px" class="ant-btn">全部导出</a>
+          <!-- <a :href="exportProductCode" target="_blank" style="margin-left: 8px" class="ant-btn">全部导出</a> -->
           </a-form-item>
         </template>
         <template v-if="$auth('qualification:add')">
