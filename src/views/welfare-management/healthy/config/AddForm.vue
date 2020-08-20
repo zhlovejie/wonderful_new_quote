@@ -88,7 +88,8 @@ import {
   getStationList //获取所有岗位
 } from '@/api/systemSetting'
 import {
-  checkupSettingAddOrUpdate
+  checkupSettingAddOrUpdate,
+  checkupSettingCheckStation
 } from '@/api/welfareManagement'
 export default {
   name: 'welfare-management-healthy-config-AddForm',
@@ -192,12 +193,31 @@ export default {
         that.postSelectDataSource = res.data
       })
     },
-    postChangeHandler(post_id){
+    async postChangeHandler(post_id){
       let target = this.postSelectDataSource.find(item => item.id === post_id)
+      if(!target){
+        this.isManagerCheck = false
+        return
+      }
+      let isStationRepeated  = await this.checkStation(Object.assign({},target))
+      if(isStationRepeated){
+        return
+      }
       if(target){
         console.log(target)
         this.isManagerCheck = target.level === 'A'
       }
+    },
+    checkStation(station){
+      let that = this
+      return checkupSettingCheckStation({stationId:station.id}).then(res =>{
+        //console.log(res)
+        if(res && res.data === true){
+          that.$message.info(`岗位【${station.stationName}】重复，请重新选择`)
+          that.form.setFieldsValue({stationId:undefined })
+        }
+        return res.data
+      })
     }
   }
 }

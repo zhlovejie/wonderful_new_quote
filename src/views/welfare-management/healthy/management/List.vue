@@ -22,7 +22,9 @@
         >{{item.departmentName}}</a-select-option>
       </a-select>
 
-      <a-select
+      <a-input style="width:150px;" placeholder="人员模糊查询" v-model="userName" :allowClear="true"/>
+
+      <!-- <a-select
         style="width:150px;"
         placeholder="选择人员"
         v-model="userName"
@@ -31,7 +33,7 @@
         :filter-option="filterOption"
       >
         <a-select-option v-for="item in userList" :key="item.id" :value="item.id">{{item.trueName}}</a-select-option>
-      </a-select>
+      </a-select> -->
 
       <a-select style="width:150px;" placeholder="体检类别" v-model="checkupType" :allowClear="true">
         <a-select-option :value="1">工龄体检</a-select-option>
@@ -47,8 +49,8 @@
         :allowClear="true"
       >
         <a-select-option :value="0">无</a-select-option>
-        <a-select-option :value="1">不合格</a-select-option>
-        <a-select-option :value="2">合格</a-select-option>
+        <a-select-option :value="1">合格</a-select-option>
+        <a-select-option :value="2">不合格</a-select-option>
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
