@@ -38,16 +38,9 @@ export default {
       previewVisible: false,
       previewImage: '',
       fileList: this.msgId,
-      fileUrl: [],
     }
   },
   props: ['msgId', 'name'],
-  // watch: {
-  //   fileList: function (val, oldVal) {
-  //     // this.fileUrl = val
-  //     console.log(val, oldVal)
-  //   },
-  // },
   methods: {
     handleCancel() {
       this.previewVisible = false

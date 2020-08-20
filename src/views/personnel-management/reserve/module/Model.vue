@@ -28,7 +28,6 @@ export default {
       fileList = fileList.map((file) => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
-          console.log()
           let arr = {
             fileUrl: file.response.data,
             templateName: that.tempName,

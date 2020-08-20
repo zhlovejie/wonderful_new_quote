@@ -542,7 +542,12 @@
                   <a :href="item.contractUrl">{{item.contractName}}</a>
                 </td>
                 <td>
-                  <Mdeol @getmsg="getChildMsg" :msg="item.id" :name="item.contractName" />
+                  <Mdeol
+                    ref="mdeol"
+                    @getmsg="getChildMsg"
+                    :msg="item.id"
+                    :name="item.contractName"
+                  />
                 </td>
               </tr>
             </table>
@@ -555,15 +560,19 @@
               <tr v-for="(item ,index) in todauuplate" :key="index">
                 <td>{{item.templateName}}</td>
                 <td>
-                  <a href type="primary">查看</a>
+                  <a type="primary" @click="doAction(item.fileUrl)">查看</a>
                   <a-divider type="vertical" />
-                  <a href type="primary">删除</a>
+                  <a type="primary" @click="deletes(index)">删除</a>
                 </td>
               </tr>
             </table>
+            <XdocView ref="xdocView" />
           </a-tab-pane>
           <a-tab-pane key="4" tab="证件信息">
-            <UploadP />
+            <h1>普通证件</h1>
+            <UploadP ref="normalCard" :msgId="certificateList" />
+            <h1>专业证件</h1>
+            <UploadZ ref="normalUpload" :msgId="specialList" />
           </a-tab-pane>
         </a-tabs>
       </a-form>
@@ -596,6 +605,8 @@ import {
 import BankChoice from './BankChoice'
 import Mdeol from './Model'
 import UploadP from './UploadP'
+import UploadZ from './UploadZ'
+import XdocView from './xdocView'
 
 function getBase64(img, callback) {
   const reader = new FileReader()
@@ -609,6 +620,8 @@ export default {
     BankChoice: BankChoice,
     Mdeol,
     UploadP,
+    UploadZ,
+    XdocView,
   },
   data() {
     return {
@@ -639,10 +652,14 @@ export default {
       //个人印章END
       todayList: [], // 合同模板列表
       todauuplate: [], //模板上传数组
+      certificateList: [],
+      specialList: [], //专业
+      getChildMsgs: [],
       loading: false,
       imageUrl: '',
       spinning: false,
       department: {},
+      arrNum: [],
       stationInfoRequire: {
         email: false,
         mobile: false,
@@ -684,15 +701,36 @@ export default {
           stationId: that.department.stationId,
         }).then((res) => {
           that.todayList = res.data.records
-          // console.log(res.data.records)
         })
-        // that.$refs.model.query()
       }
     },
     // 模板数据接收
     getChildMsg(data) {
       console.log('接受到子组件传递过来的数据为：', data)
-      this.todauuplate.push(data)
+      let that = this
+      debugger
+      if (that.todauuplate.length == 0) {
+        that.todauuplate.push(data)
+      } else {
+        that.todauuplate.map((item, i) => {
+          if (data.templateName == item.templateName) {
+            that.todauuplate.splice(i, 1)
+            that.todauuplate.push(data)
+          } else {
+            that.todauuplate.push(data)
+          }
+        })
+      }
+
+      console.log(that.todauuplate)
+    },
+    //删除上传模板
+    deletes(i) {
+      this.todauuplate.splice(i, 1)
+    },
+    // 文件预览
+    doAction(idurl) {
+      this.$refs.xdocView.query(idurl)
     },
     previewCancel() {
       this.previewVisible = false
@@ -792,6 +830,34 @@ export default {
         let entryDetailApi = isDoEntryBefore ? getEntityBeforeDetail : reserveGetDetail
         entryDetailApi({ reserveId: record.id }).then((res) => {
           that.department = res.data
+          if (res.data.contractDatalist) {
+            that.todauuplate = res.data.contractDatalist
+          }
+          if (res.data.commonCertificateList) {
+            that.certificateList = res.data.commonCertificateList.map((item) => {
+              return {
+                uid: item.id,
+                fileType: item.fileType,
+                name: '1',
+                status: 'done',
+                fileName: item.fileName,
+                url: item.fileUrl,
+              }
+            })
+          }
+          if (res.data.specialCertificateList) {
+            that.specialList = res.data.specialCertificateList.map((item) => {
+              return {
+                uid: item.id,
+                fileName: item.fileName,
+                fileType: item.fileType,
+                name: '1',
+                status: 'done',
+                url: item.fileUrl,
+              }
+            })
+          }
+
           that.fillData(isDoEntryBefore ? 'before' : 'after', res.data)
         })
       } else {
@@ -947,7 +1013,50 @@ export default {
           if (_bankChoiceResult.err) {
             return
           }
+          let arr1 = that.$refs.normalCard.getFiles().map((file) => {
+            if (file.name === '1') {
+              return {
+                fileUrl: file.fileUrl,
+                fileType: 2,
+                fileName: file.url,
+              }
+            }
+          })
+          let arr = that.$refs.normalCard.getFiles().map((file) => {
+            if (file.response && file.response.code === 200 && file.name !== '1') {
+              let arr = {
+                fileUrl: file.response.data,
+                fileType: 2,
+                fileName: file.name,
+              }
+              return arr
+            }
+          })
 
+          let num1 = that.$refs.normalUpload.getFiles().map((file) => {
+            if (file.name === '1') {
+              return {
+                fileUrl: file.fileUrl,
+                fileType: 3,
+                fileName: file.url,
+              }
+            }
+          })
+
+          let num = that.$refs.normalUpload.getFiles().map((file) => {
+            if (file.response && file.response.code === 200 && file.name !== '1') {
+              let arr = {
+                fileUrl: file.response.data,
+                fileType: 3,
+                fileName: file.name,
+              }
+              return arr
+            }
+          })
+
+          if (that.todauuplate || arr || num) {
+            values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num, ...arr1, ...num1]
+          }
           values.bankCardList = _bankChoiceResult.values.bank || []
           //values.nativePlace = '江苏徐州'
           if (values.entryDate) {
@@ -1021,6 +1130,9 @@ export default {
       this.form.resetFields()
       this.fileList = []
       this.fileListSeal = []
+      this.todauuplate = []
+      this.certificateList = []
+      this.specialList = []
       this.previewImage = ''
       this.previewCancelSeal = ''
       this.photoUrls = ''
