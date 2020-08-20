@@ -84,6 +84,17 @@ export function getUploadPath () {
   return system.baseURL + '/rDFileUpload/uploadFile'
 }
 
+//删除上传文件
+export function blueprintFileDelete (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/rDFileUpload/deleteFile',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
 
 export function blueprintFileAdd (parameter) {
   return axios({
@@ -129,6 +140,7 @@ export function blueprintFilePageList (parameter) {
     params: parameter
   })
 }
+
 
 
 //---------------------图纸管理 END-----------------------

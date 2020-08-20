@@ -140,7 +140,7 @@
   </div>
 </template>
 <script>
-import { blueprintFileDetail, blueprintFileAddOrUpdate, getUploadPath } from '@/api/researchManagement'
+import { blueprintFileDetail, blueprintFileAddOrUpdate, getUploadPath ,blueprintFileDelete} from '@/api/researchManagement'
 import moment from 'moment'
 import ImgView from '@/components/CustomerList/ImgView'
 let uuid = () => Math.random().toString(32).slice(-10)
@@ -286,16 +286,26 @@ export default {
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
     },
-    handleChange(info) {
+    handleChange({file,fileList}) {
       console.log(arguments)
-      let fileList = [...info.fileList].slice(-1)
+      let that = this
+      fileList = [...fileList].slice(-1)
       fileList = fileList.map((file) => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
         }
         return file
       })
-      this.fileList = fileList
+      that.fileList = fileList
+
+      if(file && file.status === "removed" && file.url){
+        blueprintFileDelete(`url=${file.url}`).then(res =>{
+          console.log(res)
+          if(res && +res.code === 200){
+            that.form.setFieldsValue({pictureNum:undefined})
+          }
+        })
+      }
     },
     formatHTML(htmlStr) {
       if (typeof htmlStr !== 'string') {
