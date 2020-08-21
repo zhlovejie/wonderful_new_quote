@@ -542,12 +542,14 @@
                   <a :href="item.contractUrl">{{item.contractName}}</a>
                 </td>
                 <td>
-                  <Mdeol
-                    ref="mdeol"
-                    @getmsg="getChildMsg"
-                    :msg="item.id"
-                    :name="item.contractName"
-                  />
+                  <template v-if="isEdit|| isRuzhi">
+                    <Mdeol
+                      ref="mdeol"
+                      @getmsg="getChildMsg"
+                      :msg="item.id"
+                      :name="item.contractName"
+                    />
+                  </template>
                 </td>
               </tr>
             </table>
@@ -561,8 +563,10 @@
                 <td>{{item.templateName}}</td>
                 <td>
                   <a type="primary" @click="doAction(item.fileUrl)">查看</a>
-                  <a-divider type="vertical" />
-                  <a type="primary" @click="deletes(index)">删除</a>
+                  <template v-if="isEdit|| isRuzhi">
+                    <a-divider type="vertical" />
+                    <a type="primary" @click="deletes(index)">删除</a>
+                  </template>
                 </td>
               </tr>
             </table>
@@ -570,9 +574,9 @@
           </a-tab-pane>
           <a-tab-pane key="4" tab="证件信息">
             <h1>普通证件</h1>
-            <UploadP ref="normalCard" :msgId="certificateList" />
+            <UploadP ref="normalCard" :msgId="certificateList" :name="type" />
             <h1>专业证件</h1>
-            <UploadZ ref="normalUpload" :msgId="specialList" />
+            <UploadZ ref="normalUpload" :msgId="specialList" :name="type" />
           </a-tab-pane>
         </a-tabs>
       </a-form>
@@ -679,6 +683,7 @@ export default {
     isRuzhi() {
       return this.type === 'ruzhi'
     },
+
     modalTitle() {
       return this.type === 'view' ? '查看' : '入职'
     },
@@ -712,15 +717,18 @@ export default {
       if (that.todauuplate.length == 0) {
         that.todauuplate.push(data)
       } else {
-        that.todauuplate.map((item, i) => {
-          if (data.templateName == item.templateName) {
-            that.todauuplate.splice(i, 1)
-            that.todauuplate.push(data)
-          } else {
-            that.todauuplate.push(data)
-          }
-        })
+        that.todauuplate.filter((item) => data.templateName !== item.templateName)
+        that.todauuplate.push(data)
       }
+
+      // that.todauuplate.map((item, i) => {
+      //   if (data.templateName == item.templateName) {
+      //     that.todauuplate.splice(i, 1)
+      //     that.todauuplate.push(data)
+      //   } else {
+      //     that.todauuplate.push(data)
+      //   }
+      // })
 
       console.log(that.todauuplate)
     },
@@ -1013,50 +1021,84 @@ export default {
           if (_bankChoiceResult.err) {
             return
           }
-          let arr1 = that.$refs.normalCard.getFiles().map((file) => {
-            if (file.name === '1') {
-              return {
-                fileUrl: file.fileUrl,
-                fileType: 2,
-                fileName: file.url,
+          if (this.type === 'edit') {
+            let arr1 = that.$refs.normalCard.getFiles().map((file) => {
+              if (file.name === '1') {
+                return {
+                  fileUrl: file.url,
+                  fileType: 2,
+                  fileName: file.fileName,
+                }
               }
-            }
-          })
-          let arr = that.$refs.normalCard.getFiles().map((file) => {
-            if (file.response && file.response.code === 200 && file.name !== '1') {
-              let arr = {
-                fileUrl: file.response.data,
-                fileType: 2,
-                fileName: file.name,
+            })
+            arr1 = arr1.filter((item) => item)
+            console.log(arr1)
+            let arr = that.$refs.normalCard.getFiles().map((file) => {
+              if (file.response && file.response.code === 200 && file.name !== '1') {
+                let arr = {
+                  fileUrl: file.response.data,
+                  fileType: 2,
+                  fileName: file.name,
+                }
+                return arr
               }
-              return arr
-            }
-          })
-
-          let num1 = that.$refs.normalUpload.getFiles().map((file) => {
-            if (file.name === '1') {
-              return {
-                fileUrl: file.fileUrl,
-                fileType: 3,
-                fileName: file.url,
+            })
+            arr = arr.filter((item) => item)
+            console.log(arr)
+            let num1 = that.$refs.normalUpload.getFiles().map((file) => {
+              if (file.name === '1') {
+                return {
+                  fileUrl: file.url,
+                  fileType: 3,
+                  fileName: file.fileName,
+                }
               }
-            }
-          })
-
-          let num = that.$refs.normalUpload.getFiles().map((file) => {
-            if (file.response && file.response.code === 200 && file.name !== '1') {
-              let arr = {
-                fileUrl: file.response.data,
-                fileType: 3,
-                fileName: file.name,
+            })
+            num1 = num1.filter((item) => item)
+            console.log(num1)
+            let num = that.$refs.normalUpload.getFiles().map((file) => {
+              if (file.response && file.response.code === 200 && file.name !== '1') {
+                let arr = {
+                  fileUrl: file.response.data,
+                  fileType: 3,
+                  fileName: file.name,
+                }
+                return arr
               }
-              return arr
+            })
+            num = num.filter((item) => item)
+            console.log(num)
+            if (that.todauuplate || arr || num) {
+              values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num, ...arr1, ...num1]
             }
-          })
-
-          if (that.todauuplate || arr || num) {
-            values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num, ...arr1, ...num1]
           }
+          if (this.type === 'ruzhi') {
+            let arr = that.$refs.normalCard.getFiles().map((file) => {
+              if (file.response && file.response.code === 200) {
+                let arr = {
+                  fileUrl: file.response.data,
+                  fileType: 2,
+                  fileName: file.name,
+                }
+                return arr
+              }
+            })
+            let num = that.$refs.normalUpload.getFiles().map((file) => {
+              if (file.response && file.response.code === 200) {
+                let arr = {
+                  fileUrl: file.response.data,
+                  fileType: 3,
+                  fileName: file.name,
+                }
+                return arr
+              }
+            })
+
+            if (that.todauuplate || arr || num) {
+              values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num]
+            }
+          }
+
           values.bankCardList = _bankChoiceResult.values.bank || []
           //values.nativePlace = '江苏徐州'
           if (values.entryDate) {
@@ -1128,6 +1170,8 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
+      // this.$refs.normalCard.getFilesurl()
+      // this.$refs.normalUpload.getFilesurl()
       this.fileList = []
       this.fileListSeal = []
       this.todauuplate = []

@@ -1,20 +1,34 @@
 <template>
   <div class="clearfix">
-    <a-upload
-      :action="uploadUrl"
-      list-type="picture-card"
-      :file-list="fileList"
-      @preview="handlePreview"
-      @change="handleChange"
-    >
-      <div v-if="fileList.length < 8">
-        <a-icon type="plus" />
-        <div class="ant-upload-text">证件</div>
-      </div>
-    </a-upload>
-    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-      <img alt="example" style="width: 100%" :src="previewImage" />
-    </a-modal>
+    <template v-if="this.typeNameId==='view'">
+      <a-upload
+        list-type="picture-card"
+        :file-list="fileList"
+        @preview="handlePreview"
+        @change="handleChange"
+        :disabled="true"
+      ></a-upload>
+      <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+        <img alt="example" style="width: 100%" :src="previewImage" />
+      </a-modal>
+    </template>
+    <template v-else>
+      <a-upload
+        :action="uploadUrl"
+        list-type="picture-card"
+        :file-list="fileList"
+        @preview="handlePreview"
+        @change="handleChange"
+      >
+        <div v-if="fileList.length < 8">
+          <a-icon type="plus" />
+          <div class="ant-upload-text">证件</div>
+        </div>
+      </a-upload>
+      <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+        <img alt="example" style="width: 100%" :src="previewImage" />
+      </a-modal>
+    </template>
   </div>
 </template>
 <script>
@@ -37,10 +51,25 @@ export default {
       tempName: this.name,
       previewVisible: false,
       previewImage: '',
-      fileList: this.msgId,
+      fileList: [],
+      fileUrl: [],
+      typeNameId: '',
     }
   },
   props: ['msgId', 'name'],
+  watch: {
+    msgId: function (val, oldVal) {
+      this.fileList = val || []
+    },
+
+    name: function (val, oldVal) {
+      this.typeNameId = val || ''
+    },
+  },
+  created() {
+    this.fileList = this.msgId
+    this.typeNameId = this.name
+  },
   methods: {
     handleCancel() {
       this.previewVisible = false
