@@ -548,6 +548,7 @@
                       @getmsg="getChildMsg"
                       :msg="item.id"
                       :name="item.contractName"
+                      :fileName="fileUrlType"
                     />
                   </template>
                 </td>
@@ -664,6 +665,7 @@ export default {
       spinning: false,
       department: {},
       arrNum: [],
+      fileUrlType: [],
       stationInfoRequire: {
         email: false,
         mobile: false,
@@ -712,14 +714,17 @@ export default {
     },
     // 模板数据接收
     getChildMsg(data) {
-      console.log('接受到子组件传递过来的数据为：', data)
       let that = this
-      debugger
       if (that.todauuplate.length == 0) {
         that.todauuplate.push(data)
       } else {
-        that.todauuplate.filter((item) => data.templateName !== item.templateName)
-        that.todauuplate.push(data)
+        let arr = that.todauuplate.some((item) => data.templateName === item.templateName)
+        console.log(arr)
+        if (!arr) {
+          that.todauuplate.push(data)
+        } else {
+          that.$message.error('不能选择同一个模板')
+        }
       }
 
       // that.todauuplate.map((item, i) => {
@@ -1126,6 +1131,10 @@ export default {
           console.log(values)
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit') {
+            if (that.todauuplate.length !== that.todayList.length) {
+              that.$message.error('请上传所有模板')
+              return
+            }
             let __api__ = isDoEntryBefore ? reserveAddOrUpdate : reserveUpdateEntity
             that.spinning = true
             __api__(values)
@@ -1152,6 +1161,10 @@ export default {
               that.$message.info('该人员已经办理入职了')
               return
             }
+            if (that.todauuplate.length !== that.todayList.length) {
+              that.$message.error('请上传所有模板')
+              return
+            }
             that.spinning = true
             reserveDoEntry(values)
               .then((res) => {
@@ -1171,8 +1184,7 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
-      // this.$refs.normalCard.getFilesurl()
-      // this.$refs.normalUpload.getFilesurl()
+      this.fileUrlType = []
       this.fileList = []
       this.fileListSeal = []
       this.todauuplate = []

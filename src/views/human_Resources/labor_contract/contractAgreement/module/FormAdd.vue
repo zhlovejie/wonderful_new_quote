@@ -51,6 +51,8 @@
                 <a-upload
                   v-decorator="['contractUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
                   name="file"
+                  :fileList="fileList"
+                  @change="handleChange"
                   :action="uploadUrl"
                 >
                   <a-button style="width:300px;">
@@ -162,11 +164,10 @@ export default {
             } else if (that.type === 'edit-salary') {
               values.contractUrl = values.contractUrl.fileList[0].response.data
             }
-
             contractAgreement_Add(values)
               .then((res) => {
                 that.spinning = false
-                that.fileList = []
+                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
@@ -184,11 +185,22 @@ export default {
     },
     //上传
     normFile(e) {
+      debugger
       console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e
       }
       return e && e.fileList
+    },
+    handleChange(info) {
+      let fileList = [...info.fileList]
+      fileList = fileList.map((file) => {
+        if (file.response && file.response.code === 200) {
+          file.url = file.response.data
+        }
+        return file
+      })
+      this.fileList = fileList
     },
     handleCancel() {
       this.fileList = []

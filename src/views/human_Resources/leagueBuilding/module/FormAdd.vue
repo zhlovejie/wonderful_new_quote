@@ -308,6 +308,8 @@
               <a-form-item v-if="type==='add'||type==='edit-salary'">
                 <a-upload
                   v-decorator="['planUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                  :fileList="fileListl"
+                  @change="handleChange1"
                   name="file"
                   :action="uploadUrl"
                 >
@@ -389,6 +391,7 @@ export default {
       fileList: [],
       previewVisible: false,
       previewImage: '',
+      fileListl: [],
     }
   },
   computed: {
@@ -536,6 +539,16 @@ export default {
     handleChange({ fileList }) {
       this.fileList = fileList
     },
+    handleChange1(info) {
+      let fileList = [...info.fileList]
+      fileList = fileList.map((file) => {
+        if (file.response && file.response.code === 200) {
+          file.url = file.response.data
+        }
+        return file
+      })
+      this.fileListl = fileList
+    },
 
     //上传
     normFile(e) {
@@ -656,6 +669,7 @@ export default {
       // }
     },
     handleCancel() {
+      this.fileListl = []
       this.form.resetFields() // 清空表
       this.visible = false
     },

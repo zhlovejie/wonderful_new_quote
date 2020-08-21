@@ -15,11 +15,20 @@ export default {
       tempName: this.name,
     }
   },
-  props: ['msg', 'name'],
+  props: ['msg', 'name', 'fileName'],
+  watch: {
+    fileName: function (val, oldVal) {
+      this.fileList = val || []
+    },
+  },
+  created() {
+    this.fileList = this.fileName
+  },
   methods: {
     // query(key) {
     //   console.log(key)
     // },
+
     handleChange(info) {
       console.log(arguments)
       let that = this
