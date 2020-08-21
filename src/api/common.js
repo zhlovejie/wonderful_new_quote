@@ -65,3 +65,12 @@ export function findApprovedNodeList (parameter) {
   })
 }
 
+export function customUpload(fileData){
+  return axios({
+    baseURL: system.baseURL,
+    url: api.uploadPath2,
+    method: 'post',
+    data:fileData
+  })
+}
+

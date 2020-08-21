@@ -52,6 +52,7 @@
             </a-modal>
           </div>
           <a-input type="hidden" v-decorator="['qualificationPicture', {rules: [{required: true,message: '请选择图片！'}]}]"/>
+          <a-input type="hidden" v-decorator="['zipQualificationPicture']"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -61,6 +62,7 @@
 <script>
 import { saveQualification, editQualification, getQualificationType } from '@/api/qualification'
 import { getUploadPath } from '@/api/manage'
+import { customUpload } from '@/api/common'
 
 export default {
   name: 'QualificationModal',
@@ -113,7 +115,8 @@ export default {
           id: record.id,
           qualificationName: record.qualificationName,
           qualificationType: record.qualificationType,
-          qualificationPicture: record.qualificationPicture
+          qualificationPicture: record.qualificationPicture,
+          zipQualificationPicture:record.zipQualificationPicture
         })
       })
       if (record.qualificationPicture != null && record.qualificationPicture.length > 0) {
@@ -187,6 +190,7 @@ export default {
       if (file != null && file.status === 'done') { // 状态有：uploading done error removed
         if (file.response.code === 200) { // 成功
           this.form.setFieldsValue({ qualificationPicture: file.response.data[0].url })
+          this.customUploadAction(file.originFileObj)
         }
       } else if (file.status === 'removed') { // 删除清空
         this.form.setFieldsValue({ qualificationPicture: '' })
@@ -198,6 +202,64 @@ export default {
     },
     handleCancel () {
       this.close()
+    },
+    async customUploadAction(file){//上传 压缩过的图片
+      let that = this
+      let compressFile = await that.compressPictures(file)
+      const formData = new FormData();
+      formData.append('file',compressFile)
+      let url = await customUpload(formData).then(res =>{
+        console.log(res)
+        return res.data
+      })
+      that.form.setFieldsValue({ zipQualificationPicture: url })
+      return url
+    },
+    compressPictures(file) {
+      return new Promise((resolve, reject) => {
+        let reader = new FileReader(),
+          img = new Image()
+        reader.readAsDataURL(file)
+        reader.onload = e => {
+          img.src = e.target.result
+        }
+        img.onload = function() {
+          let canvas = document.createElement('canvas')
+          let context = canvas.getContext('2d')
+          let originWidth = this.width
+          let originHeight = this.height
+          let maxWidth = 800,
+            maxHeight = 800
+          let targetWidth = originWidth,
+            targetHeight = originHeight
+          if (originWidth > maxWidth || originHeight > maxHeight) {
+            if (originWidth / originHeight > maxWidth / maxHeight) {
+              targetWidth = maxWidth
+              targetHeight = Math.round(maxWidth * (originHeight / originWidth))
+            } else {
+              targetHeight = maxHeight
+              targetWidth = Math.round(maxHeight * (originWidth / originHeight))
+            }
+          }
+          canvas.width = targetWidth
+          canvas.height = targetHeight
+          context.clearRect(0, 0, targetWidth, targetHeight)
+          context.drawImage(img, 0, 0, targetWidth, targetHeight)
+          canvas.toBlob(
+            blob => {
+              let newFile = new File([blob], file.name, { type: file.type })
+              //由于缺少uid 导致 上传文件列表 渲染失败
+              newFile.uid = file.uid
+              resolve(newFile)
+            },
+            file.type,
+            0.75
+          )
+        }
+        img.onerror = function(err) {
+          reject(err)
+        }
+      })
     }
   }
 }

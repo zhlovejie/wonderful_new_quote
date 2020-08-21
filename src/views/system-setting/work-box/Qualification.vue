@@ -39,8 +39,8 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <span slot="qualificationPicture" slot-scope="text">
-            <img style="height: 70px;" :src="text" alt=""/>
+          <span slot="qualificationPicture" slot-scope="text,record">
+            <img style="height: 70px;" :src="record.zipQualificationPicture || record.qualificationPicture" alt=""/>
           </span>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('qualification:one')">

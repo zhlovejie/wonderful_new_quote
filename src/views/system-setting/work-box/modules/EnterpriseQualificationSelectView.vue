@@ -13,7 +13,7 @@
             {{item.qualificationName}}
           </td>
           <td>
-            <img :src="item.qualificationPicture" style="height:70px;" alt="资质图片">
+            <img :src="item.zipQualificationPicture || item.qualificationPicture" style="height:70px;" alt="资质图片">
           </td>
           <td>
             <a href="javascript:void(0);" @click="doAction('del',item.key)">删除</a>

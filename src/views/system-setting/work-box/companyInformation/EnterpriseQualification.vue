@@ -71,7 +71,8 @@ export default {
           return {
             id:item.id,
             qualificationName:item.qualificationName,
-            qualificationPicture:item.qualificationPicture
+            //qualificationPicture:item.qualificationPicture,
+            zipQualificationPicture:item.zipQualificationPicture || item.qualificationPicture
           }
         })
         that.spinning = true
