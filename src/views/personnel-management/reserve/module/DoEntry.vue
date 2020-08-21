@@ -592,7 +592,7 @@ import {
   getStationList, //获取所有岗位
 } from '@/api/systemSetting'
 import { comManageSettingsGetSettingsByStationId } from '@/api/communicationManagement'
-import { postAllocation_Version } from '@/api/humanResources'
+import { Personnel_Reserve } from '@/api/humanResources'
 import { getReserveCondition } from '@/api/reserveApi'
 
 import moment from 'moment'
@@ -701,9 +701,10 @@ export default {
     callback(key) {
       let that = this
       if (key === '3') {
-        postAllocation_Version({
+        Personnel_Reserve({
           departmentId: that.department.departmentId,
           stationId: that.department.stationId,
+          insureType: 1,
         }).then((res) => {
           that.todayList = res.data.records
         })

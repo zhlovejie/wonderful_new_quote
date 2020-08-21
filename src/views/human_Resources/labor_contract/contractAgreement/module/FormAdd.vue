@@ -152,10 +152,14 @@ export default {
         that.form.validateFields((err, values) => {
           if (!err) {
             if (that.type !== 'add') {
-              //   formData.append('id', this.record.id)
               values.id = this.record.id
             }
             if (that.type === 'add') {
+              values.contractUrl = values.contractUrl.fileList[0].response.data
+            }
+            if (typeof values.contractUrl === 'string' && that.type === 'edit-salary') {
+              values.contractUrl = values.contractUrl
+            } else {
               values.contractUrl = values.contractUrl.fileList[0].response.data
             }
 

@@ -350,6 +350,7 @@ import moment from 'moment'
 import XdocView from './XdocView'
 import Approval from './Approval'
 import { TreeSelect } from 'ant-design-vue'
+import { settings } from 'accounting'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
 function getBase64(file) {
@@ -625,6 +626,12 @@ export default {
           if (that.type === 'add') {
             values.planUrl = values.planUrl.fileList[0].response.data
           }
+          if (typeof values.planUrl === 'string' && that.type === 'edit-salary') {
+            values.planUrl = values.planUrl
+          } else {
+            values.planUrl = values.planUrl.fileList[0].response.data
+          }
+
           if (that.type === 'edit-salary') {
             values.id = that.record.id
           }

@@ -246,6 +246,15 @@ export function postAllocation_Version(parameter) {
     params: parameter
   })
 }
+//人员储备模板接口
+export function Personnel_Reserve(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/listContractFormMapByCondition',
+    method: 'get',
+    params: parameter
+  })
+}
 
 /** 岗位配置新增接口 */
 export function postAllocation_Add(parameter) {
