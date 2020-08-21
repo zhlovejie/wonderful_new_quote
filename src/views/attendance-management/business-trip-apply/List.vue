@@ -342,7 +342,8 @@ export default {
         if (actionType === 'add') {
           attenceTravelUserCheckUserTravel({ userId: that.userInfo.id }).then(res => {
             if (res.data) {
-              that.$message.info('您还有未完结的出差申请，完结后方可继续申请流程')
+              //that.$message.info('您还有未完结的出差申请，完结后方可继续申请流程')
+              that.$message.info(res.msg)
               return
             }
             that.$warning({
