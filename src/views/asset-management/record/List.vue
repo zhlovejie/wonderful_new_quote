@@ -45,15 +45,14 @@
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
-      <!-- <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <!-- <template v-if="$auth('attenceTravelApply:approval')"> -->
+        <template v-if="$auth('asset-management-record:approval')">
         <a-tab-pane tab="待审批" key="1" />
         <a-tab-pane tab="已审批" key="2" />
-        <!-- </template> -->
+        </template>
       </a-tabs>
       <a-table
         :columns="columns"
@@ -74,15 +73,32 @@
           >{{ {1:'待审批',2:'通过',3:'不通过',4:'已撤回',5:'待完结',6:'已完结'}[text] || '未知' }}</a>
         </div>
         <div slot="certificates" slot-scope="text, record, index">
-          <a type="primary" @click="doAction('view_file',record)">查看</a>
+          <a type="primary" @click="doAction('view_photo',record)">查看</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
+
           <template v-if="+activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="是否要执行删除操作？" @confirm="doAction('del',record)">
-              <a type="primary">删除</a>
-            </a-popconfirm>
+            <template v-if="+record.status === 1 && +record.createdId === +userInfo.id">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="+record.status === 2">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('upload',record)">上传凭证</a>
+            </template>
+            <template v-if="+record.status === 2 && $auth('asset-management-record:fix')">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('fix',record)">填写维修方案</a>
+            </template>
+            <template v-if="+record.status === 5">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认执行完结操作吗?" @confirm="() => doAction('over',record)">
+                <a type="primary" href="javascript:;">完结</a>
+              </a-popconfirm>
+            </template>
           </template>
 
           <template v-if="+activeKey === 1">
@@ -91,14 +107,13 @@
 
           <template v-if="+activeKey === 2">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('upload',record)">上传凭证</a>
           </template>
         </div>
       </a-table>
       <ApproveInfo ref="approveInfoCard" />
       <FixForm ref="fixForm" @finish="searchAction()" />
-      <UploadFileModel ref="uploadFileModel"/>
+      <UploadFileModel ref="uploadFileModel" @finish="searchAction()" />
+      <ImgViewList ref="imgViewList" title="预览凭证"/>
     </div>
   </div>
 </template>
@@ -111,11 +126,16 @@ import {
   oaAssertsInfoGiveUpAssert,
   oaAssertsInfoRemove,
   oaAssertsInfoStockInAssert,
+  oaAssertsInfoRecoveConcludeRevocation,
+  oaAssertsInfoRecoveHandleRevocation,
+  oaAssertsInfoRecoveRevocation,
+  oaAssertsInfoRecoveDetail
 } from '@/api/assetManagement'
 import { getDictionaryList } from '@/api/workBox'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import FixForm from '../management/FixForm' 
 import UploadFileModel from './UploadFileModel'
+import ImgViewList from '@/components/CustomerList/ImgViewList'
 const columns = [
   {
     align: 'center',
@@ -190,7 +210,8 @@ export default {
   components: {
     ApproveInfo,
     FixForm,
-    UploadFileModel
+    UploadFileModel,
+    ImgViewList
   },
   data() {
     return {
@@ -203,6 +224,7 @@ export default {
       searchParam: {},
       loading: false,
       activeKey: 0,
+      userInfo: this.$store.getters.userInfo,
     }
   },
   computed: {},
@@ -253,22 +275,38 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      if (['view','edit','approval'].includes(type)) {
+      if(['withdraw'/*撤回*/,'over'/*完结*/].includes(type)){ 
+        let api = {
+          'withdraw':oaAssertsInfoRecoveRevocation,
+          'over':oaAssertsInfoRecoveConcludeRevocation
+        }
+        api[type]({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          if(+res.code === 200){
+            that.searchAction()
+          }
+        }).catch(err => that.$message.info(err))
+        return
+      }
+      if (['view','edit','approval','fix'].includes(type)) { //查看，编辑，审批，填写维修方案
         that.$refs.fixForm.query(type, record)
         return
       }
-      if (type === 'del') {
-        oaAssertsInfoRemove({ assertId: record.id }).then((res) => {
-          console.log(res)
-          that.$message.info(res.msg)
-          if (res.code === 200) {
-            that.searchAction()
-          }
-        })
+      if(type === 'upload'){ //上传凭证
+        that.$refs.uploadFileModel.query(type,record)
         return
       }
-      if(type === 'upload'){
-        that.$refs.uploadFileModel.query(type,record)
+
+      if(type === 'view_photo'){ //查看凭证
+        oaAssertsInfoRecoveDetail({id:record.id}).then(res =>{
+          if(res && res.data && res.data.fileUrl){
+            let imgList = res.data.fileUrl.split(',').map(url => decodeURIComponent(url))
+            that.$refs.imgViewList.show(imgList)
+          }else{
+            that.$message.info('未上传凭证')
+          }
+        })
+        return 
       }
     },
     tabChange(tagKey) {

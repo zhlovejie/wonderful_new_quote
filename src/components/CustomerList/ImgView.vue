@@ -5,7 +5,7 @@
     :footer="null" 
     @cancel="() => previewVisible = false"
   >
-    <img alt="图片" style="width: 100%;max-width:750px" :src="imgUrl" />
+    <img alt="图片" style="width: auto;max-width:750px" :src="imgUrl" />
   </a-modal>
 </template>
 

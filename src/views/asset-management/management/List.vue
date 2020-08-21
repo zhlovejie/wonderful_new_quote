@@ -82,10 +82,10 @@
 
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('fix',record)">报修</a>
-            <a-divider type="vertical" />
+            <!-- <a-divider type="vertical" />
             <a-popconfirm title="是否要执行报废操作？" @confirm="doAction('over',record)">
               <a type="primary" >报废</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('get-record',record)">领取记录</a>
           </template>
@@ -94,10 +94,10 @@
             <a-popconfirm title="是否要执行验收操作？" @confirm="doAction('accept',record)">
               <a type="primary" >确认验收</a>
             </a-popconfirm>
-            <a-divider type="vertical" />
+            <!-- <a-divider type="vertical" />
             <a-popconfirm title="是否要执行报废操作？" @confirm="doAction('over',record)">
               <a type="primary" >报废</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('get-record',record)">领取记录</a>
           </template>
@@ -276,8 +276,8 @@ export default {
         return
       }
       if(type === 'return'){
-        let {id,assertsInfoid} = record
-        oaAssertsInfoAssertsReturn({id,assertsId:assertsInfoid}).then(res =>{
+        let {id,cliamId} = record
+        oaAssertsInfoAssertsReturn({id,assertsId:cliamId}).then(res =>{
           console.log(res)
           that.$message.info(res.msg)
           if(res.code === 200){
@@ -296,14 +296,15 @@ export default {
       }
       
       if(['accept','over','del','put'].includes(type)){
+        debugger
         let api = {
           'accept':oaAssertsInfoConfirmRecieve,
           'over':oaAssertsInfoGiveUpAssert,
           'del':oaAssertsInfoRemove,
           'put':oaAssertsInfoStockInAssert
         }
-        api[type](`assertId=${record.id}`).then(res =>{
-          console.log(res)
+        api[type](`assertsId=${record.id}`).then(res =>{
+          //console.log(res)
           that.$message.info(res.msg)
           if(res.code === 200){
             that.searchAction()

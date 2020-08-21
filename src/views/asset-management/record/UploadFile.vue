@@ -13,7 +13,7 @@
       <div v-if="fileList.length < 3">
         <a-icon type="plus" />
         <div class="ant-upload-text">
-          上传
+          上传图片
         </div>
       </div>
     </a-upload>

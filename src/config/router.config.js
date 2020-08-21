@@ -2207,6 +2207,12 @@ export const asyncRouterMap = [
                 meta: {title: '维修申请记录',icon: 'setting',keepAlive: false,permission: ['permission'] },
               },
               {
+                path: '/human_Resources/asset-management/inventory-record-cycle',
+                name: 'asset-management-inventory-record-cycle',
+                component: () => import('@/views/asset-management/inventory-record-cycle/List'),
+                meta: {title: '资产盘点周期',icon: 'setting',keepAlive: false,permission: ['permission'] },
+              },
+              {
                 path: '/human_Resources/asset-management/inventory-record',
                 name: 'asset-management-inventory-record',
                 component: () => import('@/views/asset-management/inventory-record/List'),

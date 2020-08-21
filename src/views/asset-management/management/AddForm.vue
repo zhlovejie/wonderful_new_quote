@@ -148,20 +148,5 @@ export default {
 }
 </script>
 <style scoped>
-.wdf-custom-add-form-wrapper >>> .ant-form-item {
-  display: flex;
-  margin: 0;
-}
 
-.ant-form-item >>> .ant-form-item-label {
-  width: 100px;
-}
-.ant-form-item >>> .ant-form-item-control-wrapper {
-  flex: 1;
-}
-.custom-table-border th,
-.custom-table-border td {
-  padding: 5px 10px;
-  text-align: left;
-}
 </style>

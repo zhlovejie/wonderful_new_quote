@@ -27,7 +27,7 @@
           >
             <a-select-option :value="1">个人</a-select-option>
             <a-select-option :value="2">部门</a-select-option>
-            <a-select-option :value="3">资产库</a-select-option>
+            <!-- <a-select-option :value="3">资产库</a-select-option> -->
           </a-select>
         </a-form-item>
       </a-form>

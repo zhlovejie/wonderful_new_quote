@@ -212,3 +212,41 @@ export function oaAssertsInfoInventoryMissing (parameter) {
     params: parameter
   })
 }
+
+/*资产盘点时间段表*/
+
+export function oaAssertsInfoInventoryTimeList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory-time/inventoryTimeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oaAssertsInfoInventoryTimeDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory-time/inventoryTimeDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oaAssertsInfoInventoryTimeDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory-time/delInventoryTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oaAssertsInfoInventoryTimeAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaAssertsInfo/oa-asserts-inventory-time/addOrUpdate',
+    method: 'post',
+    data: parameter
+  })
+}

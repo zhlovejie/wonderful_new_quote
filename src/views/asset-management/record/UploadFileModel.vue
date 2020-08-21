@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="上传"
+    title="上传凭证"
     :width="550"
     :visible="visible"
     :destroyOnClose="true"
@@ -42,6 +42,7 @@ export default {
         console.log(res)
         that.$message.info(res.msg)
         if(res.code === 200){
+          that.$emit("finish")
           that.handleCancel()
         }
       }).catch(err =>{

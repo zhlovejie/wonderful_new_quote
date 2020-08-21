@@ -73,9 +73,9 @@
           {{ {1:'入库',2:'使用中',3:'报修中',4:'报废',5:'缺失'}[text] || '未知' }}
         </div>
         <div slot="status" slot-scope="text, record, index">
-          <template v-if="+text === 3">
+          <template v-if="+text === 2">
             <a-popconfirm title="是否要执行缺失操作？" @confirm="doAction('miss',record)">
-              <a type="primary" >缺失</a>
+              <a type="primary" >待盘点</a>
             </a-popconfirm>
           </template>
           <template v-else>
