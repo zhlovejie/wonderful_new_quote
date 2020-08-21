@@ -706,7 +706,7 @@ export default {
           stationId: that.department.stationId,
           insureType: 1,
         }).then((res) => {
-          that.todayList = res.data.records
+          that.todayList = res.data
         })
       }
     },

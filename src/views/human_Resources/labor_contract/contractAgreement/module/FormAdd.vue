@@ -159,14 +159,14 @@ export default {
             }
             if (typeof values.contractUrl === 'string' && that.type === 'edit-salary') {
               values.contractUrl = values.contractUrl
-            } else {
+            } else if (that.type === 'edit-salary') {
               values.contractUrl = values.contractUrl.fileList[0].response.data
             }
 
             contractAgreement_Add(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
+                that.fileList = []
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)

@@ -628,7 +628,7 @@ export default {
           }
           if (typeof values.planUrl === 'string' && that.type === 'edit-salary') {
             values.planUrl = values.planUrl
-          } else {
+          } else if (that.type === 'edit-salary') {
             values.planUrl = values.planUrl.fileList[0].response.data
           }
 
