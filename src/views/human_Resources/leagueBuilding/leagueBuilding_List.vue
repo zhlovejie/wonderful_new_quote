@@ -6,7 +6,6 @@
         placeholder="团建类别"
         v-model="queryParam.leagueType"
         :allowClear="true"
-        @change="department"
         style="width: 200px;margin-right:10px;"
       >
         <a-select-option :value="1">部门团建</a-select-option>
@@ -16,6 +15,7 @@
       <a-select
         style="width:200px;margin-right:10px;"
         v-model="queryParam.departmentId"
+        :allowClear="true"
         placeholder="选择部门"
       >
         <!-- <a-select-option :value="undefined">请选择部门</a-select-option> -->
@@ -130,7 +130,7 @@
             <a type="primary" @click="doAction('edit',record)">审核</a>
           </template>
 
-          <template v-if="activeKey === 2 && (record.status === 1 ||record.status ===3)">
+          <template v-if="activeKey === 2 ">
             <a type="primary" @click="doAction('view',record)">查看</a>
           </template>
         </div>
@@ -266,6 +266,7 @@ export default {
     init() {
       let that = this
       this.searchAction()
+      this.department()
     },
 
     // 删除
@@ -281,14 +282,10 @@ export default {
       })
     },
 
-    department(e) {
-      if (e === 1) {
-        getDevisionList().then((res) => {
-          this.departmentList = res.data
-        })
-      } else {
-        this.departmentList = {}
-      }
+    department() {
+      getDevisionList().then((res) => {
+        this.departmentList = res.data
+      })
     },
     getleagueTypeText(state) {
       let stateMap = {

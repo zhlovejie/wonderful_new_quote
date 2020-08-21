@@ -140,6 +140,8 @@ export default {
       record: {},
       todayList: [],
       planList: [],
+      todayListType: [],
+      planListType: [],
     }
   },
   computed: {
@@ -183,15 +185,39 @@ export default {
     contractChange(data) {
       let that = this
       let obj = {}
+      // debugger
       if (this.todayListName === 'todayList') {
-        obj[`todayList.${that.todayListId}.contractName`] = data.contractName
-        that.todayList[that.todayListId].contractId = data.id
-        that.todayList[that.todayListId].insureType = 1
+        if (that.todayListType.length == 0 && this.todayListName === 'todayList') {
+          that.todayListType.push(data)
+          obj[`todayList.${that.todayListId}.contractName`] = data.contractName
+          that.todayList[that.todayListId].contractId = data.id
+          that.todayList[that.todayListId].insureType = 1
+        } else {
+          let contractName = this.todayListType.some((item) => data.contractName === item.contractName)
+          if (!contractName) {
+            obj[`todayList.${that.todayListId}.contractName`] = data.contractName
+            that.todayList[that.todayListId].contractId = data.id
+            that.todayList[that.todayListId].insureType = 1
+          } else {
+            that.$message.error('不能选择同一个模板')
+          }
+        }
       } else {
-        // this.contractArr.push(contract2)
-        obj[`planList.${that.todayListId}.contractName`] = data.contractName
-        that.planList[that.todayListId].contractId = data.id
-        that.planList[that.todayListId].insureType = 2
+        if (that.planListType.length == 0 && this.todayListName === 'planList') {
+          that.planListType.push(data)
+          obj[`planList.${that.todayListId}.contractName`] = data.contractName
+          that.planList[that.todayListId].contractId = data.id
+          that.planList[that.todayListId].insureType = 2
+        } else {
+          let contractName = this.planListType.some((item) => data.contractName === item.contractName)
+          if (!contractName) {
+            obj[`planList.${that.todayListId}.contractName`] = data.contractName
+            that.planList[that.todayListId].contractId = data.id
+            that.planList[that.todayListId].insureType = 2
+          } else {
+            that.$message.error('不能选择同一个模板')
+          }
+        }
       }
       that.form.setFieldsValue(obj)
     },
@@ -336,6 +362,8 @@ export default {
       this.todayList = []
       this.planList = []
       this.fileList = []
+      this.todayListType = []
+      this.planListType = []
     },
   },
 }

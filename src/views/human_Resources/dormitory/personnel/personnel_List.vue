@@ -10,6 +10,7 @@
       <a-select
         style="width:200px; margin-right: 10px;"
         v-model="queryParam.deptId"
+        :allowClear="true"
         @change=" depChangeHandler"
         placeholder="请选择部门"
       >
