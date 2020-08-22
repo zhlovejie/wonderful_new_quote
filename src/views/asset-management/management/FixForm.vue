@@ -105,7 +105,8 @@
             <td colspan="5">
               <a-form-item>
                 <a-textarea
-                  v-if=" isFix "
+                  v-if=" isFix || !isDisabled "
+                  :disabled="!isFix"
                   style="width:100%;"
                   :rows="3"
                   v-decorator="['solutionPlan', { initialValue:detail.solutionPlan,rules: [{ required: isFix, message: '请输入维修方案' }] }]"

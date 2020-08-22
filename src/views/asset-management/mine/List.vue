@@ -186,11 +186,11 @@ export default {
     doAction(actionType, record) {
       let that = this
       if(actionType === 'fix'){
-        that.$refs.fixForm.query('add',record)
+        that.$refs.fixForm.query('add',Object.assign({},record,{id:record.assertsInfoid}))
         return
       }
       if(actionType === 'accept'){
-        oaAssertsInfoConfirmRecieve(`assertId=${record.id}`).then(res =>{
+        oaAssertsInfoConfirmRecieve(`assertsId=${record.assertsInfoid}`).then(res =>{
           console.log(res)
           that.$message.info(res.msg)
           if(res.code === 200){

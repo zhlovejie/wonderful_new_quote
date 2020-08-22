@@ -85,7 +85,7 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="+record.status === 2">
+            <template v-if="+record.status === 2 && $auth('asset-management-record:fix')">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('upload',record)">上传凭证</a>
             </template>
@@ -93,7 +93,7 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('fix',record)">填写维修方案</a>
             </template>
-            <template v-if="+record.status === 5">
+            <template v-if="+record.status === 5 && $auth('asset-management-record:over')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认执行完结操作吗?" @confirm="() => doAction('over',record)">
                 <a type="primary" href="javascript:;">完结</a>
