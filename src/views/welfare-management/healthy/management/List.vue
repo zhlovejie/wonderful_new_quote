@@ -74,7 +74,7 @@
           {{ {0:'无',1:'合格',2:'不合格'}[text] || '未知' }}
         </div>
         <div slot="checkupReport" slot-scope="text, record, index">
-          <a v-if="text" target="_blank" :href="text">查看</a>
+          <a v-if="text" target="_blank" :href="viewFormat(text)">查看</a>
           <span v-else>无</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -257,6 +257,20 @@ export default {
         option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       );
     },
+    viewFormat(_url){
+      let url = _url
+      let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
+      let isPdf = url => url.endsWith('.pdf')
+      let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
+      if(url){
+        if(isPdf(url) || isImage(url)){
+          return url
+        }else if(isWord){
+          return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+        }
+      }
+      return '#'
+    }
   },
 }
 </script>
