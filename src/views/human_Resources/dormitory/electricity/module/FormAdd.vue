@@ -135,11 +135,7 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
-      if (that.isView) {
-        that.form.resetFields() // 清空表
-        that.visible = false
-        return
-      } else if (that.type === 'add' || that.type === 'edit-salary') {
+      if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
             if (that.type !== 'add') {
@@ -156,8 +152,6 @@ export default {
               .catch((err) => (that.spinning = false))
           }
         })
-      } else if (that.isEditSalary) {
-        // that.updateUserBackCardSalary()
       } else {
         that.form.resetFields() // 清空表
         that.visible = false

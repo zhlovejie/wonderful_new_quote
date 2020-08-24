@@ -26,8 +26,9 @@
                   show-time
                   placeholder="日期"
                   format="YYYY-MM"
-                  style="width: 200px ;margin-right:10px;"
-                  v-decorator="['surfaceDate', {rules: [{required: true,message: '输入本月度数!',},
+                  disabled
+                  style="width: 300px;"
+                  v-decorator="['surfaceDate', {initialValue:moment(),rules: [{required: true,message: '输入本月度数!',},
              ]}]"
                 />
               </a-form-item>
@@ -40,7 +41,7 @@
                 <a-select
                   placeholder="房间号"
                   :allowClear="true"
-                  style="width: 200px "
+                  style="width:300px;"
                   v-decorator="['roomId', {rules: [{required: true,message: '输入本月度数!',},
              ]}]"
                 >

@@ -1,17 +1,6 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <!-- <a-select
-        style="width:200px; margin-right: 10px;"
-        v-model="queryParam.roomCode"
-        placeholder="请选择房间号"
-      >
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.roomCode }}</a-select-option>
-      </a-select>-->
       <a-input
         placeholder="房间号"
         v-model="queryParam.roomCode"
@@ -116,6 +105,12 @@ export default {
           title: '空床位',
           dataIndex: 'emptyBed',
           key: 'emptyBed',
+        },
+        {
+          align: 'center',
+          title: '电表号',
+          dataIndex: 'meterCode',
+          key: 'meterCode',
         },
         {
           align: 'center',

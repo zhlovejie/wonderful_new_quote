@@ -23,7 +23,7 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:300px; margin-right: 10px;"
+                  style="width:300px;"
                   v-decorator="['deptId', { rules: [{ required: true, message: '请选择部门' }] }]"
                   @change="depChangeHandler"
                   placeholder="请选择部门"
@@ -173,7 +173,7 @@ export default {
       return `${txt}安全卫生考核`
     },
     isView() {
-      //查看
+      //新增
       return this.type === 'add'
     },
     isEditSalary() {

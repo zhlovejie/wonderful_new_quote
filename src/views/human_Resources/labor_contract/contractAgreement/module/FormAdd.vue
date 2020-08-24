@@ -98,8 +98,6 @@ export default {
       if (this.isView) {
         return '新增合同协议'
       }
-      //   let txt = this.isView ? '新增' : '修改'
-      //   return `${txt}合同协议`
     },
     isView() {
       //新增

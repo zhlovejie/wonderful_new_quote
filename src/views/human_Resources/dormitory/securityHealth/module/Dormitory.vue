@@ -167,6 +167,7 @@
               <a-form-item>
                 <a-textarea
                   placeholder="请输入备注"
+                  :disabled="isDisabled"
                   :rows="3"
                   v-decorator="['remarks', { rules: [{ required: false, message: '请输入备注' }] }]"
                 />
@@ -252,20 +253,29 @@ export default {
     handleOk() {
       console.log('你这是要提交')
       let that = this
-      that.form.validateFields((err, values) => {
-        if (!err) {
-          values.id = this.record.id
-          securityHealth_List_update(values).then((res) => {
-            that.spinning = false
-            console.log(res)
-            that.form.resetFields() // 清空表
-            this.haveProcess = []
-            that.visible = false
-            that.$message.info(res.msg)
-            that.$emit('finish')
-          })
-        }
-      })
+      if (that.isView) {
+        that.form.resetFields() // 清空表
+        that.visible = false
+        return
+      } else if (that.isEditSalary || that.handles) {
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            values.id = this.record.id
+            securityHealth_List_update(values).then((res) => {
+              that.spinning = false
+              console.log(res)
+              that.form.resetFields() // 清空表
+              this.haveProcess = []
+              that.visible = false
+              that.$message.info(res.msg)
+              that.$emit('finish')
+            })
+          }
+        })
+      } else {
+        that.form.resetFields() // 清空表
+        that.visible = false
+      }
     },
 
     depChangeHandler(dep_id) {
