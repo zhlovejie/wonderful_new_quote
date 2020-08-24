@@ -22,7 +22,7 @@
             <td>日期</td>
             <td colspan="3">
               <a-form-item>
-                <a-date-picker
+                <a-month-picker
                   show-time
                   placeholder="日期"
                   format="YYYY-MM"
@@ -115,7 +115,7 @@ export default {
 
       that.form.validateFields((err, values) => {
         if (!err) {
-          values.surfaceDate = moment(values.surfaceDate).format('YYYY-MM-DD HH:mm:ss')
+          values.surfaceDate = moment(values.surfaceDate).format('YYYY-MM')
           room_Add(values)
             .then((res) => {
               that.spinning = false
