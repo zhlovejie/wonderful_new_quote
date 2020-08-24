@@ -20,7 +20,7 @@
         <a-card class="fl" v-for="item in recordDetails">
           <div>
             <span class="title">{{item.roomCode}}</span>
-            <template v-if="item.emptyBed!=='0'">
+            <template v-if="item.emptyBed!== 0 ">
               <span style="  margin-left:10px; color:#52c41a;">有空余</span>
             </template>
             <template v-else>

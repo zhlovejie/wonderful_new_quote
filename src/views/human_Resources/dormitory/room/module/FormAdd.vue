@@ -26,7 +26,6 @@
                   show-time
                   placeholder="日期"
                   format="YYYY-MM"
-                  disabled
                   style="width: 300px;"
                   v-decorator="['surfaceDate', {initialValue:moment(),rules: [{required: true,message: '输入本月度数!',},
              ]}]"

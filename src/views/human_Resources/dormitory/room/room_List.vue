@@ -16,10 +16,10 @@
       </a-select>
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
       <a-button style="margin-left:10px;" type="primary" @click="download()">下载</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('room:cost')">
         <a-button style="float:right; margin-left:10px;" type="primary" @click="configures()">费用设置</a-button>
       </template>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('room:add')">
         <a-button style="float:right  " type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
     </div>
@@ -31,6 +31,7 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
+          v-if="$auth('room:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>

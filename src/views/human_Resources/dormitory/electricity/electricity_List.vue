@@ -14,8 +14,10 @@
         style="width: 200px;margin-right:10px;"
       />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <a-button style="margin-left:10px;" type="primary" @click="Occupancys()">入住情况</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('electricity:Check')">
+        <a-button style="margin-left:10px;" type="primary" @click="Occupancys()">入住情况</a-button>
+      </template>
+      <template v-if="$auth('electricity:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
     </div>
@@ -27,13 +29,14 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
+          v-if="$auth('electricity:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="+record.createdId  === +userInfo.id">
-              <a @click="handle('edit-salary',record)">修改</a>
+            <template v-if="$auth('electricity:add')&&+record.createdId">
+              <a @click=" handle('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否删除"

@@ -5,6 +5,7 @@
         style="width:200px; margin-right: 10px;"
         v-model="queryParam.roomCode"
         placeholder="房间号"
+        :allowClear="true"
       >
         <a-select-option
           v-for="item in departmentList"
@@ -18,12 +19,12 @@
         :allowClear="true"
         style="width: 200px;margin-right:10px;"
       >
-        <a-select-option :value="0">待审批</a-select-option>
+        <a-select-option :value="0">待处理</a-select-option>
         <a-select-option :value="1">完结</a-select-option>
       </a-select>
       <a-range-picker @change="dateChange" style="width:400px ;margin-right:10px;" />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('securityHealth:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
     </div>
@@ -35,6 +36,7 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
+          v-if="$auth('securityHealth:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -51,13 +53,13 @@
             <template>
               <a @click="inspect('see' ,record)">查看</a>
             </template>
-            <template v-if="+record.status===1">
+            <template v-if="$auth('securityHealth:add')+record.status===1">
               <a-divider type="vertical" />
               <a @click="inspect('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
               <a @click="download(record)">下载</a>
             </template>
-            <template v-if="+record.status===0">
+            <template v-if="$auth('securityHealth:handle')+record.status===0">
               <a-divider type="vertical" />
               <a @click="inspect('handle',record)">处理</a>
             </template>

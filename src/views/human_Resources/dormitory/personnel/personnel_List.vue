@@ -33,7 +33,7 @@
         >{{item.trueName}}</a-select-option>
       </a-select>
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('personnel:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
     </div>
@@ -45,19 +45,22 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
+          v-if="$auth('personnel:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="record.status===0">
+            <template v-if="$auth('personnel:add')&& record.status===0">
               <a-popconfirm title="是否退房" ok-text="是" cancel-text="否" @confirm="Check (record)">
                 <a type="primary">退房</a>
               </a-popconfirm>
             </template>
             <template>
-              <a-divider type="vertical" />
-              <a @click="handle('edit-salary',record)">修改</a>
+              <template v-if="$auth('personnel:add')&&record.status===0">
+                <a-divider type="vertical" />
+                <a @click="handle('edit-salary',record)">修改</a>
+              </template>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否删除"
