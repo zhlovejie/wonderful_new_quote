@@ -35,7 +35,8 @@
             name="files"
             :multiple="true"
             :action="this.uploadPath"
-            :fileList="fileList"
+            :fileList="fileList" 
+            :beforeUpload="beforeUpload"
             @change="handleChange"
           >
             <a-button>
@@ -133,8 +134,19 @@ export default {
         }
       })
     },
+    beforeUpload(file) {
+      const isLt10M = this.checkFile(file)
+      if (!isLt10M) {
+        this.$message.error('上传文件必须小于10M!')
+      }
+      return isLt10M
+    },
+    checkFile(file){
+      return file.size / 1024 / 1024 < 10
+    },
     handleChange({ file, fileList }) {
-      console.log(arguments)
+      //console.log(arguments)
+      //console.log('file.status:'+file.status)
       // 上传中、完成、失败都会调用这个函数
       fileList = fileList.slice(-1)
       if (file && file.status === 'done') {
@@ -146,7 +158,7 @@ export default {
         // 删除清空
         this.form.setFieldsValue({ fileUrl: '' })
       }
-      this.fileList = fileList
+      this.fileList = fileList.filter(f => this.checkFile(f))
     },
     handleCancel() {
       this.visible = false
