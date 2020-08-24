@@ -4,14 +4,14 @@
       <a-month-picker style="width:300px;" v-model="queryParam.Dates" />
 
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('social:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <!-- <a-layout-content> -->
-      <a-table :columns="columns" :data-source="dataSource">
+      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('social:list')">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -19,7 +19,7 @@
           <a @click="handleSee('e',record)">查看</a>
           <a-divider type="vertical" />
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
-          <template v-if="+record.createdId  === +userInfo.id">
+          <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary',record)">修改</a>
             <a-divider type="vertical" />

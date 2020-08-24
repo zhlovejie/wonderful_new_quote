@@ -27,7 +27,7 @@
         >{{item.stationName}}</a-select-option>
       </a-select>
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('post_allocation:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
     </div>
@@ -39,6 +39,7 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
+          v-if="$auth('post_allocation:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -47,7 +48,7 @@
             <template>
               <a @click="handle('edit',record)">查看</a>
             </template>
-            <template v-if="+record.createdId  === +userInfo.id">
+            <template v-if="$auth('post_allocation:add')+record.createdId  === +userInfo.id">
               <a-divider type="vertical" />
               <a @click="handle('view',record)">修改</a>
               <a-divider type="vertical" />

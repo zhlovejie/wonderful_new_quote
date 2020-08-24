@@ -47,7 +47,7 @@
         @click="searchAction"
       >查询</a-button>
 
-      <a-dropdown style="float:right;" v-if="$auth('adjustApply:add')">
+      <a-dropdown style="float:right;" v-if="$auth('leagueBuilding:add')">
         <a-button type="primary" @click="doAction('add',null)">
           <a-icon type="plus" />新增
         </a-button>
@@ -57,7 +57,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('human_Resources_notice:jurisdiction')">
+        <template v-if="$auth('leagueBuilding:jurisdiction')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
@@ -68,6 +68,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        v-if="$auth('leagueBuilding:list')"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -84,14 +85,14 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('adjustApply:edit') && record.status === 5">
+            <template v-if="record.status === 5">
               <a type="primary" @click="doAction('view5',record)">查看</a>
             </template>
             <template v-else>
               <a type="primary" @click="doAction('view',record)">查看</a>
             </template>
             <template
-              v-if="$auth('adjustApply:edit') && record.status === 1 && +record.createdId  === +userInfo.id"
+              v-if="$auth('leagueBuilding:add') && record.status === 1 && +record.createdId  === +userInfo.id"
             >
               <a-divider type="vertical" />
               <a-popconfirm
@@ -104,13 +105,13 @@
               </a-popconfirm>
             </template>
             <template
-              v-if="$auth('adjustApply:edit') && record.status === 2 && +record.createdId  === +userInfo.id"
+              v-if="$auth('leagueBuilding:add') && record.status === 2 && +record.createdId  === +userInfo.id"
             >
               <a-divider type="vertical" />
               <a type="primary" @click="uploadImg(record)">上传</a>
             </template>
             <template
-              v-if="$auth('adjustApply:edit') && record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
+              v-if="$auth('leagueBuilding:add') && record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
             >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary',record)">修改</a>

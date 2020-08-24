@@ -7,27 +7,8 @@
         allowClear
         style="width: 200px;margin-right:10px;"
       />
-      <!-- <a-select
-        style="width:200px; margin-right: 10px;"
-        v-model="queryParam.departmentId"
-        @change=" depChangeHandler"
-        placeholder="请选择部门"
-      >
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
-      </a-select>
-      <a-select placeholder="选择岗位" v-model="stationId" :allowClear="true" style="width: 200px">
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.stationName}}</a-select-option>
-      </a-select>-->
       <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <template v-if="$auth('role:add')">
+      <template v-if="$auth('contractAgreement:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
       </template>
     </div>
@@ -39,6 +20,7 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
+          v-if="$auth('contractAgreement:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -47,7 +29,7 @@
             <template>
               <a @click="doAction(record.contractUrl)">查看</a>
             </template>
-            <template v-if="+record.createdId  === +userInfo.id">
+            <template v-if="$auth('contractAgreement:add')+record.createdId  === +userInfo.id">
               <a-divider type="vertical" />
               <a @click="handle('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
