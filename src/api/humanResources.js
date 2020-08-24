@@ -401,7 +401,7 @@ export function personnel_List(parameter) {
 export function queryList(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/user/queryList',
+    url: '/user/getOnPositionList',
     method: 'get',
     params: parameter
   })
