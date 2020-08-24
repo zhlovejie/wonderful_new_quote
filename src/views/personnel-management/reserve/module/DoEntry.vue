@@ -499,6 +499,12 @@
                 </td>
               </tr>
               <tr>
+                <td>员工简历</td>
+                <td colspan="3">
+                  <a type="primary" @click="doAction(department.resume)" target="_blank">查看</a>
+                </td>
+              </tr>
+              <tr>
                 <td>个人印章</td>
                 <td>
                   <a-form-item>
@@ -532,6 +538,7 @@
                 </td>
                 <td colspan="2"></td>
               </tr>
+              <XdocView ref="xdocView" />
             </table>
           </a-tab-pane>
           <a-tab-pane key="3" tab="合同信息">
@@ -563,7 +570,7 @@
               <tr v-for="(item ,index) in todauuplate" :key="index">
                 <td>{{item.templateName}}</td>
                 <td>
-                  <a type="primary" @click="doAction(item.fileUrl)">查看</a>
+                  <a type="primary" @click="doAction(item.fileUrl)" target="_blank">查看</a>
                   <template v-if="isEdit|| isRuzhi">
                     <a-divider type="vertical" />
                     <a type="primary" @click="deletes(index)">删除</a>
@@ -1130,7 +1137,7 @@ export default {
           values.reserveId = that.record.id
           console.log(values)
           let isDoEntryBefore = that.record.status === 0 ? true : false
-          if (that.type === 'edit') {
+          if (that.type === 'edit' || that.type === 'add') {
             if (that.todauuplate.length !== that.todayList.length) {
               that.$message.error('请上传所有模板')
               return

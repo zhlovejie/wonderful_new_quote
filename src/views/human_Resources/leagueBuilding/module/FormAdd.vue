@@ -472,6 +472,7 @@ export default {
     query(type, record) {
       this.visible = true
       this.type = type
+      this.fileListl = []
       this.record = record
       if (record === null) {
         this.detail = {}
@@ -615,58 +616,59 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
-      // if (that.isView) {
-      //   that.form.resetFields() // 清空表
-      //   that.visible = false
-      //   return
-      // } else if (that.type === 'add' || that.type === 'edit-salary') {
-      that.form.validateFields((err, values) => {
-        if (!err) {
-          console.log(values)
-          delete values.s_begin_date
-          delete values.s_begin_time
-          delete values.s_end_date
-          delete values.s_end_time
-          values.beginTime = `${that.sDate.beginDate} ${that.sDate.beginTime}`
-          values.endTime = `${that.sDate.endDate} ${that.sDate.endTime}`
-          if (values.beginTime >= values.endTime) {
-            that.$message.info('结束时间必须大于开始时间')
-            return
-          }
-          if (values.departmentIds) {
-            values.departmentIds = values.departmentIds.toString()
-          }
-          if (that.type === 'add') {
-            values.planUrl = values.planUrl.fileList[0].response.data
-          }
-          if (typeof values.planUrl === 'string' && that.type === 'edit-salary') {
-            values.planUrl = values.planUrl
-          } else if (that.type === 'edit-salary') {
-            values.planUrl = values.planUrl.fileList[0].response.data
-          }
+      if (that.isView) {
+        that.form.resetFields() // 清空表
+        that.visible = false
 
-          if (that.type === 'edit-salary') {
-            values.id = that.record.id
+        return
+      } else if (that.type === 'add' || that.type === 'edit-salary') {
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            console.log(values)
+            delete values.s_begin_date
+            delete values.s_begin_time
+            delete values.s_end_date
+            delete values.s_end_time
+            values.beginTime = `${that.sDate.beginDate} ${that.sDate.beginTime}`
+            values.endTime = `${that.sDate.endDate} ${that.sDate.endTime}`
+            if (values.beginTime >= values.endTime) {
+              that.$message.info('结束时间必须大于开始时间')
+              return
+            }
+            if (values.departmentIds) {
+              values.departmentIds = values.departmentIds.toString()
+            }
+            if (that.type === 'add') {
+              values.planUrl = values.planUrl.fileList[0].response.data
+            }
+            if (typeof values.planUrl === 'string' && that.type === 'edit-salary') {
+              values.planUrl = values.planUrl
+            } else if (that.type === 'edit-salary') {
+              values.planUrl = values.planUrl.fileList[0].response.data
+            }
+
+            if (that.type === 'edit-salary') {
+              values.id = that.record.id
+            }
+            leagueBuilding_add(values)
+              .then((res) => {
+                that.spinning = false
+                values.planUrl = {}
+                that.duration = {}
+                that.form.resetFields() // 清空表
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('finish')
+              })
+              .catch((err) => (that.spinning = false))
           }
-          leagueBuilding_add(values)
-            .then((res) => {
-              that.spinning = false
-              values.planUrl = {}
-              that.duration = {}
-              that.form.resetFields() // 清空表
-              that.visible = false
-              that.$message.info(res.msg)
-              that.$emit('finish')
-            })
-            .catch((err) => (that.spinning = false))
-        }
-      })
-      // } else if (that.isEditSalary) {
-      //   // that.updateUserBackCardSalary()
-      // } else {
-      //   that.form.resetFields() // 清空表
-      //   that.visible = false
-      // }
+        })
+      } else if (that.isEditSalary) {
+        // that.updateUserBackCardSalary()
+      } else {
+        that.form.resetFields() // 清空表
+        that.visible = false
+      }
     },
     handleCancel() {
       this.fileListl = []
