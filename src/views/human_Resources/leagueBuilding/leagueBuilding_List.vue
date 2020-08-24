@@ -73,13 +73,13 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="leagueType" slot-scope="text, record, index">
+        <div slot="leagueType" slot-scope="text">
           <span>{{ getleagueTypeText(text) }}</span>
         </div>
-        <div slot="status" slot-scope="text, record, index">
+        <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
-        <div slot="operationStatus" slot-scope="text, record, index">
+        <div slot="operationStatus" slot-scope="text ">
           <a href="javascript:void(0)">{{ getOperationStatus(text) }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">

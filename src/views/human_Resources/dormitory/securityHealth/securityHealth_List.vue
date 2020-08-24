@@ -41,7 +41,7 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <div slot="status" slot-scope="text, record, index">
+          <div slot="status" slot-scope="text, record">
             <template v-if="record.status===1">
               <span>完结</span>
             </template>

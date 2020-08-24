@@ -17,7 +17,7 @@
 
     <a-spin :spinning="spinning">
       <template>
-        <a-card class="fl" v-for="item in recordDetails">
+        <a-card class="fl" v-for="item in recordDetails" :key="item.roomCode">
           <div>
             <span class="title">{{item.roomCode}}</span>
             <template v-if="item.emptyBed!== 0 ">
@@ -44,7 +44,7 @@
               <td>人员</td>
             </tr>
             <template>
-              <tr v-for=" items in  item.roomUserVos">
+              <tr v-for=" items in  item.roomUserVos" :key="items.deptName">
                 <td>{{items.deptName}}</td>
                 <td>{{items.userName}}</td>
               </tr>

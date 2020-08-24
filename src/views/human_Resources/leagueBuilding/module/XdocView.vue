@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="预览"
-    :width="860"
+    :width="1200"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"

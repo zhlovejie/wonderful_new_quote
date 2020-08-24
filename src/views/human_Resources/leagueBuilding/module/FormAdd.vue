@@ -220,7 +220,7 @@
                   :tree-data="treeData"
                   tree-checkable
                   search-placeholder="选择部门"
-                  :disabled="isDisabled"
+                  :disabled="isDisabled||ment"
                   :dropdownStyle="{ maxHeight: '300px'}"
                 />
               </a-form-item>
@@ -293,7 +293,7 @@
             <td>团建费用(元)</td>
             <td colspan="3">
               <a-form-item>
-                <a-input
+                <a-textarea
                   :disabled="isDisabled"
                   placeholder="请输入费用"
                   :rows="3"
@@ -329,7 +329,6 @@
               <a-form-item>
                 <a-textarea
                   :disabled="isDisabled"
-                  placeholder="备注"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
                 />
@@ -383,6 +382,7 @@ export default {
       SHOW_PARENT,
       visible: false,
       spinning: false,
+      ment: false,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'view',
       recordDetails: {},
@@ -400,7 +400,7 @@ export default {
         return '修改团建信息'
       }
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}团结信息`
+      return `${txt}团建信息`
     },
     isView() {
       //查看
@@ -564,6 +564,7 @@ export default {
     department(e) {
       if (e === 1) {
         let that = this
+        that.ment = false
         let queue = []
         let task1 = getDevisionList().then((res) => {
           that.treeData = res.data.map((item) => {
@@ -582,6 +583,7 @@ export default {
         // })
       } else {
         this.treeData = []
+        this.ment = true
       }
     },
 
