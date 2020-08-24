@@ -41,7 +41,8 @@
           v-if="+currentItem.type === 1"
           ref="levelTwo"
           :params="currentItem"
-          @finish="() => { initTreeData('refresh') }"
+          @finish="() => { initTreeData('refresh') }" 
+          @rowhover="rowhoverChange2" 
         />
         <LevelThree
           key="l3"
@@ -249,6 +250,18 @@ export default {
             that.cacheSelectedKeys = [targetNode]
           }
         }
+      })
+    },
+    rowhoverChange2(record) {
+      let that = this
+      let { menuId, permissionId } = record
+      that.initTreeData().then(() => {
+        let nodePaths = that.getNodePath(that.orgTree[0], menuId)
+        that.expandedKeys = nodePaths.map((node) => node.key)
+        that.cacheExpandedKeys = [...nodePaths]
+        let node = nodePaths[nodePaths.length - 1]
+        that.selectedKeys = [node.key]
+        that.cacheSelectedKeys = [node]
       })
     },
   },

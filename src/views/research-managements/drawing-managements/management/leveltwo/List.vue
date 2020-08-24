@@ -14,7 +14,8 @@
         :dataSource="dataSource"
         :pagination="pagination"
         :loading="loading"
-        @change="handleTableChange"
+        @change="handleTableChange" 
+        :customRow="customRowFunction"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -178,11 +179,11 @@ export default {
           record:{...record}
         })
       } else if (actionType === 'del') {
-        let node = that.findNode(that.inputParam,record.id)
-        if(node && Array.isArray(node.subList) && node.subList.length > 0){
-          that.$message.info('该目录下有文件，无法执行删除操作')
-          return
-        }
+        // let node = that.findNode(that.inputParam,record.id)
+        // if(node && Array.isArray(node.subList) && node.subList.length > 0){
+        //   that.$message.info('该目录下有文件，无法执行删除操作')
+        //   return
+        // }
         blueprintMenuDel(`id=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
@@ -194,6 +195,17 @@ export default {
           })
       } else {
         this.$message.info('功能尚未实现！')
+      }
+    },
+    customRowFunction(record,index){
+      let that = this
+      return {
+        on:{
+          click:(event)=>{
+            console.log(record)
+            that.$emit('rowhover',{menuId:record.id})
+          }
+        }
       }
     },
     findNode(node, id) { //查找指定ID的节点
