@@ -33,7 +33,7 @@
         icon="search"
         @click="searchAction"
       >查询</a-button>
-      <a-dropdown style="float:right;" v-if="$auth('adjustApply:add')">
+      <a-dropdown style="float:right;" v-if="$auth('human_Resources_notice:add')">
         <a-button type="primary" @click="doAction('add',null)">
           <a-icon type="plus" />新增
         </a-button>
@@ -48,6 +48,7 @@
         </template>
       </a-tabs>
       <a-table
+        v-if="$auth('human_Resources_notice:list')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -69,7 +70,7 @@
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <template v-if="$auth('adjustApply:edit') && record.status === 1">
+            <template v-if="$auth('human_Resources_notice:add') && record.status === 1">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -80,7 +81,7 @@
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="$auth('adjustApply:edit') && record.status === 2">
+            <template v-if="$auth('human_Resources_notice:add') && record.status === 2">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定发布"
@@ -91,7 +92,9 @@
                 <a type="primary">发布</a>
               </a-popconfirm>
             </template>
-            <template v-if="$auth('adjustApply:edit') && record.status === 3||record.status === 5">
+            <template
+              v-if="$auth('human_Resources_notice:add') && record.status === 3||record.status === 5"
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
@@ -104,7 +107,7 @@
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
-            <template v-if="$auth('adjustApply:edit') && record.status === 4">
+            <template v-if="$auth('human_Resources_notice:add') && record.status === 4">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否撤回"

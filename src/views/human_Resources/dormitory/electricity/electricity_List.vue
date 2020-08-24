@@ -132,6 +132,12 @@ export default {
         },
         {
           align: 'center',
+          title: '提交时间',
+          key: 'createdTime',
+          dataIndex: 'createdTime',
+        },
+        {
+          align: 'center',
           title: '操作',
           key: 'action',
           scopedSlots: { customRender: 'action' },

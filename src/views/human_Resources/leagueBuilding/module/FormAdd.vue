@@ -619,7 +619,6 @@ export default {
       if (that.isView) {
         that.form.resetFields() // 清空表
         that.visible = false
-
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {

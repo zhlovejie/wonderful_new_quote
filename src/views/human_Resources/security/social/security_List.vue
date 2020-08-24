@@ -19,8 +19,8 @@
           <a @click="handleSee('e',record)">查看</a>
           <a-divider type="vertical" />
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
-          <a-divider type="vertical" />
           <template v-if="+record.createdId  === +userInfo.id">
+            <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
