@@ -36,7 +36,7 @@
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">审批通过</a-select-option>
         <a-select-option :value="3">审批不通过</a-select-option>
-        <a-select-option :value="4">已撤回撤回</a-select-option>
+        <a-select-option :value="4">已撤回</a-select-option>
         <a-select-option :value="5">已完结</a-select-option>
       </a-select>
       <a-button

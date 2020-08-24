@@ -14,7 +14,7 @@
         >{{ item.roomCode }}</a-select-option>
       </a-select>
       <a-select
-        placeholder="公告状态"
+        placeholder="状态"
         v-model="queryParam.status"
         :allowClear="true"
         style="width: 200px;margin-right:10px;"
