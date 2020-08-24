@@ -135,6 +135,7 @@ export default {
 
 .ant-form-item >>> .ant-form-item-label {
   width: 100px;
+  text-align: left;
 }
 .ant-form-item >>> .ant-form-item-control-wrapper {
   flex: 1;

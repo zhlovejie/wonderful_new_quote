@@ -277,7 +277,7 @@ export default {
       }
       if(type === 'return'){
         let {id,cliamId} = record
-        oaAssertsInfoAssertsReturn({id,assertsId:cliamId}).then(res =>{
+        oaAssertsInfoAssertsReturn({id,cliamId}).then(res =>{
           console.log(res)
           that.$message.info(res.msg)
           if(res.code === 200){

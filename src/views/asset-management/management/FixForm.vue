@@ -51,7 +51,7 @@
                   v-decorator="['needTime',{initialValue:detail.needTime ? moment(record.needTime) : undefined,rules: [{required: true,message: '请选择需求时间'}]}]"
                   style="width:100%;"
                 />
-                <span>{{detail.needTime}}</span>
+                <span v-else>{{detail.needTime}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -67,7 +67,7 @@
                   <a-radio :value="1">固定资产</a-radio>
                   <a-radio :value="2">车间设备</a-radio>
                 </a-radio-group>
-                <span>{{ {1:'固定资产',2:'车间设备'}[detail.type] }}</span>
+                <span v-else>{{ {1:'固定资产',2:'车间设备'}[detail.type] }}</span>
               </a-form-item>
             </td>
             <td style="width:150px;">紧急程度</td>
@@ -81,7 +81,7 @@
                   <a-radio :value="2">紧急(优先处理)</a-radio>
                   <a-radio :value="1">一般</a-radio>
                 </a-radio-group>
-                <span>{{ {1:'一般',2:'紧急(优先处理)'}[detail.emaeceLevel] }}</span>
+                <span v-else>{{ {1:'一般',2:'紧急(优先处理)'}[detail.emaeceLevel] }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -230,6 +230,18 @@ export default {
             values.id = that.record.id
           }else if(that.isAdd){ //报修   来自 管理资产 和 我的资产 
             values.assertsId = that.record.id
+            if (values.needTime && values.needTime instanceof moment) {
+              values.needTime = values.needTime.format('YYYY-MM-DD')
+            }
+            values.code = that.detail.code
+            values.name = that.detail.name
+            //取当前登录人的 人员ID和部门ID
+            values.departmentId = that.userInfo.departmentId
+            values.userId = that.userInfo.id
+          }else if(that.isEdit){
+            //debugger
+            values.id = that.detail.id
+            values.assertsId = that.detail.assertsId
             if (values.needTime && values.needTime instanceof moment) {
               values.needTime = values.needTime.format('YYYY-MM-DD')
             }

@@ -37,7 +37,7 @@
         <a-form-item label="资产归属">
           <a-select
             placeholder="选择资产归属"
-            v-decorator="['beyondType', {initialValue:record.beyondType, rules: [{ required: true, message: '选择资产归属' }]}]"
+            v-decorator="['beyondType', {initialValue:record.beyondType || 3, rules: [{ required: true, message: '选择资产归属' }]}]"
             :allowClear="true"
             style="width:100%;"
           >

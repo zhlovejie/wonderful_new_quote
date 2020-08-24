@@ -85,13 +85,17 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="+record.status === 2 && $auth('asset-management-record:fix')">
+            <template v-if="(+record.status === 3 || +record.status === 4) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('upload',record)">上传凭证</a>
+              <a type="primary" @click="doAction('edit',record)">修改</a>
             </template>
             <template v-if="+record.status === 2 && $auth('asset-management-record:fix')">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('fix',record)">填写维修方案</a>
+            </template>
+            <template v-if="+record.status === 5 && $auth('asset-management-record:upload')">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('upload',record)">上传凭证</a>
             </template>
             <template v-if="+record.status === 5 && $auth('asset-management-record:over')">
               <a-divider type="vertical" />
