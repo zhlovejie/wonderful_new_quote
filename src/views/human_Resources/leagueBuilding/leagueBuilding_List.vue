@@ -27,7 +27,7 @@
       </a-select>
 
       <a-select
-        placeholder="公告状态"
+        placeholder="状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"

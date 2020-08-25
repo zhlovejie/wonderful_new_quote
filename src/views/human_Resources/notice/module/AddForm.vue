@@ -322,17 +322,4 @@ export default {
   display: flex;
   margin: 0 7px;
 }
-
-.ant-input[disabled] {
-  color: rgba(0, 0, 0, 0.6);
-  background-color: #f9f9f9;
-}
-
-.ant-select-disabled {
-  color: rgba(0, 0, 0, 0.6);
-}
-.ant-select-disabled .ant-select-selection {
-  background: #f9f9f9;
-  cursor: not-allowed;
-}
 </style>
