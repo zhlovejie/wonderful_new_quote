@@ -180,38 +180,40 @@ export default {
       this.todayListName = key
       this.$refs.receiptContract.query({ type: 1 })
     },
+    todayL(data) {
+      let that = this
+      that.todayListType.push(data)
+      that.todayList[that.todayListId].contractName = data.contractName
+      that.todayList[that.todayListId].contractId = data.id
+      that.todayList[that.todayListId].insureType = 1
+    },
+    planL(data) {
+      let that = this
+      that.planListType.push(data)
+      that.planList[that.todayListId].contractName = data.contractName
+      that.planList[that.todayListId].contractId = data.id
+      that.planList[that.todayListId].insureType = 2
+    },
     contractChange(data) {
       let that = this
       if (this.todayListName === 'todayList') {
         if (that.todayListType.length == 0 && this.todayListName === 'todayList') {
-          that.todayListType.push(data)
-          that.todayList[that.todayListId].contractName = data.contractName
-          that.todayList[that.todayListId].contractId = data.id
-          that.todayList[that.todayListId].insureType = 1
+          this.todayL(data)
         } else {
           let contractName = this.todayListType.some((item) => data.contractName === item.contractName)
           if (!contractName) {
-            that.todayListType.push(data)
-            that.todayList[that.todayListId].contractName = data.contractName
-            that.todayList[that.todayListId].contractId = data.contractName
-            that.todayList[that.todayListId].insureType = 1
+            this.todayL(data)
           } else {
-            that.$message.error('不能选择同一个模板')
+            this.$message.error('不能选择同一个模板')
           }
         }
       } else {
         if (that.planListType.length == 0 && this.todayListName === 'planList') {
-          that.planListType.push(data)
-          that.planList[that.todayListId].contractName = data.contractName
-          that.planList[that.todayListId].contractId = data.id
-          that.planList[that.todayListId].insureType = 2
+          this.planL(data)
         } else {
           let contractName = this.planListType.some((item) => data.contractName === item.contractName)
           if (!contractName) {
-            that.planListType.push(data)
-            that.planList[that.todayListId].contractName = data.contractName
-            that.planList[that.todayListId].contractId = data.id
-            that.planList[that.todayListId].insureType = 2
+            this.planL(data)
           } else {
             that.$message.error('不能选择同一个模板')
           }
