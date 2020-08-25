@@ -1,12 +1,13 @@
 <template>
-  <a-modal
+  <!-- <a-modal
     :title="modalTitle"
     :width="1200"
     :visible="visible"
     :maskClosable="false"
     @cancel="handleCancel"
     :confirmLoading="spinning"
-  >
+  >-->
+  <a-card :bordered="false">
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -29,16 +30,20 @@
           icon="search"
           @click="searchActionsee"
         >查询</a-button>
+        <template>
+          <a-button style="float:right;" type="primary" @click="handleGo()">返回</a-button>
+        </template>
       </div>
       <a-table
         :columns="columns"
         :data-source="this.dataSource"
-        :scroll="{ x: 2800, y: 300 }"
+        :scroll="{ x: 2800, y: 600 }"
         :pagination="pagination"
         @change="handleTableChange"
       ></a-table>
     </a-spin>
-  </a-modal>
+  </a-card>
+  <!-- </a-modal> -->
 </template>
 <script>
 import { securitySocial_See } from '@/api/humanResources'
@@ -97,35 +102,19 @@ export default {
       },
     }
   },
-  computed: {},
-  watch: {
-    $route: {
-      handler: function (to, from) {
-        if (to.name === 'human_Resources_Insurance') {
-          this.init()
-        }
-      },
-      immediate: true,
-    },
+  created() {
+    this.searchActionsee()
   },
-  created() {},
   methods: {
-    query(type, record) {
-      console.log(type, record)
-      this.visible = true
-      this.type = type
-      this.recordId = record.id
-      if (type === 'e') {
-        this.searchActionsee()
-      }
+    handleGo() {
+      this.$router.go(-1)
     },
-
     searchActionsee() {
       let that = this
       console.log(123)
       that.loading = true
       let _searchParam = Object.assign(
-        { socialSecurityId: that.recordId },
+        { socialSecurityId: this.$route.params.id },
         { ...this.queryParam },
         { ...this.pagination }
       )

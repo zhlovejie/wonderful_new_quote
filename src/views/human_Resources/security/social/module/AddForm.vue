@@ -73,6 +73,7 @@
                   name="file"
                   :fileList="fileList"
                   :beforeUpload="beforeUpload"
+                  accept=".xls, .xlsx"
                 >
                   <a-button>
                     <a-icon type="upload" />导入
