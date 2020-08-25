@@ -715,7 +715,7 @@ export default {
       if (that.todauuplate.length == 0) {
         that.todauuplate.push(data)
       } else {
-        let arr = that.todauuplate.some((item) => data[0].templateName === item.templateName)
+        let arr = that.todauuplate.some((item) => data.templateName === item.templateName)
         if (!arr) {
           that.todauuplate.push(data)
         } else {
