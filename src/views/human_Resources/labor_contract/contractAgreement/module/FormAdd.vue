@@ -143,7 +143,6 @@ export default {
           contractUrl: this.record.contractUrl,
         })
         let arr = this.record.contractUrl.split('/')
-        console.log(arr[arr.length - 1])
         this.fileList.push({
           uid: '-1',
           name: arr[arr.length - 1],

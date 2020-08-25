@@ -519,6 +519,14 @@ export default {
           remark: res.data.remark,
           planUrl: res.data.planUrl,
         })
+        let arr = res.data.planUrl.split('/')
+        this.fileListl.push({
+          uid: '-1',
+          name: arr[arr.length - 1],
+          status: 'done',
+          url: res.data.planUrl,
+        })
+
         that.$nextTick(() => (that.detail = { ...res.data }))
       })
     },
@@ -654,6 +662,7 @@ export default {
             leagueBuilding_add(values)
               .then((res) => {
                 that.spinning = false
+                that.fileListl = []
                 values.planUrl = {}
                 that.duration = {}
                 that.form.resetFields() // 清空表
