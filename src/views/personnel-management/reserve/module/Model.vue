@@ -1,5 +1,11 @@
 <template>
-  <a-upload name="file" :action="uploadUrl" :fileList="fileList" @change="handleChange">
+  <a-upload
+    name="file"
+    :action="uploadUrl"
+    :fileList="fileList"
+    @change="handleChange"
+    :showUploadList="false"
+  >
     <a-button class="a-button" type="primary" icon="upload">上传</a-button>
   </a-upload>
 </template>
@@ -25,12 +31,8 @@ export default {
     this.fileList = this.fileName
   },
   methods: {
-    // query(key) {
-    //   console.log(key)
-    // },
-
     handleChange(info) {
-      console.log(arguments)
+      // console.log(arguments)
       let that = this
       let fileList = [...info.fileList]
       fileList = fileList.slice(-1)
@@ -46,7 +48,7 @@ export default {
         }
         return file
       })
-      this.fileList = fileList
+      that.fileList = fileList
     },
     //上传
     normFile(e) {
