@@ -26,10 +26,10 @@
           <span v-else>无</span>
         </div>
 
-        <div class="action-btns" slot="action" slot-scope="text, record">
+        <div class="action-btns" slot="action" slot-scope="text, record" @click.stop="(e) =>{/*防止触发 rowclick 事件*/}">
           <a type="primary" @click="doAction('edit',record)">修改</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+          <a-popconfirm title="是否要删除此行？"  @confirm="doAction('del',record,$event)">
             <a>删除</a>
           </a-popconfirm>
         </div>
@@ -170,14 +170,14 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
-    doAction(actionType, record={}) {
-      debugger
+    doAction(actionType, record={},event) {
       let that = this
       if(['add','edit','view'].includes(actionType)){
         that.$refs.addForm.query(actionType, {
           params:{...that.inputParam},
           record:{...record}
         })
+        return
       } else if (actionType === 'del') {
         // let node = that.findNode(that.inputParam,record.id)
         // if(node && Array.isArray(node.subList) && node.subList.length > 0){
@@ -193,8 +193,10 @@ export default {
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
+        return
       } else {
         this.$message.info('功能尚未实现！')
+        return
       }
     },
     customRowFunction(record,index){
@@ -202,7 +204,7 @@ export default {
       return {
         on:{
           click:(event)=>{
-            console.log(record)
+            //console.log(record)
             that.$emit('rowhover',{menuId:record.id})
           }
         }

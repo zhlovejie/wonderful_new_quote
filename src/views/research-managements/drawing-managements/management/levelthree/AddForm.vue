@@ -14,8 +14,8 @@
         <a-tab-pane tab="单文件上传" key="1" />
         <a-tab-pane tab="多文件上传" key="2" />
       </a-tabs>
-      <SingleForm v-if="+activeKey === 1" :param="record" :action="type" @finish="finishAction"  />
-      <MultiForm v-if="+activeKey === 2" :param="record" :action="type" @finish="finishAction"/>
+      <SingleForm v-if="+activeKey === 1" :param="record" :action="type" @finish="finishAction" @close="handleCancel" />
+      <MultiForm v-if="+activeKey === 2" :param="record" :action="type" @finish="finishAction" @close="handleCancel" />
     </div>
     <div v-if="isView || isEdit">
       <SingleForm :param="record" :action="type" @finish="finishAction"/>

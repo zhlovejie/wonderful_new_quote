@@ -41,7 +41,7 @@
           <div v-if="record.modifyTime">修改时间：{{record.modifyTime}}</div>
         </div>
         
-        <div class="action-btns" slot="action" slot-scope="text, record">
+        <div class="action-btns" slot="action" slot-scope="text, record" @click.stop="(e) =>{/*防止触发 rowclick 事件*/}">
           <!-- <a type="primary" @click="doAction('view',record)">查看</a> -->
           <a v-if="$auth('blueprintFile:detail')" type="primary" target="_blank" :href="record.fileUrl" >查看</a>
           <a-divider type="vertical" />
@@ -217,7 +217,7 @@ export default {
       return {
         on:{
           click:(event)=>{
-            console.log(record)
+            //console.log(record)
             that.$emit('rowhover',Object.assign({},record))
           }
         }

@@ -285,6 +285,7 @@ export default {
     },
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
+      this.$emit('close')
     },
     handleChange({file,fileList}) {
       console.log(arguments)
