@@ -248,6 +248,8 @@ export default {
           if (targetNode) {
             that.selectedKeys = [targetNode.key]
             that.cacheSelectedKeys = [targetNode]
+
+            setTimeout(() => {that.autoLocationNode() }, 500);
           }
         }
       })
@@ -262,8 +264,35 @@ export default {
         let node = nodePaths[nodePaths.length - 1]
         that.selectedKeys = [node.key]
         that.cacheSelectedKeys = [node]
+
+        setTimeout(() => {that.autoLocationNode() }, 500);
       })
     },
+
+    autoLocationNode(){
+      //点击右侧列表的文件夹或文件 ，左侧树形菜单同步定位并且滚动到该位置
+      let treeWrapper = document.querySelector('.menu-tree-list-wrapper')//tree的父节点元素
+      let treeNode = document.querySelector('ul[role=tree]',treeWrapper) //tree元素
+      let selectedNode = document.querySelector('.ant-tree-treenode-selected',treeNode)//被选中的node元素
+
+      let rect_treeWrapper = treeWrapper.getBoundingClientRect()
+      let rect_treeNode = treeNode.getBoundingClientRect()
+      let rect_selectedNode = selectedNode.getBoundingClientRect()
+
+      let distance = Math.abs(rect_treeNode.top - rect_selectedNode.top) 
+      //tree元素和被选中的node元素之间的距离 大于 （tree的父节点元素） 需要滑动位置
+      if(distance > rect_treeWrapper.height){
+        treeWrapper.scrollTop = distance + 30
+      }
+      //如果整个页面也存在滚动条，如果符合条件 整个页面也需要滑动位置
+      //tree可视高度
+      let tree_availHeight = document.documentElement.offsetHeight - 210
+      let body_scroll_top = distance + 30 - tree_availHeight
+      console.log(distance,tree_availHeight,body_scroll_top)
+      body_scroll_top = body_scroll_top < 0 ? 0 : body_scroll_top
+      //设置页面的滚动
+      document.body.scrollTop = body_scroll_top  * 2
+    }
   },
 }
 </script>
