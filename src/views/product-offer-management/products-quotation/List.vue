@@ -1,6 +1,11 @@
 <template>
   <div class="customer-list-wrapper">
+    <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" type="card" @change="tabChange">
+      <a-tab-pane tab="2.0产品报价" key="1" />
+      <a-tab-pane tab="4.0产品报价" key="2" />
+    </a-tabs>
     <div class="main-wrapper" style="width:1000px;margin:0 auto;">
+      
       <table class="custom-table custom-table-border" style="margin-bottom:0;">
         <tr>
           <td style="width:150px;">产品系列</td>
@@ -18,10 +23,15 @@
       <ProductConfig
         ref="productConfigMain"
         @extendProductChange="extendProductChange"
-        prefix="产品系列-"
+        prefix="产品系列-" 
+        :modelType="{is2d0:is2d0,is4d0:is4d0}"
       />
 
-      <ProductConfig ref="productConfigSub" prefix="产品-" />
+      <ProductConfig 
+        ref="productConfigSub" 
+        prefix="产品-" 
+        :modelType="{is2d0:is2d0,is4d0:is4d0}"
+      />
 
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" icon="check" @click="doAction('ok')" style="margin:0 10px;">确定</a-button>
@@ -29,7 +39,7 @@
       </div>
     </div>
 
-    <SelectProduct ref="selectProduct" @selected="selectedHandler" />
+    <SelectProduct ref="selectProduct" @selected="selectedHandler" :productType="+this.activeKey === 1 ? 1 : 0" />
 
     <a-modal
       title="产品评估"
@@ -51,9 +61,8 @@
       <div style="text-align:center;margin-top:10px;">
         <a-button type="primary" @click="doAction('price-ok')" style="margin:0 10px;">确定</a-button>
         <a-button type="primary" @click="doAction('price-view')" style="margin:0 10px;">预览</a-button>
-        <a-button type="primary" @click="doAction('price-form')" style="margin:0 10px;">新增报价单</a-button>
-        <a-button type="primary" v-if="$auth('productsQuotation:costPrice')" @click="doAction('price-view-cost')" style="margin:0 10px;">成本价</a-button>
-        
+        <a-button type="primary" v-if="is4d0" @click="doAction('price-form')" style="margin:0 10px;">新增报价单</a-button>
+        <a-button type="primary" v-if="$auth('productsQuotation2d0:costPrice') | $auth('productsQuotation4.0:costPrice')" @click="doAction('price-view-cost')" style="margin:0 10px;">成本价</a-button>
       </div>
     </a-modal>
 
@@ -107,6 +116,7 @@ export default {
   },
   data() {
     return {
+      activeKey:1,
       optInfo: {},
       visible: false,
       visibleView: false,
@@ -159,6 +169,19 @@ export default {
       }
       result.__config.showTitle = false
       return result
+    },
+    modelType(){ //报价类型
+      const m = {
+        '1':'2d0', //2.0报价参数标志
+        '2':'4d0'  //4.0报价参数标志
+      }
+      return m[this.activeKey]
+    },
+    is2d0(){
+      return +this.activeKey === 1
+    },
+    is4d0(){
+      return +this.activeKey === 2
     }
   },
   watch:{
@@ -253,10 +276,10 @@ export default {
           productPic: __viewDataSourceHTML.optInfo.productPic,
           unitPrice: this.unitPriceView,
           standardItem: __viewDataSourceHTML.optStand.map(p => {
-            return { itemName: p.itemName, type: 1 }
+            return { itemName: p.itemName, type: 1 ,introduction:p.introduction}
           }),
           optionalItem: __viewDataSourceHTML.optSelect.map(p => {
-            return { itemName: p.itemName, type: 2 }
+            return { itemName: p.itemName, type: 2 ,introduction:p.introduction}
           })
         }
         that.spinningView = true
@@ -312,8 +335,12 @@ export default {
       this.$refs[key].query()
     },
     calcCostPrice() {
-      let mainPrice = this.$refs.productConfigMain.costPriceAll
-      let subPrice = this.$refs.productConfigSub.costPriceAll
+      //let mainPrice = this.$refs.productConfigMain.costPriceAll
+      //let subPrice = this.$refs.productConfigSub.costPriceAll
+
+      let mainPrice = this.$refs.productConfigMain.calcItems(this.modelType)
+      let subPrice = this.$refs.productConfigSub.calcItems(this.modelType)
+
       let priceResult = {
         totalPrice:{
           price: 0,
@@ -400,10 +427,16 @@ export default {
           console.log(err)
         }
       })
+
+      that.$refs.selectProduct && that.$refs.selectProduct.resetCurrent()
     },
     viewPriceChange(val) {
       console.log(val)
       this.unitPriceView = val
+    },
+    tabChange(tagKey){
+      this.activeKey = parseInt(tagKey)
+      this.reset()
     }
   }
 }

@@ -111,7 +111,7 @@ export default {
   watch:{
     '$route':{
       handler:function(to,from) {
-        if(to.name === 'pom-products-quotation-list'){
+        if(to.name === 'pom-products-quotation-list4d0'){
           this.init()
         }
       },

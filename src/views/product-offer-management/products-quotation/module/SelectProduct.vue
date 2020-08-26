@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="800"
     :visible="visible"
     @cancel="handleCancel"
     :maskClosable="false"
@@ -10,6 +10,15 @@
     <div class="customer-list-wrapper">
       <div class="search-wrapper">
         <a-input placeholder="产品名称，型号模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
+        <a-select
+          placeholder="状态"
+          v-model="isSale"
+          :allowClear="true"
+          style="width: 150px"
+        >
+          <a-select-option :value="0">在售</a-select-option>
+          <a-select-option :value="1">停产</a-select-option>
+        </a-select>
         <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       </div>
       <div class="main-wrapper">
@@ -27,6 +36,18 @@
           <div slot="name" slot-scope="text, record, index">
             <a href="javascript:void(0);" @click="selectItem(record)">{{text}}</a>
           </div>
+          <div slot="isSale" slot-scope="text, record, index">
+          </div>
+
+          <div slot="isSale" slot-scope="text, record, index">
+            {{+text === 0 ? '在售' : '停产'}}
+          </div>
+
+          <div slot="productPic" slot-scope="text, record, index">
+            <img v-if="text" :src="text" style="width:64px;height:auto;overflow:hidden;" alt="">
+            <span v-else>无</span>
+          </div>
+          
         </a-table>
       </div>
     </div>
@@ -54,9 +75,21 @@ const columns = [
   },
   {
     align: 'center',
+    title: '状态',
+    dataIndex: 'isSale',
+    scopedSlots: { customRender: 'isSale' },
+  },
+  {
+    align: 'center',
     title: '系列产品型号',
     dataIndex: 'model',
     scopedSlots: { customRender: 'model' },
+  },
+  {
+    align: 'center',
+    title: '系列产品图片',
+    dataIndex: 'productPic',
+    scopedSlots: { customRender: 'productPic' },
   },
   {
     align: 'center',
@@ -70,9 +103,16 @@ export default {
   name:'SelectProduct',
   components:{
   },
+  props:{
+    productType:{
+      type:Number,
+      default:0
+    }
+  },
   data(){
     return {
       itemName:undefined,
+      isSale:undefined,
       columns:columns,
       dataSource:[],
       pagination:{
@@ -88,7 +128,9 @@ export default {
     },
     searchParam(){
       return {
-        name:this.itemName
+        name:this.itemName,
+        isSale:this.isSale,
+        productType:this.productType
       }
     }
   },
@@ -199,6 +241,10 @@ export default {
         optControlData: formatDataItem(optControlData),
         optChoiceData: res
       }
+    },
+
+    resetCurrent(page=1){
+      this.pagination = Object.assign({},this.pagination,{current:page})
     }
   }
 }

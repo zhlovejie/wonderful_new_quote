@@ -42,6 +42,12 @@
             <a-radio :value="1">否</a-radio>
           </a-radio-group>
         </a-form-item>
+        <a-form-item label="是否在售">
+          <a-radio-group v-decorator="['isSale',{initialValue: 0}]">
+            <a-radio :value="0">在售</a-radio>
+            <a-radio :value="1">停产</a-radio>
+          </a-radio-group>
+        </a-form-item>
         <a-form-item label="标准配置" class="add-shadow">
           <OptList
             ref="ref_optStand"
@@ -194,7 +200,7 @@ export default {
     init() {
       let that = this
       let queue = []
-      queue.push(productPriceCoefficientListWithoutPage().then(res =>{
+      queue.push(productPriceCoefficientListWithoutPage({type:that.record.productType}).then(res =>{
         that.productPriceCoefficientList = res.data
       }))
       return Promise.all(queue)
@@ -282,6 +288,7 @@ export default {
             })
 
           values.priceSysConfigBoList = priceSysConfigBoList
+          values.productType = that.record.productType
           console.log('Received values of form: ', values)
           that.spinning = true
           priceAdjustProductConfigAddAndUpdate(values)
@@ -336,7 +343,8 @@ export default {
           type: res.data.type,
           remarks: res.data.remarks,
           priceCoefficientId:+res.data.priceCoefficientId,
-          productPic:res.data.productPic || undefined
+          productPic:res.data.productPic || undefined,
+          isSale:res.data.isSale
         })
         let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData

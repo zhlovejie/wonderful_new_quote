@@ -68,6 +68,14 @@
           </div>
           <a-input type="hidden" v-decorator="['productPic', {}]"/>
         </a-form-item>
+
+        <a-form-item label="是否在售" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-radio-group v-decorator="['isSale',{initialValue: 0}]">
+            <a-radio :value="0">在售</a-radio>
+            <a-radio :value="1">停产</a-radio>
+          </a-radio-group>
+        </a-form-item>
+
         <a-form-item label="功能描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <vue-ueditor-wrap v-model="content" ref="ueditor" :config="myConfig"></vue-ueditor-wrap>
           <a-input type="hidden" v-decorator="['description', {rules: [{required: false,min: 5, message: '请填写功能描述！'}]}]"/>
@@ -200,6 +208,7 @@ export default {
           productType: record.productType,
           status: record.status,
           productPic: record.productPic,
+          isSale:record.isSale,
           description: record.description,
           installExplain: record.installExplain,
           operateExplain: record.operateExplain,

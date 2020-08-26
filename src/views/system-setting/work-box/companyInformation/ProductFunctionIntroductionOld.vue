@@ -6,14 +6,14 @@
         <a-form-item label="名称">
           <a-input v-model.trim="queryParam.title" placeholder="根据名称模糊查询"/>
         </a-form-item>
-        <template v-if="$auth('video:list')">
+        <template v-if="$auth('ProductFunctionIntroduction:list')">
           <a-form-item>
             <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           </a-form-item>
         </template>
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
-            <template v-if="$auth('video:add')">
+            <template v-if="$auth('ProductFunctionIntroduction:add')">
               <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
             </template>
           </a-form-item>
@@ -32,32 +32,32 @@
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('video:edit')">
+            <template v-if="$auth('ProductFunctionIntroduction:one')">
+              <a @click="$refs.preview.show(record)">预览</a>
+            </template>
+            <template v-if="$auth('ProductFunctionIntroduction:edit')">
+              <a-divider type="vertical"/>
               <a @click="handleEdit(record)">编辑</a>
             </template>
-            <template v-if="$auth('video:del')">
+            <template v-if="$auth('ProductFunctionIntroduction:del')">
               <a-divider type="vertical"/>
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="record.url != undefined && record.url != '' && record.url.length > 0 && $auth('video:one')">
-              <a-divider type="vertical"/>
-              <a target="_blank" :href="record.url">预览</a>
-            </template>
-            <template v-if="$auth('video:download')">
-              <a-divider type="vertical" />
-              <a v-download="record.url">下载</a>
-            </template>
+            <a-divider type="vertical" />
+            <a v-download="record.url">下载</a>
           </span>
         </s-table>
     <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <modal ref="editModal" @ok="handleSaveOk" @close="handleSaveClose"/>
+    <preview ref="preview" @ok="handleSaveOk"/>
   </a-card>
 </template>
 
 <script>
-import { getEnterpriseVideoList, delInformation } from '@/api/enterpriseInformation'
+import { getProductFunctionIntroductionList, delInformation } from '@/api/enterpriseInformation'
 import { STable } from '@/components'
-import Modal from '../modules/Video'
+import Modal from '../modules/Synopsis'
+import Preview from '../modules/SynopsisPreview'
 
 const columns = [
   {
@@ -69,7 +69,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '视频名称',
+    title: '简介',
     key: 'title',
     dataIndex: 'title'
   },
@@ -93,31 +93,23 @@ const columns = [
   }]
 
 export default {
-  name: 'EnterpriseSynopsis',
-  props:{
-    toolType:{
-      type:String,
-      default:'0'
-    },
-    informationType:{
-      type:String,
-      default:'2'
-    }
-  },
+  name: 'ProductFunctionIntroduction',
   components: {
     STable,
-    Modal
+    Modal,
+    Preview
   },
   data () {
     return {
-      // 表头
-      columns: columns,
+      selectedRowKeys: [],
+      selectedRows: [],
       // 查询参数
       queryParam: {},
+      // 表头
+      columns: columns,
       // 初始化加载 必须为 Promise 对象
       loadData: parameter => {
-        console.log('页面开始加载数据。。。', parameter, this.queryParam)
-        return getEnterpriseVideoList(Object.assign(parameter, this.queryParam))
+        return getProductFunctionIntroductionList(Object.assign(parameter, this.queryParam))
           .then(res => {
             return res
           }).catch(error => {
@@ -127,17 +119,10 @@ export default {
       }
     }
   },
-  created(){
-    this.queryParam = Object.assign(
-      {},
-      this.queryParam,
-      {toolType:this.toolType,informationType:this.informationType}
-    )
-  },
   methods: {
     // 新增
     handleAdd () {
-      this.$refs.modal.add({type:this.informationType || 2,toolType:this.toolType})
+      this.$refs.modal.add(5)
     },
     // 修改详情
     handleEdit (e) {
@@ -181,6 +166,11 @@ export default {
     },
     handleEditOk () {
       this.$refs.table.refresh(true)
+    },
+    onSelectChange (selectedRowKeys, selectedRows) {
+      console.log('onSelectChange 点击了')
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     }
   }
 }

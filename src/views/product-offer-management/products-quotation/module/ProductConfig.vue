@@ -10,10 +10,29 @@
               <tr>
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
+                <template v-if="modelType['is2d0']">
+                  <th style="width:150px;">产品价格(元)</th>
+                  <th style="width:100px;">配置</th>
+                </template>
               </tr>
               <tr v-for="(item,index) in optStand" :key="index" >
                 <td>{{index+1}}</td>
                 <td>{{item.itemName}}</td>
+                <template v-if="modelType['is2d0']">
+                <td>
+                  <div>
+                    A价：{{item.aprice | moneyFormatNumber}}<br/>
+                    B价：{{item.bprice | moneyFormatNumber}}<br/>
+                    C价：{{item.cprice | moneyFormatNumber}}
+                  </div>
+                </td>
+                <td>
+                  <a-checkbox
+                    :checked="item.checked"
+                    @change="optStandChoiceCheckChange(index,$event)"
+                  />
+                </td>
+                </template>
               </tr>
             </table>
           </td>
@@ -114,6 +133,9 @@
               <tr>
                 <th style="width:100px;">序号</th>
                 <th>配置名称</th>
+                <template v-if="modelType['is2d0']">
+                <th style="width:150px;">产品价格(元)</th>
+                </template>
                 <th style="width:100px;">配置</th>
               </tr>
               <tr v-for="(item,index) in optChoice" :key="index">
@@ -134,6 +156,15 @@
                     </a-select-option>
                   </a-select>
                 </td>
+                <template v-if="modelType['is2d0']">
+                <td>
+                  <div>
+                    A价：{{item.target.aprice | moneyFormatNumber}}<br/>
+                    B价：{{item.target.bprice | moneyFormatNumber}}<br/>
+                    C价：{{item.target.cprice | moneyFormatNumber}}
+                  </div>
+                </td>
+                </template>
                 <td>
                   <a-checkbox
                     :disabled="item.target.isRequire"
@@ -145,6 +176,15 @@
               <tr v-for="(item,index) in optSelect" :key="item.id" >
                 <td>{{optChoice.length + index + 1}}</td>
                 <td>{{item.itemName}}</td>
+                <template v-if="modelType['is2d0']">
+                <td>
+                  <div>
+                    A价：{{item.aprice | moneyFormatNumber}}<br/>
+                    B价：{{item.bprice | moneyFormatNumber}}<br/>
+                    C价：{{item.cprice | moneyFormatNumber}}
+                  </div>
+                </td>
+                </template>
                 <td>
                   <a-checkbox
                     :checked="item.checked || false"
@@ -182,6 +222,12 @@ export default {
       type:String,
       default:() =>{
         return ''
+      }
+    },
+    modelType:{
+      type:Object,
+      default:() =>{
+        return {}
       }
     }
   },
@@ -224,6 +270,14 @@ export default {
     }
   },
   methods: {
+    optStandChoiceCheckChange(idx,e){
+      let that = this
+      let optStand = [...that.optStand]
+      optStand[idx].checked = e.target.checked
+      that.optStand = optStand
+    },
+
+
     optChoiceDataSourceChange(index,val){
       debugger
       let _optChoice = [...this.optChoice]
@@ -333,7 +387,10 @@ export default {
         retailPrice,
         remarks,
       }
-      that.optStand = sysConfigList.optStand
+      that.optStand = sysConfigList.optStand.map(item =>{
+        item.checked = true 
+        return item
+      })
       that.optSelect = sysConfigList.optSelect.map(item => {
         item.checked = false
         return item
@@ -479,7 +536,8 @@ export default {
             bprice:item.bprice,
             cprice:item.cprice,
             retailPrice:item.retailPrice,
-            isProduct:item.isProduct === 1 ? true : false
+            isProduct:item.isProduct === 1 ? true : false,
+            introduction:item.introduction || ''
           }
           if ([4, 5].includes(item.type)) {
             _item.isRequire = item.type === 4 ? true : false
@@ -518,7 +576,7 @@ export default {
     },
     getChoiceProducts(){
       let that = this
-      let optStand = this.optStand.map(item =>Object.assign({},item))
+      let optStand = this.optStand
       let optSelect = this.optSelect.map(item =>Object.assign({},item)).filter(item => item.checked)
       let optChoice = this.optChoice.map(item => Object.assign({},item.target)).filter(item => item.checked)
 
@@ -542,7 +600,7 @@ export default {
         control_optChoice
       }
     },
-    calcItems(){
+    calcItems(type='4d0'){
       let {
         optInfo,
         optStand,
@@ -590,14 +648,41 @@ export default {
 
       unStandPrice = Object.assign({},priceResult)
 
-
       if(optStand.length > 0){
-        console.log(`【标配】 ${optInfo.name} 成本价：${optInfo.price} A价：${optInfo.aprice} B价：${optInfo.bprice} C价：${optInfo.cprice} 销售价：${optInfo.retailPrice}`)
-        priceResult.price += (parseFloat(optInfo.price) || 0)
-        priceResult.aprice += (parseFloat(optInfo.aprice) || 0)
-        priceResult.bprice += (parseFloat(optInfo.bprice) || 0)
-        priceResult.cprice += (parseFloat(optInfo.cprice) || 0)
-        priceResult.retailPrice += (parseFloat(optInfo.retailPrice) || 0)
+        debugger
+        if(type === '4d0'){//4.0 计算标配价格不动
+          console.log(`【标配】 ${optInfo.name} 成本价：${optInfo.price} A价：${optInfo.aprice} B价：${optInfo.bprice} C价：${optInfo.cprice} 销售价：${optInfo.retailPrice}`)
+          priceResult.price += (parseFloat(optInfo.price) || 0)
+          priceResult.aprice += (parseFloat(optInfo.aprice) || 0)
+          priceResult.bprice += (parseFloat(optInfo.bprice) || 0)
+          priceResult.cprice += (parseFloat(optInfo.cprice) || 0)
+          priceResult.retailPrice += (parseFloat(optInfo.retailPrice) || 0)
+        }
+
+        if(type === '2d0'){ //用标配总价格 - 未选中单项的价格
+          let optStandUnCheckedPrice = optStand.filter(item => !item.checked).reduce((calc,item) =>{
+            //console.log(`${item.itemName} 成本价：${item.price} A价：${item.aprice} B价：${item.bprice} C价：${item.cprice} 销售价：${item.retailPrice}`)
+            calc.price += (parseFloat(item.price) || 0)
+            calc.aprice += (parseFloat(item.aprice) || 0)
+            calc.bprice += (parseFloat(item.bprice) || 0)
+            calc.cprice += (parseFloat(item.cprice) || 0)
+            calc.retailPrice += (parseFloat(item.retailPrice) || 0)
+            return calc
+          },{
+            price:0,
+            aprice:0,
+            bprice:0,
+            cprice:0,
+            retailPrice:0
+          })
+
+          priceResult.price += ((parseFloat(optInfo.price) || 0) - (parseFloat(optStandUnCheckedPrice.price) || 0))
+          priceResult.aprice += ((parseFloat(optInfo.aprice) || 0) - (parseFloat(optStandUnCheckedPrice.aprice) || 0))
+          priceResult.bprice += ((parseFloat(optInfo.bprice) || 0) - (parseFloat(optStandUnCheckedPrice.bprice) || 0))
+          priceResult.cprice += ((parseFloat(optInfo.cprice) || 0) - (parseFloat(optStandUnCheckedPrice.cprice) || 0))
+          priceResult.retailPrice += ((parseFloat(optInfo.retailPrice) || 0) - (parseFloat(optStandUnCheckedPrice.retailPrice) || 0))
+
+        }
       }
       if(control_optStand.length > 0){
         console.log(`【中控标配】 ${control_optInfo.name} 成本价：${control_optInfo.price} A价：${control_optInfo.aprice} B价：${control_optInfo.bprice} C价：${control_optInfo.cprice} 销售价：${control_optInfo.retailPrice}`)

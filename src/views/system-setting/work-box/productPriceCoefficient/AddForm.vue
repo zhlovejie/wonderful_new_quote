@@ -162,6 +162,7 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
+          values.type = that.record.type
           //提交
           that.spinning = true
           productPriceCoefficientAddAndUpdate(values)

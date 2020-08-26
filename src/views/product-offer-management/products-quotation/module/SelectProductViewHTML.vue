@@ -13,15 +13,15 @@
           />
           <span v-else>暂未配置图片</span>
         </td>
-        <td style="width:150px;">产品系列</td>
+        <td style="width:401px;">产品系列</td>
         <td>{{productInfo.optInfo.name}}</td>
       </tr>
       <tr>
-        <td style="width:150px;">产品型号</td>
+        <td style="width:401px;">产品型号</td>
         <td>{{productInfo.optInfo.model}}</td>
       </tr>
       <tr>
-        <td style="width:150px;">产品价格</td>
+        <td style="width:401px;">产品价格</td>
         <td>
           <a-row>
             <a-col :span="24" v-if="!isPriceViewCost">
@@ -56,26 +56,26 @@
     </table>
     <table class="custom-table custom-table-border" v-if="productInfo.optStand && productInfo.optStand.length > 0">
       <tr>
-        <td class="__table-thead" style="width:80px;">
+        <td class="__table-thead" style="width:150px;">
           <span style="writing-mode: tb;" class="__ele-english" data-english="standard configuration">标配配置</span>
         </td>
         <td style="padding:0;" v-html="optStandHTML()"></td>
       </tr>
       <tr v-if="isPriceViewCost">
-        <td class="__table-thead" style="width:80px;">成本价</td>
+        <td class="__table-thead" style="width:150px;">成本价</td>
         <td >{{priceAll.standPrice.price | moneyFormatNumber(0)}}</td>
       </tr>
     </table>
 
     <table class="custom-table custom-table-border" v-if="productInfo.optSelect && productInfo.optSelect.length > 0">
       <tr>
-        <td class="__table-thead" style="width:80px;">
+        <td class="__table-thead" style="width:150px;">
           <span style="writing-mode: tb;" class="__ele-english" data-english="selection configuration">选择配置</span>
         </td>
         <td style="padding:0;" v-html="optSelectHTML()"></td>
       </tr>
       <tr v-if="isPriceViewCost">
-        <td class="__table-thead" style="width:80px;">成本价</td>
+        <td class="__table-thead" style="width:150px;">成本价</td>
         <td >{{priceAll.unStandPrice.price | moneyFormatNumber(0)}}</td>
       </tr>
     </table>
@@ -147,29 +147,55 @@ export default {
       debugger
       this.$emit('priceChange',v)
     },
-    optStandHTML(){
+    optStandHTML(){ //增加简介
       let html = '<table class="custom-table">'
       html += '<tr>'
       this.productInfo.optStand.map((p,idx) =>{
-        html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
-        if((idx+1) % 3 === 0){
-          html += '</tr><tr>'
-        }
+        html += `
+          <tr>
+            <td style="padding:5px 0;width:50%;">${p.itemName}</td>
+            <td style="padding:5px 0;width:50%;">${p.introduction || ''}</td>
+          </tr>
+        `
       })
-      html += '</tr></table>'
+      html += '</table>'
       return html
+
+      // let html = '<table class="custom-table">'
+      // html += '<tr>'
+      // this.productInfo.optStand.map((p,idx) =>{
+      //   html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
+      //   if((idx+1) % 3 === 0){
+      //     html += '</tr><tr>'
+      //   }
+      // })
+      // html += '</tr></table>'
+      // return html
     },
     optSelectHTML(){
       let html = '<table class="custom-table">'
       html += '<tr>'
       this.productInfo.optSelect.map((p,idx) =>{
-        html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
-        if((idx+1) % 3 === 0){
-          html += '</tr><tr>'
-        }
+        html += `
+        <tr>
+          <td style="padding:5px 0;width:50%;">${p.itemName}</td>
+          <td style="padding:5px 0;width:50%;">${p.introduction || ''}</td>
+        </tr>
+        `
       })
-      html += '</tr></table>'
+      html += '</table>'
       return html
+
+      // let html = '<table class="custom-table">'
+      // html += '<tr>'
+      // this.productInfo.optSelect.map((p,idx) =>{
+      //   html += `<td style="padding:5px 0;width:33.3333%;">${p.itemName}</td>`
+      //   if((idx+1) % 3 === 0){
+      //     html += '</tr><tr>'
+      //   }
+      // })
+      // html += '</tr></table>'
+      // return html
     },
     imgLoadAction(){
       console.log(arguments)

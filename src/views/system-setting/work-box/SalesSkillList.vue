@@ -5,14 +5,14 @@
         <a-form-item label="名称">
           <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询" :allowClear="true" />
         </a-form-item>
-        <template v-if="$auth('document:list')">
+        <template v-if="$auth('SalesSkil:list')">
           <a-form-item>
             <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           </a-form-item>
         </template>
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
-            <template v-if="$auth('synopsis:add')">
+            <template v-if="$auth('SalesSkil:add')">
               <a-button type="primary" icon="plus" @click="handleAction('add',null)">新增</a-button>
             </template>
           </a-form-item>
@@ -31,14 +31,14 @@
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('synopsis:one')">
+            <template v-if="$auth('SalesSkil:one')">
               <a target="_blank" :href="viewFormat(record)">预览</a>
             </template>
-            <template v-if="$auth('synopsis:edit')">
+            <template v-if="$auth('SalesSkil:edit')">
               <a-divider type="vertical"/>
               <a @click="handleAction('edit',record)">编辑</a>
             </template>
-            <template v-if="$auth('synopsis:del')">
+            <template v-if="$auth('SalesSkil:del')">
               <a-divider type="vertical"/>
               <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del',record)">
                 <a href="javascript:;">删除</a>

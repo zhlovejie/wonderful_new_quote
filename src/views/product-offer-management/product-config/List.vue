@@ -5,7 +5,7 @@
       <a-input placeholder="配置名称模糊查询" v-model="itemName" allowClear style="width: 200px;"/>
       <a-input placeholder="备注模糊查询" v-model="remarks" allowClear style="width: 200px;"/>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <a-button v-if="!isProductFunctionIntroduction" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -30,14 +30,22 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('edit',record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm
-            title="确认删除该条数据吗?"
-            @confirm="() => doAction('del',record)"
-          >
-            <a type="primary" href="javascript:;">删除</a>
-          </a-popconfirm>
+          <template v-if="isProductFunctionIntroduction">
+            <!-- <a type="primary" @click="doAction('view',record)">预览</a>   -->
+            <a @click="$emit('view',Object.assign({},record))">预览</a>
+          </template>
+          <template v-if="!isProductFunctionIntroduction">
+            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('edit',record)">修改</a>
+            <a-divider type="vertical" />
+            <a-popconfirm
+              title="确认删除该条数据吗?"
+              @confirm="() => doAction('del',record)"
+            >
+              <a type="primary" href="javascript:;">删除</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
@@ -98,6 +106,12 @@ const columns = [
 
 export default {
   name:'productConfig',
+  props:{
+    isProductFunctionIntroduction:{
+      type:Boolean,
+      default:false
+    }
+  },
   components:{
     AddForm
   },

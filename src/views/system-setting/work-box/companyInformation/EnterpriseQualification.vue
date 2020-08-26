@@ -16,7 +16,7 @@
   <EnterpriseQualificationSelectView ref="enterpriseQualificationSelectView" @change="selectAction" :qualificationList="selectedRows"/>
 
   <div style="text-align:center;margin-top:10px;">
-    <a-button type="primary" :disabled="selectedRows.length === 0" icon="check" @click="doAction('download')" style="margin:0 10px;">下载</a-button>
+    <a-button v-if="$auth('EnterpriseQualification:download')" type="primary" :disabled="selectedRows.length === 0" icon="check" @click="doAction('download')" style="margin:0 10px;">下载</a-button>
     <a-button type="primary" :disabled="selectedRows.length === 0" icon="reload" @click="doAction('reset')" style="margin:0 10px;">重置</a-button>
   </div>
 

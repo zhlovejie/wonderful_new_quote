@@ -133,6 +133,17 @@ export function priceAdjustProductConfigAddAndUpdate (parameter) {
     data: parameter
   })
 }
+
+//改变销售状态
+export function priceAdjustProductConfigChangeIsSale (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/changeIsSale',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------系列产品配置清单-END--------
 
 
