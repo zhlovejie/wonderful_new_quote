@@ -27,7 +27,7 @@ export default {
   //baseURL: 'http://192.168.99.130:8995', // 玉堂
   //baseURL:'http://192.168.99.188:8999/oa',//王利
 
-  //baseURL:'http://192.168.13.158:8999/oa',//张恒
+  //baseURL:'http://192.168.13.158:8995/oa',//张恒
   //baseURL: 'http://192.168.13.133:8995', // 玉堂
   //baseURL: 'http://192.168.13.27:8999/oa', // 王利
   //baseURL: 'http://106.14.194.64/cloud_new',
@@ -37,7 +37,7 @@ export default {
   layout: 'sidemenu', // nav menu position: sidemenu or topmenu
   contentWidth: 'Fixed', // layout of content: Fluid or Fixed, only works when layout is topmenu
   fixedHeader: false, // sticky headergetInformationType
-  fixSiderbar: false, // sticky siderbar
+  fixSiderbar: true, // sticky siderbar
   autoHideHeader: false, //  auto hide header
   colorWeak: false,
   multiTab: false,

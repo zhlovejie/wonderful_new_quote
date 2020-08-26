@@ -29,7 +29,7 @@
     ></side-menu>
     <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: contentPaddingLeft, minHeight: '100vh' }">
       <!-- layout header -->
-      <global-header
+      <global-header class="111122233333"
         :mode="layoutMode"
         :menus="menus"
         :theme="navTheme"
