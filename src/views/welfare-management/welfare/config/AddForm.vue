@@ -80,6 +80,7 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
+          values.welfareName = '生日福利'
           that.spinning = true
           birthdayWelfareSettingAddOrUpdate(values)
             .then((res) => {

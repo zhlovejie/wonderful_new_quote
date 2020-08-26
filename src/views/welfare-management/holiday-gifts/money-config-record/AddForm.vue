@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="800"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
@@ -40,8 +40,8 @@
             <td style="padding:0;">
               <table class="custom-table custom-table-border">
                 <tr>
-                  <td>节假日名称</td>
-                  <td>过节费(元)</td>
+                  <td style="width:50%;">节假日名称</td>
+                  <td style="width:50%;">过节费(元)</td>
                 </tr>
                 <tr v-for="(item,idx) in detail.oldDetails" :key="idx">
                   <td>{{item.festivalName}}</td>
@@ -55,14 +55,20 @@
             <td style="padding:0;">
               <table class="custom-table custom-table-border">
                 <tr>
-                  <td>节假日名称</td>
-                  <td>过节费(元)</td>
+                  <td style="width:50%;">节假日名称</td>
+                  <td style="width:50%;">过节费(元)</td>
                 </tr>
                 <tr v-for="(item,idx) in detail.newDetails" :key="idx">
                   <td>{{item.festivalName}}</td>
                   <td>{{item.money | moneyFormatNumber}}</td>
                 </tr>
               </table>
+            </td>
+          </tr>
+          <tr v-if="isApproval">
+            <td style="width:120px;">备注信息</td>
+            <td style="padding:0;">
+              <div v-html="formatHTML(detail.remark)" />
             </td>
           </tr>
         </table>
@@ -191,7 +197,15 @@ export default {
         opinion: opinion,
       })
     },
-  },
+    formatHTML(htmlStr){
+      if(typeof htmlStr !== 'string') {
+        return ''
+      }
+      htmlStr = htmlStr.replace(/[\n\r]/g,'<br/>')
+      htmlStr = htmlStr.replace(/\s+/g,'&nbsp;')
+      return htmlStr
+    }
+  }
 }
 </script>
 <style scoped>
@@ -208,11 +222,13 @@ export default {
 }
 .custom-table-border th,
 .custom-table-border td {
-  padding: 5px 10px;
+  padding: 10px;
 }
 
 .custom-table >>> .custom-table {
   margin-bottom: 0;
+  
+  width: calc(100% + 2px);
   margin: -1px;
 }
 </style>

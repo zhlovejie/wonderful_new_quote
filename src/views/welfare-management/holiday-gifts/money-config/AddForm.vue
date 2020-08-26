@@ -44,7 +44,8 @@
                 <a-select
                   placeholder="节日名称"
                   :allowClear="true" 
-                  v-decorator="[`festivalDetails.${idx}.festivalId`,{initialValue:festivalDetails[idx]['festivalId'],rules: [{required: true,message: '选择节日名称'}]}]"
+                  v-decorator="[`festivalDetails.${idx}.festivalId`,{initialValue:festivalDetails[idx]['festivalId'],rules: [{required: true,message: '选择节日名称'}]}]" 
+                  @change="(val) => festivalChange(val,`festivalDetails.${idx}.festivalId`)"
                 >
                   <a-select-option
                     v-for="item in festivalList"
@@ -210,6 +211,20 @@ export default {
       if(type === 'del'){
         this.festivalDetails = festivalDetails.filter(item => item.key !== key)
       }
+    },
+    festivalChange(val,key){
+      let that = this 
+      that.$nextTick(() => {
+        let res = that.form.getFieldsValue()
+        let target = that.festivalList.find(item => item.id === val)
+        let list = res.festivalDetails.filter(item => item.festivalId === val)
+        if(list && list.length > 1){
+          that.$message.info(`节假日名称[${target.text}]重复`)
+          let obj ={}
+          obj[key] = undefined
+          that.form.setFieldsValue(obj)
+        }
+      })
     }
   }
 }

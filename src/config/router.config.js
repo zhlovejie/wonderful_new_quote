@@ -2445,7 +2445,7 @@ export const asyncRouterMap = [
                 name: 'welfare-management-welfare-config',
                 component: () => import('@/views/welfare-management/welfare/config/List'),
                 meta: {
-                  title: '福利标准',
+                  title: '生日福利标准',
                   icon: 'setting',
                   keepAlive: false,
                   permission: ['permission']

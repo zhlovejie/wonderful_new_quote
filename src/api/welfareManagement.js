@@ -33,6 +33,15 @@ export function checkupSettingAddOrUpdate (parameter) {
     data: parameter
   })
 }
+/*判断岗位是否已有体检设置了，返回true则有，false则没有*/
+export function checkupSettingCheckStation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/checkupSetting/checkStation',
+    method: 'get',
+    params: parameter
+  })
+}
 
 //---------------------体检设置--END---------------------
 

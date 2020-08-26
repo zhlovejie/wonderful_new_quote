@@ -80,6 +80,12 @@
               </a-popconfirm>
             </template>
             <template
+              v-if="+record.status === 4 && +record.createdId === +userInfo.id"
+            >
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('edit',record)">修改</a>
+            </template>
+            <template
               v-if="(+record.status === 4 || +record.status === 3) && +record.createdId === +userInfo.id"
             >
               <a-divider type="vertical" />
