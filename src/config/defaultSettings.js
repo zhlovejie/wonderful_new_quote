@@ -29,14 +29,13 @@ export default {
 
   //baseURL:'http://192.168.13.158:8995/oa',//张恒
   //baseURL: 'http://192.168.13.133:8995', // 玉堂
-  //baseURL: 'http://192.168.13.27:8999/oa', // 王利
+  baseURL: 'http://192.168.13.27:8999/oa', // 王利
   //baseURL: 'http://106.14.194.64/cloud_new',
-  baseURL: 'http://192.168.13.250/cloud',
+  //baseURL: 'http://192.168.13.250/cloud',
   //baseURL:'http://192.168.13.158:8999/oa',//张恒
   //baseURL: 'http://192.168.13.133:8995', // 玉堂
   //baseURL: 'http://192.168.13.27:8999/oa', // 王利
   //baseURL:'http://192.168.13.253/cloud',
-product-offer-management
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
   layout: 'sidemenu', // nav menu position: sidemenu or topmenu
