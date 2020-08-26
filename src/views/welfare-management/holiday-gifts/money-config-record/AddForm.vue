@@ -79,7 +79,6 @@
   </a-modal>
 </template>
 <script>
-import { getDictionaryList } from '@/api/workBox'
 import {
   fbsRecordApprove,
   fbsRecordDetail
@@ -134,8 +133,6 @@ export default {
     init() {
       let that = this
       let queue = []
-      //let task1 = getDictionaryList({ parentId: 517 }).then(res => (that.festivalList = res.data))
-      //queue.push(task1)
       return Promise.all(queue)
     },
     async query(type, record) {

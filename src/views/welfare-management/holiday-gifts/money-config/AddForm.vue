@@ -104,7 +104,7 @@
 </template>
 <script>
 
-import { getDictionaryList } from '@/api/workBox'
+import { getDictionary } from '@/api/common'
 import { festivalBonusSettingDetail,festivalBonusSettingAddOrUpdate } from '@/api/welfareManagement'
 
 let uuid = () =>Math.random().toString(32).slice(-10)
@@ -162,7 +162,7 @@ export default {
     initData() {
       let that = this
       let queue = []
-      let task1 = getDictionaryList({ parentId: 517 }).then(res => (that.festivalList = res.data))
+      let task1 = getDictionary({ text: '节日名称' }).then(res => {that.festivalList = res.data })
       queue.push(task1)
       return Promise.all(queue)
     },

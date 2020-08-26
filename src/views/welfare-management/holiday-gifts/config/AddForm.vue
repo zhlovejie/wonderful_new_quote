@@ -47,7 +47,8 @@ import {
 import {
   giftSettingAddOrUpdate
 } from '@/api/welfareManagement'
-import { getDictionaryList } from '@/api/workBox'
+
+import { getDictionary } from '@/api/common'
 export default {
   name: 'welfare-management-healthy-config-AddForm',
   data() {
@@ -87,7 +88,7 @@ export default {
     initData() {
       let that = this
       let queue = []
-      let task1 = getDictionaryList({ parentId: 517 }).then(res => (that.festivalList = res.data))
+      let task1 = getDictionary({ text: '节日名称' }).then(res => {that.festivalList = res.data })
       queue.push(task1)
       return Promise.all(queue)
     },
