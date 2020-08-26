@@ -323,7 +323,7 @@ export const asyncRouterMap = [
                 name: 'OperationalScheme',
                 component: () => import('@/views/system-setting/work-box/OperationalScheme'),
                 meta: {
-                  title: '技术参数',
+                  title: '运行方案',
                   permission: ['permission']
                 }
               },
@@ -2213,94 +2213,6 @@ export const asyncRouterMap = [
         }]
       },
       {
-        path: '/human_Resources',
-        name: 'human_Resources',
-        component: PageView,
-        meta: {
-          title: '人力资源',
-          icon: 'setting',
-          permission: ['permission']
-        },
-        children: [{
-          // 资产管理
-          path: '/human_Resources/asset-management',
-          name: 'asset-management',
-          component: RouteView,
-          meta: {
-            title: '资产管理',
-            icon: 'setting',
-            permission: ['permission']
-          },
-          children: [{
-              path: '/human_Resources/asset-management/mine',
-              name: 'asset-management-mine',
-              component: () => import('@/views/asset-management/mine/List'),
-              meta: {
-                title: '我的资产',
-                icon: 'setting',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/human_Resources/asset-management/search',
-              name: 'asset-management-search',
-              component: () => import('@/views/asset-management/search/List'),
-              meta: {
-                title: '查询资产',
-                icon: 'setting',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/human_Resources/asset-management/management',
-              name: 'asset-management-management',
-              component: () => import('@/views/asset-management/management/List'),
-              meta: {
-                title: '管理资产',
-                icon: 'setting',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/human_Resources/asset-management/record',
-              name: 'asset-management-record',
-              component: () => import('@/views/asset-management/record/List'),
-              meta: {
-                title: '维修申请记录',
-                icon: 'setting',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/human_Resources/asset-management/inventory-record-cycle',
-              name: 'asset-management-inventory-record-cycle',
-              component: () => import('@/views/asset-management/inventory-record-cycle/List'),
-              meta: {
-                title: '资产盘点周期',
-                icon: 'setting',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/human_Resources/asset-management/inventory-record',
-              name: 'asset-management-inventory-record',
-              component: () => import('@/views/asset-management/inventory-record/List'),
-              meta: {
-                title: '资产盘点记录',
-                icon: 'setting',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }
-          ]
-        }]
-      },
-      {
         // 福利管理
         path: '/welfare-management',
         name: 'welfare-management',
@@ -2473,6 +2385,247 @@ export const asyncRouterMap = [
                 component: () => import('@/views/welfare-management/welfare/annual-meeting-config/List'),
                 meta: {
                   title: '年会福利管理',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              }
+            ]
+          }
+        ]
+      },
+      {
+        //人力资源
+        path: '/human_Resources',
+        name: 'human_Resources',
+        component: PageView,
+        meta: {
+          title: '人力资源',
+          icon: 'user',
+          permission: ['permission']
+        },
+        redirect: '/human_Resources',
+        children: [
+          {
+            path: '/human_Resources/notice',
+            name: 'human_Resources_notice',
+            component: () => import('@/views/human_Resources/notice/Notice-List'),
+            meta: {
+              title: '公告管理',
+              icon: 'read',
+              keepAlive: false,
+              permission: ['permission']
+            },
+          },
+          {
+            path: '/human_Resources/security',
+            name: 'human_Resources_security',
+            component: RouteView,
+            meta: {
+              title: '社保管理',
+              icon: 'audit',
+              keepAlive: false,
+              permission: ['permission']
+            },
+            redirect: '/human_Resources/security/Insurance',
+            children: [{
+                path: '/human_Resources/security/Insurance',
+                name: 'human_Resources_Insurance',
+                component: () => import('@/views/human_Resources/security/Insurance/Insurance_List'),
+                meta: {
+                  title: '保险配置',
+                  icon: 'audit',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/security/social',
+                name: 'human_Resources_social',
+                component: () => import('@/views/human_Resources/security/social/security_List'),
+                meta: {
+                  title: '社保',
+                  icon: 'audit',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+            ]
+          },
+          {
+            path: '/human_Resources/leagueBuilding',
+            name: 'human_Resources_leagueBuilding',
+            component: () => import('@/views/human_Resources/leagueBuilding/leagueBuilding_List'),
+            meta: {
+              title: '团建管理',
+              icon: 'usergroup-delete',
+              keepAlive: false,
+              permission: ['permission']
+            },
+          },
+          {
+            path: '/human_Resources/labor_contract',
+            name: 'human_Resources_contract',
+            component: RouteView,
+            meta: {
+              title: '劳动合同管理',
+              icon: 'solution',
+              keepAlive: false,
+              permission: ['permission']
+            },
+            redirect: '/human_Resources/labor_contract/post_allocation',
+            children: [{
+                path: '/human_Resources/labor_contract/post_allocation',
+                name: 'human_Resources_allocation',
+                component: () => import('@/views/human_Resources/labor_contract/post_allocation/post_allocation_List'),
+                meta: {
+                  title: '岗位配置',
+                  icon: 'container',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/labor_contract/contractAgreement',
+                name: 'human_Resources_contractAgreement',
+                component: () => import('@/views/human_Resources/labor_contract/contractAgreement/contractAgreement_List'),
+                meta: {
+                  title: '合同协议管理',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+            ]
+          },
+          {
+            path: '/human_Resources/dormitory',
+            name: 'human_Resources_dormitory',
+            component: RouteView,
+            meta: {
+              title: '宿舍管理',
+              icon: 'solution',
+              keepAlive: false,
+              permission: ['permission']
+            },
+            redirect: '/human_Resources/dormitory/electricity',
+            children: [{
+                path: '/human_Resources/dormitory/electricity',
+                name: 'human_Resources_electricity',
+                component: () => import('@/views/human_Resources/dormitory/electricity/electricity_List'),
+                meta: {
+                  title: '房间管理',
+                  icon: 'container',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/dormitory/personnel',
+                name: 'human_Resources_personnel',
+                component: () => import('@/views/human_Resources/dormitory/personnel/personnel_List'),
+                meta: {
+                  title: '人员管理',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/dormitory/room',
+                name: 'human_Resources_room',
+                component: () => import('@/views/human_Resources/dormitory/room/room_List'),
+                meta: {
+                  title: '电费管理',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/dormitory/securityHealth',
+                name: 'human_Resources_securityHealth',
+                component: () => import('@/views/human_Resources/dormitory/securityHealth/securityHealth_List'),
+                meta: {
+                  title: '安全卫生考核',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+            ]
+          },
+          {
+            // 资产管理
+            path: '/human_Resources/asset-management',
+            name: 'asset-management',
+            component: RouteView,
+            meta: {
+              title: '资产管理',
+              icon: 'setting',
+              permission: ['permission']
+            },
+            children: [{
+                path: '/human_Resources/asset-management/mine',
+                name: 'asset-management-mine',
+                component: () => import('@/views/asset-management/mine/List'),
+                meta: {
+                  title: '我的资产',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/asset-management/search',
+                name: 'asset-management-search',
+                component: () => import('@/views/asset-management/search/List'),
+                meta: {
+                  title: '查询资产',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/asset-management/management',
+                name: 'asset-management-management',
+                component: () => import('@/views/asset-management/management/List'),
+                meta: {
+                  title: '管理资产',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/asset-management/record',
+                name: 'asset-management-record',
+                component: () => import('@/views/asset-management/record/List'),
+                meta: {
+                  title: '维修申请记录',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/asset-management/inventory-record-cycle',
+                name: 'asset-management-inventory-record-cycle',
+                component: () => import('@/views/asset-management/inventory-record-cycle/List'),
+                meta: {
+                  title: '资产盘点周期',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/human_Resources/asset-management/inventory-record',
+                name: 'asset-management-inventory-record',
+                component: () => import('@/views/asset-management/inventory-record/List'),
+                meta: {
+                  title: '资产盘点记录',
                   icon: 'setting',
                   keepAlive: false,
                   permission: ['permission']

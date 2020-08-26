@@ -5,7 +5,7 @@
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
   >
     <!-- <template slot="footer">
       <template v-if="isApproval">
@@ -74,7 +74,7 @@
               </a-col>
               <a-col :span="24" >
                 <a-form-item label="语言表达(最高10分)">
-                  <!-- <label>语言表达</label> 
+                  <!-- <label>语言表达</label>
                   <a-input :disabled="isDisabled"  v-decorator="['results.3.evaluateScore']" /> -->
                   <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.3.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.3.evaluateItem',{initialValue:'语言表达'}]" />
@@ -82,7 +82,7 @@
               </a-col>
               <a-col :span="24" >
                 <a-form-item label="健康情况(最高10分)">
-                  <!-- <label>健康情况</label> 
+                  <!-- <label>健康情况</label>
                   <a-input :disabled="isDisabled"  v-decorator="['results.4.evaluateScore']" /> -->
                   <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.4.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.4.evaluateItem',{initialValue:'健康情况'}]" />
@@ -93,7 +93,7 @@
                   <span style="float:left;">{{totalCalcScore}}</span>
                 </a-form-item>
               </a-col>
-              
+
             </a-row>
           </td>
         </tr>
@@ -102,10 +102,10 @@
           <td>综合评价</td>
           <td colspan="3">
             <a-form-item>
-              <a-textarea 
-                :disabled="isDisabled" 
-                placeholder="综合评价" 
-                :rows="3" 
+              <a-textarea
+                :disabled="isDisabled"
+                placeholder="综合评价"
+                :rows="3"
                 v-decorator="['firstEvaluate', { rules: [{ required: false, message: '综合评价' }] }]"
               />
             </a-form-item>
@@ -120,10 +120,11 @@
                 <a-form-item>
                   <a-select :disabled="isView" @change="probationTypeChange" v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]" placeholder="选择试用期">
                     <a-select-option :value="0">无</a-select-option>
+                    <a-select-option :value="5">7天</a-select-option>
                     <a-select-option :value="1">1个月</a-select-option>
                     <a-select-option :value="2">2个月</a-select-option>
                     <a-select-option :value="3">3个月</a-select-option>
-                    <a-select-option :value="4">考察期</a-select-option>
+<!--                    <a-select-option :value="4">考察期</a-select-option>-->
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -162,10 +163,10 @@
           <td>
             {{firstDate}}
             <!-- <a-form-item>
-              <a-date-picker 
-                disabled 
-                style="width:100%;" 
-                v-decorator="['firstDate',{initialValue:moment(),rules: [{required: false,message: '初试日期'}]}]" 
+              <a-date-picker
+                disabled
+                style="width:100%;"
+                v-decorator="['firstDate',{initialValue:moment(),rules: [{required: false,message: '初试日期'}]}]"
                 format="YYYY-MM-DD"
               />
             </a-form-item> -->
@@ -178,8 +179,8 @@
             <a-row>
               <a-col :span="24">
                 <a-form-item label="复试人员">
-                  <a-cascader 
-                    :disabled="isDisabled" 
+                  <a-cascader
+                    :disabled="isDisabled"
                     v-decorator="['secondPersonInfo',{rules: [{required: false,message: '选择复试人员'}]}]"
                     :options="departmentOptions"
                     @change="departmentCascaderChange"
@@ -195,11 +196,11 @@
               </a-col>
               <a-col :span="24">
                 <a-form-item label="复试时间">
-                  <a-date-picker 
-                    :disabled="isDisabled" 
+                  <a-date-picker
+                    :disabled="isDisabled"
                     style="width:100%;"
                     v-decorator="['secondDatetime',{rules: [{required: false,message: '输入复试时间'}]}]"
-                    format="YYYY-MM-DD HH:mm:ss" 
+                    format="YYYY-MM-DD HH:mm:ss"
                     :showTime="{ defaultValue: moment('00:00:00', 'HH:mm:ss') }"
                   />
                 </a-form-item>
@@ -233,10 +234,10 @@
           <td>综合评价</td>
           <td colspan="3">
             <a-form-item>
-              <a-textarea 
-                :disabled="isDisabled" 
-                placeholder="综合评价" 
-                :rows="3" 
+              <a-textarea
+                :disabled="isDisabled"
+                placeholder="综合评价"
+                :rows="3"
                 v-decorator="['secondEvaluate', { rules: [{ required: false, message: '综合评价' }] }]"
               />
             </a-form-item>
@@ -289,7 +290,7 @@ import {
   handleInterviewRecord
 } from '@/api/personnelManagement'
 
-import moment from 'moment' 
+import moment from 'moment'
 
 export default {
   name:'AddForm',
@@ -300,7 +301,7 @@ export default {
     return {
       form: this.$form.createForm(this, { name: 'addForm' }),
       visible:false,
-      actionType:'add', 
+      actionType:'add',
       stationName:'',
       personName:'',
       personPhoneNo:'',
@@ -385,7 +386,7 @@ export default {
       let that = this
       if(that.isView || that.isApproval){
         that.handleCancel()
-        return 
+        return
       }
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -410,13 +411,13 @@ export default {
             //type:values.hasSecondPass
             type:that.hasSecondPass
           }
-          
+
           console.log('Received values of form: ', _values)
           that.spinning = true
           interviewRecordUpdate(_values).then(res =>{
             that.spinning = false
             if(res.code === 200){
-              that.visible = false 
+              that.visible = false
               that.$message.success('操作成功')
 
               that.$emit('finish')
@@ -438,11 +439,11 @@ export default {
     },
     async query(type,record){
       let that = this
-      that.actionType = type 
+      that.actionType = type
       that.record = record || {}
       that.form.resetFields()
 
-      await that.init() 
+      await that.init()
       that.visible = true
       handleInterviewRecord({id:that.record.id}).then(res =>{
         console.log(res)
@@ -463,7 +464,7 @@ export default {
         }
         //data.firstDate = that.moment(data.firstDate)
         try{
-          that.secondName = data.secondName || '' 
+          that.secondName = data.secondName || ''
           if(data.secondDate){
             that.secondDate = data.secondDate
           }
@@ -477,8 +478,8 @@ export default {
           that.personName = data.name || ''
           that.personPhoneNo = data.phone || ''
           that.firstUserName = data.firstUserName || ''
-          that.firstDate = data.firstDate || '' 
-          
+          that.firstDate = data.firstDate || ''
+
         }catch(err){
           console.log(err)
         }
@@ -488,7 +489,7 @@ export default {
           //填充其余数据
           delete data.interviewResult
           data.confirmSalary = data.confirmSalary === -1 ? '***' : data.confirmSalary
-          that.form.setFieldsValue(data) 
+          that.form.setFieldsValue(data)
           that.calcScores()
         })
 
@@ -513,7 +514,7 @@ export default {
           })
         }
 
-        
+
 
       })
     },

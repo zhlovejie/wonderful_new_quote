@@ -1,21 +1,25 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 //取消请求
-import {CancelToken} from 'axios'
+import {
+  CancelToken
+} from 'axios'
 
 // 人员储备上传
-export function reserveImportExcel (parameter) {
+export function reserveImportExcel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/importExcel',
     method: 'post',
-    responseType:'blob',
+    responseType: 'blob',
     data: parameter
   })
 }
 
 // 人员储备新增或修改
-export function reserveAddOrUpdate (parameter) {
+export function reserveAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/addOrUpdate',
@@ -25,7 +29,7 @@ export function reserveAddOrUpdate (parameter) {
 }
 
 //删除人员储备信息 reserveId
-export function deleteReserve (parameter) {
+export function deleteReserve(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/deleteReserve',
@@ -35,7 +39,7 @@ export function deleteReserve (parameter) {
 }
 
 // 人员入职
-export function reserveDoEntry (parameter) {
+export function reserveDoEntry(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/doEntry',
@@ -45,7 +49,7 @@ export function reserveDoEntry (parameter) {
 }
 
 // 下载列表导出excel 
-export function reserveExportExcel (parameter) {
+export function reserveExportExcel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/exportExcel',
@@ -55,7 +59,7 @@ export function reserveExportExcel (parameter) {
 }
 
 // 获取入职后的用户详情 reserveId
-export function reserveGetDetail (parameter) {
+export function reserveGetDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/getDetail',
@@ -65,7 +69,7 @@ export function reserveGetDetail (parameter) {
 }
 
 //入职操作时，回显之前储备的用户信息
-export function getEntityBeforeDetail (parameter) {
+export function getEntityBeforeDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/getEntityBeforeDetail',
@@ -75,7 +79,7 @@ export function getEntityBeforeDetail (parameter) {
 }
 
 //获取人脸识别码 无参数
-export function getFaceNo (parameter) {
+export function getFaceNo(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/getFaceNo',
@@ -85,7 +89,7 @@ export function getFaceNo (parameter) {
 }
 
 // 人员储备列表
-export function getReserveList (parameter) {
+export function getReserveList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/pageList',
@@ -95,7 +99,7 @@ export function getReserveList (parameter) {
 }
 
 //更改已入职人员信息
-export function reserveUpdateEntity (parameter) {
+export function reserveUpdateEntity(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/updateEntity',
@@ -114,42 +118,57 @@ export function reserveUpdateEntity (parameter) {
 //   })
 // }
 
-export function reserveUpdateResume (parameter) {
+export function reserveUpdateResume(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/updateResume',
     method: 'post',
     data: parameter,
-    config:{
-      headers: { "Content-Type": "multipart/form-data" }
+    config: {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
     }
   })
 }
 
 //采集人脸信息，传入照片返回特征值
-export function reserveFaceAdd (parameter) {
+export function reserveFaceAdd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/faceAdd',
     method: 'post',
     data: parameter,
-    config:{
-      headers: { "Content-Type": "multipart/form-data" }
+    config: {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
     }
   })
 }
 
 //检索人脸，传入照片返回匹配用户
-export function reserveFaceSearch (parameter) {
+export function reserveFaceSearch(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/reserve/faceSearch',
     method: 'post',
     data: parameter,
-    config:{
-      headers: { "Content-Type": "multipart/form-data" }
+    config: {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
     }
   })
 }
 
 
+// 获取合同模板接口 
+export function getReserveCondition(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaContractStationMap/contract-station-map/listContractFormMapByCondition',
+    method: 'get',
+    params: parameter
+  })
+}
