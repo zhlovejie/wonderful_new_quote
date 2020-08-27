@@ -36,13 +36,8 @@
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  :disabled="isDisabled"
                   placeholder="输入公司缴费金额"
-                  v-decorator="['companyPay', {rules: [ {required: true,  message: '请输入公司缴费金额!'},
-              {
-                max:10,
-                message: '金额不能超过10位',
-              }]}]"
+                  v-decorator="['companyPay', {rules: [ {required: true,  message: '请输入公司缴费金额!'},]}]"
                 />
               </a-form-item>
             </td>
@@ -53,13 +48,8 @@
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  :disabled="isDisabled"
                   placeholder="输入个人缴费金额"
-                  v-decorator="['personalPay', {rules: [{required: true,message: '请输入个人缴费金额!',},
-              {
-                max:10,
-                message: '金额不能超过10位',
-              }]}]"
+                  v-decorator="['personalPay', {rules: [{required: true,message: '请输入个人缴费金额!',}]}]"
                 />
               </a-form-item>
             </td>
@@ -103,6 +93,7 @@ export default {
     return {
       visible: false,
       spinning: false,
+      type: 'add',
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       uploadUrl: getUploadPath2(),
       //   上传文件
@@ -111,9 +102,9 @@ export default {
   },
   computed: {
     modalTitle() {
-      if (this.isEditSalary) {
-        return '社保'
-      }
+      // if (this.isEditSalary) {
+      //   return '社保'
+      // }
       let txt = this.isView ? '新增' : '修改'
       return `${txt}社保`
     },
