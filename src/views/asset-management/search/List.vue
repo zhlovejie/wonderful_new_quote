@@ -148,7 +148,7 @@ export default {
         }
       },
       immediate: true,
-    },
+    }
   },
   methods: {
     init() {
@@ -158,7 +158,16 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let searchParamFilter = (searchParam) =>{
+        let obj = {}
+        for(let [k,v] of Object.entries(searchParam)){
+          if(v){
+            obj[k] = v
+          }
+        }
+        return obj
+      }
+      let _searchParam = Object.assign({}, searchParamFilter({ ...this.searchParam }), { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       oaAssertsInfoMyAssertsAllList(_searchParam)
