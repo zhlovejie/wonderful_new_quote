@@ -59,7 +59,9 @@
               <a-divider type="vertical" />
               <a @click="download(record)">下载</a>
             </template>
-            <template v-if="userInfo===record.inspectId&&record.status===0">
+            <template
+              v-if="(','+record.inspectId+',').indexOf(','+userInfo.id+',')!=-1&&record.status===0"
+            >
               <a-divider type="vertical" />
               <a @click="inspect('handle',record)">处理</a>
             </template>
@@ -177,6 +179,7 @@ export default {
         this.departmentList = res.data
       })
       this.searchAction()
+      console.log(that.userInfo)
     },
     // 获取时间
     dateChange(date, dateString) {
