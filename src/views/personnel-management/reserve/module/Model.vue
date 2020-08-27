@@ -1,5 +1,11 @@
 <template>
-  <a-upload name="file" :action="uploadUrl" :fileList="fileList" @change="handleChange">
+  <a-upload
+    name="file"
+    :action="uploadUrl"
+    :fileList="fileList"
+    @change="handleChange"
+    :showUploadList="fileUrl"
+  >
     <a-button class="a-button" type="primary" icon="upload">上传</a-button>
   </a-upload>
 </template>
@@ -11,11 +17,12 @@ export default {
     return {
       uploadUrl: getUploadPath2(),
       fileList: [],
+      fileUrl: false,
       id: this.msg,
       tempName: this.name,
     }
   },
-  props: ['msg', 'name', 'fileName'],
+  props: ['msg', 'name', 'fileName', 'fileListData'],
   watch: {
     fileName: function (val, oldVal) {
       this.fileList = val || []
@@ -25,13 +32,10 @@ export default {
     this.fileList = this.fileName
   },
   methods: {
-    // query(key) {
-    //   console.log(key)
-    // },
-
     handleChange(info) {
-      console.log(arguments)
+      // console.log(arguments)
       let that = this
+      that.fileUrl = true
       let fileList = [...info.fileList]
       fileList = fileList.slice(-1)
       fileList = fileList.map((file) => {
@@ -43,10 +47,11 @@ export default {
             fileType: 1,
           }
           that.$emit('getmsg', arr)
+          that.fileUrl = false
         }
         return file
       })
-      this.fileList = fileList
+      that.fileList = fileList
     },
     //上传
     normFile(e) {

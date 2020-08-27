@@ -29,9 +29,11 @@
             <template>
               <a @click="doAction(record.contractUrl)">查看</a>
             </template>
-            <template v-if="$auth('contractAgreement:add')+record.createdId  === +userInfo.id">
+            <template v-if="$auth('contractAgreement:edit')">
               <a-divider type="vertical" />
               <a @click="handle('edit-salary',record)">修改</a>
+            </template>
+            <template v-if="$auth('contractAgreement:del')">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否删除"

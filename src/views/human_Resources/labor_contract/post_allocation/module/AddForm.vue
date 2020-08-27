@@ -56,14 +56,13 @@
           <tr v-for="(item ,index) in todayList" :key="index">
             <td style="width:150px;">{{'合同'}}{{index + 1}}</td>
             <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder
-                  v-decorator="[`todayList.${index}.contractName`, {initialValue:todayList[index].contractName, rules: [{ required: true, message: '请选择合同协议' }] }]"
-                  @click="selectCustomer('todayList',index)"
-                />
-              </a-form-item>
+              <!-- <a-form-item> -->
+              <a-input
+                :disabled="isDisabled"
+                placeholder
+                v-model="todayList[index].contractName"
+                @click="selectCustomer('todayList',index)"
+              />
             </td>
             <td style="width:70px;" v-if="!isEdit">
               <a-form-item>
@@ -84,14 +83,13 @@
           <tr v-for="(item ,index) in planList" :key="index">
             <td style="width:150px;">{{'合同'}}{{index + 1}}</td>
             <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder
-                  v-decorator="[`planList.${index}.contractName`, {initialValue:planList[index].contractName, rules: [{ required: true, message: '请选择合同协议' }] }]"
-                  @click="selectCustomer('planList',index)"
-                />
-              </a-form-item>
+              <!-- <a-form-item> -->
+              <a-input
+                :disabled="isDisabled"
+                placeholder
+                v-model="planList[index].contractName"
+                @click="selectCustomer('planList',index)"
+              />
             </td>
             <td style="width:70px;" v-if="!isEdit">
               <a-form-item>
@@ -182,44 +180,45 @@ export default {
       this.todayListName = key
       this.$refs.receiptContract.query({ type: 1 })
     },
+    todayL(data) {
+      let that = this
+      that.todayListType.push(data)
+      that.todayList[that.todayListId].contractName = data.contractName
+      that.todayList[that.todayListId].contractId = data.id
+      that.todayList[that.todayListId].insureType = 1
+    },
+    planL(data) {
+      let that = this
+      that.planListType.push(data)
+      that.planList[that.todayListId].contractName = data.contractName
+      that.planList[that.todayListId].contractId = data.id
+      that.planList[that.todayListId].insureType = 2
+    },
     contractChange(data) {
       let that = this
-      let obj = {}
-      // debugger
       if (this.todayListName === 'todayList') {
         if (that.todayListType.length == 0 && this.todayListName === 'todayList') {
-          that.todayListType.push(data)
-          obj[`todayList.${that.todayListId}.contractName`] = data.contractName
-          that.todayList[that.todayListId].contractId = data.id
-          that.todayList[that.todayListId].insureType = 1
+          this.todayL(data)
         } else {
           let contractName = this.todayListType.some((item) => data.contractName === item.contractName)
           if (!contractName) {
-            obj[`todayList.${that.todayListId}.contractName`] = data.contractName
-            that.todayList[that.todayListId].contractId = data.id
-            that.todayList[that.todayListId].insureType = 1
+            this.todayL(data)
           } else {
-            that.$message.error('不能选择同一个模板')
+            this.$message.error('不能选择同一个模板')
           }
         }
       } else {
         if (that.planListType.length == 0 && this.todayListName === 'planList') {
-          that.planListType.push(data)
-          obj[`planList.${that.todayListId}.contractName`] = data.contractName
-          that.planList[that.todayListId].contractId = data.id
-          that.planList[that.todayListId].insureType = 2
+          this.planL(data)
         } else {
           let contractName = this.planListType.some((item) => data.contractName === item.contractName)
           if (!contractName) {
-            obj[`planList.${that.todayListId}.contractName`] = data.contractName
-            that.planList[that.todayListId].contractId = data.id
-            that.planList[that.todayListId].insureType = 2
+            this.planL(data)
           } else {
             that.$message.error('不能选择同一个模板')
           }
         }
       }
-      that.form.setFieldsValue(obj)
     },
     addItem(key) {
       this[key].push({
@@ -228,9 +227,9 @@ export default {
       })
     },
     delItem(key, index) {
-      let _d = [...this[key]]
-      _d.splice(index, 1)
-      this[key] = [..._d]
+      let that = this
+      that.todayList.splice(index, 1)
+      this.todayListType.splice(index, 1)
     },
 
     async query(type, record) {
@@ -262,8 +261,6 @@ export default {
         departmentId: that.record.departmentId,
         stationId: that.record.stationId,
       })
-      // that.todayList = resultData.haveSueryContractFormList || []
-
       that.todayList =
         resultData.haveSueryContractFormList.map((item) => {
           return { contractId: item.id, insureType: 1, contractName: item.contractName }
@@ -285,23 +282,15 @@ export default {
         that.handleCancel()
         return
       }
-      // if (that.todayList.length === 0) {
-      //   that.$message.info('请填写今日工作内容')
-      //   return
-      // }
-      // if (that.planList.length === 0) {
-      //   that.$message.info('请填写明日工作计划')
-      //   return
-      // }
+      if (that.todayList.length === 0) {
+        that.$message.info('请选择模板')
+      }
 
       if (this.isAdd) {
         this.form.validateFields((err, values) => {
           if (!err) {
-            console.log('新增')
-            delete values.planList
-            delete values.todayList
+            console.log(that.todayList)
             values.contractStationMapList = [...that.todayList, ...that.planList]
-            console.log('Received values of form: ', values)
             that.spinning = true
             postAllocation_Add(values)
               .then((res) => {
@@ -324,8 +313,6 @@ export default {
         this.form.validateFields((err, values) => {
           if (!err) {
             console.log('修改')
-            delete values.planList
-            delete values.todayList
             let today = that.todayList.map((item) => {
               return { contractId: item.contractId, insureType: item.insureType }
             })

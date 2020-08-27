@@ -142,6 +142,13 @@ export default {
           version: this.record.version,
           contractUrl: this.record.contractUrl,
         })
+        let arr = this.record.contractUrl.split('/')
+        this.fileList.push({
+          uid: '-1',
+          name: arr[arr.length - 1],
+          status: 'done',
+          url: this.record.contractUrl,
+        })
       })
     },
 
@@ -165,7 +172,7 @@ export default {
             contractAgreement_Add(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
+                this.fileList = []
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
@@ -191,6 +198,7 @@ export default {
       return e && e.fileList
     },
     handleChange(info) {
+      this.fileList = []
       let fileList = [...info.fileList]
       fileList = fileList.map((file) => {
         if (file.response && file.response.code === 200) {

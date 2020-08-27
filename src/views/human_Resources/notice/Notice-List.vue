@@ -59,7 +59,7 @@
           <span>{{ index + 1 }}</span>
         </div>
 
-        <div slot="status" slot-scope="text, record, index">
+        <div slot="status" slot-scope="text, record">
           <a
             href="javascript:void(0)"
             @click="approvalPreview(record)"

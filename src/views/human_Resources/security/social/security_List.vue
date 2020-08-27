@@ -16,7 +16,7 @@
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleSee('e',record)">查看</a>
+          <a @click="handleSee(record)">查看</a>
           <a-divider type="vertical" />
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
           <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
@@ -29,7 +29,7 @@
       </a-table>
       <!-- </a-layout-content> -->
       <AddForm ref="addForm" @finish="searchAction()" />
-      <See ref="See" @finish="searchAction()" />
+      <!-- <See ref="See" @finish="searchAction()" /> -->
     </a-layout>
   </a-card>
 </template>
@@ -39,7 +39,7 @@ import moment from 'moment'
 import system from '@/config/defaultSettings'
 import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
 import AddForm from './module/AddForm'
-import See from './module/See'
+// import See from './module/See'
 
 const columns = [
   {
@@ -97,7 +97,7 @@ export default {
   name: 'RoleManagement',
   components: {
     AddForm: AddForm,
-    See: See,
+    // See: See,
   },
   data() {
     return {
@@ -185,8 +185,8 @@ export default {
       this.$refs.addForm.query(type, record)
     },
     // 查看
-    handleSee(type, record) {
-      this.$refs.See.query(type, record)
+    handleSee(record) {
+      this.$router.push({ name: 'humanResourcesSee', params: { id: record.id } })
     },
   },
 }

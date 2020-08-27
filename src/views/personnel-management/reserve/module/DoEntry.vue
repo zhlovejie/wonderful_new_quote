@@ -469,15 +469,9 @@
                     </a-select>
                   </a-form-item>
                 </td>
-                <td>考察期限（月）</td>
-                <td>
-                  <a-form-item>
-                    <a-input
-                      :disabled="isView || isProbationType4"
-                      v-decorator="['inspectMoth',{rules: [{required: !isProbationType4,message: '输入考察期限'},{max:10,message:'最多可输入10个字符'}]}]"
-                      placeholder="输入考察期限"
-                    />
-                  </a-form-item>
+                <td>员工简历</td>
+                <td colspan="3">
+                  <a type="primary" @click="doAction(department.resume)" target="_blank">查看</a>
                 </td>
               </tr>
 
@@ -498,12 +492,7 @@
                   </a-form-item>
                 </td>
               </tr>
-              <tr>
-                <td>员工简历</td>
-                <td colspan="3">
-                  <a type="primary" @click="doAction(department.resume)" target="_blank">查看</a>
-                </td>
-              </tr>
+
               <tr>
                 <td>个人印章</td>
                 <td>
@@ -722,17 +711,25 @@ export default {
     // 模板数据接收
     getChildMsg(data) {
       let that = this
+      console.log(data)
       if (that.todauuplate.length == 0) {
         that.todauuplate.push(data)
       } else {
         let arr = that.todauuplate.some((item) => data.templateName === item.templateName)
-        console.log(arr)
         if (!arr) {
           that.todauuplate.push(data)
         } else {
-          that.$message.error('不能选择同一个模板')
+          that.$message.error('不能重复上传同一个模板')
         }
       }
+
+      // that.todauuplate = [...data]
+      // debugger
+      // if (!arr) {
+      //   that.todauuplate.push(data)
+      // } else {
+      //   that.$message.error('不能选择同一个模板')
+      // }
 
       // that.todauuplate.map((item, i) => {
       //   if (data.templateName == item.templateName) {
@@ -751,7 +748,11 @@ export default {
     },
     // 文件预览
     doAction(idurl) {
-      this.$refs.xdocView.query(idurl)
+      if (idurl) {
+        this.$refs.xdocView.query(idurl)
+      } else {
+        this.$message.error('请上传简历')
+      }
     },
     previewCancel() {
       this.previewVisible = false

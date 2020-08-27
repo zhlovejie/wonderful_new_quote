@@ -2172,7 +2172,18 @@ export const asyncRouterMap = [
                   permission: ['permission']
                 },
               },
+
             ]
+          },
+          {
+            path: '/human_Resources/security/social',
+            name: 'humanResourcesSee',
+            hidden: true,
+            component: () => import('@/views/human_Resources/security/social/See'),
+            meta: {
+              title: '社保列表',
+              permission: ['permission']
+            },
           },
           {
             path: '/human_Resources/leagueBuilding',

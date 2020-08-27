@@ -48,9 +48,11 @@
             <template>
               <a @click="handle('edit',record)">查看</a>
             </template>
-            <template v-if="$auth('post_allocation:add')+record.createdId  === +userInfo.id">
+            <template v-if="$auth('post_allocation:edit')">
               <a-divider type="vertical" />
               <a @click="handle('view',record)">修改</a>
+            </template>
+            <template v-if="$auth('post_allocation:del')">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否删除"
