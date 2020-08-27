@@ -9,6 +9,7 @@
         style="width: 200px;margin-right:10px;"
       />
       <a-select
+        v-if="activeKey === 0"
         placeholder="公告状态"
         v-model="queryParam.status"
         :allowClear="true"
@@ -18,8 +19,8 @@
         <a-select-option :value="2">通过</a-select-option>
         <a-select-option :value="3">不通过</a-select-option>
         <a-select-option :value="4">发布</a-select-option>
-        <a-select-option :value="5">审批时撤回</a-select-option>
-        <a-select-option :value="6">发布时撤回</a-select-option>
+        <a-select-option :value="5">已撤回</a-select-option>
+        <a-select-option :value="6">已完结</a-select-option>
       </a-select>
       <a-range-picker
         @change="dateChange"
