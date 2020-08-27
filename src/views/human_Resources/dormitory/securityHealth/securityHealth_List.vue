@@ -59,7 +59,7 @@
               <a-divider type="vertical" />
               <a @click="download(record)">下载</a>
             </template>
-            <template v-if="$auth('securityHealth:handle')&&record.status===0">
+            <template v-if="userInfo===record.inspectId&&record.status===0">
               <a-divider type="vertical" />
               <a @click="inspect('handle',record)">处理</a>
             </template>
