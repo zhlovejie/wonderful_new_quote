@@ -3,6 +3,8 @@
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
       <a-month-picker placeholder="选择年月" style="width:160px;" v-model="searchParam.beginTime"/>
+      <span>~</span>
+      <a-month-picker placeholder="选择年月" style="width:160px;" v-model="searchParam.endTime"/>
       <a-input
         placeholder="资产名称"
         v-model="searchParam.name"
@@ -65,6 +67,11 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="beginTime" slot-scope="text, record, index">
+          <span>{{record.beginTime}}~{{record.endTime}}</span>
+        </div>
+
+        
         <div slot="beyondType" slot-scope="text, record, index">
           {{ {1:'个人',2:'部门',3:'资产库'}[text] || '未知' }}
         </div>
@@ -94,6 +101,7 @@ import {
   oaAssertsInfoInventoryMissing 
 } from '@/api/assetManagement'
 import { getDictionaryList } from '@/api/workBox'
+import moment from 'moment'
 
 const columns = [
   {
@@ -107,6 +115,7 @@ const columns = [
     align: 'center',
     title: '日期',
     dataIndex: 'beginTime',
+    scopedSlots: { customRender: 'beginTime' },
   },
   {
     align: 'center',
@@ -192,6 +201,7 @@ export default {
     },
   },
   methods: {
+    moment,
     init() {
       let that = this
       let task1 = getDictionaryList({ parentId: 532 }).then((res) => (that.assetTypeList = res.data))
@@ -199,7 +209,13 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      
+      let _beginTime = this.searchParam.beginTime 
+      _beginTime = _beginTime instanceof moment ? _beginTime.format('YYYY-MM-DD') : undefined
+      let _endTime = this.searchParam.endTime 
+      _endTime = _endTime instanceof moment ? _endTime.format('YYYY-MM-DD') : undefined
+
+      let _searchParam = Object.assign({}, { ...this.searchParam },{beginTime:_beginTime,endTime:_endTime}, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       oaAssertsInfoInventoryList(_searchParam)
