@@ -53,13 +53,13 @@
             <template>
               <a @click="inspect('see' ,record)">查看</a>
             </template>
-            <template v-if="$auth('securityHealth:add')+record.status===1">
+            <template v-if="$auth('securityHealth:add')&&record.status===1">
               <a-divider type="vertical" />
               <a @click="inspect('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
               <a @click="download(record)">下载</a>
             </template>
-            <template v-if="$auth('securityHealth:handle')+record.status===0">
+            <template v-if="$auth('securityHealth:handle')&&record.status===0">
               <a-divider type="vertical" />
               <a @click="inspect('handle',record)">处理</a>
             </template>
