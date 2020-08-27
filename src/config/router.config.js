@@ -1783,29 +1783,7 @@ export const asyncRouterMap = [
           },
         ]
       },
-      {
-        //制度文档管理
-        path: '/files-management',
-        name: 'files-management',
-        component: PageView,
-        meta: {
-          title: '制度文档管理',
-          icon: 'file',
-          permission: ['permission']
-        },
-        redirect: '/files-management/list',
-        children: [{
-          path: '/files-management/list',
-          name: 'files-management-list',
-          component: () => import('@/views/files-management/List'),
-          meta: {
-            title: '制度文档管理',
-            icon: 'file',
-            keepAlive: false,
-            permission: ['permission']
-          },
-        }]
-      },
+
       {
         //会议管理
         path: '/meeting-management',
@@ -1841,120 +1819,8 @@ export const asyncRouterMap = [
           }
         ]
       },
-      {
-        //通讯管理
-        path: '/communication-management',
-        name: 'communication-management',
-        component: PageView,
-        meta: {
-          title: '通讯管理',
-          icon: 'phone',
-          permission: ['permission']
-        },
-        redirect: '/communication-management',
-        children: [{
-            path: '/communication-management/settings',
-            name: 'communication-management-settings',
-            component: () => import('@/views/communication-management/settings/List'),
-            meta: {
-              title: '通讯设置',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          },
-          {
-            path: '/communication-management/phone-number',
-            name: 'communication-management-phone-number',
-            component: () => import('@/views/communication-management/phone-number/List'),
-            meta: {
-              title: '手机号管理',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          },
-          {
-            path: '/communication-management/consume',
-            name: 'communication-management-consume',
-            component: () => import('@/views/communication-management/consume/List'),
-            meta: {
-              title: '消费详情',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          },
-          {
-            path: '/communication-management/account',
-            name: 'communication-management-account',
-            component: () => import('@/views/communication-management/account/List'),
-            meta: {
-              title: '账号管理',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          },
-          {
-            path: '/communication-management/group-leader',
-            name: 'communication-management-group-leader',
-            component: () => import('@/views/communication-management/group-leader/List'),
-            meta: {
-              title: '群主管理',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          }
-        ]
-      },
-      {
-        //食堂菜单管理
-        path: '/canteen-menu-management',
-        name: 'canteen-menu-management',
-        component: PageView,
-        meta: {
-          title: '食堂菜单管理',
-          icon: 'shop',
-          permission: ['permission']
-        },
-        redirect: '/canteen-menu-management/config',
-        children: [{
-            path: '/canteen-menu-management/config',
-            name: 'canteen-menu-management-config',
-            component: () => import('@/views/canteen-menu-management/config/List'),
-            meta: {
-              title: '食堂菜单',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          },
-          {
-            path: '/canteen-menu-management/record',
-            name: 'canteen-menu-management-record',
-            component: () => import('@/views/canteen-menu-management/record/List'),
-            meta: {
-              title: '菜单记录',
-              icon: 'profile',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          },
-          {
-            path: '/canteen-menu-management/evaluate',
-            name: 'canteen-menu-management-evaluate',
-            component: () => import('@/views/canteen-menu-management/evaluate/List'),
-            meta: {
-              title: '满意度调查',
-              icon: 'file-done',
-              keepAlive: false,
-              permission: ['permission']
-            },
-          }
-        ]
-      },
+
+
       {
         //考勤管理
         path: '/attendance-management',
@@ -2250,188 +2116,7 @@ export const asyncRouterMap = [
           ]
         }]
       },
-      {
-        // 福利管理
-        path: '/welfare-management',
-        name: 'welfare-management',
-        component: PageView,
-        meta: {
-          title: '福利管理',
-          icon: 'setting',
-          permission: ['permission']
-        },
-        children: [{
-            path: '/welfare-management/healthy',
-            name: 'welfare-management-healthy',
-            component: RouteView,
-            meta: {
-              title: '健康管理',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission'],
-            },
-            children: [{
-                path: '/welfare-management/healthy/config',
-                name: 'welfare-management-healthy-config',
-                component: () => import('@/views/welfare-management/healthy/config/List'),
-                meta: {
-                  title: '体检设置',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/healthy/cycle-config',
-                name: 'welfare-management-healthy-cycle-config',
-                component: () => import('@/views/welfare-management/healthy/cycle-config/List'),
-                meta: {
-                  title: '体检周期设置',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/healthy/management',
-                name: 'welfare-management-healthy-management',
-                component: () => import('@/views/welfare-management/healthy/management/List'),
-                meta: {
-                  title: '体检管理',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              }
-            ]
-          },
-          {
-            path: '/welfare-management/employee-care',
-            name: 'welfare-management-employee-care',
-            component: RouteView,
-            meta: {
-              title: '员工关怀',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission'],
-            },
-            children: [{
-                path: '/welfare-management/employee-care/config',
-                name: 'welfare-management-employee-care-config',
-                component: () => import('@/views/welfare-management/employee-care/config/List'),
-                meta: {
-                  title: '关怀设置',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/employee-care/config-record',
-                name: 'welfare-management-employee-care-config-record',
-                component: () => import('@/views/welfare-management/employee-care/config-record/List'),
-                meta: {
-                  title: '关怀设置修改记录',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              }
-            ]
-          },
 
-          {
-            path: '/welfare-management/holiday-gifts',
-            name: 'welfare-management-holiday-gifts',
-            component: RouteView,
-            meta: {
-              title: '过节礼品',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission'],
-            },
-            children: [{
-                path: '/welfare-management/holiday-gifts/config',
-                name: 'welfare-management-holiday-gifts-config',
-                component: () => import('@/views/welfare-management/holiday-gifts/config/List'),
-                meta: {
-                  title: '礼品标准',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/holiday-gifts/money-config',
-                name: 'welfare-management-holiday-gifts-money-config',
-                component: () => import('@/views/welfare-management/holiday-gifts/money-config/List'),
-                meta: {
-                  title: '过节费标准',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/holiday-gifts/money-config-record',
-                name: 'welfare-management-holiday-gifts-money-config-record',
-                component: () => import('@/views/welfare-management/holiday-gifts/money-config-record/List'),
-                meta: {
-                  title: '过节费修改记录',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                }
-              },
-            ]
-          },
-          {
-            path: '/welfare-management/welfare',
-            name: 'welfare-management-welfare',
-            component: RouteView,
-            meta: {
-              title: '福利',
-              icon: 'setting',
-              keepAlive: false,
-              permission: ['permission'],
-            },
-            children: [{
-                path: '/welfare-management/welfare/config',
-                name: 'welfare-management-welfare-config',
-                component: () => import('@/views/welfare-management/welfare/config/List'),
-                meta: {
-                  title: '生日福利标准',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/welfare/birthday-config',
-                name: 'welfare-management-welfare-birthday-config',
-                component: () => import('@/views/welfare-management/welfare/birthday-config/List'),
-                meta: {
-                  title: '生日福利管理',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              },
-              {
-                path: '/welfare-management/welfare/annual-meeting-config',
-                name: 'welfare-management-welfare-annual-meeting-config',
-                component: () => import('@/views/welfare-management/welfare/annual-meeting-config/List'),
-                meta: {
-                  title: '年会福利管理',
-                  icon: 'setting',
-                  keepAlive: false,
-                  permission: ['permission']
-                },
-              }
-            ]
-          }
-        ]
-      },
       {
         //人力资源
         path: '/human_Resources',
@@ -2667,6 +2352,337 @@ export const asyncRouterMap = [
                   keepAlive: false,
                   permission: ['permission']
                 },
+              }
+            ]
+          },
+
+          {
+            //通讯管理
+            path: '/communication-management',
+            name: 'communication-management',
+            component: RouteView,
+            meta: {
+              title: '通讯管理',
+              icon: 'phone',
+              permission: ['permission']
+            },
+            redirect: '/communication-management/settings',
+            children: [{
+                path: '/communication-management/settings',
+                name: 'communication-management-settings',
+                component: () => import('@/views/communication-management/settings/List'),
+                meta: {
+                  title: '通讯设置',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/communication-management/phone-number',
+                name: 'communication-management-phone-number',
+                component: () => import('@/views/communication-management/phone-number/List'),
+                meta: {
+                  title: '手机号管理',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/communication-management/consume',
+                name: 'communication-management-consume',
+                component: () => import('@/views/communication-management/consume/List'),
+                meta: {
+                  title: '消费详情',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/communication-management/account',
+                name: 'communication-management-account',
+                component: () => import('@/views/communication-management/account/List'),
+                meta: {
+                  title: '账号管理',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/communication-management/group-leader',
+                name: 'communication-management-group-leader',
+                component: () => import('@/views/communication-management/group-leader/List'),
+                meta: {
+                  title: '群主管理',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              }
+            ]
+          },
+
+
+
+
+
+          {
+            //制度文档管理
+            path: '/files-management',
+            name: 'files-management',
+            component: RouteView,
+            meta: {
+              title: '制度文档管理',
+              icon: 'file',
+              permission: ['permission']
+            },
+            redirect: '/files-management/list',
+            children: [{
+              path: '/files-management/list',
+              name: 'files-management-list',
+              component: () => import('@/views/files-management/List'),
+              meta: {
+                title: '制度文档管理',
+                icon: 'file',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }]
+          },
+
+
+
+          {
+            //食堂菜单管理
+            path: '/canteen-menu-management',
+            name: 'canteen-menu-management',
+            component: RouteView,
+            meta: {
+              title: '食堂菜单管理',
+              icon: 'shop',
+              permission: ['permission']
+            },
+            redirect: '/canteen-menu-management/config',
+            children: [{
+                path: '/canteen-menu-management/config',
+                name: 'canteen-menu-management-config',
+                component: () => import('@/views/canteen-menu-management/config/List'),
+                meta: {
+                  title: '食堂菜单',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/canteen-menu-management/record',
+                name: 'canteen-menu-management-record',
+                component: () => import('@/views/canteen-menu-management/record/List'),
+                meta: {
+                  title: '菜单记录',
+                  icon: 'profile',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              },
+              {
+                path: '/canteen-menu-management/evaluate',
+                name: 'canteen-menu-management-evaluate',
+                component: () => import('@/views/canteen-menu-management/evaluate/List'),
+                meta: {
+                  title: '满意度调查',
+                  icon: 'file-done',
+                  keepAlive: false,
+                  permission: ['permission']
+                },
+              }
+            ]
+          },
+
+
+
+          {
+            // 福利管理
+            path: '/welfare-management',
+            name: 'welfare-management',
+            component: RouteView,
+            meta: {
+              title: '福利管理',
+              icon: 'setting',
+              permission: ['permission']
+            },
+            children: [{
+                path: '/welfare-management/healthy',
+                name: 'welfare-management-healthy',
+                component: RouteView,
+                meta: {
+                  title: '健康管理',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission'],
+                },
+                children: [{
+                    path: '/welfare-management/healthy/config',
+                    name: 'welfare-management-healthy-config',
+                    component: () => import('@/views/welfare-management/healthy/config/List'),
+                    meta: {
+                      title: '体检设置',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/healthy/cycle-config',
+                    name: 'welfare-management-healthy-cycle-config',
+                    component: () => import('@/views/welfare-management/healthy/cycle-config/List'),
+                    meta: {
+                      title: '体检周期设置',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/healthy/management',
+                    name: 'welfare-management-healthy-management',
+                    component: () => import('@/views/welfare-management/healthy/management/List'),
+                    meta: {
+                      title: '体检管理',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  }
+                ]
+              },
+              {
+                path: '/welfare-management/employee-care',
+                name: 'welfare-management-employee-care',
+                component: RouteView,
+                meta: {
+                  title: '员工关怀',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission'],
+                },
+                children: [{
+                    path: '/welfare-management/employee-care/config',
+                    name: 'welfare-management-employee-care-config',
+                    component: () => import('@/views/welfare-management/employee-care/config/List'),
+                    meta: {
+                      title: '关怀设置',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/employee-care/config-record',
+                    name: 'welfare-management-employee-care-config-record',
+                    component: () => import('@/views/welfare-management/employee-care/config-record/List'),
+                    meta: {
+                      title: '关怀设置修改记录',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  }
+                ]
+              },
+
+              {
+                path: '/welfare-management/holiday-gifts',
+                name: 'welfare-management-holiday-gifts',
+                component: RouteView,
+                meta: {
+                  title: '过节礼品',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission'],
+                },
+                children: [{
+                    path: '/welfare-management/holiday-gifts/config',
+                    name: 'welfare-management-holiday-gifts-config',
+                    component: () => import('@/views/welfare-management/holiday-gifts/config/List'),
+                    meta: {
+                      title: '礼品标准',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/holiday-gifts/money-config',
+                    name: 'welfare-management-holiday-gifts-money-config',
+                    component: () => import('@/views/welfare-management/holiday-gifts/money-config/List'),
+                    meta: {
+                      title: '过节费标准',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/holiday-gifts/money-config-record',
+                    name: 'welfare-management-holiday-gifts-money-config-record',
+                    component: () => import('@/views/welfare-management/holiday-gifts/money-config-record/List'),
+                    meta: {
+                      title: '过节费修改记录',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    }
+                  },
+                ]
+              },
+              {
+                path: '/welfare-management/welfare',
+                name: 'welfare-management-welfare',
+                component: RouteView,
+                meta: {
+                  title: '福利',
+                  icon: 'setting',
+                  keepAlive: false,
+                  permission: ['permission'],
+                },
+                children: [{
+                    path: '/welfare-management/welfare/config',
+                    name: 'welfare-management-welfare-config',
+                    component: () => import('@/views/welfare-management/welfare/config/List'),
+                    meta: {
+                      title: '生日福利标准',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/welfare/birthday-config',
+                    name: 'welfare-management-welfare-birthday-config',
+                    component: () => import('@/views/welfare-management/welfare/birthday-config/List'),
+                    meta: {
+                      title: '生日福利管理',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  },
+                  {
+                    path: '/welfare-management/welfare/annual-meeting-config',
+                    name: 'welfare-management-welfare-annual-meeting-config',
+                    component: () => import('@/views/welfare-management/welfare/annual-meeting-config/List'),
+                    meta: {
+                      title: '年会福利管理',
+                      icon: 'setting',
+                      keepAlive: false,
+                      permission: ['permission']
+                    },
+                  }
+                ]
               }
             ]
           }
