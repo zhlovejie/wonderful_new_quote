@@ -45,7 +45,7 @@
                   placeholder="节日名称"
                   :allowClear="true" 
                   v-decorator="[`festivalDetails.${idx}.festivalId`,{initialValue:festivalDetails[idx]['festivalId'],rules: [{required: true,message: '选择节日名称'}]}]" 
-                  @change="(val) => festivalChange(val,`festivalDetails.${idx}.festivalId`)"
+                  @change="(val) => eleChangeHandler(val,'festivalId',item.key)"
                 >
                   <a-select-option
                     v-for="item in festivalList"
@@ -63,7 +63,8 @@
                   :max="99999"
                   :step="1"
                   :precision="2"
-                  v-decorator="[`festivalDetails.${idx}.money`, {initialValue:festivalDetails[idx]['money'], rules: [{ required: true, message: '请输入金额' }]}]"
+                  v-decorator="[`festivalDetails.${idx}.money`, {initialValue:festivalDetails[idx]['money'], rules: [{ required: true, message: '请输入金额' }]}]" 
+                  @change="(val) => eleChangeHandler(val,'money',item.key)"
                 />
               </a-form-item>
             </td>
@@ -212,19 +213,34 @@ export default {
         this.festivalDetails = festivalDetails.filter(item => item.key !== key)
       }
     },
-    festivalChange(val,key){
-      let that = this 
-      that.$nextTick(() => {
-        let res = that.form.getFieldsValue()
-        let target = that.festivalList.find(item => item.id === val)
-        let list = res.festivalDetails.filter(item => item.festivalId === val)
-        if(list && list.length > 1){
-          that.$message.info(`节假日名称[${target.text}]重复`)
-          let obj ={}
-          obj[key] = undefined
-          that.form.setFieldsValue(obj)
-        }
-      })
+    eleChangeHandler(val,fieldName,key){
+      let that = this
+      let festivalDetails = [...that.festivalDetails]
+      let target = festivalDetails.find(item => item.key === key)
+      if(target){
+        target[fieldName] = val
+        that.festivalDetails = festivalDetails
+      }
+      //检测节假日名称重复
+      if(fieldName === 'festivalId'){
+        that.$nextTick(() => {
+          let festivalDetails = [...that.festivalDetails]
+          let festivalItem = that.festivalList.find(item => item.id === val)
+          let list = festivalDetails.filter(item => item.festivalId === val)
+          if(list && list.length > 1){
+            that.$message.info(`节假日名称[${festivalItem.text}]重复`)
+            let idx = festivalDetails.findIndex(item => item.key === key)
+
+            let _key = `festivalDetails.${idx}.festivalId`
+            let obj = {}
+            obj[_key] = undefined
+            that.form.setFieldsValue(obj)
+
+            festivalDetails[idx]['festivalId'] = undefined
+            that.festivalDetails = festivalDetails
+          }
+        })
+      }
     }
   }
 }

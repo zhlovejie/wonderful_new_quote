@@ -52,6 +52,10 @@
             <span v-if="text == 1">运行中</span>
             <span v-else>暂停</span>
           </div>
+          <div slot="remarks" slot-scope="text, record, index">
+            <p style="width:180px;text-align: left;word-break: break-all;">{{text}}</p>
+          </div>
+          
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('sysJob:one')">
               <a @click="query(record)">查看详情</a>
@@ -117,11 +121,17 @@ const columns = [
     dataIndex: 'methodName',
     key: 'methodName'
   },
+  // {
+  //   align: 'center',
+  //   title: '参数信息',
+  //   key: 'methodParams',
+  //   dataIndex: 'methodParams'
+  // },
   {
     align: 'center',
-    title: '参数信息',
-    key: 'methodParams',
-    dataIndex: 'methodParams'
+    title: '备注',
+    dataIndex: 'remarks',
+    scopedSlots: { customRender: 'remarks' }
   },
   {
     align: 'center',
