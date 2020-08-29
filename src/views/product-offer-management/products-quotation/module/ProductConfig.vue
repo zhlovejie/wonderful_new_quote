@@ -702,22 +702,22 @@ export default {
         retailPrice:parseFloat(priceResult.retailPrice - unStandPrice.retailPrice)
       }
 
-      let formatPrice = n => {
-        let _n = Math.round(parseFloat(n))
-        if (_n < 10) return _n
-        return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
-      }
+      // let formatPrice = n => {
+      //   let _n = Math.round(parseFloat(n))
+      //   if (_n < 10) return _n
+      //   return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
+      // }
       
 
-      Object.keys(priceResult).map(k =>{
-        priceResult[k] = formatPrice(priceResult[k])
-      })
-      Object.keys(standPrice).map(k =>{
-        priceResult[k] = formatPrice(priceResult[k])
-      })
-      Object.keys(unStandPrice).map(k =>{
-        priceResult[k] = formatPrice(priceResult[k])
-      })
+      // Object.keys(priceResult).map(k =>{
+      //   priceResult[k] = formatPrice(priceResult[k])
+      // })
+      // Object.keys(standPrice).map(k =>{
+      //   priceResult[k] = formatPrice(priceResult[k])
+      // })
+      // Object.keys(unStandPrice).map(k =>{
+      //   priceResult[k] = formatPrice(priceResult[k])
+      // })
 
       console.log('总价：',priceResult)
       console.log('标配总价：',standPrice)
