@@ -116,12 +116,10 @@
                       </a-select>
                     </a-col>
                     <a-col :lg="9" :md="9" :sm="24">
-                      <!-- <a-form-item> -->
                       <a-input
                         placeholder="请输入详细地址"
                         v-decorator="['address',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
                       />
-                      <!-- </a-form-item> -->
                     </a-col>
                   </a-form-item>
                 </a-col>
@@ -134,68 +132,98 @@
             </td>
           </tr>
           <tr>
-            <td>检查房间</td>
-            <td colspan="3">
-              <!-- <a-form-item>
-                <a-select
-                  style="width:300px;"
-                  mode="multiple"
-                  :allowClear="true"
-                  :maxTagCount="1"
-                  @change="addProcess"
-                  showSearch
-                  placeholder="请选择房间"
-                  optionFilterProp="children"
-                  :filterOption="selectFilter"
-                  v-decorator="['roomIds']"
+            <td>营业执照</td>
+            <td colspan="3" style="padding-top:30px">
+              <a-form-item>
+                <a-upload
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  list-type="picture-card"
+                  :file-list="fileList"
+                  @preview="handlePreview"
+                  @change="handleChange"
                 >
-                  <a-select-option
-                    v-for="(process, index) in RoomNumber"
-                    :key="index"
-                    :value="process.id"
-                  >{{ process.roomCode }}</a-select-option>
-                </a-select>
-              </a-form-item>-->
+                  <div v-if="fileList.length <5">
+                    <a-icon type="plus" />
+                    <div class="ant-upload-text">上传</div>
+                  </div>
+                </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>检查房间列表</td>
-            <!-- <td>
-              <a-form-item>
-                <div class="process_header_wrapper">
-                  <div class="draggable-columns draggable-columns-1">房间号</div>
-                  <div class="draggable-columns draggable-columns-3">
-                    <a href="javascript:void(0);" @click="processClearAction">清空</a>
-                  </div>
-                </div>
-                <vuedraggable
-                  class="process_main_wrapper"
-                  v-if="haveProcess.length > 0"
-                  ghost-class="ghost"
-                  v-model="haveProcess"
-                >
-                  <transition-group name="list">
-                    <div
-                      v-for="(item, index) in haveProcess"
-                      :key="item.id"
-                      class="draggable-columns-item"
-                    >
-                      <div class="draggable-columns draggable-columns-2">{{ item.roomCode }}</div>
-                      <div class="draggable-columns draggable-columns-3" title="删除">
-                        <a-popconfirm
-                          title="确认删除这条数据？"
-                          @confirm="confirm(item.id, index)"
-                          okText="是"
-                          cancelText="否"
-                        >
-                          <a-icon type="close-circle" />
-                        </a-popconfirm>
-                      </div>
-                    </div>
-                  </transition-group>
-                </vuedraggable>
-              </a-form-item>
-            </td>-->
+            <td colspan="4">
+              <b>货物合同</b>
+            </td>
+          </tr>
+          <tr>
+            <th colspan="3">合同</th>
+            <th>操作</th>
+          </tr>
+          <tr v-for="(item ,index) in todayList" :key="index">
+            <td colspan="3">
+              <template>
+                <Mdeol ref="mdeol" @getmsg="getChildMsg" :name="todayName" />
+              </template>
+            </td>
+            <td v-if="!isSee">
+              <template>
+                <a href="javascript:void(0);" @click="delItem('todayList',index)">查看</a>
+              </template>
+              <template>
+                <a-divider type="vertical" />
+                <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
+              </template>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <a-button
+                :disabled="isDisabled"
+                style="width:100%;"
+                type="dashed"
+                icon="plus"
+                @click="addItem('todayList')"
+              >添加</a-button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <b>承接单位法律承诺书</b>
+            </td>
+          </tr>
+          <tr>
+            <th colspan="3">承接单位法律承诺书</th>
+            <th>操作</th>
+          </tr>
+          <tr v-for="(item ,index) in planList" :key="'plan'+index">
+            <td colspan="3">
+              <template>
+                <Mdeol ref="mdeol" @getmsg="getChildMsg" :name="planName" />
+              </template>
+            </td>
+            <td v-if="!isSee">
+              <template>
+                <a href="javascript:void(0);" @click="delItem('planList',index)">查看</a>
+              </template>
+              <template>
+                <a-divider type="vertical" />
+                <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
+              </template>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <a-button
+                :disabled="isDisabled"
+                style="width:100%;"
+                type="dashed"
+                icon="plus"
+                @click="addItem('planList')"
+              >添加</a-button>
+            </td>
           </tr>
         </table>
       </a-form>
@@ -204,12 +232,22 @@
 </template>
 <script>
 import moment from 'moment'
-import { getAreaByParent } from '@/api/common'
+import { getAreaByParent, getUploadPath } from '@/api/common'
+import Mdeol from './upload'
 // import vuedraggable from 'vuedraggable'
 
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'BecomingForm',
   components: {
+    Mdeol,
     // vuedraggable,
   },
   data() {
@@ -225,14 +263,22 @@ export default {
       provinces: [], // 省下拉框数据
       citys: [], // 城市下拉框数据
       areas: [], // 区下拉框数据
+      uploadPath: getUploadPath(), // 上传图片的url
       visible: false,
       spinning: false,
-      isDisabled: true,
+      // isDisabled: true,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'add',
       record: {},
       postSelectDataSource: [],
       haveProcess: [],
+      previewVisible: false,
+      previewImage: '',
+      fileList: [], //营业执照
+      todayList: [], //货物合同
+      todayName: 'todayList',
+      planName: 'planList',
+      planList: [], //承接单位法律承诺书
     }
   },
   computed: {
@@ -243,6 +289,10 @@ export default {
       let txt = this.isView ? '新增' : '修改'
       return `${txt}配货站信息登记`
     },
+    //查看
+    isSee() {
+      return this.type === 'see'
+    },
     isView() {
       //新增
       return this.type === 'add'
@@ -250,6 +300,9 @@ export default {
     isEditSalary() {
       //修改
       return this.type === 'edit-salary'
+    },
+    isDisabled() {
+      return this.isSee
     },
   },
   mounted() {
@@ -264,6 +317,19 @@ export default {
   },
   methods: {
     moment: moment,
+    handleCancel() {
+      this.previewVisible = false
+    },
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    handleChange({ fileList }) {
+      this.fileList = fileList
+    },
 
     getCity(type, pId) {
       getAreaByParent({ pId: pId })
@@ -278,31 +344,58 @@ export default {
           console.log(err)
         })
     },
-
-    query(type, record) {
-      this.visible = true
-      this.type = type
-      this.record = record
-
-      if (type === 'edit-salary') {
-        this.fillData()
+    //添加上传表格
+    addItem(key) {
+      this[key].push({
+        contractName: undefined,
+        progress: undefined,
+      })
+    },
+    //删除上传表格
+    delItem(key, index) {
+      let that = this
+      if (key === 'todayList') {
+        that.todayList.splice(index, 1)
+        // that.todayListType.splice(index, 1)
+      } else {
+        that.planList.splice(index, 1)
+        // that.planListType.splice(index, 1)
       }
     },
-
-    fillData() {
-      queryList({ departmentId: this.record.deptId }).then((res) => {
-        this.postSelectDataSource = res.data
-      })
-      this.$nextTick(() => {
-        this.form.setFieldsValue({
-          deptId: this.record.deptId,
-          userId: this.record.userId,
-          roomId: this.record.roomId,
-          checkInTime: moment(this.record.checkInTime),
-          remark: this.record.remark,
-        })
-      })
+    //上传组件返回的数据
+    getChildMsg(data) {
+      console.log(data)
     },
+    query(type, record) {
+      let that = this
+      that.visible = true
+      that.type = type
+      that.record = record
+      if (that.isSee || that.isEditSalary) {
+        //详情接口
+      } else {
+        that.addItem('todayList')
+        that.addItem('planList')
+      }
+      // if (type === 'edit-salary') {
+      //   this.fillData()
+      // }
+    },
+
+    // fillData() {
+    //   queryList({ departmentId: this.record.deptId }).then((res) => {
+    //     this.postSelectDataSource = res.data
+    //   })
+    //   this.$nextTick(() => {
+    //     this.form.setFieldsValue({
+    //       deptId: this.record.deptId,
+    //       userId: this.record.userId,
+    //       roomId: this.record.roomId,
+    //       checkInTime: moment(this.record.checkInTime),
+    //       remark: this.record.remark,
+    //     })
+    //   })
+    // },
 
     handleOk() {
       console.log('你这是要提交')

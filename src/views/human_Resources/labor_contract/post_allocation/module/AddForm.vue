@@ -228,8 +228,13 @@ export default {
     },
     delItem(key, index) {
       let that = this
-      that.todayList.splice(index, 1)
-      this.todayListType.splice(index, 1)
+      if (key === 'todayList') {
+        that.todayList.splice(index, 1)
+        that.todayListType.splice(index, 1)
+      } else {
+        that.planList.splice(index, 1)
+        that.planListType.splice(index, 1)
+      }
     },
 
     async query(type, record) {
