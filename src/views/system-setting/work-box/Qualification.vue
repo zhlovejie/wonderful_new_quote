@@ -53,7 +53,10 @@
             </template>
             <template v-if="$auth('qualification:del')">
               <a class="delete" @click="() => del(record)">删除</a>
+              <a-divider type="vertical"/>
             </template>
+            <a v-download="record.qualificationPicture" target="_blank">下载</a>
+            <a-divider type="vertical"/>
           </span>
         </s-table>
       </a-layout-content>
