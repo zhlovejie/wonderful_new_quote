@@ -2732,9 +2732,19 @@ export const asyncRouterMap = [
               keepAlive: false,
               permission: ['permission']
             },
+          },
+          {
+            path: '/distribution-management/logistics/module',
+            name: 'basicInform',
+            hidden: true,
+            component: () => import('@/views/distribution-management/logistics/module/AddForm'),
+            meta: {
+              title: '新增物流信息登记',
+              permission: ['permission']
+            },
           }
         ]
-      },
+      }
     ]
   }
 ]

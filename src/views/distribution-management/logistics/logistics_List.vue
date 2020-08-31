@@ -1,16 +1,25 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-month-picker style="width:300px;" v-model="queryParam.Dates" />
+      <a-input
+        placeholder="物流单号"
+        v-model="queryParam.title"
+        allowClear
+        style="width: 200px;margin-right:10px;"
+      />
+      <a-range-picker
+        @change="dateChange"
+        style="width:400px ;margin-right:10px;"
+        v-model="queryParam.rangeDate"
+      />
 
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('social:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
+        <a-button style="float:right;" type="primary" icon="plus" @click="applyFor('add',null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <!-- <a-layout-content> -->
       <a-table :columns="columns" :data-source="dataSource" v-if="$auth('social:list')">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -25,10 +34,12 @@
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>
+          <template>
+            <a-divider type="vertical" />
+            <a class="ant-dropdown-link" @click="delete_list(record.id)">回访记录</a>
+          </template>
         </span>
       </a-table>
-      <!-- </a-layout-content> -->
-      <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
     </a-layout>
   </a-card>
 </template>
@@ -37,7 +48,6 @@
 import moment from 'moment'
 import system from '@/config/defaultSettings'
 import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
-// import AddForm from './module/AddForm'
 
 const columns = [
   {
@@ -48,39 +58,51 @@ const columns = [
     scopedSlots: { customRender: 'order' },
   },
   {
-    title: '台账年月',
+    title: '日期',
     dataIndex: 'accountDate',
     key: 'accountDate',
     align: 'center',
   },
   {
-    title: '人数',
+    title: '物流单号',
     dataIndex: 'peopleNumber',
     key: 'peopleNumber',
     align: 'center',
   },
   {
-    title: '公司缴费金额（元）',
+    title: '车牌号',
     dataIndex: 'companyPay',
     key: 'companyPay',
     align: 'center',
   },
   {
-    title: '个人缴费金额（元）',
+    title: '驾驶人姓名',
     dataIndex: 'personalPay',
     key: 'personalPay',
     align: 'center',
   },
   {
-    title: '提交人',
+    title: '驾驶人手机号',
     dataIndex: 'createdName',
     key: 'createdName',
     align: 'center',
   },
   {
-    title: '提交时间',
+    title: '目的地',
     dataIndex: 'createdTime',
     key: 'createdTime',
+    align: 'center',
+  },
+  {
+    title: '结算方式',
+    dataIndex: 'createdTime1',
+    key: 'createdTime1',
+    align: 'center',
+  },
+  {
+    title: '提交时间',
+    dataIndex: 'createdTime2',
+    key: 'createdTime2',
     align: 'center',
   },
 
@@ -93,9 +115,7 @@ const columns = [
 ]
 export default {
   name: 'RoleManagement',
-  components: {
-    // AddForm: AddForm,
-  },
+  components: {},
   data() {
     return {
       urls: system.baseURL + '/socialSecurity/social-security-info/socialSecurityInfo/exportExcel?id=',
@@ -136,9 +156,10 @@ export default {
       let that = this
       this.searchAction()
     },
-    check() {
-      let that = this
-      console.log(12312)
+    dateChange(date, dateString) {
+      this.$set(this.queryParam, 'rangeDate', date)
+      this.$set(this.queryParam, 'beginTime', dateString[0])
+      this.$set(this.queryParam, 'endTime', dateString[1])
     },
     searchAction(opt) {
       let that = this
@@ -177,10 +198,16 @@ export default {
         }
       })
     },
-    //新增 修改
-    handleAdd(type, record) {
-      this.$refs.addForm.query(type, record)
+    applyFor(type) {
+      this.$router.push({
+        name: 'basicInform',
+        params: { id: null, action: type },
+      })
     },
+    // //新增 修改
+    // handleAdd(type, record) {
+    //   this.$refs.addForm.query(type, record)
+    // },
     // 查看
     handleSee(record) {
       this.$router.push({ name: 'humanResourcesSee', params: { id: record.id } })

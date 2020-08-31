@@ -29,7 +29,8 @@ export default {
 
   //baseURL:'http://192.168.13.158:8995/oa',//张恒
   //baseURL: 'http://192.168.13.133:8995', // 玉堂
-  baseURL: 'http://192.168.13.27:8999/oa', // 王利
+  // baseURL: 'http://192.168.13.27:8999/oa', // 王利
+  baseURL: 'http://192.168.13.11:8999/oa', // 吴远
   //baseURL: 'http://106.14.194.64/cloud_new',
   //baseURL: 'http://192.168.13.250/cloud',
   //baseURL:'http://192.168.13.158:8999/oa',//张恒
@@ -53,4 +54,3 @@ export default {
     storage: 'local' // storage name session, local, memory
   }
 }
-
