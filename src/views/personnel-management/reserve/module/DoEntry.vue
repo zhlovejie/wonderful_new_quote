@@ -14,7 +14,7 @@
           <a-tab-pane key="1" tab="基本信息">
             <table class="custom-table custom-table-border">
               <tr>
-                <td>姓名</td>
+                <td class="requiredMark">姓名</td>
                 <td>
                   <a-form-item>
                     <a-input
@@ -23,7 +23,7 @@
                     />
                   </a-form-item>
                 </td>
-                <td>性别</td>
+                <td class="requiredMark">性别</td>
                 <td>
                   <a-form-item>
                     <a-select
@@ -36,7 +36,7 @@
                     </a-select>
                   </a-form-item>
                 </td>
-                <td>籍贯</td>
+                <td class="requiredMark">籍贯</td>
                 <td>
                   <a-form-item>
                     <a-cascader
@@ -51,7 +51,7 @@
                 </td>
               </tr>
               <tr>
-                <td>身份证号</td>
+                <td class="requiredMark">身份证号</td>
                 <td>
                   <a-form-item>
                     <a-input
@@ -136,7 +136,7 @@
               </tr>
 
               <tr>
-                <td>毕业院校</td>
+                <td class="requiredMark">毕业院校</td>
                 <td>
                   <a-form-item>
                     <a-input
@@ -146,7 +146,7 @@
                     />
                   </a-form-item>
                 </td>
-                <td>专业</td>
+                <td class="requiredMark">专业</td>
                 <td>
                   <a-form-item>
                     <a-input
@@ -156,7 +156,7 @@
                     />
                   </a-form-item>
                 </td>
-                <td>工作年限</td>
+                <td class="requiredMark">工作年限</td>
                 <td>
                   <a-form-item>
                     <a-input
@@ -169,7 +169,7 @@
               </tr>
 
               <tr>
-                <td>紧急联系人</td>
+                <td class="requiredMark">紧急联系人</td>
                 <td colspan="2">
                   <a-form-item>
                     <a-input
@@ -179,7 +179,7 @@
                     />
                   </a-form-item>
                 </td>
-                <td>紧急联系电话</td>
+                <td class="requiredMark">紧急联系电话</td>
                 <td colspan="2">
                   <a-form-item>
                     <a-input
@@ -192,7 +192,7 @@
               </tr>
 
               <tr>
-                <td>手机(私)</td>
+                <td class="requiredMark">手机(私)</td>
                 <td colspan="2">
                   <a-form-item>
                     <a-input
@@ -237,7 +237,7 @@
                 </td>
               </tr>
               <tr>
-                <td>现居住地</td>
+                <td class="requiredMark">现居住地</td>
                 <td colspan="5">
                   <a-form-item>
                     <a-input
@@ -304,7 +304,7 @@
                 </td>
               </tr>
               <tr>
-                <td>部门</td>
+                <td class="requiredMark">部门</td>
                 <td>
                   <a-form-item>
                     <a-select
@@ -321,7 +321,7 @@
                     </a-select>
                   </a-form-item>
                 </td>
-                <td>岗位</td>
+                <td class="requiredMark">岗位</td>
                 <td>
                   <a-form-item>
                     <a-select
@@ -424,7 +424,7 @@
               </tr>
 
               <tr>
-                <td>入职日期</td>
+                <td class="requiredMark">入职日期</td>
                 <td>
                   <a-form-item>
                     <a-date-picker
@@ -435,7 +435,7 @@
                     />
                   </a-form-item>
                 </td>
-                <td>是否缴纳社保</td>
+                <td class="requiredMark">是否缴纳社保</td>
                 <td>
                   <a-form-item>
                     <a-radio-group
@@ -451,7 +451,7 @@
               </tr>
 
               <tr>
-                <td>试用期</td>
+                <td class="requiredMark">试用期</td>
                 <td>
                   <a-form-item>
                     <a-select
@@ -476,7 +476,7 @@
               </tr>
 
               <tr>
-                <td>员工状态</td>
+                <td class="requiredMark">员工状态</td>
                 <td colspan="3">
                   <a-form-item>
                     <a-select
@@ -1275,6 +1275,15 @@ export default {
 </script>
 
 <style scoped>
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .do_entry_form-wrapper >>> .ant-form-item {
   margin-bottom: 0;
 }
