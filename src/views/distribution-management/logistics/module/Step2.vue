@@ -4,54 +4,66 @@
       <a-col :span="24" class="basic-tit" justify="center" align="middle">产品信息</a-col>
     </a-row>
     <div class="form wdf-form">
-      <template v-if="this.$parent.routeParams.action === 'split'">
-        <h3>产品非变动部分</h3>
-        <ProductSplitCommon 
-          ref="productCommonSplitNormal" 
-          key="psc1" 
-          :params="productCommonSplitNormalParams" 
-          @totalAmountChange="totalAmountChange"
-        ></ProductSplitCommon>
-        <h3 style="margin-top:20px;">产品变动部分</h3>
-        <ProductSplitCommon 
-          ref="productCommonSplitChange" 
-          key="psc2" 
-          :params="productCommonSplitChangeParams" 
-          @totalAmountChange="totalAmountChange"
-        >
-        </ProductSplitCommon>
-
-        <a-row justify="start" align="middle">
-          <a-col :span="24">
-            <div v-if="freightType === 0">
-              <span v-if="isTax === 0">
-                运费：&nbsp;{{ freightCharge | moneyFormatNumber}}
-              </span>
-              <span v-else>
-                运费：&nbsp;{{ (Math.ceil(freightCharge * 1.13)) | moneyFormatNumber}}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{freightCharge | moneyFormatNumber}}&nbsp;&nbsp;运费税率：&nbsp;13%&nbsp; )
-              </span>
-            </div>
-          </a-col>
-          <a-col :span="24">
-            <span class="span-mount">合计（人民币）</span>
-            <span class="span-mount bigword">{{ chineseTotalAmount }}</span>
-            <span class="span-mount">(&nbsp;{{ totalAmount | moneyFormatNumber }}&nbsp;)</span>
-            <span class="span-mount">此价格{{isTax ? '含税' :'不含税'}}、{{freightType === 0 ? '含运费' : '不含运费'}}。</span>
-          </a-col>
-        </a-row>
-
-      </template>
-      <template v-if="this.$parent.routeParams.action !== 'split'">
-        <ProductCommon ref="productCommon" :params="productCommonParams">
-          <div v-if="freightType === 0">
-            <span v-if="isTax === 0">
-              运费：&nbsp;{{ freightCharge | moneyFormatNumber}}
-            </span>
-            <span v-else>
-              运费：&nbsp;{{ freightMoneyWithRate | moneyFormatNumber}}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{freightCharge | moneyFormatNumber}}&nbsp;&nbsp;运费税率：&nbsp;13%&nbsp; )
-            </span>
-          </div>
-        </ProductCommon>
+      <template>
+        <a-form :form="form" @submit="handleSubmit" class="form wdf-form">
+          <a-form-item>
+            <a-row type="flex">
+              <a-col class="col-border" :span="3" justify="center" align="middle">承运方</a-col>
+              <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+                <a-form-item>
+                  <a-select
+                    placeholder="结算方式"
+                    :allowClear="true"
+                    style="border: none;width: 60%;"
+                    v-decorator="['settlementMethod', {rules: [{required: true,message: '请选择结算方式!',},
+             ]}]"
+                  >
+                    <a-select-option
+                      v-for="item in settlement"
+                      :key="item.id"
+                      :value="item.id"
+                    >{{item.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row type="flex">
+              <a-col class="col-border" :span="3" justify="center" align="middle">车牌号</a-col>
+              <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+                <a-form-item>
+                  <a-input
+                    style="width:60%;"
+                    :precision="0"
+                    v-decorator="['managementFeeWithdrawal',{rules: [{required: true,message: '请输入管理提取数额',},
+             ]}]"
+                  />
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item :style="{borderBottom:'1px solid #ddd'}">
+            <a-col class="col-border" :span="3" justify="center" align="middle">车辆型号</a-col>
+            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+              <a-form-item>
+                <a-select
+                  placeholder="结算方式"
+                  :allowClear="true"
+                  style="border: none;width: 60%;"
+                  v-decorator="['settlementMethod', {rules: [{required: true,message: '请选择结算方式!',},
+             ]}]"
+                >
+                  <a-select-option
+                    v-for="item in settlement"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </a-form-item>
+        </a-form>
       </template>
     </div>
     <div class="btns-grop">
@@ -62,223 +74,136 @@
 </template>
 
 <script>
-import {
-  getQueryOne,
-  saveProduct,
-  getSplitProductTemp,
-  saveSplitProductTemp,
-  turnTheCapital
-} from '@/api/contractListManagement'
-
 import moment from 'moment'
-import ProductCommon from './ProductCommon'
-import ProductSplitCommon from './ProductSplitCommon'
 
-  export default {
-    name: 'Step2',
-    components:{ProductCommon,ProductSplitCommon},
-    props: {
-      queryonedata: {
-        type: Object,
-        default:function(){
-          return {}
-        }
-      }
+export default {
+  name: 'Step2',
+  props: {
+    queryonedata: {
+      type: Object,
+      default: function () {
+        return {}
+      },
     },
-    data() {
-      return {
-        productCommonParams:{
-          dataSource:[],
-          totalAmount:0,
-          chineseTotalAmount:'零',
-          isTax:false,
-          __fromAction:'add'
-        },
-        productCommonSplitNormalParams:{ //拆分非变动部分参数
-          dataSource:[],
-          totalAmount:0,
-          chineseTotalAmount:'零',
-          isTax:false,
-          startKey:1000,
-          __name:'SplitNormal'
-        },
-        productCommonSplitChangeParams:{ //拆分变动部分参数
-          dataSource:[],
-          totalAmount:0,
-          chineseTotalAmount:'零',
-          isTax:false,
-          startKey:2000,
-          __name:'SplitChange'
-        },
-        freightType:0,//运费类型 0含运费 1不含运费
-        freightCharge:0, //运费显示用
-        freightMoneyWithRate:0,
-        isTax:0,  // 1 含税（销售合同） 0 不含税（产品订货单）
-        splitNormalTotalAmount:0,
-        splitChangeTotalAmount:0,
-        chineseTotalAmount:'零', //仅拆分使用
-        freightDivType: 2 //运费分配类型 1单价 2金额
-      }
-  }
-  ,
-  computed: {
-    totalAmount:function(){
-      let _totalAmount = Number(this.splitNormalTotalAmount) + Number(this.splitChangeTotalAmount) 
-      if(this.freightType === 0){
-        _totalAmount += Number(this.freightMoneyWithRate)
-      }
-      if(_totalAmount <= 0){
-        this.chineseTotalAmount = '零'
-      }else{
-        turnTheCapital({money: _totalAmount}).then((res) => {
-          this.chineseTotalAmount = res.data
-        }).catch(error => {
-          console.error(error)
-        })
-      }
-      
-      return _totalAmount
-    }
   },
+  data() {
+    return {}
+  },
+  computed: {},
   watch: {
-    $route (to, from) {}
+    $route(to, from) {},
   },
-  beforeCreate(){},
-  mounted () {
+  beforeCreate() {},
+  mounted() {
     this.init()
   },
   methods: {
-    async init () {
+    async init() {
       let that = this
       let product = []
 
-      if(this.queryonedata && this.queryonedata.id){
+      if (this.queryonedata && this.queryonedata.id) {
         //正常流程
-          let result = await this.getContractInfo({ id: this.queryonedata.id })
-          //this.totalAmount = result.totalAmount
-          //this.chineseTotalAmount = result.chineseTotalAmount
-          this.freightCharge = result.freightCharge
-          this.freightMoneyWithRate = result.freightMoneyWithRate
-          this.freightType = parseInt(result.freightType)
-          this.freightDivType = result.freightDivType || 2
-          this.isTax = result.isTax
-          
-          product = result.product.map(p =>{
-            p.deliveryDate = moment(p.deliveryDate)
-            p.productPic = p.contractProductPo.productPic
-            p.productModel = p.contractProductPo.productModel
-            p.productName = p.contractProductPo.productName
-            p.tax = p.taxRate
-            p.id = p.id
-            p.productId = p.productId
-            p.company = String(p.company)
-            p.editable = true
-            p.isNew = true
-            p.contractId = that.queryonedata.id
+        let result = await this.getContractInfo({ id: this.queryonedata.id })
+        //this.totalAmount = result.totalAmount
+        //this.chineseTotalAmount = result.chineseTotalAmount
+        this.freightCharge = result.freightCharge
+        this.freightMoneyWithRate = result.freightMoneyWithRate
+        this.freightType = parseInt(result.freightType)
+        this.freightDivType = result.freightDivType || 2
+        this.isTax = result.isTax
 
-            if(p.contractProductPo) delete p.contractProductPo
-            return p
-          })
-
-          this.productCommonParams = {
-            dataSource:product,
-            totalAmount : result.totalAmount,
-            chineseTotalAmount : result.chineseTotalAmount,
-            isTax : result.isTax === 1,
-            __fromAction:this.$parent.routeParams.action,
-            freightType:result.freightType,
-            freightCharge:result.freightMoneyWithRate,
-            freightDivType:result.freightDivType || 2
-          }
         //正常流程END
 
-
         //拆分流程
-          if(this.$parent.routeParams.action !== 'split'){
-            return
-          }
+        if (this.$parent.routeParams.action !== 'split') {
+          return
+        }
 
-          let resultProduct = await this.getSplitProductTempInfo({contractId:this.queryonedata.id})
-          let resultProductTempNormal = resultProduct.filter(p => p.changeFlag === 0)
-          let resultProductTempChange = resultProduct.filter(p => p.changeFlag === 1)
+        let resultProduct = await this.getSplitProductTempInfo({ contractId: this.queryonedata.id })
+        let resultProductTempNormal = resultProduct.filter((p) => p.changeFlag === 0)
+        let resultProductTempChange = resultProduct.filter((p) => p.changeFlag === 1)
 
-          console.log('resultProductTempNormal')
-          console.log(resultProductTempNormal)
+        console.log('resultProductTempNormal')
+        console.log(resultProductTempNormal)
 
-          console.log('resultProductTempChange')
-          console.log(resultProductTempChange)
+        console.log('resultProductTempChange')
+        console.log(resultProductTempChange)
 
-          let productNormal = resultProductTempNormal.map(p =>{
-            p.deliveryDate = moment(p.deliveryDate)
-            p.productPic = p.contractProductPo.productPic
-            p.productModel = p.contractProductPo.productModel
-            p.productName = p.contractProductPo.productName
-            p.tax = p.taxRate
-            p.productId = p.productId
-            p.id = p.id
-            p.company = String(p.company)
-            p.editable = true
-            p.isNew = true
-            p.contractId = that.queryonedata.id
-            return p
-          })
+        let productNormal = resultProductTempNormal.map((p) => {
+          p.deliveryDate = moment(p.deliveryDate)
+          p.productPic = p.contractProductPo.productPic
+          p.productModel = p.contractProductPo.productModel
+          p.productName = p.contractProductPo.productName
+          p.tax = p.taxRate
+          p.productId = p.productId
+          p.id = p.id
+          p.company = String(p.company)
+          p.editable = true
+          p.isNew = true
+          p.contractId = that.queryonedata.id
+          return p
+        })
 
-          //debugger
+        //debugger
 
-          this.productCommonSplitNormalParams = { //拆分表没产品数据 合同里有产品 先同的
-            dataSource:productNormal.length === 0 && product.length > 0 ? [...product] : productNormal,
-            totalAmount : 0,
-            chineseTotalAmount : '零',
-            isTax : result.isTax === 1,
-            __fromAction:'split',
-            startKey:1000,
-            __name:'SplitNormal',
-            freightType:result.freightType,
-            freightCharge:result.freightMoneyWithRate,
-            freightDivType:result.freightDivType || 2
-          }
+        this.productCommonSplitNormalParams = {
+          //拆分表没产品数据 合同里有产品 先同的
+          dataSource: productNormal.length === 0 && product.length > 0 ? [...product] : productNormal,
+          totalAmount: 0,
+          chineseTotalAmount: '零',
+          isTax: result.isTax === 1,
+          __fromAction: 'split',
+          startKey: 1000,
+          __name: 'SplitNormal',
+          freightType: result.freightType,
+          freightCharge: result.freightMoneyWithRate,
+          freightDivType: result.freightDivType || 2,
+        }
 
-          let productChange = resultProductTempChange.map(p =>{
-            p.deliveryDate = moment(p.deliveryDate)
-            p.productPic = p.contractProductPo.productPic
-            p.productModel = p.contractProductPo.productModel
-            p.productName = p.contractProductPo.productName
-            p.tax = p.taxRate
-            p.productId = p.productId
-            p.id = p.id
-            p.company = String(p.company)
-            p.editable = true
-            p.isNew = true
-            p.contractId = that.queryonedata.id
-            return p
-          })
+        let productChange = resultProductTempChange.map((p) => {
+          p.deliveryDate = moment(p.deliveryDate)
+          p.productPic = p.contractProductPo.productPic
+          p.productModel = p.contractProductPo.productModel
+          p.productName = p.contractProductPo.productName
+          p.tax = p.taxRate
+          p.productId = p.productId
+          p.id = p.id
+          p.company = String(p.company)
+          p.editable = true
+          p.isNew = true
+          p.contractId = that.queryonedata.id
+          return p
+        })
 
-          this.productCommonSplitChangeParams = { //拆分表没产品数据 合同里有产品 先用合同的
-            dataSource:productChange.length === 0 && product.length > 0 ? [...product] : productChange ,
-            totalAmount : 0,
-            chineseTotalAmount : '零',
-            isTax : result.isTax === 1,
-            __fromAction:'split',
-            startKey:2000,
-            __name:'SplitChange',
-            freightType:result.freightType,
-            freightCharge:result.freightMoneyWithRate,
-            freightDivType:result.freightDivType || 2
-          }
+        this.productCommonSplitChangeParams = {
+          //拆分表没产品数据 合同里有产品 先用合同的
+          dataSource: productChange.length === 0 && product.length > 0 ? [...product] : productChange,
+          totalAmount: 0,
+          chineseTotalAmount: '零',
+          isTax: result.isTax === 1,
+          __fromAction: 'split',
+          startKey: 2000,
+          __name: 'SplitChange',
+          freightType: result.freightType,
+          freightCharge: result.freightMoneyWithRate,
+          freightDivType: result.freightDivType || 2,
+        }
 
         //拆分流程END
-
       }
     },
-    getContractInfo(params){
-      return getQueryOne(params).then((res) => {
-        return res.data
-      }).catch(error => {
-        console.error(error)
-      })
+    getContractInfo(params) {
+      return getQueryOne(params)
+        .then((res) => {
+          return res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     // handler 表单数据验证成功后回调事件
-    handleSubmit (e) {
+    handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -288,72 +213,73 @@ import ProductSplitCommon from './ProductSplitCommon'
       })
     },
     // 点击下一步
-    async nextStep (status) {
-
+    async nextStep(status) {
       const that = this
 
-      if(that.$parent.routeParams.action === 'split'){
-        let {errors , values} = that.$refs.productCommonSplitNormal.validate()
-        if(errors) return
-        let {errors:errors1 , values:values1} = that.$refs.productCommonSplitChange.validate()
-        if(errors1) return
+      if (that.$parent.routeParams.action === 'split') {
+        let { errors, values } = that.$refs.productCommonSplitNormal.validate()
+        if (errors) return
+        let { errors: errors1, values: values1 } = that.$refs.productCommonSplitChange.validate()
+        if (errors1) return
 
         let nomalProduct = that.formatProduct(values)
-        nomalProduct = nomalProduct.map(item =>{
+        nomalProduct = nomalProduct.map((item) => {
           item.changeFlag = 0
           return item
         })
 
         let changeProduct = that.formatProduct(values1)
-        changeProduct = changeProduct.map(item =>{
+        changeProduct = changeProduct.map((item) => {
           item.id && delete item.id //变动部分产品不用传ID
           item.changeFlag = 1
           return item
         })
 
         await saveSplitProductTemp([].concat(nomalProduct).concat(changeProduct))
-        if(status != 1){
+        if (status != 1) {
           that.$emit('nextStep', {})
-        }else {
+        } else {
           that.$message.success('保存成功')
         }
-      }else{
-        let {errors , values} = this.$refs.productCommon.validate()
-        if(errors) {
+      } else {
+        let { errors, values } = this.$refs.productCommon.validate()
+        if (errors) {
           return
         }
 
-        if(values.length <= 0){
+        if (values.length <= 0) {
           this.$message.error('请完善产品信息')
           return
         }
 
         let products = this.formatProduct(values)
         // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-        saveProduct(products).then((res) => {
-          console.log('插入产品信息，请求后端接口结果', res)
+        saveProduct(products)
+          .then((res) => {
+            console.log('插入产品信息，请求后端接口结果', res)
 
-          if(res && res.code && parseInt(res.code) === 500){
-            that.$info.error(res.msg)
-            return
-          }
-          if(status != 1){
-            that.$emit('nextStep', { ...res.data })
-          }else {
-            that.$message.success('保存成功')
-          }
-          //that.$emit('nextStep', { ...res.data })
-        }).catch(error => {
-          console.error(error)
-        })
+            if (res && res.code && parseInt(res.code) === 500) {
+              that.$info.error(res.msg)
+              return
+            }
+            if (status != 1) {
+              that.$emit('nextStep', { ...res.data })
+            } else {
+              that.$message.success('保存成功')
+            }
+            //that.$emit('nextStep', { ...res.data })
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       }
     },
-    formatProduct(products){
+    formatProduct(products) {
       let that = this
       // 拼接产品集合
-      const res = products.map(item => {
+      const res = products.map((item) => {
         return {
-          id:item.id,
+          id: item.id,
           contractId: that.queryonedata.id,
           targetId: item.targetId,
           productType: item.productType,
@@ -365,43 +291,45 @@ import ProductSplitCommon from './ProductSplitCommon'
           taxRate: item.tax,
           //deliveryDate:item.deliveryDate.format('YYYY-MM-DD'),
           //deliveryDate: item.deliveryDate,
-          productStatus:item.productStatus, //产品状态
-          remarks:item.remarks, //拆分产品备注
-          freightUnitPrice:item.freightUnitPrice
+          productStatus: item.productStatus, //产品状态
+          remarks: item.remarks, //拆分产品备注
+          freightUnitPrice: item.freightUnitPrice,
         }
       })
       console.log(res)
       return res
     },
     // 上一步
-    prevStep () {
+    prevStep() {
       const id = this.id
       this.$emit('prevStep', id)
     },
-    finish () {
+    finish() {
       this.currentTab = 0
     },
-    getSplitProductTempInfo(params){
-      return getSplitProductTemp(params).then((res) => {
-        return res.data
-      }).catch(error => {
-        console.error(error)
-      })
+    getSplitProductTempInfo(params) {
+      return getSplitProductTemp(params)
+        .then((res) => {
+          return res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
-    totalAmountChange(param){
-      if(param.name === 'SplitNormal'){
+    totalAmountChange(param) {
+      if (param.name === 'SplitNormal') {
         this.splitNormalTotalAmount = param.totalAmount
-      }else{
+      } else {
         this.splitChangeTotalAmount = param.totalAmount
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style>
-  .step-table-list .ant-form-item{
-    margin-bottom: 0;
-  }
+.step-table-list .ant-form-item {
+  margin-bottom: 0;
+}
 </style>
 
 

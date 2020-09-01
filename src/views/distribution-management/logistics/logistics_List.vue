@@ -30,7 +30,7 @@
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
           <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
             <a-divider type="vertical" />
-            <a @click="handleAdd('edit-salary',record)">修改</a>
+            <a @click="applyFor('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>

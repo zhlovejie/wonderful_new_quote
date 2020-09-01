@@ -11,26 +11,28 @@
       <a-form :form="form" @submit="handleSubmit" class="form wdf-form">
         <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="3" justify="center" align="middle">物流编号</a-col>
+            <a-col class="col-border" :span="3" justify="center" align="middle">物流单号</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-form-item>
                 <a-input
                   type="text"
+                  :precision="0"
                   style="border: none;width: 60%;"
-                  v-decorator="['contractNum',{rules: [{ required: false, message: '请' }]}]"
+                  v-decorator="['logisticsOrderNo',{rules: [{ required: false, message: '物流编号' }]}]"
                   disabled
                 />
               </a-form-item>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">日期</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-form-item label="日期">
+              <a-form-item>
                 <a-date-picker
                   style="border: none;width: 60%;"
                   show-time
+                  :precision="0"
                   placeholder="日期"
                   format="YYYY-MM-DD"
-                  v-decorator="['surfaceDate', {initialValue:moment(),rules: [{required: true,message: '请输入日期',},
+                  v-decorator="['date', {initialValue:moment(),rules: [{required: true,message: '请输入日期',},
              ]}]"
                 />
               </a-form-item>
@@ -41,26 +43,31 @@
           <a-row type="flex">
             <a-col class="col-border" :span="3" justify="center" align="middle">是否开票</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-radio-group v-decorator="['freightDivType',{initialValue: 1}]">
-                <a-radio :value="1">否</a-radio>
-                <a-radio :value="2">是</a-radio>
-              </a-radio-group>
+              <a-form-item>
+                <a-radio-group v-decorator="['isInvoice',{initialValue:0}]">
+                  <a-radio :value="0">否</a-radio>
+                  <a-radio :value="1">是</a-radio>
+                </a-radio-group>
+              </a-form-item>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">物流属性</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-select
-                placeholder="物流属性"
-                :allowClear="true"
-                style="border: none;width: 60%;"
-                v-decorator="['roomId', {rules: [{required: true,message: '请选择物流属性!',},
+              <a-form-item>
+                <a-select
+                  placeholder="物流属性"
+                  :allowClear="true"
+                  :precision="0"
+                  style="border: none;width: 60%;"
+                  v-decorator="['logisticsAttribute', {rules: [{required: true,message: '请选择物流属性!',},
              ]}]"
-              >
-                <a-select-option
-                  v-for="item in postSelectDataSource"
-                  :key="item.id"
-                  :value="item.id"
-                >{{item.roomCode}}</a-select-option>
-              </a-select>
+                >
+                  <a-select-option
+                    v-for="item in postSelectDataSource"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
             </a-col>
           </a-row>
         </a-form-item>
@@ -68,30 +75,33 @@
           <a-row type="flex">
             <a-col class="col-border" :span="3" justify="center" align="middle">物流价格</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-input-number
-                style="width:60%;"
-                :min="0"
-                :step="1"
-                :precision="0"
-                placeholder="运费"
-                v-decorator="['freightCharge']"
-              />
+              <a-form-item>
+                <a-input
+                  style="width:60%;"
+                  :precision="0"
+                  placeholder="物流价格"
+                  v-decorator="['logisticsPrice',{rules: [{required: true,message: '请输入物流价格',},
+             ]}]"
+                />
+              </a-form-item>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">结算方式</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-select
-                placeholder="结算方式"
-                :allowClear="true"
-                style="border: none;width: 60%;"
-                v-decorator="['roomId', {rules: [{required: true,message: '请选择物流属性!',},
+              <a-form-item>
+                <a-select
+                  placeholder="结算方式"
+                  :allowClear="true"
+                  style="border: none;width: 60%;"
+                  v-decorator="['settlementMethod', {rules: [{required: true,message: '请选择结算方式!',},
              ]}]"
-              >
-                <a-select-option
-                  v-for="item in postSelectDataSource"
-                  :key="item.id"
-                  :value="item.id"
-                >{{item.roomCode}}</a-select-option>
-              </a-select>
+                >
+                  <a-select-option
+                    v-for="item in settlement"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{item.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
             </a-col>
           </a-row>
         </a-form-item>
@@ -100,50 +110,95 @@
           <a-row type="flex">
             <a-col class="col-border" :span="3" justify="center" align="middle">我方管理费提取数额</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-input-number
-                style="width:60%;"
-                :min="0"
-                :step="1"
-                :precision="0"
-                placeholder="运费"
-                v-decorator="['freightCharge']"
-              />
+              <a-form-item>
+                <a-input
+                  style="width:60%;"
+                  :precision="0"
+                  v-decorator="['managementFeeWithdrawal',{rules: [{required: true,message: '请输入管理提取数额',},
+             ]}]"
+                />
+              </a-form-item>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">预提货时间</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-date-picker
-                style="border: none;width: 60%;"
-                show-time
-                placeholder="年月日"
-                format="YYYY-MM-DD"
-                v-decorator="['surfaceDate', {initialValue:moment(),rules: [{required: true,message: '请输入日期',},
+              <a-form-item>
+                <a-date-picker
+                  style="border: none;width: 60%;"
+                  show-time
+                  :precision="0"
+                  placeholder="年月日"
+                  format="YYYY-MM-DD"
+                  v-decorator="['preDeliveryTime', {rules: [{required: true,message: '请选择预提货日期',},
              ]}]"
-              />
+                />
+              </a-form-item>
             </a-col>
           </a-row>
         </a-form-item>
-        <!-- <a-form-item :style="{borderBottom:'1px solid #ddd'}">
-          <a-row type="flex" v-if="parseInt(freightType) === 0">
-            <a-col class="col-border" :span="3" justify="center" align="middle">运费(元)</a-col>
-            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-input-number
-                style="width:60%;"
-                :min="0"
-                :step="1"
-                :precision="0"
-                placeholder="运费"
-                v-decorator="['freightCharge']"
-              />
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">运费分配类型</a-col>
-            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-radio-group v-decorator="['freightDivType',{initialValue: 2}]">
-                <a-radio :value="1">单价</a-radio>
-                <a-radio :value="2">金额</a-radio>
-              </a-radio-group>
+        <a-form-item :style="{borderBottom:'1px solid #ddd'}">
+          <a-row type="flex">
+            <a-col class="col-border" :span="3" justify="center" align="middle">目的地</a-col>
+            <a-col class="col-border" :span="21" justify="center" align="middle">
+              <a-col :lg="5" :md="5" :sm="24">
+                <a-form-item>
+                  <a-select
+                    placeholder="省"
+                    :precision="0"
+                    v-decorator="['province',{rules: [{required: true, message: '请选择省！'}]}]"
+                  >
+                    <a-select-option
+                      @click="getCity(1,province.id, province.area)"
+                      v-for="province in this.provinces"
+                      :key="province.index"
+                      :value="province.id"
+                    >{{ province.area }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="5" :md="5" :sm="24">
+                <a-form-item>
+                  <a-select
+                    placeholder="市"
+                    :precision="0"
+                    v-decorator="['city',{rules: [{required: true, message: '请选择区！'}]}]"
+                  >
+                    <a-select-option
+                      @click="getCity(2,city.id,city.area)"
+                      v-for="city in this.citys"
+                      :key="city.index"
+                      :value="city.id"
+                    >{{ city.area }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="5" :md="5" :sm="24">
+                <a-form-item>
+                  <a-select
+                    placeholder="区"
+                    :precision="0"
+                    v-decorator="['area',{rules: [{required: true, message: '请选择区！'}]}]"
+                  >
+                    <a-select-option
+                      @click="getCity(3,null,area.area)"
+                      v-for="area in this.areas"
+                      :key="area.index"
+                      :value="area.id"
+                    >{{ area.area }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :lg="9" :md="9" :sm="24">
+                <a-form-item>
+                  <a-input
+                    :precision="0"
+                    placeholder="请输入详细地址"
+                    v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
+                  />
+                </a-form-item>
+              </a-col>
             </a-col>
           </a-row>
-        </a-form-item>-->
+        </a-form-item>
 
         <a-form-item>
           <div style="margin: 16px auto 0;width: 100px;">
@@ -156,19 +211,13 @@
 </template>
 
 <script>
-import {
-  getcusSelectsList,
-  getListSaleContractUser,
-  saveEssentialInformation,
-  deleteQueryOne,
-} from '@/api/contractListManagement'
+import { logisticsNum, logisticsPreservation } from '@/api/distribution-management'
+import { getDictionaryList } from '@/api/workBox' // 数据字典
 
 import moment from 'moment'
-// import AFormItem from 'ant-design-vue/es/form/FormItem'
-// import CustomerList from '@/components/CustomerList/CustomerList'
+import { getAreaByParent } from '@/api/common'
 export default {
   name: 'Step1',
-  // components: { AFormItem ,CustomerList},
   props: {
     queryonedata: {
       type: Object,
@@ -178,11 +227,23 @@ export default {
     return {
       postSelectDataSource: [], //物流属性数据字典
       settlement: [], //结算方式 数据字典
+      oneLBCol: {
+        xs: { span: 4 },
+        sm: { span: 4 },
+      },
+      oneWPCol: {
+        xs: { span: 20 },
+        sm: { span: 20 },
+      },
+      provinces: [], // 省下拉框数据
+      citys: [], // 城市下拉框数据
+      areas: [], // 区下拉框数据
       // form
+      province: '', //选择省名称
+      city: '', //选择市名称
+      area: '', // 选择区名称
       form: this.$form.createForm(this),
-      contractNum: this.queryonedata.contractNum, // 合同编号
 
-      disabled: false, // 是否含税启用/禁用
       loading: false,
       timer: 0,
       disabledDateTime: function () {},
@@ -202,36 +263,80 @@ export default {
   },
   created() {},
   mounted() {
-    console.log('from mounted....')
+    let qt = this.queryonedata
+    if (qt.id && qt.id > 0) {
+      let arr = qt.addressNumber.split(',')
+      let num = qt.addressName.split(',')
+      this.getCity(1, arr[0], num[1])
+      this.getCity(2, arr[1], num[2])
+    }
+    getAreaByParent({ pId: 100000 })
+      .then((res) => {
+        // 所有省
+        this.provinces = res.data
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    getDictionaryList({ parentId: 541 }).then((res) => {
+      this.postSelectDataSource = res.data
+    })
+    getDictionaryList({ parentId: 542 }).then((res) => {
+      this.settlement = res.data
+    })
     this.init()
   },
   methods: {
     moment,
-    async init() {
-      await Promise.all[this.getSalesList()]
+    getCity(type, pId, name) {
+      if (type != 3) {
+        getAreaByParent({ pId: pId })
+          .then((res) => {
+            if (type === 1) {
+              this.province = name
+              this.citys = res.data
+            } else if (type === 2) {
+              this.city = name
+              this.areas = res.data
+            }
+          })
+          .catch(function (err) {
+            console.log(err)
+          })
+      } else {
+        this.area = name
+      }
+    },
+
+    init() {
       this.$nextTick(() => {
+        if (this.$parent.routeParams.action === 'add') {
+          logisticsNum().then((res) => {
+            this.form.setFieldsValue({
+              logisticsOrderNo: res.data,
+            })
+          })
+        }
         let qt = this.queryonedata
+
         if (qt.id && qt.id > 0) {
           this.freightType = qt.freightType
+          qt.addressNumber = qt.addressNumber.split(',')
           this.form.setFieldsValue({
             id: qt.id,
-            contractNum: qt.contractNum,
-            customerId: qt.customerId,
-            isTax: qt.isTax,
-            billingType: qt.billingType,
-            saleUserId: qt.saleUserId,
-            signDate: moment(qt.signDate) || moment(),
-            usingPlatform: qt.usingPlatform,
-            contractAttribute: qt.contractAttribute,
-            fullAmount: qt.fullAmount,
-            customerName: qt.customerName || qt.saleCustomerName,
-            freightType: qt.freightType,
-            freightCharge: qt.freightCharge || 0,
-            bucketType: qt.bucketType || 1,
-            freightDivType: qt.freightDivType || 1,
+            logisticsOrderNo: qt.logisticsOrderNo,
+            date: moment(qt.date),
+            isInvoice: qt.isInvoice,
+            settlementMethod: qt.settlementMethod,
+            logisticsAttribute: qt.logisticsAttribute,
+            logisticsPrice: qt.logisticsPrice,
+            managementFeeWithdrawal: qt.managementFeeWithdrawal,
+            preDeliveryTime: moment(qt.preDeliveryTime),
+            province: Number(qt.addressNumber[0]),
+            city: Number(qt.addressNumber[1]),
+            area: Number(qt.addressNumber[2]),
+            detailedAddressName: qt.detailedAddressName,
           })
-          //不含税 禁用 开票类型
-          this.disabled = qt.isTax === 0 ? true : false
         }
       })
     },
@@ -245,12 +350,6 @@ export default {
         }
       })
     },
-    // 选择销售经理名称下拉框根据输入项进行筛选
-    filterSalersOption(input, option) {
-      // 是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      // option.componentOptions.children[0].text
-    },
     // 点击下一步
     nextStep(status) {
       const that = this
@@ -261,40 +360,29 @@ export default {
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
         console.log('先校验，通过表单校验后，才进入下一步', values)
+        console.log(that.$parent.routeParams.action)
         if (!err) {
-          //debugger
-          const params = {
-            id: that.queryonedata.id,
-            contractNum: that.queryonedata.contractNum,
-            customerId: values.customerId,
-            customerName: values.customerName,
-            saleUserId: values.saleUserId,
-            isTax: values.isTax,
-            billingType: values.billingType,
-            signDate: values.signDate.format('YYYY-MM-DD'), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
-            usingPlatform: values.usingPlatform,
-            contractAttribute: values.contractAttribute,
-            fullAmount: values.fullAmount,
-            freightType: values.freightType,
-            freightCharge: values.freightCharge,
-            bucketType: values.bucketType,
-            freightDivType: values.freightDivType,
-          }
-
-          if (that.$parent.routeParams.action === 'add') {
-            console.log('新增模式 添加参数 contractModifyFlag：0')
-            params.contractModifyFlag = 0
-          } else if (that.$parent.routeParams.action === 'edit') {
-            console.log('修改模式 添加参数 contractModifyFlag：1')
-            params.contractModifyFlag = 1
-          } else if (that.$parent.routeParams.action === 'split') {
-            console.log('拆分模式 添加参数 contractModifyFlag：1')
-            params.contractModifyFlag = 1
-          }
+          // if (that.$parent.routeParams.action === 'add') {
+          //   console.log('新增模式 添加参数 contractModifyFlag：0')
+          //   params.contractModifyFlag = 0
+          // } else if (that.$parent.routeParams.action === 'edit') {
+          //   console.log('修改模式 添加参数 contractModifyFlag：1')
+          //   params.contractModifyFlag = 1
+          // } else if (that.$parent.routeParams.action === 'split') {
+          //   console.log('拆分模式 添加参数 contractModifyFlag：1')
+          //   params.contractModifyFlag = 1
+          // }
           //console.log(this.$parent.fromAction)
+          values.preDeliveryTime = moment(values.preDeliveryTime).format('YYYY-MM-DD')
+          values.date = moment(values.date).format('YYYY-MM-DD')
+          values.addressName = that.province + ',' + that.city + ',' + that.area
+          values.addressNumber = values.province + ',' + values.city + ',' + values.area
+          delete values.province
+          delete values.city
+          delete values.area
 
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-          saveEssentialInformation(params)
+          logisticsPreservation(values)
             .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
@@ -318,95 +406,9 @@ export default {
         }
       })
     },
-    finish() {
-      this.currentTab = 0
-    },
     // 注销Step组件之前清除定时器
     beforeDestroy() {
       clearTimeout(0)
-    },
-    handlerCustomerSelected(record) {
-      console.log(record)
-      this.customerName = record.name
-      this.customerId = record.id
-      this.form.setFieldsValue({
-        customerName: record.name,
-        customerId: record.id,
-      })
-    },
-    handleCustomerClick() {
-      //debugger
-      if (!this.saleUserId) {
-        this.$message.info('请选择销售人员后，再选择客户')
-        return
-      }
-      this.$refs.customerList.init({ userId: this.saleUserId })
-    },
-    // 获取所有销售经理经理和区域经理
-    getSalesList(params = {}) {
-      params = {
-        name: '', // 销售经理经理和区域经理名字智能搜索
-      }
-      return getListSaleContractUser(params)
-        .then((res) => {
-          console.log('销售经理经理和区域经理', res)
-          this.saleUser = res.data
-          this.trueName = res.data.salesmanName
-          this.saleUserId = res.data.userId
-          return res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    // 选择销售人员
-    saleSelectChange(e) {
-      this.saleUserId = e
-      this.customerName = undefined
-      this.customerId = undefined
-      this.form.setFieldsValue({
-        customerName: undefined,
-        customerId: undefined,
-      })
-      console.log('选择销售人员', this.saleUserId)
-    },
-    // 是否含税选中
-    selectedTax(e) {
-      this.isTax = e.target.value
-      console.log('//选择是否含税选中', e.target.value)
-      if (this.isTax === 0) {
-        this.disabled = true
-      } else {
-        this.disabled = false
-      }
-    },
-    // 普票、增票
-    selectedBillingType(e) {
-      this.billingType = e.target.value
-      console.log('//选择普票、增票', e.target.value)
-    },
-    // 是否使用我方平台
-    isUsingPlatform(e) {
-      this.usingPlatform = e.target.value
-      console.log('//选择是否使用我方平台', e.target.value)
-    },
-    // 是否使用我方合同
-    isContractAttribute(e) {
-      this.contractAttribute = e.target.value
-      console.log('//选择是否使用我方合同', e.target.value)
-    },
-    // 是否全款
-    isFullAmount(e) {
-      this.fullAmount = e.target.value
-      console.log('//选择是否全款', e.target.value)
-    },
-    disabledDate(current) {
-      // 后三十天内可选
-      return current < moment().subtract(11, 'days') || current > moment().add(10, 'd')
-    },
-    freightTypeChange(e) {
-      //debugger
-      this.freightType = parseInt(e.target.value)
     },
   },
 }

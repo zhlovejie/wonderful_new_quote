@@ -8,7 +8,39 @@ import system from '@/config/defaultSettings'
 export function DistributionList(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/goticeManage/gotice-manage/getGoticeManageList',
+    url: '/logistics/logistics-distribution-station/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
+/**自动生成编号 */
+export function logisticsNum(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/logistics/logistics-information/logisticsNum',
+    method: 'get',
+    params: parameter
+  })
+}
+/**物流信息保存 */
+export function logisticsPreservation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/logistics/logistics-information/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**物流信息详情 */
+export function getQueryOne(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/logistics/logistics-information/info',
     method: 'get',
     params: parameter
   })

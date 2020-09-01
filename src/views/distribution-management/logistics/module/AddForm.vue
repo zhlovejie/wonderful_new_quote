@@ -2,7 +2,7 @@
   <div class="content-wrap">
     <div class="top-right clearfix">
       <a-button class="fl-r" type="danger" @click="goBackAction" icon="left">返回</a-button>
-      <a-button class="fl-r" type="danger" @click="saveStep">保存当前信息</a-button>
+      <!-- <a-button class="fl-r" type="danger" @click="saveStep">保存当前信息</a-button> -->
     </div>
     <div class="content">
       <step1
@@ -12,7 +12,7 @@
         @nextStep="nextStep"
         :queryonedata="queryonedata"
       />
-      <!-- <step2
+      <step2
         v-if="currentTab === 1"
         ref="step2"
         key="step2"
@@ -20,7 +20,7 @@
         @prevStep="prevStep"
         :queryonedata="queryonedata"
       />
-      <step3
+      <!-- <step3
         v-if="currentTab === 2"
         ref="step3"
         key="step3"
@@ -43,22 +43,6 @@
         @nextStep="nextStep"
         @prevStep="prevStep"
         :queryonedata="queryonedata"
-      />
-      <step6
-        v-if="currentTab === 5"
-        ref="step6"
-        key="step6"
-        @nextStep="nextStep"
-        @prevStep="prevStep"
-        :queryonedata="queryonedata"
-      />
-      <step7
-        v-if="currentTab === 6"
-        ref="step7"
-        key="step7"
-        @prevStep="prevStep"
-        @finish="finish"
-        :queryonedata="queryonedata"
       />-->
     </div>
     <a-card :bordered="false">
@@ -68,34 +52,27 @@
         <a-step title="货物信息" />
         <a-step title="驾驶员信息" />
         <a-step title="货物合同" />
-        <!-- <a-step title="其他信息" />
-        <a-step :class="{ active: isActive }" title="附加条款" />-->
       </a-steps>
     </a-card>
   </div>
 </template>
 
 <script>
-import { getQueryOne, deleteQueryOne, delSplitProductTemp } from '@/api/contractListManagement'
-
+import { getQueryOne } from '@/api/distribution-management'
 import moment from 'moment'
 import Step1 from './Step1'
-// import Step2 from './Step2'
+import Step2 from './Step2'
 // import Step3 from './Step3'
 // import Step4 from './Step4'
 // import Step5 from './Step5'
-// import Step6 from './Step6'
-// import Step7 from './Step7'
 export default {
   name: 'BasicInform',
   components: {
     Step1,
-    // Step2,
+    Step2,
     // Step3,
     // Step4,
     // Step5,
-    // Step6,
-    // Step7,
   },
   props: {},
   data() {
@@ -179,7 +156,7 @@ export default {
     nextStep(data) {
       this.id = data.id
       this.queryonedata = { ...this.queryonedata, ...data }
-      if (this.currentTab < 7) {
+      if (this.currentTab < 5) {
         this.currentTab = this.currentTab + 1
       }
       if (this.queryonedata.contractAttribute === 0) {
@@ -205,14 +182,14 @@ export default {
           this.$refs.step4.nextStep(1)
           break
         case 4:
-          this.$refs.step5.nextStep(1)
+          this.$refs.step5.lastSubmit(0, 1)
           break
-        case 5:
-          this.$refs.step6.nextStep(1)
-          break
-        case 6:
-          this.$refs.step7.lastSubmit(0, 1)
-          break
+        // case 5:
+        //   this.$refs.step6.nextStep(1)
+        //   break
+        // case 6:
+        //   this.$refs.step7.lastSubmit(0, 1)
+        //   break
       }
     },
     // handler

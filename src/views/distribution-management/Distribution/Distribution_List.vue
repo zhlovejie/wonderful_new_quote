@@ -4,19 +4,19 @@
       <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
       <a-input
         placeholder="物流名称"
-        v-model="queryParam.title"
+        v-model="queryParam.logisticsCompanyName"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
       <a-input
         placeholder="负责人"
-        v-model="queryParam.title"
+        v-model="queryParam.personChargeName"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
       <a-input
         placeholder="负责人电话"
-        v-model="queryParam.title"
+        v-model="queryParam.personChargeTelephone"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
@@ -52,7 +52,7 @@
 
 <script>
 import moment from 'moment'
-import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
+import { DistributionList } from '@/api/distribution-management'
 import AddForm from './module/AddForm'
 
 const columns = [
@@ -65,32 +65,32 @@ const columns = [
   },
   {
     title: '物流公司名称',
-    dataIndex: 'accountDate',
-    key: 'accountDate',
+    dataIndex: 'logisticsCompanyName',
+    key: 'logisticsCompanyName',
     align: 'center',
   },
   {
     title: '负责人',
-    dataIndex: 'peopleNumber',
-    key: 'peopleNumber',
+    dataIndex: 'personChargeName',
+    key: 'personChargeName',
     align: 'center',
   },
   {
     title: '负责人电话',
-    dataIndex: 'companyPay',
-    key: 'companyPay',
+    dataIndex: 'personChargeTelephone',
+    key: 'personChargeTelephone',
     align: 'center',
   },
   {
     title: '微信号',
-    dataIndex: 'personalPay',
-    key: 'personalPay',
+    dataIndex: 'wechatNumber',
+    key: 'wechatNumber',
     align: 'center',
   },
   {
     title: '公司地址',
-    dataIndex: 'companyPay1',
-    key: 'companyPay1',
+    dataIndex: 'addressName',
+    key: 'addressName',
     align: 'center',
   },
   {
@@ -144,7 +144,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_social') {
+        if (to.name === 'distribution_Distribution') {
           this.init()
         }
       },
@@ -169,7 +169,7 @@ export default {
         // this.queryParam.accountDate = date
       }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
-      securitySocial_List(_searchParam)
+      DistributionList(_searchParam)
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''
