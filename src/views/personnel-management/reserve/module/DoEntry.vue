@@ -41,7 +41,7 @@
                   <a-form-item>
                     <a-cascader
                       :disabled="isView"
-                      v-decorator="['birthplace',{rules: [{required: false,message: '输入籍贯'}]}]"
+                      v-decorator="['birthplace',{rules: [{required: true ,message: '输入籍贯'}]}]"
                       :options="birthplaceOptions"
                       @change="birthplaceCascaderChange"
                       :loadData="birthplaceCascaderLoadData"
@@ -117,12 +117,12 @@
                     </a-select>
                   </a-form-item>
                 </td>
-                <td>文化程度</td>
+                <td class="requiredMark">文化程度</td>
                 <td>
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['educationId',{rules: [{required: false,message: '选择文化程度'}]}]"
+                      v-decorator="['educationId',{rules: [{required: true,message: '选择文化程度'}]}]"
                       placeholder="选择文化程度"
                     >
                       <a-select-option
@@ -151,7 +151,7 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['major',{rules: [{required: false,message: '输入专业'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="['major',{rules: [{required: true,message: '输入专业'},{max:30,message:'最多可输入30个字符'}]}]"
                       placeholder="输入专业"
                     />
                   </a-form-item>
@@ -161,7 +161,7 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['workingLife',{rules: [{required: false,message: '输入工作年限'}]}]"
+                      v-decorator="['workingLife',{rules: [{required: true,message: '输入工作年限'}]}]"
                       placeholder="输入工作年限"
                     />
                   </a-form-item>
@@ -723,23 +723,6 @@ export default {
         }
       }
 
-      // that.todauuplate = [...data]
-      // debugger
-      // if (!arr) {
-      //   that.todauuplate.push(data)
-      // } else {
-      //   that.$message.error('不能选择同一个模板')
-      // }
-
-      // that.todauuplate.map((item, i) => {
-      //   if (data.templateName == item.templateName) {
-      //     that.todauuplate.splice(i, 1)
-      //     that.todauuplate.push(data)
-      //   } else {
-      //     that.todauuplate.push(data)
-      //   }
-      // })
-
       console.log(that.todauuplate)
     },
     //删除上传模板
@@ -1036,80 +1019,90 @@ export default {
             return
           }
           if (this.type === 'edit') {
-            let arr1 = that.$refs.normalCard.getFiles().map((file) => {
-              if (file.name === '1') {
-                return {
-                  fileUrl: file.url,
-                  fileType: 2,
-                  fileName: file.fileName,
-                }
-              }
-            })
+            let arr1 = that.$refs.normalCard
+              ? that.$refs.normalCard.getFiles().map((file) => {
+                  if (file.name === '1') {
+                    return {
+                      fileUrl: file.url,
+                      fileType: 2,
+                      fileName: file.fileName,
+                    }
+                  }
+                })
+              : []
             arr1 = arr1.filter((item) => item)
-            console.log(arr1)
-            let arr = that.$refs.normalCard.getFiles().map((file) => {
-              if (file.response && file.response.code === 200 && file.name !== '1') {
-                let arr = {
-                  fileUrl: file.response.data,
-                  fileType: 2,
-                  fileName: file.name,
-                }
-                return arr
-              }
-            })
+            let arr = that.$refs.normalCard
+              ? that.$refs.normalCard.getFiles().map((file) => {
+                  if (file.response && file.response.code === 200 && file.name !== '1') {
+                    let arr = {
+                      fileUrl: file.response.data,
+                      fileType: 2,
+                      fileName: file.name,
+                    }
+                    return arr
+                  }
+                })
+              : []
             arr = arr.filter((item) => item)
-            console.log(arr)
-            let num1 = that.$refs.normalUpload.getFiles().map((file) => {
-              if (file.name === '1') {
-                return {
-                  fileUrl: file.url,
-                  fileType: 3,
-                  fileName: file.fileName,
-                }
-              }
-            })
+            let num1 = that.$refs.normalUpload
+              ? that.$refs.normalUpload.getFiles().map((file) => {
+                  if (file.name === '1') {
+                    return {
+                      fileUrl: file.url,
+                      fileType: 3,
+                      fileName: file.fileName,
+                    }
+                  }
+                })
+              : []
             num1 = num1.filter((item) => item)
-            console.log(num1)
-            let num = that.$refs.normalUpload.getFiles().map((file) => {
-              if (file.response && file.response.code === 200 && file.name !== '1') {
-                let arr = {
-                  fileUrl: file.response.data,
-                  fileType: 3,
-                  fileName: file.name,
-                }
-                return arr
-              }
-            })
+            let num = that.$refs.normalUpload
+              ? that.$refs.normalUpload.getFiles().map((file) => {
+                  if (file.response && file.response.code === 200 && file.name !== '1') {
+                    let arr = {
+                      fileUrl: file.response.data,
+                      fileType: 3,
+                      fileName: file.name,
+                    }
+                    return arr
+                  }
+                })
+              : []
             num = num.filter((item) => item)
-            console.log(num)
+
             if (that.todauuplate || arr || num) {
               values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num, ...arr1, ...num1]
             }
           }
           if (this.type === 'ruzhi') {
-            let arr = that.$refs.normalCard.getFiles().map((file) => {
-              if (file.response && file.response.code === 200) {
-                let arr = {
-                  fileUrl: file.response.data,
-                  fileType: 2,
-                  fileName: file.name,
-                }
-                return arr
-              }
-            })
-            let num = that.$refs.normalUpload.getFiles().map((file) => {
-              if (file.response && file.response.code === 200) {
-                let arr = {
-                  fileUrl: file.response.data,
-                  fileType: 3,
-                  fileName: file.name,
-                }
-                return arr
-              }
-            })
+            console.log(123)
+            let arr10 = that.$refs.normalCard
+              ? that.$refs.normalCard.getFiles().map((file) => {
+                  if (file.response && file.response.code === 200 && file.name !== '1') {
+                    let arr = {
+                      fileUrl: file.response.data,
+                      fileType: 2,
+                      fileName: file.name,
+                    }
+                    return arr
+                  }
+                })
+              : []
 
+            let num10 = that.$refs.normalUpload
+              ? that.$refs.normalUpload.getFiles().map((file) => {
+                  if (file.response && file.response.code === 200 && file.name !== '1') {
+                    let arr = {
+                      fileUrl: file.response.data,
+                      fileType: 3,
+                      fileName: file.name,
+                    }
+                    return arr
+                  }
+                })
+              : []
             if (that.todauuplate || arr || num) {
-              values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num]
+              values.certificateSaveBoList = [...that.todauuplate, ...arr10, ...num10]
             }
           }
 
@@ -1139,10 +1132,10 @@ export default {
           console.log(values)
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit' || that.type === 'add') {
-            if (that.todauuplate.length !== that.todayList.length) {
-              that.$message.error('请上传所有模板')
-              return
-            }
+            // if (that.todauuplate.length !== that.todayList.length) {
+            //   that.$message.error('请上传所有模板')
+            //   return
+            // }
             let __api__ = isDoEntryBefore ? reserveAddOrUpdate : reserveUpdateEntity
             that.spinning = true
             __api__(values)
