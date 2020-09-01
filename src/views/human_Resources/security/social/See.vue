@@ -111,7 +111,6 @@ export default {
     },
     searchActionsee() {
       let that = this
-      console.log(123)
       that.loading = true
       let _searchParam = Object.assign(
         { socialSecurityId: this.$route.params.id },

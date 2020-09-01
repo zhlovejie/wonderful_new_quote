@@ -63,6 +63,7 @@
                   name="file"
                   :fileList="fileList"
                   :beforeUpload="beforeUpload"
+                  @change="handleChange"
                   accept=".xls, .xlsx"
                 >
                   <a-button>
@@ -167,15 +168,21 @@ export default {
       this.fileList = this.fileList.slice(-1)
       return false
     },
-
+    handleChange(info) {
+      this.fileList = []
+      let fileList = [...info.fileList]
+      fileList = fileList.map((file) => {
+        if (file.response && file.response.code === 200) {
+          file.url = file.response.data
+        }
+        return file
+      })
+      this.fileList = fileList
+    },
     handleOk() {
       console.log('你是要提交')
       let that = this
-      if (that.isView) {
-        that.form.resetFields() // 清空表
-        that.visible = false
-        return
-      } else if (that.type === 'add' || that.type === 'edit-salary') {
+      if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
             values.accountDate = values.accountDate.format('YYYYMM')
