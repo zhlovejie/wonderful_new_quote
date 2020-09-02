@@ -702,12 +702,14 @@ export default {
         Personnel_Reserve({
           departmentId: that.department.departmentId,
           stationId: that.department.stationId,
-          insureType: 1,
+          insureType: this.form.getFieldsValue().haveSecurity,
         }).then((res) => {
           that.todayList = res.data
+          console.log(res.data)
         })
       }
     },
+
     // 模板数据接收
     getChildMsg(data) {
       let that = this

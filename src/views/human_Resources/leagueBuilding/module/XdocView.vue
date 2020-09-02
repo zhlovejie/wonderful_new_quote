@@ -49,6 +49,9 @@ export default {
         isImage = true
       }
 
+      if (suffixName === '.pdf') {
+        isImage = true
+      }
       if (isImage) {
         that.xdocUrl = xdocUrl
         that.visible = true
