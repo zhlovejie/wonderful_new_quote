@@ -820,6 +820,7 @@ export default {
       let that = this
       that.visible = true
       that.type = type
+      that.todauuplate = []
       that.record = Object.assign({}, record)
       that.form.resetFields()
       that.stationInfoRequire = {
