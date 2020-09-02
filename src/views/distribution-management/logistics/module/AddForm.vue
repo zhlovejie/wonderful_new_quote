@@ -6,14 +6,14 @@
     </div>
     <div class="content">
       <step1
-        v-if="currentTab === 0"
+        v-if="currentTab === 1"
         ref="step1"
         key="step1"
         @nextStep="nextStep"
         :queryonedata="queryonedata"
       />
       <step2
-        v-if="currentTab === 1"
+        v-if="currentTab === 0"
         ref="step2"
         key="step2"
         @nextStep="nextStep"

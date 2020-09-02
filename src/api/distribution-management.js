@@ -45,3 +45,13 @@ export function getQueryOne(parameter) {
     params: parameter
   })
 }
+
+/**承运方下拉列表 */
+export function stationList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/logistics/logistics-distribution-station/list',
+    method: 'get',
+    params: parameter
+  })
+}

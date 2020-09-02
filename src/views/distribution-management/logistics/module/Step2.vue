@@ -1,5 +1,6 @@
 <template>
   <div class="content-wrap">
+    <CustomerList ref="customerList" @selected="handlerCustomerSelected" />
     <a-row>
       <a-col :span="24" class="basic-tit" justify="center" align="middle">产品信息</a-col>
     </a-row>
@@ -12,19 +13,12 @@
               <a-col class="col-border" :span="3" justify="right" align="middle">承运方</a-col>
               <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
                 <a-form-item>
-                  <a-select
-                    placeholder="结算方式"
-                    :allowClear="true"
-                    style="border: none;width: 60%;"
-                    v-decorator="['settlementMethod', {rules: [{required: true,message: '请选择承运方!',},
+                  <a-input
+                    style="width:60%;"
+                    @click="handleCustomerClick"
+                    v-decorator="['distributionStationId',{rules: [{required: true,message: '请选择承运方',},
              ]}]"
-                  >
-                    <a-select-option
-                      v-for="item in settlement"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{item.text}}</a-select-option>
-                  </a-select>
+                  />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -38,7 +32,7 @@
                   <a-input
                     style="width:60%;"
                     :precision="0"
-                    v-decorator="['managementFeeWithdrawal',{rules: [{required: true,message: '请输车牌号',},
+                    v-decorator="['licensePlateNumber',{rules: [{required: true,message: '请输车牌号',},
              ]}]"
                   />
                 </a-form-item>
@@ -54,7 +48,7 @@
                   placeholder="车辆型号"
                   :allowClear="true"
                   style="border: none;width: 60%;"
-                  v-decorator="['settlementMethod', {rules: [{required: true,message: '请选择车辆型号!',},
+                  v-decorator="['vehicleType', {rules: [{required: true,message: '请选择车辆型号!',},
              ]}]"
                 >
                   <a-select-option
@@ -70,7 +64,7 @@
       </template>
     </div>
     <div class="btns-grop">
-      <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+      <!-- <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button> -->
       <a-button type="primary" @click="nextStep">下一步</a-button>
     </div>
   </div>
@@ -78,10 +72,13 @@
 
 <script>
 import moment from 'moment'
+
 import { getDictionaryList } from '@/api/workBox' // 数据字典
+import CustomerList from './modify'
 
 export default {
   name: 'Step2',
+  components: { CustomerList },
   props: {
     queryonedata: {
       type: Object,
@@ -92,7 +89,9 @@ export default {
   },
   data() {
     return {
-      settlement: [],
+      form: this.$form.createForm(this),
+      settlement: [], //数据字典  车辆类型
+      postSelectDataSource: [], //承运方
     }
   },
   computed: {},
@@ -102,9 +101,26 @@ export default {
   beforeCreate() {},
   mounted() {
     this.init()
-    getDictionaryList().then(() => {})
+    getDictionaryList({ parentId: 543 }).then((res) => {
+      this.settlement = res.data
+    })
   },
   methods: {
+    //打开承运方列表
+    handleCustomerClick() {
+      this.$refs.customerList.init()
+    },
+    //承运方组件返回值
+    handlerCustomerSelected(record) {
+      console.log(record)
+      // this.customerName = record.name
+      // this.customerId = record.id
+      // this.form.setFieldsValue({
+      //   customerName: record.name,
+      //   customerId: record.id,
+      // })
+    },
+
     async init() {
       let that = this
       let product = []
@@ -127,56 +143,33 @@ export default {
     // 点击下一步
     async nextStep(status) {
       const that = this
-      // if (that.$parent.routeParams.action === 'split') {
-      //   let { errors, values } = that.$refs.productCommonSplitNormal.validate()
-      //   if (errors) return
-      //   let { errors: errors1, values: values1 } = that.$refs.productCommonSplitChange.validate()
-      //   if (errors1) return
-
-      //   await saveSplitProductTemp([].concat(nomalProduct).concat(changeProduct))
-      //   if (status != 1) {
-      //     that.$emit('nextStep', {})
-      //   } else {
-      //     that.$message.success('保存成功')
-      //   }
-      // } else {
-      //   let { errors, values } = this.$refs.productCommon.validate()
-      //   if (errors) {
-      //     return
-      //   }
-
-      //   if (values.length <= 0) {
-      //     this.$message.error('请完善产品信息')
-      //     return
-      //   }
-
-      //   let products = this.formatProduct(values)
-      // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-      saveProduct(products)
-        .then((res) => {
-          console.log('插入产品信息，请求后端接口结果', res)
-
-          if (res && res.code && parseInt(res.code) === 500) {
-            that.$info.error(res.msg)
-            return
-          }
-          if (status != 1) {
-            that.$emit('nextStep', { ...res.data })
-          } else {
-            that.$message.success('保存成功')
-          }
-          //that.$emit('nextStep', { ...res.data })
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      validateFields((err, values) => {
+        console.log(values)
+        // saveProduct(products)
+        //   .then((res) => {
+        //     console.log('插入产品信息，请求后端接口结果', res)
+        //     if (res && res.code && parseInt(res.code) === 500) {
+        //       that.$info.error(res.msg)
+        //       return
+        //     }
+        //     if (status != 1) {
+        //       that.$emit('nextStep', { ...res.data })
+        //     } else {
+        //       that.$message.success('保存成功')
+        //     }
+        //     //that.$emit('nextStep', { ...res.data })
+        //   })
+        //   .catch((error) => {
+        //     console.error(error)
+        //   })
+      })
     },
   },
   // 上一步
-  prevStep() {
-    const id = this.id
-    this.$emit('prevStep', id)
-  },
+  // prevStep() {
+  //   // const id = this.id
+  //   // this.$emit('prevStep', id)
+  // },
   finish() {
     this.currentTab = 0
   },
