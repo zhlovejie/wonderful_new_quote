@@ -1164,10 +1164,10 @@ export default {
               that.$message.info('该人员已经办理入职了')
               return
             }
-            if (that.todauuplate.length !== that.todayList.length) {
-              that.$message.error('请上传所有模板')
-              return
-            }
+            // if (that.todauuplate.length !== that.todayList.length) {
+            //   that.$message.error('请上传所有模板')
+            //   return
+            // }
             that.spinning = true
             reserveDoEntry(values)
               .then((res) => {
