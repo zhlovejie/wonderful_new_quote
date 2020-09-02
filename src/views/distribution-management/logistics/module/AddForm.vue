@@ -6,21 +6,21 @@
     </div>
     <div class="content">
       <step1
-        v-if="currentTab === 1"
+        v-if="currentTab === 0"
         ref="step1"
         key="step1"
         @nextStep="nextStep"
         :queryonedata="queryonedata"
       />
       <step2
-        v-if="currentTab === 0"
+        v-if="currentTab === 1"
         ref="step2"
         key="step2"
         @nextStep="nextStep"
         @prevStep="prevStep"
         :queryonedata="queryonedata"
       />
-      <!-- <step3
+      <step3
         v-if="currentTab === 2"
         ref="step3"
         key="step3"
@@ -28,7 +28,7 @@
         @prevStep="prevStep"
         :queryonedata="queryonedata"
       />
-      <step4
+      <!-- <step4
         v-if="currentTab === 3"
         ref="step4"
         key="step4"
@@ -62,7 +62,7 @@ import { getQueryOne } from '@/api/distribution-management'
 import moment from 'moment'
 import Step1 from './Step1'
 import Step2 from './Step2'
-// import Step3 from './Step3'
+import Step3 from './Step3'
 // import Step4 from './Step4'
 // import Step5 from './Step5'
 export default {
@@ -70,7 +70,7 @@ export default {
   components: {
     Step1,
     Step2,
-    // Step3,
+    Step3,
     // Step4,
     // Step5,
   },

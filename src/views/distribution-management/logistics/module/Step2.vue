@@ -6,7 +6,7 @@
     </a-row>
     <div class="form wdf-form">
       <template>
-        <a-form :form="form" @submit="handleSubmit" class="form wdf-form">
+        <a-form :form="form" class="form wdf-form">
           <a-form-item>
             <a-row type="flex">
               <a-col class="col-border" :span="6" justify="center" align="middle"></a-col>
@@ -64,7 +64,7 @@
       </template>
     </div>
     <div class="btns-grop">
-      <!-- <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button> -->
+      <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
       <a-button type="primary" @click="nextStep">下一步</a-button>
     </div>
   </div>
@@ -72,6 +72,7 @@
 
 <script>
 import moment from 'moment'
+import { logisticsCarrier } from '@/api/distribution-management'
 
 import { getDictionaryList } from '@/api/workBox' // 数据字典
 import CustomerList from './modify'
@@ -92,6 +93,8 @@ export default {
       form: this.$form.createForm(this),
       settlement: [], //数据字典  车辆类型
       postSelectDataSource: [], //承运方
+      customerName: '', //承运方名称
+      customerId: '',
     }
   },
   computed: {},
@@ -112,82 +115,91 @@ export default {
     },
     //承运方组件返回值
     handlerCustomerSelected(record) {
-      console.log(record)
-      // this.customerName = record.name
-      // this.customerId = record.id
-      // this.form.setFieldsValue({
-      //   customerName: record.name,
-      //   customerId: record.id,
-      // })
-    },
-
-    async init() {
-      let that = this
-      let product = []
-
-      if (this.queryonedata && this.queryonedata.id) {
-        //正常流程
-      }
-    },
-    getContractInfo() {},
-    // handler 表单数据验证成功后回调事件
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          // eslint-disable-next-line no-console
-          console.log('Received values of form: ', values)
-        }
+      this.customerName = record.logisticsCompanyName
+      this.customerId = record.id
+      this.form.setFieldsValue({
+        distributionStationId: record.logisticsCompanyName,
       })
     },
+    // 上一步
+    prevStep() {
+      let that = this
+      const id = this.queryonedata.id
+      that.$emit('prevStep', id)
+    },
+    async init() {
+      // let qt = this.queryonedata
+      console.log(this.queryonedata)
+      // if (qt.id && qt.id > 0) {
+      //   this.freightType = qt.freightType
+      //   qt.addressNumber = qt.addressNumber.split(',')
+      //   this.form.setFieldsValue({
+      //     id: qt.id,
+      //     logisticsOrderNo: qt.logisticsOrderNo,
+      //     date: moment(qt.date),
+      //     isInvoice: qt.isInvoice,
+      //     settlementMethod: qt.settlementMethod,
+      //     logisticsAttribute: qt.logisticsAttribute,
+      //     logisticsPrice: qt.logisticsPrice,
+      //     managementFeeWithdrawal: qt.managementFeeWithdrawal,
+      //     preDeliveryTime: moment(qt.preDeliveryTime),
+      //     province: Number(qt.addressNumber[0]),
+      //     city: Number(qt.addressNumber[1]),
+      //     area: Number(qt.addressNumber[2]),
+      //     detailedAddressName: qt.detailedAddressName,
+      //   })
+      // }
+    },
+
+    // handler 表单数据验证成功后回调事件
     // 点击下一步
     async nextStep(status) {
       const that = this
+      const {
+        form: { validateFields },
+      } = this
       validateFields((err, values) => {
         console.log(values)
-        // saveProduct(products)
-        //   .then((res) => {
-        //     console.log('插入产品信息，请求后端接口结果', res)
-        //     if (res && res.code && parseInt(res.code) === 500) {
-        //       that.$info.error(res.msg)
-        //       return
-        //     }
-        //     if (status != 1) {
-        //       that.$emit('nextStep', { ...res.data })
-        //     } else {
-        //       that.$message.success('保存成功')
-        //     }
-        //     //that.$emit('nextStep', { ...res.data })
-        //   })
-        //   .catch((error) => {
-        //     console.error(error)
-        //   })
+        values.distributionStationId = that.customerId
+        logisticsCarrier(values)
+          .then((res) => {
+            console.log('插入产品信息，请求后端接口结果', res)
+            if (res && res.code && parseInt(res.code) === 500) {
+              that.$info.error(res.msg)
+              return
+            }
+            if (status != 1) {
+              that.$emit('nextStep', { ...res.data })
+            } else {
+              that.$message.success('保存成功')
+            }
+            //that.$emit('nextStep', { ...res.data })
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       })
     },
-  },
-  // 上一步
-  // prevStep() {
-  //   // const id = this.id
-  //   // this.$emit('prevStep', id)
-  // },
-  finish() {
-    this.currentTab = 0
-  },
-  getSplitProductTempInfo(params) {
-    return getSplitProductTemp(params)
-      .then((res) => {
-        return res.data
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  },
-  totalAmountChange(param) {
-    if (param.name === 'SplitNormal') {
-      this.splitNormalTotalAmount = param.totalAmount
-    } else {
-      this.splitChangeTotalAmount = param.totalAmount
-    }
+
+    finish() {
+      this.currentTab = 0
+    },
+    getSplitProductTempInfo(params) {
+      return getSplitProductTemp(params)
+        .then((res) => {
+          return res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    totalAmountChange(param) {
+      if (param.name === 'SplitNormal') {
+        this.splitNormalTotalAmount = param.totalAmount
+      } else {
+        this.splitChangeTotalAmount = param.totalAmount
+      }
+    },
   },
 }
 </script>

@@ -263,12 +263,31 @@ export default {
   },
   created() {},
   mounted() {
-    let qt = this.queryonedata
+    let qt = this.queryonedata ? this.queryonedata : {}
     if (qt.id && qt.id > 0) {
       let arr = qt.addressNumber.split(',')
       let num = qt.addressName.split(',')
       this.getCity(1, arr[0], num[1])
       this.getCity(2, arr[1], num[2])
+    }
+    if (qt.id && qt.id > 0) {
+      this.freightType = qt.freightType
+      qt.addressNumber = qt.addressNumber.split(',')
+      this.form.setFieldsValue({
+        id: qt.id,
+        logisticsOrderNo: qt.logisticsOrderNo,
+        date: moment(qt.date),
+        isInvoice: qt.isInvoice,
+        settlementMethod: qt.settlementMethod,
+        logisticsAttribute: qt.logisticsAttribute,
+        logisticsPrice: qt.logisticsPrice,
+        managementFeeWithdrawal: qt.managementFeeWithdrawal,
+        preDeliveryTime: moment(qt.preDeliveryTime),
+        province: Number(qt.addressNumber[0]),
+        city: Number(qt.addressNumber[1]),
+        area: Number(qt.addressNumber[2]),
+        detailedAddressName: qt.detailedAddressName,
+      })
     }
     getAreaByParent({ pId: 100000 })
       .then((res) => {
@@ -317,27 +336,6 @@ export default {
             })
           })
         }
-        let qt = this.queryonedata
-
-        if (qt.id && qt.id > 0) {
-          this.freightType = qt.freightType
-          qt.addressNumber = qt.addressNumber.split(',')
-          this.form.setFieldsValue({
-            id: qt.id,
-            logisticsOrderNo: qt.logisticsOrderNo,
-            date: moment(qt.date),
-            isInvoice: qt.isInvoice,
-            settlementMethod: qt.settlementMethod,
-            logisticsAttribute: qt.logisticsAttribute,
-            logisticsPrice: qt.logisticsPrice,
-            managementFeeWithdrawal: qt.managementFeeWithdrawal,
-            preDeliveryTime: moment(qt.preDeliveryTime),
-            province: Number(qt.addressNumber[0]),
-            city: Number(qt.addressNumber[1]),
-            area: Number(qt.addressNumber[2]),
-            detailedAddressName: qt.detailedAddressName,
-          })
-        }
       })
     },
     // handler 表单数据验证成功后回调事件
@@ -361,6 +359,9 @@ export default {
       validateFields((err, values) => {
         console.log('先校验，通过表单校验后，才进入下一步', values)
         console.log(that.$parent.routeParams.action)
+        if (that.queryonedata.id) {
+          values.id = that.queryonedata.id
+        }
         if (!err) {
           // if (that.$parent.routeParams.action === 'add') {
           //   console.log('新增模式 添加参数 contractModifyFlag：0')
@@ -394,10 +395,6 @@ export default {
                 that.$emit('nextStep', { ...res.data })
               } else {
                 that.$message.success('保存成功')
-                that.queryonedata.id = res.data.id
-                that.form.setFieldsValue({
-                  id: res.data.id,
-                })
               }
             })
             .catch((error) => {

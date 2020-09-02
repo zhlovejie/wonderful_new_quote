@@ -1,12 +1,11 @@
 
 <template>
-  <!-- 主名、辅名版本 -->
-  <a-modal title="选择客户" v-model="priewVisible" :footer="null" :maskClosable="false">
+  <a-modal title="承运方" v-model="priewVisible" :footer="null" :maskClosable="false">
     <div class="search-options">
       <a-input
         class="main-items"
         style="margin-right:10px;"
-        placeholder="客户名称"
+        placeholder="承运方名称"
         v-model="logisticsCompanyName"
       />
       <a-button type="primary" icon="search" @click="searchAction">查询</a-button>
@@ -24,27 +23,6 @@
       </div>
       <div slot="name" slot-scope="text,record">
         <a @click="handlerSelected(record)">{{ text }}</a>
-        <!-- <a-dropdown>
-          <a href="javascript:void(0);" style="text-align:left;">
-            {{ text }}
-            <a-icon type="down" style="margin-left:5px;" />
-          </a>
-          <a-menu slot="overlay">
-            <a-menu-item
-              v-for="(item, index) in record.customAlias"
-              :key="index"
-              @click="handlerSelected(record,index)"
-            >
-              <template v-if="item._primary">
-                <a-tag color="red">主</a-tag>
-              </template>
-              <template v-else>
-                <a-tag color="pink">辅</a-tag>
-              </template>
-              {{item.name}}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>-->
       </div>
     </a-table>
   </a-modal>

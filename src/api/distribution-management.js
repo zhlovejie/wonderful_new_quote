@@ -35,7 +35,16 @@ export function logisticsPreservation(parameter) {
     data: parameter
   })
 }
+/** 承运方信息 */
 
+export function logisticsCarrier(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/logistics/logistics-carrier/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
 /**物流信息详情 */
 export function getQueryOne(parameter) {
   return axios({
