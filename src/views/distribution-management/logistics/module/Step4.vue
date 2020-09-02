@@ -103,12 +103,12 @@ import { getAreaByParent } from '@/api/common'
 export default {
   name: 'Step4',
   components: {
-    ContactForm
+    ContactForm,
   },
   props: {
     queryonedata: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     const queryOneData = { ...this.queryonedata }
@@ -123,7 +123,7 @@ export default {
       domEles: {},
       contacts: [],
       freightType: 0, // 是否含运费 0是，1否
-      birthplaceOptions: [] //籍贯 级联 省市
+      birthplaceOptions: [], //籍贯 级联 省市
     }
   },
   watch: {
@@ -131,7 +131,7 @@ export default {
       if (to.fullPath === '/sales-management/contract-list-management/distributionContractList') {
         this.currentTab = 0
       }
-    }
+    },
   },
   mounted() {
     this.init()
@@ -139,11 +139,11 @@ export default {
   directives: {
     getdom(el, binding) {
       if (typeof binding.value == 'function') binding.value(el)
-    }
+    },
   },
   methods: {
     regist(flag) {
-      return el => {
+      return (el) => {
         this.domEles[flag] = el
       }
     },
@@ -159,7 +159,7 @@ export default {
       that.id = that.queryonedata.id
       const params = { id: that.queryonedata.id }
       await getQueryOne(params)
-        .then(res => {
+        .then((res) => {
           that.queryOneData = res.data
           that.form.setFieldsValue({
             id: this.queryonedata.id || 0,
@@ -170,7 +170,7 @@ export default {
             transportType: res.data.transportType,
             deliveryDate: res.data.deliveryDate,
             otherMsg: res.data.otherMsg === null ? '' : res.data.otherMsg,
-            detailDeliveryAddress:res.data.deliveryAddress || ''
+            detailDeliveryAddress: res.data.deliveryAddress || '',
           })
           that.contractId = this.queryonedata.id
           that.id = this.queryonedata.id
@@ -186,7 +186,7 @@ export default {
           //   mobilStr: res.data.deliveryMobile
           // })
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
 
@@ -196,23 +196,22 @@ export default {
       that.birthplaceOptions = _areaData
       if (detailDeliveryAreaIds) {
         let _arr = detailDeliveryAreaIds.split(',')
-        _arr = _arr.map(v => parseInt(v,10))
+        _arr = _arr.map((v) => parseInt(v, 10))
         let _areaCityData = await that.loadAreaAction(_arr[0])
-        let ctiyTargetOption = that.birthplaceOptions.find(p =>p.value == _arr[0])
-        if(ctiyTargetOption){
+        let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
+        if (ctiyTargetOption) {
           ctiyTargetOption.children = _areaCityData
           that.birthplaceOptions = [...that.birthplaceOptions]
         }
 
         let _areaAreaData = await that.loadAreaAction(_arr[1])
-        let areaTargetOption = ctiyTargetOption.children.find(p =>p.value == _arr[1])
-        if(areaTargetOption){
+        let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
+        if (areaTargetOption) {
           areaTargetOption.children = _areaAreaData
           that.birthplaceOptions = [...that.birthplaceOptions]
         }
-        that.$nextTick(() => that.form.setFieldsValue({areaPlace:_arr}))
+        that.$nextTick(() => that.form.setFieldsValue({ areaPlace: _arr }))
       }
-
 
       //填充省市区 END
       // that.form.setFieldsValue({
@@ -239,7 +238,7 @@ export default {
     nextStep(status) {
       const that = this
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
@@ -254,14 +253,13 @@ export default {
             that.$message.info('请选择交货地点的省市区')
             return
           }*/
-          var deliveryAreaId;
-          if((Array.isArray(values.areaPlace) && values.areaPlace.length === 3)){
+          var deliveryAreaId
+          if (Array.isArray(values.areaPlace) && values.areaPlace.length === 3) {
             /*that.$message.info('请选择交货地点的省市区')
             return*/
             debugger
             deliveryAreaId = values.areaPlace[values.areaPlace.length - 1]
           }
-
 
           const params = {
             id: that.queryonedata.id,
@@ -271,16 +269,16 @@ export default {
             // deliveryAddress: contactResult.addressStr,
             // deliveryName: contactResult.nameStr,
             // deliveryMobile: contactResult.mobilStr,
-            deliveryAddress:values.detailDeliveryAddress || '',
-            deliveryAreaId:deliveryAreaId,
+            deliveryAddress: values.detailDeliveryAddress || '',
+            deliveryAreaId: deliveryAreaId,
             freightType: values.freightType,
             transportType: values.transportType,
             otherMsg: values.otherMsg ? values.otherMsg : '无',
-            deliveryDate: values.deliveryDate
+            deliveryDate: values.deliveryDate,
           }
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           saveDeliveryAddress(params)
-            .then(res => {
+            .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
               that.loading = false
@@ -293,7 +291,7 @@ export default {
                 that.$message.success('保存成功')
               }
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
         }
@@ -372,7 +370,7 @@ export default {
         contacts.push({
           name: nameArr[index] ? nameArr[index] : '',
           telphone: mobileArr[index] ? mobileArr[index] : '',
-          address: addressArr[index] ? addressArr[index] : ''
+          address: addressArr[index] ? addressArr[index] : '',
         })
       })
       return contacts
@@ -398,7 +396,7 @@ export default {
           }
           if (index === arr.length - 1) {
             //处理多余的 ;
-            Object.keys(accumulator).map(k => {
+            Object.keys(accumulator).map((k) => {
               accumulator[k] = accumulator[k].endsWith(';') ? accumulator[k].slice(0, -1) : accumulator[k]
             })
           }
@@ -417,41 +415,41 @@ export default {
       const targetOption = selectedOptions[selectedOptions.length - 1]
       targetOption.loading = true
       getAreaByParent({ pId: targetOption.value })
-        .then(res => {
+        .then((res) => {
           //城市
           targetOption.loading = false
-          targetOption.children = res.data.map(item => {
+          targetOption.children = res.data.map((item) => {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false
+              isLeaf: item.level === 3 ? true : false,
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log(err)
         })
     },
     loadAreaAction(pId) {
       const that = this
       return getAreaByParent({ pId: pId })
-        .then(res => {
+        .then((res) => {
           //城市
-          return res.data.map(item => {
+          return res.data.map((item) => {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false
+              isLeaf: item.level === 3 ? true : false,
             }
           })
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log(err)
           return []
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

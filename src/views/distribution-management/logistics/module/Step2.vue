@@ -95,6 +95,7 @@ export default {
       postSelectDataSource: [], //承运方
       customerName: '', //承运方名称
       customerId: '',
+      id: '',
     }
   },
   computed: {},
@@ -124,12 +125,13 @@ export default {
     // 上一步
     prevStep() {
       let that = this
-      const id = this.queryonedata.id
-      that.$emit('prevStep', id)
+      console.log(this.id)
+      that.$emit('prevStep', this.id)
     },
     async init() {
-      // let qt = this.queryonedata
-      console.log(this.queryonedata)
+      this.id = this.queryonedata.id ? this.queryonedata.id : ''
+      // console.log(this.queryonedata)
+
       // if (qt.id && qt.id > 0) {
       //   this.freightType = qt.freightType
       //   qt.addressNumber = qt.addressNumber.split(',')
@@ -160,6 +162,7 @@ export default {
       } = this
       validateFields((err, values) => {
         console.log(values)
+        values.logisticsInformationId = that.id
         values.distributionStationId = that.customerId
         logisticsCarrier(values)
           .then((res) => {

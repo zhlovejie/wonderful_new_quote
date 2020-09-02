@@ -31,7 +31,9 @@ export default {
   },
   data() {
     const queryOneData = { ...this.queryonedata }
-    return {}
+    return {
+      id: '',
+    }
   },
   watch: {
     $route(to, from) {
@@ -186,17 +188,17 @@ export default {
     prevStep() {
       // this.$emit('prevStep', {...this.id})
       // const id = this.id
-      this.$emit('prevStep')
+      this.$emit('prevStep', this.id)
     },
     init() {
       const that = this
-      that.id = that.queryonedata.id
+      this.id = this.queryonedata.logisticsInformationId ? this.queryonedata.logisticsInformationId : ''
 
-      const params = { id: that.queryonedata.id }
+      // const params = { id: that.queryonedata.id }
       //拆分流程
-      if (this.$parent.routeParams.action == 'split') {
-        params['type'] = 3
-      }
+      // if (this.$parent.routeParams.action == 'split') {
+      //   params['type'] = 3
+      // }
 
       // if (that.id > 0) {
       //   getQueryOne(params)

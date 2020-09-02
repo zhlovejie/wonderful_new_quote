@@ -154,7 +154,7 @@ export default {
     // },
     // 点击下一步
     nextStep(data) {
-      this.id = data.id
+      // this.id = data.id
       this.queryonedata = { ...this.queryonedata, ...data }
       if (this.currentTab < 5) {
         this.currentTab = this.currentTab + 1
@@ -199,8 +199,8 @@ export default {
         this.currentTab -= 1
       }
       // 点击上一步，相当于修改操作
-      // const params={id:e}
-      const params = { id: this.queryonedata.id }
+      const params = { id: e }
+      // const params = { id: this.queryonedata.id }
       console.log('点击上一步传入的参数', params)
       getQueryOne(params)
         .then((res) => {
