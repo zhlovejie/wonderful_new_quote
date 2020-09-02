@@ -444,7 +444,7 @@
                       v-decorator="['haveSecurity',{initialValue:1,rules: [{required: true,message: '选择是否缴纳社保'}]}]"
                     >
                       <a-radio :value="1">是</a-radio>
-                      <a-radio :value="0">否</a-radio>
+                      <a-radio :value="2">否</a-radio>
                     </a-radio-group>
                   </a-form-item>
                 </td>
