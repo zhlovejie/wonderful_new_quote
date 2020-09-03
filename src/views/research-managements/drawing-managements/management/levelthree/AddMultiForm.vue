@@ -213,7 +213,9 @@ export default {
             dataSource.push(Object.assign({}, item))
           } else {
             let pictureNum = ''
+            let fileName = ''
             try {
+              fileName = f.name.split('.')[0]
               pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
             } catch (err) {
               pictureNum = ''
@@ -222,7 +224,7 @@ export default {
               key: uuid(),
               uploadFileName: f.name,
               pictureNum: pictureNum,
-              fileName: '',
+              fileName: fileName,
               productCode: '',
               remark: '',
               fileUrl: f.url,
