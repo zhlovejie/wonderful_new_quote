@@ -206,8 +206,24 @@
             <a-col class="col-border" :span="3" justify="center" align="middle"></a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle"></a-col>
           </a-row>
+
+        <a-row type="flex" style="border-bottom: 1px solid #ddd;" >
+            <a-col class="col-border" :span="3" justify="center" align="middle">备注</a-col>
+            <a-col class="col-border" :span="21" justify="center" align="middle">
+              <a-form-item>
+              <a-textarea 
+                placeholder="备注" 
+                read-only="read-only"
+                :rows="3" 
+                v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+              />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+
         <a-form-item>
-          <a-row>
+          <a-row style="border-bottom: 1px solid #ddd;" >
             <a-col class="col-border" :span="3" justify="center" align="middle">创建人</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-input
@@ -227,7 +243,7 @@
           </a-row>
         </a-form-item>
         <a-form-item v-if="approveVueBoolean">
-          <a-row class="wdf-row">
+          <a-row class="wdf-row" style="border-bottom: 1px solid #ddd;" >
             <a-col class="col-border" :span="3" justify="center" align="middle">审批人</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-input
@@ -340,13 +356,13 @@ export default {
   },
   methods: {
     init () {
-      console.log('init this.$route.params ' + JSON.stringify(this.$route.params))
-      const params = { 'id': this.$route.params.id }
-      this.auditBoolean = this.$route.params.auditBoolean
-      this.id = this.$route.params.id
+      let that = this
+      console.log('init this.$route.params ' + JSON.stringify(that.$route.params))
+      const params = { 'id': that.$route.params.id }
+      that.auditBoolean = that.$route.params.auditBoolean
+      that.id = that.$route.params.id
       openPaperDetail(params).then((res) => {
-
-        this.freightType = res.data.saleContractDetail.freightType
+        that.freightType = res.data.saleContractDetail.freightType
         const record = {
           'paperCode': res.data.paperCode,
           'contractNum': res.data.saleContractDetail.contractNum,
@@ -369,16 +385,23 @@ export default {
           'createdName': res.data.createdName,
           'approveTime': res.data.approveTime,
           'freightCharge': res.data.freightCharge || res.data.saleContractDetail.freightCharge,
+          'remark':res.data.remark,
           openUnit:res.data.openUnit || ''
         }
         if (res.data.approveName != undefined && res.data.approveTime != undefined) {
-          this.approveVueBoolean = true
+          that.approveVueBoolean = true
         }
 
-        this.$nextTick(() => {
-          this.form.setFieldsValue({ ...record })
+
+        that.$nextTick(() => {
+          that.form.setFieldsValue(record)
+          that.$nextTick(() =>{
+            that.form.setFieldsValue(record)
+          })
         })
-        console.log('getContractOne : ' + JSON.stringify(res))
+
+
+        //console.log('getContractOne : ' + JSON.stringify(res))
       })
 
       /**
