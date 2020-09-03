@@ -163,14 +163,16 @@ export default {
     },
     viewFormat(record){
       let url = record.fileUrl
+      let pdfUrl = record.filePdf || url
       let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
       let isPdf = url => url.endsWith('.pdf')
       let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
       if(url){
         if(isPdf(url) || isImage(url)){
           return url
-        }else if(isWord){
-          return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+        }else if(isWord){ //增加了word转PDF的功能，，，如果是 word 预览用PDF
+          //return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+          return pdfUrl
         }
       }
       return '#'

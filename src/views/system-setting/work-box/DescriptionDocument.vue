@@ -39,7 +39,7 @@
       <span slot="action" slot-scope="text,record">
         <template>
           <template v-if="$auth('document:one')">
-            <a target="_blank" :href="url+record.fileUrl">查看</a>
+            <a target="_blank" :href="viewFormat(record)">查看</a>
           </template>
           <template v-if="$auth('document:one')">
             <a-divider type="vertical" />
@@ -205,6 +205,22 @@ export default {
       console.log('onSelectChange 点击了', selectedRows)
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    viewFormat(record){
+      let url = record.fileUrl
+      let pdfUrl = record.filePdf || url
+      let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
+      let isPdf = url => url.endsWith('.pdf')
+      let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
+      if(url){
+        if(isPdf(url) || isImage(url)){
+          return url
+        }else if(isWord){ //增加了word转PDF的功能，，，如果是 word 预览用PDF
+          //return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+          return pdfUrl
+        }
+      }
+      return '#'
     }
   }
 
