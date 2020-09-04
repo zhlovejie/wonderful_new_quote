@@ -47,8 +47,7 @@
 <script>
 import moment from 'moment'
 import system from '@/config/defaultSettings'
-import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
-
+import { logisticsList } from '@/api/distribution-management'
 const columns = [
   {
     dataIndex: 'name',
@@ -143,7 +142,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_social') {
+        if (to.name === 'distribution_logistics') {
           this.init()
         }
       },
@@ -153,7 +152,6 @@ export default {
   methods: {
     moment: moment,
     init() {
-      let that = this
       this.searchAction()
     },
     dateChange(date, dateString) {
@@ -169,7 +167,7 @@ export default {
         this.queryParam.accountDate = date
       }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
-      securitySocial_List(_searchParam)
+      logisticsList(_searchParam)
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''

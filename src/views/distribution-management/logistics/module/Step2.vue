@@ -72,7 +72,7 @@
 
 <script>
 import moment from 'moment'
-import { logisticsCarrier } from '@/api/distribution-management'
+import { logisticsCarrier, getQueryOne } from '@/api/distribution-management'
 
 import { getDictionaryList } from '@/api/workBox' // 数据字典
 import CustomerList from './modify'
@@ -96,15 +96,18 @@ export default {
       customerName: '', //承运方名称
       customerId: '',
       id: '',
+      distribution: '',
     }
   },
   computed: {},
   watch: {
     $route(to, from) {},
+    queryonedata: function () {
+      this.init()
+    },
   },
   beforeCreate() {},
   mounted() {
-    this.init()
     getDictionaryList({ parentId: 543 }).then((res) => {
       this.settlement = res.data
     })
@@ -125,35 +128,22 @@ export default {
     // 上一步
     prevStep() {
       let that = this
-      console.log(this.id)
-      that.$emit('prevStep', this.id)
+      that.$emit('prevStep', this.queryonedata.id)
     },
     async init() {
-      this.id = this.queryonedata.id ? this.queryonedata.id : ''
-      // console.log(this.queryonedata)
-
-      // if (qt.id && qt.id > 0) {
-      //   this.freightType = qt.freightType
-      //   qt.addressNumber = qt.addressNumber.split(',')
-      //   this.form.setFieldsValue({
-      //     id: qt.id,
-      //     logisticsOrderNo: qt.logisticsOrderNo,
-      //     date: moment(qt.date),
-      //     isInvoice: qt.isInvoice,
-      //     settlementMethod: qt.settlementMethod,
-      //     logisticsAttribute: qt.logisticsAttribute,
-      //     logisticsPrice: qt.logisticsPrice,
-      //     managementFeeWithdrawal: qt.managementFeeWithdrawal,
-      //     preDeliveryTime: moment(qt.preDeliveryTime),
-      //     province: Number(qt.addressNumber[0]),
-      //     city: Number(qt.addressNumber[1]),
-      //     area: Number(qt.addressNumber[2]),
-      //     detailedAddressName: qt.detailedAddressName,
-      //   })
-      // }
+      this.$nextTick(() => {
+        if (this.queryonedata.logisticsCarrierVos.length > 0) {
+          this.id = this.queryonedata.logisticsCarrierVos[0].logisticsInformationId
+          this.distribution = this.queryonedata.logisticsCarrierVos[0]
+          this.customerId = this.queryonedata.logisticsCarrierVos[0].distributionStationId
+          this.form.setFieldsValue({
+            distributionStationId: this.queryonedata.logisticsCarrierVos[0].logisticsCompanyName,
+            licensePlateNumber: this.queryonedata.logisticsCarrierVos[0].licensePlateNumber,
+            vehicleType: this.queryonedata.logisticsCarrierVos[0].vehicleType,
+          })
+        }
+      })
     },
-
-    // handler 表单数据验证成功后回调事件
     // 点击下一步
     async nextStep(status) {
       const that = this
@@ -161,20 +151,21 @@ export default {
         form: { validateFields },
       } = this
       validateFields((err, values) => {
-        console.log(values)
+        if (that.distribution) {
+          values.id = that.distribution.logisticsInformationId
+        }
         values.logisticsInformationId = that.id
         values.distributionStationId = that.customerId
+        values.logisticsCompanyName = that.customerName
         logisticsCarrier(values)
           .then((res) => {
-            console.log('插入产品信息，请求后端接口结果', res)
             if (res && res.code && parseInt(res.code) === 500) {
               that.$info.error(res.msg)
               return
             }
             if (status != 1) {
-              that.$emit('nextStep', { ...res.data })
+              that.$emit('nextStep', {})
             } else {
-              that.$message.success('保存成功')
             }
             //that.$emit('nextStep', { ...res.data })
           })
@@ -186,22 +177,6 @@ export default {
 
     finish() {
       this.currentTab = 0
-    },
-    getSplitProductTempInfo(params) {
-      return getSplitProductTemp(params)
-        .then((res) => {
-          return res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    totalAmountChange(param) {
-      if (param.name === 'SplitNormal') {
-        this.splitNormalTotalAmount = param.totalAmount
-      } else {
-        this.splitChangeTotalAmount = param.totalAmount
-      }
     },
   },
 }

@@ -28,7 +28,7 @@
         @prevStep="prevStep"
         :queryonedata="queryonedata"
       />
-      <!-- <step4
+      <step4
         v-if="currentTab === 3"
         ref="step4"
         key="step4"
@@ -43,7 +43,7 @@
         @nextStep="nextStep"
         @prevStep="prevStep"
         :queryonedata="queryonedata"
-      />-->
+      />
     </div>
     <a-card :bordered="false">
       <a-steps class="steps" :current="currentTab">
@@ -63,16 +63,16 @@ import moment from 'moment'
 import Step1 from './Step1'
 import Step2 from './Step2'
 import Step3 from './Step3'
-// import Step4 from './Step4'
-// import Step5 from './Step5'
+import Step4 from './Step4'
+import Step5 from './Step5'
 export default {
   name: 'BasicInform',
   components: {
     Step1,
     Step2,
     Step3,
-    // Step4,
-    // Step5,
+    Step4,
+    Step5,
   },
   props: {},
   data() {
@@ -93,12 +93,6 @@ export default {
       queryonedata: {}, // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
       isActive: true, // 第七步是否隐藏
       contractAttribute: 0,
-      routeParams: {
-        //路由参数
-        id: null, //合同编号
-        action: 'add', //来源 新增 add  修改 edit 拆分 split
-        from: 'distributionContractList', //处理完跳转的路由名称
-      },
       __isFinished: false, //完结提交标志
       show: false,
     }
@@ -138,13 +132,13 @@ export default {
     this.currentTab = 0
     this.routeParams = Object.assign({}, this.routeParams, this.$route.params)
     this.__isFinished = false
-    if (this.routeParams.show) {
-      this.show = this.routeParams.show
-    }
-    if (this.routeParams.id) {
-      this.id = this.routeParams.id
-      this.resetQueryonedata(this.routeParams.id)
-    }
+    // if (this.routeParams.show) {
+    //   this.show = this.routeParams.show
+    // }
+    // if (this.routeParams.id) {
+    //   this.id = this.routeParams.id
+    //   this.resetQueryonedata(this.routeParams.id)
+    // }
   },
   methods: {
     // 返回
@@ -184,12 +178,6 @@ export default {
         case 4:
           this.$refs.step5.lastSubmit(0, 1)
           break
-        // case 5:
-        //   this.$refs.step6.nextStep(1)
-        //   break
-        // case 6:
-        //   this.$refs.step7.lastSubmit(0, 1)
-        //   break
       }
     },
     // handler
@@ -200,7 +188,6 @@ export default {
       }
       // 点击上一步，相当于修改操作
       const params = { id: e }
-      // const params = { id: this.queryonedata.id }
       console.log('点击上一步传入的参数', params)
       getQueryOne(params)
         .then((res) => {
@@ -213,16 +200,16 @@ export default {
         })
     },
 
-    resetQueryonedata(id) {
-      console.log('resetQueryonedata called...')
-      getQueryOne({ id: id })
-        .then((res) => {
-          this.queryonedata = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
+    // resetQueryonedata(id) {
+    //   console.log('resetQueryonedata called...')
+    //   getQueryOne({ id: id })
+    //     .then((res) => {
+    //       this.queryonedata = res.data
+    //     })
+    //     .catch((error) => {
+    //       console.error(error)
+    //     })
+    // },
     finish() {
       this.currentTab = 0
     },

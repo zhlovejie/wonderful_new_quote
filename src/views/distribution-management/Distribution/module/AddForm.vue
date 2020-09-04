@@ -29,7 +29,7 @@
               <a-form-item>
                 <a-input
                   placeholder="物流名称"
-                  v-decorator="['title', { rules: [{ required: true, message: '请输入物流名称' }] }]"
+                  v-decorator="['logisticsCompanyName', { rules: [{ required: true, message: '请输入物流名称' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -40,7 +40,7 @@
               <a-form-item>
                 <a-input
                   placeholder="负责人名称"
-                  v-decorator="['title', { rules: [{ required: true, message: '请输入负责人名称' }] }]"
+                  v-decorator="['personChargeName', { rules: [{ required: true, message: '请输入负责人名称' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -53,7 +53,7 @@
               <a-form-item>
                 <a-input
                   placeholder="负责人电话"
-                  v-decorator="['title', { rules: [{ required: true, message: '请输入负责人电话' }] }]"
+                  v-decorator="['personChargeTelephone', { rules: [{ required: true, message: '请输入负责人电话' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -64,7 +64,7 @@
               <a-form-item>
                 <a-input
                   placeholder="微信号"
-                  v-decorator="['title', { rules: [{ required: true, message: '请输入微信号' }] }]"
+                  v-decorator="['wechatNumber', { rules: [{ required: true, message: '请输入微信号' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -118,7 +118,7 @@
                     <a-col :lg="9" :md="9" :sm="24">
                       <a-input
                         placeholder="请输入详细地址"
-                        v-decorator="['address',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
+                        v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
                       />
                     </a-col>
                   </a-form-item>

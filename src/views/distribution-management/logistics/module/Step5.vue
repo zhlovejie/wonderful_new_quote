@@ -127,7 +127,7 @@
 
         <a-form-item class="btns-grop" style="border-left: none">
           <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
-          <a-button type="primary" @click="nextStep">下一步</a-button>
+          <a-button type="primary" @click="nextStep">保存</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -142,8 +142,8 @@ export default {
   components: { AFormItem },
   props: {
     queryonedata: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -157,15 +157,15 @@ export default {
       queryOneData: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 3 }
+        sm: { span: 3 },
       },
       wrapper: {
         xs: { span: 24 },
-        sm: { span: 21 }
+        sm: { span: 21 },
       },
       //是否(产品订货单 isTax = 0 )
       //新增需求0612
-      isProductOrder: false
+      isProductOrder: false,
     }
   },
   computed: {},
@@ -174,7 +174,7 @@ export default {
       if (to.fullPath === '/sales-management/contract-list-management/distributionContractList') {
         this.currentTab = 0
       }
-    }
+    },
   },
   created() {},
   mounted() {
@@ -188,14 +188,14 @@ export default {
       if (that.id > 0) {
         console.log('step5 called ... getQueryOne')
         getQueryOne(params)
-          .then(res => {
+          .then((res) => {
             //debugger
             that.queryOneData = res.data
 
             that.isProductOrder = that.queryOneData.isTax === 0 ? true : false
 
             that.form.setFieldsValue({
-              id: res.data.id || 0
+              id: res.data.id || 0,
             })
 
             if (res.data.customerInfo) {
@@ -211,7 +211,7 @@ export default {
                 fax: res.data.customerInfo.fax || '',
                 zipCode: res.data.customerInfo.zipCode || '',
                 bankCardAccount: res.data.customerInfo.bankCardAccount || '',
-                accountTitle: res.data.customerInfo.accountTitle || ''
+                accountTitle: res.data.customerInfo.accountTitle || '',
               })
             }
 
@@ -235,14 +235,14 @@ export default {
                 (that.accountTitle = res.data.customerInfo.accountTitle || '')
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
           })
       } else {
         //
         try {
           that.form.setFieldsValue({
-            id: this.queryonedata.id || 0
+            id: this.queryonedata.id || 0,
           })
 
           if (this.queryonedata.customerInfo) {
@@ -258,7 +258,7 @@ export default {
               fax: this.queryonedata.customerInfo.fax || '',
               zipCode: this.queryonedata.customerInfo.zipCode || '',
               bankCardAccount: this.queryonedata.customerInfo.bankCardAccount || '',
-              accountTitle: this.queryonedata.customerInfo.accountTitle || ''
+              accountTitle: this.queryonedata.customerInfo.accountTitle || '',
             })
           }
         } catch (err) {}
@@ -278,7 +278,7 @@ export default {
     nextStep(status) {
       const that = this
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       console.log('{ form: { validateFields } } = this', this)
       // 先校验，通过表单校验后，才进入下一步
@@ -300,11 +300,11 @@ export default {
             address: values.address,
             fax: values.fax,
             zipCode: values.zipCode,
-            bankCardAccount: values.bankCardAccount
+            bankCardAccount: values.bankCardAccount,
           }
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           saveBInformation(params)
-            .then(res => {
+            .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
               that.loading = false
@@ -317,7 +317,7 @@ export default {
                 that.$message.success('保存成功')
               }
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
         }
@@ -325,8 +325,8 @@ export default {
     },
     // 上一步
     prevStep() {
-      const id = this.id
-      this.$emit('prevStep', id)
+      // const id = this.id
+      this.$emit('prevStep', this.queryonedata.id)
     },
 
     // 是否含运费
@@ -338,8 +338,8 @@ export default {
     transportTypeSelected(e) {
       this.transportType = e.target.value
       console.log('选择自提/代办运输', e.target.value)
-    }
-  }
+    },
+  },
 }
 </script>
 
