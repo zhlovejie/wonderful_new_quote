@@ -171,7 +171,9 @@ export default {
         that.certificateList = that.queryonedata.logisticsPilots[0].cardNoAnnuxes.map((item) => {
           return {
             uid: item.id,
+            id: item.id,
             name: '1',
+            fileName: item.name,
             status: 'done',
             url: item.url,
           }
@@ -179,7 +181,9 @@ export default {
         that.specialList = that.queryonedata.logisticsPilots[0].driveNoAnnuxes.map((item) => {
           return {
             uid: item.id,
+            id: item.id,
             name: '1',
+            fileName: item.name,
             status: 'done',
             url: item.url,
           }
@@ -215,6 +219,7 @@ export default {
                 }
               })
             : []
+          arr = arr.filter((item) => item)
           let num = that.$refs.normalUpload
             ? that.$refs.normalUpload.getFiles().map((file) => {
                 if (file.response && file.response.code === 200 && file.name != '1') {
@@ -227,13 +232,14 @@ export default {
                 }
               })
             : []
+          num = num.filter((item) => item)
           let arr1 = that.$refs.normalCard
             ? that.$refs.normalCard.getFiles().map((file) => {
                 if (file.name === '1') {
                   let arr = {
-                    url: file.response.data,
+                    url: file.url,
                     status: 1,
-                    name: file.name,
+                    name: file.fileName,
                     id: file.id,
                   }
                   return arr
@@ -245,9 +251,9 @@ export default {
             ? that.$refs.normalUpload.getFiles().map((file) => {
                 if (file.name === '1') {
                   let arr = {
-                    url: file.response.data,
+                    url: file.url,
                     status: 2,
-                    name: file.name,
+                    name: file.fileName,
                     id: file.id,
                   }
                   return arr

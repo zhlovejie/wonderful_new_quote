@@ -20,7 +20,7 @@
         @preview="handlePreview"
         @change="handleChange"
       >
-        <div v-if="fileList.length < 3">
+        <div v-if="fileList.length <3">
           <a-icon type="plus" />
           <div class="ant-upload-text">证件</div>
         </div>
