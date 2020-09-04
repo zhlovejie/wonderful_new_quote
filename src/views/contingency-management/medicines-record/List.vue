@@ -1,61 +1,32 @@
-<!-- 1.领取记录 -->
+<!-- 1.药品物资管理 -->
 <template>
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-select
-        placeholder="选择部门"
-        @change="depChangeHandler"
-        v-model="searchParam.departmentId"
+      <a-input
+        style="width:150px;"
         :allowClear="true"
-        style="width: 160px"
-      >
-        <a-select-option
-          v-for="item in depSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.departmentName}}</a-select-option>
-      </a-select>
-
-      <a-select
-        placeholder="选择岗位" 
-        @change="postChangeHandler"
-        v-model="searchParam.stationId"
+        placeholder="设备名称"
+        v-model="searchParam.equipmentName"
+      />
+      <a-input
+        style="width:150px;"
         :allowClear="true"
-        style="width: 160px"
-      >
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.stationName}}</a-select-option>
-      </a-select>
-
-      <a-select 
-        placeholder="选择人员"
-        v-model="searchParam.userId" 
+        placeholder="药品名称"
+        v-model="searchParam.medicineName"
+      />
+      <a-input
+        style="width:150px;"
         :allowClear="true"
-        style="width: 160px"
-      >
-        <a-select-option
-          v-for="item in personSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.trueName}}</a-select-option>
-      </a-select>
+        placeholder="领取人"
+        v-model="searchParam.receiver"
+      />
+      <a-range-picker
+        style="width:220px;"
+        :allowClear="true"
+        v-model="sDate"
+        @change="rangePickerChange"
+      />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
-      <!-- <a-button
-        class="a-button"
-        type="primary"
-        icon="download"
-        @click="doAction('download',null)"
-      >下载</a-button> -->
-      <a-button
-        class="a-button"
-        style="float:right;"
-        type="primary"
-        icon="plus"
-        @click="doAction('add',null)"
-      >新增</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -66,124 +37,114 @@
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit',record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
-            <a href="javascript:void(0);">删除</a>
-          </a-popconfirm>
-        </div>
       </a-table>
     </div>
-    <AddForm ref="addForm" @finish="searchAction" />
   </div>
 </template>
 <script>
-import {
-  departmentList, //所有部门
-  getStationList, //获取部门下面的岗位
-  getUserByStation //获取岗位下人员
-} from '@/api/systemSetting'
-import {
-  comManageAccountPage,
-  comManageMobileManageExportExcel,
-  comManageAccountDelete
-} from '@/api/communicationManagement'
-import AddForm from './AddForm'
+import { emergencyCabinetReceiveRecordList } from '@/api/contingencyManagement'
 
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
     title: '序号',
     width: '70px',
     dataIndex: 'order',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName'
+    title: '设备名称',
+    dataIndex: 'equipmentName',
   },
   {
     align: 'center',
-    title: '岗位',
-    dataIndex: 'stationName'
+    title: '货道号',
+    dataIndex: 'aisleNum',
   },
   {
     align: 'center',
-    title: '人员',
-    dataIndex: 'userName'
+    title: '药品名称',
+    dataIndex: 'medicineName',
   },
   {
     align: 'center',
-    title: '钉钉账户',
-    dataIndex: 'ddAccount',
+    title: '数量',
+    dataIndex: 'quantity',
   },
   {
     align: 'center',
-    title: '万德福云账户',
-    dataIndex: 'wdfAccount',
+    title: '领取人部门',
+    dataIndex: 'receiverDepName',
   },
   {
     align: 'center',
-    title: '提交人',
-    dataIndex: 'createdName'
+    title: '领取人',
+    dataIndex: 'receiver',
   },
   {
     align: 'center',
-    title: '提交时间',
-    dataIndex: 'createdTime'
+    title: '手机号',
+    dataIndex: 'receiverMobile',
   },
   {
     align: 'center',
-    title: '操作',
-    scopedSlots: { customRender: 'action' }
-  }
+    title: '领取时间',
+    dataIndex: 'createdTime',
+  },
 ]
 
 export default {
-  name: 'communication-management-account',
-  components: {
-    AddForm: AddForm
-  },
+  name: 'contingency-management-medicines-record',
+  components: {},
   data() {
     return {
-      depSelectDataSource: [],
-      postSelectDataSource: [],
-      personSelectDataSource:[],
+      sDate: [undefined, undefined],
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
       searchParam: {},
-      packageDetail: '',
       visible: false,
-      exportFilePath: comManageMobileManageExportExcel()
+      bindEnterFn: null,
     }
   },
   computed: {},
   watch: {
     $route: {
-      handler: function(to, from) {
-        if (to.name === 'communication-management-account') {
+      handler: function (to, from) {
+        if (to.name === 'contingency-management-medicines-record') {
           this.init()
         }
       },
-      immediate: true
+      immediate: true,
+    },
+  },
+  mounted() {
+    let that = this
+    let ele = document.querySelector('.wdf-custom-wrapper')
+    that.bindEnterFn = (event) => {
+      if (event.type === 'keyup' && event.keyCode === 13) {
+        //Enter
+        that.searchAction()
+      }
+    }
+    if (ele) {
+      ele.addEventListener('keyup', that.bindEnterFn)
     }
   },
+  beforeDestroy() {
+    let that = this
+    let ele = document.querySelector('.wdf-custom-wrapper')
+    ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
+  },
   methods: {
+    moment,
     init() {
       let that = this
-      //depSelectDataSource
-      departmentList().then(res => {
-        that.depSelectDataSource = res.data
-      })
-
       this.searchAction()
     },
     searchAction(opt) {
@@ -191,8 +152,8 @@ export default {
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      comManageAccountPage(_searchParam)
-        .then(res => {
+      emergencyCabinetReceiveRecordList(_searchParam)
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -203,7 +164,7 @@ export default {
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -213,43 +174,18 @@ export default {
       this.pagination = pager
       this.searchAction()
     },
-    doAction(type, record) {
-      let that = this
-      if (type === 'add' || type === 'edit' || type === 'view') {
-        this.$refs.addForm.query(type, record)
-        return
-      }
-      if (type === 'del') {
-        comManageAccountDelete({ id: record.id })
-          .then(res => {
-            that.$message.info(res.msg)
-            that.searchAction()
-          })
-          .catch(err => {
-            that.$message.info(`错误：${err.message}`)
-          })
-        return
-      }
-      if (type === 'download') {
-        let eleA = document.createElement('a')
-        eleA.href = that.exportFilePath
-        eleA.target = '_blank'
-        eleA.click()
-        return
+    rangePickerChange(arrMoment, arrStrs) {
+      if (Array.isArray(arrMoment)) {
+        if (arrMoment.length === 2) {
+          this.searchParam.startTime = arrMoment[0].format('YYYY-MM-DD')
+          this.searchParam.endTime = arrMoment[1].format('YYYY-MM-DD')
+        } else {
+          this.searchParam.startTime = undefined
+          this.searchParam.endTime = undefined
+        }
       }
     },
-    depChangeHandler(dep_id) {
-      let that = this
-      that.postSelectDataSource = []
-      return getStationList({ id: dep_id }).then(res => {
-        that.postSelectDataSource = res.data
-      })
-    },
-    postChangeHandler(stationId){
-      this.personSelectDataSource = []
-      getUserByStation({ stationId: stationId }).then(res => (this.personSelectDataSource = res.data))
-    },
-  }
+  },
 }
 </script>
 <style scoped>

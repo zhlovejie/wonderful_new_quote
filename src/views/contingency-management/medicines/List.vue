@@ -2,9 +2,24 @@
 <template>
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-input style="width:150px;" :allowClear="true" placeholder="药品名称" v-model="searchParam.medicineName" />
-      <a-input style="width:150px;" :allowClear="true" placeholder="功效" v-model="searchParam.efficacy" />
-      <a-range-picker style="width:220px;" :allowClear="true" v-model="sDate" @change="rangePickerChange" />
+      <a-input
+        style="width:150px;"
+        :allowClear="true"
+        placeholder="药品名称"
+        v-model="searchParam.medicineName"
+      />
+      <a-input
+        style="width:150px;"
+        :allowClear="true"
+        placeholder="功效"
+        v-model="searchParam.efficacy"
+      />
+      <a-range-picker
+        style="width:220px;"
+        :allowClear="true"
+        v-model="sDate"
+        @change="rangePickerChange"
+      />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
       <a-button
         class="a-button"
@@ -13,6 +28,7 @@
         icon="plus"
         @click="doAction('add',null)"
       >新增</a-button>
+      <!-- v-if="$auth('contingency-management-medicines:add')" -->
     </div>
     <div class="main-wrapper">
       <a-table
@@ -23,14 +39,34 @@
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
+        <div slot="efficacy" slot-scope="text">
+          <a-tooltip v-if="String(text).length > 15">
+            <template slot="title">{{text}}</template>
+            {{ String(text).slice(0,15) }}...
+          </a-tooltip>
+          <span v-else>{{text}}</span>
+        </div>
+
+        <div slot="remark" slot-scope="text">
+          <a-tooltip v-if="String(text).length > 15">
+            <template slot="title">{{text}}</template>
+            {{ String(text).slice(0,15) }}...
+          </a-tooltip>
+          <span v-else>{{text}}</span>
+        </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
+          <!-- <template v-if="$auth('contingency-management-medicines:edit')"> -->
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('edit',record)">修改</a>
+          <!-- </template> -->
+
+          <!-- <template v-if="$auth('contingency-management-medicines:del')"> -->
           <a-divider type="vertical" />
           <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
             <a href="javascript:void(0);">删除</a>
           </a-popconfirm>
+          <!-- </template> -->
         </div>
       </a-table>
     </div>
@@ -38,13 +74,12 @@
   </div>
 </template>
 <script>
-
 import {
   emergencyMedicineAddOrUpdate,
   emergencyMedicineDetail,
   emergencyMedicineList,
   emergencyMedicineReplenishmentList,
-  emergencyMedicineDel
+  emergencyMedicineDel,
 } from '@/api/contingencyManagement'
 import AddForm from './AddForm'
 import moment from 'moment'
@@ -54,22 +89,23 @@ const columns = [
     title: '序号',
     width: '70px',
     dataIndex: 'order',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'medicineName'
+    dataIndex: 'medicineName',
   },
   {
     align: 'center',
     title: '功效',
-    dataIndex: 'efficacy'
+    dataIndex: 'efficacy',
+    scopedSlots: { customRender: 'efficacy' },
   },
   {
     align: 'center',
     title: '生产日期',
-    dataIndex: 'productionDate'
+    dataIndex: 'productionDate',
   },
   {
     align: 'center',
@@ -84,53 +120,73 @@ const columns = [
   {
     align: 'center',
     title: '保管人',
-    dataIndex: 'preserver'
+    dataIndex: 'preserver',
   },
   {
     align: 'center',
     title: '保管人手机号',
-    dataIndex: 'preserverMobile'
+    dataIndex: 'preserverMobile',
   },
   {
     align: 'center',
     title: '备注',
-    dataIndex: 'remark'
+    dataIndex: 'remark',
+    scopedSlots: { customRender: 'remark' },
   },
   {
     align: 'center',
     title: '操作',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'contingency-management-medicines',
   components: {
-    AddForm: AddForm
+    AddForm: AddForm,
   },
   data() {
     return {
-      sDate:[undefined,undefined],
+      sDate: [undefined, undefined],
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
       searchParam: {},
-      visible: false
+      visible: false,
+      bindEnterFn: null,
     }
   },
   computed: {},
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'contingency-management-medicines') {
           this.init()
         }
       },
-      immediate: true
+      immediate: true,
+    },
+  },
+  mounted() {
+    let that = this
+    let ele = document.querySelector('.wdf-custom-wrapper')
+    that.bindEnterFn = (event) => {
+      if (event.type === 'keyup' && event.keyCode === 13) {
+        //Enter
+        that.searchAction()
+      }
     }
+    if (ele) {
+      ele.addEventListener('keyup', that.bindEnterFn)
+    }
+  },
+  beforeDestroy() {
+    let that = this
+    let ele = document.querySelector('.wdf-custom-wrapper')
+    ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
   },
   methods: {
     moment,
@@ -144,7 +200,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       emergencyMedicineList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -155,7 +211,7 @@ export default {
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -172,30 +228,31 @@ export default {
         return
       }
       if (type === 'del') {
-        emergencyMedicineDel({ id: record.id })
-          .then(res => {
+        emergencyMedicineDel(`id=${record.id}`)
+          .then((res) => {
             that.$message.info(res.msg)
-            that.searchAction()
+            if(+res.code === 200){
+              that.searchAction()
+            }
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
         return
       }
-
     },
-    rangePickerChange(arrMoment,arrStrs){
-      if(Array.isArray(arrMoment)){
-        if(arrMoment.length === 2){
+    rangePickerChange(arrMoment, arrStrs) {
+      if (Array.isArray(arrMoment)) {
+        if (arrMoment.length === 2) {
           this.searchParam.startTime = arrMoment[0].format('YYYY-MM-DD')
           this.searchParam.endTime = arrMoment[1].format('YYYY-MM-DD')
-        }else{
+        } else {
           this.searchParam.startTime = undefined
           this.searchParam.endTime = undefined
         }
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>

@@ -2770,6 +2770,17 @@ export const asyncRouterMap = [
             },
           },
           {
+            path: '/contingency-management/medicines-cabinet-config',
+            name: 'contingency-management-medicines-cabinet-config',
+            component: () => import('@/views/contingency-management/medicines-cabinet-config/List'),
+            meta: {
+              title: '药品柜类型',
+              icon: 'select',
+              keepAlive: false,
+              permission: ['permission']
+            },
+          },
+          {
             path: '/contingency-management/medicines-cabinet',
             name: 'contingency-management-medicines-cabinet',
             component: () => import('@/views/contingency-management/medicines-cabinet/List'),
