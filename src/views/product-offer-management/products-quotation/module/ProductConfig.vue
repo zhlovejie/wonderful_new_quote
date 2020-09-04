@@ -28,6 +28,7 @@
                 </td>
                 <td>
                   <a-checkbox
+                    :disabled="(parseInt(item.aprice) || 0) === 0 && (parseInt(item.bprice) || 0) === 0 && (parseInt(item.cprice) || 0) === 0"
                     :checked="item.checked"
                     @change="optStandChoiceCheckChange(index,$event)"
                   />
@@ -124,7 +125,7 @@
 
       </template>
 
-      <table class="custom-table custom-table-border c-select-color" v-if="optSelect.length > 0">
+      <table class="custom-table custom-table-border c-select-color" v-if="optChoice.length > 0 || optSelect.length > 0">
         <tr>
           <td style="width:150px;">{{prefix}}选配</td>
           <td style="padding:0;">
