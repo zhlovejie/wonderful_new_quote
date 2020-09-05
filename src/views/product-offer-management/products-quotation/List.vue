@@ -209,11 +209,16 @@ export default {
       this.$nextTick(() =>this.reset())
     },
     extendProductChange(record) {
-      if (record && record.isProduct && record.checked) {
-        this.$refs.productConfigSub.query(record.id)
+      //debugger
+      if (record && record.isProduct) {
+        if(record.checked){
+          this.$refs.productConfigSub.query(record.id)
+        }else{
+          this.$refs.productConfigSub.reset()
+        }
         return
       }
-      this.$refs.productConfigSub.reset()
+      //this.$refs.productConfigSub.reset()
     },
     selectedHandler(record) {
       this.optInfo = {
