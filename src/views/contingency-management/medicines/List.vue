@@ -21,14 +21,15 @@
         @change="rangePickerChange"
       />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
-      <a-button
+      <a-button 
+        v-if="$auth('contingency-management-medicines:add')"
         class="a-button"
         style="float:right;"
         type="primary"
         icon="plus"
-        @click="doAction('add',null)"
+        @click="doAction('add',null)" 
       >新增</a-button>
-      <!-- v-if="$auth('contingency-management-medicines:add')" -->
+      
     </div>
     <div class="main-wrapper">
       <a-table
@@ -56,17 +57,17 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
-          <!-- <template v-if="$auth('contingency-management-medicines:edit')"> -->
+          <template v-if="$auth('contingency-management-medicines:edit')">
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('edit',record)">修改</a>
-          <!-- </template> -->
+          </template>
 
-          <!-- <template v-if="$auth('contingency-management-medicines:del')"> -->
+          <template v-if="$auth('contingency-management-medicines:del')">
           <a-divider type="vertical" />
           <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
             <a href="javascript:void(0);">删除</a>
           </a-popconfirm>
-          <!-- </template> -->
+          </template>
         </div>
       </a-table>
     </div>
