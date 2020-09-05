@@ -1,6 +1,6 @@
 
 <template>
-  <a-modal :title="modelTitle" v-model="priewVisible" :footer="null" :maskClosable="false">
+  <a-modal :title="modelTitle" :width="850" v-model="priewVisible" :footer="null" :maskClosable="false">
     <a-table
       :columns="columns"
       rowKey="id"
@@ -9,26 +9,7 @@
       :pagination="pagination"
       @change="handleTableChange"
     >
-      <div slot="order" slot-scope="text,record,index">
-        <span>{{ index+1 }}</span>
-      </div>
-      <div slot="name" slot-scope="text,record">
-        <!-- <a @click="handlerSelected(record)">{{ text }}</a> -->
-        <a-dropdown>
-          <a href="javascript:void(0);" style="text-align:left;">{{ text }}<a-icon type="down" style="margin-left:5px;" /></a>
-          <a-menu slot="overlay">
-            <a-menu-item v-for="(item, index) in record.customAlias" :key="index" @click="handlerSelected(record,index)">
-              <template v-if="item._primary">
-                <a-tag color="red">主</a-tag>
-              </template>
-              <template v-else>
-                <a-tag color="pink">辅</a-tag>
-              </template>
-              {{item.name}}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
-      </div>
+      <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
     </a-table>
   </a-modal>
 </template>
@@ -100,9 +81,6 @@ export default {
   data(){
     return {
       loading:false,
-      pagination: {
-        current:1
-      },
       type:'',
       priewVisible:false,
       searchParams:{},
@@ -117,11 +95,20 @@ export default {
       }
       return m[this.type]
     },
+    isGoodsRecord(){
+      return this.type === 'goodsRecord'
+    },
+    isAisleCase(){
+      return this.type === 'aisleCase'
+    },
     columns(){
-      return this.type === 'goodsRecord' ? columns_goodsRecord : columns_aisleCase
+      return this.isGoodsRecord ? columns_goodsRecord : columns_aisleCase
     },
     api(){
-      return this.type === 'goodsRecord' ? emergencyCabinetReplenishmentList : emergencyCabinetInventoryListByCabinet
+      return this.isGoodsRecord ? emergencyCabinetReplenishmentList : emergencyCabinetInventoryListByCabinet
+    },
+    pagination(){
+      return this.isGoodsRecord ? {current:1} : false
     }
   },
   methods:{
@@ -149,7 +136,8 @@ export default {
       let _param = Object.assign({},that.pagination,that.searchParams)
       console.log(_param)
       return that.api(_param).then((res) => {
-        that.dataSource = res.data.records.map(item =>{
+        let data = that.isGoodsRecord ? res.data.records : res.data
+        that.dataSource = data.map(item =>{
           return item
         })
         that.loading = false

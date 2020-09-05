@@ -136,3 +136,43 @@ export function emergencyMedicineCabinetList (params) {
   })
 }
 /*--应急管理-药品柜接口-------END--------------------------*/
+
+
+/*--应急管理-药品柜类型接口------------------------------------*/
+export function emergencyCabinetTypeList (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/emergencyCabinetType/pageList',
+    method: 'get',
+    params: params
+  })
+}
+
+export function emergencyCabinetTypeDetail (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/emergencyCabinetType/detail',
+    method: 'get',
+    params: params
+  })
+}
+
+export function emergencyCabinetTypeDel (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/emergencyCabinetType/delete',
+    method: 'post',
+    data: params
+  })
+}
+
+export function emergencyCabinetTypeAddOrUpdate (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/emergencyCabinetType/addOrUpdate',
+    method: 'post',
+    data: params
+  })
+}
+
+/*--应急管理-药品柜类型接口-------END--------------------------*/
