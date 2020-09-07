@@ -28,10 +28,10 @@
         <table class="custom-table custom-table-border">
           <thead>
             <tr>
-              <th>开始层数(个)</th>
-              <th>结束层数(个)</th>
-              <th>每层货道数量(个)</th>
-              <th>每层货道容量(个)</th>
+              <th>开始层数</th>
+              <th>结束层数</th>
+              <th>每层货道数量</th>
+              <th>每个货道容量</th>
               <th v-if="!isView">操作</th>
             </tr>
           </thead>
