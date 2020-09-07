@@ -14,7 +14,8 @@
         placeholder="功效"
         v-model="searchParam.efficacy"
       />
-      <a-range-picker
+      <a-range-picker 
+        :placeholder="['到期日期','到期日期']"
         style="width:220px;"
         :allowClear="true"
         v-model="sDate"

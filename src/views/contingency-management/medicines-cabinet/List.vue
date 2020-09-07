@@ -12,7 +12,7 @@
         style="width:150px;"
         :allowClear="true"
         placeholder="主板号"
-        v-model="searchParam.medicineName"
+        v-model="searchParam.mainboardNum"
       />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
     </div>

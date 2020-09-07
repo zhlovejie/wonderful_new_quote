@@ -22,6 +22,7 @@
       />
       <a-range-picker
         style="width:220px;"
+        :placeholder="['领取时间','领取时间']"
         :allowClear="true"
         v-model="sDate"
         @change="rangePickerChange"
