@@ -76,7 +76,7 @@
           </tr>
           <tr>
             <td>保管人</td>
-            <td >
+            <td colspan="3">
               <a-form-item>
                 <a-input 
                   v-if="!isView"
@@ -92,7 +92,7 @@
                 <a-input v-decorator="['preserverId',{initialValue:detail.preserverId}]" />
               </a-form-item>
             </td>
-            <td>保管人手机号</td>
+            <!-- <td>保管人手机号</td>
             <td >
               <a-form-item>
                 <a-input 
@@ -102,7 +102,7 @@
                 />
                 <span v-if="isView">{{detail.preserverMobile}}</span>
               </a-form-item>
-            </td>
+            </td> -->
           </tr>
           <tr>
             <td>图片</td>
