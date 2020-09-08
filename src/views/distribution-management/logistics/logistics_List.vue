@@ -39,17 +39,20 @@
           </template>
           <template>
             <a-divider type="vertical" />
-            <a class="ant-dropdown-link">回访记录</a>
+            <a class="ant-dropdown-link" @click="returnV(record.id)">回访记录</a>
           </template>
         </span>
       </a-table>
     </a-layout>
+
+    <ReturnVisit ref="returnVisit" />
   </a-card>
 </template>
 
 <script>
 import moment from 'moment'
 import system from '@/config/defaultSettings'
+import ReturnVisit from './module/returnVisit'
 import { logisticsList, logisticsDelete } from '@/api/distribution-management'
 const columns = [
   {
@@ -118,7 +121,7 @@ const columns = [
 ]
 export default {
   name: 'RoleManagement',
-  components: {},
+  components: { ReturnVisit },
   data() {
     return {
       urls: system.baseURL + '/logistics/logistics-information/download/LogisticsDownload?id=',
@@ -205,6 +208,10 @@ export default {
         name: 'basicInform',
         params: { typeName: type, action: record },
       })
+    },
+
+    returnV(id) {
+      this.$refs.returnVisit.init(id)
     },
   },
 }

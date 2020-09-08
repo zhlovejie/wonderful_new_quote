@@ -126,3 +126,14 @@ export function getList(parameter) {
     params: parameter
   })
 }
+
+// 
+/**回访记录 */
+export function returnVisit(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/logistics/logistics-return-visit-record/list',
+    method: 'get',
+    params: parameter
+  })
+}
