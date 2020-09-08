@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrap">
     <div class="top-right clearfix">
-      <a-button class="fl-r" type="danger" @click="goBackAction" icon="left">返回</a-button>
+      <a-button class="fl-r" type="primary" @click="goBackAction" icon="left">返回</a-button>
       <!-- <a-button class="fl-r" type="danger" @click="saveStep">保存当前信息</a-button> -->
     </div>
     <div class="content">
@@ -77,88 +77,33 @@ export default {
   props: {},
   data() {
     return {
-      form: this.$form.createForm(this),
-      signDate: {
-        rules: [{ type: 'object', required: true, message: '请选择日期!' }],
-      },
       currentTab: 0, // tab切换，当前tab
-      contractNum: '', // 合同编号
-      saleCustomers: {}, // 客户名称数组
-      customerId: 0, // 客户id
-      saleUser: {}, // 销售经理名称列表
-      saleUserId: 0, // 选中的销售经理id
-      signDate: moment(), // 签订日期, 默认今天
       disabled: false, // 是否含税启用/禁用
       id: 0, // 这个是主键id,名称是唯一的，要在7个组件中都能使用，别的地方不要定义成id
       queryonedata: {}, // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
-      isActive: true, // 第七步是否隐藏
-      contractAttribute: 0,
-      __isFinished: false, //完结提交标志
       show: false,
     }
   },
-  watch: {
-    $route(to, from) {
-      console.log('from.fullPath--------', from.fullPath)
-      //   if (from.fullPath === '/sales-management/contract-list-management/distributionContractList') {
-      //     this.currentTab = 0
-      //   }
-      //   if (to.name === 'basicInformation1') {
-      //     this.currentTab = 0
-      //     this.__isFinished = false
-      //     this.routeParams = Object.assign({}, this.routeParams, this.$route.params)
-      //     if (this.routeParams.show) {
-      //       this.show = this.routeParams.show
-      //     }
-      //     if (this.routeParams.id) {
-      //       this.id = this.routeParams.id
-      //       this.resetQueryonedata(this.routeParams.id)
-      //     }
-      //   }
-    },
-  },
-  beforeRouteLeave(to, from, next) {
-    //用户未点击删除按钮，离开此页面 自动触发删除订单操作
-    try {
-      if (from.name === 'basicInform' && !this.__isFinished) {
-        // this.goBackActionSilent()
-      }
-    } catch (err) {
-      console.log(err)
+  created() {
+    if (this.$route.params.typeName === 'see' || this.$route.params.typeName === 'edit-salary') {
+      getQueryOne({ id: this.$route.params.action.id }).then((res) => {
+        console.log(res.data)
+        this.queryonedata = { ...res.data }
+      })
     }
-    next()
   },
   mounted() {
     this.currentTab = 0
     this.routeParams = Object.assign({}, this.routeParams, this.$route.params)
-    this.__isFinished = false
-    // if (this.routeParams.show) {
-    //   this.show = this.routeParams.show
-    // }
-    // if (this.routeParams.id) {
-    //   this.id = this.routeParams.id
-    //   this.resetQueryonedata(this.routeParams.id)
-    // }
   },
   methods: {
-    // 返回
-    // goBack(){
-    //   this.$router.push({name:'distributionContractList'})
-    //   this.currentTab===0
-    // },
-    // 点击下一步
     nextStep(data) {
-      // this.id = data.id
+      console.log(data)
       this.queryonedata = { ...this.queryonedata, ...data }
+      console.log(this.queryonedata)
       if (this.currentTab < 5) {
         this.currentTab = this.currentTab + 1
       }
-      if (this.queryonedata.contractAttribute === 0) {
-        this.isActive = true
-      } else {
-        this.isActive = false
-      }
-      console.log('isActive', this.isActive)
     },
     //当点击保存按钮时，保存当前页输入信息，不跳入下一步
     saveStep() {
@@ -182,34 +127,11 @@ export default {
     },
     // handler
     prevStep(e) {
-      console.log('点击上一步，相当于修改操作,带过来的参数', e)
+      // console.log('点击上一步，相当于修改操作,带过来的参数', e)
       if (this.currentTab > 0) {
         this.currentTab -= 1
       }
-      // 点击上一步，相当于修改操作
-      const params = { id: e }
-      console.log('点击上一步传入的参数', params)
-      getQueryOne(params)
-        .then((res) => {
-          console.log('点击上一步,请求的结果', res)
-          this.queryonedata = res.data
-          console.log('这个是父页面的打印，要传入到子页面的数据对象', this.queryonedata)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
     },
-
-    // resetQueryonedata(id) {
-    //   console.log('resetQueryonedata called...')
-    //   getQueryOne({ id: id })
-    //     .then((res) => {
-    //       this.queryonedata = res.data
-    //     })
-    //     .catch((error) => {
-    //       console.error(error)
-    //     })
-    // },
     finish() {
       this.currentTab = 0
     },
@@ -221,87 +143,9 @@ export default {
         okText: '确定',
         cancelText: '取消',
         onOk() {
-          // 在这里调用删除接口
-          //   if (_this.queryonedata && _this.queryonedata.id) {
-          //     const params = { id: _this.queryonedata.id }
-          // if (_this.routeParams.action === 'add') {
-          //   //新增
-          //   params.contractModifyFlag = 0
-          // } else if (_this.routeParams.action === 'edit') {
-          //   //驳回修改
-          //   params.contractModifyFlag = 1
-          // } else if (_this.routeParams.action === 'split') {
-          //   //拆分修改
-          //   params.contractModifyFlag = 1
-          // }
-          //     deleteQueryOne(params)
-          //       .then((res) => {
-          //         if (res.code == 200) {
-          //           if (_this.routeParams.action === 'add') {
-          //             _this.$message.info('删除合同编辑成功')
-          //           }
-          //           console.log('contractId====', _this.id)
-          //           console.log('show====', _this.show)
-          //           //_this.$router.push({ name: _this.routeParams.from, params: { contractId: _this.id, show: _this.show } }) //新增修改走此路由
-          //           _this.$router.push({ name: _this.routeParams.from, params: { ..._this.routeParams } })
-          //         } else {
-          //           _this.$message.error(res.msg)
-          //         }
-          //       })
-          //       .catch((err) => {
-          //         console.log(err)
-          //         _this.$router.push({ name: _this.routeParams.from, params: { ..._this.routeParams } })
-          //       })
-          //     // const splitParams = {contractId:_this.queryonedata.id}
-          //     // if(_this.routeParams.action === 'split'){
-          //     //   Promise.all([
-          //     //     delSplitProductTemp(splitParams),
-          //     //     deleteQueryOne(params)
-          //     //   ]).then(() =>{
-          //     //     if (res.code == 200) {
-          //     //       _this.$message.info('删除合同编辑成功')
-          //     //       _this.$router.push({ name: _this.routeParams.from }) //新增修改走此路由
-          //     //     } else {
-          //     //       _this.$message.error(res.msg)
-          //     //     }
-          //     //   })
-          //     // }else{
-          //     //   deleteQueryOne(params).then((res) => {
-          //     //     if (res.code == 200) {
-          //     //       _this.$message.info('删除合同编辑成功')
-          //     //       _this.$router.push({ name: _this.routeParams.from }) //新增修改走此路由
-          //     //     } else {
-          //     //       _this.$message.error(res.msg)
-          //     //     }
-          //     //   })
-          //     // }
-          //   } else {
-          //     _this.$message.info('删除合同编辑成功')
           _this.$router.push({ name: 'distribution_logistics' })
-          //   }
-          //   console.log('OK')
-          // },
-          // onCancel() {
-          //   console.log('Cancel')
         },
       })
-    },
-    goBackActionSilent() {
-      const _this = this
-      if (_this.queryonedata && _this.queryonedata.id) {
-        const params = { id: _this.queryonedata.id }
-        if (_this.routeParams.action === 'add') {
-          //新增
-          params.contractModifyFlag = 0
-        } else if (_this.routeParams.action === 'edit') {
-          //驳回修改
-          params.contractModifyFlag = 1
-        } else if (_this.routeParams.action === 'split') {
-          //拆分修改
-          params.contractModifyFlag = 1
-        }
-        deleteQueryOne(params)
-      }
     },
   },
 }

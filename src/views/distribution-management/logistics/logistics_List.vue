@@ -3,7 +3,7 @@
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
       <a-input
         placeholder="物流单号"
-        v-model="queryParam.title"
+        v-model="queryParam.logisticsOrderNo"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
@@ -24,8 +24,11 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <span slot="addressName" slot-scope="text, record">
+          <span>{{text= text.split(",").join("")}}{{record.detailedAddressName}}</span>
+        </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleSee(record)">查看</a>
+          <a @click="applyFor('see',record)">查看</a>
           <a-divider type="vertical" />
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
           <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
@@ -36,7 +39,7 @@
           </template>
           <template>
             <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">回访记录</a>
+            <a class="ant-dropdown-link">回访记录</a>
           </template>
         </span>
       </a-table>
@@ -47,7 +50,7 @@
 <script>
 import moment from 'moment'
 import system from '@/config/defaultSettings'
-import { logisticsList } from '@/api/distribution-management'
+import { logisticsList, logisticsDelete } from '@/api/distribution-management'
 const columns = [
   {
     dataIndex: 'name',
@@ -58,50 +61,51 @@ const columns = [
   },
   {
     title: '日期',
-    dataIndex: 'accountDate',
-    key: 'accountDate',
+    dataIndex: 'date',
+    key: 'date',
     align: 'center',
   },
   {
     title: '物流单号',
-    dataIndex: 'peopleNumber',
-    key: 'peopleNumber',
+    dataIndex: 'logisticsOrderNo',
+    key: 'logisticsOrderNo',
     align: 'center',
   },
   {
     title: '车牌号',
-    dataIndex: 'companyPay',
-    key: 'companyPay',
+    dataIndex: 'licensePlateNumber',
+    key: 'licensePlateNumber',
     align: 'center',
   },
   {
     title: '驾驶人姓名',
-    dataIndex: 'personalPay',
-    key: 'personalPay',
+    dataIndex: 'fullName',
+    key: 'fullName',
     align: 'center',
   },
   {
     title: '驾驶人手机号',
-    dataIndex: 'createdName',
-    key: 'createdName',
+    dataIndex: 'telephone',
+    key: 'telephone',
     align: 'center',
   },
   {
     title: '目的地',
-    dataIndex: 'createdTime',
-    key: 'createdTime',
+    dataIndex: 'addressName',
+    key: 'addressName',
     align: 'center',
+    scopedSlots: { customRender: 'addressName' },
   },
   {
     title: '结算方式',
-    dataIndex: 'createdTime1',
-    key: 'createdTime1',
+    dataIndex: 'settlementMethodName',
+    key: 'settlementMethodName',
     align: 'center',
   },
   {
     title: '提交时间',
-    dataIndex: 'createdTime2',
-    key: 'createdTime2',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
     align: 'center',
   },
 
@@ -117,7 +121,7 @@ export default {
   components: {},
   data() {
     return {
-      urls: system.baseURL + '/socialSecurity/social-security-info/socialSecurityInfo/exportExcel?id=',
+      urls: system.baseURL + '/logistics/logistics-information/download/LogisticsDownload?id=',
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
@@ -155,9 +159,9 @@ export default {
       this.searchAction()
     },
     dateChange(date, dateString) {
-      this.$set(this.queryParam, 'rangeDate', date)
-      this.$set(this.queryParam, 'beginTime', dateString[0])
-      this.$set(this.queryParam, 'endTime', dateString[1])
+      // this.$set(this.queryParam, 'rangeDate', date)
+      this.$set(this.queryParam, 'startDate', dateString[0])
+      this.$set(this.queryParam, 'endDate', dateString[1])
     },
     searchAction(opt) {
       let that = this
@@ -171,7 +175,7 @@ export default {
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''
-          that.dataSource = res.data.records.map((item, index) => {
+          that.dataSource = res.data.map((item, index) => {
             item.key = index + 1
             return item
           })
@@ -187,7 +191,7 @@ export default {
     },
     delete_list(id) {
       let that = this
-      securitySocial_del({ id: id }).then((res) => {
+      logisticsDelete({ id: id }).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -196,19 +200,11 @@ export default {
         }
       })
     },
-    applyFor(type) {
+    applyFor(type, record) {
       this.$router.push({
         name: 'basicInform',
-        params: { id: null, action: type },
+        params: { typeName: type, action: record },
       })
-    },
-    // //新增 修改
-    // handleAdd(type, record) {
-    //   this.$refs.addForm.query(type, record)
-    // },
-    // 查看
-    handleSee(record) {
-      this.$router.push({ name: 'humanResourcesSee', params: { id: record.id } })
     },
   },
 }

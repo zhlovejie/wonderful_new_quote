@@ -91,7 +91,6 @@ export default {
       const that = this
       that.loading = true
       let _param = Object.assign({}, that.pagination, that.searchParams)
-      console.log(_param)
       return DistributionList(_param)
         .then((res) => {
           that.saleCustomers = res.data.records

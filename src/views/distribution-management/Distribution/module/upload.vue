@@ -1,5 +1,13 @@
 <template>
-  <a-upload name="file" :action="uploadUrl" :fileList="fileList" @change="handleChange">
+  <a-upload
+    name="file"
+    :action="uploadUrl"
+    :fileList="fileList"
+    accept=".pdf, .doc, .docx"
+    :before-upload="beforeUpload"
+    @change="handleChange"
+    :showUploadList="fileUrl"
+  >
     <a-button class="a-button" type="upload" icon="upload">上传</a-button>
   </a-upload>
 </template>
@@ -11,42 +19,56 @@ export default {
     return {
       uploadUrl: getUploadPath2(),
       fileList: [],
-      todayN: this.name,
+      fileUrl: false,
+      ids: '',
     }
   },
-  props: ['name'],
+  props: ['name', 'statusId'],
   watch: {
-    fileName: function (val, oldVal) {
-      this.fileList = val || []
+    statusId: function (val, oldVal) {
+      this.ids = val || ''
     },
   },
   created() {
-    this.fileList = this.fileName
+    this.ids = this.statusId
   },
   methods: {
+    beforeUpload(file) {
+      const isLt10M = file.size / 1024 / 1024 < 10
+      if (!isLt10M) {
+        this.$message.error('文件大小不能超过10MB!')
+      }
+      return isLt10M
+    },
     handleChange(info) {
       // console.log(arguments)
       let that = this
+      that.fileUrl = true
       let fileList = [...info.fileList]
       fileList = fileList.slice(-1)
       fileList = fileList.map((file) => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
-          file.todayName = that.todayN
-          that.$emit('getmsg', file)
+          let arr = {
+            url: file.response.data,
+            statusType: this.ids,
+            name: file.name,
+          }
+          that.$emit('getmsg', arr)
+          that.fileUrl = false
         }
         return file
       })
       that.fileList = fileList
     },
-    //上传
-    normFile(e) {
-      console.log('Upload event:', e)
-      if (Array.isArray(e)) {
-        return e
-      }
-      return e && e.fileList
-    },
+    // //上传
+    // normFile(e) {
+    //   console.log('Upload event:', e)
+    //   if (Array.isArray(e)) {
+    //     return e
+    //   }
+    //   return e && e.fileList
+    // },
   },
 }
 </script>

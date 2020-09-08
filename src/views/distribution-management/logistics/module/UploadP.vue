@@ -15,12 +15,13 @@
     <template>
       <a-upload
         :action="uploadUrl"
+        :disabled="typeNameId"
         list-type="picture-card"
         :file-list="fileList"
         @preview="handlePreview"
         @change="handleChange"
       >
-        <div v-if="fileList.length <3">
+        <div v-if="fileList.length <3 &&typeNameId===false ">
           <a-icon type="plus" />
           <div class="ant-upload-text">证件</div>
         </div>
@@ -53,7 +54,7 @@ export default {
       previewImage: '',
       fileList: [],
       fileUrl: [],
-      // typeNameId: '',
+      typeNameId: false,
     }
   },
   props: ['msgId', 'name'],

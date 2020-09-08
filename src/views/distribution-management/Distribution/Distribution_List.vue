@@ -33,11 +33,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleSee(record)">查看</a>
+          <a @click="handleAdd('see',record)">查看</a>
           <a-divider type="vertical" />
           <!-- <a class="ant-dropdown-link" :href="urls+record.id">下载</a> -->
           <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
-            <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
@@ -52,7 +51,7 @@
 
 <script>
 import moment from 'moment'
-import { DistributionList } from '@/api/distribution-management'
+import { DistributionList, DistributionDelete } from '@/api/distribution-management'
 import AddForm from './module/AddForm'
 
 const columns = [
@@ -164,10 +163,6 @@ export default {
     searchAction(opt) {
       let that = this
       that.loading = true
-      if (this.queryParam.Dates) {
-        // let date = that.queryParam.Dates.format('YYYYMM')
-        // this.queryParam.accountDate = date
-      }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
       DistributionList(_searchParam)
         .then((res) => {
@@ -189,7 +184,7 @@ export default {
     },
     delete_list(id) {
       let that = this
-      securitySocial_del({ id: id }).then((res) => {
+      DistributionDelete({ id: id }).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -201,10 +196,6 @@ export default {
     //新增 修改
     handleAdd(type, record) {
       this.$refs.addForm.query(type, record)
-    },
-    // 查看
-    handleSee(record) {
-      this.$router.push({ name: 'humanResourcesSee', params: { id: record.id } })
     },
   },
 }

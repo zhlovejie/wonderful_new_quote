@@ -11,6 +11,7 @@
           <h3 style="font-weight: 700; ">
             发货单{{index+ 1}}
             <a-button
+              v-if="!isSee"
               style="margin-bottom:10px; float: right;"
               type="primary"
               @click="deleteItem(index)"
@@ -47,14 +48,14 @@
               <td>{{item.productName}}</td>
               <td>{{item.invoiceCount}}</td>
               <td>
-                <a-input placeholder v-model="item.volume" />
+                <a-input placeholder v-model="item.volume" :disabled="isSee" />
               </td>
             </tr>
           </table>
         </div>
         <h3 style="width:150px;   font-weight: 700;">备注</h3>
         <a-form-item>
-          <a-textarea :rows="3" v-model="remarks" />
+          <a-textarea :rows="3" v-model="remarks" :disabled="isSee" />
         </a-form-item>
         <a-form-item class="btns-grop">
           <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
@@ -90,18 +91,27 @@ export default {
       todayList: [],
       indexs: '',
       remarks: '',
-      form: this.$form.createForm(this),
+      queryonedata1: {},
+      isSee: false,
     }
   },
   watch: {
     queryonedata: function (newVal, oldVal) {
-      this.init()
+      this.queryonedata1 = val
     },
   },
-  beforeMount() {
-    // debugger
+  created() {
+    this.queryonedata1 = this.queryonedata
   },
-  mounted() {},
+  mounted() {
+    if (this.$parent.routeParams.typeName === 'see') {
+      this.isSee = true
+    }
+    if (this.queryonedata1.logisticsInvoices) {
+      this.todayList = this.queryonedata1.logisticsInvoices
+      this.remarks = this.queryonedata1.remarks
+    }
+  },
   computed: {},
   methods: {
     // 弹出发货单
@@ -113,7 +123,6 @@ export default {
       console.log(this.todayList)
       this.todayList.splice(index, 1)
     },
-    selectCustomer() {},
 
     // 接收发货单数据
     handlerCustomerSelected(record) {
@@ -140,29 +149,11 @@ export default {
       let params = {}
       params.logisticsInvoices = this.todayList
       params.remarks = that.remarks
-      params.id = that.queryonedata.id
-
-      console.log(params)
-      logisticsaddAndUpdte(params)
-        .then((res) => {
-          console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-          that.loading = false
-          this.todayList = []
-          that.$emit('nextStep', { ...res.data })
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      that.$emit('nextStep', params)
     },
     //点击上一步
     prevStep() {
-      this.$emit('prevStep', this.queryonedata.id)
-    },
-    init() {
-      if (this.queryonedata.logisticsInvoiceVos.length > 0) {
-        this.todayList = this.queryonedata.logisticsInvoiceVos
-        this.remarks = this.queryonedata.remarks
-      }
+      this.$emit('prevStep')
     },
   },
 }

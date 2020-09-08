@@ -15,6 +15,7 @@
                 <a-form-item>
                   <a-input
                     style="width:60%;"
+                    :disabled="isSee"
                     @click="handleCustomerClick"
                     v-decorator="['distributionStationId',{rules: [{required: true,message: '请选择承运方',},
              ]}]"
@@ -30,6 +31,7 @@
               <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
                 <a-form-item>
                   <a-input
+                    :disabled="isSee"
                     style="width:60%;"
                     :precision="0"
                     v-decorator="['licensePlateNumber',{rules: [{required: true,message: '请输车牌号',},
@@ -45,6 +47,7 @@
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
+                  :disabled="isSee"
                   placeholder="车辆型号"
                   :allowClear="true"
                   style="border: none;width: 60%;"
@@ -95,22 +98,37 @@ export default {
       postSelectDataSource: [], //承运方
       customerName: '', //承运方名称
       customerId: '',
-      id: '',
-      distribution: '',
+      queryonedata1: {},
+      isSee: false,
     }
   },
   computed: {},
   watch: {
     $route(to, from) {},
-    queryonedata: function () {
-      this.init()
+    queryonedata: function (val) {
+      // this.init()
+      this.queryonedata1 = val
     },
   },
-  beforeCreate() {},
+  created() {
+    this.queryonedata1 = this.queryonedata
+  },
   mounted() {
+    if (this.$parent.routeParams.typeName === 'see') {
+      this.isSee = true
+    }
     getDictionaryList({ parentId: 543 }).then((res) => {
       this.settlement = res.data
     })
+    console.log(this.queryonedata1)
+    if (this.queryonedata1.licensePlateNumber) {
+      this.customerId = this.queryonedata1.distributionStationId
+      this.form.setFieldsValue({
+        distributionStationId: this.queryonedata1.logisticsCompanyName,
+        licensePlateNumber: this.queryonedata1.licensePlateNumber,
+        vehicleType: this.queryonedata1.vehicleType,
+      })
+    }
   },
   methods: {
     //打开承运方列表
@@ -130,20 +148,6 @@ export default {
       let that = this
       that.$emit('prevStep', this.queryonedata.id)
     },
-    async init() {
-      this.$nextTick(() => {
-        if (this.queryonedata.logisticsCarrierVos.length > 0) {
-          this.id = this.queryonedata.logisticsCarrierVos[0].logisticsInformationId
-          this.distribution = this.queryonedata.logisticsCarrierVos[0]
-          this.customerId = this.queryonedata.logisticsCarrierVos[0].distributionStationId
-          this.form.setFieldsValue({
-            distributionStationId: this.queryonedata.logisticsCarrierVos[0].logisticsCompanyName,
-            licensePlateNumber: this.queryonedata.logisticsCarrierVos[0].licensePlateNumber,
-            vehicleType: this.queryonedata.logisticsCarrierVos[0].vehicleType,
-          })
-        }
-      })
-    },
     // 点击下一步
     async nextStep(status) {
       const that = this
@@ -151,27 +155,10 @@ export default {
         form: { validateFields },
       } = this
       validateFields((err, values) => {
-        if (that.distribution) {
-          values.id = that.distribution.logisticsInformationId
-        }
-        values.logisticsInformationId = that.id
+        values.logisticsCompanyName = values.distributionStationId
         values.distributionStationId = that.customerId
-        values.logisticsCompanyName = that.customerName
-        logisticsCarrier(values)
-          .then((res) => {
-            if (res && res.code && parseInt(res.code) === 500) {
-              that.$info.error(res.msg)
-              return
-            }
-            if (status != 1) {
-              that.$emit('nextStep', {})
-            } else {
-            }
-            //that.$emit('nextStep', { ...res.data })
-          })
-          .catch((error) => {
-            console.error(error)
-          })
+        console.log(values)
+        that.$emit('nextStep', values)
       })
     },
 

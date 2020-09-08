@@ -30,6 +30,7 @@
                   style="border: none;width: 60%;"
                   show-time
                   :precision="0"
+                  :disabled="isSee"
                   placeholder="日期"
                   format="YYYY-MM-DD"
                   v-decorator="['date', {initialValue:moment(),rules: [{required: true,message: '请输入日期',},
@@ -44,7 +45,7 @@
             <a-col class="col-border" :span="3" justify="center" align="middle">是否开票</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
-                <a-radio-group v-decorator="['isInvoice',{initialValue:0}]">
+                <a-radio-group :disabled="isSee" v-decorator="['isInvoice',{initialValue:0}]">
                   <a-radio :value="0">否</a-radio>
                   <a-radio :value="1">是</a-radio>
                 </a-radio-group>
@@ -57,6 +58,7 @@
                   placeholder="物流属性"
                   :allowClear="true"
                   :precision="0"
+                  :disabled="isSee"
                   style="border: none;width: 60%;"
                   v-decorator="['logisticsAttribute', {rules: [{required: true,message: '请选择物流属性!',},
              ]}]"
@@ -77,6 +79,7 @@
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-input
+                  :disabled="isSee"
                   style="width:60%;"
                   :precision="0"
                   placeholder="物流价格"
@@ -89,6 +92,7 @@
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
+                  :disabled="isSee"
                   placeholder="结算方式"
                   :allowClear="true"
                   style="border: none;width: 60%;"
@@ -112,6 +116,7 @@
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-input
+                  :disabled="isSee"
                   style="width:60%;"
                   :precision="0"
                   v-decorator="['managementFeeWithdrawal',{rules: [{required: true,message: '请输入管理提取数额',},
@@ -123,6 +128,7 @@
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
+                  :disabled="isSee"
                   style="border: none;width: 60%;"
                   show-time
                   :precision="0"
@@ -142,6 +148,7 @@
               <a-col :lg="5" :md="5" :sm="24">
                 <a-form-item>
                   <a-select
+                    :disabled="isSee"
                     placeholder="省"
                     :precision="0"
                     v-decorator="['province',{rules: [{required: true, message: '请选择省！'}]}]"
@@ -158,6 +165,7 @@
               <a-col :lg="5" :md="5" :sm="24">
                 <a-form-item>
                   <a-select
+                    :disabled="isSee"
                     placeholder="市"
                     :precision="0"
                     v-decorator="['city',{rules: [{required: true, message: '请选择区！'}]}]"
@@ -174,6 +182,7 @@
               <a-col :lg="5" :md="5" :sm="24">
                 <a-form-item>
                   <a-select
+                    :disabled="isSee"
                     placeholder="区"
                     :precision="0"
                     v-decorator="['area',{rules: [{required: true, message: '请选择区！'}]}]"
@@ -190,6 +199,7 @@
               <a-col :lg="9" :md="9" :sm="24">
                 <a-form-item>
                   <a-input
+                    :disabled="isSee"
                     :precision="0"
                     placeholder="请输入详细地址"
                     v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
@@ -211,7 +221,7 @@
 </template>
 
 <script>
-import { logisticsNum, logisticsPreservation } from '@/api/distribution-management'
+import { logisticsNum, logisticsPreservation, getQueryOne } from '@/api/distribution-management'
 import { getDictionaryList } from '@/api/workBox' // 数据字典
 
 import moment from 'moment'
@@ -249,46 +259,29 @@ export default {
       disabledDateTime: function () {},
       id: 0,
       freightType: 0,
+      queryonedata1: {},
+      isSee: false,
     }
   },
   computed: {},
   watch: {
-    $route(to, from) {
-      console.log('watch $route called...')
-    },
-    queryonedata() {
-      console.log('from watch queryonedata....')
-      this.init()
+    queryonedata(val) {
+      this.queryonedata1 = val
+      this.quweyData()
+      if (this.$parent.routeParams.typeName === 'see') {
+        this.isSee = true
+      }
     },
   },
-  created() {},
+  created() {
+    this.queryonedata1 = this.queryonedata
+    if (this.$parent.routeParams.typeName === 'see') {
+      this.isSee = true
+    }
+  },
   mounted() {
-    let qt = this.queryonedata ? this.queryonedata : {}
-    if (qt.id && qt.id > 0) {
-      let arr = qt.addressNumber.split(',')
-      let num = qt.addressName.split(',')
-      this.getCity(1, arr[0], num[1])
-      this.getCity(2, arr[1], num[2])
-    }
-    if (qt.id && qt.id > 0) {
-      this.freightType = qt.freightType
-      qt.addressNumber = qt.addressNumber.split(',')
-      this.form.setFieldsValue({
-        id: qt.id,
-        logisticsOrderNo: qt.logisticsOrderNo,
-        date: moment(qt.date),
-        isInvoice: qt.isInvoice,
-        settlementMethod: qt.settlementMethod,
-        logisticsAttribute: qt.logisticsAttribute,
-        logisticsPrice: qt.logisticsPrice,
-        managementFeeWithdrawal: qt.managementFeeWithdrawal,
-        preDeliveryTime: moment(qt.preDeliveryTime),
-        province: Number(qt.addressNumber[0]),
-        city: Number(qt.addressNumber[1]),
-        area: Number(qt.addressNumber[2]),
-        detailedAddressName: qt.detailedAddressName,
-      })
-    }
+    this.quweyData()
+    this.init()
     getAreaByParent({ pId: 100000 })
       .then((res) => {
         // 所有省
@@ -303,10 +296,37 @@ export default {
     getDictionaryList({ parentId: 542 }).then((res) => {
       this.settlement = res.data
     })
-    this.init()
   },
   methods: {
     moment,
+    quweyData() {
+      let qt = this.queryonedata1 ? this.queryonedata1 : {}
+      if (JSON.stringify(qt) != '{}') {
+        let arr = (qt.addressNumber || '').split(',')
+        let num = (qt.addressName || '').split(',')
+        this.getCity(1, arr[0], num[1])
+        this.getCity(2, arr[1], num[2])
+      }
+      if (JSON.stringify(qt) != '{}') {
+        this.freightType = qt.freightType
+        qt.addressNumber = (qt.addressNumber || '').split(',')
+        this.form.setFieldsValue({
+          id: qt.id,
+          logisticsOrderNo: qt.logisticsOrderNo,
+          date: moment(qt.date),
+          isInvoice: qt.isInvoice,
+          settlementMethod: qt.settlementMethod,
+          logisticsAttribute: qt.logisticsAttribute,
+          logisticsPrice: qt.logisticsPrice,
+          managementFeeWithdrawal: qt.managementFeeWithdrawal,
+          preDeliveryTime: moment(qt.preDeliveryTime),
+          province: Number(qt.addressNumber[0]),
+          city: Number(qt.addressNumber[1]),
+          area: Number(qt.addressNumber[2]),
+          detailedAddressName: qt.detailedAddressName,
+        })
+      }
+    },
     getCity(type, pId, name) {
       if (type != 3) {
         getAreaByParent({ pId: pId })
@@ -329,7 +349,7 @@ export default {
 
     init() {
       this.$nextTick(() => {
-        if (this.$parent.routeParams.action === 'add') {
+        if (this.$parent.routeParams.typeName === 'add') {
           logisticsNum().then((res) => {
             this.form.setFieldsValue({
               logisticsOrderNo: res.data,
@@ -354,26 +374,14 @@ export default {
       const {
         form: { validateFields },
       } = this
-      console.log('{ form: { validateFields } } = this', this)
+
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
         console.log('先校验，通过表单校验后，才进入下一步', values)
-        console.log(that.$parent.routeParams.action)
         if (that.queryonedata.id) {
           values.id = that.queryonedata.id
         }
         if (!err) {
-          // if (that.$parent.routeParams.action === 'add') {
-          //   console.log('新增模式 添加参数 contractModifyFlag：0')
-          //   params.contractModifyFlag = 0
-          // } else if (that.$parent.routeParams.action === 'edit') {
-          //   console.log('修改模式 添加参数 contractModifyFlag：1')
-          //   params.contractModifyFlag = 1
-          // } else if (that.$parent.routeParams.action === 'split') {
-          //   console.log('拆分模式 添加参数 contractModifyFlag：1')
-          //   params.contractModifyFlag = 1
-          // }
-          //console.log(this.$parent.fromAction)
           values.preDeliveryTime = moment(values.preDeliveryTime).format('YYYY-MM-DD')
           values.date = moment(values.date).format('YYYY-MM-DD')
           values.addressName = that.province + ',' + that.city + ',' + that.area
@@ -381,31 +389,9 @@ export default {
           delete values.province
           delete values.city
           delete values.area
-
-          // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-          logisticsPreservation(values)
-            .then((res) => {
-              console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-              that.id = res.data.id
-              that.loading = false
-              that.form.setFieldsValue({
-                contractNum: res.data.contractNum,
-              })
-              if (status != 1) {
-                that.$emit('nextStep', { ...res.data })
-              } else {
-                that.$message.success('保存成功')
-              }
-            })
-            .catch((error) => {
-              console.error(error)
-            })
+          that.$emit('nextStep', { ...values })
         }
       })
-    },
-    // 注销Step组件之前清除定时器
-    beforeDestroy() {
-      clearTimeout(0)
     },
   },
 }

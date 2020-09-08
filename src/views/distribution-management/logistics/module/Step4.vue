@@ -12,6 +12,7 @@
             <a-form-item>
               <a-input-search
                 placeholder=" 身份证号码"
+                :disabled="isSee"
                 v-decorator="['cardNo',{rules: [{required: true,message: '请输入身份证号码',},
               ]}]"
                 style="width:60%;"
@@ -30,6 +31,7 @@
                 style="width:60%;"
                 :precision="0"
                 placeholder="姓名"
+                :disabled="isSee"
                 v-decorator="['fullName',{rules: [{required: true,message: '请输入姓名',},
              ]}]"
               />
@@ -44,6 +46,7 @@
               <a-input
                 style="width:60%;"
                 :precision="0"
+                :disabled="isSee"
                 placeholder="电话"
                 v-decorator="['telephone',{rules: [{required: true,message: '请输入电话',},
              ]}]"
@@ -59,6 +62,7 @@
               <a-input
                 style="width:60%;"
                 :precision="0"
+                :disabled="isSee"
                 placeholder="微信号"
                 v-decorator="['wechatNumber',{rules: [{required: true,message: '请输入微信号',},
              ]}]"
@@ -75,6 +79,7 @@
                 style="width:60%;"
                 :precision="0"
                 placeholder="驾驶证号码"
+                :disabled="isSee"
                 v-decorator="['driveNo',{rules: [{required: true,message: '请输入驾驶证号码',},
              ]}]"
               />
@@ -85,7 +90,12 @@
           <a-col :span="6"></a-col>
           <a-col class="col-border" :span="3" justify="center" align="middle">身份证</a-col>
           <a-col class="col-border" :span="9" justify="center" align="middle">
-            <UploadP ref="normalCard" style="margin-left:100px" :msgId="certificateList" />
+            <UploadP
+              ref="normalCard"
+              style="margin-left:100px"
+              :msgId="certificateList"
+              :name="isSee"
+            />
           </a-col>
         </a-row>
 
@@ -106,7 +116,12 @@
               align="middle"
               :span="9"
             >
-              <UploadP style="margin-left:100px" ref="normalUpload" :msgId="specialList" />
+              <UploadP
+                style="margin-left:100px"
+                ref="normalUpload"
+                :msgId="specialList"
+                :name="isSee"
+              />
             </a-col>
           </a-row>
         </a-form-item>
@@ -118,9 +133,7 @@
     </a-form>
   </div>
 </template>
-
 <script>
-// import { getQueryOne, saveDeliveryAddress, deleteQueryOne } from '@/api/contractListManagement'
 import { getCardNo, pilotAndUpdate } from '@/api/distribution-management'
 import moment from 'moment'
 import UploadP from './UploadP'
@@ -141,47 +154,85 @@ export default {
       form: this.$form.createForm(this),
       certificateList: [], //身份证
       specialList: [], //专业
+      queryonedata1: {},
+      isSee: false,
     }
   },
   watch: {
-    queryonedata: function () {
-      this.init()
+    queryonedata: function (newVal, oldVal) {
+      this.queryonedata1 = val
     },
   },
+  created() {
+    this.queryonedata1 = this.queryonedata
+  },
   mounted() {
-    // this.init()
+    this.init()
+    if (this.$parent.routeParams.typeName === 'see') {
+      this.isSee = true
+    }
   },
 
   methods: {
+    init() {
+      this.$nextTick(() => {
+        let that = this
+        if (that.queryonedata1.logisticsPilot) {
+          that.certificateList = that.queryonedata1.logisticsPilot.logisticsPilotAnnuxes.filter(
+            (item) => item.statusType === 1
+          )
+          that.certificateList = that.certificateList.map((item, index) => {
+            return {
+              uid: index,
+              name: '1',
+              fileName: item.name,
+              status: 'done',
+              url: item.url,
+            }
+          })
+          that.specialList = that.queryonedata1.logisticsPilot.logisticsPilotAnnuxes.filter(
+            (item) => item.statusType === 2
+          )
+          that.specialList = that.specialList.map((item, index) => {
+            return {
+              uid: index,
+              name: '1',
+              fileName: item.name,
+              status: 'done',
+              url: item.url,
+            }
+          })
+          that.form.setFieldsValue({
+            cardNo: that.queryonedata1.logisticsPilot.cardNo,
+            driveNo: that.queryonedata1.logisticsPilot.driveNo,
+            fullName: that.queryonedata1.logisticsPilot.fullName,
+            telephone: that.queryonedata1.logisticsPilot.telephone,
+            wechatNumber: that.queryonedata1.logisticsPilot.wechatNumber,
+          })
+        }
+      })
+    },
     regist(flag) {
       return (el) => {
         this.domEles[flag] = el
       }
     },
     onSearch(value) {
+      let that = this
       getCardNo({ cardNo: value }).then((res) => {
         console.log(res.data)
-      })
-    },
-
-    async init() {
-      const that = this
-      if (that.queryonedata.logisticsPilots.length > 0) {
-        console.log(that.queryonedata.logisticsPilots)
-        that.certificateList = that.queryonedata.logisticsPilots[0].cardNoAnnuxes.map((item) => {
+        that.certificateList = res.data[0].cardNoAnnuxes.map((item) => {
           return {
             uid: item.id,
-            id: item.id,
             name: '1',
             fileName: item.name,
             status: 'done',
             url: item.url,
           }
         })
-        that.specialList = that.queryonedata.logisticsPilots[0].driveNoAnnuxes.map((item) => {
+        that.specialList = res.data[0].driveNoAnnuxes.map((item) => {
           return {
             uid: item.id,
-            id: item.id,
             name: '1',
             fileName: item.name,
             status: 'done',
@@ -189,13 +240,13 @@ export default {
           }
         })
         that.form.setFieldsValue({
-          cardNo: that.queryonedata.logisticsPilots[0].cardNo,
-          driveNo: that.queryonedata.logisticsPilots[0].driveNo,
-          fullName: that.queryonedata.logisticsPilots[0].fullName,
-          telephone: that.queryonedata.logisticsPilots[0].telephone,
-          wechatNumber: that.queryonedata.logisticsPilots[0].wechatNumber,
+          cardNo: res.data[0].cardNo,
+          driveNo: res.data[0].driveNo,
+          fullName: res.data[0].fullName,
+          telephone: res.data[0].telephone,
+          wechatNumber: res.data[0].wechatNumber,
         })
-      }
+      })
     },
 
     // 点击下一步
@@ -212,7 +263,7 @@ export default {
                 if (file.response && file.response.code === 200 && file.name != '1') {
                   let arr = {
                     url: file.response.data,
-                    status: 1,
+                    statusType: 1,
                     name: file.name,
                   }
                   return arr
@@ -225,7 +276,7 @@ export default {
                 if (file.response && file.response.code === 200 && file.name != '1') {
                   let arr = {
                     url: file.response.data,
-                    status: 2,
+                    statusType: 2,
                     name: file.name,
                   }
                   return arr
@@ -238,9 +289,8 @@ export default {
                 if (file.name === '1') {
                   let arr = {
                     url: file.url,
-                    status: 1,
+                    statusType: 1,
                     name: file.fileName,
-                    id: file.id,
                   }
                   return arr
                 }
@@ -252,9 +302,8 @@ export default {
                 if (file.name === '1') {
                   let arr = {
                     url: file.url,
-                    status: 2,
+                    statusType: 2,
                     name: file.fileName,
-                    id: file.id,
                   }
                   return arr
                 }
@@ -264,28 +313,16 @@ export default {
           if (arr || num || arr1 || num1) {
             values.logisticsPilotAnnuxes = [...arr, ...num, ...arr1, ...num1]
           }
-          values.logisticsInformationId = that.queryonedata.id
-          console.log(values)
-          // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-          pilotAndUpdate(values)
-            .then((res) => {
-              console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-              that.loading = false
-              if (status != 1) {
-                that.$emit('nextStep', { ...res.data })
-              } else {
-                that.$message.success('保存成功')
-              }
-            })
-            .catch((error) => {
-              console.error(error)
-            })
+          let params = {
+            logisticsPilot: values,
+          }
+          that.$emit('nextStep', params)
         }
       })
     },
     // 上一步
     prevStep() {
-      this.$emit('prevStep', this.queryonedata.id)
+      this.$emit('prevStep')
     },
   },
 }
