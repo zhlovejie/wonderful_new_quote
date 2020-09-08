@@ -183,12 +183,13 @@ export default {
       let that = this
       //  判断是卡号还是iccid
       if (this.cardnoOrIccid) {
-        if (this.cardnoOrIccid.length > 13) {
-          this.searchParam.iccid = this.cardnoOrIccid
-          this.searchParam.cardno =null
-        } else {
-          this.searchParam.cardno = this.cardnoOrIccid
-        }
+        this.searchParam.iccid = this.cardnoOrIccid
+        // if (this.cardnoOrIccid.length > 13) {
+        //   this.searchParam.iccid = this.cardnoOrIccid
+        //   this.searchParam.cardno =null
+        // } else {
+        //   this.searchParam.cardno = this.cardnoOrIccid
+        // }
       } else {
         this.searchParam.cardno = null
         this.searchParam.iccid = null
