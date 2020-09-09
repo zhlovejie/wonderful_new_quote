@@ -304,8 +304,9 @@ export default {
       if (JSON.stringify(qt) != '{}') {
         let arr = (qt.addressNumber || '').split(',')
         let num = (qt.addressName || '').split(',')
-        this.getCity(1, arr[0], num[1])
-        this.getCity(2, arr[1], num[2])
+        this.getCity(1, arr[0], num[0])
+        this.getCity(2, arr[1], num[1])
+        this.getCity(3, null, num[2])
       }
       if (JSON.stringify(qt) != '{}') {
         this.freightType = qt.freightType

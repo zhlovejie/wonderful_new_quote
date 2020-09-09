@@ -82,6 +82,7 @@ export default {
       id: 0, // 这个是主键id,名称是唯一的，要在7个组件中都能使用，别的地方不要定义成id
       queryonedata: {}, // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
       show: false,
+      routeParams: {},
     }
   },
   created() {

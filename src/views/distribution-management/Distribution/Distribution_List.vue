@@ -28,7 +28,13 @@
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('Distribution:list')">
+      <a-table
+        :columns="columns"
+        :data-source="dataSource"
+        :pagination="pagination"
+        @change="handleTableChange"
+        v-if="$auth('Distribution:list')"
+      >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -179,8 +185,14 @@ export default {
         })
         .catch((err) => (that.loading = false))
     },
-    onChange(date, dateString) {
-      console.log(date, dateString)
+
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      // console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction()
     },
     delete_list(id) {
       let that = this

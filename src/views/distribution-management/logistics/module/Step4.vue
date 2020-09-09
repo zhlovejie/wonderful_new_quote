@@ -221,18 +221,20 @@ export default {
       let that = this
       getCardNo({ cardNo: value }).then((res) => {
         console.log(res.data)
-        that.certificateList = res.data[0].cardNoAnnuxes.map((item) => {
+        that.certificateList = res.data[0].logisticsPilotAnnuxes.filter((item) => item.statusType === 1)
+        that.certificateList = that.certificateList.map((item, index) => {
           return {
-            uid: item.id,
+            uid: index,
             name: '1',
             fileName: item.name,
             status: 'done',
             url: item.url,
           }
         })
-        that.specialList = res.data[0].driveNoAnnuxes.map((item) => {
+        that.specialList = res.data[0].logisticsPilotAnnuxes.filter((item) => item.statusType === 2)
+        that.specialList = that.specialList.map((item, index) => {
           return {
-            uid: item.id,
+            uid: index,
             name: '1',
             fileName: item.name,
             status: 'done',
