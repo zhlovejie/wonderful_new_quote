@@ -166,7 +166,13 @@
           <tr>
             <td colspan="4">
               <b>货物合同</b>
-              <Mdeol style="float: right;" ref="mdeol" @getmsg="getChildMsg" :statusId="2" />
+              <Mdeol
+                v-if="isSee"
+                style="float: right;"
+                ref="mdeol"
+                @getmsg="getChildMsg"
+                :statusId="2"
+              />
             </td>
           </tr>
           <tr>
@@ -188,7 +194,13 @@
           <tr>
             <td colspan="4">
               <b>承接单位法律承诺书</b>
-              <Mdeol style="float: right;" ref="mdeol" @getmsg="getChildMsg" :statusId="3" />
+              <Mdeol
+                v-if="isSee"
+                style="float: right;"
+                ref="mdeol"
+                @getmsg="getChildMsg"
+                :statusId="3"
+              />
             </td>
           </tr>
           <tr>
@@ -379,6 +391,8 @@ export default {
           let num = (res.data.data.addressName || '').split(',')
           that.getCity(1, arr[0], num[1])
           that.getCity(2, arr[1], num[2])
+          that.getCity(3, null, num[3])
+
           that.fileList = res.data.data.businessLicenseList
             ? res.data.data.businessLicenseList.map((item) => {
                 return {
@@ -387,7 +401,7 @@ export default {
                   url: item.url,
                   statusType: item.statusType,
                   status: 'done',
-                  name: item.name,
+                  name: '1',
                 }
               })
             : []
@@ -417,7 +431,7 @@ export default {
           }
           let arr = this.fileList
             ? this.fileList.map((file) => {
-                if (file.response && file.response.code === 200) {
+                if (file.response && file.response.code === 200 && file.name != '1') {
                   return {
                     url: file.response.data,
                     statusType: 1,
@@ -426,10 +440,23 @@ export default {
                 }
               })
             : []
+          arr = arr.filter((item) => item)
+          let arr1 = this.fileList
+            ? this.fileList.map((file) => {
+                if (file.name === '1') {
+                  let arr = {
+                    url: file.url,
+                    statusType: 1,
+                    name: file.fileName,
+                  }
+                  return arr
+                }
+              })
+            : []
+          arr1 = arr1.filter((item) => item)
           if (arr || that.todayList || that.planList) {
-            values.annexList = [...arr, ...that.todayList, ...that.planList]
+            values.annexList = [...arr, ...arr1, ...that.todayList, ...that.planList]
           }
-
           values.addressName = that.province + ',' + that.city + ',' + that.area
           values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
           delete values.provinces
