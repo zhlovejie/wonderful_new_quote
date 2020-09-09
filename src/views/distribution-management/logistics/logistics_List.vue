@@ -14,13 +14,13 @@
       />
 
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('social:add')">
+      <template v-if="$auth('logistics:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="applyFor('add',null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('social:list')">
+      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('logistics:list')">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -31,13 +31,13 @@
           <a @click="applyFor('see',record)">查看</a>
           <a-divider type="vertical" />
           <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
-          <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
+          <template v-if="$auth('logistics:add')&&+record.createdId  === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="applyFor('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>
-          <template>
+          <template v-if="$auth('logistics:returnV')">
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="returnV(record.id)">回访记录</a>
           </template>
