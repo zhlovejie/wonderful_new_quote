@@ -184,7 +184,7 @@ export default {
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''
-          that.dataSource = res.data.map((item, index) => {
+          that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             return item
           })
