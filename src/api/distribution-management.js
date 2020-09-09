@@ -36,7 +36,7 @@ export function DistributionInfot(parameter) {
 export function DistributionDelete(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oa/logistics/logistics-distribution-station/del',
+    url: '/logistics/logistics-distribution-station/del',
     method: 'delete',
     params: parameter
 
