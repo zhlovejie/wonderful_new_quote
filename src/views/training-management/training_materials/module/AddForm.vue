@@ -22,11 +22,7 @@
             <td>上级</td>
             <td colspan="4">
               <a-form-item>
-                <a-input
-                  disabled
-                  :rows="3"
-                  v-decorator="['parentId', { rules: [{ required: true, message: '请输入团建地址' }] }]"
-                />
+                <a-input disabled :rows="3" v-model="parentId" />
               </a-form-item>
             </td>
           </tr>
@@ -37,7 +33,7 @@
                 <a-input
                   placeholder="输入文件名称"
                   :rows="3"
-                  v-decorator="['folderName', { rules: [{ required: true, message: '请输入团建地址' }] }]"
+                  v-decorator="['folderName', { rules: [{ required: true, message: '输入文件名称' }] }]"
                 />
               </a-form-item>
             </td>
@@ -49,7 +45,7 @@
                 <a-textarea
                   placeholder="请输入备注"
                   :rows="3"
-                  v-decorator="['remark', { rules: [{ required: true, message: '请输入费用' }] }]"
+                  v-decorator="['remark', { rules: [{ required: true, message: '请输入备注' }] }]"
                 />
               </a-form-item>
             </td>
@@ -160,8 +156,8 @@
 </template>
 <script>
 import { getDevisionList } from '@/api/systemSetting'
-import { listRoom, securityHealth_List_Add, queryList } from '@/api/humanResources'
-import moment from 'moment'
+import { materialsAdd, materialsDetail } from '@/api/training-management'
+import { queryList } from '@/api/humanResources'
 import vuedraggable from 'vuedraggable'
 
 export default {
@@ -181,11 +177,14 @@ export default {
       postSelectDataSource: [],
       haveProcess: [],
       jurisdiction: false, //人员显示隐藏
+      targetValue: '',
+      parentId: '' || '无',
       depart: '',
       _d: {
         departmentId: '',
         departmentName: '',
       },
+      addId: '',
     }
   },
   watch: {
@@ -194,18 +193,25 @@ export default {
       this._d.departmentId = val
       this._d.departmentName = _d.departmentName
     },
+    targetValue: function (val) {
+      if (val === 1) {
+        this.jurisdiction = true
+      } else {
+        this.jurisdiction = false
+      }
+    },
   },
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '安全卫生考核'
+        return '文件夹'
       }
       let txt = this.isView ? '新增' : '修改'
-      return `${txt}安全卫生考核`
+      return `${txt}文件夹`
     },
     isView() {
       //新增
-      return this.type === 'add'
+      return this.type === 'add' || this.type === 'folder'
     },
     isEditSalary() {
       //修改
@@ -214,7 +220,6 @@ export default {
   },
 
   methods: {
-    moment: moment,
     query(type, record) {
       this.visible = true
       this.type = type
@@ -225,6 +230,14 @@ export default {
       if (type === 'edit-salary') {
         this.fillData()
       }
+      if (type === 'add') {
+        this.addId = record.Id
+        this.parentId = record.name
+      }
+      if (type === 'folder') {
+        this.addId = record.id
+        this.parentId = record.folderName
+      }
     },
 
     fillData() {
@@ -232,12 +245,18 @@ export default {
         this.postSelectDataSource = res.data
       })
       this.$nextTick(() => {
-        this.form.setFieldsValue({
-          deptId: this.record.deptId,
-          userId: this.record.userId,
-          roomId: this.record.roomId,
-          checkInTime: moment(this.record.checkInTime),
-          remark: this.record.remark,
+        materialsDetail({ folderId: this.record.id }).then((res) => {
+          this.haveProcess = res.data.oaTrainFolerPermissionsDetailVoList
+          if (res.data.authorityType === 1) {
+            this.jurisdiction = true
+          }
+          this.addId = res.data.parentId
+          this.form.setFieldsValue({
+            parentId: res.data.parentId || '无',
+            folderName: res.data.folderName,
+            remark: res.data.remark,
+            authorityType: res.data.authorityType,
+          })
         })
       })
     },
@@ -247,17 +266,35 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          delete values.deptId
-          values.inspectTime = moment(values.inspectTime).format('YYYY-MM-DD')
+          values.authTrainFolderBoList = this.haveProcess.map((item) => {
+            return {
+              departmentId: item.departmentId,
+              userId: item.userId,
+            }
+          })
+          if (this.type === 'add') {
+            values.parentId = this.addId
+          }
+          if (this.type === 'edit-salary') {
+            values.id = this.record.id
+          }
+          if (values.parentId === '无') {
+            values.parentId = -1
+          }
+          if (this.type === 'folder') {
+            values.parentId = this.record.id
+          }
           console.log(values)
-          securityHealth_List_Add(values).then((res) => {
+          materialsAdd(values).then((res) => {
             that.spinning = false
             console.log(res)
             that.form.resetFields() // 清空表
             this.haveProcess = []
             that.visible = false
+            this.jurisdiction = false
             that.$message.info(res.msg)
-            that.$emit('finish')
+            let arr = { id: that.addId }
+            that.$emit('finish', arr)
           })
         }
       })
@@ -275,6 +312,7 @@ export default {
       this.fileList = []
       this.form.resetFields() // 清空表
       this.visible = false
+      this.jurisdiction = false
     },
     //清空
     processClearAction() {
@@ -292,7 +330,7 @@ export default {
         let target = that.haveProcess.find((p) => p.id === _ppid)
         if (!target) {
           let _p = that.postSelectDataSource.find((_p) => _p.id === _ppid)
-          console.log(_p)
+          _p.userId = _p.id
           that.haveProcess.push({ ..._p, ...that._d })
         }
       })
@@ -300,6 +338,7 @@ export default {
     //人员显示隐藏
     authorityType(author) {
       console.log(author.target.value)
+      this.targetValue = author.target.value
       if (author.target.value === 1) {
         this.jurisdiction = true
       } else {

@@ -16,11 +16,24 @@
       />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('Distribution:add')">
+        <template v-if="fold">
+          <a-button
+            style="float:right;  margin-right:10px;"
+            type="primary"
+            @click="gohandle()"
+          >&lt;返回</a-button>
+          <a-button
+            style="float:right; margin-right:10px;"
+            type="primary"
+            icon="plus"
+            @click="fileAdd('add',{Id:pagination.folderId ,name:folderNa||''})"
+          >新增文件</a-button>
+        </template>
         <a-button
-          style="float:right;"
+          style="float:right; margin-right:10px;"
           type="primary"
           icon="plus"
-          @click="handleAdd('add',null)"
+          @click="handleAdd('add',{Id:pagination.folderId ,name:folderNa||''})"
         >新增文件夹</a-button>
       </template>
     </div>
@@ -36,26 +49,78 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="orderIocn" slot-scope="text, record, index">
+          <template v-if="record.isFileFlag===1">
+            <a-icon style="color:#ecc865;font-size:30px;" type="folder-open" theme="filled" />
+          </template>
+          <template v-else>
+            <a-icon style="color:#ecc865;font-size:30px;" theme="filled" type="file" />
+          </template>
+        </div>
+
+        <div slot="folderName" slot-scope="text, record, index">
+          <template v-if="record.isFileFlag===1">
+            <a @click="folderName(record)">{{record.folderName}}</a>
+          </template>
+          <template v-else>
+            <span>{{record.folderName}}</span>
+          </template>
+        </div>
+
+        <div slot="authorityType" slot-scope="text, record, index">
+          <template v-if="record.authorityType===2">
+            <span>私密</span>
+          </template>
+          <template v-else>
+            <span>公开</span>
+          </template>
+        </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleAdd('see',record)">新增</a>
-          <a-divider type="vertical" />
-          <!-- <a class="ant-dropdown-link" :href="urls+record.id">下载</a> -->
-          <template v-if="$auth('Distribution:add')&&+record.createdId  === +userInfo.id">
-            <a @click="handleAdd('edit-salary',record)">修改</a>
+          <template v-if="record.isFileFlag===1">
+            <a-dropdown>
+              <a-menu slot="overlay">
+                <a-menu-item key="1" @click="handleMenuClick(1,record)">文件夹</a-menu-item>
+                <a-menu-item key="2" @click="handleMenuClick(2,record)">文件</a-menu-item>
+              </a-menu>
+              <a>
+                新增
+                <a-icon type="down" />
+              </a>
+            </a-dropdown>
+            <!-- <a @click="handleAdd('see',record)">新增</a> -->
             <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+            <template>
+              <a @click="handleAdd('edit-salary',record)">修改</a>
+              <a-divider type="vertical" />
+              <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+            </template>
+          </template>
+          <template v-else>
+            <a @click="doAction(record.fileUrl)">查看</a>
+            <a-divider type="vertical" />
+            <a class="ant-dropdown-link" :href="record.fileUrl">下载</a>
+            <template>
+              <a-divider type="vertical" />
+              <a @click="fileAdd('edit-salary',record)">修改</a>
+              <a-divider type="vertical" />
+              <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+            </template>
           </template>
         </span>
       </a-table>
 
-      <AddForm ref="addForm" @finish="searchAction()" />
+      <AddForm ref="addForm" @finish="search" />
+      <AppFrom ref="appForm" @finish="search" />
+      <XdocView ref="xdocView" />
     </a-layout>
   </a-card>
 </template>
 
 <script>
-import { DistributionList, DistributionDelete } from '@/api/distribution-management'
+import { materialsList, materialsId } from '@/api/training-management'
 import AddForm from './module/AddForm'
+import AppFrom from './module/AppFrom'
+import XdocView from './module/XdocView'
 
 const columns = [
   {
@@ -66,33 +131,49 @@ const columns = [
     scopedSlots: { customRender: 'order' },
   },
   {
-    title: '文件名称',
-    dataIndex: 'logisticsCompanyName',
-    key: 'logisticsCompanyName',
+    dataIndex: 'orderIocn',
+    title: '文件类型',
+    key: 'orderIocn',
     align: 'center',
+    scopedSlots: { customRender: 'orderIocn' },
+  },
+
+  {
+    title: '文件名称',
+    dataIndex: 'folderName',
+    key: 'folderName',
+    align: 'center',
+    scopedSlots: { customRender: 'folderName' },
   },
   {
     title: '备注',
-    dataIndex: 'personChargeName',
-    key: 'personChargeName',
+    dataIndex: 'remark',
+    key: 'remark',
     align: 'center',
   },
   {
     title: '提交人',
-    dataIndex: 'personChargeTelephone',
-    key: 'personChargeTelephone',
+    dataIndex: 'createdUsername',
+    key: 'createdUsername',
     align: 'center',
   },
   {
     title: '提交时间',
-    dataIndex: 'wechatNumber',
-    key: 'wechatNumber',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
     align: 'center',
   },
   {
+    title: '状态',
+    dataIndex: 'authorityType',
+    key: 'authorityType',
+    align: 'center',
+    scopedSlots: { customRender: 'authorityType' },
+  },
+  {
     title: '修改时间',
-    dataIndex: 'addressName',
-    key: 'addressName',
+    dataIndex: 'modifyTime',
+    key: 'modifyTime',
     align: 'center',
   },
   {
@@ -105,6 +186,8 @@ const columns = [
 export default {
   name: 'RoleManagement',
   components: {
+    AppFrom,
+    XdocView,
     AddForm: AddForm,
   },
   data() {
@@ -112,6 +195,9 @@ export default {
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
+      parentId: '',
+      folderNa: '',
+      fold: false,
       pagination: {
         current: 1,
         folderId: -1,
@@ -127,6 +213,14 @@ export default {
   created() {},
   computed: {},
   watch: {
+    pagination: function (val) {
+      // debugger
+      if (val.folderId === -1) {
+        this.fold = false
+      } else {
+        this.fold = true
+      }
+    },
     $route: {
       handler: function (to, from) {
         if (to.name === 'training-management_materials') {
@@ -145,19 +239,50 @@ export default {
       let that = this
       console.log(12312)
     },
+    handleMenuClick(e, record) {
+      if (e === 1) {
+        this.$refs.addForm.query('folder', record)
+      } else {
+        this.$refs.appForm.query('folder', record)
+      }
+    },
+    //进入下一级
+    folderName(record) {
+      this.pagination.folderId = record.id
+      this.folderNa = record.folderName
+      this.parentId = record.id
+      this.searchAction()
+    },
+    //返回上一级
+    gohandle() {
+      materialsId({ folderId: this.parentId }).then((res) => {
+        this.pagination.folderId = res.data.parentId
+        this.searchAction()
+      })
+    },
+    //接收子组件数据
+    search(data) {
+      this.pagination.folderId = data.id
+      this.searchAction()
+    },
     searchAction(opt) {
       let that = this
       that.loading = true
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
-      DistributionList(_searchParam)
+      materialsList(_searchParam)
         .then((res) => {
           that.loading = false
-          this.queryParam.accountDate = ''
-          that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
-            return item
-          })
+          if (res.data.records.length == 0) {
+            that.$message.info('当前文件夹下没有文件')
+          }
+          that.dataSource = res.data.records
+            ? res.data.records.map((item, index) => {
+                item.key = index + 1
+                return item
+              })
+            : []
           //设置数据总条数
+          // that.queryParam.accountDate = ''
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
           that.pagination = pagination
@@ -184,9 +309,17 @@ export default {
         }
       })
     },
-    //新增 修改
+    //文件夹新增 修改
     handleAdd(type, record) {
       this.$refs.addForm.query(type, record)
+    },
+    // 文件 查看 新增 修改
+    fileAdd(type, record) {
+      this.$refs.appForm.query(type, record)
+    },
+    //文件查看
+    doAction(idurl) {
+      this.$refs.xdocView.query(idurl)
     },
   },
 }
