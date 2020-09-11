@@ -64,3 +64,38 @@ export function getFolderDetail(parameter) {
     params: parameter
   })
 }
+
+
+// 文件夹 删除
+export function materialsSaveOrRemove(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-folder/removeOaTrainFolderById',
+    method: 'post',
+    data: parameter
+  })
+}
+// 文件删除
+export function materialsSaveOrDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-file/removeOaTrainFileById',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+// 查询目录权限列表
+export function getFolderlistrainList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-folder-permissions/listrainFolderByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//分散集中列表
+
+// /oaTrainInfo/oa-train-group-content/pageList

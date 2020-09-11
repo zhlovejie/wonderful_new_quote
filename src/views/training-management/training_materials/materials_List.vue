@@ -4,14 +4,16 @@
       <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
       <a-input
         placeholder="名称"
-        v-model="queryParam.logisticsCompanyName"
+        v-model="queryParam.folderName"
         allowClear
+        @keydown.native.stop="handleKeyDown"
         style="width: 200px;margin-right:10px;"
       />
       <a-input
         placeholder="备注信息"
-        v-model="queryParam.personChargeName"
+        v-model="queryParam.remark"
         allowClear
+        @keydown.native.stop="handleKeyDown"
         style="width: 200px;margin-right:10px;"
       />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
@@ -33,7 +35,7 @@
           style="float:right; margin-right:10px;"
           type="primary"
           icon="plus"
-          @click="handleAdd('add',{Id:pagination.folderId ,name:folderNa||''})"
+          @click="handleAdd('add',{Id:pagination.folderId ,name:folderNa||'',type:authority})"
         >新增文件夹</a-button>
       </template>
     </div>
@@ -87,12 +89,20 @@
                 <a-icon type="down" />
               </a>
             </a-dropdown>
-            <!-- <a @click="handleAdd('see',record)">新增</a> -->
             <a-divider type="vertical" />
             <template>
-              <a @click="handleAdd('edit-salary',record)">修改</a>
+              <a
+                @click="handleAdd('edit-salary',{deptId:record.deptId,id:record.id,name:folderNa||'',Id:pagination.folderId})"
+              >修改</a>
               <a-divider type="vertical" />
-              <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+              <a-popconfirm
+                title="是否确定删除"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="confirmDelete(record)"
+              >
+                <a type="primary">删除</a>
+              </a-popconfirm>
             </template>
           </template>
           <template v-else>
@@ -101,9 +111,19 @@
             <a class="ant-dropdown-link" :href="record.fileUrl">下载</a>
             <template>
               <a-divider type="vertical" />
-              <a @click="fileAdd('edit-salary',record)">修改</a>
+              <a
+                @click="fileAdd('edit-salary',{deptId:record.deptId,id:record.id,name:folderNa||'',Id:pagination.folderId})"
+              >修改</a>
               <a-divider type="vertical" />
-              <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+              <a-popconfirm
+                title="是否确定删除"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="confirmDelete(record)"
+              >
+                <a type="primary">删除</a>
+              </a-popconfirm>
+              <!-- <a class="ant-dropdown-link" @click="delete_list(record)">删除</a> -->
             </template>
           </template>
         </span>
@@ -117,7 +137,7 @@
 </template>
 
 <script>
-import { materialsList, materialsId } from '@/api/training-management'
+import { materialsList, materialsId, materialsSaveOrRemove, materialsSaveOrDelete } from '@/api/training-management'
 import AddForm from './module/AddForm'
 import AppFrom from './module/AppFrom'
 import XdocView from './module/XdocView'
@@ -197,6 +217,7 @@ export default {
       columns,
       parentId: '',
       folderNa: '',
+      authority: '',
       fold: false,
       pagination: {
         current: 1,
@@ -235,9 +256,13 @@ export default {
       let that = this
       this.searchAction()
     },
-    check() {
-      let that = this
-      console.log(12312)
+
+    handleKeyDown(e) {
+      let eCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode
+      if (eCode === 13) {
+        //调用对应的方法
+        this.searchAction()
+      }
     },
     handleMenuClick(e, record) {
       if (e === 1) {
@@ -250,6 +275,7 @@ export default {
     folderName(record) {
       this.pagination.folderId = record.id
       this.folderNa = record.folderName
+      this.authority = record.authorityType
       this.parentId = record.id
       this.searchAction()
     },
@@ -257,6 +283,7 @@ export default {
     gohandle() {
       materialsId({ folderId: this.parentId }).then((res) => {
         this.pagination.folderId = res.data.parentId
+        this.parentId = res.data.parentId
         this.searchAction()
       })
     },
@@ -298,16 +325,33 @@ export default {
       this.pagination = pager
       this.searchAction()
     },
-    delete_list(id) {
+    confirmDelete(record) {
       let that = this
-      DistributionDelete({ id: id }).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          that.$message.error(res.msg)
-        }
-      })
+
+      console.log('你是要删除')
+      console.log(record)
+
+      if (record.isFileFlag === 1) {
+        //文件夹删除
+        materialsSaveOrRemove(`folderId=${record.id}`).then((res) => {
+          if (res.code === 200) {
+            this.searchAction()
+            that.$message.info(res.msg)
+          } else {
+            that.$message.error(res.msg)
+          }
+        })
+      } else {
+        //文件删除
+        materialsSaveOrDelete(`fileId=${record.id}`).then((res) => {
+          if (res.code === 200) {
+            this.searchAction()
+            that.$message.info(res.msg)
+          } else {
+            that.$message.error(res.msg)
+          }
+        })
+      }
     },
     //文件夹新增 修改
     handleAdd(type, record) {

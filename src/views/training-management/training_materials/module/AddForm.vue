@@ -56,7 +56,7 @@
               <a-form-item>
                 <a-radio-group
                   @change="authorityType"
-                  v-decorator="['authorityType',{ initialValue:2}]"
+                  v-decorator="['authorityType',{ rules: [{ required: true, message: '请选择权限' }] }]"
                 >
                   <a-radio :value="1">公开</a-radio>
                   <a-radio :value="2">私密</a-radio>
@@ -64,91 +64,93 @@
               </a-form-item>
             </td>
           </tr>
-
-          <tr v-if="jurisdiction">
-            <td colspan="6">
-              <b>选择人员</b>
-            </td>
-          </tr>
-          <tr v-if="jurisdiction">
-            <td>部门</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select style="width:200px;" @change="depChangeHandler" placeholder="请选择部门">
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-            <td>人员</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  style="width:200px;"
-                  mode="multiple"
-                  :allowClear="true"
-                  :maxTagCount="1"
-                  @change="addProcess"
-                  showSearch
-                  placeholder="请选择人员"
-                  optionFilterProp="children"
-                  :filterOption="selectFilter"
-                >
-                  <a-select-option
-                    v-for="(process, index) in postSelectDataSource"
-                    :key="index"
-                    :value="process.id"
-                  >{{ process.trueName }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr v-if="jurisdiction">
-            <td colspan="6">人员详情</td>
-          </tr>
-          <tr v-if="jurisdiction">
-            <td colspan="6">
-              <a-form-item>
-                <div class="process_header_wrapper">
-                  <div class="draggable-columns draggable-columns-1">部门</div>
-                  <div class="draggable-columns draggable-columns-1">人员</div>
-                  <div class="draggable-columns draggable-columns-3">
-                    <a href="javascript:void(0);" @click="processClearAction">清空</a>
-                  </div>
-                </div>
-                <vuedraggable
-                  class="process_main_wrapper"
-                  v-if="haveProcess.length > 0"
-                  ghost-class="ghost"
-                  v-model="haveProcess"
-                >
-                  <transition-group name="list">
-                    <div
-                      v-for="(item, index) in haveProcess"
+          <template v-if="jurisdiction">
+            <tr v-if="dis">
+              <td colspan="6">
+                <b>选择人员</b>
+              </td>
+            </tr>
+            <tr v-if="dis">
+              <td>部门</td>
+              <td colspan="2">
+                <a-form-item>
+                  <a-select style="width:200px;" @change="depChangeHandler" placeholder="请选择部门">
+                    <a-select-option
+                      v-for="item in departmentList"
                       :key="item.id"
-                      class="draggable-columns-item"
-                    >
-                      <div class="draggable-columns draggable-columns-2">{{ item.departmentName }}</div>
-                      <div class="draggable-columns draggable-columns-2">{{ item.trueName }}</div>
-                      <div class="draggable-columns draggable-columns-3" title="删除">
-                        <a-popconfirm
-                          title="确认删除这条数据？"
-                          @confirm="confirm(item.id, index)"
-                          okText="是"
-                          cancelText="否"
-                        >
-                          <a-icon type="close-circle" />
-                        </a-popconfirm>
-                      </div>
+                      :value="item.id"
+                    >{{ item.departmentName }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </td>
+              <td>人员</td>
+              <td colspan="2">
+                <a-form-item>
+                  <a-select
+                    style="width:200px;"
+                    mode="multiple"
+                    :allowClear="true"
+                    :maxTagCount="1"
+                    @change="addProcess"
+                    showSearch
+                    placeholder="请选择人员"
+                    optionFilterProp="children"
+                    :filterOption="selectFilter"
+                    v-decorator="['authTrainFolderBoList']"
+                  >
+                    <a-select-option
+                      v-for="(process, index) in postSelectDataSource"
+                      :key="index"
+                      :value="process.id"
+                    >{{ process.trueName }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="6">人员详情</td>
+            </tr>
+            <tr>
+              <td colspan="6">
+                <a-form-item>
+                  <div class="process_header_wrapper">
+                    <div class="draggable-columns draggable-columns-1">部门</div>
+                    <div class="draggable-columns draggable-columns-1">人员</div>
+                    <div class="draggable-columns draggable-columns-3">
+                      <a href="javascript:void(0);" @click="processClearAction">清空</a>
                     </div>
-                  </transition-group>
-                </vuedraggable>
-              </a-form-item>
-            </td>
-          </tr>
+                  </div>
+                  <vuedraggable
+                    class="process_main_wrapper"
+                    v-if="haveProcess.length > 0"
+                    ghost-class="ghost"
+                    v-model="haveProcess"
+                  >
+                    <transition-group name="list">
+                      <div
+                        v-for="(item, index) in haveProcess"
+                        :key="item.id"
+                        class="draggable-columns-item"
+                      >
+                        <div class="draggable-columns draggable-columns-1">{{ item.departmentName }}</div>
+                        <div class="draggable-columns draggable-columns-1">{{ item.userName }}</div>
+                        <div class="draggable-columns draggable-columns-3" title="删除">
+                          <a-popconfirm
+                            title="确认删除这条数据？"
+                            @confirm="confirm(item.id, index)"
+                            okText="是"
+                            cancelText="否"
+                          >
+                            <a-icon type="close-circle" />
+                          </a-popconfirm>
+                        </div>
+                      </div>
+                    </transition-group>
+                  </vuedraggable>
+                </a-form-item>
+              </td>
+            </tr>
+          </template>
         </table>
       </a-form>
     </a-spin>
@@ -156,7 +158,7 @@
 </template>
 <script>
 import { getDevisionList } from '@/api/systemSetting'
-import { materialsAdd, materialsDetail } from '@/api/training-management'
+import { materialsAdd, materialsDetail, getFolderlistrainList } from '@/api/training-management'
 import { queryList } from '@/api/humanResources'
 import vuedraggable from 'vuedraggable'
 
@@ -170,6 +172,7 @@ export default {
       visible: false,
       spinning: false,
       isDisabled: true,
+      dis: true,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       departmentList: [],
       type: 'add',
@@ -196,6 +199,7 @@ export default {
     targetValue: function (val) {
       if (val === 1) {
         this.jurisdiction = true
+        this.dis = this.addId === -1 ? true : false
       } else {
         this.jurisdiction = false
       }
@@ -228,15 +232,37 @@ export default {
         this.departmentList = res.data
       })
       if (type === 'edit-salary') {
+        this.addId = record.Id
+        console.log(this.addId)
+        this.parentId = record.Id === -1 ? '无' : record.name
+        this.dis = record.Id === -1 ? true : false
         this.fillData()
       }
       if (type === 'add') {
         this.addId = record.Id
-        this.parentId = record.name
+        this.parentId = record.Id === -1 ? '无' : record.name
+        this.dis = record.Id === -1 ? true : false
+        if (record.Id != -1) {
+          getFolderlistrainList({ folderId: record.Id }).then((res) => {
+            this.haveProcess = res.data
+            this.form.setFieldsValue({
+              authorityType: record.type,
+            })
+          })
+          this.jurisdiction = record.type === 1 ? true : false
+        }
       }
       if (type === 'folder') {
         this.addId = record.id
         this.parentId = record.folderName
+        this.dis = record.id === -1 ? true : false
+        getFolderlistrainList({ folderId: record.id }).then((res) => {
+          this.haveProcess = res.data
+          this.form.setFieldsValue({
+            authorityType: record.authorityType,
+          })
+        })
+        this.jurisdiction = record.authorityType === 1 ? true : false
       }
     },
 
@@ -249,10 +275,9 @@ export default {
           this.haveProcess = res.data.oaTrainFolerPermissionsDetailVoList
           if (res.data.authorityType === 1) {
             this.jurisdiction = true
+            this.dis = this.record.Id === -1 ? true : false
           }
-          this.addId = res.data.parentId
           this.form.setFieldsValue({
-            parentId: res.data.parentId || '无',
             folderName: res.data.folderName,
             remark: res.data.remark,
             authorityType: res.data.authorityType,
@@ -289,9 +314,12 @@ export default {
             that.spinning = false
             console.log(res)
             that.form.resetFields() // 清空表
-            this.haveProcess = []
+            that.haveProcess = []
+            that.form.setFieldsValue({
+              authTrainFolderBoList: [],
+            })
             that.visible = false
-            this.jurisdiction = false
+            that.jurisdiction = false
             that.$message.info(res.msg)
             let arr = { id: that.addId }
             that.$emit('finish', arr)
@@ -310,6 +338,7 @@ export default {
     },
     handleCancel() {
       this.fileList = []
+      this.haveProcess = []
       this.form.resetFields() // 清空表
       this.visible = false
       this.jurisdiction = false
@@ -318,7 +347,7 @@ export default {
     processClearAction() {
       this.haveProcess = []
       this.form.setFieldsValue({
-        roomIds: [],
+        authTrainFolderBoList: [],
       })
     },
     addProcess(selectedArray) {
@@ -331,18 +360,21 @@ export default {
         if (!target) {
           let _p = that.postSelectDataSource.find((_p) => _p.id === _ppid)
           _p.userId = _p.id
+          _p.userName = _p.trueName
           that.haveProcess.push({ ..._p, ...that._d })
         }
       })
     },
     //人员显示隐藏
     authorityType(author) {
-      console.log(author.target.value)
-      this.targetValue = author.target.value
+      let that = this
+      that.targetValue = author.target.value
       if (author.target.value === 1) {
-        this.jurisdiction = true
+        that.jurisdiction = true
+        console.log(that.addId)
+        that.dis = that.addId === -1 ? true : false
       } else {
-        this.jurisdiction = false
+        that.jurisdiction = false
       }
     },
     selectFilter(input, option) {
@@ -358,7 +390,7 @@ export default {
         arr.push(item.id)
       })
       this.form.setFieldsValue({
-        roomIds: arr,
+        authTrainFolderBoList: arr,
       })
     },
   },

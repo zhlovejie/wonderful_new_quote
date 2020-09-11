@@ -2805,7 +2805,7 @@ export const asyncRouterMap = [
             name: 'training-management_information',
             component: () => import('@/views/training-management/my_information/information_List'),
             meta: {
-              title: '我的培训方案',
+              title: '我的培训资料',
               icon: 'select',
               keepAlive: false,
               permission: ['permission']
