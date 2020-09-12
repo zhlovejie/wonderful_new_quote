@@ -236,7 +236,7 @@ export default {
       } else if (type === 'price-ok') {
         this.visible = false
       } else if (['price-view','price-view-cost'].includes(type)) {
-
+        this.unitPriceView = null
         that.isPriceViewCost = type === 'price-view-cost'
         this.makeViewDataSource()
         this.hackReset = false
