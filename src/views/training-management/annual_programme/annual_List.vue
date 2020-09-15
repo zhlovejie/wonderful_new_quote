@@ -2,15 +2,12 @@
   <!--公告管理 -->
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <!-- mode="year" -->
-      <!-- :getCalendarContainer=" particular" -->
-      <!-- style="top: 230px !important ;" -->
-      <!-- <a-year-picker placeholder="日期" @change="onChange" style="width: 200px ;margin-right:10px;" /> -->
       <a-date-picker
+        style="width: 280px ;margin-right:10px;"
         mode="year"
         placeholder="请选择年份"
         format="YYYY"
-        :value="yearPick"
+        v-model=" yearPick"
         :open="yearPickShow"
         @panelChange="handlePanelChange"
         @openChange="handleOpenChange"
@@ -18,9 +15,9 @@
       <a-select
         placeholder="审批状态"
         v-if="activeKey === 0"
-        v-model="queryParam.status"
+        v-model="queryParam.status "
         :allowClear="true"
-        style="width: 200px;margin-right:10px;"
+        style="width: 280px;margin-right:10px;"
       >
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">审批通过</a-select-option>
@@ -33,11 +30,11 @@
         type="primary"
         style="position: relative;top:-1px;"
         icon="search"
-        @click="searchAction"
+        @click="searchAction1"
       >查询</a-button>
 
-      <a-dropdown style="float:right;" v-if="$auth('leagueBuilding:add')">
-        <a-button type="primary" @click="doAction('add',null)">
+      <a-dropdown style="float:right;">
+        <a-button type="primary" @click="showModal()">
           <a-icon type="plus" />新增
         </a-button>
       </a-dropdown>
@@ -46,7 +43,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('leagueBuilding:jurisdiction')">
+        <template>
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
@@ -57,13 +54,10 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
-        v-if="$auth('leagueBuilding:list')"
       >
+        <!-- v-if="$auth('leagueBuilding:list')" -->
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
-        </div>
-        <div slot="leagueType" slot-scope="text">
-          <span>{{ getleagueTypeText(text) }}</span>
         </div>
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
@@ -74,15 +68,10 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="record.status === 5">
-              <a type="primary" @click="doAction('view5',record)">查看</a>
-            </template>
-            <template v-else>
+            <template>
               <a type="primary" @click="doAction('view',record)">查看</a>
             </template>
-            <template
-              v-if="$auth('leagueBuilding:add') && record.status === 1 && +record.createdId  === +userInfo.id"
-            >
+            <template v-if=" record.status === 1 ">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -93,15 +82,11 @@
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <template
-              v-if="$auth('leagueBuilding:add') && record.status === 2 && +record.createdId  === +userInfo.id"
-            >
+            <template v-if="record.status === 2 ">
               <a-divider type="vertical" />
-              <a type="primary" @click="uploadImg(record)">上传</a>
+              <a type="primary" :href="record.planUrl">下载</a>
             </template>
-            <template
-              v-if="$auth('leagueBuilding:add') && record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
-            >
+            <template v-if="record.status === 3||record.status === 4 ">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
@@ -126,17 +111,28 @@
         </div>
       </a-table>
     </div>
-    <!-- <AddForm ref="addForm" @finish="searchAction()" />
+    <a-modal v-model="visible" title="新增年度培训方案" @ok="handleOk">
+      <a-date-picker
+        style="width:280px ;margin-right:10px;"
+        mode="year"
+        placeholder="请选择年份"
+        format="YYYY"
+        v-model=" yearPick1"
+        :open="yearPickShow1"
+        @panelChange="handlePanelChange1"
+        @openChange="handleOpenChange1"
+      />
+    </a-modal>
+    <AddForm ref="addForm" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
-    <UploadImgs ref="uploadImgs" @finish="searchAction()" />-->
   </div>
 </template>
 <script>
 import { getDevisionList } from '../../../api/systemSetting'
-import { leagueBuilding_List, leagueBuilding_Apply, leagueBuildingRemove } from '@/api/humanResources'
-// import AddForm from './module/FormAdd'
-// import UploadImgs from './module/uploadImgs'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import { annualList, annualPlan, annualRemove } from '@/api/training-management'
+import AddForm from './module/FromAdd'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import moment from 'moment'
 const columns = [
   {
     align: 'center',
@@ -147,47 +143,17 @@ const columns = [
   },
   {
     align: 'center',
-    title: '团建类别',
-    dataIndex: 'leagueType',
-    key: 'leagueType',
-    scopedSlots: { customRender: 'leagueType' },
+    title: '时间',
+    dataIndex: 'year',
+    key: 'year',
   },
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentNames',
-    key: 'departmentNames',
+    title: '备注',
+    dataIndex: 'remark',
+    key: 'remark',
   },
-  {
-    align: 'center',
-    title: '开始时间',
-    dataIndex: 'beginTime',
-    key: 'beginTime',
-  },
-  {
-    align: 'center',
-    title: '结束时间',
-    dataIndex: 'endTime',
-    key: 'endTime',
-  },
-  {
-    align: 'center',
-    title: '时长',
-    dataIndex: 'timeSpace',
-    key: 'timeSpacer ',
-  },
-  {
-    align: 'center',
-    title: '地点',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    align: 'center',
-    title: '团建费用',
-    dataIndex: 'expense',
-    key: 'expense',
-  },
+
   {
     align: 'center',
     title: '审核状态',
@@ -198,12 +164,12 @@ const columns = [
   {
     align: 'center',
     title: '提交人',
-    key: 'createdUserName',
-    dataIndex: 'createdUserName',
+    key: 'createdUsername',
+    dataIndex: 'createdUsername',
   },
   {
     align: 'center',
-    title: '提交人日期',
+    title: '提交人时间',
     dataIndex: 'createdTime',
     key: 'createdTime',
   },
@@ -218,15 +184,19 @@ const columns = [
 export default {
   name: 'NoticeList',
   components: {
-    // AddForm: AddForm,
-    // ApproveInfo: ApproveInfo,
+    AddForm: AddForm,
+    ApproveInfo: ApproveInfo,
     // UploadImgs: UploadImgs,
   },
   data() {
     return {
+      visible: false,
       yearPick: null, //年选择器的值
       yearPickShow: false, //年选择器的显示隐藏
+      yearPick1: null, //年选择器的值
+      yearPickShow1: false, //年选择器的显示隐藏
       queryParam: {},
+      status: '',
       activeKey: 0,
       departmentList: [],
       operation_status: undefined,
@@ -247,7 +217,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_leagueBuilding') {
+        if (to.name === 'training-management_programme') {
           this.init()
         }
       },
@@ -255,32 +225,55 @@ export default {
     },
   },
   methods: {
+    moment,
     init() {
       let that = this
       this.searchAction()
       this.department()
     },
-    // particular(trigger) {
-    //   return trigger.parentNode
-    // },
-    handleOpenChange(status) {
-      console.log(status, '============')
-      this.yearPickShow = status
+    searchAction1() {
+      console.log('chaxun')
+      if (this.yearPick != null) {
+        this.queryParam.year = moment(this.yearPick).format('YYYY')
+      } else {
+        delete this.queryParam.year
+      }
+      this.searchAction()
+    },
+    showModal() {
+      this.visible = true
+      this.yearPick1 = null
+    },
+    handleOk(e) {
+      console.log(e)
+      this.visible = false
+      if (this.yearPick1) {
+        this.doAction('add', { year: this.yearPick1 })
+      } else {
+        this.$message.error('请选择年份')
+      }
     },
     // 得到年份选择器的值
     handlePanelChange(value) {
       this.yearPick = value
-      console.log(value)
       this.yearPickShow = false
     },
-    // onChange(date, dateString) {
-    //   console.log(dateString)
-    //   //   this.queryParam.surfaceDate = dateString
-    // },
+    handleOpenChange(status) {
+      this.yearPickShow = status
+    },
+    // 得到年份选择器的值
+    handlePanelChange1(value) {
+      this.yearPick1 = value
+      console.log(value)
+      this.yearPickShow1 = false
+    },
+    handleOpenChange1(status) {
+      this.yearPickShow1 = status
+    },
     // 删除
     confirmDelete(record) {
       let that = this
-      leagueBuildingRemove(`id=${record.id}`).then((res) => {
+      annualRemove(`oaTrainYearPlanId=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -294,14 +287,6 @@ export default {
       getDevisionList().then((res) => {
         this.departmentList = res.data
       })
-    },
-    getleagueTypeText(state) {
-      let stateMap = {
-        1: '部门团建',
-        2: '公司团建',
-        3: '管理层团建',
-      }
-      return stateMap[state] || `未知状态:${state}`
     },
     getStateText(state) {
       let stateMap = {
@@ -317,10 +302,7 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-    uploadImg(record) {
-      let that = this
-      that.$refs.uploadImgs.query(record.id)
-    },
+
     // 发布
     confirmRelease(record) {
       let that = this
@@ -337,7 +319,7 @@ export default {
     confirmWithdraw(record) {
       let that = this
       // console.log(record.id)
-      leagueBuilding_Apply(`id=${record.id}`).then((res) => {
+      annualPlan(`oaTrainYearPlanId=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })
@@ -348,7 +330,7 @@ export default {
         searchStatus: that.activeKey,
       })
       that.loading = true
-      leagueBuilding_List(_searchParam)
+      annualList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

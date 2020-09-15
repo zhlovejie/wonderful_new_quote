@@ -96,6 +96,65 @@ export function getFolderlistrainList(parameter) {
   })
 }
 
-//分散集中列表
 
-// /oaTrainInfo/oa-train-group-content/pageList
+// 培训年计划方案接口
+
+// 列表接口
+export function annualList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//新增 修改
+export function annualAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/saveOrUpdateTrainFile',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//撤回
+export function annualPlan(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/withdrawOaTrainYearPlan',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//删除 
+export function annualRemove(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/removeTrainYearPlan',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//详情 
+export function annualDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/getTrainYearPlanDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+// 审批接口
+
+export function annualisAdopt(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/approvalTrainYearPlan',
+    method: 'post',
+    data: parameter
+  })
+}
