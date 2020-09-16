@@ -79,7 +79,6 @@
               <a-form-item>
                 <a-range-picker
                   :disabled="isDisabled"
-                  @change="dateChange($event,{key:key,index:index})"
                   v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.beginData`, {initialValue:items.beginData, rules: [{ required: true, message: '请输入预估时间' }] }]"
                   :defaultPickerValue="[moment(dateFormat, 'YYYY-MM-DD'), moment(dateFormat, 'YYYY-MM-DD')]"
                 />
@@ -295,10 +294,6 @@ export default {
         ],
       })
     },
-    dateChange(e, id) {
-      this.programme[id.key].oaTrainYearPlanItemDetailSaveBoList[id.index].beginTime = e[0]
-      this.programme[id.key].oaTrainYearPlanItemDetailSaveBoList[id.index].endTime = e[1]
-    },
     departmentChange(name, id) {
       this.months = id
       this.month = name
@@ -341,8 +336,6 @@ export default {
             oaTrainYearPlanItemDetailSaveBoList: arr,
           }
         })
-
-        // that.$nextTick(() => (that.detail = { ...res.data }))
       })
     },
 
@@ -371,8 +364,7 @@ export default {
             values.id = that.record.id
           }
           if (that.type === 'add' || that.type === 'edit-salary') {
-            debugger
-            annualAdd(arr)
+            annualAdd(values)
               .then((res) => {
                 console.log(res.data)
                 this.programme = []

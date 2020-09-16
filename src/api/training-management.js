@@ -158,3 +158,37 @@ export function annualisAdopt(parameter) {
     data: parameter
   })
 }
+
+
+//集中 分散培训列表
+export function dispersedList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//集中 分散 新增 修改
+export function dispersedAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/saveOrUpdateDisperseTrainContent',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+//文件类别
+export function dispersedForDipreseByPage(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-folder/listrainFolderForDipreseByPage',
+    method: 'get',
+    params: parameter
+  })
+}
