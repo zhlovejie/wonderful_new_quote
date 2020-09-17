@@ -201,6 +201,18 @@ export function dispersedDetailVo(parameter) {
   })
 }
 
+//集中详情
+export function focusDetailVo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/getOaTrainGroupContentDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
 export function dispersedDelete(parameter) {
   return axios({
     baseURL: system.baseURL,

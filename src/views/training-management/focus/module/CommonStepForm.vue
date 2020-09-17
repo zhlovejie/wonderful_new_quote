@@ -64,7 +64,9 @@ import Step1 from './CommonCustomerForm'
 import Step2 from './LinkmanForm'
 import Step3 from './Step3'
 import Step4 from './Step4'
-import { dispersedDetailVo } from '@/api/training-management'
+// import { addCustomer, getOneCustomer, editCustomer } from '@/api/customer'
+// import { queryList } from '@/api/linkman'
+import { focusDetailVo } from '@/api/training-management'
 
 export default {
   name: 'CommonStepForm',
@@ -123,7 +125,7 @@ export default {
         this.queryonedata = {}
       }
       if (this.type != 'add') {
-        dispersedDetailVo({ trainId: record.id }).then((res) => {
+        focusDetailVo({ trainId: record.id }).then((res) => {
           console.log(res.data)
           this.queryonedata = { ...res.data }
         })

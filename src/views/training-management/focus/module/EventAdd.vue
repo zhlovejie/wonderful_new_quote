@@ -131,6 +131,7 @@ export default {
       dayLoop: range(1, 31, 1, '号'),
       weekLoop: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
       monthLoop: range(1, 12, 1, '月'),
+      //   meetingCycle: undefined,
     }
   },
   computed: {
@@ -159,6 +160,7 @@ export default {
     },
     async handleOk() {
       let that = this
+
       this.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true
@@ -187,7 +189,6 @@ export default {
       that.record = record || {}
       await that.form.resetFields()
       await that.init()
-
       console.log(record)
       //填充数据
       if (type === 'edit') {
