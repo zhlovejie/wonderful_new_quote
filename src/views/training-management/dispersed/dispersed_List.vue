@@ -22,12 +22,7 @@
           </a-button-group>
         </a-form-item>
         <a-form-item>
-          <a-input
-            v-model="customerName"
-            placeholder="培训名称"
-            style="width:200px;"
-            :allowClear="true"
-          />
+          <a-input v-model="trainName" placeholder="培训名称" style="width:200px;" :allowClear="true" />
         </a-form-item>
         <a-form-item label="日期">
           <a-range-picker v-model="sDate" style="width:280px;" />
@@ -78,7 +73,6 @@
             <a @click="handleClick(record)" v-if="text==2">通过</a>
             <a @click="handleClick(record)" v-if="text==3">不通过</a>
             <a @click="handleClick(record)" v-if="text==4">已撤回</a>
-            <a @click="handleClick(record)" v-if="text==4">已完结</a>
           </div>
 
           <!-- <div slot="delayedDays" slot-scope="text, record">{{calcDelayedDays(record)}}</div>
@@ -87,7 +81,7 @@
 
           <span slot="action" slot-scope="text, record">
             <template v-if="audit==0||audit==2">
-              <a type="primary" @click="doAction('view',record)">查看</a>
+              <a type="primary" @click="toAdd('view',record)">查看</a>
             </template>
             <template v-if=" audit==0&&record.status === 1 ">
               <a-divider type="vertical" />
@@ -100,15 +94,25 @@
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if=" audit==0 &&record.status === 2 ">
-              <a-divider type="vertical" />
-              <a type="primary" :href="record.planUrl">会议事件</a>
-              <a-divider type="vertical" />
-              <a type="primary" :href="record.planUrl">会议记录</a>
+            <!-- && record.onlineFlag==0 -->
+            <template v-if=" audit==0 &&record.status == 2  ">
+              <template v-if="record.meetingEventId">
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('edit',record)">修改会议事件</a>
+              </template>
+              <template v-else>
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('add',record)">会议事件</a>
+              </template>
+
+              <template v-if="record.meetingNum">
+                <a-divider type="vertical" />
+                <a type="primary" @click="meeting('view',record)">会议记录</a>
+              </template>
             </template>
             <template v-if="audit==0&& record.status === 3||record.status === 4 ">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit-salary',record)">修改</a>
+              <a type="primary" @click="toAdd('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定删除"
@@ -120,40 +124,25 @@
               </a-popconfirm>
             </template>
             <template v-if="audit==1&&record.status === 1 ">
-              <a type="primary" :href="record.planUrl">审核</a>
+              <a type="primary" @click="toAdd('examine',record)">审核</a>
             </template>
-            <!-- <template >
-              <a @click="handleSee(record)">查看</a>
-            </template>
-            <a-divider v-if="audit==0&&record.approvalStatus==2" type="vertical" />
-            <a v-if="audit==0&&record.approvalStatus==2" target="_blank" :href="record.wordUrl">欠款单</a>
-            <a-divider v-if="audit==0&&record.approvalStatus==2" type="vertical" />
-            <a
-              v-if="audit==0&&record.approvalStatus==2"
-              target="_blank"
-              @click="UploadFile(record)"
-            >上传</a>
-            <template v-if="$auth('payment:edit')">
-              <a-divider v-if="audit==1&&userInfo.id!=1" type="vertical" />
-              <a v-if="audit==1&&userInfo.id!=1" @click="handleApproval(record)">审核</a>
-            </template>
-            <template v-if="$auth('payment:one')">
-              <a-divider v-if="audit==0&&record.approvalStatus==3" type="vertical" />
-              <a v-if="audit==0&&record.approvalStatus==3" @click="Resubmit(record)">重新提交</a>
-            </template>-->
           </span>
         </s-table>
       </a-col>
     </a-row>
-    <common-step-form ref="commonStepForm" />
+    <common-step-form ref="commonStepForm" @finish="search()" />
     <ApproveInfo ref="approveInfoCard" />
+    <AddForm ref="addForm" @finish="search()" />
+    <Meeting ref="meeting" />
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
-import { dispersedList } from '@/api/training-management'
+import { dispersedList, dispersedwithdraw, dispersedDelete, meetingDetailByCode } from '@/api/training-management'
 import CommonStepForm from './module/CommonStepForm'
+import AddForm from './module/EventAdd'
+import Meeting from './module/view'
 import { getLoginUser } from '@api/systemSetting'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -162,33 +151,29 @@ export default {
   components: {
     CommonStepForm,
     ApproveInfo,
-
+    AddForm,
     STable,
+    Meeting,
   },
   data() {
     return {
       form: this.$form.createForm(this),
-      // 查询参数
-      url: 'https://view.officeapps.live.com/op/view.aspx?src=',
       queryParam: {
-        // dayWeekMonth: 1,
         searchStatus: 0,
         trainType: 2,
       },
+      trainName: undefined,
       recordResult: {},
       queryRecord: {},
       contractState: 0,
       saleCustomer: 0,
       customerName: undefined,
-      // delayedPaymentNum: undefined,
       sDate: [undefined, undefined],
       dayWeekMonth: 1,
-      vueBoolean: this.$store.getters.vueBoolean,
+
       saleCustomers: [],
       audit: 0,
       show: true,
-      arrearsState: 0,
-      wordUrl: '',
       userInfo: {},
       approvalStatusSelect: 0,
       // 表头
@@ -204,19 +189,21 @@ export default {
           align: 'center',
           title: '培训编号',
           dataIndex: 'trainNum',
-          // key: 'title',
+          key: 'trainNum',
           scopedSlots: { customRender: 'trainNum' },
         },
         {
           align: 'center',
           title: '培训名称',
           dataIndex: 'trainName',
+          key: 'trainName',
           scopedSlots: { customRender: 'trainName' },
         },
         {
           align: 'center',
           title: '会议负责人',
           dataIndex: 'lecturerUserName',
+          key: 'lecturerUserName',
           scopedSlots: { customRender: 'lecturerUserName' },
         },
         {
@@ -229,29 +216,31 @@ export default {
           align: 'center',
           title: '结束时间',
           key: 'endTime',
-          // scopedSlots: { customRender: 'endTime' },
+          dataIndex: 'endTime',
         },
         {
           align: 'center',
           title: '地点',
           key: 'meetingAddress',
           dataIndex: 'meetingAddress',
-          // scopedSlots: { customRender: 'meetingAddress' },
         },
         {
           align: 'center',
           title: '审批状态',
           dataIndex: 'status',
+          key: 'status',
           scopedSlots: { customRender: 'status' },
         },
         {
           align: 'center',
           title: '提交人',
-          dataIndex: 'createdUsername',
+          key: 'createdUserName',
+          dataIndex: 'createdUserName',
         },
         {
           align: 'center',
           title: '提交时间',
+          key: 'createdTime',
           dataIndex: 'createdTime',
         },
         {
@@ -292,6 +281,28 @@ export default {
     toAdd(type, record) {
       this.$refs.commonStepForm.query(type, record)
     },
+    //撤回
+    confirmWithdraw(record) {
+      dispersedwithdraw({ trainId: record.id }).then((res) => {
+        if (res.code === 200) {
+          this.$message.info(res.msg)
+          this.search()
+        }
+      })
+    },
+    // 列表删除
+    confirmDelete(record) {
+      dispersedDelete(`trainId=${record.id}`).then((res) => {
+        if (res.code === 200) {
+          this.$message.info(res.msg)
+          this.search()
+        }
+      })
+    },
+    //会议事件新增
+    doAction(actionType, record) {
+      this.$refs.addForm.query(actionType, record)
+    },
 
     search(opt = {}) {
       let beginTime = undefined,
@@ -301,40 +312,34 @@ export default {
         endTime = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       this.queryParam = {
-        // customerName: this.customerName,
         searchStatus: this.audit,
-        // arrearsStatus: this.arrearsState,
-        // delayedPaymentNum: this.delayedPaymentNum,
+        trainName: this.trainName,
         trainType: 2,
         beginTime: beginTime,
         endTime: endTime,
         dayWeekMonth: this.dayWeekMonth,
         ...opt,
       }
-      // if (this.audit == 0) {
-      //   this.queryParam['approvalStatus'] = this.approvalStatusSelect
-      // }
       this.$refs.table.refresh(true)
     },
-    // onSelectChange(selectedRowKeys, selectedRows) {
-    //   this.selectedRowKeys = selectedRowKeys
-    //   this.selectedRows = selectedRows
-    // },
     //审批流组件
     handleClick(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-    // handleClick(record) {
-    //   this.$refs.node.query(record)
-    // },
-    // handleSaveOk() {
-    //   this.$refs.table.refresh(true)
-    // },
-    // handleSaveClose() {},
-    // tenderingClick(record) {
-    //   const data = { id: record.customerId }
-    //   this.$refs.tenderingModel.look(data)
-    // },
+    //查看会议记录
+    meeting(type, record) {
+      meetingDetailByCode({ recordCode: record.meetingNum })
+        .then((res) => {
+          if (res.code === 200) {
+            this.$refs.meeting.query(type, res.data)
+          } else {
+            this.$message.info(res.msg)
+          }
+        })
+        .catch((error) => {
+          this.$message.error(error)
+        })
+    },
     paramClick(key) {
       if (key === '1') {
         this.audit = 1
@@ -349,70 +354,12 @@ export default {
       this.queryParam = { searchStatus: key, trainType: 2 }
       this.$refs.table.refresh(true)
     },
-    // handleSee(e) {
-    //   debugger
-    //   if (e.contractType === 1) {
-    //     this.$router.push({ name: 'lookDelayedPayment', params: { record: e } })
-    //   }
-    //   if (e.contractType === 2) {
-    //     this.$router.push({ name: 'lookSoftDelayedPayment', params: { record: e } })
-    //   }
-    // },
-    // handleApproval(e) {
-    //   if (e.contractType === 1) {
-    //     this.$router.push({ name: 'lookDelayedPayment', params: { record: e, type: 'Approval' } })
-    //   }
-    //   if (e.contractType === 2) {
-    //     this.$router.push({ name: 'lookSoftDelayedPayment', params: { record: e, type: 'Approval' } })
-    //   }
-    // },
-    // Resubmit(e) {
-    //   if (e.contractType === 1) {
-    //     this.$router.push({ name: 'resubmit', params: { record: e } })
-    //   }
-    //   if (e.contractType === 2) {
-    //     this.$router.push({ name: 'softResubmit', params: { record: e } })
-    //   }
-    // },
-    // createPromise(e) {
-    //   this.$router.push({ name: 'createPromise', params: { record: e } })
-    // },
-    // handleAuditOk() {
-    //   this.$refs.table.refresh(true)
-    // },
-    // handleAuditClose() {
-    //   this.$refs.table.refresh(true)
-    // },
-    // openModel() {
-    //   this.$refs.invoiceContract.query()
-    // },
-    // checkIsEnd(record) {
-    //   changeState(record).then((res) => {
-    //     if (res.code === 200) {
-    //       this.$refs.table.refresh(true)
-    //     }
-    //   })
-    // },
-    // UploadFile(record) {
-    //   this.$refs.UploadFile.showForm(record.id)
-    // },
-    // calcDelayedDays(record) {
-    //   var ptime = this.moment(record.promiseTime)
-    //   var dtime = this.moment(record.delayedTime)
-    //   if (!ptime.isValid() || !dtime.isValid) {
-    //     return '-'
-    //   }
-    //   return moment(dtime).diff(moment(ptime), 'days')
-    // },
+
     simpleSearch(type) {
       this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
       console.log(type)
       this.search()
     },
-    /* handleAdd (record) {
-      // 跳转到申请延迟付款单界面
-      this.$router.push({ name: 'addSoftDelayedPayment', params: { id: record.id ,contractType:"2"} })
-    }*/
   },
 }
 </script>

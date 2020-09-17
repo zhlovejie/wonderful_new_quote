@@ -12,13 +12,14 @@
                 style="float: right; margin-bottom:30px "
                 type="primary"
                 @click="selectCustomer()"
+                v-if="!isSee"
               >选择类型</a-button>
             </tr>
             <tr>
               <a-form-item>
                 <div class="process_header_wrapper">
                   <div class="draggable-columns draggable-columns-1">文件类别</div>
-                  <div class="draggable-columns draggable-columns-3">
+                  <div class="draggable-columns draggable-columns-3" v-if="!isSee">
                     <a href="javascript:void(0);">操作</a>
                   </div>
                 </div>
@@ -35,8 +36,7 @@
                       class="draggable-columns-item"
                     >
                       <div class="draggable-columns draggable-columns-1">{{ item.folderName }}</div>
-                      <!-- <div class="draggable-columns draggable-columns-1">{{ item.userName }}</div> -->
-                      <div class="draggable-columns draggable-columns-3" title="删除">
+                      <div v-if="!isSee" class="draggable-columns draggable-columns-3" title="删除">
                         <a-popconfirm
                           title="确认删除这条数据？"
                           @confirm="confirm(item.id, index)"
@@ -54,9 +54,18 @@
           </template>
         </table>
         <ReceiptSaleContract ref="receiptContract" @onSelect="contractChange" />
+        <Approval ref="approval" @opinionChange="opinionChange" />
         <div class="btns-grop">
-          <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
-          <a-button type="primary" @click="nextStep">保存</a-button>
+          <template v-if="isApproval">
+            <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+            <a-button class="a-button" type="primary" icon="close" @click="noPassAction()">不通过</a-button>
+            <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
+          </template>
+          <template v-else>
+            <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+            <a-button v-if="!isSee" type="primary" @click="nextStep">保存</a-button>
+            <a-button v-if="isSee" type="primary" @click="nextStep">退出</a-button>
+          </template>
         </div>
       </a-form>
     </div>
@@ -64,13 +73,15 @@
 </template>
 
 <script>
-import { dispersedAdd } from '@/api/training-management'
+import { dispersedAdd, dispersedExamine } from '@/api/training-management'
 import vuedraggable from 'vuedraggable'
 import moment from 'moment'
 import ReceiptSaleContract from './CutomerList'
+import Approval from './Approval'
 export default {
   name: 'Step1',
   components: {
+    Approval,
     vuedraggable,
     ReceiptSaleContract,
   },
@@ -84,17 +95,23 @@ export default {
     return {
       haveProcess: [],
       type1: '',
+      isSee: false,
       queryonedata1: {},
     }
   },
-  computed: {},
+  computed: {
+    isApproval() {
+      //通过不通过
+      return this.type1 === 'examine'
+    },
+  },
   watch: {
     queryonedata(val) {
       this.queryonedata1 = val
-      // this.quweyData()
-      // if (this.$parent.routeParams.typeName === 'see') {
-      //   this.isSee = true
-      // }
+      this.quweyData()
+      if (this.type1 === 'view' || this.type1 === 'examine') {
+        this.isSee = true
+      }
     },
     type(val) {
       this.type1 = val
@@ -103,16 +120,21 @@ export default {
   created() {
     this.queryonedata1 = this.queryonedata
     this.type1 = this.type
-
-    // if (this.$parent.routeParams.typeName === 'see') {
-    //   this.isSee = true
-    // }
+    if (this.type1 === 'view' || this.type1 === 'examine') {
+      this.isSee = true
+    }
   },
   mounted() {
-    // this.quweyData()
+    this.quweyData()
   },
   methods: {
     moment,
+    quweyData() {
+      let qt = this.queryonedata1 ? this.queryonedata1 : {}
+      if (qt.folerList) {
+        this.haveProcess = qt.folerList
+      }
+    },
     //点击显示列表组件
     selectCustomer() {
       this.$refs.receiptContract.query()
@@ -143,39 +165,75 @@ export default {
     // 点击下一步
     nextStep(status) {
       const that = this
-      console.log(that.type1)
-
-      if (that.haveProcess.length > 0) {
-        console.log(that.haveProcess)
-        let params = {}
-        that.queryonedata1.oaTrainUserList = this.queryonedata1.oaTrainUserList.map((item) => {
-          return {
-            userId: item.id,
-          }
-        })
-        that.queryonedata1.oaTrainDisperseFolderBoList = that.haveProcess.map((item) => {
-          return {
-            oaTrainFolerId: item.id,
-          }
-        })
-        dispersedAdd(that.queryonedata1).then((res) => {
-          if (res.code === 200) {
-            this.$message.info(res.msg)
-            this.$emit('toList')
-          } else {
-            this.$message.error(res.msg)
-          }
-        })
-        //   that.$emit('nextStep', { ...params })
+      if (that.type1 === 'view') {
+        that.$emit('nextStep', {})
       } else {
-        that.$message.error('请选择受训人员')
+        if (that.haveProcess.length > 0) {
+          that.queryonedata1.oaTrainUserList = this.queryonedata1.oaTrainUserList.map((item) => {
+            return {
+              userId: item.id,
+            }
+          })
+          that.queryonedata1.oaTrainDisperseFolderBoList = that.haveProcess.map((item) => {
+            return {
+              oaTrainFolerId: item.id,
+            }
+          })
+          that.queryonedata1.trainType = 2
+          dispersedAdd(that.queryonedata1).then((res) => {
+            if (res.code === 200) {
+              this.$message.info(res.msg)
+              that.$emit('nextStep', {})
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+        } else {
+          that.$message.error('请选择受训人员')
+        }
       }
     },
-    // quweyData() {
-    //   let qt = this.queryonedata1 ? this.queryonedata1 : {}
-    //   if (qt.oaTrainUserList) {
-    //     this.haveProcess = qt.oaTrainUserList
-    //   }
+
+    //审批
+    submitAction(opt) {
+      let that = this
+      let values = {
+        approveId: this.queryonedata1.id,
+        isAdopt: opt.isAdopt,
+        opinion: opt.opinion,
+      }
+      console.log(values)
+      that.spinning = true
+      dispersedExamine(values)
+        .then((res) => {
+          that.$message.info(res.msg)
+          that.$emit('nextStep', {})
+          // that.spinning = false
+          // that.form.resetFields() // 清空表
+          // that.visible = false
+
+          // that.$emit('finish')
+        })
+        .catch((err) => (that.spinning = false))
+    },
+    passAction() {
+      this.submitAction({
+        isAdopt: 0,
+        // opinion: '通过',
+      })
+    },
+    noPassAction() {
+      let that = this
+      //that.opinion = ''
+      that.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion,
+      })
+    },
   },
 }
 </script>

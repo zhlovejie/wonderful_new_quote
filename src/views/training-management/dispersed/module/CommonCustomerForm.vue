@@ -79,9 +79,9 @@ export default {
     queryonedata(val) {
       this.queryonedata1 = val
       this.quweyData()
-      // if (this.$parent.routeParams.typeName === 'see') {
-      //   this.isSee = true
-      // }
+      if (this.type1 === 'view' || this.type1 === 'examine') {
+        this.isSee = true
+      }
     },
     type(val) {
       this.type1 = val
@@ -90,9 +90,9 @@ export default {
   created() {
     this.queryonedata1 = this.queryonedata
     this.type1 = this.type
-    // if (this.$parent.routeParams.typeName === 'see') {
-    //   this.isSee = true
-    // }
+    if (this.type1 === 'view' || this.type1 === 'examine') {
+      this.isSee = true
+    }
   },
   mounted() {
     this.quweyData()

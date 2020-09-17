@@ -64,8 +64,9 @@ import Step1 from './CommonCustomerForm'
 import Step2 from './LinkmanForm'
 import Step3 from './Step3'
 import Step4 from './Step4'
-import { addCustomer, getOneCustomer, editCustomer } from '@/api/customer'
-import { queryList } from '@/api/linkman'
+// import { addCustomer, getOneCustomer, editCustomer } from '@/api/customer'
+// import { queryList } from '@/api/linkman'
+import { dispersedDetailVo } from '@/api/training-management'
 
 export default {
   name: 'CommonStepForm',
@@ -94,12 +95,15 @@ export default {
       if (this.isEditSalary) {
         return '修改年度培训方案'
       }
-      let txt = this.isView ? '查看' : '新增'
+      let txt = this.isView ? '查看' : this.Examine ? '审核' : '新增'
       return `${txt}年度培训方案`
     },
     isView() {
       //查看
       return this.type === 'view'
+    },
+    Examine() {
+      return this.type === 'examine'
     },
     isEditSalary() {
       //修改
@@ -117,14 +121,27 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
+      if (this.type === 'add') {
+        this.queryonedata = {}
+      }
+      if (this.type != 'add') {
+        dispersedDetailVo({ trainId: record.id }).then((res) => {
+          console.log(res.data)
+          this.queryonedata = { ...res.data }
+        })
+      }
     },
 
     nextStep(data) {
       console.log(data)
       this.queryonedata = { ...this.queryonedata, ...data }
       console.log(this.queryonedata)
-      if (this.currentTab < 5) {
+      if (this.currentTab < 4) {
         this.currentTab = this.currentTab + 1
+      }
+      if (this.currentTab === 4) {
+        this.$emit('finish')
+        this.visible = false
       }
     },
     //当点击保存按钮时，保存当前页输入信息，不跳入下一步

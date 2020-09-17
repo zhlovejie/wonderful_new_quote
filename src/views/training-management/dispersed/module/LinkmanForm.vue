@@ -12,6 +12,7 @@
               <a-form-item>
                 <a-radio-group
                   @change="authorityType"
+                  :disabled="isSee"
                   v-decorator="['onlineFlag',{  initialValue:0,rules: [{ required: true, message: '请选择权限' }] }]"
                 >
                   <a-radio :value="0">线下</a-radio>
@@ -29,8 +30,9 @@
                 <a-select
                   style="width:200px;"
                   @change="depChangeHandler"
+                  :disabled="isSee"
                   placeholder="请选择部门"
-                  v-decorator="['lecturerDepartmentId',{ rules: [{ required: true, message: '请选择部门!' }] },]"
+                  v-decorator="['meetingDepartmentId',{ rules: [{ required: true, message: '请选择部门!' }] },]"
                 >
                   <a-select-option
                     v-for="item in departmentList"
@@ -45,7 +47,8 @@
                 <a-select
                   style="width:200px;"
                   placeholder="请选择人员"
-                  v-decorator="['lecturerUserId',{ rules: [{ required: true, message: '请选择部门!' }] },]"
+                  :disabled="isSee"
+                  v-decorator="['meetingUserId',{ rules: [{ required: true, message: '请选择部门!' }] },]"
                 >
                   <a-select-option
                     v-for="item in postSelectDataSource"
@@ -64,6 +67,7 @@
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
+                  :disabled="isSee"
                   style="width:60%;"
                   v-decorator="['beginTime',{rules: [{required: true,message: '请输入开始时间',},
              ]}]"
@@ -80,6 +84,7 @@
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
+                  :disabled="isSee"
                   style="width:60%;"
                   v-decorator="['endTime',{rules: [{required: true,message: '请输入结束时间',},
              ]}]"
@@ -113,6 +118,7 @@
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
+                  :disabled="isSee"
                   style="width:60%;"
                   placeholder="请选择地点"
                   v-decorator="['meetingDicId',{ rules: [{ required: false, message: '请选择地点!' }] },]"
@@ -134,6 +140,7 @@
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-radio-group
+                  :disabled="isSee"
                   v-decorator="['haveCheckFlag',{initialValue:0, rules: [{  required: false, message: '请选择权限' }] }]"
                 >
                   <a-radio :value="0">无</a-radio>
@@ -185,10 +192,10 @@ export default {
     queryonedata(val) {
       this.queryonedata1 = val
 
-      // this.quweyData()
-      // if (this.$parent.routeParams.typeName === 'see') {
-      //   this.isSee = true
-      // }
+      this.quweyData()
+      if (this.type1 === 'view' || this.type1 === 'examine') {
+        this.isSee = true
+      }
     },
     type(val) {
       this.type1 = val
@@ -203,9 +210,12 @@ export default {
     getDictionaryList({ parentId: 503 }).then((res) => {
       this.settlement = res.data
     })
-    // if (this.$parent.routeParams.typeName === 'see') {
-    //   this.isSee = true
-    // }
+    if (this.type1 === 'view' || this.type1 === 'examine') {
+      this.isSee = true
+      queryList({ departmentId: this.queryonedata1.meetingDepartmentId }).then((res) => {
+        this.postSelectDataSource = res.data
+      })
+    }
   },
   mounted() {
     this.quweyData()
@@ -233,7 +243,10 @@ export default {
     },
     quweyData() {
       let qt = this.queryonedata1 ? this.queryonedata1 : {}
-      if (qt.lecturerDepartmentId) {
+      if (qt.meetingDepartmentId) {
+        queryList({ departmentId: qt.meetingDepartmentId }).then((res) => {
+          this.postSelectDataSource = res.data
+        })
         if (qt.onlineFlag === 1) {
           this.jurisdiction = false
         }
@@ -241,8 +254,8 @@ export default {
           beginTime: moment(qt.beginTime),
           endTime: moment(qt.endTime),
           haveCheckFlag: qt.haveCheckFlag,
-          lecturerDepartmentId: qt.lecturerDepartmentId,
-          lecturerUserId: qt.lecturerUserId,
+          meetingDepartmentId: qt.meetingDepartmentId,
+          meetingUserId: qt.meetingUserId,
           lecturerUserName: qt.lecturerUserName,
           meetingDicId: qt.meetingDicId,
           onlineFlag: qt.onlineFlag,

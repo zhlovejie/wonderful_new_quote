@@ -16,7 +16,12 @@
               <td>部门</td>
               <td colspan="2">
                 <a-form-item>
-                  <a-select style="width:200px;" @change="depChangeHandler" placeholder="请选择部门">
+                  <a-select
+                    :disabled="isSee"
+                    style="width:200px;"
+                    @change="depChangeHandler"
+                    placeholder="请选择部门"
+                  >
                     <a-select-option
                       v-for="item in departmentList"
                       :key="item.id"
@@ -29,6 +34,7 @@
               <td colspan="2">
                 <a-form-item>
                   <a-select
+                    :disabled="isSee"
                     style="width:200px;"
                     mode="multiple"
                     :allowClear="true"
@@ -59,7 +65,7 @@
                     <div class="draggable-columns draggable-columns-1">部门</div>
                     <div class="draggable-columns draggable-columns-1">人员</div>
                     <div class="draggable-columns draggable-columns-3">
-                      <a href="javascript:void(0);" @click="processClearAction">清空</a>
+                      <a href="javascript:void(0);" @click="processClearAction" v-if="!isSee">清空</a>
                     </div>
                   </div>
                   <vuedraggable
@@ -71,15 +77,15 @@
                     <transition-group name="list">
                       <div
                         v-for="(item, index) in haveProcess"
-                        :key="item.id"
+                        :key="item.userId"
                         class="draggable-columns-item"
                       >
                         <div class="draggable-columns draggable-columns-1">{{ item.departmentName }}</div>
                         <div class="draggable-columns draggable-columns-1">{{ item.userName }}</div>
-                        <div class="draggable-columns draggable-columns-3" title="删除">
+                        <div v-if="!isSee" class="draggable-columns draggable-columns-3" title="删除">
                           <a-popconfirm
                             title="确认删除这条数据？"
-                            @confirm="confirm(item.id, index)"
+                            @confirm="confirm(item.userId, index)"
                             okText="是"
                             cancelText="否"
                           >
@@ -127,6 +133,7 @@ export default {
       haveProcess: [],
       depart: '',
       type1: '',
+      isSee: false,
       queryonedata1: {},
       _d: {
         departmentId: '',
@@ -144,9 +151,9 @@ export default {
     queryonedata(val) {
       this.queryonedata1 = val
       this.quweyData()
-      // if (this.$parent.routeParams.typeName === 'see') {
-      //   this.isSee = true
-      // }
+      if (this.type1 === 'view' || this.type1 === 'examine') {
+        this.isSee = true
+      }
     },
     type(val) {
       this.type1 = val
@@ -158,9 +165,9 @@ export default {
     getDevisionList().then((res) => {
       this.departmentList = res.data
     })
-    // if (this.$parent.routeParams.typeName === 'see') {
-    //   this.isSee = true
-    // }
+    if (this.type1 === 'view' || this.type1 === 'examine') {
+      this.isSee = true
+    }
   },
   mounted() {
     this.quweyData()
@@ -170,8 +177,11 @@ export default {
     moment,
     quweyData() {
       let qt = this.queryonedata1 ? this.queryonedata1 : {}
-      if (qt.oaTrainUserList && qt.oaTrainUserList.length > 0) {
+      if (qt.oaTrainUserList) {
         this.haveProcess = qt.oaTrainUserList
+      }
+      if (qt.userList) {
+        this.haveProcess = qt.userList
       }
     },
     //选择人员
@@ -245,8 +255,8 @@ export default {
           let params = {}
           let List = that.haveProcess.map((item) => {
             return {
-              id: item.id,
-              userId: item.id,
+              id: item.userId,
+              userId: item.userId,
               departmentName: item.departmentName,
               userName: item.userName,
             }

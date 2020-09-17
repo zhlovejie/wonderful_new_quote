@@ -180,7 +180,46 @@ export function dispersedAdd(parameter) {
     data: parameter
   })
 }
+//集中 分散 审核
 
+export function dispersedExamine(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/approvalTrain',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//分散详情
+export function dispersedDetailVo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/getOaTrainDisperseContentDetailVo',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function dispersedDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/removeTrainContent',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+//集中分散的撤回
+export function dispersedwithdraw(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/withdrawOaTrainContent',
+    method: 'get',
+    params: parameter
+  })
+}
 
 
 //文件类别
@@ -192,3 +231,31 @@ export function dispersedForDipreseByPage(parameter) {
     params: parameter
   })
 }
+//会议事件新增修改
+export function dispersedMeetingEvent(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/saveOrUpdateOaTrainMeetingEvent',
+    method: 'post',
+    data: parameter
+  })
+}
+//会议事件详情
+export function meetingSetDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oa/oa-meeting-record/getMeetingEventDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//会议记录详情
+export function meetingDetailByCode(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oa/oa-meeting-record/getMeetingRecordDetailByCode',
+    method: 'get',
+    params: parameter
+  })
+}
+//
