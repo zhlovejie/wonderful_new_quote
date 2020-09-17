@@ -1,4 +1,4 @@
-<!-- 1.药品物资管理 -->
+<!-- 车辆信息 -->
 <template>
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
