@@ -42,11 +42,6 @@
           <template v-else>
             <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
             <a-button v-if="!isSee" type="primary" @click="nextStep">保存</a-button>
-            <a-button
-              v-if="isSee&&queryonedata1.onlineFlag===1"
-              type="primary"
-              @click="nextStep"
-            >下一步</a-button>
             <a-button v-if="isSee" type="primary" @click="nextStep">退出</a-button>
           </template>
         </div>

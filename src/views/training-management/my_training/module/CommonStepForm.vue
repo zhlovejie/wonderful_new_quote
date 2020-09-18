@@ -46,15 +46,6 @@
           :queryonedata="queryonedata"
           :type="type"
         />
-        <step5
-          v-if="currentTab === 4&&type==='view'&&queryonedata.onlineFlag===1"
-          ref="step5"
-          key="step5"
-          @nextStep="nextStep"
-          @prevStep="prevStep"
-          :queryonedata="queryonedata"
-          :type="type"
-        />
       </div>
       <a-card :bordered="false">
         <a-steps class="steps" :current="currentTab">
@@ -62,7 +53,6 @@
           <a-step title="课程安排" />
           <a-step title="受训人员" />
           <a-step title="培训资料" />
-          <a-step v-if="type==='view'&&queryonedata.onlineFlag===1" title="培训情况" />
         </a-steps>
       </a-card>
     </a-card>
@@ -74,8 +64,9 @@ import Step1 from './CommonCustomerForm'
 import Step2 from './LinkmanForm'
 import Step3 from './Step3'
 import Step4 from './Step4'
-import Step5 from './Training'
-import { dispersedDetailVo } from '@/api/training-management'
+// import { addCustomer, getOneCustomer, editCustomer } from '@/api/customer'
+// import { queryList } from '@/api/linkman'
+import { focusDetailVo } from '@/api/training-management'
 
 export default {
   name: 'CommonStepForm',
@@ -84,7 +75,6 @@ export default {
     Step2,
     Step3,
     Step4,
-    Step5,
   },
   data() {
     return {
@@ -103,10 +93,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改分散培训'
+        return '修改集中培训'
       }
       let txt = this.isView ? '查看' : this.Examine ? '审核' : '新增'
-      return `${txt}分散培训`
+      return `${txt}集中培训`
     },
     isView() {
       //查看
@@ -135,7 +125,7 @@ export default {
         this.queryonedata = {}
       }
       if (this.type != 'add') {
-        dispersedDetailVo({ trainId: record.id }).then((res) => {
+        focusDetailVo({ trainId: record.id }).then((res) => {
           console.log(res.data)
           this.queryonedata = { ...res.data }
         })
@@ -146,14 +136,10 @@ export default {
       console.log(data)
       this.queryonedata = { ...this.queryonedata, ...data }
       console.log(this.queryonedata)
-      if (this.currentTab < 5) {
+      if (this.currentTab < 4) {
         this.currentTab = this.currentTab + 1
       }
       if (this.currentTab === 4 && this.type != 'view') {
-        this.$emit('finish')
-        this.visible = false
-      }
-      if (this.currentTab === 5 && this.type === 'view') {
         this.$emit('finish')
         this.visible = false
       }
@@ -174,10 +160,7 @@ export default {
           this.$refs.step4.nextStep(1)
           break
         case 4:
-          this.$refs.step6.nextStep(1)
-          break
-        case 5:
-          this.$refs.step7.lastSubmit(0, 1)
+          this.$refs.step5.lastSubmit(0, 1)
           break
       }
     },

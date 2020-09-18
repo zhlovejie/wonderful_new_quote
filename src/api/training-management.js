@@ -171,7 +171,7 @@ export function dispersedList(parameter) {
 }
 
 
-//集中 分散 新增 修改
+// 分散 新增 修改
 export function dispersedAdd(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -271,3 +271,13 @@ export function meetingDetailByCode(parameter) {
   })
 }
 //
+
+// 集中 新增 修改
+export function focusAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/saveOrUpdateGroupTrainContent',
+    method: 'post',
+    data: parameter
+  })
+}
