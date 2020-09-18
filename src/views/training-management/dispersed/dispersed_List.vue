@@ -28,11 +28,11 @@
           <a-range-picker v-model="sDate" style="width:280px;" />
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('payment:list')">
+          <template>
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
         </a-form-item>
-        <a-dropdown style="float:right;">
+        <a-dropdown style="float:right; " v-if="$auth('dispersed:add')">
           <a-button type="primary" @click="toAdd('add',null)">
             <a-icon type="plus" />新增
           </a-button>
@@ -44,13 +44,14 @@
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="全部" key="0" forceRender></a-tab-pane>
-            <template v-if="$auth('payment:approval')">
+            <template v-if="$auth('dispersed:approval')">
               <a-tab-pane tab="待审批" key="1"></a-tab-pane>
               <a-tab-pane tab="已审批" key="2"></a-tab-pane>
             </template>
           </a-tabs>·
         </div>
         <s-table
+          v-if="$auth('dispersed:List')"
           style="margin-bottom: 24px"
           ref="table"
           size="default"
@@ -61,13 +62,7 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <!-- <span slot="customerName" slot-scope="text, record">
-            <a @click="tenderingClick(record)">{{ text }}</a>
-          </span>-->
-          <!--<a slot="arrearsStatus" slot-scope="text, record" @click="checkIsEnd(record)">
-            <span v-if="text==1">未结</span>
-            <span v-if="text==2">已结</span>
-          </a>-->
+
           <div slot="status" slot-scope="text, record">
             <a @click="handleClick(record)" v-if="text==1">待审批</a>
             <a @click="handleClick(record)" v-if="text==2">通过</a>
@@ -75,15 +70,11 @@
             <a @click="handleClick(record)" v-if="text==4">已撤回</a>
           </div>
 
-          <!-- <div slot="delayedDays" slot-scope="text, record">{{calcDelayedDays(record)}}</div>
-          <div slot="totalAmount" slot-scope="text, record">{{text | moneyFormatNumber}}</div>
-          <div slot="delayedAmount" slot-scope="text, record">{{text | moneyFormatNumber}}</div>-->
-
           <span slot="action" slot-scope="text, record">
             <template v-if="audit==0||audit==2">
               <a type="primary" @click="toAdd('view',record)">查看</a>
             </template>
-            <template v-if=" audit==0&&record.status === 1 ">
+            <template v-if="$auth('dispersed:Withdraw')&& audit==0&&record.status === 1 ">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -94,9 +85,9 @@
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <!-- && record.onlineFlag==0 -->
-            <template v-if=" audit==0 &&record.status == 2  ">
-              <template v-if="record.meetingEventId">
+
+            <template v-if=" audit==0 &&record.status == 2 && record.onlineFlag==0  ">
+              <template v-if="$auth('dispersed:meetingEventId')&&record.meetingEventId">
                 <a-divider type="vertical" />
                 <a type="primary" @click="doAction('edit',record)">修改会议事件</a>
               </template>
@@ -105,12 +96,14 @@
                 <a type="primary" @click="doAction('add',record)">会议事件</a>
               </template>
 
-              <template v-if="record.meetingNum">
+              <template v-if="$auth('dispersed:meeting')&& record.meetingNum ">
                 <a-divider type="vertical" />
                 <a type="primary" @click="meeting('view',record)">会议记录</a>
               </template>
             </template>
-            <template v-if="audit==0&& record.status === 3||record.status === 4 ">
+            <template
+              v-if="$auth('dispersed:edit-salary')&&audit==0&& record.status === 3||record.status === 4 "
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="toAdd('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
@@ -123,7 +116,7 @@
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
-            <template v-if="audit==1&&record.status === 1 ">
+            <template v-if="$auth('dispersed:examine')&& audit==1&&record.status === 1 ">
               <a type="primary" @click="toAdd('examine',record)">审核</a>
             </template>
           </span>
@@ -190,21 +183,18 @@ export default {
           title: '培训编号',
           dataIndex: 'trainNum',
           key: 'trainNum',
-          scopedSlots: { customRender: 'trainNum' },
         },
         {
           align: 'center',
           title: '培训名称',
           dataIndex: 'trainName',
           key: 'trainName',
-          scopedSlots: { customRender: 'trainName' },
         },
         {
           align: 'center',
           title: '会议负责人',
           dataIndex: 'lecturerUserName',
           key: 'lecturerUserName',
-          scopedSlots: { customRender: 'lecturerUserName' },
         },
         {
           align: 'center',

@@ -28,11 +28,11 @@
           <a-range-picker v-model="sDate" style="width:280px;" />
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('payment:list')">
+          <template>
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
         </a-form-item>
-        <a-dropdown style="float:right;">
+        <a-dropdown style="float:right;" v-if="$auth('focus:add')">
           <a-button type="primary" @click="toAdd('add',null)">
             <a-icon type="plus" />新增
           </a-button>
@@ -44,13 +44,14 @@
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="全部" key="0" forceRender></a-tab-pane>
-            <template v-if="$auth('payment:approval')">
+            <template v-if="$auth('focus:approval')">
               <a-tab-pane tab="待审批" key="1"></a-tab-pane>
               <a-tab-pane tab="已审批" key="2"></a-tab-pane>
             </template>
-          </a-tabs>·
+          </a-tabs>
         </div>
         <s-table
+          v-if="$auth('focus:list')"
           style="margin-bottom: 24px"
           ref="table"
           size="default"
@@ -61,7 +62,7 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <div slot="onlineFlag" slot-scope="text">
+          <div slot="haveCheckFlag" slot-scope="text">
             <span v-if="text==0">无</span>
             <span v-if="text==1">有</span>
           </div>
@@ -76,7 +77,7 @@
             <template v-if="audit==0||audit==2">
               <a type="primary" @click="toAdd('view',record)">查看</a>
             </template>
-            <template v-if=" audit==0&&record.status === 1 ">
+            <template v-if=" $auth('focus:Withdraw')&&audit==0&&record.status === 1 ">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -87,9 +88,10 @@
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <!-- && record.onlineFlag==0 -->
-            <template v-if=" audit==0 &&record.status == 2  ">
-              <template v-if="record.meetingEventId">
+            <template
+              v-if=" $auth('focus:meetingEventId')&&audit==0 &&record.status == 2 && record.onlineFlag==0 "
+            >
+              <template v-if=" record.meetingEventId">
                 <a-divider type="vertical" />
                 <a type="primary" @click="doAction('edit',record)">修改会议事件</a>
               </template>
@@ -103,7 +105,9 @@
                 <a type="primary" @click="meeting('view',record)">会议记录</a>
               </template>
             </template>
-            <template v-if="audit==0&& record.status === 3||record.status === 4 ">
+            <template
+              v-if="$auth('focus:edit-salary')&&audit==0&& record.status === 3||record.status === 4 "
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="toAdd('edit-salary',record)">修改</a>
               <a-divider type="vertical" />
@@ -116,7 +120,7 @@
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
-            <template v-if="audit==1&&record.status === 1 ">
+            <template v-if="$auth('focus:examine')&&audit==1&&record.status === 1 ">
               <a type="primary" @click="toAdd('examine',record)">审核</a>
             </template>
           </span>
@@ -217,9 +221,9 @@ export default {
         {
           align: 'center',
           title: '是否有考核',
-          key: 'onlineFlag',
-          dataIndex: 'onlineFlag',
-          scopedSlots: { customRender: 'onlineFlag' },
+          key: 'haveCheckFlag',
+          dataIndex: 'haveCheckFlag',
+          scopedSlots: { customRender: 'haveCheckFlag' },
         },
 
         {

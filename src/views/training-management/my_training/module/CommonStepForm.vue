@@ -45,6 +45,7 @@
           @prevStep="prevStep"
           :queryonedata="queryonedata"
           :type="type"
+          :trainType="trainType"
         />
       </div>
       <a-card :bordered="false">
@@ -64,9 +65,7 @@ import Step1 from './CommonCustomerForm'
 import Step2 from './LinkmanForm'
 import Step3 from './Step3'
 import Step4 from './Step4'
-// import { addCustomer, getOneCustomer, editCustomer } from '@/api/customer'
-// import { queryList } from '@/api/linkman'
-import { focusDetailVo } from '@/api/training-management'
+import { focusDetailVo, dispersedDetailVo, meetinglistMyFile } from '@/api/training-management'
 
 export default {
   name: 'CommonStepForm',
@@ -84,6 +83,7 @@ export default {
       customer: {},
       linkmans: [],
       type: '',
+      trainType: '',
       record: {},
       routeParams: {},
       queryonedata: {}, // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
@@ -121,14 +121,28 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
+      this.trainType = record.trainType
       if (this.type === 'add') {
         this.queryonedata = {}
       }
-      if (this.type != 'add') {
-        focusDetailVo({ trainId: record.id }).then((res) => {
-          console.log(res.data)
+      if (this.type === 'examine') {
+        // 处理详情
+        this.currentTab = 3
+        meetinglistMyFile({ trainId: record.id, trainType: record.trainType }).then((res) => {
           this.queryonedata = { ...res.data }
         })
+      }
+
+      if (this.type === 'view') {
+        if (record.trainType === 1) {
+          focusDetailVo({ trainId: record.id }).then((res) => {
+            this.queryonedata = { ...res.data }
+          })
+        } else {
+          dispersedDetailVo({ trainId: record.id }).then((res) => {
+            this.queryonedata = { ...res.data }
+          })
+        }
       }
     },
 
@@ -139,7 +153,7 @@ export default {
       if (this.currentTab < 4) {
         this.currentTab = this.currentTab + 1
       }
-      if (this.currentTab === 4 && this.type != 'view') {
+      if (this.currentTab === 4) {
         this.$emit('finish')
         this.visible = false
       }

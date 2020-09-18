@@ -281,3 +281,24 @@ export function focusAdd(parameter) {
     data: parameter
   })
 }
+
+//我的培训列表
+export function meetingOaTrainInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-group-content/listOaMyTrainContentByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//处理详情
+
+export function meetinglistMyFile(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-file-history/listMyFile',
+    method: 'get',
+    params: parameter
+  })
+}

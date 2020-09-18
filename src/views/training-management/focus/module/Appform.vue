@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新增货物合同"
+    title="新增培训文件"
     :width="700"
     :visible="visible"
     @ok="handleOk"
@@ -24,8 +24,8 @@
               <a-form-item>
                 <a-input
                   style="width:300px;"
-                  placeholder="输入名称"
-                  v-decorator="['fileName', {rules: [{required: true,message: '请输入版本号!',},
+                  placeholder="输入培训文件名称"
+                  v-decorator="['fileName', {rules: [{required: true,message: '请输入培训文件!',},
              ]}]"
                 />
               </a-form-item>

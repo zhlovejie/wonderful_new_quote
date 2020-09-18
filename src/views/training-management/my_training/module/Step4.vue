@@ -5,10 +5,11 @@
     </a-row>
     <div>
       <a-form class="form wdf-form">
-        <template v-if="!isSee">
-          <a-button style="float:right;" type="primary" icon="plus" @click="applyFor('add',null)">新增</a-button>
-        </template>
-        <table class="custom-table custom-table-border" style="margin-top:20px">
+        <table
+          v-if="type1==='view'&&trainType1===1"
+          class="custom-table custom-table-border"
+          style="margin-top:20px"
+        >
           <tr>
             <th>
               <b>文件名称</b>
@@ -30,19 +31,45 @@
             </td>
           </tr>
         </table>
-        <Approval ref="approval" @opinionChange="opinionChange" />
-        <Appform ref="normalUpload" @msgId="specialList" />
+        <table class="custom-table custom-table-border" v-if="type1==='view'&&trainType1===2">
+          <template>
+            <tr>
+              <th>
+                <b>文件类别</b>
+              </th>
+              <th>
+                <b>操作</b>
+              </th>
+            </tr>
+            <tr v-for="(item,index) in haveProcess " :key="index">
+              <td>{{item.folderName}}</td>
+              <td></td>
+            </tr>
+          </template>
+        </table>
+        <table class="custom-table custom-table-border" v-if="type1==='examine'">
+          <template>
+            <tr>
+              <th>
+                <b>文件名称</b>
+              </th>
+              <th>
+                <b>操作</b>
+              </th>
+            </tr>
+            <tr v-for="(item,index) in readHistoryList " :key="index">
+              <td>{{item.fileName}}</td>
+              <td>
+                <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">处理</a>
+              </td>
+            </tr>
+          </template>
+        </table>
         <XdocView ref="xdocView" />
         <div class="btns-grop">
-          <template v-if="isApproval">
+          <template>
             <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
-            <a-button class="a-button" type="primary" icon="close" @click="noPassAction()">不通过</a-button>
-            <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
-          </template>
-          <template v-else>
-            <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
-            <a-button v-if="!isSee" type="primary" @click="nextStep">保存</a-button>
-            <a-button v-if="isSee" type="primary" @click="nextStep">退出</a-button>
+            <a-button type="primary" @click="nextStep">退出</a-button>
           </template>
         </div>
       </a-form>
@@ -54,15 +81,11 @@
 import { focusAdd, dispersedExamine } from '@/api/training-management'
 import vuedraggable from 'vuedraggable'
 import moment from 'moment'
-import Appform from './Appform'
 import XdocView from './XdocView'
-import Approval from './Approval'
 export default {
   name: 'Step1',
   components: {
-    Approval,
     vuedraggable,
-    Appform,
     XdocView,
   },
   props: {
@@ -70,12 +93,16 @@ export default {
       type: Object,
     },
     type: '',
+    trainType: '',
   },
   data() {
     return {
+      haveProcess: [],
       goodsList: [],
       type1: '',
+      trainType1: '',
       isSee: false,
+      readHistoryList: [],
       queryonedata1: {},
     }
   },
@@ -89,18 +116,23 @@ export default {
     queryonedata(val) {
       this.queryonedata1 = val
       this.quweyData()
-      if (this.type1 === 'view' || this.type1 === 'examine') {
+      if (this.type1 === 'view') {
         this.isSee = true
       }
     },
     type(val) {
       this.type1 = val
     },
+    trainType(val) {
+      this.trainType1 = val
+    },
   },
   created() {
     this.queryonedata1 = this.queryonedata
     this.type1 = this.type
-    if (this.type1 === 'view' || this.type1 === 'examine') {
+    this.trainType1 = this.trainType
+    console.log(this.trainType1)
+    if (this.type1 === 'view') {
       this.isSee = true
     }
   },
@@ -111,28 +143,17 @@ export default {
     moment,
     quweyData() {
       let qt = this.queryonedata1 ? this.queryonedata1 : {}
-      if (qt.fileList) {
+      if (qt.folerList && this.trainType1 === 2) {
+        this.haveProcess = qt.folerList
+      }
+      if (qt.fileList && this.trainType1 === 1) {
         this.goodsList = qt.fileList
       }
+      if (this.type1 === 'examine') {
+        this.readHistoryList = qt.readHistoryList
+      }
     },
-    applyFor() {
-      //打开新增上传模板
-      this.$refs.normalUpload.query()
-    },
-    specialList(data) {
-      //接收子组件传的数据
-      this.goodsList.push(data)
-    },
-    deletes(id) {
-      this.goodsList.splice(id)
-    },
-    delete_list(idurl) {
-      this.$refs.xdocView.query(idurl)
-    },
-    confirm(cpId, index) {
-      // 确认删除事件
-      this.goodsList.splice(index, 1)
-    },
+    delete_list() {},
     //上一步
     prevStep() {
       let that = this
@@ -141,69 +162,7 @@ export default {
     // 点击下一步
     nextStep(status) {
       const that = this
-      if (that.type1 === 'view') {
-        that.$emit('nextStep', {})
-      } else {
-        if (that.goodsList.length > 0) {
-          that.queryonedata1.oaTrainUserList = this.queryonedata1.oaTrainUserList.map((item) => {
-            return {
-              userId: item.id,
-            }
-          })
-          that.queryonedata1.oaTrainGroupFileBoList = that.goodsList.map((item) => {
-            return {
-              fileName: item.fileName,
-              trainUrl: item.trainUrl,
-            }
-          })
-          focusAdd(that.queryonedata1).then((res) => {
-            if (res.code === 200) {
-              this.$message.info(res.msg)
-              that.$emit('nextStep', {})
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-        } else {
-          that.$message.error('请选择受训人员')
-        }
-      }
-    },
-
-    //审批
-    submitAction(opt) {
-      let that = this
-      let values = {
-        approveId: this.queryonedata1.id,
-        isAdopt: opt.isAdopt,
-        opinion: opt.opinion,
-      }
-      console.log(values)
-      that.spinning = true
-      dispersedExamine(values)
-        .then((res) => {
-          that.$message.info(res.msg)
-          that.$emit('nextStep', {})
-        })
-        .catch((err) => (that.spinning = false))
-    },
-    passAction() {
-      this.submitAction({
-        isAdopt: 0,
-        // opinion: '通过',
-      })
-    },
-    noPassAction() {
-      let that = this
-      //that.opinion = ''
-      that.$refs.approval.query()
-    },
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion,
-      })
+      that.$emit('nextStep', {})
     },
   },
 }
