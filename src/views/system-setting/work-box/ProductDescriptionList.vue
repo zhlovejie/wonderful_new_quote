@@ -44,6 +44,10 @@
                 <a href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
+            <template v-if="$auth('ProductDescription:one')">
+              <a-divider type="vertical" />
+              <a v-download="record.fileUrl">下载</a>
+            </template>
           </span>
         </s-table>
     <!-- <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
