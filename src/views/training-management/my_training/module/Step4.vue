@@ -60,12 +60,18 @@
             <tr v-for="(item,index) in readHistoryList " :key="index">
               <td>{{item.fileName}}</td>
               <td>
-                <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">处理</a>
+                <template v-if="item.readFlag===0">
+                  <a class="ant-dropdown-link" @click="delete_lists(item.id,item.fileUrl)">处理</a>
+                </template>
+                <template v-else>
+                  <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">已阅</a>
+                </template>
               </td>
             </tr>
           </template>
         </table>
         <XdocView ref="xdocView" />
+        <filesView ref="xdocViews" @filesV="serve" />
         <div class="btns-grop">
           <template>
             <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
@@ -78,15 +84,17 @@
 </template>
 
 <script>
-import { focusAdd, dispersedExamine } from '@/api/training-management'
+import { focusAdd, dispersedExamine, meetinglistMyFileWithoutDetail } from '@/api/training-management'
 import vuedraggable from 'vuedraggable'
 import moment from 'moment'
 import XdocView from './XdocView'
+import filesView from './filesView'
 export default {
   name: 'Step1',
   components: {
     vuedraggable,
     XdocView,
+    filesView,
   },
   props: {
     queryonedata: {
@@ -94,6 +102,7 @@ export default {
     },
     type: '',
     trainType: '',
+    trainId: '',
   },
   data() {
     return {
@@ -101,6 +110,7 @@ export default {
       goodsList: [],
       type1: '',
       trainType1: '',
+      trainId1: '',
       isSee: false,
       readHistoryList: [],
       queryonedata1: {},
@@ -126,10 +136,14 @@ export default {
     trainType(val) {
       this.trainType1 = val
     },
+    trainId(val) {
+      this.trainId1 = val
+    },
   },
   created() {
     this.queryonedata1 = this.queryonedata
     this.type1 = this.type
+    this.trainId1 = this.trainId
     this.trainType1 = this.trainType
     console.log(this.trainType1)
     if (this.type1 === 'view') {
@@ -150,10 +164,26 @@ export default {
         this.goodsList = qt.fileList
       }
       if (this.type1 === 'examine') {
-        this.readHistoryList = qt.readHistoryList
+        // this.readHistoryList = qt.readHistoryList
+        meetinglistMyFileWithoutDetail({ trainId: this.trainId1 }).then((res) => {
+          console.log(res.data)
+          this.readHistoryList = res.data
+        })
       }
     },
-    delete_list() {},
+
+    serve() {
+      meetinglistMyFileWithoutDetail({ trainId: this.trainId1 }).then((res) => {
+        console.log(res.data)
+        this.readHistoryList = res.data
+      })
+    },
+    delete_list(idurl) {
+      this.$refs.xdocView.query(idurl)
+    },
+    delete_lists(id, idurl) {
+      this.$refs.xdocViews.query(id, idurl)
+    },
     //上一步
     prevStep() {
       let that = this

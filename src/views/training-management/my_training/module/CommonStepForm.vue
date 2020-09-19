@@ -46,6 +46,7 @@
           :queryonedata="queryonedata"
           :type="type"
           :trainType="trainType"
+          :trainId="trainId"
         />
       </div>
       <a-card :bordered="false">
@@ -84,6 +85,7 @@ export default {
       linkmans: [],
       type: '',
       trainType: '',
+      trainId: '',
       record: {},
       routeParams: {},
       queryonedata: {}, // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
@@ -122,6 +124,7 @@ export default {
       this.type = type
       this.record = record
       this.trainType = record.trainType
+      this.trainId = record.id
       if (this.type === 'add') {
         this.queryonedata = {}
       }

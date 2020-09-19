@@ -157,6 +157,10 @@ export default {
         this.$emit('finish')
         this.visible = false
       }
+      if (this.currentTab === 4 && this.type === 'view' && this.queryonedata.onlineFlag === 0) {
+        this.$emit('finish')
+        this.visible = false
+      }
     },
     //当点击保存按钮时，保存当前页输入信息，不跳入下一步
     saveStep() {

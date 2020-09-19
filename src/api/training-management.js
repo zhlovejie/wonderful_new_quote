@@ -302,3 +302,24 @@ export function meetinglistMyFile(parameter) {
     params: parameter
   })
 }
+
+//处理接口
+export function focusupdateFile(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-file-history/updateFileReadFlag',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 文件阅读列查询
+
+export function meetinglistMyFileWithoutDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-file-history/listMyFileWithoutDetail',
+    method: 'get',
+    params: parameter
+  })
+}

@@ -47,7 +47,7 @@
               type="primary"
               @click="nextStep"
             >下一步</a-button>
-            <a-button v-if="isSee" type="primary" @click="nextStep">退出</a-button>
+            <a-button v-if="isSee&&queryonedata1.onlineFlag===0" type="primary" @click="nextStep">退出</a-button>
           </template>
         </div>
       </a-form>
