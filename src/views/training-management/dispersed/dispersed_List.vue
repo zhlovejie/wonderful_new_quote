@@ -21,11 +21,24 @@
             >本月</a-button>
           </a-button-group>
         </a-form-item>
+        <a-form-item v-show="show">
+          <a-select
+            style="width: 150px"
+            placeholder="审批状态"
+            v-model="approvalStatusSelect"
+            :allowClear="true"
+          >
+            <a-select-option :value="1">待审批</a-select-option>
+            <a-select-option :value="2">通过</a-select-option>
+            <a-select-option :value="3">不通过</a-select-option>
+            <a-select-option :value="4">已撤回</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item>
           <a-input v-model="trainName" placeholder="培训名称" style="width:200px;" :allowClear="true" />
         </a-form-item>
         <a-form-item label="日期">
-          <a-range-picker v-model="sDate" style="width:280px;" />
+          <a-range-picker v-model="sDate" style="width:200px;" />
         </a-form-item>
         <a-form-item>
           <template>
@@ -172,7 +185,7 @@ export default {
       audit: 0,
       show: true,
       userInfo: {},
-      approvalStatusSelect: 0,
+      approvalStatusSelect: undefined,
       // 表头
       columns: [
         {
@@ -313,6 +326,9 @@ export default {
         endTime: endTime,
         dayWeekMonth: this.dayWeekMonth,
         ...opt,
+      }
+      if (this.audit == 0) {
+        this.queryParam['status'] = this.approvalStatusSelect
       }
       this.$refs.table.refresh(true)
     },
