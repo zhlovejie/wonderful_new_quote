@@ -129,6 +129,7 @@ export default {
   },
   methods: {
     query(type, record) {
+      this.currentTab = 0
       this.visible = true
       this.type = type
       this.record = record
@@ -163,29 +164,29 @@ export default {
         this.visible = false
       }
     },
-    //当点击保存按钮时，保存当前页输入信息，不跳入下一步
-    saveStep() {
-      switch (this.currentTab) {
-        case 0:
-          this.$refs.step1.nextStep(1)
-          break
-        case 1:
-          this.$refs.step2.nextStep(1)
-          break
-        case 2:
-          this.$refs.step3.nextStep(1)
-          break
-        case 3:
-          this.$refs.step4.nextStep(1)
-          break
-        case 4:
-          this.$refs.step6.nextStep(1)
-          break
-        case 5:
-          this.$refs.step7.lastSubmit(0, 1)
-          break
-      }
-    },
+    // //当点击保存按钮时，保存当前页输入信息，不跳入下一步
+    // saveStep() {
+    //   switch (this.currentTab) {
+    //     case 0:
+    //       this.$refs.step1.nextStep(1)
+    //       break
+    //     case 1:
+    //       this.$refs.step2.nextStep(1)
+    //       break
+    //     case 2:
+    //       this.$refs.step3.nextStep(1)
+    //       break
+    //     case 3:
+    //       this.$refs.step4.nextStep(1)
+    //       break
+    //     case 4:
+    //       this.$refs.step6.nextStep(1)
+    //       break
+    //     case 5:
+    //       this.$refs.step7.lastSubmit(0, 1)
+    //       break
+    //   }
+    // },
     // handler
     prevStep(e) {
       // console.log('点击上一步，相当于修改操作,带过来的参数', e)

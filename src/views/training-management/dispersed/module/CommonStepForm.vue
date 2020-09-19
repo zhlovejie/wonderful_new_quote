@@ -128,6 +128,7 @@ export default {
   },
   methods: {
     query(type, record) {
+      this.currentTab = 0
       this.visible = true
       this.type = type
       this.record = record
