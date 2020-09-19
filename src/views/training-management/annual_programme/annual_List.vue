@@ -23,7 +23,6 @@
         <a-select-option :value="2">审批通过</a-select-option>
         <a-select-option :value="3">审批不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
-        <a-select-option :value="5">已完结</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -71,7 +70,7 @@
             <template>
               <a type="primary" @click="doAction('view',record)">查看</a>
             </template>
-            <template v-if=" record.status === 1 ">
+            <template v-if=" record.status === 1&& +record.createdId  === +userInfo.id  ">
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -86,7 +85,9 @@
               <a-divider type="vertical" />
               <a type="primary" :href="record.planUrl">下载</a>
             </template>
-            <template v-if="record.status === 3||record.status === 4 ">
+            <template
+              v-if="record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary',record)">修改</a>
               <a-divider type="vertical" />

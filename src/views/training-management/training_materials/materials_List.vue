@@ -17,7 +17,7 @@
         style="width: 200px;margin-right:10px;"
       />
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('Distribution:add')">
+      <template>
         <template v-if="fold">
           <a-button
             style="float:right;  margin-right:10px;"
@@ -46,7 +46,6 @@
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
-        v-if="$auth('Distribution:list')"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>

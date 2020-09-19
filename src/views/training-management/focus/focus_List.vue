@@ -77,7 +77,9 @@
             <template v-if="audit==0||audit==2">
               <a type="primary" @click="toAdd('view',record)">查看</a>
             </template>
-            <template v-if=" $auth('focus:Withdraw')&&audit==0&&record.status === 1 ">
+            <template
+              v-if=" $auth('focus:Withdraw')&&audit==0&&record.status === 1 && +record.createdId  === +userInfo.id"
+            >
               <a-divider type="vertical" />
               <a-popconfirm
                 title="是否确定撤回"
@@ -89,7 +91,7 @@
               </a-popconfirm>
             </template>
             <template
-              v-if=" $auth('focus:meetingEventId')&&audit==0 &&record.status == 2 && record.onlineFlag==0 "
+              v-if=" $auth('focus:meetingEventId')&&audit==0 &&record.status == 2 && record.onlineFlag==0 && +record.createdId  === +userInfo.id"
             >
               <template v-if=" record.meetingEventId">
                 <a-divider type="vertical" />
@@ -106,7 +108,7 @@
               </template>
             </template>
             <template
-              v-if="$auth('focus:edit-salary')&&audit==0&& record.status === 3||record.status === 4 "
+              v-if="$auth('focus:edit-salary')&&audit==0&& record.status === 3||record.status === 4&& +record.createdId  === +userInfo.id "
             >
               <a-divider type="vertical" />
               <a type="primary" @click="toAdd('edit-salary',record)">修改</a>
