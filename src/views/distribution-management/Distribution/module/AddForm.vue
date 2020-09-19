@@ -30,7 +30,7 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="物流名称"
-                  v-decorator="['logisticsCompanyName', { rules: [{ required: true, message: '请输入物流名称' }] }]"
+                  v-decorator="['logisticsCompanyName', { rules: [{ required: true,max:40, message: '请输入物流名称' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -42,7 +42,7 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="负责人名称"
-                  v-decorator="['personChargeName', { rules: [{ required: true, message: '请输入负责人名称' }] }]"
+                  v-decorator="['personChargeName', { rules: [{ required: true, max:10, message: '请输入负责人名称' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -56,7 +56,7 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="负责人电话"
-                  v-decorator="['personChargeTelephone', { rules: [{ required: true, message: '请输入负责人电话' }] }]"
+                  v-decorator="['personChargeTelephone', { rules: [{ required: true,max:20, message: '请输入负责人电话' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -68,7 +68,7 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="微信号"
-                  v-decorator="['wechatNumber', { rules: [{ required: true, message: '请输入微信号' }] }]"
+                  v-decorator="['wechatNumber', { rules: [{ required: false, max:30, message: '请输入微信号' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -82,53 +82,61 @@
                 <a-col :lg="24" :md="24" :sm="24">
                   <a-form-item :labelCol="oneLBCol" :wrapperCol="oneWPCol">
                     <a-col :lg="5" :md="5" :sm="24">
-                      <a-select
-                        :disabled="isSee"
-                        placeholder="省"
-                        v-decorator="['provinces',{rules: [{required: false, message: '请选择省！'}]}]"
-                      >
-                        <a-select-option
-                          @click="getCity(1,province.id, province.area)"
-                          v-for="province in this.provinces"
-                          :key="province.index"
-                          :value="province.id"
-                        >{{ province.area }}</a-select-option>
-                      </a-select>
+                      <a-form-item>
+                        <a-select
+                          :disabled="isSee"
+                          placeholder="省"
+                          v-decorator="['provinces',{rules: [{required: true, message: '请选择省！'}]}]"
+                        >
+                          <a-select-option
+                            @click="getCity(1,province.id, province.area)"
+                            v-for="province in this.provinces"
+                            :key="province.index"
+                            :value="province.id"
+                          >{{ province.area }}</a-select-option>
+                        </a-select>
+                      </a-form-item>
                     </a-col>
                     <a-col :lg="5" :md="5" :sm="24">
-                      <a-select
-                        placeholder="市"
-                        :disabled="isSee"
-                        v-decorator="['citys',{rules: [{required: false, message: '请选择区！'}]}]"
-                      >
-                        <a-select-option
-                          @click="getCity(2,city.id,city.area)"
-                          v-for="city in this.citys"
-                          :key="city.index"
-                          :value="city.id"
-                        >{{ city.area }}</a-select-option>
-                      </a-select>
+                      <a-form-item>
+                        <a-select
+                          placeholder="市"
+                          :disabled="isSee"
+                          v-decorator="['citys',{rules: [{required: true, message: '请选择市！'}]}]"
+                        >
+                          <a-select-option
+                            @click="getCity(2,city.id,city.area)"
+                            v-for="city in this.citys"
+                            :key="city.index"
+                            :value="city.id"
+                          >{{ city.area }}</a-select-option>
+                        </a-select>
+                      </a-form-item>
                     </a-col>
                     <a-col :lg="5" :md="5" :sm="24">
-                      <a-select
-                        placeholder="区"
-                        :disabled="isSee"
-                        v-decorator="['areas',{rules: [{required: false, message: '请选择区！'}]}]"
-                      >
-                        <a-select-option
-                          @click="getCity(3,null,item.area)"
-                          v-for="item in this.areas"
-                          :key="item.index"
-                          :value="item.id"
-                        >{{ item.area }}</a-select-option>
-                      </a-select>
+                      <a-form-item>
+                        <a-select
+                          placeholder="区"
+                          :disabled="isSee"
+                          v-decorator="['areas',{rules: [{required: true, message: '请选择区！'}]}]"
+                        >
+                          <a-select-option
+                            @click="getCity(3,null,item.area)"
+                            v-for="item in this.areas"
+                            :key="item.index"
+                            :value="item.id"
+                          >{{ item.area }}</a-select-option>
+                        </a-select>
+                      </a-form-item>
                     </a-col>
                     <a-col :lg="9" :md="9" :sm="24">
-                      <a-input
-                        :disabled="isSee"
-                        placeholder="请输入详细地址"
-                        v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
-                      />
+                      <a-form-item>
+                        <a-input
+                          :disabled="isSee"
+                          placeholder="请输入详细地址"
+                          v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, max: 30, message: '详细地址最少为5个字符！'}]}]"
+                        />
+                      </a-form-item>
                     </a-col>
                   </a-form-item>
                 </a-col>
@@ -167,7 +175,7 @@
             <td colspan="4">
               <b>货物合同</b>
               <Mdeol
-                v-if="isSee"
+                v-if="!isSee"
                 style="float: right;"
                 ref="mdeol"
                 @getmsg="getChildMsg"
@@ -195,7 +203,7 @@
             <td colspan="4">
               <b>承接单位法律承诺书</b>
               <Mdeol
-                v-if="isSee"
+                v-if="!isSee"
                 style="float: right;"
                 ref="mdeol"
                 @getmsg="getChildMsg"
@@ -213,7 +221,7 @@
               <template>
                 <a href="javascript:void(0);" @click="delSee(item.url)">查看</a>
               </template>
-              <template v-if="isSee">
+              <template v-if="!isSee">
                 <a-divider type="vertical" />
                 <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
               </template>

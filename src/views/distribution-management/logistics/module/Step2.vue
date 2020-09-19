@@ -16,6 +16,7 @@
                   <a-input
                     style="width:60%;"
                     :disabled="isSee"
+                    read-only
                     @click="handleCustomerClick"
                     v-decorator="['distributionStationId',{rules: [{required: true,message: '请选择承运方',},
              ]}]"

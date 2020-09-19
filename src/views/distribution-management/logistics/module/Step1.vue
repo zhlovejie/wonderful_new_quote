@@ -78,7 +78,7 @@
             <a-col class="col-border" :span="3" justify="center" align="middle">物流价格</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
-                <a-input
+                <a-input-number
                   :disabled="isSee"
                   style="width:60%;"
                   :precision="0"
@@ -115,11 +115,11 @@
             <a-col class="col-border" :span="3" justify="center" align="middle">我方管理费提取数额</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
-                <a-input
+                <a-input-number
                   :disabled="isSee"
                   style="width:60%;"
                   :precision="0"
-                  v-decorator="['managementFeeWithdrawal',{rules: [{required: true,message: '请输入管理提取数额',},
+                  v-decorator="['managementFeeWithdrawal',{rules: [{required: true,  message: '请输入管理提取数额',},
              ]}]"
                 />
               </a-form-item>
@@ -202,7 +202,7 @@
                     :disabled="isSee"
                     :precision="0"
                     placeholder="请输入详细地址"
-                    v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, message: '详细地址最少为5个字符！'}]}]"
+                    v-decorator="['detailedAddressName',{rules: [{required: true, min: 5,max:30, message: '详细地址最少为5个字符！'}]}]"
                   />
                 </a-form-item>
               </a-col>
