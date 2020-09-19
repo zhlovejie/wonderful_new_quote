@@ -39,6 +39,7 @@
                   v-decorator="['url',{ rules: [{ required: true, message: '请上传文件' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
                   name="file"
                   :fileList="fileList"
+                  accept=".pdf, .doc, .docx"
                   @change="handleChange"
                   :action="uploadUrl"
                 >

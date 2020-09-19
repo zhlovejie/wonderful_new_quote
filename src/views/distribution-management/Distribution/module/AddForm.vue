@@ -155,6 +155,7 @@
                 <a-upload
                   :disabled="isSee"
                   :action="uploadPath"
+                  accept=".png, .jpg"
                   list-type="picture-card"
                   :file-list="fileList"
                   @preview="handlePreview"
@@ -339,6 +340,7 @@ export default {
     },
 
     getCity(type, pId, name) {
+      debugger
       if (type != 3) {
         getAreaByParent({ pId: pId })
           .then((res) => {
@@ -397,9 +399,10 @@ export default {
         DistributionInfot({ id: that.record.id }).then((res) => {
           let arr = (res.data.data.addressNumber || '').split(',')
           let num = (res.data.data.addressName || '').split(',')
-          that.getCity(1, arr[0], num[1])
-          that.getCity(2, arr[1], num[2])
-          that.getCity(3, null, num[3])
+          that.getCity(1, arr[0], num[0])
+          that.getCity(2, arr[1], num[1])
+          that.getCity(3, arr[2], num[2])
+          console.log(that.province + ',' + that.city + ',' + that.area)
 
           that.fileList = res.data.data.businessLicenseList
             ? res.data.data.businessLicenseList.map((item) => {
@@ -430,7 +433,10 @@ export default {
     },
 
     handleOk() {
-      console.log('你这是要提交')
+      if (this.type === 'see') {
+        that.visible = false
+        that.$emit('finish')
+      }
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
@@ -466,7 +472,9 @@ export default {
             values.annexList = [...arr, ...arr1, ...that.todayList, ...that.planList]
           }
           values.addressName = that.province + ',' + that.city + ',' + that.area
+          console.log(values.addressName)
           values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
+          console.log(values.addressNumber)
           delete values.provinces
           delete values.citys
           delete values.areas

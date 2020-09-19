@@ -86,6 +86,7 @@ export default {
     }
   },
   created() {
+    this.queryonedata = {}
     if (this.$route.params.typeName === 'see' || this.$route.params.typeName === 'edit-salary') {
       getQueryOne({ id: this.$route.params.action.id }).then((res) => {
         console.log(res.data)
@@ -138,15 +139,7 @@ export default {
     },
     goBackAction() {
       const _this = this
-      this.$confirm({
-        title: '警告',
-        content: `确定放弃新增物流信息登记?`,
-        okText: '确定',
-        cancelText: '取消',
-        onOk() {
-          _this.$router.push({ name: 'distribution_logistics' })
-        },
-      })
+      _this.$router.push({ name: 'distribution_logistics' })
     },
   },
 }

@@ -15,6 +15,7 @@
     <template>
       <a-upload
         :action="uploadUrl"
+        accept=".png, .jpg"
         :disabled="typeNameId"
         list-type="picture-card"
         :file-list="fileList"

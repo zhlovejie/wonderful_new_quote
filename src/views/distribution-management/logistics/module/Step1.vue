@@ -81,7 +81,7 @@
                 <a-input-number
                   :disabled="isSee"
                   style="width:60%;"
-                  :precision="0"
+                  :precision="2"
                   placeholder="物流价格"
                   v-decorator="['logisticsPrice',{rules: [{required: true,message: '请输入物流价格',},
              ]}]"
@@ -118,7 +118,7 @@
                 <a-input-number
                   :disabled="isSee"
                   style="width:60%;"
-                  :precision="0"
+                  :precision="2"
                   v-decorator="['managementFeeWithdrawal',{rules: [{required: true,  message: '请输入管理提取数额',},
              ]}]"
                 />
