@@ -68,6 +68,7 @@
               <a-form-item>
                 <a-date-picker
                   :disabled="isSee"
+                  @change="dateChange"
                   style="width:60%;"
                   v-decorator="['beginTime',{rules: [{required: true,message: '请输入开始时间',},
              ]}]"
@@ -84,6 +85,7 @@
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
+                  @change="dateChange"
                   :disabled="isSee"
                   style="width:60%;"
                   v-decorator="['endTime',{rules: [{required: true,message: '请输入结束时间',},
@@ -222,7 +224,22 @@ export default {
   },
   methods: {
     moment,
-
+    dateChange() {
+      let that = this
+      that.$nextTick(() => {
+        let { beginTime, endTime } = that.form.getFieldsValue(['beginTime', 'endTime'])
+        if (beginTime > endTime) {
+          that.$message.info('结束时间必须大于开始时间')
+          that.form.setFieldsValue({ endTime: undefined })
+          return
+        }
+        if (beginTime instanceof moment && endTime instanceof moment) {
+          let s = moment(beginTime.format('YYYY-MM-DD'))
+          let e = moment(endTime.format('YYYY-MM-DD'))
+          that.diffDate = e.diff(s, 'days') + 1
+        }
+      })
+    },
     //选择人员
     depChangeHandler(dep_id) {
       let that = this

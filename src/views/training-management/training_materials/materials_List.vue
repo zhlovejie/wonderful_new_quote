@@ -107,7 +107,7 @@
           <template v-else>
             <a @click="doAction(record.fileUrl)">查看</a>
             <a-divider type="vertical" />
-            <a class="ant-dropdown-link" :href="record.fileUrl">下载</a>
+            <a class="ant-dropdown-link" :href="record.fileUrl" target="_blank">下载</a>
             <template>
               <a-divider type="vertical" />
               <a
@@ -288,6 +288,7 @@ export default {
     },
     //接收子组件数据
     search(data) {
+      this.parentId = data.id
       this.pagination.folderId = data.id
       this.searchAction()
     },

@@ -41,7 +41,6 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleAdd('see',record)">查看</a>
           <a-divider type="vertical" />
-          <!-- <a class="ant-dropdown-link" :href="urls+record.id">下载</a> -->
           <template v-if="$auth('Distribution:add')&&+record.createdId  === +userInfo.id">
             <a @click="handleAdd('edit-salary',record)">修改</a>
             <a-divider type="vertical" />

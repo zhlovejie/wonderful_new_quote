@@ -30,7 +30,7 @@
               <td>
                 <a class="ant-dropdown-link" @click="delete_list(item.url)">查看</a>
                 <a-divider type="vertical" />
-                <a class="ant-dropdown-link" :href="item.url">下载</a>
+                <a class="ant-dropdown-link" :href="item.url" target="_blank">下载</a>
                 <template v-if="!isSee">
                   <a-divider type="vertical" />
                   <a class="ant-dropdown-link" @click="deletes(index)">删除</a>

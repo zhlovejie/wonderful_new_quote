@@ -36,7 +36,7 @@
         <span slot="action" slot-scope="text, record">
           <a @click="applyFor('see',record)">查看</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
+          <a class="ant-dropdown-link" :href="urls+record.id" target="_blank">下载</a>
           <template v-if="$auth('logistics:add')&&+record.createdId  === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="applyFor('edit-salary',record)">修改</a>

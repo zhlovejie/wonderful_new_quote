@@ -83,7 +83,7 @@
             </template>
             <template v-if="record.status === 2 ">
               <a-divider type="vertical" />
-              <a type="primary" :href="record.planUrl">下载</a>
+              <a type="primary" :href="record.planUrl" target="_blank">下载</a>
             </template>
             <template
               v-if="record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
