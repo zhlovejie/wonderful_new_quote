@@ -40,8 +40,8 @@
         </div>
         <span slot="action" slot-scope="text, record">
           <a @click="handleAdd('see',record)">查看</a>
-          <a-divider type="vertical" />
           <template v-if="$auth('Distribution:add')&&+record.createdId  === +userInfo.id">
+            <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>

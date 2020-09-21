@@ -433,65 +433,66 @@ export default {
     },
 
     handleOk() {
-      if (this.type === 'see') {
+      let that = this
+      if (that.type === 'see') {
         that.visible = false
         that.$emit('finish')
+      } else {
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            if (this.type === 'edit-salary') {
+              values.id = that.record.id
+            }
+            let arr = this.fileList
+              ? this.fileList.map((file) => {
+                  if (file.response && file.response.code === 200 && file.name != '1') {
+                    return {
+                      url: file.response.data,
+                      statusType: 1,
+                      name: file.name,
+                    }
+                  }
+                })
+              : []
+            arr = arr.filter((item) => item)
+            let arr1 = this.fileList
+              ? this.fileList.map((file) => {
+                  if (file.name === '1') {
+                    let arr = {
+                      url: file.url,
+                      statusType: 1,
+                      name: file.fileName,
+                    }
+                    return arr
+                  }
+                })
+              : []
+            arr1 = arr1.filter((item) => item)
+            if (arr || that.todayList || that.planList) {
+              values.annexList = [...arr, ...arr1, ...that.todayList, ...that.planList]
+            }
+            values.addressName = that.province + ',' + that.city + ',' + that.area
+            console.log(values.addressName)
+            values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
+            console.log(values.addressNumber)
+            delete values.provinces
+            delete values.citys
+            delete values.areas
+            DistributionAdd(values).then((res) => {
+              that.spinning = false
+              console.log(res)
+              that.fileList = []
+              that.todayList = []
+              that.planList = []
+              that.form.resetFields() // 清空表
+              that.haveProcess = []
+              that.visible = false
+              that.$message.info(res.msg)
+              that.$emit('finish')
+            })
+          }
+        })
       }
-      let that = this
-      that.form.validateFields((err, values) => {
-        if (!err) {
-          if (this.type === 'edit-salary') {
-            values.id = that.record.id
-          }
-          let arr = this.fileList
-            ? this.fileList.map((file) => {
-                if (file.response && file.response.code === 200 && file.name != '1') {
-                  return {
-                    url: file.response.data,
-                    statusType: 1,
-                    name: file.name,
-                  }
-                }
-              })
-            : []
-          arr = arr.filter((item) => item)
-          let arr1 = this.fileList
-            ? this.fileList.map((file) => {
-                if (file.name === '1') {
-                  let arr = {
-                    url: file.url,
-                    statusType: 1,
-                    name: file.fileName,
-                  }
-                  return arr
-                }
-              })
-            : []
-          arr1 = arr1.filter((item) => item)
-          if (arr || that.todayList || that.planList) {
-            values.annexList = [...arr, ...arr1, ...that.todayList, ...that.planList]
-          }
-          values.addressName = that.province + ',' + that.city + ',' + that.area
-          console.log(values.addressName)
-          values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
-          console.log(values.addressNumber)
-          delete values.provinces
-          delete values.citys
-          delete values.areas
-          DistributionAdd(values).then((res) => {
-            that.spinning = false
-            console.log(res)
-            that.fileList = []
-            that.todayList = []
-            that.planList = []
-            that.form.resetFields() // 清空表
-            that.haveProcess = []
-            that.visible = false
-            that.$message.info(res.msg)
-            that.$emit('finish')
-          })
-        }
-      })
     },
     handleCancel() {
       this.fileList = []
