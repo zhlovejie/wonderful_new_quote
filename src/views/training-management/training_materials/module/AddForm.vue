@@ -45,7 +45,7 @@
                 <a-textarea
                   placeholder="请输入备注"
                   :rows="3"
-                  v-decorator="['remark', { rules: [{ required: true, message: '请输入备注' }] }]"
+                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
                 />
               </a-form-item>
             </td>
@@ -55,6 +55,7 @@
             <td colspan="4">
               <a-form-item>
                 <a-radio-group
+                  :disabled="!dis"
                   @change="authorityType"
                   v-decorator="['authorityType',{ rules: [{ required: true, message: '请选择权限' }] }]"
                 >

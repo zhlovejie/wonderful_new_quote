@@ -65,7 +65,7 @@
                   style="width:300px;"
                   placeholder="备注信息"
                   :rows="3"
-                  v-decorator="['remark', { rules: [{ required: true, message: '请输入备注信息' }] }]"
+                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注信息' }] }]"
                 />
               </a-form-item>
             </td>
@@ -147,22 +147,24 @@ export default {
     },
 
     fillData() {
-      this.$nextTick(() => {
-        getFolderDetail({ fileId: this.record.id }).then((res) => {
+      const that = this
+      that.$nextTick(() => {
+        getFolderDetail({ fileId: that.record.id }).then((res) => {
           console.log(res.data)
-          this.form.setFieldsValue({
+          that.form.setFieldsValue({
             fileName: res.data.fileName,
             fileUrl: res.data.fileUrl,
             remark: res.data.remark,
           })
-          this.addId = res.data.folderId
-          this.parentId = res.data.folderName
-          let arr = this.record.fileUrl.split('/')
-          this.fileList.push({
+          that.addId = res.data.folderId
+          that.parentId = res.data.folderName
+          let arr = res.data.fileUrl.split('/')
+          console.log(arr)
+          that.fileList.push({
             uid: '-1',
             name: arr[arr.length - 1],
             status: 'done',
-            url: this.record.fileUrl,
+            url: that.record.fileUrl,
           })
         })
       })
