@@ -130,6 +130,7 @@ export default {
       pagination: {
         current: 1,
         folderId: -1,
+        taskUserId: this.$store.getters.userInfo.id,
       },
       queryParam: {},
       hiddenBoolean: false,
