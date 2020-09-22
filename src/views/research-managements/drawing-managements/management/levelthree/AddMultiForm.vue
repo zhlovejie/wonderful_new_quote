@@ -44,6 +44,7 @@
                     :multiple="true"
                     :fileList="fileList"
                     @change="handleChange"
+                    :beforeUpload="beforeUpload"
                   >
                     <a-button type="dashed" icon="upload">上传文件</a-button>
                   </a-upload>
@@ -234,6 +235,8 @@ export default {
         }
       })
       that.dataSource = dataSource
+
+      
     },
   },
   methods: {
@@ -270,12 +273,38 @@ export default {
       }
       return Promise.all(queue)
     },
+    beforeUpload(file){
+      console.log(file)
+      let isRepeat = this.fileList.filter(f => f.name === file.name).length > 0
+      if(isRepeat){
+        //file.name = '【重复】-'+file.name
+        file.status = 'error'
+        file.__repeat = true
+      }
+      return isRepeat ? false : true
+    },
     handleSubmit() {
       let that = this
       if (that.isView) {
         that.handleCancel()
         return
       }
+
+      let repeatFiles = that.fileList.filter(f => f.__repeat)
+      if(repeatFiles.length > 0){
+        const h = that.$createElement;
+        let msgArr = ['以下文件存在重复，请手动删除：',...repeatFiles.map(f => f.name)]
+          that.$warning({
+            title: '检测到重复文件',
+            content: h('div', {}, msgArr.map(msg => h('p',msg))),
+            onOk() {
+
+            },
+          });
+        return
+      }
+
+
       this.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {

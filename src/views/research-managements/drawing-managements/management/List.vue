@@ -106,7 +106,7 @@ export default {
         }
       },
       immediate: true,
-    },
+    }
   },
   created() {},
   methods: {
@@ -136,10 +136,11 @@ export default {
           that.selectedKeys = [rootKey]
           that.currentItem = that.orgTree[0]
 
-          that.cacheSelectedKeys = that.orgTree[0]
+          that.cacheSelectedKeys = [that.orgTree[0]]
           that.cacheExpandedKeys = that.expandedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
           //})
         } else {
+          //debugger
           that.expandedKeys = that.cacheExpandedKeys
             .map((item) => that.findNode(that.orgTree[0], item.id))
             .map((node) => node.key)

@@ -13,6 +13,16 @@
       <a-button v-if="$auth('blueprintFile:add')" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
+      <div style="margin-bottom: 16px" v-if="$auth('blueprintFile:delete')">
+        <a-button type="primary" :disabled="!hasSelected" @click="doAction('deleteBatch')">
+          批量删除
+        </a-button>
+        <span style="margin-left: 8px">
+          <template v-if="hasSelected">
+            {{ `已选择 ${selectedRowKeys.length} 项` }}
+          </template>
+        </span>
+      </div>
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -20,7 +30,8 @@
         :loading="loading"
         @change="handleTableChange" 
         size="middle" 
-        :customRow="customRowFunction"
+        :customRow="customRowFunction" 
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -49,7 +60,8 @@
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('back',record)">反馈记录</a>
           <a-divider type="vertical" />
-          <a-popconfirm v-if="$auth('blueprintFile:delete')" title="是否要删除此行？" @confirm="doAction('del',record)">
+          <!-- v-if="$auth('blueprintFile:delete')" -->
+          <a-popconfirm v-if="$auth('blueprintFile:delete')"  title="是否要删除此行？" @confirm="doAction('del',record)">
             <a>删除</a>
           </a-popconfirm>
         </div>
@@ -69,7 +81,8 @@ import {
   blueprintFilePageList,
   blueprintFileDetail,
   blueprintFileDel,
-  blueprintFileAddOrUpdate
+  blueprintFileAddOrUpdate,
+  blueprintFileDeleteBatch
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import DisposeForm from './DisposeForm'
@@ -151,12 +164,19 @@ export default {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
+        size:"middle"
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      inputParam:{}
+      inputParam:{},
+      selectedRowKeys:[]
     }
+  },
+  computed: {
+    hasSelected() {
+      return this.selectedRowKeys.length > 0;
+    },
   },
   watch:{
     params(val){
@@ -186,14 +206,16 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let pagination = {...this.pagination}
+      delete pagination.size
+      let _searchParam = Object.assign({}, { ...this.searchParam }, pagination, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       blueprintFilePageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
+            item.key = item.id
             return item
           })
           //设置数据总条数
@@ -251,6 +273,28 @@ export default {
           })
       } else if(actionType === 'back'){
         that.$refs.disposeForm.query(actionType,record)
+      } else if(actionType === 'deleteBatch'){
+        that.$confirm({
+          title: '警告',
+          content: `确定要删除已选择文件吗?`,
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk () {
+            blueprintFileDeleteBatch(`ids=${that.selectedRowKeys.join(',')}`)
+            .then(res => {
+              that.$message.info(res.msg)
+              that.searchAction()
+              that.$emit('finish')
+            })
+            .catch(err => {
+              that.$message.info(`错误：${err.message}`)
+            })
+          },
+          onCancel () {}
+        })
+
+        return
       }
       else {
         this.$message.info('功能尚未实现！')
@@ -273,6 +317,10 @@ export default {
         return null
       }
       return fNode(node)
+    },
+    onSelectChange(selectedRowKeys) {
+      //console.log('selectedRowKeys changed: ', selectedRowKeys);
+      this.selectedRowKeys = selectedRowKeys;
     }
   }
 }
