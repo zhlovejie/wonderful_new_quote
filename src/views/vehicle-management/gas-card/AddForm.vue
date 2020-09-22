@@ -86,12 +86,22 @@
             <td >
               <a-form-item>
                 <a-input-number 
+                  @blur="rechargeChange"
                   placeholder="充值金额"
                   style="width:100%;"
-                  :min="1000"
+                  :min="0"
                   :max="20000"
                   :step="1"
-                  v-decorator="['investAmount',{initialValue:detail.investAmount ,rules: [{required: true,message: '输入充值金额'}]}]"
+                  v-decorator="[
+                  'investAmount',
+                    {
+                      initialValue:detail.investAmount ,
+                      rules: [
+                        {required: true,message: '输入充值金额'},
+                        {validator:rechargeHandler}
+                      ]
+                    }
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -230,6 +240,18 @@ export default {
         'careDepartmentId':depId,
         'careUserId':userId
       })
+    },
+    rechargeChange(val){
+      // if(parseFloat(val) < 1000){
+      //   this.$message.info
+      // }
+    },
+    rechargeHandler(rule,value,callback){
+      //console.log(arguments)
+      if(parseFloat(value) < 1000){
+        callback('最低充值金额为1000')
+      }
+      callback()
     }
   }
 }

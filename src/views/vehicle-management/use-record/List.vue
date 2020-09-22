@@ -14,6 +14,11 @@
               :class="{currentDayWeekMonth:dayWeekMonth === 2}"
               @click="simpleSearch(2)"
             >本周</a-button>
+            <a-button
+              type="primary"
+              :class="{currentDayWeekMonth:dayWeekMonth === 0}"
+              @click="simpleSearch(0)"
+            >全部</a-button>
           </a-button-group>
         </a-form-item>
         <a-form-item>

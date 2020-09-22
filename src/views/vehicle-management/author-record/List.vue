@@ -5,8 +5,10 @@
       <a-input placeholder="姓名模糊查询" v-model="userName" allowClear style="width:160px;" />
       <a-select
         placeholder="持照类别"
+        showSearch
         v-model="licenseTypeDicId"
         :allowClear="true"
+        :filterOption="filterOption"
         style="width: 150px"
       >
         <a-select-option
@@ -82,7 +84,7 @@
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('edit',record)">修改</a>
           </template>
-          <template v-if="+activeKey === 0 && record.status === 1 ">
+          <template v-if="+activeKey === 0 && record.status === 1 && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
             <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('revocation',record)">
               <a type="primary" href="javascript:;">撤回</a>
@@ -312,6 +314,9 @@ export default {
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    filterOption (input, option) { 
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
   },
 }
