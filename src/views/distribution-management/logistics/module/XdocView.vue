@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="预览"
-    :width="860"
+    :width="1200"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -45,7 +45,13 @@ export default {
       } catch (err) {
         suffixName = ''
       }
-      if (suffixName === '.jpg' || suffixName === '.jpeg' || suffixName === '.png' || suffixName === '.gif'|| suffixName === '.pdf') {
+      if (
+        suffixName === '.jpg' ||
+        suffixName === '.jpeg' ||
+        suffixName === '.png' ||
+        suffixName === '.gif' ||
+        suffixName === '.pdf'
+      ) {
         isImage = true
       }
 

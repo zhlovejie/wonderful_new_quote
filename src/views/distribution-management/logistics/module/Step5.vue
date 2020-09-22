@@ -132,11 +132,18 @@ export default {
         logisticsGoodsContracts: that.goodsList,
       }
       let valuer = { ...that.queryonedata, ...params }
-      console.log(valuer)
-      logisticsPreservation(valuer).then((res) => {
-        that.$message.info(res.msg)
-        this.$router.push({ name: 'distribution_logistics' })
-      })
+      if (that.goodsList.length > 0) {
+        logisticsPreservation(valuer).then((res) => {
+          if (res.code === 200) {
+            that.$message.info(res.msg)
+            this.$router.push({ name: 'distribution_logistics' })
+          } else {
+            that.$message.info(res.msg)
+          }
+        })
+      } else {
+        that.$message.error('货物合同不能为空！')
+      }
     },
     // 上一步
     prevStep() {

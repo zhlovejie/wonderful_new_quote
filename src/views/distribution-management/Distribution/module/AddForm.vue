@@ -340,7 +340,6 @@ export default {
     },
 
     getCity(type, pId, name) {
-      debugger
       if (type != 3) {
         getAreaByParent({ pId: pId })
           .then((res) => {

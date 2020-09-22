@@ -20,7 +20,7 @@
 
           <table class="custom-table custom-table-border">
             <tr>
-              <td colspan="3">
+              <td style="text-align: Left;">
                 <b>提货信息</b>
               </td>
             </tr>
@@ -35,7 +35,7 @@
               <td>{{i.contactInformation}}</td>
             </tr>
             <tr>
-              <td colspan="3">
+              <td style="text-align: Left;">
                 <b>货物信息</b>
               </td>
             </tr>
@@ -167,13 +167,14 @@ export default {
 .custom-table-border td {
   padding: 10px;
   width: 30%;
+  border: none;
 }
 .wdf-row {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
 }
 
 .col-border {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;

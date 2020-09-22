@@ -1,21 +1,27 @@
 <template>
   <div class="content-wrap">
     <a-row>
-      <a-col :span="24" class="basic-tit" justify="center" align="middle">驾驶员信息</a-col>
+      <a-col
+        :span="24"
+        class="basic-tit"
+        style="margin-bottom:3px"
+        justify="center"
+        align="middle"
+      >驾驶员信息</a-col>
     </a-row>
     <a-form :form="form">
       <a-form-item>
         <a-row type="flex">
-          <a-col :span="6"></a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle">身份证号码</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
+          <a-col :span="5"></a-col>
+          <a-col class="col-border" :span="4" justify="center" align="middle">身份证号码</a-col>
+          <a-col class="col-border" :span="10" justify="center" align="middle">
             <a-form-item>
               <a-input-search
                 placeholder=" 身份证号码"
                 :disabled="isSee"
                 v-decorator="['cardNo',{rules: [{required: true,message: '请输入身份证号码',},
               ]}]"
-                style="width:60%;"
+                style="width:70%;"
                 enter-button
                 @search="onSearch"
               />
@@ -23,12 +29,12 @@
           </a-col>
         </a-row>
         <a-row type="flex">
-          <a-col :span="6"></a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle">姓名</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
+          <a-col :span="5"></a-col>
+          <a-col class="col-border" :span="4" justify="center" align="middle">姓名</a-col>
+          <a-col class="col-border" :span="10" justify="center" align="middle">
             <a-form-item>
               <a-input
-                style="width:60%;"
+                style="width:70%;"
                 :precision="0"
                 placeholder="姓名"
                 :disabled="isSee"
@@ -39,12 +45,12 @@
           </a-col>
         </a-row>
         <a-row type="flex">
-          <a-col :span="6"></a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle">电话</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
+          <a-col :span="5"></a-col>
+          <a-col class="col-border" :span="4" justify="center" align="middle">电话</a-col>
+          <a-col class="col-border" :span="10" justify="center" align="middle">
             <a-form-item>
               <a-input
-                style="width:60%;"
+                style="width:70%;"
                 :precision="0"
                 :disabled="isSee"
                 placeholder="电话"
@@ -55,12 +61,12 @@
           </a-col>
         </a-row>
         <a-row type="flex">
-          <a-col :span="6"></a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle">微信号</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
+          <a-col :span="5"></a-col>
+          <a-col class="col-border" :span="4" justify="center" align="middle">微信号</a-col>
+          <a-col class="col-border" :span="10" justify="center" align="middle">
             <a-form-item>
               <a-input
-                style="width:60%;"
+                style="width:70%;"
                 :precision="0"
                 :disabled="isSee"
                 placeholder="微信号"
@@ -71,12 +77,12 @@
           </a-col>
         </a-row>
         <a-row type="flex">
-          <a-col :span="6"></a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle">驾驶证号码</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
+          <a-col :span="5"></a-col>
+          <a-col class="col-border" :span="4" justify="center" align="middle">驾驶证号码</a-col>
+          <a-col class="col-border" :span="10" justify="center" align="middle">
             <a-form-item>
               <a-input
-                style="width:60%;"
+                style="width:70%;"
                 :precision="0"
                 placeholder="驾驶证号码"
                 :disabled="isSee"
@@ -87,9 +93,9 @@
           </a-col>
         </a-row>
         <a-row type="flex">
-          <a-col :span="6"></a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle">身份证</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
+          <a-col :span="5"></a-col>
+          <a-col class="col-border" :span="4" justify="center" align="middle">身份证</a-col>
+          <a-col class="col-border" :span="10" justify="center" align="middle">
             <UploadP
               ref="normalCard"
               style="margin-left:100px"
@@ -101,21 +107,9 @@
 
         <a-form-item>
           <a-row type="flex">
-            <a-col :span="6"></a-col>
-            <a-col
-              class="col-border"
-              :style="{borderBottom:'1px solid #ddd'}"
-              justify="center"
-              align="middle"
-              :span="3"
-            >驾驶证</a-col>
-            <a-col
-              class="col-border"
-              :style="{borderBottom:'1px solid #ddd'}"
-              justify="center"
-              align="middle"
-              :span="9"
-            >
+            <a-col :span="5"></a-col>
+            <a-col class="col-border" justify="center" align="middle" :span="4">驾驶证</a-col>
+            <a-col class="col-border" justify="center" align="middle" :span="10">
               <UploadP
                 style="margin-left:100px"
                 ref="normalUpload"
@@ -332,10 +326,10 @@ export default {
 
 <style lang="less" scoped>
 .wdf-row {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
 }
 .col-border {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;

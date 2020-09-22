@@ -202,7 +202,7 @@
                     :disabled="isSee"
                     :precision="0"
                     placeholder="请输入详细地址"
-                    v-decorator="['detailedAddressName',{rules: [{required: true, min: 5,max:30, message: '详细地址最少为5个字符！'}]}]"
+                    v-decorator="['detailedAddressName',{rules: [{required: false, max:30, message: '详细地址最少为5个字符！'}]}]"
                   />
                 </a-form-item>
               </a-col>
