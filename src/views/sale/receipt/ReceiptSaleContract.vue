@@ -27,6 +27,20 @@
             <a-select-option v-for="val in saleUsers" :key="val.id" :value="val.id">{{ val.trueName }}</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="是否含税">
+          <a-select
+            class="a-select"
+            style="width: 150px"
+            defaultValue="1"
+            v-model="isTax"
+            showSearch
+            placeholder="是否含税"
+            optionFilterProp="children"
+          >
+            <a-select-option :value="1">含税</a-select-option>
+            <a-select-option :value="0">不含税</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
         </a-form-item>
@@ -79,6 +93,7 @@ export default {
       loading: true,
       saleUsers: [],
       userId: 0,
+      isTax: 1,
       columns: [
         {
           align: 'center',
@@ -129,6 +144,7 @@ export default {
     search () {
       this.$set(this.queryParam, 'customerName', this.customerName)
       this.$set(this.queryParam, 'userId', this.userId)
+      this.$set(this.queryParam, 'isTax', this.isTax)
       this.$refs.table.refresh(true)
     },
     close () {
