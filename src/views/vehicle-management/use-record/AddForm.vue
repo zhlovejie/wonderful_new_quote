@@ -47,20 +47,20 @@
 
           <tr >
             <td>返回时间</td>
-            <td >
+            <td colspan="3">
               <a-form-item>
                 <span >{{detail.returnTime}}</span>
               </a-form-item>
             </td>
-            <td>始发地点</td>
+            <!-- <td>始发地点</td>
             <td >
               <a-form-item>
                 <span >{{detail.cardName}}</span>
               </a-form-item>
-            </td>
+            </td> -->
           </tr>
 
-          <tr >
+          <tr hidden>
             <td>目的地</td>
             <td >
               <a-form-item>
