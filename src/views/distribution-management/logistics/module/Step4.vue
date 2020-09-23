@@ -70,7 +70,7 @@
                 :precision="0"
                 :disabled="isSee"
                 placeholder="微信号"
-                v-decorator="['wechatNumber',{rules: [{required: true,message: '请输入微信号',},
+                v-decorator="['wechatNumber',{rules: [{required: false,message: '请输入微信号',},
              ]}]"
               />
             </a-form-item>

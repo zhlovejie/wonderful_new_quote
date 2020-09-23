@@ -45,7 +45,7 @@
             <th colspan="3">
               {{item.month}}月
               <span style=" float: right;" v-if="!isDisabled">
-                <a href="javascript:void(0);" @click="delItem(item.key)">删除</a>
+                <a href="javascript:void(0);" @click="delItem(key)">删除</a>
               </span>
             </th>
           </tr>
@@ -56,7 +56,6 @@
           </tr>
           <tr v-for="(items,index) in item.oaTrainYearPlanItemDetailSaveBoList" :key="items.key">
             <td>
-              <!-- v-model="items.title" -->
               <a-form-item>
                 <a-input
                   :disabled="isDisabled"
@@ -66,7 +65,6 @@
               </a-form-item>
             </td>
             <td>
-              <!-- v-model="items.joinPerson" -->
               <a-form-item>
                 <a-input
                   :disabled="isDisabled"
@@ -192,7 +190,6 @@ export default {
       type: 'view',
       record: {},
       isModified: false, //财务人员为 true
-
       previewVisible: false,
     }
   },
@@ -224,9 +221,6 @@ export default {
       //修改
       return this.type === 'edit-salary'
     },
-    // disabled() {
-    //   return this.isView || this.isApproval || this.isEditSalary
-    // },
     isDisabled() {
       return this.isView || this.isEdit || this.isView5
     },
@@ -246,12 +240,12 @@ export default {
   },
   methods: {
     moment,
-    init() {},
     addItem(index) {
       this.programme[index].oaTrainYearPlanItemDetailSaveBoList.push({
         key: uuid(),
         title: undefined,
         joinPerson: undefined,
+        beginData: undefined,
       })
     },
     //添加月份
@@ -260,8 +254,8 @@ export default {
     },
     //删除月份
     delItem(key) {
-      let that = this
-      that.programme = that.programme.filter((item) => item.key !== key)
+      debugger
+      this.programme.splice(key, 1)
     },
     handleOkMonth() {
       this.visibleMonth = false
@@ -288,8 +282,7 @@ export default {
             key: uuid(),
             title: undefined,
             joinPerson: undefined,
-            endTime: undefined,
-            beginTime: undefined,
+            beginData: undefined,
           },
         ],
       })

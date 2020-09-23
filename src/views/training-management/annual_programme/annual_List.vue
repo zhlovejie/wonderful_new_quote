@@ -130,7 +130,7 @@
 </template>
 <script>
 import { getDevisionList } from '../../../api/systemSetting'
-import { annualList, annualPlan, annualRemove } from '@/api/training-management'
+import { annualList, annualPlan, annualRemove, checkIfExistsYearPlan } from '@/api/training-management'
 import AddForm from './module/FromAdd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -249,7 +249,12 @@ export default {
       console.log(e)
       this.visible = false
       if (this.yearPick1) {
-        this.doAction('add', { year: this.yearPick1 })
+        checkIfExistsYearPlan({ year: moment(this.yearPick1).format('YYYY') }).then((res) => {
+          if (res.code === 200) {
+            console.log(res)
+          }
+        })
+        // this.doAction('add', { year: this.yearPick1 })
       } else {
         this.$message.error('请选择年份')
       }

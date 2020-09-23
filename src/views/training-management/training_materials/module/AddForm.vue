@@ -55,7 +55,6 @@
             <td colspan="4">
               <a-form-item>
                 <a-radio-group
-                  :disabled="!dis"
                   @change="authorityType"
                   v-decorator="['authorityType',{ rules: [{ required: true, message: '请选择权限' }] }]"
                 >
@@ -138,7 +137,7 @@
                         <div class="draggable-columns draggable-columns-3" title="删除">
                           <a-popconfirm
                             title="确认删除这条数据？"
-                            @confirm="confirm(item.id, index)"
+                            @confirm="confirm(item.userId, index)"
                             okText="是"
                             cancelText="否"
                           >
@@ -159,7 +158,13 @@
 </template>
 <script>
 import { getDevisionList } from '@/api/systemSetting'
-import { materialsAdd, materialsDetail, getFolderlistrainList } from '@/api/training-management'
+import { folderUser } from '@/api/training-management'
+import {
+  materialsAdd,
+  materialsDetail,
+  getFolderlistrainList,
+  meetinglistMycheckCanModifyl,
+} from '@/api/training-management'
 import { queryList } from '@/api/humanResources'
 import vuedraggable from 'vuedraggable'
 
@@ -171,15 +176,18 @@ export default {
   data() {
     return {
       visible: false,
+      // disll: true,
       spinning: false,
       isDisabled: true,
       dis: true,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       departmentList: [],
       type: 'add',
       record: {},
       postSelectDataSource: [],
       haveProcess: [],
+      haves: [],
       jurisdiction: false, //人员显示隐藏
       targetValue: '',
       parentId: '' || '无',
@@ -199,10 +207,7 @@ export default {
     },
     targetValue: function (val) {
       if (val === 1) {
-        this.jurisdiction = true
         this.dis = this.addId === -1 ? true : false
-      } else {
-        this.jurisdiction = false
       }
     },
   },
@@ -273,7 +278,13 @@ export default {
       })
       this.$nextTick(() => {
         materialsDetail({ folderId: this.record.id }).then((res) => {
+          this.haves = res.data.parentOaTrainFolerPermissionsDetailVoList
+
+          // if (this.record.Id === -1) {
           this.haveProcess = res.data.oaTrainFolerPermissionsDetailVoList
+          // } else {
+          //   this.haveProcess = res.data.parentOaTrainFolerPermissionsDetailVoList
+          // }
           if (res.data.authorityType === 1) {
             this.jurisdiction = true
             this.dis = this.record.Id === -1 ? true : false
@@ -369,14 +380,51 @@ export default {
     //人员显示隐藏
     authorityType(author) {
       let that = this
-      that.targetValue = author.target.value
-      if (author.target.value === 1) {
-        that.jurisdiction = true
-        console.log(that.addId)
-        that.dis = that.addId === -1 ? true : false
-      } else {
-        that.jurisdiction = false
-      }
+      that.$nextTick(() => {
+        that.targetValue = author.target.value
+        if (author.target.value === 1 && that.type === 'add') {
+          that.jurisdiction = true
+          that.dis = that.addId === -1 ? true : false
+        } else if (author.target.value === 2 && that.type === 'add') {
+          that.jurisdiction = false
+        }
+        if (author.target.value === 2 && that.type === 'edit-salary') {
+          meetinglistMycheckCanModifyl({ folderId: that.record.id }).then((res) => {
+            if (res.code === 200) {
+              that.jurisdiction = false
+              that.form.setFieldsValue({
+                authorityType: 2,
+              })
+            } else {
+              that.$message.error(res.msg)
+              that.jurisdiction = true
+              that.form.setFieldsValue({
+                authorityType: 1,
+              })
+            }
+          })
+        }
+
+        if (that.addId === -1 && that.type === 'edit-salary') {
+          that.jurisdiction = true
+        } else {
+          if (author.target.value === 1 && that.type === 'edit-salary') {
+            let hascliss = that.haves.length > 0 ? true : false
+            if (!hascliss) {
+              that.jurisdiction = false
+              that.$message.error('上级为私密 ，当前等级不能设为公开')
+              that.form.setFieldsValue({
+                authorityType: 2,
+              })
+            } else {
+              that.jurisdiction = true
+              that.form.setFieldsValue({
+                authorityType: 1,
+              })
+            }
+          }
+        }
+      })
     },
     selectFilter(input, option) {
       // 下拉框搜索
@@ -384,15 +432,31 @@ export default {
     },
     confirm(cpId, index) {
       // 确认删除事件
-      this.haveProcess.splice(index, 1)
-      console.log(this.haveProcess)
-      let arr = []
-      this.haveProcess.map((item) => {
-        arr.push(item.id)
-      })
-      this.form.setFieldsValue({
-        authTrainFolderBoList: arr,
-      })
+      if (this.type === 'edit-salary') {
+        folderUser({ folderId: this.record.id, userId: cpId }).then((res) => {
+          if (res.code === 200) {
+            this.haveProcess.splice(index, 1)
+            let arr = []
+            this.haveProcess.map((item) => {
+              arr.push(item.id)
+            })
+            this.form.setFieldsValue({
+              authTrainFolderBoList: arr,
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      } else {
+        this.haveProcess.splice(index, 1)
+        let arr = []
+        this.haveProcess.map((item) => {
+          arr.push(item.id)
+        })
+        this.form.setFieldsValue({
+          authTrainFolderBoList: arr,
+        })
+      }
     },
   },
 }

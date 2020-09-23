@@ -323,3 +323,36 @@ export function meetinglistMyFileWithoutDetail(parameter) {
     params: parameter
   })
 }
+
+
+// 公开改私密
+export function meetinglistMycheckCanModifyl(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-folder/checkCanModify',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//人员列表删除 
+export function folderUser(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-folder-permissions/checkCanRemoveFolderUser',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+//判读是否存在年份 
+
+export function checkIfExistsYearPlan(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaTrainInfo/oa-train-year-plan/checkIfExistsYearPlan',
+    method: 'get',
+    params: parameter
+  })
+}
