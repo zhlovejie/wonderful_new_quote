@@ -45,7 +45,7 @@
             <th colspan="3">
               {{item.month}}月
               <span style=" float: right;" v-if="!isDisabled">
-                <a href="javascript:void(0);" @click="delItem(key)">删除</a>
+                <a href="javascript:void(0);" @click="delItem(item.key)">删除</a>
               </span>
             </th>
           </tr>
@@ -60,6 +60,7 @@
                 <a-input
                   :disabled="isDisabled"
                   placeholder
+                  @change="inputChange($event,item.key,items.key,'title')"
                   v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.title`, {initialValue:items.title, rules: [{ required: true, message: '请输入培训主题' }] }]"
                 />
               </a-form-item>
@@ -69,6 +70,7 @@
                 <a-input
                   :disabled="isDisabled"
                   placeholder
+                  @change="inputChange($event,item.key,items.key,'joinPerson')"
                   v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.joinPerson`, {initialValue:items.joinPerson, rules: [{ required: true, message: '请输入参与人员' }] }]"
                 />
               </a-form-item>
@@ -77,8 +79,9 @@
               <a-form-item>
                 <a-range-picker
                   :disabled="isDisabled"
+                  @change="inputChange($event,item.key,items.key,'beginData')"
                   v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.beginData`, {initialValue:items.beginData, rules: [{ required: true, message: '请输入预估时间' }] }]"
-                  :defaultPickerValue="[moment(dateFormat, 'YYYY-MM-DD'), moment(dateFormat, 'YYYY-MM-DD')]"
+                  :defaultPickerValue="[moment(`${year}-0${item.monthId}-01`, 'YYYY-MM-DD'), moment(`${year}-0${item.monthId}-01`, 'YYYY-MM-DD')]"
                 />
               </a-form-item>
             </td>
@@ -112,7 +115,12 @@
         </tr>
       </table>
       <a-modal v-model="visibleMonth" title="新增月份" @ok="handleOkMonth">
-        <a-select placeholder="月份" :allowClear="true" style="width: 280px;margin-right:10px;">
+        <a-select
+          placeholder="月份"
+          v-model="monthsll"
+          :allowClear="true"
+          style="width:280px ;margin-left:90px;"
+        >
           <a-select-option
             v-for="(item, index) in monthList"
             :key="index"
@@ -177,10 +185,10 @@ export default {
       todayList: [],
       programme: [],
       beginData: [],
-      dateFormat: '',
       month: '',
-      months: '',
+      monthsll: '',
       remark: '',
+      months: '',
       visible: false,
       visibleMonth: false,
       year: '',
@@ -226,9 +234,6 @@ export default {
     },
   },
   watch: {
-    year: function (val) {
-      this.dateFormat = this.year + '-' + '01' + '-' + '01'
-    },
     $route: {
       handler: function (to, from) {
         if (to.name === 'human_Resources_leagueBuilding') {
@@ -240,6 +245,16 @@ export default {
   },
   methods: {
     moment,
+    inputChange(event, key, keys, field) {
+      let programme = [...this.programme]
+      let target = programme.find((item) => item.key === key)
+      let targets = target.oaTrainYearPlanItemDetailSaveBoList.find((items) => items.key === keys)
+      if (targets) {
+        targets[field] = event instanceof Event ? event.target.value : event
+        this.programme = programme
+      }
+      // console.log(arguments)
+    },
     addItem(index) {
       this.programme[index].oaTrainYearPlanItemDetailSaveBoList.push({
         key: uuid(),
@@ -254,8 +269,7 @@ export default {
     },
     //删除月份
     delItem(key) {
-      debugger
-      this.programme.splice(key, 1)
+      this.programme = this.programme.filter((item) => item.key !== key)
     },
     handleOkMonth() {
       this.visibleMonth = false
@@ -263,16 +277,16 @@ export default {
         return item.month === this.month
       })
       this.handle = this.month
-      if (!arr) {
+      if (!arr && this.monthsll) {
         this.addprogramme(this.handle, this.months)
         this.month = ''
+        this.monthsll = ''
       } else {
         this.$message.error('月份不能重复添加')
       }
     },
     addprogramme(name, ids) {
       let that = this
-      this.dateFormat = this.year + '-' + this.months + '-' + '01'
       that.programme.push({
         key: uuid(),
         month: name,

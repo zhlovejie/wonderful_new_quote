@@ -1,19 +1,44 @@
 <template>
   <div class="content-wrap">
     <a-row>
-      <a-col :span="24" class="basic-tit" justify="center" align="middle">培训情况</a-col>
+      <a-col :span="24" class="basic-tit" justify="center" align="middle" style>培训情况</a-col>
     </a-row>
     <div>
       <template>
-        <a-select
-          @change="Read"
-          placeholder="阅读状态"
-          :allowClear="true"
-          style="width: 180px;margin-left:50px;"
-        >
-          <a-select-option :value="0">未阅</a-select-option>
-          <a-select-option :value="1">已阅</a-select-option>
-        </a-select>
+        <a-form layout="inline" :form="form">
+          <a-form-item>
+            <a-input
+              v-model="trainName"
+              size="small"
+              placeholder="姓名"
+              style="width:150px;"
+              :allowClear="true"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-select
+              v-model="Read"
+              size="small"
+              placeholder="阅读状态"
+              :allowClear="true"
+              style="width: 150px;"
+            >
+              <a-select-option :value="0">未阅</a-select-option>
+              <a-select-option :value="1">已阅</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item>
+            <template>
+              <a-button
+                class="a-button"
+                size="small"
+                type="primary"
+                icon="search"
+                @click="search"
+              >查询</a-button>
+            </template>
+          </a-form-item>
+        </a-form>
       </template>
       <table class="custom-table custom-table-border" style="margin-top:20px">
         <tr>
@@ -73,8 +98,11 @@ export default {
   },
   data() {
     return {
+      form: this.$form.createForm(this),
       loading: false,
       goodsList: [],
+      trainName: '',
+      Read: undefined,
       isProductOrder: false,
       queryonedata1: {},
       isSee: false,
@@ -100,13 +128,15 @@ export default {
         this.goodsList = qt.userList
       }
     },
-
-    Read(id) {
+    search() {
       this.goodsList = this.queryonedata1.userList
-      if (id === 0) {
-        this.goodsList = this.goodsList.filter((item) => item.readFlag === id)
-      } else if (id === 1) {
-        this.goodsList = this.goodsList.filter((item) => item.readFlag === id)
+      if (this.Read || this.trainName) {
+        if (this.Read) {
+          this.goodsList = this.goodsList.filter((item) => item.readFlag === this.Read)
+        }
+        if (this.trainName) {
+          this.goodsList = this.goodsList.filter((ites) => ites.userName.indexOf(this.trainName) != -1)
+        }
       } else {
         this.goodsList = this.queryonedata1.userList
       }
@@ -125,10 +155,10 @@ export default {
 
 <style lang="less" scoped>
 .wdf-row {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
 }
 .col-border {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
   padding: 10px;
   border-bottom: none;
   min-height: 60px;

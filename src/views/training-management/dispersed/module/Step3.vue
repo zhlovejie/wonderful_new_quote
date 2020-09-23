@@ -1,62 +1,56 @@
 <template>
   <div class="content-wrap">
     <a-row type="flex">
-      <a-col :span="24" class="basic-tit" justify="center" align="middle">受训人员</a-col>
+      <a-col
+        :span="24"
+        class="basic-tit"
+        justify="center"
+        align="middle"
+        style="margin-bottom：50px"
+      >受训人员</a-col>
     </a-row>
     <div>
       <a-form :form="form" class="form wdf-form">
         <table class="custom-table custom-table-border">
           <template>
             <tr>
-              <td colspan="6">
-                <b>选择人员</b>
-              </td>
-            </tr>
-            <tr>
-              <td>部门</td>
+              <td style="text-align: right;">部门</td>
               <td colspan="2">
-                <a-form-item>
-                  <a-select
-                    :disabled="isSee"
-                    style="width:200px;"
-                    @change="depChangeHandler"
-                    placeholder="请选择部门"
-                  >
-                    <a-select-option
-                      v-for="item in departmentList"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{ item.departmentName }}</a-select-option>
-                  </a-select>
-                </a-form-item>
+                <a-select
+                  :disabled="isSee"
+                  style="width:200px;"
+                  @change="depChangeHandler"
+                  placeholder="请选择部门"
+                >
+                  <a-select-option
+                    v-for="item in departmentList"
+                    :key="item.id"
+                    :value="item.id"
+                  >{{ item.departmentName }}</a-select-option>
+                </a-select>
               </td>
-              <td>人员</td>
+              <td style="text-align: right;">人员</td>
               <td colspan="2">
-                <a-form-item>
-                  <a-select
-                    :disabled="isSee"
-                    style="width:200px;"
-                    mode="multiple"
-                    :allowClear="true"
-                    :maxTagCount="1"
-                    @change="addProcess"
-                    showSearch
-                    placeholder="请选择人员"
-                    optionFilterProp="children"
-                    :filterOption="selectFilter"
-                    v-decorator="['authTrainFolderBoList']"
-                  >
-                    <a-select-option
-                      v-for="(process, index) in postSelectDataSource"
-                      :key="index"
-                      :value="process.id"
-                    >{{ process.trueName }}</a-select-option>
-                  </a-select>
-                </a-form-item>
+                <a-select
+                  :disabled="isSee"
+                  style="width:200px;"
+                  mode="multiple"
+                  :allowClear="true"
+                  :maxTagCount="1"
+                  @change="addProcess"
+                  showSearch
+                  placeholder="请选择人员"
+                  optionFilterProp="children"
+                  :filterOption="selectFilter"
+                  v-decorator="['authTrainFolderBoList']"
+                >
+                  <a-select-option
+                    v-for="(process, index) in postSelectDataSource"
+                    :key="index"
+                    :value="process.id"
+                  >{{ process.trueName }}</a-select-option>
+                </a-select>
               </td>
-            </tr>
-            <tr>
-              <td colspan="6">人员详情</td>
             </tr>
             <tr>
               <td colspan="6">
@@ -64,8 +58,8 @@
                   <div class="process_header_wrapper">
                     <div class="draggable-columns draggable-columns-1">部门</div>
                     <div class="draggable-columns draggable-columns-1">人员</div>
-                    <div class="draggable-columns draggable-columns-3">
-                      <a href="javascript:void(0);" @click="processClearAction" v-if="!isSee">清空</a>
+                    <div v-if="!isSee" class="draggable-columns draggable-columns-3">
+                      <a href="javascript:void(0);" @click="processClearAction">清空</a>
                     </div>
                   </div>
                   <vuedraggable
@@ -294,6 +288,7 @@ export default {
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;
+  border: none;
 }
 
 .custom-table >>> .custom-table {

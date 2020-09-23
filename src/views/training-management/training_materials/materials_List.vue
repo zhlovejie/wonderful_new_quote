@@ -50,7 +50,7 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="orderIocn" slot-scope="text, record, index">
+        <div slot="orderIocn" slot-scope="text, record, ">
           <template v-if="record.isFileFlag===1">
             <a-icon style="color:#ecc865;font-size:30px;" type="folder-open" theme="filled" />
           </template>
@@ -59,7 +59,7 @@
           </template>
         </div>
 
-        <div slot="folderName" slot-scope="text, record, index">
+        <div slot="folderName" slot-scope="text, record,">
           <template v-if="record.isFileFlag===1">
             <a @click="folderName(record)">{{record.folderName}}</a>
           </template>
@@ -68,7 +68,7 @@
           </template>
         </div>
 
-        <div slot="authorityType" slot-scope="text, record, index">
+        <div slot="authorityType" slot-scope="text, record">
           <template v-if="record.authorityType===2">
             <span>私密</span>
           </template>
@@ -122,7 +122,6 @@
               >
                 <a type="primary">删除</a>
               </a-popconfirm>
-              <!-- <a class="ant-dropdown-link" @click="delete_list(record)">删除</a> -->
             </template>
           </template>
         </span>
@@ -309,7 +308,6 @@ export default {
               })
             : []
           //设置数据总条数
-          // that.queryParam.accountDate = ''
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
           that.pagination = pagination
@@ -319,7 +317,6 @@ export default {
 
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

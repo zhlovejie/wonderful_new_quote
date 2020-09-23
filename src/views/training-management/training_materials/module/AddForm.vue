@@ -279,12 +279,11 @@ export default {
       this.$nextTick(() => {
         materialsDetail({ folderId: this.record.id }).then((res) => {
           this.haves = res.data.parentOaTrainFolerPermissionsDetailVoList
-
-          // if (this.record.Id === -1) {
           this.haveProcess = res.data.oaTrainFolerPermissionsDetailVoList
-          // } else {
-          //   this.haveProcess = res.data.parentOaTrainFolerPermissionsDetailVoList
-          // }
+          const arr = []
+          res.data.oaTrainFolerPermissionsDetailVoList.map((item) => {
+            arr.push(item.userId)
+          })
           if (res.data.authorityType === 1) {
             this.jurisdiction = true
             this.dis = this.record.Id === -1 ? true : false
@@ -293,6 +292,7 @@ export default {
             folderName: res.data.folderName,
             remark: res.data.remark,
             authorityType: res.data.authorityType,
+            authTrainFolderBoList: arr,
           })
         })
       })
@@ -368,7 +368,8 @@ export default {
       if (!Array.isArray(selectedArray)) return
       selectedArray.map((_ppid) => {
         if (!_ppid) return
-        let target = that.haveProcess.find((p) => p.id === _ppid)
+        console.log(that.haveProcess)
+        let target = that.haveProcess.find((p) => p.userId === _ppid)
         if (!target) {
           let _p = that.postSelectDataSource.find((_p) => _p.id === _ppid)
           _p.userId = _p.id
@@ -438,7 +439,7 @@ export default {
             this.haveProcess.splice(index, 1)
             let arr = []
             this.haveProcess.map((item) => {
-              arr.push(item.id)
+              arr.push(item.userId)
             })
             this.form.setFieldsValue({
               authTrainFolderBoList: arr,
@@ -451,7 +452,7 @@ export default {
         this.haveProcess.splice(index, 1)
         let arr = []
         this.haveProcess.map((item) => {
-          arr.push(item.id)
+          arr.push(item.userId)
         })
         this.form.setFieldsValue({
           authTrainFolderBoList: arr,

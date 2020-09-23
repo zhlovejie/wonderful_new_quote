@@ -7,7 +7,13 @@
       <a-form :form="form" class="form wdf-form">
         <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">类型</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >类型</a-col>
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-radio-group
@@ -15,7 +21,7 @@
                   :disabled="isSee"
                   v-decorator="['onlineFlag',{  initialValue:0,rules: [{ required: true, message: '请选择权限' }] }]"
                 >
-                  <a-radio :value="0">线下</a-radio>
+                  <a-radio :value="0" style="margin-right:50px">线下</a-radio>
                   <a-radio :value="1">线上</a-radio>
                 </a-radio-group>
               </a-form-item>
@@ -24,11 +30,17 @@
         </a-form-item>
         <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">会议负责人</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >会议负责人</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-form-item>
+              <a-form-item style="  float: right;">
                 <a-select
-                  style="width:200px;"
+                  style="width:180px;"
                   @change="depChangeHandler"
                   :disabled="isSee"
                   placeholder="请选择部门"
@@ -43,9 +55,9 @@
               </a-form-item>
             </a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-form-item>
+              <a-form-item style="  float: left;">
                 <a-select
-                  style="width:200px;"
+                  style="width:180px;"
                   placeholder="请选择人员"
                   :disabled="isSee"
                   v-decorator="['meetingUserId',{ rules: [{ required: true, message: '请选择部门!' }] },]"
@@ -63,7 +75,13 @@
 
         <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">开始时间</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >开始时间</a-col>
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
@@ -79,9 +97,15 @@
             </a-col>
           </a-row>
         </a-form-item>
-        <a-form-item :style="{borderBottom:'1px solid #ddd'}">
+        <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">结束时间</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >结束时间</a-col>
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
@@ -99,7 +123,13 @@
         </a-form-item>
         <a-form-item v-if="jurisdiction">
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">讲师</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >讲师</a-col>
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-input
@@ -116,7 +146,13 @@
         </a-form-item>
         <a-form-item v-if="jurisdiction">
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">地点</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >地点</a-col>
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
@@ -136,16 +172,22 @@
           </a-row>
         </a-form-item>
 
-        <a-form-item :style="{borderBottom:'1px solid #ddd'}" v-if="jurisdiction">
+        <a-form-item v-if="jurisdiction">
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">有无考核</a-col>
+            <a-col
+              class="col-border"
+              :span="6"
+              justify="center"
+              align="middle"
+              style="text-align: right;"
+            >有无考核</a-col>
             <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-radio-group
                   :disabled="isSee"
                   v-decorator="['haveCheckFlag',{initialValue:0, rules: [{  required: false, message: '请选择权限' }] }]"
                 >
-                  <a-radio :value="0">无</a-radio>
+                  <a-radio :value="0" style="margin-right:50px">无</a-radio>
                   <a-radio :value="1">有</a-radio>
                 </a-radio-group>
               </a-form-item>
@@ -308,10 +350,10 @@ export default {
 
 <style lang="less" scoped>
 .wdf-row {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
 }
 .col-border {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;

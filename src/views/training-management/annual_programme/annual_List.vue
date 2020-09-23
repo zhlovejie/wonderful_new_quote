@@ -114,7 +114,7 @@
     </div>
     <a-modal v-model="visible" title="新增年度培训方案" @ok="handleOk">
       <a-date-picker
-        style="width:280px ;margin-right:10px;"
+        style="width:280px ;margin-left:90px;"
         mode="year"
         placeholder="请选择年份"
         format="YYYY"
@@ -247,14 +247,16 @@ export default {
     },
     handleOk(e) {
       console.log(e)
-      this.visible = false
+
       if (this.yearPick1) {
         checkIfExistsYearPlan({ year: moment(this.yearPick1).format('YYYY') }).then((res) => {
           if (res.code === 200) {
-            console.log(res)
+            this.visible = false
+            this.doAction('add', { year: this.yearPick1 })
+          } else {
+            this.$message.error(res.msg)
           }
         })
-        // this.doAction('add', { year: this.yearPick1 })
       } else {
         this.$message.error('请选择年份')
       }

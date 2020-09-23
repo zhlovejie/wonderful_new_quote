@@ -8,7 +8,7 @@
               type="primary"
               :class="{currentDayWeekMonth:dayWeekMonth === 1}"
               @click="simpleSearch(1)"
-            >今天</a-button>
+            >全部</a-button>
             <a-button
               type="primary"
               :class="{currentDayWeekMonth:dayWeekMonth === 2}"

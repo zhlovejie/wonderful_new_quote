@@ -7,8 +7,14 @@
       <a-form :form="form" class="form wdf-form">
         <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">培训名称</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col
+              class="col-border"
+              :span="8"
+              justify="right"
+              align="middle"
+              style="text-align: right;"
+            >培训名称</a-col>
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-input
                   :disabled="isSee"
@@ -23,10 +29,16 @@
           </a-row>
         </a-form-item>
 
-        <a-form-item :style="{borderBottom:'1px solid #ddd'}">
+        <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="6" justify="center" align="middle">培训介绍</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col
+              class="col-border"
+              :span="8"
+              justify="right"
+              align="middle"
+              style="text-align: right;"
+            >培训介绍</a-col>
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-input
                   type="textarea"
@@ -131,11 +143,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.wdf-row {
-  border: 1px solid #ddd;
-}
 .col-border {
-  border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;

@@ -8,7 +8,7 @@
               type="primary"
               :class="{currentDayWeekMonth:dayWeekMonth === 1}"
               @click="simpleSearch(1)"
-            >今天</a-button>
+            >全部</a-button>
             <a-button
               type="primary"
               :class="{currentDayWeekMonth:dayWeekMonth === 2}"
@@ -153,8 +153,8 @@
 import { STable } from '@/components'
 import { dispersedList, dispersedwithdraw, dispersedDelete, meetingDetailByCode } from '@/api/training-management'
 import CommonStepForm from './module/CommonStepForm'
-import AddForm from './module/EventAdd'
-import Meeting from './module/view'
+import AddForm from '../dispersed/module/EventAdd'
+import Meeting from '../dispersed/module/view'
 import { getLoginUser } from '@api/systemSetting'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
