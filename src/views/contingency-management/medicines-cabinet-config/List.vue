@@ -90,7 +90,7 @@ const columns = [
   {
     align: 'center',
     title: '创建人',
-    dataIndex: 'createdId'
+    dataIndex: 'createdName'
   },
   {
     align: 'center',
