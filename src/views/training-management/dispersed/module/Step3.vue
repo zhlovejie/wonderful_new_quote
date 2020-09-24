@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrap">
-    <a-row type="flex">
+    <a-row type="flex" style="margin-bottom:30px">
       <a-col
         :span="24"
         class="basic-tit"
@@ -13,7 +13,7 @@
       <a-form :form="form" class="form wdf-form">
         <table class="custom-table custom-table-border">
           <template>
-            <tr>
+            <tr v-if="!isSee">
               <td style="text-align: right;">部门</td>
               <td colspan="2">
                 <a-select

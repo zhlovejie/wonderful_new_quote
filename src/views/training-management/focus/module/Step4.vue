@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrap">
-    <a-row type="flex">
+    <a-row type="flex" style="margin-bottom:30px">
       <a-col :span="24" class="basic-tit" justify="center" align="middle">培训文件</a-col>
     </a-row>
     <div>
