@@ -54,6 +54,7 @@
                   :min="0"
                   :max="99999"
                   :step="1"
+                  :precision="0" 
                   v-decorator="['shelfLife',{initialValue:+detail.shelfLife || undefined ,rules: [{required: true,message: '输入质保期'}]}]"
                   @change="datePickerChange"
                 />
@@ -220,6 +221,13 @@ export default {
         try {
           _detail = await emergencyMedicineDetail({ id: record.id }).then((res) => res.data)
           that.spinning = false
+          if(_detail.productionDate){
+            _detail.productionDate = _detail.productionDate.slice(0,10)
+          }
+          if(_detail.expirationDate){
+            _detail.expirationDate = _detail.expirationDate.slice(0,10)
+          }
+
           that.detail = { ..._detail }
 
           //pictureUrl

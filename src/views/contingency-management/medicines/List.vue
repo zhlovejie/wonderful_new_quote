@@ -206,6 +206,12 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            if(item.productionDate){
+              item.productionDate = item.productionDate.slice(0,10)
+            }
+            if(item.expirationDate){
+              item.expirationDate = item.expirationDate.slice(0,10)
+            }
             return item
           })
           //设置数据总条数
