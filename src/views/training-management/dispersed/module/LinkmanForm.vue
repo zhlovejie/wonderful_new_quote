@@ -7,14 +7,15 @@
       <a-form :form="form" class="form wdf-form">
         <a-form-item>
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >类型</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-radio-group
                   @change="authorityType"
@@ -30,17 +31,18 @@
         </a-form-item>
         <a-form-item>
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >会议负责人</a-col>
-            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="8" type="flex" justify="left" align="middle">
               <a-form-item style="  float: right;">
                 <a-select
-                  style="width:180px;"
+                  style="width:160px;"
                   @change="depChangeHandler"
                   :disabled="isSee"
                   placeholder="请选择部门"
@@ -54,10 +56,10 @@
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="8" type="flex" justify="left" align="middle">
               <a-form-item style="  float: left;">
                 <a-select
-                  style="width:180px;"
+                  style="width:160px;"
                   placeholder="请选择人员"
                   :disabled="isSee"
                   v-decorator="['meetingUserId',{ rules: [{ required: true, message: '请选择部门!' }] },]"
@@ -75,14 +77,15 @@
 
         <a-form-item>
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >开始时间</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
                   :disabled="isSee"
@@ -99,14 +102,15 @@
         </a-form-item>
         <a-form-item>
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >结束时间</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-date-picker
                   :disabled="isSee"
@@ -123,14 +127,15 @@
         </a-form-item>
         <a-form-item v-if="jurisdiction">
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >讲师</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-input
                   :disabled="isSee"
@@ -146,14 +151,15 @@
         </a-form-item>
         <a-form-item v-if="jurisdiction">
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >地点</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
                   :disabled="isSee"
@@ -174,14 +180,15 @@
 
         <a-form-item v-if="jurisdiction">
           <a-row type="flex">
+            <a-col class="col-border" :span="5" justify="center" align="middle"></a-col>
             <a-col
               class="col-border"
-              :span="6"
+              :span="3"
               justify="center"
               align="middle"
-              style="text-align: right;"
+              style="text-align: left;"
             >有无考核</a-col>
-            <a-col class="col-border" :span="18" type="flex" justify="left" align="middle">
+            <a-col class="col-border" :span="16" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-radio-group
                   :disabled="isSee"

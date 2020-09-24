@@ -11,7 +11,7 @@
             <a-col :span="6" justify="center" align="middle"></a-col>
             <a-col class="col-border" :span="3" justify="right" align="middle">承运方</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-form-item>
+              <a-form-item style="margin-bottom: 0;margin-top: 10px;">
                 <a-input
                   style="width:60%;"
                   :disabled="isSee"
@@ -28,7 +28,7 @@
             <a-col :span="6" justify="center" align="middle"></a-col>
             <a-col class="col-border" :span="3" justify="right" align="middle">车牌号</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-form-item>
+              <a-form-item style="margin-bottom: 0;margin-top: 10px;">
                 <a-input
                   :disabled="isSee"
                   style="width:60%;"
@@ -57,7 +57,7 @@
               justify="left"
               align="middle"
             >
-              <a-form-item>
+              <a-form-item style="margin-bottom: 0;margin-top: 10px;">
                 <a-select
                   :disabled="isSee"
                   placeholder="车辆型号"
@@ -190,12 +190,13 @@ export default {
 
 <style lang="less" scoped>
 .wdf-row {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
 }
 .col-border {
   border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
+  line-height: 60px;
   min-height: 60px;
   box-sizing: border-box;
 }

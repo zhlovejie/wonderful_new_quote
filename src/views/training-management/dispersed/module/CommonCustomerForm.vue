@@ -46,7 +46,7 @@
                   style="width:60%;"
                   :precision="0"
                   placeholder="培训介绍"
-                  v-decorator="['trainDesc',{rules: [{required: true,message: '请输入培训介绍',},
+                  v-decorator="['trainDesc',{rules: [{required: false,message: '请输入培训介绍',},
              ]}]"
                 />
               </a-form-item>

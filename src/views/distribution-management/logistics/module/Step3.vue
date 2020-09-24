@@ -20,7 +20,10 @@
 
           <table class="custom-table custom-table-border">
             <tr>
-              <td colspan="3" style="text-align: Left;">
+              <td
+                colspan="3"
+                style="text-align: Left;  border-top: none; border-left: none;border-right: none; "
+              >
                 <b>提货信息</b>
               </td>
             </tr>
@@ -35,7 +38,7 @@
               <td>{{i.contactInformation}}</td>
             </tr>
             <tr>
-              <td colspan="3" style="text-align: Left;">
+              <td colspan="3" style="text-align: Left; border-left: none;border-right: none; ">
                 <b>货物信息</b>
               </td>
             </tr>

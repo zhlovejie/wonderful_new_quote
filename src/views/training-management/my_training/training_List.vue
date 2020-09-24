@@ -6,11 +6,6 @@
           <a-button-group>
             <a-button
               type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
-              @click="simpleSearch(1)"
-            >全部</a-button>
-            <a-button
-              type="primary"
               :class="{currentDayWeekMonth:dayWeekMonth === 2}"
               @click="simpleSearch(2)"
             >本周</a-button>
@@ -19,6 +14,11 @@
               :class="{currentDayWeekMonth:dayWeekMonth === 3}"
               @click="simpleSearch(3)"
             >本月</a-button>
+            <a-button
+              type="primary"
+              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
+              @click="simpleSearch(1)"
+            >全部</a-button>
           </a-button-group>
         </a-form-item>
         <a-form-item>
@@ -61,8 +61,11 @@
             <template v-if="record.onlineFlag===0">
               <a type="primary" @click="toAdd('view',record)">查看</a>
             </template>
-            <template v-else>
+            <template v-else-if="record.readFlag===0">
               <a type="primary" @click="toAdd('examine',record)">处理</a>
+            </template>
+            <template v-else>
+              <a type="primary" @click="toAdd('examine',record)">查看</a>
             </template>
           </span>
         </s-table>
@@ -88,9 +91,8 @@ export default {
     return {
       form: this.$form.createForm(this),
       queryParam: {
-        // searchStatus: 0,
-        // trainType: 1,
         current: 0,
+        dayWeekMonth: 2,
       },
       trainName: undefined,
       recordResult: {},
@@ -99,7 +101,7 @@ export default {
       saleCustomer: 0,
       customerName: undefined,
       sDate: [undefined, undefined],
-      dayWeekMonth: 1,
+      dayWeekMonth: 2,
 
       saleCustomers: [],
       show: true,
@@ -211,7 +213,6 @@ export default {
         endTime = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       this.queryParam = {
-        // searchStatus: this.audit,
         trainName: this.trainName,
         beginTime: beginTime,
         endTime: endTime,

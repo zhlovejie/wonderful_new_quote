@@ -62,9 +62,9 @@
 </template>
 
 <script>
-import Step1 from './CommonCustomerForm'
-import Step2 from './LinkmanForm'
-import Step3 from './Step3'
+import Step1 from '../../dispersed/module/CommonCustomerForm'
+import Step2 from '../../dispersed/module/LinkmanForm'
+import Step3 from '../../dispersed/module/Step3'
 import Step4 from './Step4'
 import { focusDetailVo, dispersedDetailVo, meetinglistMyFile } from '@/api/training-management'
 

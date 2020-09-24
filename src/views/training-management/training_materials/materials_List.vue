@@ -220,6 +220,7 @@ export default {
       pagination: {
         current: 1,
         folderId: -1,
+        fromSource: 1,
       },
       queryParam: {},
       hiddenBoolean: false,

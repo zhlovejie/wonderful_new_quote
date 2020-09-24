@@ -38,6 +38,8 @@
                 <a-upload
                   v-decorator="['trainUrl',{ rules: [{ required: true, message: '请上传文件' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
                   name="file"
+                  accept=".pdf, .doc, .docx"
+                  :before-upload="beforeUpload"
                   :fileList="fileList"
                   @change="handleChange"
                   :action="uploadUrl"
@@ -75,6 +77,14 @@ export default {
 
   created() {},
   methods: {
+    beforeUpload(file) {
+      const isLt2M = file.size / 1024 / 1024 < 10
+      if (!isLt2M) {
+        this.$message.error('上传文件不能超过10M')
+      }
+      return isLt2M
+    },
+
     query() {
       this.visible = true
     },

@@ -58,13 +58,15 @@
               </th>
             </tr>
             <tr v-for="(item,index) in readHistoryList " :key="index">
-              <td>{{item.fileName}}</td>
+              <td>
+                <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">{{item.fileName}}</a>
+              </td>
               <td>
                 <template v-if="item.readFlag===0">
                   <a class="ant-dropdown-link" @click="delete_lists(item.id,item.fileUrl)">处理</a>
                 </template>
                 <template v-else>
-                  <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">已阅</a>
+                  <span class="ant-dropdown-link">已阅</span>
                 </template>
               </td>
             </tr>

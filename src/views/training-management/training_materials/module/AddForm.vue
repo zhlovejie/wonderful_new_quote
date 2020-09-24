@@ -191,6 +191,7 @@ export default {
       jurisdiction: false, //人员显示隐藏
       targetValue: '',
       parentId: '' || '无',
+      stateType: '',
       depart: '',
       _d: {
         departmentId: '',
@@ -246,6 +247,8 @@ export default {
       }
       if (type === 'add') {
         this.addId = record.Id
+        this.stateType = record.type
+        console.log(record.type)
         this.parentId = record.Id === -1 ? '无' : record.name
         this.dis = record.Id === -1 ? true : false
         if (record.Id != -1) {
@@ -261,6 +264,7 @@ export default {
       if (type === 'folder') {
         this.addId = record.id
         this.parentId = record.folderName
+        this.stateType = record.authorityType
         this.dis = record.id === -1 ? true : false
         getFolderlistrainList({ folderId: record.id }).then((res) => {
           this.haveProcess = res.data
@@ -303,12 +307,14 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          values.authTrainFolderBoList = this.haveProcess.map((item) => {
-            return {
-              departmentId: item.departmentId,
-              userId: item.userId,
-            }
-          })
+          if (this.haveProcess.length > 0) {
+            values.authTrainFolderBoList = this.haveProcess.map((item) => {
+              return {
+                departmentId: item.departmentId,
+                userId: item.userId,
+              }
+            })
+          }
           if (this.type === 'add') {
             values.parentId = this.addId
           }
@@ -363,7 +369,6 @@ export default {
       })
     },
     addProcess(selectedArray) {
-      console.log(selectedArray)
       let that = this
       if (!Array.isArray(selectedArray)) return
       selectedArray.map((_ppid) => {
@@ -383,11 +388,35 @@ export default {
       let that = this
       that.$nextTick(() => {
         that.targetValue = author.target.value
-        if (author.target.value === 1 && that.type === 'add') {
+        if (that.addId === -1 && that.type === 'add' && author.target.value === 1) {
           that.jurisdiction = true
           that.dis = that.addId === -1 ? true : false
-        } else if (author.target.value === 2 && that.type === 'add') {
+        } else {
           that.jurisdiction = false
+        }
+        if (that.addId != -1 && (that.type === 'add' || that.type === 'folder') && author.target.value === 1) {
+          if (author.target.value === that.stateType) {
+            that.jurisdiction = true
+            that.dis = that.addId === -1 ? true : false
+          } else {
+            that.jurisdiction = false
+            that.$message.error('请和父级权限保持一致')
+            that.form.setFieldsValue({
+              authorityType: that.stateType,
+            })
+          }
+        }
+        if (that.addId != -1 && (that.type === 'add' || that.type === 'folder') && author.target.value === 2) {
+          if (author.target.value === that.stateType) {
+            that.jurisdiction = false
+          } else {
+            that.jurisdiction = true
+            that.dis = that.addId === -1 ? true : false
+            that.$message.error('请和父级权限保持一致')
+            that.form.setFieldsValue({
+              authorityType: that.stateType,
+            })
+          }
         }
         if (author.target.value === 2 && that.type === 'edit-salary') {
           meetinglistMycheckCanModifyl({ folderId: that.record.id }).then((res) => {
@@ -419,6 +448,11 @@ export default {
               })
             } else {
               that.jurisdiction = true
+              debugger
+              let haveProcess = that.haveProcess.length > 0 ? true : false
+              if (!haveProcess) {
+                that.haveProcess = that.haves
+              }
               that.form.setFieldsValue({
                 authorityType: 1,
               })

@@ -88,7 +88,14 @@
         </a-row>
         <a-row type="flex">
           <a-col :span="5"></a-col>
-          <a-col class="col-border" :span="4" justify="center" align="middle">身份证</a-col>
+          <a-col
+            class="col-border"
+            :span="4"
+            justify="center"
+            align="middle"
+            style="margin-top：20px"
+            :style="{paddingTop:'45px'}"
+          >身份证</a-col>
           <a-col class="col-border" :span="10" justify="center" align="middle">
             <UploadP
               ref="normalCard"
@@ -103,7 +110,7 @@
           <a-row type="flex">
             <a-col :span="5"></a-col>
             <a-col
-              :style="{borderBottom:'1px solid #ddd'}"
+              :style="{borderBottom:'1px solid #ddd',paddingTop:'45px'}"
               class="col-border"
               justify="center"
               align="middle"

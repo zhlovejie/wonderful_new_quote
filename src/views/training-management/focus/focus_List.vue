@@ -6,11 +6,6 @@
           <a-button-group>
             <a-button
               type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
-              @click="simpleSearch(1)"
-            >全部</a-button>
-            <a-button
-              type="primary"
               :class="{currentDayWeekMonth:dayWeekMonth === 2}"
               @click="simpleSearch(2)"
             >本周</a-button>
@@ -19,6 +14,11 @@
               :class="{currentDayWeekMonth:dayWeekMonth === 3}"
               @click="simpleSearch(3)"
             >本月</a-button>
+            <a-button
+              type="primary"
+              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
+              @click="simpleSearch(1)"
+            >全部</a-button>
           </a-button-group>
         </a-form-item>
         <a-form-item v-show="show">
@@ -173,6 +173,7 @@ export default {
       queryParam: {
         searchStatus: 0,
         trainType: 1,
+        dayWeekMonth: 2,
       },
       trainName: undefined,
       recordResult: {},
@@ -181,7 +182,7 @@ export default {
       saleCustomer: 0,
       customerName: undefined,
       sDate: [undefined, undefined],
-      dayWeekMonth: 1,
+      dayWeekMonth: 2,
 
       saleCustomers: [],
       audit: 0,
