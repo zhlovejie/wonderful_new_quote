@@ -266,7 +266,13 @@ export default {
         that.selectedKeys = [node.key]
         that.cacheSelectedKeys = [node]
 
-        setTimeout(() => {that.autoLocationNode() }, 500);
+        setTimeout(() => {
+          try{
+            that.autoLocationNode()
+          }catch(e){
+            console.log(e)
+          }
+        }, 1500);
       })
     },
 

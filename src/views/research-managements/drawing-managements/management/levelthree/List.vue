@@ -71,7 +71,7 @@
       </a-table>
     </div>
 
-    <AddForm ref="addForm" @finish="() => { searchAction(),$emit('finish') }" />
+    <AddForm ref="addForm" @finish="() => { searchAction() }" />
     <DisposeForm ref="disposeForm" />
     <XdocView ref="xdocView" />
   </div>
@@ -227,6 +227,13 @@ export default {
           pagination.total = res.data.total || 0
           pagination.current = res.data.current || 1
           that.pagination = pagination
+          //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
+          //刷新也不显示数据
+          let {current,pages} = res.data
+          if(current > pages){
+            that.pagination = {...pagination,current:pages}
+            that.searchAction()
+          }
         })
         .catch(err => (that.loading = false))
     },
@@ -289,7 +296,7 @@ export default {
             .then(res => {
               that.$message.info(res.msg)
               that.searchAction()
-              that.$emit('finish')
+              //that.$emit('finish')
             })
             .catch(err => {
               that.$message.info(`错误：${err.message}`)
