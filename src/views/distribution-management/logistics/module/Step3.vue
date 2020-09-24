@@ -5,7 +5,7 @@
       <a-row>
         <a-col :span="24" class="basic-tit" justify="center" align="middle">物流单</a-col>
       </a-row>
-      <a-button type="primary" icon="plus" @click="addInvoice()">新增</a-button>
+      <a-button v-if="!isSee" type="primary" icon="plus" @click="addInvoice()">新增</a-button>
       <a-form :form="form" class="form wdf-form">
         <div v-for="(i ,index) in todayList" :key="index">
           <h3 style="font-weight: 700; ">
@@ -20,7 +20,7 @@
 
           <table class="custom-table custom-table-border">
             <tr>
-              <td style="text-align: Left;">
+              <td colspan="3" style="text-align: Left;">
                 <b>提货信息</b>
               </td>
             </tr>
@@ -35,7 +35,7 @@
               <td>{{i.contactInformation}}</td>
             </tr>
             <tr>
-              <td style="text-align: Left;">
+              <td colspan="3" style="text-align: Left;">
                 <b>货物信息</b>
               </td>
             </tr>
@@ -167,14 +167,13 @@ export default {
 .custom-table-border td {
   padding: 10px;
   width: 30%;
-  border: none;
 }
 .wdf-row {
-  // border: 1px solid #ddd;
+  border: 1px solid #ddd;
 }
 
 .col-border {
-  // border: 1px solid #ddd;
+  border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;

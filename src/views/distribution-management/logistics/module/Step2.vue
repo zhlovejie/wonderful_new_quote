@@ -7,45 +7,56 @@
     <div class="form wdf-form">
       <template>
         <a-form :form="form" class="form wdf-form">
-          <a-form-item>
-            <a-row type="flex">
-              <a-col class="col-border" :span="6" justify="center" align="middle"></a-col>
-              <a-col class="col-border" :span="3" justify="right" align="middle">承运方</a-col>
-              <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-                <a-form-item>
-                  <a-input
-                    style="width:60%;"
-                    :disabled="isSee"
-                    read-only
-                    @click="handleCustomerClick"
-                    v-decorator="['distributionStationId',{rules: [{required: true,message: '请选择承运方',},
-             ]}]"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form-item>
-          <a-form-item>
-            <a-row type="flex">
-              <a-col class="col-border" :span="6" justify="center" align="middle"></a-col>
-              <a-col class="col-border" :span="3" justify="right" align="middle">车牌号</a-col>
-              <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-                <a-form-item>
-                  <a-input
-                    :disabled="isSee"
-                    style="width:60%;"
-                    :precision="0"
-                    v-decorator="['licensePlateNumber',{rules: [{required: true,message: '请输车牌号',},
-             ]}]"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form-item>
-          <a-col class="col-border" :span="6" justify="center" align="middle"></a-col>
-          <a-form-item :style="{borderBottom:'1px solid #ddd'}">
-            <a-col class="col-border" :span="3" justify="right" align="middle">车辆型号</a-col>
+          <a-row type="flex">
+            <a-col :span="6" justify="center" align="middle"></a-col>
+            <a-col class="col-border" :span="3" justify="right" align="middle">承运方</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+              <a-form-item>
+                <a-input
+                  style="width:60%;"
+                  :disabled="isSee"
+                  read-only
+                  @click="handleCustomerClick"
+                  v-decorator="['distributionStationId',{rules: [{required: true,message: '请选择承运方',},
+             ]}]"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+          <a-row type="flex">
+            <a-col :span="6" justify="center" align="middle"></a-col>
+            <a-col class="col-border" :span="3" justify="right" align="middle">车牌号</a-col>
+            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+              <a-form-item>
+                <a-input
+                  :disabled="isSee"
+                  style="width:60%;"
+                  :precision="0"
+                  v-decorator="['licensePlateNumber',{rules: [{required: true,message: '请输车牌号',},
+             ]}]"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+          <a-row type="flex">
+            <a-col :span="6" justify="center" align="middle"></a-col>
+            <a-col
+              class="col-border"
+              :style="{borderBottom:'1px solid #ddd'}"
+              :span="3"
+              justify="right"
+              align="middle"
+            >车辆型号</a-col>
+            <a-col
+              class="col-border"
+              :style="{borderBottom:'1px solid #ddd'}"
+              :span="9"
+              type="flex"
+              justify="left"
+              align="middle"
+            >
               <a-form-item>
                 <a-select
                   :disabled="isSee"
@@ -63,7 +74,7 @@
                 </a-select>
               </a-form-item>
             </a-col>
-          </a-form-item>
+          </a-row>
         </a-form>
       </template>
     </div>
@@ -178,15 +189,15 @@ export default {
 
 
 <style lang="less" scoped>
+.wdf-row {
+  border: 1px solid #ddd;
+}
 .col-border {
   border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;
   box-sizing: border-box;
-}
-.wdf-row {
-  border: 1px solid #ddd;
 }
 .wdf-form {
   margin-top: 12px;

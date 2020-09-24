@@ -1,13 +1,7 @@
 <template>
   <div class="content-wrap">
-    <a-row>
-      <a-col
-        :span="24"
-        class="basic-tit"
-        style="margin-bottom:3px"
-        justify="center"
-        align="middle"
-      >驾驶员信息</a-col>
+    <a-row style="margin-bottom:50px">
+      <a-col :span="24" class="basic-tit" justify="center" align="middle">驾驶员信息</a-col>
     </a-row>
     <a-form :form="form">
       <a-form-item>
@@ -108,8 +102,20 @@
         <a-form-item>
           <a-row type="flex">
             <a-col :span="5"></a-col>
-            <a-col class="col-border" justify="center" align="middle" :span="4">驾驶证</a-col>
-            <a-col class="col-border" justify="center" align="middle" :span="10">
+            <a-col
+              :style="{borderBottom:'1px solid #ddd'}"
+              class="col-border"
+              justify="center"
+              align="middle"
+              :span="4"
+            >驾驶证</a-col>
+            <a-col
+              :style="{borderBottom:'1px solid #ddd'}"
+              class="col-border"
+              justify="center"
+              align="middle"
+              :span="10"
+            >
               <UploadP
                 style="margin-left:100px"
                 ref="normalUpload"
@@ -326,10 +332,10 @@ export default {
 
 <style lang="less" scoped>
 .wdf-row {
-  // border: 1px solid #ddd;
+  border: 1px solid #ddd;
 }
 .col-border {
-  // border: 1px solid #ddd;
+  border: 1px solid #ddd;
   padding: 10px 0;
   border-bottom: none;
   min-height: 60px;
