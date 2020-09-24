@@ -30,7 +30,7 @@ export default {
   //baseURL:'http://192.168.13.158:8995/oa',//张恒
   baseURL: 'http://192.168.13.133:8995', // 玉堂
 
-  baseURL: 'http://106.14.194.64/cloud_new',
+  //baseURL: 'http://106.14.194.64/cloud_new',
   //baseURL: 'http://192.168.13.250/cloud',
 
   //baseURL:'http://192.168.13.158:8995/cloud_new',//张恒

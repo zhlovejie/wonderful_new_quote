@@ -59,11 +59,14 @@
           <a v-if="$auth('blueprintFile:update')" type="primary" @click="doAction('edit',record)">修改</a>
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('back',record)">反馈记录</a>
+
+          <template v-if="+record.createdId === +userInfo.id">
           <a-divider type="vertical" />
           <!-- v-if="$auth('blueprintFile:delete')" -->
           <a-popconfirm v-if="$auth('blueprintFile:delete')"  title="是否要删除此行？" @confirm="doAction('del',record)">
             <a>删除</a>
           </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
@@ -189,6 +192,7 @@ export default {
   methods: {
     moment,
     init() {
+      this.selectedRowKeys = []
       this.inputParam = Object.assign({},this.params)
       let {id,superiorId} = this.inputParam
       if(this.globalSearch){
