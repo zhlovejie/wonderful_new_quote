@@ -1,7 +1,6 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
       <a-input
         placeholder="名称"
         v-model="queryParam.folderName"
@@ -28,14 +27,14 @@
             style="float:right; margin-right:10px;"
             type="primary"
             icon="plus"
-            @click="fileAdd('add',{Id:pagination.folderId ,name:folderNa||''})"
+            @click="fileAdd('add',{Id:paginationType.folderId ,name:folderNa||''})"
           >新增文件</a-button>
         </template>
         <a-button
           style="float:right; margin-right:10px;"
           type="primary"
           icon="plus"
-          @click="handleAdd('add',{Id:pagination.folderId ,name:folderNa||'',type:authority})"
+          @click="handleAdd('add',{Id:paginationType.folderId ,name:folderNa||'',type:authority})"
         >新增文件夹</a-button>
       </template>
     </div>
@@ -91,7 +90,7 @@
             <a-divider type="vertical" />
             <template>
               <a
-                @click="handleAdd('edit-salary',{deptId:record.deptId,id:record.id,name:folderNa||'',Id:pagination.folderId})"
+                @click="handleAdd('edit-salary',{deptId:record.deptId,id:record.id,name:folderNa||'',Id:paginationType.folderId})"
               >修改</a>
               <a-divider type="vertical" />
               <a-popconfirm
@@ -221,14 +220,14 @@ export default {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        onShowSizeChange: (current, pageSize) => ((this.paginationType.size = pageSize), this.searchAction()),
       },
-      pagination1: {},
-      queryParam: {
+      paginationType: {
         folderId: -1,
         fromSource: 1,
         current: 1,
       },
+      queryParam: {},
       hiddenBoolean: false,
 
       selectedRowKeys: [],
@@ -239,8 +238,8 @@ export default {
   created() {},
   computed: {},
   watch: {
-    pagination: function (val) {
-      // debugger
+    paginationType: function (val) {
+      console.log(val)
       if (val.folderId === -1) {
         this.fold = false
       } else {
@@ -249,6 +248,7 @@ export default {
     },
     $route: {
       handler: function (to, from) {
+        console.log(to)
         if (to.name === 'training-management_materials') {
           this.init()
         }
@@ -278,7 +278,8 @@ export default {
     },
     //进入下一级
     folderName(record) {
-      this.pagination.folderId = record.id
+      //this.paginationType.folderId = record.id
+      this.paginationType = { ...this.paginationType, folderId: record.id }
       this.folderNa = record.folderName
       this.authority = record.authorityType
       this.parentId = record.id
@@ -287,7 +288,7 @@ export default {
     //返回上一级
     gohandle() {
       materialsId({ folderId: this.parentId }).then((res) => {
-        this.pagination.folderId = res.data.parentId
+        this.paginationType = { ...this.paginationType, folderId: res.data.parentId }
         this.parentId = res.data.parentId
         this.searchAction()
       })
@@ -295,13 +296,13 @@ export default {
     //接收子组件数据
     search(data) {
       this.parentId = data.id
-      this.pagination.folderId = data.id
+      this.paginationType.folderId = data.id
       this.searchAction()
     },
     searchAction(opt) {
       let that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.paginationType }, opt || {})
       materialsList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -325,8 +326,8 @@ export default {
     // 分页
     handleTableChange(pagination, filters, sorter) {
       console.log(pagination)
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
+      this.paginationType.size = pagination.pageSize
+      this.paginationType.current = pagination.current
       // const pager = { ...this.pagination }
       // pager.current = pagination.current
       // this.pagination = pager

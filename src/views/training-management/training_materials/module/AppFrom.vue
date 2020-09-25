@@ -105,7 +105,7 @@ export default {
     },
     isView() {
       //新增
-      return this.type === 'add'
+      return this.type === 'add' || this.type === 'folder'
     },
     isEditSalary() {
       //修改
