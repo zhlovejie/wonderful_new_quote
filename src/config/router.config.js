@@ -2745,6 +2745,7 @@ export const asyncRouterMap = [
           }
         ]
       },
+
       {
         //车辆管理
         path: '/vehicle-management',
@@ -2756,7 +2757,8 @@ export const asyncRouterMap = [
           permission: ['permission']
         },
         redirect: '/vehicle-management/car-info-list',
-        children: [{
+        children: [
+          {
             path: '/vehicle-management/car-info-list',
             name: 'vehicle-management-car-info-list',
             component: () => import('@/views/vehicle-management/car-info-list/List'),
@@ -2873,8 +2875,11 @@ export const asyncRouterMap = [
               }
             ]
           }
+
         ]
-      }
+      },
+
+      
     ]
   }
 ]
