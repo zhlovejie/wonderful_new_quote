@@ -17,7 +17,10 @@
         <a-button type="primary" :disabled="!hasSelected" @click="doAction('deleteBatch')">
           批量删除
         </a-button>
-        <span style="margin-left: 8px">
+        <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
+          批量下载
+        </a-button>
+        <span style="margin-left: 15px">
           <template v-if="hasSelected">
             {{ `已选择 ${selectedRowKeys.length} 项` }}
           </template>
@@ -85,12 +88,15 @@ import {
   blueprintFileDetail,
   blueprintFileDel,
   blueprintFileAddOrUpdate,
-  blueprintFileDeleteBatch
+  blueprintFileDeleteBatch,
+  duplicateCheck
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import DisposeForm from './DisposeForm'
 import XdocView from './XdocView'
 import moment from 'moment'
+import { downloadFile } from '@/api/OperationalScheme'
+
 
 const columns = [
   {
@@ -173,7 +179,8 @@ export default {
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       inputParam:{},
-      selectedRowKeys:[]
+      selectedRowKeys:[],
+      selectedRows:[]
     }
   },
   computed: {
@@ -306,6 +313,13 @@ export default {
         })
 
         return
+      }else if(actionType === 'downloadBatch'){
+        let selectedRows = that.selectedRows
+        for (let j = 0; j < selectedRows.length; j++) {
+          const url = selectedRows[j].fileUrl
+          downloadFile(url)
+        }
+        return
       }
       else {
         this.$message.info('功能尚未实现！')
@@ -329,9 +343,10 @@ export default {
       }
       return fNode(node)
     },
-    onSelectChange(selectedRowKeys) {
+    onSelectChange(selectedRowKeys,selectedRows) {
       //console.log('selectedRowKeys changed: ', selectedRowKeys);
-      this.selectedRowKeys = selectedRowKeys;
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     }
   }
 }

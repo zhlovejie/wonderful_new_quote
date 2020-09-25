@@ -9,23 +9,23 @@
               <a-form-item>
                 <a-input
                   disabled
-                  style="width:100%;"
-                  v-decorator="['permissionName',{initialValue:detail.permissionName}]"
+                  style="width: 100%"
+                  v-decorator="['permissionName', { initialValue: detail.permissionName }]"
                 />
               </a-form-item>
               <a-form-item hidden>
-                <a-input v-decorator="['menuId',{initialValue:detail.menuId}]" />
+                <a-input v-decorator="['menuId', { initialValue: detail.menuId }]" />
               </a-form-item>
               <a-form-item hidden>
-                <a-input v-decorator="['permissionId',{initialValue:detail.permissionId}]" />
+                <a-input v-decorator="['permissionId', { initialValue: detail.permissionId }]" />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">类型</td>
+            <td style="width: 120px">类型</td>
             <td>
               <a-form-item>
-                <a-radio-group v-decorator="['fileType',{initialValue: detail.fileType}]">
+                <a-radio-group v-decorator="['fileType', { initialValue: detail.fileType }]">
                   <a-radio :value="1">研发图纸</a-radio>
                   <a-radio :value="2">工艺图纸</a-radio>
                 </a-radio-group>
@@ -34,11 +34,12 @@
           </tr>
 
           <tr>
-            <td style="width:120px;">文件</td>
+            <td style="width: 120px">文件</td>
             <td>
-              <a-form-item style="width:400px;overflow:hidden;">
+              <a-form-item style="width: 400px; overflow: hidden">
                 <div class="clearfix">
                   <a-upload
+                    ref="customUpload"
                     name="file"
                     :action="uploadPath"
                     :multiple="true"
@@ -62,51 +63,47 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="uploadFileName" slot-scope="text, record, index">
-            <span style="display:inline-block;width:100px;word-break: break-all;">{{text}}</span>
+            <span style="display: inline-block; width: 100px; word-break: break-all">{{ text }}</span>
           </div>
 
           <div slot="pictureNum" slot-scope="text, record">
             <a-input
               placeholder="图号"
               :value="record.pictureNum"
-              @change="inputChange(record.key,'pictureNum',$event)"
+              @change="inputChange(record.key, 'pictureNum', $event)"
             />
           </div>
           <div slot="fileName" slot-scope="text, record">
             <a-input
               placeholder="文件名称"
               :value="record.fileName"
-              @change="inputChange(record.key,'fileName',$event)"
+              @change="inputChange(record.key, 'fileName', $event)"
             />
           </div>
           <div slot="productCode" slot-scope="text, record">
             <a-input
               placeholder="代码"
               :value="record.productCode"
-              @change="inputChange(record.key,'productCode',$event)"
+              @change="inputChange(record.key, 'productCode', $event)"
             />
           </div>
           <div slot="remark" slot-scope="text, record">
-            <a-input
-              placeholder="备注"
-              :value="record.remark"
-              @change="inputChange(record.key,'remark',$event)"
-            />
+            <a-input placeholder="备注" :value="record.remark" @change="inputChange(record.key, 'remark', $event)" />
           </div>
           <div slot="action" slot-scope="text, record">
             <a type="primary" @click="doRemoveAction(record.key)">删除</a>
           </div>
         </a-table>
-        <div style="margin-top:20px;text-align:center;" v-if="!isView">
+        <div style="margin-top: 20px; text-align: center" v-if="!isView">
           <a-button @click="handleCancel">取消</a-button>
-          <a-button style="margin-left:10px;" type="primary" @click="handleSubmit">确定</a-button>
+          <a-button style="margin-left: 10px" type="primary" @click="handleSubmit">确定</a-button>
         </div>
       </a-form>
     </a-spin>
   </div>
 </template>
 <script>
-import { blueprintFileAdd, getUploadPath ,blueprintFileDelete} from '@/api/researchManagement'
+import { blueprintFileAdd, getUploadPath, blueprintFileDelete, duplicateCheck } from '@/api/researchManagement'
 import moment from 'moment'
 
 let uuid = () => Math.random().toString(32).slice(-10)
@@ -128,7 +125,7 @@ let columns = [
   {
     align: 'center',
     title: '图号',
-    dataIndex: 'pictureNum',
+    //dataIndex: 'pictureNum',
     scopedSlots: { customRender: 'pictureNum' },
   },
   {
@@ -183,6 +180,8 @@ export default {
       fileList: [],
       dataSource: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
+
+      duplicateNames: [], //重复文件名
     }
   },
   computed: {
@@ -201,6 +200,12 @@ export default {
   },
   created() {
     this.query(this.action, this.param)
+
+    // this.$nextTick(() => {
+    //   window.vueInstance = this
+    //   window.customUpload = this.$refs.customUpload
+    //   window.fileList = this.fileList
+    // })
   },
   watch: {
     fileList(val) {
@@ -235,11 +240,55 @@ export default {
         }
       })
       that.dataSource = dataSource
-
-      
     },
   },
   methods: {
+    testUpload() {
+      this.autoUploadTag = true
+      let customUpload = this.$refs.customUpload
+      let uploadRef = customUpload.$refs.uploadRef
+      uploadRef.Component.methods.uploadFiles(this.fileList)
+    },
+    async checkRepeatFiles(fileList) {
+      let that = this
+      let { superiorId } = that.record.params
+      let { haveDuplicate, duplicateNames } = await duplicateCheck({
+        menuId: superiorId,
+        names: fileList.map((f) => f.name.split('.')[0]).join(','),
+      }).then((res) => res.data)
+
+      if (haveDuplicate === true) {
+        const h = that.$createElement
+        let msgArr = [
+          h('p', '检测到以下文件重复，可以选择执行以下操作'),
+          ...duplicateNames.map((fName) => h('p', fName)),
+        ]
+        that.$confirm({
+          title: '文件重复提示',
+          okText: '替换',
+          cancelText: '取消',
+          content: h('div', {}, msgArr),
+          onOk() {
+            that.duplicateNames = [...new Set([...that.duplicateNames, ...duplicateNames])]
+            that.fileList = fileList.map((f) => {
+              if (f.__repeat === true) {
+                ;(f.status = 'done'), (f.__repeat = false)
+              }
+              return f
+            })
+          },
+          onCancel() {
+            that.fileList = fileList.map((f) => {
+              if (duplicateNames.includes(f.name.split('.')[0])) {
+                ;(f.status = 'error'), (f.__repeat = true)
+              }
+              return f
+            })
+          },
+        })
+      }
+    },
+
     inputChange(key, field, event) {
       let that = this
       let dataSource = [...that.dataSource]
@@ -256,6 +305,7 @@ export default {
       that.record = { ...record }
       await that.initData()
       that.visible = true
+      that.duplicateNames = []
     },
     initData() {
       let that = this
@@ -273,15 +323,8 @@ export default {
       }
       return Promise.all(queue)
     },
-    beforeUpload(file){
-      console.log(file)
-      let isRepeat = this.fileList.filter(f => f.name === file.name).length > 0
-      if(isRepeat){
-        //file.name = '【重复】-'+file.name
-        file.status = 'error'
-        file.__repeat = true
-      }
-      return isRepeat ? false : true
+    beforeUpload(file) {
+      return true
     },
     handleSubmit() {
       let that = this
@@ -290,32 +333,37 @@ export default {
         return
       }
 
-      let repeatFiles = that.fileList.filter(f => f.__repeat)
-      if(repeatFiles.length > 0){
-        const h = that.$createElement;
-        let msgArr = ['以下文件存在重复，请手动删除：',...repeatFiles.map(f => f.name)]
-          that.$warning({
-            title: '检测到重复文件',
-            content: h('div', {}, msgArr.map(msg => h('p',msg))),
-            onOk() {
-
-            },
-          });
+      let repeatFiles = that.fileList.filter((f) => f.__repeat === true)
+      if (repeatFiles.length > 0) {
+        const h = that.$createElement
+        let msgArr = ['以下文件存在重复，请手动删除：', ...repeatFiles.map((f) => f.name)]
+        that.$warning({
+          title: '检测到重复文件',
+          content: h(
+            'div',
+            {},
+            msgArr.map((msg) => h('p', msg))
+          ),
+          onOk() {},
+        })
         return
       }
-
 
       this.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {
             values.id = that.detail.id
-          } 
+          }
 
-          if(!that.checkFiles()){
-            return 
+          if (!that.checkFiles()) {
+            return
           }
 
           values.files = that.dataSource
+          if (that.duplicateNames.length > 0) {
+            values.coverFileNames = that.duplicateNames
+          }
+
           console.log('Received values of form: ', values)
           that.spinning = true
           blueprintFileAdd(values)
@@ -336,11 +384,12 @@ export default {
         }
       })
     },
-    checkFiles(){ //目前只检测 文件名称字段
+    checkFiles() {
+      //目前只检测 文件名称字段
       let that = this
       let isEmpty = (obj) => obj === '' || obj === undefined || obj === null
-      for(let item of that.dataSource){
-        if(isEmpty(item.fileName)){
+      for (let item of that.dataSource) {
+        if (isEmpty(item.fileName)) {
           that.$message.info('请完善文件名称')
           return false
         }
@@ -351,7 +400,7 @@ export default {
       this.$nextTick(() => (this.visible = false))
       this.$emit('close')
     },
-    handleChange({file,fileList}) {
+    handleChange({ file, fileList }) {
       let that = this
       fileList = [...fileList]
       fileList = fileList.map((file) => {
@@ -362,24 +411,27 @@ export default {
       })
       that.fileList = fileList
 
-      if(file && file.status === "removed" && file.url){
-        blueprintFileDelete(`url=${file.url}`).then(res =>{
-          console.log(res)
-          if(res && +res.code === 200){
-            that.form.setFieldsValue({pictureNum:undefined})
-          }
-        })
+      if (file && file.status === 'removed' && file.url) {
+        blueprintFileDelete(`url=${file.url}`)
+        let fname = file.name.split('.')[0]
+        that.duplicateNames = that.duplicateNames.filter((_fname) => _fname !== fname)
+      }
+      if (!(file && file.status === 'removed')) {
+        if (that.fileList.every((f) => ['done', 'error'].includes(f.status))) {
+          that.checkRepeatFiles([...that.fileList])
+        }
       }
     },
     doRemoveAction(key) {
       let target = this.dataSource.find((item) => item.key === key)
       if (target) {
         this.fileList = this.fileList.filter((f) => f.url !== target.__url)
+        blueprintFileDelete(`url=${target.url}`)
       }
     },
-    clearAll(){
+    clearAll() {
       let dataSource = [...this.dataSource]
-      dataSource.map(item =>{
+      dataSource.map((item) => {
         item.pictureNum = ''
         item.fileName = ''
         item.productCode = ''
@@ -387,7 +439,7 @@ export default {
         return item
       })
       this.dataSource = dataSource
-    }
+    },
   },
 }
 </script>

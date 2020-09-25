@@ -109,7 +109,14 @@ export function blueprintFileDelete (parameter) {
   })
 }
 
-
+export function duplicateCheck (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/duplicateCheck',
+    method: 'get',
+    params: parameter
+  })
+}
 
 export function blueprintFileAdd (parameter) {
   return axios({
