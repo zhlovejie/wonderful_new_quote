@@ -128,11 +128,18 @@ export default {
       authority: '',
       fold: false,
       pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+      },
+      pagination1: {},
+
+      queryParam: {
         current: 1,
         folderId: -1,
         fromSource: 2,
       },
-      queryParam: {},
       hiddenBoolean: false,
 
       selectedRowKeys: [],
@@ -195,7 +202,7 @@ export default {
     searchAction(opt) {
       let that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
       materialsList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -220,9 +227,11 @@ export default {
     // 分页
     handleTableChange(pagination, filters, sorter) {
       // console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      // const pager = { ...this.pagination }
+      // pager.current = pagination.current
+      // this.pagination = pager
       this.searchAction()
     },
     confirmDelete(record) {
