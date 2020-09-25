@@ -67,9 +67,25 @@ export default {
     this.init()
   },
   watch:{
+    depId(val){
+      this.userInfo = {
+        ...this.userInfo,
+        depId:val || undefined,
+      }
+      this.init()
+    },
+    userId(val){
+      this.userInfo = {
+        ...this.userInfo,
+        userId:val || undefined,
+      }
+      this.init()
+    },
     userInfo(newVal,oldVal){
       if(newVal.depId && newVal.userId){
-        this.$emit('change',newVal.depId,newVal.userId)
+        let targetDep = this.depList.find(item => item.id === newVal.depId)
+        let targetUser = this.userList.find(item => item.id === newVal.userId)
+        this.$emit('change',newVal.depId,newVal.userId,targetDep,targetUser)
       }
     }
   },
