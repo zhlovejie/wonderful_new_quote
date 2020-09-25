@@ -4,39 +4,43 @@
       <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
       <a-input
         placeholder="物流名称"
-        v-model="queryParam.title"
+        v-model="queryParam.logisticsCompanyName"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
       <a-input
         placeholder="负责人"
-        v-model="queryParam.title"
+        v-model="queryParam.personChargeName"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
       <a-input
         placeholder="负责人电话"
-        v-model="queryParam.title"
+        v-model="queryParam.personChargeTelephone"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
 
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('social:add')">
+      <template v-if="$auth('Distribution:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('social:list')">
+      <a-table
+        :columns="columns"
+        :data-source="dataSource"
+        :pagination="pagination"
+        @change="handleTableChange"
+        v-if="$auth('Distribution:list')"
+      >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleSee(record)">查看</a>
-          <a-divider type="vertical" />
-          <!-- <a class="ant-dropdown-link" :href="urls+record.id">下载</a> -->
-          <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
+          <a @click="handleAdd('see',record)">查看</a>
+          <template v-if="$auth('Distribution:add')&&+record.createdId  === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
@@ -52,7 +56,7 @@
 
 <script>
 import moment from 'moment'
-import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
+import { DistributionList, DistributionDelete } from '@/api/distribution-management'
 import AddForm from './module/AddForm'
 
 const columns = [
@@ -65,32 +69,32 @@ const columns = [
   },
   {
     title: '物流公司名称',
-    dataIndex: 'accountDate',
-    key: 'accountDate',
+    dataIndex: 'logisticsCompanyName',
+    key: 'logisticsCompanyName',
     align: 'center',
   },
   {
     title: '负责人',
-    dataIndex: 'peopleNumber',
-    key: 'peopleNumber',
+    dataIndex: 'personChargeName',
+    key: 'personChargeName',
     align: 'center',
   },
   {
     title: '负责人电话',
-    dataIndex: 'companyPay',
-    key: 'companyPay',
+    dataIndex: 'personChargeTelephone',
+    key: 'personChargeTelephone',
     align: 'center',
   },
   {
     title: '微信号',
-    dataIndex: 'personalPay',
-    key: 'personalPay',
+    dataIndex: 'wechatNumber',
+    key: 'wechatNumber',
     align: 'center',
   },
   {
     title: '公司地址',
-    dataIndex: 'companyPay1',
-    key: 'companyPay1',
+    dataIndex: 'addressName',
+    key: 'addressName',
     align: 'center',
   },
   {
@@ -144,7 +148,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_social') {
+        if (to.name === 'distribution_Distribution') {
           this.init()
         }
       },
@@ -164,12 +168,8 @@ export default {
     searchAction(opt) {
       let that = this
       that.loading = true
-      if (this.queryParam.Dates) {
-        // let date = that.queryParam.Dates.format('YYYYMM')
-        // this.queryParam.accountDate = date
-      }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
-      securitySocial_List(_searchParam)
+      DistributionList(_searchParam)
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''
@@ -184,12 +184,18 @@ export default {
         })
         .catch((err) => (that.loading = false))
     },
-    onChange(date, dateString) {
-      console.log(date, dateString)
+
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      // console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction()
     },
     delete_list(id) {
       let that = this
-      securitySocial_del({ id: id }).then((res) => {
+      DistributionDelete({ id: id }).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -201,10 +207,6 @@ export default {
     //新增 修改
     handleAdd(type, record) {
       this.$refs.addForm.query(type, record)
-    },
-    // 查看
-    handleSee(record) {
-      this.$router.push({ name: 'humanResourcesSee', params: { id: record.id } })
     },
   },
 }

@@ -3,7 +3,7 @@
     <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
       <a-input
         placeholder="物流单号"
-        v-model="queryParam.title"
+        v-model="queryParam.logisticsOrderNo"
         allowClear
         style="width: 200px;margin-right:10px;"
       />
@@ -14,41 +14,52 @@
       />
 
       <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('social:add')">
+      <template v-if="$auth('logistics:add')">
         <a-button style="float:right;" type="primary" icon="plus" @click="applyFor('add',null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('social:list')">
+      <a-table
+        :columns="columns"
+        :data-source="dataSource"
+        :pagination="pagination"
+        @change="handleTableChange"
+        v-if="$auth('logistics:list')"
+      >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <span slot="addressName" slot-scope="text, record">
+          <span>{{text= text.split(",").join("")}}{{record.detailedAddressName}}</span>
+        </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleSee(record)">查看</a>
+          <a @click="applyFor('see',record)">查看</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
-          <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
+          <a class="ant-dropdown-link" :href="urls+record.id" target="_blank">下载</a>
+          <template v-if="$auth('logistics:add')&&+record.createdId  === +userInfo.id">
             <a-divider type="vertical" />
-            <a @click="handleAdd('edit-salary',record)">修改</a>
+            <a @click="applyFor('edit-salary',record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>
-          <template>
+          <template v-if="$auth('logistics:returnV')">
             <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">回访记录</a>
+            <a class="ant-dropdown-link" @click="returnV(record.id)">回访记录</a>
           </template>
         </span>
       </a-table>
     </a-layout>
+
+    <ReturnVisit ref="returnVisit" />
   </a-card>
 </template>
 
 <script>
 import moment from 'moment'
 import system from '@/config/defaultSettings'
-import { securitySocial_List, securitySocial_del } from '@/api/humanResources'
-
+import ReturnVisit from './module/returnVisit'
+import { logisticsList, logisticsDelete } from '@/api/distribution-management'
 const columns = [
   {
     dataIndex: 'name',
@@ -59,50 +70,51 @@ const columns = [
   },
   {
     title: '日期',
-    dataIndex: 'accountDate',
-    key: 'accountDate',
+    dataIndex: 'date',
+    key: 'date',
     align: 'center',
   },
   {
     title: '物流单号',
-    dataIndex: 'peopleNumber',
-    key: 'peopleNumber',
+    dataIndex: 'logisticsOrderNo',
+    key: 'logisticsOrderNo',
     align: 'center',
   },
   {
     title: '车牌号',
-    dataIndex: 'companyPay',
-    key: 'companyPay',
+    dataIndex: 'licensePlateNumber',
+    key: 'licensePlateNumber',
     align: 'center',
   },
   {
     title: '驾驶人姓名',
-    dataIndex: 'personalPay',
-    key: 'personalPay',
+    dataIndex: 'fullName',
+    key: 'fullName',
     align: 'center',
   },
   {
     title: '驾驶人手机号',
-    dataIndex: 'createdName',
-    key: 'createdName',
+    dataIndex: 'telephone',
+    key: 'telephone',
     align: 'center',
   },
   {
     title: '目的地',
-    dataIndex: 'createdTime',
-    key: 'createdTime',
+    dataIndex: 'addressName',
+    key: 'addressName',
     align: 'center',
+    scopedSlots: { customRender: 'addressName' },
   },
   {
     title: '结算方式',
-    dataIndex: 'createdTime1',
-    key: 'createdTime1',
+    dataIndex: 'settlementMethodName',
+    key: 'settlementMethodName',
     align: 'center',
   },
   {
     title: '提交时间',
-    dataIndex: 'createdTime2',
-    key: 'createdTime2',
+    dataIndex: 'createdTime',
+    key: 'createdTime',
     align: 'center',
   },
 
@@ -115,10 +127,10 @@ const columns = [
 ]
 export default {
   name: 'RoleManagement',
-  components: {},
+  components: { ReturnVisit },
   data() {
     return {
-      urls: system.baseURL + '/socialSecurity/social-security-info/socialSecurityInfo/exportExcel?id=',
+      urls: system.baseURL + '/logistics/logistics-information/download/LogisticsDownload?id=',
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
@@ -143,7 +155,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'human_Resources_social') {
+        if (to.name === 'distribution_logistics') {
           this.init()
         }
       },
@@ -153,13 +165,12 @@ export default {
   methods: {
     moment: moment,
     init() {
-      let that = this
       this.searchAction()
     },
     dateChange(date, dateString) {
-      this.$set(this.queryParam, 'rangeDate', date)
-      this.$set(this.queryParam, 'beginTime', dateString[0])
-      this.$set(this.queryParam, 'endTime', dateString[1])
+      // this.$set(this.queryParam, 'rangeDate', date)
+      this.$set(this.queryParam, 'startDate', dateString[0])
+      this.$set(this.queryParam, 'endDate', dateString[1])
     },
     searchAction(opt) {
       let that = this
@@ -169,7 +180,7 @@ export default {
         this.queryParam.accountDate = date
       }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
-      securitySocial_List(_searchParam)
+      logisticsList(_searchParam)
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''
@@ -184,12 +195,17 @@ export default {
         })
         .catch((err) => (that.loading = false))
     },
-    onChange(date, dateString) {
-      console.log(date, dateString)
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      // console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction()
     },
     delete_list(id) {
       let that = this
-      securitySocial_del({ id: id }).then((res) => {
+      logisticsDelete({ id: id }).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -198,19 +214,15 @@ export default {
         }
       })
     },
-    applyFor(type) {
+    applyFor(type, record) {
       this.$router.push({
         name: 'basicInform',
-        params: { id: null, action: type },
+        params: { typeName: type, action: record },
       })
     },
-    // //新增 修改
-    // handleAdd(type, record) {
-    //   this.$refs.addForm.query(type, record)
-    // },
-    // 查看
-    handleSee(record) {
-      this.$router.push({ name: 'humanResourcesSee', params: { id: record.id } })
+
+    returnV(id) {
+      this.$refs.returnVisit.init(id)
     },
   },
 }
