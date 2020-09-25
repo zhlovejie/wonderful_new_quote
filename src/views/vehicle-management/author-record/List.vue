@@ -80,7 +80,7 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
-          <template v-if="+activeKey === 0 && record.status === 3 ">
+          <template v-if="+activeKey === 0 && (record.status === 3 || record.status === 4) ">
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('edit',record)">修改</a>
           </template>
