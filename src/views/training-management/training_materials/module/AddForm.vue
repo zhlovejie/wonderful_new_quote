@@ -452,7 +452,6 @@ export default {
               })
             } else {
               that.jurisdiction = true
-              debugger
               let haveProcess = that.haveProcess.length > 0 ? true : false
               if (!haveProcess) {
                 that.haveProcess = that.haves

@@ -45,7 +45,7 @@
             <th colspan="3">
               {{item.month}}月
               <span style=" float: right;" v-if="!isDisabled">
-                <a href="javascript:void(0);" @click="delItem(item.key)">删除</a>
+                <a href="javascript:void(0);" @click="delItem(key)">删除</a>
               </span>
             </th>
           </tr>
@@ -269,7 +269,8 @@ export default {
     },
     //删除月份
     delItem(key) {
-      this.programme = this.programme.filter((item) => item.key !== key)
+      // this.programme = this.programme.filter((item) => item.key !== key)
+      this.programme.splice(key, 1)
     },
     handleOkMonth() {
       this.visibleMonth = false
@@ -349,41 +350,45 @@ export default {
     handleOk() {
       // console.log('你是要提交')
       let that = this
-      that.form.validateFields((err, values) => {
-        if (!err) {
-          values.year = Number(this.year)
-          values.remark = this.remark
-          values.planItemList = values.programme
-          delete values.programme
-          values.planItemList = values.planItemList.map((item) => {
-            let num = item.oaTrainYearPlanItemDetailSaveBoList.map((items) => {
-              return {
-                beginTime: moment(items.beginData[0]).format('YYYY-MM-DD'),
-                endTime: moment(items.beginData[1]).format('YYYY-MM-DD'),
-                joinPerson: items.joinPerson,
-                title: items.title,
-              }
-              delete items.beginData
-            })
-            return { month: item.month, oaTrainYearPlanItemDetailSaveBoList: num }
-          })
-          if (that.type === 'edit-salary') {
-            values.id = that.record.id
-          }
-          if (that.type === 'add' || that.type === 'edit-salary') {
-            annualAdd(values)
-              .then((res) => {
-                console.log(res.data)
-                this.programme = []
-                this.remark = ''
-                this.visible = false
-                that.$message.info(res.msg)
-                that.$emit('finish')
+      if (that.type === 'view') {
+        this.visible = false
+      } else {
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            values.year = Number(this.year)
+            values.remark = this.remark
+            values.planItemList = values.programme
+            delete values.programme
+            values.planItemList = values.planItemList.map((item) => {
+              let num = item.oaTrainYearPlanItemDetailSaveBoList.map((items) => {
+                return {
+                  beginTime: moment(items.beginData[0]).format('YYYY-MM-DD'),
+                  endTime: moment(items.beginData[1]).format('YYYY-MM-DD'),
+                  joinPerson: items.joinPerson,
+                  title: items.title,
+                }
+                delete items.beginData
               })
-              .catch((err) => (that.spinning = false))
+              return { month: item.month, oaTrainYearPlanItemDetailSaveBoList: num }
+            })
+            if (that.type === 'edit-salary') {
+              values.id = that.record.id
+            }
+            if (that.type === 'add' || that.type === 'edit-salary') {
+              annualAdd(values)
+                .then((res) => {
+                  console.log(res.data)
+                  this.programme = []
+                  this.remark = ''
+                  this.visible = false
+                  that.$message.info(res.msg)
+                  that.$emit('finish')
+                })
+                .catch((err) => (that.spinning = false))
+            }
           }
-        }
-      })
+        })
+      }
     },
     handleCancel() {
       this.programme = []
