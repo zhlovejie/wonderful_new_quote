@@ -221,9 +221,15 @@ export default {
             let pictureNum = ''
             let fileName = ''
             try {
-              fileName = f.name.split('.')[0]
-              pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
+              //新文件格式 图号__文件名.pdf
+              //fileName = f.name.split('.')[0]
+              //pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
+              let fullName = f.name.split('.')[0]
+              let _arr = fullName.split('__')
+              fileName = _arr[1]
+              pictureNum = _arr[0]
             } catch (err) {
+              fileName = f.name.split('.')[0]
               pictureNum = ''
             }
             dataSource.push({
