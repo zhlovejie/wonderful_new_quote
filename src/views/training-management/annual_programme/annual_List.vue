@@ -1,5 +1,4 @@
 <template>
-  <!--公告管理 -->
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-date-picker
@@ -31,30 +30,32 @@
         icon="search"
         @click="searchAction1"
       >查询</a-button>
+      <template v-if="$auth('annual:add')">
+        <a-dropdown style="float:right;">
+          <a-button type="primary" @click="showModal()">
+            <a-icon type="plus" />新增
+          </a-button>
+        </a-dropdown>
+      </template>
 
-      <a-dropdown style="float:right;">
-        <a-button type="primary" @click="showModal()">
-          <a-icon type="plus" />新增
-        </a-button>
-      </a-dropdown>
       <div style="float:right;"></div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template>
+        <template v-if="$auth('annual:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
+        v-if="$auth('annual:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
       >
-        <!-- v-if="$auth('leagueBuilding:list')" -->
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -67,26 +68,28 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template>
+            <template v-if="$auth('annual:view')">
               <a type="primary" @click="doAction('view',record)">查看</a>
             </template>
             <template v-if=" record.status === 1&& +record.createdId  === +userInfo.id  ">
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定撤回"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmWithdraw(record)"
-              >
-                <a type="primary">撤回</a>
-              </a-popconfirm>
+              <template v-if="$auth('annual:Withdraw')">
+                <a-popconfirm
+                  title="是否确定撤回"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="confirmWithdraw(record)"
+                >
+                  <a type="primary">撤回</a>
+                </a-popconfirm>
+              </template>
             </template>
-            <template v-if="record.status === 2 ">
+            <template v-if="record.status === 2&&$auth('annual:blank')">
               <a-divider type="vertical" />
               <a type="primary" :href="record.planUrl" target="_blank">下载</a>
             </template>
             <template
-              v-if="record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
+              v-if=" $auth('annual:edit-salary')&&(record.status === 3||record.status === 4 )&& +record.createdId  === +userInfo.id"
             >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary',record)">修改</a>
