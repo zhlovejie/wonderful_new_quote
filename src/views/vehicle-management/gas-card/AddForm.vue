@@ -90,7 +90,6 @@
                   placeholder="充值金额"
                   style="width:100%;"
                   :min="0"
-                  :max="20000"
                   :step="1"
                   v-decorator="[
                   'investAmount',
@@ -248,11 +247,14 @@ export default {
     },
     rechargeHandler(rule,value,callback){
       //console.log(arguments)
-      if(parseFloat(value) < 1000){
+      let n = parseFloat(value)
+      if(n < 1000){
         callback('最低充值金额为1000')
+      }else if(n > 20000){
+        callback('最大充值金额为20000')
       }
       callback()
-    }
+    },
   }
 }
 </script>
