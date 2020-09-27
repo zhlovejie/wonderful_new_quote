@@ -23,13 +23,13 @@
   </a-modal>
 </template>
 <script>
-//import SingleForm from './AddSingleForm'
+import SingleForm from './AddSingleForm'
 import MultiForm from './AddMultiForm'
 
 export default {
   name: 'AddForm',
   components: {
-    //SingleForm,
+    SingleForm,
     MultiForm
   },
   data() {
