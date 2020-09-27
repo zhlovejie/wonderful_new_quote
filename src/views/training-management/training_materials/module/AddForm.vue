@@ -332,6 +332,7 @@ export default {
             values.parentId = this.record.id
           }
           console.log(values)
+          that.spinning = true
           materialsAdd(values).then((res) => {
             that.spinning = false
             console.log(res)

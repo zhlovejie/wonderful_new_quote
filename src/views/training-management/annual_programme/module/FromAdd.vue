@@ -353,6 +353,7 @@ export default {
       if (that.type === 'view') {
         this.visible = false
       } else {
+        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.year = Number(this.year)
@@ -381,6 +382,7 @@ export default {
                   this.programme = []
                   this.remark = ''
                   this.visible = false
+                  that.spinning = false
                   that.$message.info(res.msg)
                   that.$emit('finish')
                 })

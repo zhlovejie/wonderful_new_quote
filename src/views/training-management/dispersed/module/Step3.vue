@@ -16,22 +16,24 @@
             <tr v-if="!isSee">
               <td style="text-align: right;">部门</td>
               <td colspan="2">
-                <a-select
-                  :disabled="isSee"
-                  style="width:200px;"
-                  @change="depChangeHandler"
-                  placeholder="请选择部门"
-                >
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
-                </a-select>
+                <a-form-item style="padding-top: 24px;">
+                  <a-select
+                    :disabled="isSee"
+                    style="width:200px;"
+                    @change="depChangeHandler"
+                    placeholder="请选择部门"
+                  >
+                    <a-select-option
+                      v-for="item in departmentList"
+                      :key="item.id"
+                      :value="item.id"
+                    >{{ item.departmentName }}</a-select-option>
+                  </a-select>
+                </a-form-item>
               </td>
               <td style="text-align: right;">人员</td>
               <td colspan="2">
-                <a-form-item>
+                <a-form-item style="padding-top: 24px;">
                   <a-select
                     :disabled="isSee"
                     style="width:200px;"
@@ -200,7 +202,6 @@ export default {
           _p.userId = _p.id
           _p.userName = _p.trueName
           that.haveProcess.push({ ..._p, ...that._d })
-          console.log(that.haveProcess)
         }
       })
     },

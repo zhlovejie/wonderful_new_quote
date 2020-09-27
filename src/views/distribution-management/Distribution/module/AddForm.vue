@@ -437,6 +437,7 @@ export default {
         that.visible = false
         that.$emit('finish')
       } else {
+        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             if (this.type === 'edit-salary') {

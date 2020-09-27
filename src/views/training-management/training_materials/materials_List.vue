@@ -296,7 +296,8 @@ export default {
     //接收子组件数据
     search(data) {
       this.parentId = data.id
-      this.paginationType.folderId = data.id
+      this.paginationType = { ...this.paginationType, folderId: data.id }
+      // this.paginationType.folderId = data.id
       this.searchAction()
     },
     searchAction(opt) {

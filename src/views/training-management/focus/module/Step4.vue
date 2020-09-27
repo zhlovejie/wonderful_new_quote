@@ -41,7 +41,7 @@
           </template>
           <template v-else>
             <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
-            <a-button v-if="!isSee" type="primary" @click="nextStep">保存</a-button>
+            <a-button v-if="!isSee" type="primary" :loading="spinning" @click="nextStep">保存</a-button>
             <a-button
               v-if="isSee&&queryonedata1.onlineFlag===1"
               type="primary"
@@ -81,6 +81,7 @@ export default {
       goodsList: [],
       type1: '',
       isSee: false,
+      spinning: false,
       queryonedata1: {},
     }
   },
@@ -157,8 +158,10 @@ export default {
               trainUrl: item.trainUrl,
             }
           })
+          that.spinning = true
           focusAdd(that.queryonedata1).then((res) => {
             if (res.code === 200) {
+              that.spinning = false
               this.$message.info(res.msg)
               that.$emit('nextStep', {})
             } else {
@@ -166,7 +169,7 @@ export default {
             }
           })
         } else {
-          that.$message.error('请选择受训人员')
+          that.$message.error('请上传文件')
         }
       }
     },
