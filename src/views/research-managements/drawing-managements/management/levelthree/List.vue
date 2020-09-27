@@ -17,9 +17,9 @@
         <a-button type="primary" :disabled="!hasSelected" @click="doAction('deleteBatch')">
           批量删除
         </a-button>
-        <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
+        <!-- <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
           批量下载
-        </a-button>
+        </a-button> -->
         <span style="margin-left: 15px">
           <template v-if="hasSelected">
             {{ `已选择 ${selectedRowKeys.length} 项` }}
@@ -303,6 +303,8 @@ export default {
             .then(res => {
               that.$message.info(res.msg)
               that.searchAction()
+              that.selectedRowKeys = []
+              that.selectedRows= []
               //that.$emit('finish')
             })
             .catch(err => {
