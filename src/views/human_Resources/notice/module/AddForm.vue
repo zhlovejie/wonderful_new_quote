@@ -219,6 +219,7 @@ export default {
         that.visible = false
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
+        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.deptId = values.deptId.toString()

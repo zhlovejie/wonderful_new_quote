@@ -183,6 +183,7 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
+        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.accountDate = values.accountDate.format('YYYYMM')

@@ -220,6 +220,7 @@ export default {
       console.log('你这是要提交')
       let that = this
       that.form.validateFields((err, values) => {
+        that.spinning = true
         if (!err) {
           delete values.deptId
           values.inspectTime = moment(values.inspectTime).format('YYYY-MM-DD')
