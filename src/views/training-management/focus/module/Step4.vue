@@ -161,7 +161,7 @@ export default {
           that.spinning = true
           focusAdd(that.queryonedata1).then((res) => {
             if (res.code === 200) {
-               that.spinning = false
+              that.spinning = false
               this.$message.info(res.msg)
               that.$emit('nextStep', {})
             } else {
@@ -169,7 +169,7 @@ export default {
             }
           })
         } else {
-          that.$message.error('请选择受训人员')
+          that.$message.error('请上传文件')
         }
       }
     },

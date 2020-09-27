@@ -202,7 +202,6 @@ export default {
           _p.userId = _p.id
           _p.userName = _p.trueName
           that.haveProcess.push({ ..._p, ...that._d })
-          console.log(that.haveProcess)
         }
       })
     },

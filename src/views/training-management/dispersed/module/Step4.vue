@@ -197,7 +197,7 @@ export default {
             }
           })
         } else {
-          that.$message.error('请选择受训人员')
+          that.$message.error('请选择文件类型')
         }
       }
     },
