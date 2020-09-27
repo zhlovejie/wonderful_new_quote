@@ -45,7 +45,7 @@
         <a-form-item class="btns-grop" style="border-left: none">
           <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
           <template v-if="!isSee">
-            <a-button type="primary" @click="nextStep()">保存</a-button>
+            <a-button type="primary" :loading="spinning" @click="nextStep()">保存</a-button>
           </template>
           <template v-else>
             <a-button type="primary" @click="next()">退出</a-button>
@@ -73,6 +73,7 @@ export default {
   data() {
     return {
       loading: false,
+      spinning: false,
       goodsList: [],
       isProductOrder: false,
       queryonedata1: {},
@@ -128,6 +129,7 @@ export default {
     // 点击下一步
     nextStep(status) {
       const that = this
+      that.spinning = true
       let params = {
         logisticsGoodsContracts: that.goodsList,
       }
@@ -135,6 +137,7 @@ export default {
       if (that.goodsList.length > 0) {
         logisticsPreservation(valuer).then((res) => {
           if (res.code === 200) {
+            that.spinning = false
             that.$message.info(res.msg)
             this.$router.push({ name: 'distribution_logistics' })
           } else {

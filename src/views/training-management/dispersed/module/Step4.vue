@@ -63,7 +63,7 @@
           </template>
           <template v-else>
             <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
-            <a-button v-if="!isSee" type="primary" @click="nextStep">保存</a-button>
+            <a-button v-if="!isSee" type="primary" :loading="spinning" @click="nextStep">保存</a-button>
             <a-button
               v-if="isSee&&queryonedata1.onlineFlag===1"
               type="primary"
@@ -101,6 +101,7 @@ export default {
       haveProcess: [],
       type1: '',
       isSee: false,
+      spinning: false,
       queryonedata1: {},
     }
   },
@@ -184,8 +185,10 @@ export default {
               oaTrainFolerId: item.id,
             }
           })
+          that.spinning = true
           that.queryonedata1.trainType = 2
           dispersedAdd(that.queryonedata1).then((res) => {
+            that.spinning = false
             if (res.code === 200) {
               this.$message.info(res.msg)
               that.$emit('nextStep', {})
