@@ -307,14 +307,18 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          if (this.haveProcess.length > 0) {
+          if (values.authorityType === 1 && this.haveProcess.length > 0) {
             values.authTrainFolderBoList = this.haveProcess.map((item) => {
               return {
                 departmentId: item.departmentId,
                 userId: item.userId,
               }
             })
+          } else if (values.authorityType != 2) {
+            that.$message.error('人员不能为空')
+            return false
           }
+
           if (this.type === 'add') {
             values.parentId = this.addId
           }
@@ -448,7 +452,6 @@ export default {
               })
             } else {
               that.jurisdiction = true
-              debugger
               let haveProcess = that.haveProcess.length > 0 ? true : false
               if (!haveProcess) {
                 that.haveProcess = that.haves

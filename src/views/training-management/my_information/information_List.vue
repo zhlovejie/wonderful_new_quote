@@ -128,10 +128,17 @@ export default {
       authority: '',
       fold: false,
       pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+      },
+      pagination1: {
         current: 1,
         folderId: -1,
         fromSource: 2,
       },
+
       queryParam: {},
       hiddenBoolean: false,
 
@@ -143,7 +150,7 @@ export default {
   created() {},
   computed: {},
   watch: {
-    pagination: function (val) {
+    pagination1: function (val) {
       // debugger
       if (val.folderId === -1) {
         this.fold = false
@@ -175,27 +182,27 @@ export default {
     },
     //进入下一级
     folderName(record) {
-      this.pagination.folderId = record.id
+      this.pagination1 = { ...this.pagination1, folderId: record.id }
       this.parentId = record.id
       this.searchAction()
     },
     //返回上一级
     gohandle() {
       materialsId({ folderId: this.parentId }).then((res) => {
-        this.pagination.folderId = res.data.parentId
+        this.pagination1 = { ...this.pagination1, folderId: res.data.parentId }
         this.parentId = res.data.parentId
         this.searchAction()
       })
     },
     //接收子组件数据
     search(data) {
-      this.pagination.folderId = data.id
+      this.pagination1.folderId = data.id
       this.searchAction()
     },
     searchAction(opt) {
       let that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
       materialsList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -219,10 +226,8 @@ export default {
 
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
     confirmDelete(record) {

@@ -31,25 +31,27 @@
               </td>
               <td style="text-align: right;">人员</td>
               <td colspan="2">
-                <a-select
-                  :disabled="isSee"
-                  style="width:200px;"
-                  mode="multiple"
-                  :allowClear="true"
-                  :maxTagCount="1"
-                  @change="addProcess"
-                  showSearch
-                  placeholder="请选择人员"
-                  optionFilterProp="children"
-                  :filterOption="selectFilter"
-                  v-decorator="['authTrainFolderBoList']"
-                >
-                  <a-select-option
-                    v-for="(process, index) in postSelectDataSource"
-                    :key="index"
-                    :value="process.id"
-                  >{{ process.trueName }}</a-select-option>
-                </a-select>
+                <a-form-item>
+                  <a-select
+                    :disabled="isSee"
+                    style="width:200px;"
+                    mode="multiple"
+                    :allowClear="true"
+                    :maxTagCount="1"
+                    @change="addProcess"
+                    showSearch
+                    placeholder="请选择人员"
+                    optionFilterProp="children"
+                    :filterOption="selectFilter"
+                    v-decorator="['authTrainFolderBoList']"
+                  >
+                    <a-select-option
+                      v-for="(process, index) in postSelectDataSource"
+                      :key="index"
+                      :value="process.id"
+                    >{{ process.trueName }}</a-select-option>
+                  </a-select>
+                </a-form-item>
               </td>
             </tr>
             <tr>
@@ -188,7 +190,6 @@ export default {
       })
     },
     addProcess(selectedArray) {
-      console.log(selectedArray)
       let that = this
       if (!Array.isArray(selectedArray)) return
       selectedArray.map((_ppid) => {
@@ -206,8 +207,9 @@ export default {
 
     //清空
     processClearAction() {
-      this.haveProcess = []
-      this.form.setFieldsValue({
+      let that = this
+      that.haveProcess = []
+      that.form.setFieldsValue({
         authTrainFolderBoList: [],
       })
     },
@@ -220,6 +222,7 @@ export default {
       this.haveProcess.map((item) => {
         arr.push(item.id)
       })
+      console.log(this.haveProcess)
       this.form.setFieldsValue({
         authTrainFolderBoList: arr,
       })

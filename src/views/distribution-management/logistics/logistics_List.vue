@@ -135,9 +135,13 @@ export default {
       dataSource: [],
       columns,
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
-      queryParam: {},
+      pagination1: {},
+      queryParam: { current: 1 },
       hiddenBoolean: false,
 
       selectedRowKeys: [],
@@ -179,7 +183,7 @@ export default {
         let date = that.queryParam.Dates.format('YYYYMM')
         this.queryParam.accountDate = date
       }
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
       logisticsList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -197,10 +201,12 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       // console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      // const pager = { ...this.pagination }
+      // pager.current = pagination.current
+      // this.pagination = pager
       this.searchAction()
     },
     delete_list(id) {

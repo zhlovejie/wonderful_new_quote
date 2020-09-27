@@ -129,14 +129,10 @@ export default {
       this.goodsList.push(data)
     },
     deletes(id) {
-      this.goodsList.splice(id)
+      this.goodsList.splice(id, 1)
     },
     delete_list(idurl) {
       this.$refs.xdocView.query(idurl)
-    },
-    confirm(cpId, index) {
-      // 确认删除事件
-      this.goodsList.splice(index, 1)
     },
     //上一步
     prevStep() {
