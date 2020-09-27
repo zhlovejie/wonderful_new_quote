@@ -60,7 +60,7 @@
                 <a-checkbox-group v-decorator="['releaseRange']" :disabled="isDisabled">
                   <a-checkbox value="1">公告栏</a-checkbox>
                   <a-checkbox value="2">app消息</a-checkbox>
-                  <a-checkbox value="3">短信通知</a-checkbox>
+                  <!-- <a-checkbox value="3">短信通知</a-checkbox> -->
                 </a-checkbox-group>
               </a-form-item>
             </td>
