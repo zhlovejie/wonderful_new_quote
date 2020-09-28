@@ -2824,7 +2824,97 @@ export const asyncRouterMap = [
           }
 
         ]
-      }
+      },
+      {
+        //薪酬管理
+        path: '/salary-management',
+        name: 'salary-management',
+        component: PageView,
+        meta: {
+          title: '薪酬管理',
+          icon: 'shop',
+          permission: ['permission']
+        },
+        redirect: '/salary-management',
+        children: [{
+          path: '/salary-management/bonus',
+          name: 'salary-management_bonus',
+          component: RouteView,
+          meta: {
+            title: '奖金管理',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          children: [{
+              path: '/salary-management/bonus/bonusRules',
+              name: 'salary-management_bonusRules',
+              component: RouteView,
+              meta: {
+                title: '奖金规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+              children: [{
+                  path: '/salary-management/bonus/bonusRules/research',
+                  name: 'bonusRules_research',
+                  component: () => import('@/views/salary-management/bonus/bonusRules/research/research_List'),
+                  meta: {
+                    title: '研发提成奖金规则',
+                    icon: 'select',
+                    keepAlive: false,
+                    permission: ['permission']
+                  },
+                },
+                {
+                  path: '/salary-management/bonus/bonusRules/overtime',
+                  name: 'bonusRules_overtime',
+                  component: () => import('@/views/salary-management/bonus/bonusRules/overtime/overtime_List'),
+                  meta: {
+                    title: '加班奖金规则',
+                    icon: 'select',
+                    keepAlive: false,
+                    permission: ['permission']
+                  },
+                },
+                {
+                  path: '/salary-management/bonus/bonusRules/attendance',
+                  name: 'bonusRules_attendance',
+                  component: () => import('@/views/salary-management/bonus/bonusRules/attendance/attendance_List'),
+                  meta: {
+                    title: '全勤奖金规则',
+                    icon: 'select',
+                    keepAlive: false,
+                    permission: ['permission']
+                  },
+                }
+              ]
+            },
+            {
+              path: '/salary-management/bonus/year_end_bonus',
+              name: 'salary_year_bonus',
+              component: () => import('@/views/salary-management/bonus/year_end_bonus/year_end_bonus_List'),
+              meta: {
+                title: '年终奖金',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+            // {
+            //   path: '/salary-management/logistics/module',
+            //   name: 'basicInform',
+            //   hidden: true,
+            //   component: () => import('@/views/salary-management/logistics/module/AddForm'),
+            //   meta: {
+            //     title: '新增物流信息登记',
+            //     permission: ['permission']
+            //   },
+            // }
+          ]
+        }, ]
+      },
     ]
   }
 ]
