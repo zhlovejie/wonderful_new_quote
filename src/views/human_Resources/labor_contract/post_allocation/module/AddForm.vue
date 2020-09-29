@@ -9,6 +9,12 @@
     :confirmLoading="spinning"
     :maskClosable="false"
   >
+    <template slot="footer">
+      <template>
+        <a-button key="back" @click="handleCancel">取消</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleSubmit">确定</a-button>
+      </template>
+    </template>
     <a-spin :spinning="spinning">
       <a-form :form="form">
         <table class="custom-table custom-table-border">

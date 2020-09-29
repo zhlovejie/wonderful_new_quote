@@ -180,6 +180,7 @@ export default {
     handleOk() {
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
+        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.checkInTime = moment(values.checkInTime).format('YYYY-MM-DD HH:mm:ss')
