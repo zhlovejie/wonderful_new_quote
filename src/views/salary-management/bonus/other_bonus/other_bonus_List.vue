@@ -2,22 +2,22 @@
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-select
-        style="width: 200px; margin-right: 10px"
+        style="width: 150px; margin-right: 10px"
         placeholder="选择部门"
         :allowClear="true"
-        v-model="queryParam.departmentId"
+        @change="depChangeHandler"
+        v-model="queryParam.status"
       >
         <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
           item.departmentName
         }}</a-select-option>
       </a-select>
-
       <a-select
         placeholder="审批状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
-        style="width: 200px; margin-right: 10px"
+        style="width: 280px; margin-right: 10px"
       >
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">审批通过</a-select-option>
@@ -29,15 +29,12 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction1"
         >查询</a-button
       >
       <template v-if="$auth('annual:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
-        </a-dropdown>
-        <a-dropdown style="float: right; margin-right: 10px">
-          <a-button type="primary" @click="Distribution()">发放规则</a-button>
         </a-dropdown>
       </template>
 
@@ -65,6 +62,9 @@
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
+        <div slot="operationStatus" slot-scope="text">
+          <a href="javascript:void(0)">{{ getOperationStatus(text) }}</a>
+        </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
@@ -78,6 +78,10 @@
                   <a type="primary">撤回</a>
                 </a-popconfirm>
               </template>
+            </template>
+            <template v-if="record.status === 2 && $auth('annual:blank')">
+              <a-divider type="vertical" />
+              <!-- <a type="primary" :href="record.planUrl" target="_blank">下载</a> -->
             </template>
             <template
               v-if="
@@ -105,25 +109,27 @@
         </div>
       </a-table>
     </div>
-    <a-modal v-model="visible" title="新增年终奖金" @ok="handleOk">
-      <a-select style="width: 280px; margin-left: 90px" placeholder="选择部门" :allowClear="true" v-model="depId">
-        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
-          item.departmentName
-        }}</a-select-option>
-      </a-select>
+    <a-modal v-model="visible" title="新增年度培训方案" @ok="handleOk">
+      <!-- <a-date-picker
+        style="width: 280px; margin-left: 90px"
+        mode="year"
+        placeholder="请选择年份"
+        format="YYYY"
+        v-model="yearPick1"
+        :open="yearPickShow1"
+        @panelChange="handlePanelChange1"
+        @openChange="handleOpenChange1"
+      /> -->
     </a-modal>
-    <AddForm ref="addForm" @finish="searchAction()" />
-    <ApproveInfo ref="approveInfoCard" />
-    <Appadd ref="appadd" />
+    <!-- <AddForm ref="addForm" @finish="searchAction()" />
+    <ApproveInfo ref="approveInfoCard" /> -->
   </div>
 </template>
 <script>
-import { departmentList } from '@/api/systemSetting'
-import { year_List, year_bonus_annua, year_send_rule, year_send_annual } from '@/api/bonus_management'
-import AddForm from './module/Formadd'
-import Appadd from './module/Appadd'
-
-import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import { getDevisionList, departmentList } from '@/api/systemSetting'
+import { annualList, annualPlan, annualRemove, checkIfExistsYearPlan } from '@/api/training-management'
+// import AddForm from './module/FromAdd'
+// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
 const columns = [
   {
@@ -135,10 +141,17 @@ const columns = [
   },
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    title: '时间',
+    dataIndex: 'year',
+    key: 'year',
   },
+  {
+    align: 'center',
+    title: '备注',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+
   {
     align: 'center',
     title: '审核状态',
@@ -149,12 +162,12 @@ const columns = [
   {
     align: 'center',
     title: '提交人',
-    key: 'createdName',
-    dataIndex: 'createdName',
+    key: 'createdUsername',
+    dataIndex: 'createdUsername',
   },
   {
     align: 'center',
-    title: '提交人日期',
+    title: '提交人时间',
     dataIndex: 'createdTime',
     key: 'createdTime',
   },
@@ -169,9 +182,8 @@ const columns = [
 export default {
   name: 'NoticeList',
   components: {
-    Appadd,
-    AddForm: AddForm,
-    ApproveInfo: ApproveInfo,
+    // AddForm: AddForm,
+    // ApproveInfo: ApproveInfo,
     // UploadImgs: UploadImgs,
   },
   data() {
@@ -179,18 +191,11 @@ export default {
       visible: false,
       depList: [],
       queryParam: {},
-      pagination1: { current: 1 },
-      pagination: {
-        showSizeChanger: true,
-        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
-      },
       status: '',
-      depId: '',
       activeKey: 0,
       departmentList: [],
-      rule_List: [],
+      operation_status: undefined,
+      person_name: undefined,
       approval_status: undefined,
       depSelectDataSource: [],
       columns: columns,
@@ -207,8 +212,9 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'salary_year_bonus') {
+        if (to.name === 'salary_other_bonus') {
           this.init()
+          departmentList().then((res) => (this.depList = res.data))
         }
       },
       immediate: true,
@@ -218,52 +224,71 @@ export default {
     moment,
     init() {
       let that = this
-      that.searchAction()
-      departmentList().then((res) => (this.depList = res.data))
-      year_send_rule().then((res) => (this.rule_List = res.data))
+      this.searchAction()
+      this.department()
     },
-
-    //发放规则
-    Distribution() {
-      year_send_rule().then((res) => {
-        if (res.data.length > 0) {
-          this.$refs.appadd.query('edit-salary', res.data[0])
-        } else {
-          this.$refs.appadd.query('add', null)
-        }
-      })
+    searchAction1() {
+      console.log('chaxun')
+      if (this.yearPick != null) {
+        this.queryParam.year = moment(this.yearPick).format('YYYY')
+      } else {
+        delete this.queryParam.year
+      }
+      this.searchAction()
     },
-
     showModal() {
       this.visible = true
+      this.yearPick1 = null
     },
     handleOk(e) {
-      if (this.depId && this.rule_List.length > 0) {
-        year_bonus_annua({ deptId: this.depId }).then((res) => {
+      console.log(e)
+
+      if (this.yearPick1) {
+        checkIfExistsYearPlan({ year: moment(this.yearPick1).format('YYYY') }).then((res) => {
           if (res.code === 200) {
             this.visible = false
-            this.doAction('add', { depId: this.depId, departmentName: res.data.departmentName })
+            this.doAction('add', { year: this.yearPick1 })
           } else {
-            this.$message.error('部门已添加')
+            this.$message.error(res.msg)
           }
         })
-      } else if (!this.rule_List.length > 0) {
-        this.$message.error('请先填写发放规则')
       } else {
-        this.$message.error('请选择部门')
+        this.$message.error('请选择年份')
       }
     },
-
+    // 得到年份选择器的值
+    handlePanelChange(value) {
+      this.yearPick = value
+      this.yearPickShow = false
+    },
+    handleOpenChange(status) {
+      this.yearPickShow = status
+    },
+    // 得到年份选择器的值
+    handlePanelChange1(value) {
+      this.yearPick1 = value
+      console.log(value)
+      this.yearPickShow1 = false
+    },
+    handleOpenChange1(status) {
+      this.yearPickShow1 = status
+    },
     // 删除
     confirmDelete(record) {
       let that = this
-      year_annual_addAnddel(`id=${record.id}`).then((res) => {
+      annualRemove(`oaTrainYearPlanId=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
         } else {
           _this.$message.error(res.msg)
         }
+      })
+    },
+
+    department() {
+      getDevisionList().then((res) => {
+        this.departmentList = res.data
       })
     },
     getStateText(state) {
@@ -281,33 +306,34 @@ export default {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
 
-    // // 发布
-    // confirmRelease(record) {
-    //   let that = this
-    //   NoticeRelease({ id: record.id }).then((res) => {
-    //     if (res.code === 200) {
-    //       this.searchAction()
-    //       that.$message.info(res.msg)
-    //     } else {
-    //       _this.$message.error(res.msg)
-    //     }
-    //   })
-    // },
+    // 发布
+    confirmRelease(record) {
+      let that = this
+      NoticeRelease({ id: record.id }).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          _this.$message.error(res.msg)
+        }
+      })
+    },
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      year_send_annual({ id: record.id }).then((res) => {
+      // console.log(record.id)
+      annualPlan(`oaTrainYearPlanId=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {}, {
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {}, {
         searchStatus: that.activeKey,
       })
       that.loading = true
-      year_List(_searchParam)
+      annualList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -323,8 +349,10 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
+      // console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
       this.searchAction()
     },
 

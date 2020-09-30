@@ -25,6 +25,9 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+          <div slot="emptyBed" slot-scope="text, record, index">
+            <span>月度</span>
+          </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('electricity:add') && +record.createdId">
               <a @click="handle('edit-salary', record)">修改</a>
@@ -38,22 +41,17 @@
       </a-layout-content>
     </a-layout>
     <AddForm ref="addForm" @finish="init()" />
-    <!-- <Occupancy ref="occupancy" /> -->
   </a-card>
 </template>
 
 <script>
-// import { getDevisionList, getStationList } from '../../../../api/systemSetting'
-// import { electricity_List, listRoom, electricityDelete } from '@/api/humanResources'
-import { oaSalaryInfo_list } from '@/api/bonus_management'
+import { oaSalaryInfo_list, oaSalaryInfo_delete } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
-// import Occupancy from './module/Occupancy'
 
 export default {
   name: 'RoleManagement',
   components: {
     AddForm,
-    // Occupancy,
   },
   data() {
     return {
@@ -63,11 +61,14 @@ export default {
       hiddenBoolean: false,
       stationId: undefined,
       queryParam: {},
-      //   postSelectDataSource: [], //
       recordResult: {},
       queryRecord: {},
+      pagination1: { current: 1 },
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       // 表头
       columns: [
@@ -95,12 +96,7 @@ export default {
           title: '释放周期',
           dataIndex: 'emptyBed',
           key: 'emptyBed',
-        },
-        {
-          align: 'center',
-          title: '备注',
-          dataIndex: 'remark',
-          key: 'remark',
+          scopedSlots: { customRender: 'emptyBed' },
         },
         {
           align: 'center',
@@ -136,7 +132,7 @@ export default {
       let _searchParam = Object.assign(
         { socialSecurityId: that.recordId },
         { ...this.queryParam },
-        { ...this.pagination }
+        { ...this.pagination1 }
       )
       oaSalaryInfo_list(_searchParam)
         .then((res) => {
@@ -154,10 +150,12 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       // console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      // const pager = { ...this.pagination }
+      // pager.current = pagination.current
+      // this.pagination = pager
       this.searchActionsee()
     },
 
@@ -177,7 +175,7 @@ export default {
     // 删除
     deleteRoleInfo(record) {
       let that = this
-      electricityDelete({ id: record.id }).then((res) => {
+      oaSalaryInfo_delete(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)

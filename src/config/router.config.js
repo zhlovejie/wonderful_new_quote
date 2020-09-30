@@ -2902,16 +2902,17 @@ export const asyncRouterMap = [
                 permission: ['permission']
               },
             },
-            // {
-            //   path: '/salary-management/logistics/module',
-            //   name: 'basicInform',
-            //   hidden: true,
-            //   component: () => import('@/views/salary-management/logistics/module/AddForm'),
-            //   meta: {
-            //     title: '新增物流信息登记',
-            //     permission: ['permission']
-            //   },
-            // }
+            {
+              path: '/salary-management/bonus/other_bonus',
+              name: 'salary_other_bonus',
+              component: () => import('@/views/salary-management/bonus/other_bonus/other_bonus_List'),
+              meta: {
+                title: '其他奖金',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }
           ]
         }, ]
       },

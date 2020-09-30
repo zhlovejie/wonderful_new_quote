@@ -27,7 +27,10 @@
                   read-only
                   @click="handleCustomerClick"
                   placeholder="选择产品代码"
-                  v-decorator="['productCode', { rules: [{ required: true, message: '输入合同协议名称!' }] }]"
+                  v-decorator="[
+                    'productCode',
+                    { initialValue: productCode, rules: [{ required: true, message: '输入合同协议名称!' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -38,7 +41,10 @@
                   style="width: 200px"
                   read-only
                   placeholder="选择产品名称"
-                  v-decorator="['productName', { rules: [{ required: true, message: '请输入版本号!' }] }]"
+                  v-decorator="[
+                    'productName',
+                    { initialValue: productName, rules: [{ required: true, message: '请输入版本号!' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -99,17 +105,19 @@
                 >
                   <transition-group name="list">
                     <div v-for="(item, index) in haveProcess" :key="item.userId" class="draggable-columns-item">
-                      <div class="draggable-columns draggable-columns-1">{{ item.userName }}</div>
+                      <div class="draggable-columns draggable-columns-1">{{ item.trueName }}</div>
                       <div class="draggable-columns draggable-columns-1">
                         <a-form-item>
-                          <a-input
+                          <a-input-number
                             style="width: 200px"
                             placeholder="输入奖金系数"
+                            :precision="6"
                             @change="inputChange($event, item.userId, 'bounsToilt')"
                             v-decorator="[
                               `haveProcess${index}bounsToilt`,
                               {
                                 initialValue: item.bounsToilt,
+                                len: 8,
                                 rules: [{ required: true, message: '输入奖金系数!' }],
                               },
                             ]"
@@ -143,6 +151,7 @@
 <script>
 import { getDevisionList } from '@/api/systemSetting'
 import { queryList } from '@/api/humanResources'
+import { oaSalaryInfo_addAndUpdate, oaSalaryInfo_getId } from '@/api/bonus_management'
 import vuedraggable from 'vuedraggable'
 import Approval from './appForm'
 
@@ -156,11 +165,14 @@ export default {
     return {
       visible: false,
       spinning: false,
+      productName: undefined,
+      productCode: undefined,
       type: 'View',
       form: this.$form.createForm(this),
       departmentList: [], //部门
       postSelectDataSource: [], //人员
       haveProcess: [],
+      productId: '',
       depart: '',
       _d: {
         departmentId: '',
@@ -210,7 +222,7 @@ export default {
     },
     //产品代码组件返回值
     handlerCustomerSelected(record) {
-      console.log(record)
+      this.productId = record.id
       this.form.setFieldsValue({
         productCode: record.productModel,
         productName: record.productName,
@@ -225,7 +237,6 @@ export default {
       }
     },
     query(type, record) {
-      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -236,10 +247,11 @@ export default {
 
     fillData() {
       this.$nextTick(() => {
-        this.form.setFieldsValue({
-          contractName: this.record.contractName,
-          version: this.record.version,
-          contractUrl: this.record.contractUrl,
+        oaSalaryInfo_getId({ id: this.record.id }).then((res) => {
+          console.log(res.data)
+          this.productName = res.data.productName
+          this.productCode = res.data.productCode
+          this.haveProcess = res.data.oaSalaryBounsPercentageRuleDetails
         })
       })
     },
@@ -248,38 +260,34 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
+        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
+            let arr = {}
             if (that.type !== 'add') {
-              values.id = this.record.id
+              arr.id = this.record.id
             }
-            delete authTrainFolderBoList
-            values.oaSalaryBounsPercentageRuleDetails = that.haveProcess.map((item) => {
+            arr.productCode = values.productCode
+            arr.productName = values.productName
+            arr.productId = that.productId
+            arr.oaSalaryBounsPercentageRuleDetails = that.haveProcess.map((item) => {
               return {
                 departmentId: item.departmentId,
                 userId: item.userId,
                 bounsToilt: item.bounsToilt,
               }
             })
-            console.log(values)
-            //   if (that.type === 'add') {
-            //   //   values.contractUrl = values.contractUrl.fileList[0].response.data
-            //   }
-            //   if (typeof values.contractUrl === 'string' && that.type === 'edit-salary') {
-            //     values.contractUrl = values.contractUrl
-            //   } else if (that.type === 'edit-salary') {
-            //     values.contractUrl = values.contractUrl.fileList[0].response.data
-            //   }
-            // contractAgreement_Add(values)
-            //   .then((res) => {
-            //     that.spinning = false
-            //     this.fileList = []
-            //     that.form.resetFields() // 清空表
-            //     that.visible = false
-            //     that.$message.info(res.msg)
-            //     that.$emit('finish')
-            //   })
-            //   .catch((err) => (that.spinning = false))
+            oaSalaryInfo_addAndUpdate(arr)
+              .then((res) => {
+                that.spinning = false
+                that.departmentList = []
+                that.form.resetFields() // 清空表
+                that.haveProcess = []
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('finish')
+              })
+              .catch((err) => (that.spinning = false))
           }
         })
       } else if (that.isEditSalary) {
@@ -307,7 +315,7 @@ export default {
         if (!target) {
           let _p = that.postSelectDataSource.find((_p) => _p.id === _ppid)
           _p.userId = _p.id
-          _p.userName = _p.trueName
+          _p.trueName = _p.trueName
           _p.bounsToilt = undefined
           that.haveProcess.push({ ..._p, ...that._d })
         }
@@ -342,7 +350,8 @@ export default {
     },
 
     handleCancel() {
-      this.fileList = []
+      this.departmentList = []
+      this.haveProcess = []
       this.form.resetFields() // 清空表
       this.visible = false
     },
