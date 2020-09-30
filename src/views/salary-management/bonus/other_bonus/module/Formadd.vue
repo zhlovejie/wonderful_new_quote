@@ -21,46 +21,50 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
-        <h1 style="text-align: center">公司职工年终奖发放表</h1>
         <table class="custom-table custom-table-border">
           <tr>
-            <th>序号</th>
-            <th>部门</th>
-            <th>职工姓名</th>
-            <th>实发奖金</th>
-            <th>一期奖金</th>
-            <th>二期奖金</th>
-            <th>三期奖金</th>
-          </tr>
-          <tr v-for="(item, index) in programme" :key="item.key">
-            <td>
-              {{ index + 1 }}
-            </td>
-            <td>{{ item.departmentName }}</td>
-            <td>{{ item.trueName }}</td>
-            <td>
+            <td>部门</td>
+            <td colspan="2">
               <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder
-                  @change="inputChange($event, item.userId, 'amount')"
-                  v-decorator="[
-                    `programme${index}.amount`,
-                    { initialValue: item.amount, rules: [{ required: true, message: '请输入实发奖金' }] },
-                  ]"
-                />
+                <a-select style="width: 200px" @change="depChangeHandler" placeholder="请选择部门">
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
+                </a-select>
               </a-form-item>
             </td>
-            <td>{{ item.firAmount }}</td>
-            <td>{{ item.secAmount }}</td>
-            <td>{{ item.thrAmount }}</td>
+            <td>岗位</td>
+            <td colspan="2">
+              <a-form-item>
+                <a-select style="width: 200px" placeholder="请选择岗位">
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.stationName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
           </tr>
           <tr>
-            <td colspan="3">合计：</td>
-            <td>{{ totalPrice }}</td>
-            <td>{{ totalPhase }}</td>
-            <td>{{ totalPhase1 }}</td>
-            <td>{{ totalPhase2 }}</td>
+            <td>姓名</td>
+            <td colspan="2">
+              <a-form-item>
+                <a-select style="width: 200px" placeholder="请选择人员">
+                  <a-select-option v-for="item in personSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+            <td>人员</td>
+            <td colspan="2">
+              <!-- <a-form-item>
+                <a-select style="width: 200px" placeholder="请选择人员">
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item> -->
+            </td>
           </tr>
         </table>
       </a-form>
@@ -69,12 +73,15 @@
   </a-modal>
 </template>
 <script>
-import { queryList } from '@/api/humanResources'
-
+import {
+  departmentList, //所有部门
+  getStationList, //获取部门下面的岗位
+  getUserByDep, //获取人员
+} from '@/api/systemSetting'
 import { year_send_rule, year_annual_addAndUpdate, year_send_getId, year_annual_approval } from '@/api/bonus_management'
 import Approval from './Approval'
 
-let uuid = () => Math.random().toString(32).slice(-10)
+// let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'BecomingForm',
@@ -83,26 +90,26 @@ export default {
   },
   data() {
     return {
-      programme: [],
       remark: '',
       visible: false,
+
+      personSelectDataSource: [], //岗位
+      departmentList: [], //部门
+      postSelectDataSource: [], //人员
       spinning: false,
-      year_send: {},
-      ment: false,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'view',
       record: {},
-      isModified: false, //财务人员为 true
-      previewVisible: false,
     }
   },
+
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改年终奖金'
+        return '修改其他奖金'
       }
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}年终奖金`
+      return `${txt}其他奖金`
     },
     isView() {
       //查看
@@ -127,67 +134,84 @@ export default {
     isDisabled() {
       return this.isView || this.isEdit || this.isView5
     },
-    totalPrice() {
-      return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.amount)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
-    totalPhase() {
-      return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.firAmount || 0)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
-    totalPhase1() {
-      return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.secAmount || 0)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
-    totalPhase2() {
-      return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.thrAmount || 0)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
+    // totalPrice() {
+    //   return this.programme.reduce((addr, item) => {
+    //     addr = Number(addr) + Number(item.amount)
+    //     return parseFloat(addr).toFixed(2)
+    //   }, 0)
+    // },
+    // totalPhase() {
+    //   return this.programme.reduce((addr, item) => {
+    //     addr = Number(addr) + Number(item.firAmount || 0)
+    //     return parseFloat(addr).toFixed(2)
+    //   }, 0)
+    // },
+    // totalPhase1() {
+    //   return this.programme.reduce((addr, item) => {
+    //     addr = Number(addr) + Number(item.secAmount || 0)
+    //     return parseFloat(addr).toFixed(2)
+    //   }, 0)
+    // },
+    // totalPhase2() {
+    //   return this.programme.reduce((addr, item) => {
+    //     addr = Number(addr) + Number(item.thrAmount || 0)
+    //     return parseFloat(addr).toFixed(2)
+    //   }, 0)
+    // },
   },
-
+  created() {
+    departmentList().then((res) => {
+      this.departmentList = res.data
+    })
+  },
   methods: {
-    // moment,
-    inputChange(event, keys, field) {
-      let programme = [...this.programme]
-      let target = programme.find((item, index) => item.userId === keys)
-      if (target) {
-        target[field] = event instanceof Event ? event.target.value : event
-        target['firAmount'] = parseFloat(target[field] * this.year_send.firPart).toFixed(2)
-        target['secAmount'] = parseFloat(target[field] * this.year_send.secPar).toFixed(2)
-        target['thrAmount'] = parseFloat(target[field] * this.year_send.thrPar).toFixed(2)
-        this.programme = programme
-      }
+    //选择岗位
+    depChangeHandler(dep_id) {
+      let that = this
+      that.depart = dep_id
+      that.postSelectDataSource = []
+      return getStationList({ id: dep_id }).then((res) => {
+        that.postSelectDataSource = res.data
+      })
     },
+    postChangeHandler(stationId) {
+      this.personSelectDataSource = []
+      getUserByStation({ stationId: stationId }).then((res) => (this.personSelectDataSource = res.data))
+    },
+    // moment,
+    // inputChange(event, keys, field) {
+    //   let programme = [...this.programme]
+    //   let target = programme.find((item, index) => item.userId === keys)
+    //   if (target) {
+    //     target[field] = event instanceof Event ? event.target.value : event
+    //     target['firAmount'] = parseFloat(target[field] * this.year_send.firPart).toFixed(2)
+    //     target['secAmount'] = parseFloat(target[field] * this.year_send.secPar).toFixed(2)
+    //     target['thrAmount'] = parseFloat(target[field] * this.year_send.thrPar).toFixed(2)
+    //     this.programme = programme
+    //   }
+    // },
     query(type, record) {
       this.visible = true
       this.type = type
       this.record = record
-      year_send_rule().then((res) => (this.year_send = res.data[0]))
+      // year_send_rule().then((res) => (this.year_send = res.data[0]))
       if (type === 'add') {
-        console.log(record)
-        return queryList({ departmentId: record.depId }).then((res) => {
-          this.programme = res.data.map((res) => {
-            return {
-              departmentId: record.depId,
-              departmentName: record.departmentName,
-              amount: '',
-              trueName: res.trueName,
-              userId: res.id,
-              firAmount: undefined,
-              secAmount: undefined,
-              thrAmount: undefined,
-            }
-          })
-          console.log(res.data)
-        })
+        // console.log(record)
+        // return queryList({ departmentId: record.depId }).then((res) => {
+        //   this.programme = res.data.map((res) => {
+        //     return {
+        //       departmentId: record.depId,
+        //       departmentName: record.departmentName,
+        //       amount: '',
+        //       trueName: res.trueName,
+        //       userId: res.id,
+        //       firAmount: undefined,
+        //       secAmount: undefined,
+        //       thrAmount: undefined,
+        //     }
+        //   })
+        //   console.log(res.data)
+        // })
       } else {
         this.fillData()
       }

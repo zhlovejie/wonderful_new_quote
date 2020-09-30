@@ -152,10 +152,7 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       this.pagination1.size = pagination.pageSize
       this.pagination1.current = pagination.current
-      // console.log(pagination, filters, sorter)
-      // const pager = { ...this.pagination }
-      // pager.current = pagination.current
-      // this.pagination = pager
+
       this.searchActionsee()
     },
 

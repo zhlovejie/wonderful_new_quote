@@ -2,22 +2,22 @@
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-select
-        style="width: 150px; margin-right: 10px"
+        style="width: 200px; margin-right: 10px"
         placeholder="选择部门"
         :allowClear="true"
-        @change="depChangeHandler"
-        v-model="queryParam.status"
+        v-model="queryParam.departmentId"
       >
         <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
           item.departmentName
         }}</a-select-option>
       </a-select>
+      <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
         placeholder="审批状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
-        style="width: 280px; margin-right: 10px"
+        style="width: 200px; margin-right: 10px"
       >
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">审批通过</a-select-option>
@@ -29,12 +29,12 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction1"
+        @click="searchAction"
         >查询</a-button
       >
       <template v-if="$auth('annual:add')">
         <a-dropdown style="float: right">
-          <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
+          <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
       </template>
 
@@ -59,11 +59,13 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="itemType" slot-scope="text, record, index">
+          <span v-if="text === 1">补次申请</span>
+          <span v-if="text === 2">调整申请 </span>
+          <span v-if="text === 3">其他</span>
+        </div>
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
-        </div>
-        <div slot="operationStatus" slot-scope="text">
-          <a href="javascript:void(0)">{{ getOperationStatus(text) }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
@@ -78,10 +80,6 @@
                   <a type="primary">撤回</a>
                 </a-popconfirm>
               </template>
-            </template>
-            <template v-if="record.status === 2 && $auth('annual:blank')">
-              <a-divider type="vertical" />
-              <!-- <a type="primary" :href="record.planUrl" target="_blank">下载</a> -->
             </template>
             <template
               v-if="
@@ -109,27 +107,16 @@
         </div>
       </a-table>
     </div>
-    <a-modal v-model="visible" title="新增年度培训方案" @ok="handleOk">
-      <!-- <a-date-picker
-        style="width: 280px; margin-left: 90px"
-        mode="year"
-        placeholder="请选择年份"
-        format="YYYY"
-        v-model="yearPick1"
-        :open="yearPickShow1"
-        @panelChange="handlePanelChange1"
-        @openChange="handleOpenChange1"
-      /> -->
-    </a-modal>
-    <!-- <AddForm ref="addForm" @finish="searchAction()" />
-    <ApproveInfo ref="approveInfoCard" /> -->
+
+    <AddForm ref="addForm" @finish="searchAction()" />
+    <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
 <script>
-import { getDevisionList, departmentList } from '@/api/systemSetting'
-import { annualList, annualPlan, annualRemove, checkIfExistsYearPlan } from '@/api/training-management'
-// import AddForm from './module/FromAdd'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import { departmentList } from '@/api/systemSetting'
+import { other_add } from '@/api/bonus_management'
+import AddForm from './module/Formadd'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
 const columns = [
   {
@@ -141,17 +128,35 @@ const columns = [
   },
   {
     align: 'center',
-    title: '时间',
-    dataIndex: 'year',
-    key: 'year',
+    title: '部门',
+    dataIndex: 'departmentName',
+    key: 'departmentName',
   },
   {
     align: 'center',
-    title: '备注',
-    dataIndex: 'remark',
-    key: 'remark',
+    title: '职位',
+    dataIndex: 'stationName',
+    key: 'stationName',
   },
-
+  {
+    align: 'center',
+    title: '姓名',
+    dataIndex: 'trueName',
+    key: 'trueName',
+  },
+  {
+    align: 'center',
+    title: '申请事项',
+    dataIndex: 'itemType',
+    key: 'itemType',
+    scopedSlots: { customRender: 'itemType' },
+  },
+  {
+    align: 'center',
+    title: '奖金',
+    dataIndex: 'amount',
+    key: 'amount',
+  },
   {
     align: 'center',
     title: '审核状态',
@@ -162,12 +167,12 @@ const columns = [
   {
     align: 'center',
     title: '提交人',
-    key: 'createdUsername',
-    dataIndex: 'createdUsername',
+    key: 'createdName',
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
-    title: '提交人时间',
+    title: '提交人日期',
     dataIndex: 'createdTime',
     key: 'createdTime',
   },
@@ -182,28 +187,31 @@ const columns = [
 export default {
   name: 'NoticeList',
   components: {
-    // AddForm: AddForm,
-    // ApproveInfo: ApproveInfo,
-    // UploadImgs: UploadImgs,
+    AddForm: AddForm,
+    ApproveInfo: ApproveInfo,
   },
   data() {
     return {
       visible: false,
       depList: [],
       queryParam: {},
+      pagination1: { current: 1 },
+      pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+      },
       status: '',
+      depId: '',
       activeKey: 0,
       departmentList: [],
-      operation_status: undefined,
-      person_name: undefined,
+      rule_List: [],
       approval_status: undefined,
       depSelectDataSource: [],
       columns: columns,
       dataSource: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      pagination: {
-        current: 1,
-      },
       loading: false,
       whole: true,
     }
@@ -214,7 +222,6 @@ export default {
       handler: function (to, from) {
         if (to.name === 'salary_other_bonus') {
           this.init()
-          departmentList().then((res) => (this.depList = res.data))
         }
       },
       immediate: true,
@@ -224,71 +231,20 @@ export default {
     moment,
     init() {
       let that = this
-      this.searchAction()
-      this.department()
+      that.searchAction()
+      departmentList().then((res) => (this.depList = res.data))
     },
-    searchAction1() {
-      console.log('chaxun')
-      if (this.yearPick != null) {
-        this.queryParam.year = moment(this.yearPick).format('YYYY')
-      } else {
-        delete this.queryParam.year
-      }
-      this.searchAction()
-    },
-    showModal() {
-      this.visible = true
-      this.yearPick1 = null
-    },
-    handleOk(e) {
-      console.log(e)
 
-      if (this.yearPick1) {
-        checkIfExistsYearPlan({ year: moment(this.yearPick1).format('YYYY') }).then((res) => {
-          if (res.code === 200) {
-            this.visible = false
-            this.doAction('add', { year: this.yearPick1 })
-          } else {
-            this.$message.error(res.msg)
-          }
-        })
-      } else {
-        this.$message.error('请选择年份')
-      }
-    },
-    // 得到年份选择器的值
-    handlePanelChange(value) {
-      this.yearPick = value
-      this.yearPickShow = false
-    },
-    handleOpenChange(status) {
-      this.yearPickShow = status
-    },
-    // 得到年份选择器的值
-    handlePanelChange1(value) {
-      this.yearPick1 = value
-      console.log(value)
-      this.yearPickShow1 = false
-    },
-    handleOpenChange1(status) {
-      this.yearPickShow1 = status
-    },
     // 删除
     confirmDelete(record) {
       let that = this
-      annualRemove(`oaTrainYearPlanId=${record.id}`).then((res) => {
+      year_annual_addAnddel(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
         } else {
           _this.$message.error(res.msg)
         }
-      })
-    },
-
-    department() {
-      getDevisionList().then((res) => {
-        this.departmentList = res.data
       })
     },
     getStateText(state) {
@@ -306,34 +262,21 @@ export default {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
 
-    // 发布
-    confirmRelease(record) {
-      let that = this
-      NoticeRelease({ id: record.id }).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          _this.$message.error(res.msg)
-        }
-      })
-    },
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      // console.log(record.id)
-      annualPlan(`oaTrainYearPlanId=${record.id}`).then((res) => {
+      year_send_annual({ id: record.id }).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {}, {
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
       })
       that.loading = true
-      annualList(_searchParam)
+      other_add(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -342,17 +285,15 @@ export default {
           })
           //设置数据总条数
           const pagination = { ...that.pagination }
-          // pagination.total = res.data.total
+          pagination.total = res.data.total
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
 

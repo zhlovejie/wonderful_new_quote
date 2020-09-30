@@ -177,3 +177,22 @@ export function year_annual_addAnddel(parameter) {
     data: parameter
   })
 }
+
+//年终审核
+export function year_annual_approval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bonus-annual/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//其他奖金列表
+export function other_add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/page',
+    method: 'get',
+    params: parameter
+  })
+}

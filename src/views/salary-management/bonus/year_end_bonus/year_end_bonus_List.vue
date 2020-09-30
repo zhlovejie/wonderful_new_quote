@@ -11,7 +11,6 @@
           item.departmentName
         }}</a-select-option>
       </a-select>
-
       <a-select
         placeholder="审批状态"
         v-if="activeKey === 0"
@@ -172,7 +171,6 @@ export default {
     Appadd,
     AddForm: AddForm,
     ApproveInfo: ApproveInfo,
-    // UploadImgs: UploadImgs,
   },
   data() {
     return {
@@ -196,9 +194,6 @@ export default {
       columns: columns,
       dataSource: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      pagination: {
-        current: 1,
-      },
       loading: false,
       whole: true,
     }
@@ -281,18 +276,6 @@ export default {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
 
-    // // 发布
-    // confirmRelease(record) {
-    //   let that = this
-    //   NoticeRelease({ id: record.id }).then((res) => {
-    //     if (res.code === 200) {
-    //       this.searchAction()
-    //       that.$message.info(res.msg)
-    //     } else {
-    //       _this.$message.error(res.msg)
-    //     }
-    //   })
-    // },
     // 撤回
     confirmWithdraw(record) {
       let that = this
@@ -316,7 +299,7 @@ export default {
           })
           //设置数据总条数
           const pagination = { ...that.pagination }
-          // pagination.total = res.data.total
+          pagination.total = res.data.total
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
