@@ -87,3 +87,20 @@ export function gaopaiyiCustomUpload(url){
 export function gaoPaiYiUploadProxyURL(){
   return system.gaoPaiYiUploadProxyURL
 }
+
+/**
+ * base64上传接口
+ * var formData = new FormData();
+ * formData.append('picBase64',getbase64data())
+ * 
+ * data:image/jpeg;base64,
+ * @param {*} data 
+ */
+export function customUploadBase64(data){
+  return axios({
+    baseURL: system.baseURL,
+    url: '/common/uploadBase64Pic',
+    method: 'post',
+    data:data
+  })
+}
