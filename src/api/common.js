@@ -74,3 +74,16 @@ export function customUpload(fileData){
   })
 }
 
+/**高拍仪上传文件代理接口 */
+export function gaopaiyiCustomUpload(url){
+  return axios({
+    url: url,
+    method: 'get'
+  })
+}
+/**
+ * 参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
+ */
+export function gaoPaiYiUploadProxyURL(){
+  return system.gaoPaiYiUploadProxyURL
+}

@@ -34,6 +34,8 @@ export default {
   baseURL: 'http://192.168.13.250/cloud',
   //baseURL: 'http://192.168.13.27:8999/oa', // 王利
   //baseURL:'http://192.168.13.253/oa',
+
+  gaoPaiYiUploadProxyURL:'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
   layout: 'sidemenu', // nav menu position: sidemenu or topmenu

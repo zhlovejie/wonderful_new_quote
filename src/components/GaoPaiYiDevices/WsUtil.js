@@ -54,8 +54,29 @@ let isFn = fn => Object.prototype.toString.call(fn) === '[object Function]'
 let isBoolean = fn => Object.prototype.toString.call(fn) === '[object Boolean]'
 let isIE = (() => !!window.ActiveXObject || "ActiveXObject" in window)()
 
-export function getWsInstance(){
-  return ws
+export function wsClose(){
+  if(ws){
+    try{
+      switch (ws.readyState) {
+        case WebSocket.CONNECTING: //值为0，表示正在连接。
+          ws.close()
+          break;
+        case WebSocket.OPEN: //值为1，表示连接成功，可以通信了。
+          ws.close()
+          break;
+        case WebSocket.CLOSING: //值为2，表示连接正在关闭。
+          console.log('ws连接正在关闭...')
+          break;
+        case WebSocket.CLOSED: //值为3，表示连接已经关闭，或者打开连接失败。
+          console.log('ws连接已经关闭，或者打开连接失败...')
+          break;
+        default:
+          break;
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
 }
 
 export function registerCallback(opt={}){
