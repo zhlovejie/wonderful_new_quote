@@ -572,6 +572,10 @@
           <a-tab-pane key="4" tab="证件信息">
             <h1>普通证件</h1>
             <UploadP ref="normalCard" :msgId="certificateList" :name="type" />
+
+              <a-button @click="gaoPaiYiDevicesClickHandler">test</a-button>
+
+            <GaoPaiYiDevices ref="gaoPaiYiDevices" @change="gaoPaiYiDevicesChange" />
             <h1>专业证件</h1>
             <UploadZ ref="normalUpload" :msgId="specialList" :name="type" />
           </a-tab-pane>
@@ -591,6 +595,11 @@ import {
 import { comManageSettingsGetSettingsByStationId } from '@/api/communicationManagement'
 import { Personnel_Reserve } from '@/api/humanResources'
 import { getReserveCondition } from '@/api/reserveApi'
+
+//高拍仪组件
+import GaoPaiYiDevices from '@/components/GaoPaiYiDevices/Index'
+//base64上传接口
+import {customUploadBase64} from '@/api/common'
 
 import moment from 'moment'
 
@@ -623,6 +632,7 @@ export default {
     UploadP,
     UploadZ,
     XdocView,
+    GaoPaiYiDevices
   },
   data() {
     return {
@@ -1266,6 +1276,49 @@ export default {
       }
       return
     },
+    gaoPaiYiDevicesChange(result){
+      console.log(result)
+      //result 参数 数据结构说明
+      /**
+       * type - 'pdf':'PDF文件','face':'人脸照片','video':'录像文件','photo':'照片文件'
+       * url  - 上传后返回的 文件url
+       */
+      /**
+       * type - idcard -身份证信息  idcardcopy -身份证复印件base64
+       * data - {
+            //0x19:'身份证功能启动成功',0x1a:'身份证功能启动失败',
+            ICStartStatus: null, 
+            //0x1b:'身份证读卡成功',0x1c:'身份证读卡失败',
+            ICGetOneStatus: null,
+            ICName: null, //姓名
+            ICNumber: null, //身份证号码
+            ICSex: null, //性别汉字  男or女
+            ICNation: null, //民族
+            ICBrithday: null, //出生日期
+            ICAddr: null, //地址
+            ICSignOrganization: null,//签发机关
+            ICExpiryBeginDate: null,//生效日期
+            ICExpiryEndDate: null,//过期日期
+            ICModelNumber: null, //安全码
+            ICPhoto: null, //身份证头像 base64 格式
+          }
+       */
+      /**
+       * idcardcopy -身份证复印件base64
+       * data - base64格式图片
+       */
+
+      let {type,url,data} = result
+      //#处理自己的逻辑
+      //#处理自己的逻辑END
+
+      //关闭高拍仪
+      this.$refs.gaoPaiYiDevices.close()
+    },
+    gaoPaiYiDevicesClickHandler(){
+      //打开高拍仪
+      this.$refs.gaoPaiYiDevices.show()
+    }
   },
 }
 </script>

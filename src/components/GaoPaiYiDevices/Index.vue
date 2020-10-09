@@ -400,6 +400,12 @@ export default {
       that.init()
       setTimeout(() => (that.spinning = false), 2000)
     },
+    show(){
+      this.query()
+    },
+    close(){
+      this.handleCancel()
+    },
     async handleCancel() {
       let that = this
       that.spinning = true
@@ -914,16 +920,37 @@ export default {
 
       that.spinTips = '上传文件中...'
       that.spinning = true
-      return gaopaiyiCustomUpload(url).then((res) => {
+      
+      return window.fetch(url).then(response =>{
+        if(response.ok){
+          return response.json()
+        }else{
+          throw new Error('网络响应不正常，请稍后再试');
+        }
+      }).then(res =>{
         that.spinning = false
         if (res && res.response && res.response.data) {
           return res.response.data
         }
         return null
-      }).catch(err =>{
-        console.log(err)
-        that.spinning = false
       })
+      .catch(error =>{
+        that.spinning = false
+        that.$message.error(error.message)
+      })
+
+
+      //return gaopaiyiCustomUpload(url).then((res) => {
+      // return that.$http(url).then((res) => {
+      //   that.spinning = false
+      //   if (res && res.response && res.response.data) {
+      //     return res.response.data
+      //   }
+      //   return null
+      // }).catch(err =>{
+      //   console.log(err)
+      //   that.spinning = false
+      // })
     },
   },
 }
