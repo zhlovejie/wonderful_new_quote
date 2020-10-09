@@ -19,7 +19,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['trueName', { rules: [{ required: true, message: '请输入姓名' },{max:20,message:'最多可输入20个字符'}] }]"
+                      v-decorator="[
+                        'trueName',
+                        {
+                          rules: [
+                            { required: true, message: '请输入姓名' },
+                            { max: 20, message: '最多可输入20个字符' },
+                          ],
+                        },
+                      ]"
                     />
                   </a-form-item>
                 </td>
@@ -28,7 +36,7 @@
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['sex',{initialValue:0,rules: [{required: false,message: '选择性别'}]}]"
+                      v-decorator="['sex', { initialValue: 0, rules: [{ required: false, message: '选择性别' }] }]"
                       placeholder="选择性别"
                     >
                       <a-select-option :value="1">男</a-select-option>
@@ -41,7 +49,7 @@
                   <a-form-item>
                     <a-cascader
                       :disabled="isView"
-                      v-decorator="['birthplace',{rules: [{required: true ,message: '输入籍贯'}]}]"
+                      v-decorator="['birthplace', { rules: [{ required: true, message: '输入籍贯' }] }]"
                       :options="birthplaceOptions"
                       @change="birthplaceCascaderChange"
                       :loadData="birthplaceCascaderLoadData"
@@ -57,7 +65,7 @@
                     <a-input
                       :disabled="isView"
                       @blur="validateIdentityCard"
-                      v-decorator="['identityCard',{rules: [{required: true,message: '输入身份证号'}]}]"
+                      v-decorator="['identityCard', { rules: [{ required: true, message: '输入身份证号' }] }]"
                       placeholder="输入身份证号"
                     />
                   </a-form-item>
@@ -67,8 +75,8 @@
                   <a-form-item>
                     <a-date-picker
                       disabled
-                      style="width:100%;"
-                      v-decorator="['birthDate',{rules: [{required: false,message: '输入出生日期'}]}]"
+                      style="width: 100%"
+                      v-decorator="['birthDate', { rules: [{ required: false, message: '输入出生日期' }] }]"
                       format="YYYY-MM-DD"
                       title="根据身份证号码自动填充出生日期"
                     />
@@ -79,7 +87,10 @@
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['politicsStatus',{initialValue:0,rules: [{required: false,message: '选择政治面貌'}]}]"
+                      v-decorator="[
+                        'politicsStatus',
+                        { initialValue: 0, rules: [{ required: false, message: '选择政治面貌' }] },
+                      ]"
                       placeholder="选择政治面貌"
                     >
                       <a-select-option :value="0">无</a-select-option>
@@ -96,7 +107,10 @@
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['maritalStatus',{initialValue:0,rules: [{required: false,message: '选择政治面貌'}]}]"
+                      v-decorator="[
+                        'maritalStatus',
+                        { initialValue: 0, rules: [{ required: false, message: '选择政治面貌' }] },
+                      ]"
                       placeholder="选择政治面貌"
                     >
                       <a-select-option :value="0">未婚</a-select-option>
@@ -109,7 +123,10 @@
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['fertilityStatus',{initialValue:0,rules: [{required: false,message: '选择生育状况'}]}]"
+                      v-decorator="[
+                        'fertilityStatus',
+                        { initialValue: 0, rules: [{ required: false, message: '选择生育状况' }] },
+                      ]"
                       placeholder="选择生育状况"
                     >
                       <a-select-option :value="0">未育</a-select-option>
@@ -122,14 +139,12 @@
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['educationId',{rules: [{required: true,message: '选择文化程度'}]}]"
+                      v-decorator="['educationId', { rules: [{ required: true, message: '选择文化程度' }] }]"
                       placeholder="选择文化程度"
                     >
-                      <a-select-option
-                        v-for="(item, index) in education"
-                        :key="index"
-                        :value="item.id"
-                      >{{item.text}}</a-select-option>
+                      <a-select-option v-for="(item, index) in education" :key="index" :value="item.id">{{
+                        item.text
+                      }}</a-select-option>
                     </a-select>
                   </a-form-item>
                 </td>
@@ -141,7 +156,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['school',{rules: [{required: false,message: '输入毕业院校'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="[
+                        'school',
+                        {
+                          rules: [
+                            { required: false, message: '输入毕业院校' },
+                            { max: 30, message: '最多可输入30个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入毕业院校"
                     />
                   </a-form-item>
@@ -151,7 +174,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['major',{rules: [{required: true,message: '输入专业'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="[
+                        'major',
+                        {
+                          rules: [
+                            { required: true, message: '输入专业' },
+                            { max: 30, message: '最多可输入30个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入专业"
                     />
                   </a-form-item>
@@ -161,7 +192,7 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['workingLife',{rules: [{required: true,message: '输入工作年限'}]}]"
+                      v-decorator="['workingLife', { rules: [{ required: true, message: '输入工作年限' }] }]"
                       placeholder="输入工作年限"
                     />
                   </a-form-item>
@@ -174,7 +205,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['emergencyContact',{rules: [{required: true,message: '输入紧急联系人'},{max:20,message:'最多可输入20个字符'}]}]"
+                      v-decorator="[
+                        'emergencyContact',
+                        {
+                          rules: [
+                            { required: true, message: '输入紧急联系人' },
+                            { max: 20, message: '最多可输入20个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入紧急联系人"
                     />
                   </a-form-item>
@@ -184,7 +223,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['emergencyTelephone',{rules: [{required: true,message: '输入紧急联系电话'},{pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}]"
+                      v-decorator="[
+                        'emergencyTelephone',
+                        {
+                          rules: [
+                            { required: true, message: '输入紧急联系电话' },
+                            { pattern: /^1\d{10}$/, message: '请输入正确的手机号' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入紧急联系电话"
                     />
                   </a-form-item>
@@ -197,7 +244,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['privateMobile',{rules: [{required: true,message: '输入手机'},{pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}]"
+                      v-decorator="[
+                        'privateMobile',
+                        {
+                          rules: [
+                            { required: true, message: '输入手机' },
+                            { pattern: /^1\d{10}$/, message: '请输入正确的手机号' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入手机"
                     />
                   </a-form-item>
@@ -207,7 +262,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['privateQqNum',{rules: [{required: false,message: '输入QQ'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="[
+                        'privateQqNum',
+                        {
+                          rules: [
+                            { required: false, message: '输入QQ' },
+                            { max: 30, message: '最多可输入30个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入QQ"
                     />
                   </a-form-item>
@@ -220,7 +283,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['privateWxNum',{rules: [{required: false,message: '输入微信'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="[
+                        'privateWxNum',
+                        {
+                          rules: [
+                            { required: false, message: '输入微信' },
+                            { max: 30, message: '最多可输入30个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入微信"
                     />
                   </a-form-item>
@@ -230,7 +301,16 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['privateEmail',{rules: [{required: false,message: '输入邮箱'},{pattern:/^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/,message:'请填写正确电子邮箱'},{max:50,message:'最多可输入50个字符'}]}]"
+                      v-decorator="[
+                        'privateEmail',
+                        {
+                          rules: [
+                            { required: false, message: '输入邮箱' },
+                            { pattern: /^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/, message: '请填写正确电子邮箱' },
+                            { max: 50, message: '最多可输入50个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入邮箱"
                     />
                   </a-form-item>
@@ -242,7 +322,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['nowAbode',{rules: [{required: true,message: '输入现居住地'},{max:50,message:'最多可输入50个字符'}]}]"
+                      v-decorator="[
+                        'nowAbode',
+                        {
+                          rules: [
+                            { required: true, message: '输入现居住地' },
+                            { max: 50, message: '最多可输入50个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入现居住地"
                     />
                   </a-form-item>
@@ -258,7 +346,7 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView || isRuzhi"
-                      v-decorator="['jobNum',{rules: [{required: false,message: '输入工号'}]}]"
+                      v-decorator="['jobNum', { rules: [{ required: false, message: '输入工号' }] }]"
                       placeholder="输入工号"
                     />
                   </a-form-item>
@@ -269,7 +357,7 @@
                     <a-input
                       disabled
                       type="hidden"
-                      v-decorator="['faceCode',{rules: [{required: false,message: '输入人脸识别号'}]}]"
+                      v-decorator="['faceCode', { rules: [{ required: false, message: '输入人脸识别号' }] }]"
                       placeholder="输入人脸识别号"
                     />
                   </a-form-item>
@@ -290,12 +378,7 @@
                           <div class="ant-upload-text">选择图片</div>
                         </div>
                       </a-upload>
-                      <a-modal
-                        :visible="previewVisible"
-                        :footer="null"
-                        @cancel="previewCancel"
-                        :maskClosable="false"
-                      >
+                      <a-modal :visible="previewVisible" :footer="null" @cancel="previewCancel" :maskClosable="false">
                         <img alt="图片" style="width: 100%" :src="previewImage" />
                       </a-modal>
                     </div>
@@ -310,14 +393,12 @@
                     <a-select
                       :disabled="isView"
                       @change="departmentChange"
-                      v-decorator="['departmentId',{rules: [{required: true,message: '选择部门'}]}]"
+                      v-decorator="['departmentId', { rules: [{ required: true, message: '选择部门' }] }]"
                       placeholder="选择部门"
                     >
-                      <a-select-option
-                        v-for="(item, index) in departmentDataSource"
-                        :key="index"
-                        :value="item.id"
-                      >{{item.departmentName}}</a-select-option>
+                      <a-select-option v-for="(item, index) in departmentDataSource" :key="index" :value="item.id">{{
+                        item.departmentName
+                      }}</a-select-option>
                     </a-select>
                   </a-form-item>
                 </td>
@@ -326,14 +407,12 @@
                   <a-form-item>
                     <a-select
                       :disabled="isView"
-                      v-decorator="['stationId',{rules: [{required: true,message: '选择岗位'}]}]"
+                      v-decorator="['stationId', { rules: [{ required: true, message: '选择岗位' }] }]"
                       placeholder="选择岗位"
                     >
-                      <a-select-option
-                        v-for="(item, index) in stationDataSource"
-                        :key="index"
-                        :value="item.id"
-                      >{{item.stationName}}</a-select-option>
+                      <a-select-option v-for="(item, index) in stationDataSource" :key="index" :value="item.id">{{
+                        item.stationName
+                      }}</a-select-option>
                     </a-select>
                   </a-form-item>
                 </td>
@@ -344,7 +423,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['mobile',{rules: [{required: false,message: '输入手机'},{pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}]"
+                      v-decorator="[
+                        'mobile',
+                        {
+                          rules: [
+                            { required: false, message: '输入手机' },
+                            { pattern: /^1\d{10}$/, message: '请输入正确的手机号' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入手机"
                     />
                   </a-form-item>
@@ -354,7 +441,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['qqNum',{rules: [{required: false,message: '输入QQ'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="[
+                        'qqNum',
+                        {
+                          rules: [
+                            { required: false, message: '输入QQ' },
+                            { max: 30, message: '最多可输入30个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入QQ"
                     />
                   </a-form-item>
@@ -367,7 +462,15 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['wxNum',{rules: [{required: false,message: '输入微信'},{max:30,message:'最多可输入30个字符'}]}]"
+                      v-decorator="[
+                        'wxNum',
+                        {
+                          rules: [
+                            { required: false, message: '输入微信' },
+                            { max: 30, message: '最多可输入30个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入微信"
                     />
                   </a-form-item>
@@ -377,7 +480,16 @@
                   <a-form-item>
                     <a-input
                       :disabled="isView"
-                      v-decorator="['email',{rules: [{required: false,message: '输入邮箱'},{pattern:/^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/,message:'请填写正确电子邮箱'},{max:50,message:'最多可输入50个字符'}]}]"
+                      v-decorator="[
+                        'email',
+                        {
+                          rules: [
+                            { required: false, message: '输入邮箱' },
+                            { pattern: /^[0-9a-z]+\w*@([0-9a-z]+\.)+[0-9a-z]+$/, message: '请填写正确电子邮箱' },
+                            { max: 50, message: '最多可输入50个字符' },
+                          ],
+                        },
+                      ]"
                       placeholder="输入邮箱"
                     />
                   </a-form-item>
@@ -393,15 +505,23 @@
 
               <tr>
                 <td>车牌号</td>
-                <td colspan="3" style="padding:0;">
-                  <table class="custom-table custom-table-border" style="margin:-1px;">
+                <td colspan="3" style="padding: 0">
+                  <table class="custom-table custom-table-border" style="margin: -1px">
                     <tr>
                       <td>常用</td>
                       <td>
                         <a-form-item>
                           <a-input
                             :disabled="isView"
-                            v-decorator="['licensePlateNum',{rules: [{required: false,message: '输入常用车牌号'},{max:10,message:'最多可输入10个字符'}]}]"
+                            v-decorator="[
+                              'licensePlateNum',
+                              {
+                                rules: [
+                                  { required: false, message: '输入常用车牌号' },
+                                  { max: 10, message: '最多可输入10个字符' },
+                                ],
+                              },
+                            ]"
                             placeholder="输入常用车牌号"
                           />
                         </a-form-item>
@@ -413,7 +533,15 @@
                         <a-form-item>
                           <a-input
                             :disabled="isView"
-                            v-decorator="['spareLicensePlateNum',{rules: [{required: false,message: '输入备用车牌号'},{max:10,message:'最多可输入10个字符'}]}]"
+                            v-decorator="[
+                              'spareLicensePlateNum',
+                              {
+                                rules: [
+                                  { required: false, message: '输入备用车牌号' },
+                                  { max: 10, message: '最多可输入10个字符' },
+                                ],
+                              },
+                            ]"
                             placeholder="输入备用车牌号"
                           />
                         </a-form-item>
@@ -428,9 +556,12 @@
                 <td>
                   <a-form-item>
                     <a-date-picker
-                      style="width:100%;"
+                      style="width: 100%"
                       :disabled="isView"
-                      v-decorator="['entryDate',{initialValue:moment(),rules: [{required: true,message: '输入入职日期'}]}]"
+                      v-decorator="[
+                        'entryDate',
+                        { initialValue: moment(), rules: [{ required: true, message: '输入入职日期' }] },
+                      ]"
                       format="YYYY-MM-DD"
                     />
                   </a-form-item>
@@ -441,7 +572,10 @@
                     <a-radio-group
                       :disabled="isView"
                       name="haveSecurity"
-                      v-decorator="['haveSecurity',{initialValue:1,rules: [{required: true,message: '选择是否缴纳社保'}]}]"
+                      v-decorator="[
+                        'haveSecurity',
+                        { initialValue: 1, rules: [{ required: true, message: '选择是否缴纳社保' }] },
+                      ]"
                     >
                       <a-radio :value="1">是</a-radio>
                       <a-radio :value="2">否</a-radio>
@@ -457,7 +591,10 @@
                     <a-select
                       :disabled="isView"
                       @change="probationTypeChange"
-                      v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]"
+                      v-decorator="[
+                        'probationType',
+                        { initialValue: 1, rules: [{ required: true, message: '选择试用期' }] },
+                      ]"
                       placeholder="选择试用期"
                     >
                       <a-select-option :value="0">无</a-select-option>
@@ -482,7 +619,10 @@
                     <a-select
                       :disabled="isView"
                       placeholder="员工状态"
-                      v-decorator="['positionStatus',{initialValue:1,rules: [{required: true,message: '输入员工状态'}]}]"
+                      v-decorator="[
+                        'positionStatus',
+                        { initialValue: 1, rules: [{ required: true, message: '输入员工状态' }] },
+                      ]"
                     >
                       <a-select-option :value="1">试用期</a-select-option>
                       <a-select-option :value="2" :disabled="!isEdit">试用期不通过</a-select-option>
@@ -533,12 +673,12 @@
           <a-tab-pane key="3" tab="合同信息">
             <h3>合同模板</h3>
             <table class="custom-table custom-table-border">
-              <tr v-for="(item ,index) in todayList" :key="index">
+              <tr v-for="(item, index) in todayList" :key="index">
                 <td>
-                  <a :href="item.contractUrl">{{item.contractName}}</a>
+                  <a :href="item.contractUrl">{{ item.contractName }}</a>
                 </td>
                 <td>
-                  <template v-if="isEdit|| isRuzhi">
+                  <template v-if="isEdit || isRuzhi">
                     <Mdeol
                       ref="mdeol"
                       @getmsg="getChildMsg"
@@ -556,11 +696,11 @@
                 <th>合同名称</th>
                 <th>操作</th>
               </tr>
-              <tr v-for="(item ,index) in todauuplate" :key="index">
-                <td>{{item.templateName}}</td>
+              <tr v-for="(item, index) in todauuplate" :key="index">
+                <td>{{ item.templateName }}</td>
                 <td>
                   <a type="primary" @click="doAction(item.fileUrl)" target="_blank">查看</a>
-                  <template v-if="isEdit|| isRuzhi">
+                  <template v-if="isEdit || isRuzhi">
                     <a-divider type="vertical" />
                     <a type="primary" @click="deletes(index)">删除</a>
                   </template>
@@ -573,11 +713,12 @@
             <h1>普通证件</h1>
             <UploadP ref="normalCard" :msgId="certificateList" :name="type" />
 
-              <a-button @click="gaoPaiYiDevicesClickHandler">test</a-button>
+            <a-button @click="gaoPaiYiDevicesClickHandler">拍照上传</a-button>
 
             <GaoPaiYiDevices ref="gaoPaiYiDevices" @change="gaoPaiYiDevicesChange" />
             <h1>专业证件</h1>
             <UploadZ ref="normalUpload" :msgId="specialList" :name="type" />
+            <a-button @click="gaoPaiYiDevicesClickZhuanye">拍照上传</a-button>
           </a-tab-pane>
         </a-tabs>
       </a-form>
@@ -599,7 +740,8 @@ import { getReserveCondition } from '@/api/reserveApi'
 //高拍仪组件
 import GaoPaiYiDevices from '@/components/GaoPaiYiDevices/Index'
 //base64上传接口
-import {customUploadBase64} from '@/api/common'
+import { customUploadBase64 } from '@/api/common'
+let uuid = () => Math.random().toString(32).slice(-10)
 
 import moment from 'moment'
 
@@ -632,7 +774,7 @@ export default {
     UploadP,
     UploadZ,
     XdocView,
-    GaoPaiYiDevices
+    GaoPaiYiDevices,
   },
   data() {
     return {
@@ -670,6 +812,7 @@ export default {
       imageUrl: '',
       spinning: false,
       department: {},
+      fileTypes: undefined,
       arrNum: [],
       fileUrlType: [],
       stationInfoRequire: {
@@ -1031,7 +1174,7 @@ export default {
           if (_bankChoiceResult.err) {
             return
           }
-          if (this.type === 'edit') {
+          if (this.type === 'edit' || this.type === 'ruzhi') {
             let arr1 = that.$refs.normalCard
               ? that.$refs.normalCard.getFiles().map((file) => {
                   if (file.name === '1') {
@@ -1087,37 +1230,36 @@ export default {
               values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num, ...arr1, ...num1]
             }
           }
-          if (this.type === 'ruzhi') {
-            console.log(123)
-            let arr10 = that.$refs.normalCard
-              ? that.$refs.normalCard.getFiles().map((file) => {
-                  if (file.response && file.response.code === 200 && file.name !== '1') {
-                    let arr = {
-                      fileUrl: file.response.data,
-                      fileType: 2,
-                      fileName: file.name,
-                    }
-                    return arr
-                  }
-                })
-              : []
+          // if (this.type === 'ruzhi') {
+          //   let arr10 = that.$refs.normalCard
+          //     ? that.$refs.normalCard.getFiles().map((file) => {
+          //         if (file.response && file.response.code === 200 && file.name !== '1') {
+          //           let arr = {
+          //             fileUrl: file.response.data,
+          //             fileType: 2,
+          //             fileName: file.name,
+          //           }
+          //           return arr
+          //         }
+          //       })
+          //     : []
 
-            let num10 = that.$refs.normalUpload
-              ? that.$refs.normalUpload.getFiles().map((file) => {
-                  if (file.response && file.response.code === 200 && file.name !== '1') {
-                    let arr = {
-                      fileUrl: file.response.data,
-                      fileType: 3,
-                      fileName: file.name,
-                    }
-                    return arr
-                  }
-                })
-              : []
-            if (that.todauuplate || arr || num) {
-              values.certificateSaveBoList = [...that.todauuplate, ...arr10, ...num10]
-            }
-          }
+          //   let num10 = that.$refs.normalUpload
+          //     ? that.$refs.normalUpload.getFiles().map((file) => {
+          //         if (file.response && file.response.code === 200 && file.name !== '1') {
+          //           let arr = {
+          //             fileUrl: file.response.data,
+          //             fileType: 3,
+          //             fileName: file.name,
+          //           }
+          //           return arr
+          //         }
+          //       })
+          //     : []
+          //   if (that.todauuplate || arr || num) {
+          //     values.certificateSaveBoList = [...that.todauuplate, ...arr10, ...num10]
+          //   }
+          // }
 
           values.bankCardList = _bankChoiceResult.values.bank || []
           //values.nativePlace = '江苏徐州'
@@ -1276,7 +1418,7 @@ export default {
       }
       return
     },
-    gaoPaiYiDevicesChange(result){
+    gaoPaiYiDevicesChange(result) {
       console.log(result)
       //result 参数 数据结构说明
       /**
@@ -1308,17 +1450,43 @@ export default {
        * data - base64格式图片
        */
 
-      let {type,url,data} = result
+      let { type, url, data } = result
       //#处理自己的逻辑
       //#处理自己的逻辑END
-
+      const file = result.url.split('/')
+      const fileName = file[file.length - 1]
+      if (this.fileTypes===2){
+          this.certificateList.push({
+        uid: uuid(),
+        name: '1',
+        fileName: fileName,
+        status: 'done',
+        fileType: this.fileTypes,
+        url: result.url,
+      })
+      }else{
+            this.specialList.push({
+        uid: uuid(),
+        name: '1',
+        fileName: fileName,
+        status: 'done',
+        fileType: this.fileTypes,
+        url: result.url,
+      })
+      }
       //关闭高拍仪
       this.$refs.gaoPaiYiDevices.close()
     },
-    gaoPaiYiDevicesClickHandler(){
+    gaoPaiYiDevicesClickZhuanye() {
       //打开高拍仪
+      this.fileTypes = 3
       this.$refs.gaoPaiYiDevices.show()
-    }
+    },
+    gaoPaiYiDevicesClickHandler() {
+      //打开高拍仪
+      this.fileTypes = 2
+      this.$refs.gaoPaiYiDevices.show()
+    },
   },
 }
 </script>
