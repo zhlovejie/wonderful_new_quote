@@ -31,7 +31,7 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('annual:add')">
+      <template v-if="$auth('year:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
@@ -45,13 +45,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('annual:list')">
+        <template v-if="$auth('year:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('annual:lists')"
+        v-if="$auth('year:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -67,12 +67,12 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('annual:view')">
+            <template v-if="$auth('year:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <template v-if="$auth('annual:Withdraw')">
+              <template v-if="$auth('year:Withdraw')">
                 <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                   <a type="primary">撤回</a>
                 </a-popconfirm>
@@ -80,7 +80,7 @@
             </template>
             <template
               v-if="
-                $auth('annual:edit-salary') &&
+                $auth('year:edit-salary') &&
                 (record.status === 3 || record.status === 4) &&
                 +record.createdId === +userInfo.id
               "

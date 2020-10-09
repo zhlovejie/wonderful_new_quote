@@ -196,3 +196,31 @@ export function other_add(parameter) {
     params: parameter
   })
 }
+//其他奖金新增 
+export function other_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//其他奖金撤回
+export function other_withdraw(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/withdraw',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//其他奖金审批 
+export function other_approval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/approval',
+    method: 'post',
+    data: parameter
+  })
+}

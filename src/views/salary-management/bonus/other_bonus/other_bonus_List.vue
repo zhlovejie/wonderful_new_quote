@@ -32,7 +32,7 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('annual:add')">
+      <template v-if="$auth('other:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
@@ -43,13 +43,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('annual:list')">
+        <template v-if="$auth('other:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('annual:lists')"
+        v-if="$auth('other:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -70,12 +70,12 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('annual:view')">
+            <template v-if="$auth('other:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <template v-if="$auth('annual:Withdraw')">
+              <template v-if="$auth('other:Withdraw')">
                 <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                   <a type="primary">撤回</a>
                 </a-popconfirm>
@@ -83,7 +83,7 @@
             </template>
             <template
               v-if="
-                $auth('annual:edit-salary') &&
+                $auth('other:edit-salary') &&
                 (record.status === 3 || record.status === 4) &&
                 +record.createdId === +userInfo.id
               "
@@ -114,7 +114,7 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { other_add } from '@/api/bonus_management'
+import { other_add, other_withdraw } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -265,14 +265,14 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      year_send_annual({ id: record.id }).then((res) => {
+      other_withdraw({ id: record.id }).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {}, {
+      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
       })
       that.loading = true

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1005"
+    :width="800"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -26,17 +26,29 @@
             <td>部门</td>
             <td colspan="2">
               <a-form-item>
-                <a-select style="width: 200px" @change="depChangeHandler" placeholder="请选择部门">
+                <a-select
+                  style="width: 200px"
+                  :disabled="isDisabled"
+                  @change="depChangeHandler"
+                  placeholder="请选择部门"
+                  v-decorator="['departmentId', { rules: [{ required: true, message: '请选择部门!' }] }]"
+                >
                   <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
                     item.departmentName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
-            <td>岗位</td>
+            <td>职位</td>
             <td colspan="2">
               <a-form-item>
-                <a-select style="width: 200px" placeholder="请选择岗位">
+                <a-select
+                  style="width: 200px"
+                  :disabled="isDisabled"
+                  @change="postChangeHandler"
+                  placeholder="请选择职位"
+                  v-decorator="['stationId', { rules: [{ required: true, message: '请选择职位!' }] }]"
+                >
                   <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
                     item.stationName
                   }}</a-select-option>
@@ -48,22 +60,72 @@
             <td>姓名</td>
             <td colspan="2">
               <a-form-item>
-                <a-select style="width: 200px" placeholder="请选择人员">
+                <a-select
+                  :disabled="isDisabled"
+                  style="width: 200px"
+                  placeholder="请选择人员"
+                  v-decorator="['userId', { rules: [{ required: true, message: '请选择人员!' }] }]"
+                >
                   <a-select-option v-for="item in personSelectDataSource" :key="item.id" :value="item.id">{{
                     item.trueName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
-            <td>人员</td>
+            <td>申请事项</td>
             <td colspan="2">
-              <!-- <a-form-item>
-                <a-select style="width: 200px" placeholder="请选择人员">
-                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
-                    item.trueName
-                  }}</a-select-option>
+              <a-form-item>
+                <a-select
+                  :disabled="isDisabled"
+                  style="width: 200px"
+                  placeholder="请选择申请事项"
+                  v-decorator="['itemType', { rules: [{ required: true, message: '请选择申请事项!' }] }]"
+                >
+                  <a-select-option :value="1">补次申请</a-select-option>
+                  <a-select-option :value="2">调整申请</a-select-option>
+                  <a-select-option :value="3">其他</a-select-option>
                 </a-select>
-              </a-form-item> -->
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>奖金（元）</td>
+            <td colspan="4">
+              <a-form-item>
+                <a-input-number
+                  :precision="2"
+                  :disabled="isDisabled"
+                  style="width: 700px"
+                  placeholder="输入奖金"
+                  v-decorator="['amount', { rules: [{ required: true, message: '请输入奖金!' }] }]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>申请事由</td>
+            <td colspan="4">
+              <a-form-item>
+                <a-textarea
+                  placeholder="申请事由"
+                  :disabled="isDisabled"
+                  :rows="2"
+                  v-decorator="['reason', { rules: [{ required: true, message: '请输入申请事由' }] }]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>备注</td>
+            <td colspan="4">
+              <a-form-item>
+                <a-textarea
+                  placeholder="备注"
+                  :disabled="isDisabled"
+                  :rows="2"
+                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+                />
+              </a-form-item>
             </td>
           </tr>
         </table>
@@ -76,10 +138,11 @@
 import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
-  getUserByDep, //获取人员
+  getUserByStation, //获取人员
 } from '@/api/systemSetting'
-import { year_send_rule, year_annual_addAndUpdate, year_send_getId, year_annual_approval } from '@/api/bonus_management'
+import { other_addAndUpdate, other_approval } from '@/api/bonus_management'
 import Approval from './Approval'
+import moment from 'moment'
 
 // let uuid = () => Math.random().toString(32).slice(-10)
 
@@ -93,9 +156,9 @@ export default {
       remark: '',
       visible: false,
 
-      personSelectDataSource: [], //岗位
+      personSelectDataSource: [], //人员
       departmentList: [], //部门
-      postSelectDataSource: [], //人员
+      postSelectDataSource: [], //职位
       spinning: false,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'view',
@@ -134,30 +197,6 @@ export default {
     isDisabled() {
       return this.isView || this.isEdit || this.isView5
     },
-    // totalPrice() {
-    //   return this.programme.reduce((addr, item) => {
-    //     addr = Number(addr) + Number(item.amount)
-    //     return parseFloat(addr).toFixed(2)
-    //   }, 0)
-    // },
-    // totalPhase() {
-    //   return this.programme.reduce((addr, item) => {
-    //     addr = Number(addr) + Number(item.firAmount || 0)
-    //     return parseFloat(addr).toFixed(2)
-    //   }, 0)
-    // },
-    // totalPhase1() {
-    //   return this.programme.reduce((addr, item) => {
-    //     addr = Number(addr) + Number(item.secAmount || 0)
-    //     return parseFloat(addr).toFixed(2)
-    //   }, 0)
-    // },
-    // totalPhase2() {
-    //   return this.programme.reduce((addr, item) => {
-    //     addr = Number(addr) + Number(item.thrAmount || 0)
-    //     return parseFloat(addr).toFixed(2)
-    //   }, 0)
-    // },
   },
   created() {
     departmentList().then((res) => {
@@ -165,6 +204,7 @@ export default {
     })
   },
   methods: {
+    moment,
     //选择岗位
     depChangeHandler(dep_id) {
       let that = this
@@ -174,45 +214,27 @@ export default {
         that.postSelectDataSource = res.data
       })
     },
+    //选择人员
     postChangeHandler(stationId) {
       this.personSelectDataSource = []
-      getUserByStation({ stationId: stationId }).then((res) => (this.personSelectDataSource = res.data))
+      getUserByStation({ stationId: stationId, showLeaveFlag: 1 }).then(
+        (res) => (this.personSelectDataSource = res.data)
+      )
     },
-    // moment,
-    // inputChange(event, keys, field) {
-    //   let programme = [...this.programme]
-    //   let target = programme.find((item, index) => item.userId === keys)
-    //   if (target) {
-    //     target[field] = event instanceof Event ? event.target.value : event
-    //     target['firAmount'] = parseFloat(target[field] * this.year_send.firPart).toFixed(2)
-    //     target['secAmount'] = parseFloat(target[field] * this.year_send.secPar).toFixed(2)
-    //     target['thrAmount'] = parseFloat(target[field] * this.year_send.thrPar).toFixed(2)
-    //     this.programme = programme
-    //   }
-    // },
+    //接受数据
     query(type, record) {
+      console.log(this.record)
+      this.form.resetFields() // 清空表
       this.visible = true
       this.type = type
       this.record = record
-      // year_send_rule().then((res) => (this.year_send = res.data[0]))
-      if (type === 'add') {
-        // console.log(record)
-        // return queryList({ departmentId: record.depId }).then((res) => {
-        //   this.programme = res.data.map((res) => {
-        //     return {
-        //       departmentId: record.depId,
-        //       departmentName: record.departmentName,
-        //       amount: '',
-        //       trueName: res.trueName,
-        //       userId: res.id,
-        //       firAmount: undefined,
-        //       secAmount: undefined,
-        //       thrAmount: undefined,
-        //     }
-        //   })
-        //   console.log(res.data)
-        // })
-      } else {
+      if (type !== 'add') {
+        getStationList({ id: record.departmentId }).then((res) => {
+          this.postSelectDataSource = res.data
+        })
+        getUserByStation({ stationId: record.stationId, showLeaveFlag: 1 }).then(
+          (res) => (this.personSelectDataSource = res.data)
+        )
         this.fillData()
       }
     },
@@ -220,16 +242,19 @@ export default {
     fillData() {
       let that = this
       this.$nextTick(() => {
-        year_send_getId({ id: this.record.id }).then((res) => {
-          console.log(res.data)
-          this.programme = res.data.oaSalaryBounsAnnulDetails
-          this.record.depId = res.data.departmentId
+        this.form.setFieldsValue({
+          amount: this.record.amount,
+          departmentId: this.record.departmentId,
+          itemType: this.record.itemType,
+          reason: this.record.reason,
+          stationId: this.record.stationId,
+          userId: this.record.userId,
+          remark: this.record.remark,
         })
       })
     },
-
+    //提交
     handleOk() {
-      // console.log('你是要提交')
       let that = this
       if (that.type === 'view') {
         this.visible = false
@@ -240,16 +265,13 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
-            let arr = {}
-            arr.departmentId = that.record.depId
-            arr.oaSalaryBounsAnnulDetails = this.programme
-
             if (that.type === 'add' || that.type === 'edit-salary') {
-              year_annual_addAndUpdate(arr)
+              other_addAndUpdate(values)
                 .then((res) => {
                   this.programme = []
                   this.visible = false
                   that.spinning = false
+                  that.form.resetFields() // 清空表
                   that.$message.info(res.msg)
                   that.$emit('finish')
                 })
@@ -264,6 +286,7 @@ export default {
       this.remark = '' // 清空表
       this.visible = false
     },
+    // 审批
     submitAction(opt) {
       let that = this
       let values = {
@@ -272,7 +295,7 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      year_annual_approval(values)
+      other_approval(values)
         .then((res) => {
           that.spinning = false
           that.form.resetFields() // 清空表
