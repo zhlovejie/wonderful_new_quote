@@ -5,13 +5,7 @@
       <!-- <a-button class="fl-r" type="danger" @click="saveStep">保存当前信息</a-button> -->
     </div>
     <div class="content">
-      <step1
-        v-if="currentTab === 0"
-        ref="step1"
-        key="step1"
-        @nextStep="nextStep"
-        :queryonedata="queryonedata"
-      />
+      <step1 v-if="currentTab === 0" ref="step1" key="step1" @nextStep="nextStep" :queryonedata="queryonedata" />
       <step2
         v-if="currentTab === 1"
         ref="step2"

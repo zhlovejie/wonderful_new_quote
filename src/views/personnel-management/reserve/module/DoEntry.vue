@@ -1453,7 +1453,8 @@ export default {
       let { type, url, data } = result
       //#处理自己的逻辑
       //#处理自己的逻辑END
-      const file = result.url.split('/')
+      if (type==='photo'){
+        const file = result.url.split('/')
       const fileName = file[file.length - 1]
       if (this.fileTypes===2){
           this.certificateList.push({
@@ -1473,6 +1474,7 @@ export default {
         fileType: this.fileTypes,
         url: result.url,
       })
+      }
       }
       //关闭高拍仪
       this.$refs.gaoPaiYiDevices.close()
