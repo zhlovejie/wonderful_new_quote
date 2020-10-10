@@ -2914,6 +2914,40 @@ export const asyncRouterMap = [
               },
             }
           ]
+        }, {
+          path: '/salary-management/capital',
+          name: 'salary_year_capital',
+          component: RouteView,
+
+          meta: {
+            title: '应扣资金',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          children: [{
+              path: '/salary-management/capital/Meals',
+              name: 'salary_capital_Meals',
+              component: () => import('@/views/salary-management/capital/Meals/Meals_List'),
+              meta: {
+                title: '餐费扣款规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+            {
+              path: '/salary-management/capital/bill',
+              name: 'salary_capital_bill',
+              component: () => import('@/views/salary-management/capital/bill/bill_list'),
+              meta: {
+                title: '票据单',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }
+          ]
         }, ]
       },
     ]

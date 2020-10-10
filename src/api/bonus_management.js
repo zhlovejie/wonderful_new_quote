@@ -224,3 +224,13 @@ export function other_approval(parameter) {
     data: parameter
   })
 }
+
+//餐费扣款规则
+export function capital_Meals_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-charge-back-rule/list',
+    method: 'get',
+    params: parameter
+  })
+}
