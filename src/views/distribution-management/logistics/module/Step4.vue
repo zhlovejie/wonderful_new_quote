@@ -116,6 +116,7 @@
               :span="10"
             >
               <UploadP style="margin-left: 100px" ref="normalUpload" :msgId="specialList" :name="isSee" />
+              <a-button @click="gaoPaiYiDevicesClickHandler">拍照上传</a-button>
             </a-col>
           </a-row>
         </a-form-item>
@@ -137,6 +138,7 @@ import GaoPaiYiDevices from '@/components/GaoPaiYiDevices/Index'
 //上传图片
 //base64上传接口
 import { customUploadBase64 } from '@/api/common'
+let uuid = () => Math.random().toString(32).slice(-10)
 import UploadP from './UploadP'
 export default {
   name: 'Step4',
@@ -158,6 +160,7 @@ export default {
       specialList: [], //专业
       queryonedata1: {},
       isSee: false,
+      statusType: undefined,
     }
   },
   watch: {
@@ -222,38 +225,12 @@ export default {
     onSearch(value) {
       let that = this
       this.$refs.gaoPaiYiDevices.show()
-      // getCardNo({ cardNo: value }).then((res) => {
-      //   console.log(res.data)
-      //   that.certificateList = res.data[0].logisticsPilotAnnuxes.filter((item) => item.statusType === 1)
-      //   that.certificateList = that.certificateList.map((item, index) => {
-      //     return {
-      //       uid: index,
-      //       name: '1',
-      //       fileName: item.name,
-      //       status: 'done',
-      //       url: item.url,
-      //     }
-      //   })
-      //   that.specialList = res.data[0].logisticsPilotAnnuxes.filter((item) => item.statusType === 2)
-      //   that.specialList = that.specialList.map((item, index) => {
-      //     return {
-      //       uid: index,
-      //       name: '1',
-      //       fileName: item.name,
-      //       status: 'done',
-      //       url: item.url,
-      //     }
-      //   })
-      //   that.form.setFieldsValue({
-      //     cardNo: res.data[0].cardNo,
-      //     driveNo: res.data[0].driveNo,
-      //     fullName: res.data[0].fullName,
-      //     telephone: res.data[0].telephone,
-      //     wechatNumber: res.data[0].wechatNumber,
-      //   })
-      // })
     },
-
+    gaoPaiYiDevicesClickHandler() {
+      //打开高拍仪
+      this.statusType = 2
+      this.$refs.gaoPaiYiDevices.show()
+    },
     gaoPaiYiDevicesChange(result) {
       console.log(result)
       //result 参数 数据结构说明
@@ -289,20 +266,54 @@ export default {
       let { type, url, data } = result
       //#处理自己的逻辑
       if (type === 'idcard') {
-        that.form.setFieldsValue({
-          cardNo: data.ICNumber,
-          fullName: data.ICName,
+        const cardNo = data.ICNumber.split(',')
+        const cardl = cardNo[cardNo.length - 1]
+        const fullName = data.ICName.split(',')
+        const fulll = fullName[fullName.length - 1]
+        this.form.setFieldsValue({
+          cardNo: cardl,
+          fullName: fulll,
         })
       }
       if (type === 'idcardcopy') {
-        customUploadBase64({ picBase64: data.idcardcopy }).then((res) => {
+        // this.$refs.gaoPaiYiDevices.close()
+        customUploadBase64({ picBase64: data }).then((res) => {
           console.log(res.data)
+          if (res.code === 200) {
+            this.$refs.gaoPaiYiDevices.close()
+            const file = res.data.split('/')
+            const fileName = file[file.length - 1]
+            this.certificateList.push({
+              uid: uuid(),
+              name: '1',
+              fileName: fileName,
+              status: 'done',
+              statusType: 1,
+              url: res.data,
+            })
+          } else {
+            this.$message.error(res.msg)
+            this.$refs.gaoPaiYiDevices.close()
+          }
         })
+      }
+      // 拍照上传驾驶证
+      if (type === 'photo' && this.statusType === 2) {
+        const file = url.split('/')
+        const fileName = file[file.length - 1]
+        this.specialList.push({
+          uid: uuid(),
+          name: '1',
+          fileName: fileName,
+          status: 'done',
+          statusType: 2,
+          url: url,
+        })
+        this.$refs.gaoPaiYiDevices.close()
       }
 
       //#处理自己的逻辑END
       //关闭高拍仪
-      this.$refs.gaoPaiYiDevices.close()
     },
 
     // 点击下一步
