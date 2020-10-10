@@ -346,7 +346,7 @@ export default {
       that.visible = true
       that.dataReset()
       that.type = type
-      console.log(that)
+      //console.log(that)
       that.record = Object.assign({}, record)
       that.form.resetFields()
       await that.initData()
@@ -414,7 +414,7 @@ export default {
       }
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
+          //console.log('Received values of form: ', values)
           Object.keys(values).map(key => {
             let target = values[key]
             Array.isArray(target) &&
@@ -463,7 +463,7 @@ export default {
       this.fileList = []
     },
     handleChange(info) {
-      console.log(arguments)
+      //console.log(arguments)
       let fileList = [...info.fileList]
       fileList = fileList.map(file => {
         if (file.response && file.response.code === 200) {

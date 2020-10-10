@@ -55,11 +55,11 @@ const user = {
   actions: {
     // 登录
     Login ({ commit }, userInfo) {
-      console.log('user.js .....', userInfo)
+      //console.log('user.js .....', userInfo)
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           //请求成功，有可能校验失败
-          console.log(response)
+          //console.log(response)
           if(response && response.code === 200){
             const result = response.data
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)

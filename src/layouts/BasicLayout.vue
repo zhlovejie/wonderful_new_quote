@@ -72,12 +72,7 @@ import GlobalFooter from '@/components/GlobalFooter'
 import SettingDrawer from '@/components/SettingDrawer'
 
 
-console.log('-----------------------mapState-----------------------')
-console.log(mapState)
-console.log('-----------------------mapState END-------------------')
-console.log('-----------------------mapActions----------------------')
-console.log(mapActions)
-console.log('-----------------------mapActions END------------------')
+
 // const [menuData, setMenuData] = useState([]);    //从服务器请求菜单
 
 // useEffect(() => {
@@ -138,9 +133,6 @@ export default {
     this.collapsed = !this.sidebarOpened
   },
   mounted () {
-
-    console.log(this.mainMenu)
-
     const userAgent = navigator.userAgent
     if (userAgent.indexOf('Edge') > -1) {
       this.$nextTick(() => {
