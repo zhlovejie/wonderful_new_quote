@@ -27,6 +27,8 @@ import distributionManagement from '@/router/router-distribution-management'
 import vehicleManagement from '@/router/router-vehicle-management'
 import contingencyManagement from '@/router/router-contingency-management'
 import trainingManagement from '@/router/router-training-management'
+import salaryManagemen from '@/router/router-salary-management'
+
 
 const __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
@@ -45,6 +47,7 @@ const __ROUTER_MAP__ = [
   vehicleManagement, //车辆管理
   contingencyManagement, //应急管理
   trainingManagement, //培训管理
+  salaryManagemen, // 薪酬管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
