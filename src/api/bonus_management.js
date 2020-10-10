@@ -234,3 +234,21 @@ export function capital_Meals_List(parameter) {
     params: parameter
   })
 }
+//餐费扣款规则新增修改
+export function capital_Meals_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-charge-back-rule/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//餐费扣款规则删除
+export function capital_Meals_delete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-charge-back-rule/delete',
+    method: 'post',
+    data: parameter
+  })
+}

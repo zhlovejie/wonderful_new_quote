@@ -19,21 +19,25 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>加班时长(h)</td>
-            <td colspan="2">1个</td>
+            <td>用餐次数(次)</td>
+            <td colspan="2">1</td>
           </tr>
           <tr>
-            <td>奖金(元/h)</td>
+            <td>扣款(元)</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
                   :precision="2"
                   style="width: 400px"
-                  placeholder="输入奖金"
-                  v-decorator="['bounsNum', { rules: [{ required: true, message: '请输入奖金!' }] }]"
+                  placeholder="输入扣款"
+                  v-decorator="['amount', { rules: [{ required: true, message: '请输入扣款!' }] }]"
                 />
               </a-form-item>
             </td>
+          </tr>
+          <tr>
+            <td>发放周期</td>
+            <td colspan="2">按月</td>
           </tr>
           <tr>
             <td>备注</td>
@@ -54,7 +58,7 @@
   </a-modal>
 </template>
 <script>
-import { overwork_addAndUpdate } from '@/api/bonus_management'
+import { capital_Meals_addAndUpdate } from '@/api/bonus_management'
 
 export default {
   name: 'BecomingForm',
@@ -71,10 +75,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改加班奖金规则'
+        return '修改餐费扣款规则'
       }
       if (this.isView) {
-        return '新增加班奖金规则'
+        return '新增餐费扣款规则'
       }
     },
     isView() {
@@ -105,7 +109,7 @@ export default {
       this.$nextTick(() => {
         console.log(this.record)
         this.form.setFieldsValue({
-          bounsNum: this.record.bounsNum,
+          amount: this.record.amount,
           remark: this.record.remark,
         })
       })
@@ -122,7 +126,7 @@ export default {
             if (that.type !== 'add') {
               values.id = this.record.id
             }
-            overwork_addAndUpdate(values)
+            capital_Meals_addAndUpdate(values)
               .then((res) => {
                 that.spinning = false
                 that.form.resetFields() // 清空表

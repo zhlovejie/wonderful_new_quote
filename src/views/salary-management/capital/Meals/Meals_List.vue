@@ -14,9 +14,9 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <!-- <div slot="lunchTimes" slot-scope="text, record, index">
-            <span>1个</span>
-          </div> -->
+          <div slot="lunchTimes" slot-scope="text, record, index">
+            <span>1</span>
+          </div>
           <span slot="action" slot-scope="text, record">
             <template>
               <a @click="handle('edit-salary', record)">修改</a>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { capital_Meals_List, overwork_delete } from '@/api/bonus_management'
+import { capital_Meals_List, capital_Meals_delete } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 
 export default {
@@ -140,7 +140,7 @@ export default {
     // 删除
     deleteRoleInfo(record) {
       let that = this
-      overwork_delete(`id=${record.id}`).then((res) => {
+      capital_Meals_delete(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
