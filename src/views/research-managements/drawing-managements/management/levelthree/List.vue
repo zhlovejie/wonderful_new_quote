@@ -13,6 +13,19 @@
       <a-button v-if="$auth('blueprintFile:add')" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
+      <div style="margin-bottom: 16px" v-if="$auth('blueprintFile:delete')">
+        <a-button type="primary" :disabled="!hasSelected" @click="doAction('deleteBatch')">
+          批量删除
+        </a-button>
+        <!-- <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
+          批量下载
+        </a-button> -->
+        <span style="margin-left: 15px">
+          <template v-if="hasSelected">
+            {{ `已选择 ${selectedRowKeys.length} 项` }}
+          </template>
+        </span>
+      </div>
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -20,7 +33,8 @@
         :loading="loading"
         @change="handleTableChange" 
         size="middle" 
-        :customRow="customRowFunction"
+        :customRow="customRowFunction" 
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -48,15 +62,19 @@
           <a v-if="$auth('blueprintFile:update')" type="primary" @click="doAction('edit',record)">修改</a>
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('back',record)">反馈记录</a>
+
+          <template v-if="+record.createdId === +userInfo.id">
           <a-divider type="vertical" />
-          <a-popconfirm v-if="$auth('blueprintFile:delete')" title="是否要删除此行？" @confirm="doAction('del',record)">
+          <!-- v-if="$auth('blueprintFile:delete')" -->
+          <a-popconfirm v-if="$auth('blueprintFile:delete')"  title="是否要删除此行？" @confirm="doAction('del',record)">
             <a>删除</a>
           </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
 
-    <AddForm ref="addForm" @finish="() => { searchAction(),$emit('finish') }" />
+    <AddForm ref="addForm" @finish="() => { searchAction() }" />
     <DisposeForm ref="disposeForm" />
     <XdocView ref="xdocView" />
   </div>
@@ -69,12 +87,16 @@ import {
   blueprintFilePageList,
   blueprintFileDetail,
   blueprintFileDel,
-  blueprintFileAddOrUpdate
+  blueprintFileAddOrUpdate,
+  blueprintFileDeleteBatch,
+  duplicateCheck
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import DisposeForm from './DisposeForm'
 import XdocView from './XdocView'
 import moment from 'moment'
+import { downloadFile } from '@/api/OperationalScheme'
+
 
 const columns = [
   {
@@ -151,12 +173,20 @@ export default {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
+        size:"middle"
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      inputParam:{}
+      inputParam:{},
+      selectedRowKeys:[],
+      selectedRows:[]
     }
+  },
+  computed: {
+    hasSelected() {
+      return this.selectedRowKeys.length > 0;
+    },
   },
   watch:{
     params(val){
@@ -169,6 +199,7 @@ export default {
   methods: {
     moment,
     init() {
+      this.selectedRowKeys = []
       this.inputParam = Object.assign({},this.params)
       let {id,superiorId} = this.inputParam
       if(this.globalSearch){
@@ -186,14 +217,16 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let pagination = {...this.pagination}
+      delete pagination.size
+      let _searchParam = Object.assign({}, { ...this.searchParam }, pagination, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       blueprintFilePageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
+            item.key = item.id
             return item
           })
           //设置数据总条数
@@ -201,6 +234,13 @@ export default {
           pagination.total = res.data.total || 0
           pagination.current = res.data.current || 1
           that.pagination = pagination
+          //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
+          //刷新也不显示数据
+          let {current,pages} = res.data
+          if(current > pages){
+            that.pagination = {...pagination,current:pages}
+            that.searchAction()
+          }
         })
         .catch(err => (that.loading = false))
     },
@@ -251,6 +291,37 @@ export default {
           })
       } else if(actionType === 'back'){
         that.$refs.disposeForm.query(actionType,record)
+      } else if(actionType === 'deleteBatch'){
+        that.$confirm({
+          title: '警告',
+          content: `确定要删除已选择文件吗?`,
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk () {
+            blueprintFileDeleteBatch(`ids=${that.selectedRowKeys.join(',')}`)
+            .then(res => {
+              that.$message.info(res.msg)
+              that.searchAction()
+              that.selectedRowKeys = []
+              that.selectedRows= []
+              //that.$emit('finish')
+            })
+            .catch(err => {
+              that.$message.info(`错误：${err.message}`)
+            })
+          },
+          onCancel () {}
+        })
+
+        return
+      }else if(actionType === 'downloadBatch'){
+        let selectedRows = that.selectedRows
+        for (let j = 0; j < selectedRows.length; j++) {
+          const url = selectedRows[j].fileUrl
+          downloadFile(url)
+        }
+        return
       }
       else {
         this.$message.info('功能尚未实现！')
@@ -273,6 +344,11 @@ export default {
         return null
       }
       return fNode(node)
+    },
+    onSelectChange(selectedRowKeys,selectedRows) {
+      //console.log('selectedRowKeys changed: ', selectedRowKeys);
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     }
   }
 }

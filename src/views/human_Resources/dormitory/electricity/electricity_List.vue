@@ -172,8 +172,8 @@ export default {
       that.loading = true
       let _searchParam = Object.assign(
         { socialSecurityId: that.recordId },
-        { ...this.queryParam }
-        // { ...this.pagination }
+        { ...this.queryParam },
+        { ...this.pagination }
       )
       electricity_List(_searchParam)
         .then((res) => {
@@ -195,7 +195,7 @@ export default {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
-      this.searchActionsee()
+      this.searchAction()
     },
 
     // 清空、重置

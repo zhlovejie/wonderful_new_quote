@@ -162,15 +162,17 @@ export default {
       this.selectedRows = selectedRows
     },
     viewFormat(record){
-      let url = record.fileUrl
+      let url = String(record.fileUrl)
+      let pdfUrl = String(record.filePdf)
       let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
       let isPdf = url => url.endsWith('.pdf')
       let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
       if(url){
         if(isPdf(url) || isImage(url)){
           return url
-        }else if(isWord){
-          return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+        }
+        if(isWord(url)){
+          return isPdf(pdfUrl) ? pdfUrl : `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
         }
       }
       return '#'

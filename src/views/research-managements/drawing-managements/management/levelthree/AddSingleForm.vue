@@ -188,15 +188,18 @@ export default {
   },
   watch: {
     fileList(val) {
+      debugger
       let file = val.find(f => f.url)
       if(file){
         let pictureNum = ''
+        let fileName = ''
         try {
+          fileName = file.name.split('.')[0]
           pictureNum = file.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
         } catch (err) {
           pictureNum = ''
         }
-        this.$nextTick(() => this.form.setFieldsValue({pictureNum:pictureNum}))
+        this.$nextTick(() => this.form.setFieldsValue({pictureNum:pictureNum,fileName:fileName}))
       }
     }
   },

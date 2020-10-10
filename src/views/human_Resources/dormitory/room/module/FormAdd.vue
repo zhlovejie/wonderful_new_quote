@@ -115,6 +115,7 @@ export default {
 
       that.form.validateFields((err, values) => {
         if (!err) {
+          that.spinning = true
           values.surfaceDate = moment(values.surfaceDate).format('YYYY-MM')
           room_Add(values)
             .then((res) => {

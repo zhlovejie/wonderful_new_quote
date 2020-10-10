@@ -318,6 +318,8 @@ export default {
         that.visible = false
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
+        debugger
+        this.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.insuranceInfoList = values.insuranceInfoList.map((item, index) => {

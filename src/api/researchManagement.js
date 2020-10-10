@@ -84,6 +84,21 @@ export function getUploadPath () {
   return system.baseURL + '/rDFileUpload/uploadFile'
 }
 
+//自定义上传函数
+export function customUpload(parameter,progressEventCallback){
+  return axios({
+    baseURL: system.baseURL,
+    url: '/rDFileUpload/uploadFile',
+    method: 'post',
+    //responseType:'blob',
+    data: parameter,
+    onUploadProgress:function(progressEvent){
+        if(progressEvent.lengthComputable){ progressEventCallback(progressEvent)}
+    },
+  })
+}
+
+
 //删除上传文件
 export function blueprintFileDelete (parameter) {
   return axios({
@@ -94,7 +109,14 @@ export function blueprintFileDelete (parameter) {
   })
 }
 
-
+export function duplicateCheck (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/duplicateCheck',
+    method: 'get',
+    params: parameter
+  })
+}
 
 export function blueprintFileAdd (parameter) {
   return axios({
@@ -141,6 +163,15 @@ export function blueprintFilePageList (parameter) {
   })
 }
 
+
+export function blueprintFileDeleteBatch (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/deleteBatch',
+    method: 'post',
+    data: parameter
+  })
+}
 
 
 //---------------------图纸管理 END-----------------------

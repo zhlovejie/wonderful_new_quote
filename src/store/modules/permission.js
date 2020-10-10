@@ -117,10 +117,10 @@ const permission = {
       return new Promise(resolve => {
         routerListByUser().then(res => {
           const accessedRouters = generator(res.code === 200 ? res.data : [])
-          console.log('generator', accessedRouters)
+          //console.log('generator', accessedRouters)
           accessedRouters.push(notFoundRouter)
           commit('SET_ROUTERS', accessedRouters)
-          console.log('accessedRouters',accessedRouters)
+          //console.log('accessedRouters',accessedRouters)
           resolve()
         })
       })

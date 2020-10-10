@@ -1,0 +1,221 @@
+<!-- 1.药品物资管理 -->
+<template>
+  <div class="wdf-custom-wrapper">
+    <div class="search-wrapper">
+      <a-button
+        class="a-button"
+        style="float:right;"
+        type="primary"
+        icon="plus"
+        @click="doAction('add',null)"
+      >新增</a-button>
+      <!-- v-if="$auth('contingency-management-medicines:add')" -->
+    </div>
+    <div class="main-wrapper">
+      <a-table
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="false"
+        :loading="loading"
+        @change="handleTableChange"
+      >
+        <div slot="order" slot-scope="text, record, index">{{ index + 1 }}</div>
+        <div slot="efficacy" slot-scope="text">
+          <a-tooltip v-if="String(text).length > 15">
+            <template slot="title">{{text}}</template>
+            {{ String(text).slice(0,15) }}...
+          </a-tooltip>
+          <span v-else>{{text}}</span>
+        </div>
+
+        <div slot="remark" slot-scope="text">
+          <a-tooltip v-if="String(text).length > 15">
+            <template slot="title">{{text}}</template>
+            {{ String(text).slice(0,15) }}...
+          </a-tooltip>
+          <span v-else>{{text}}</span>
+        </div>
+        <div class="action-btns" slot="action" slot-scope="text, record">
+          <a type="primary" @click="doAction('view',record)">查看</a>
+          <!-- <template v-if="$auth('contingency-management-medicines:edit')"> -->
+          <a-divider type="vertical" />
+          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <!-- </template> -->
+
+          <!-- <template v-if="$auth('contingency-management-medicines:del')"> -->
+          <a-divider type="vertical" />
+          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+            <a href="javascript:void(0);">删除</a>
+          </a-popconfirm>
+          <!-- </template> -->
+        </div>
+      </a-table>
+    </div>
+    <AddForm ref="addForm" @finish="searchAction" />
+  </div>
+</template>
+<script>
+import {
+  emergencyCabinetTypeAddOrUpdate,
+  emergencyCabinetTypeDetail,
+  emergencyCabinetTypeList,
+  emergencyMedicineReplenishmentList,
+  emergencyCabinetTypeDel,
+} from '@/api/contingencyManagement'
+import AddForm from './AddForm'
+import moment from 'moment'
+const columns = [
+  {
+    align: 'center',
+    title: '序号',
+    width: '70px',
+    dataIndex: 'order',
+    scopedSlots: { customRender: 'order' }
+  },
+  {
+    align: 'center',
+    title: '类型名称',
+    dataIndex: 'typeName'
+  },
+  {
+    align: 'center',
+    title: '货道数量',
+    dataIndex: 'aisleQuantity'
+  },
+  {
+    align: 'center',
+    title: '货道层数',
+    dataIndex: 'aisleTier'
+  },
+  {
+    align: 'center',
+    title: '创建人',
+    dataIndex: 'createdName'
+  },
+  {
+    align: 'center',
+    title: '创建时间',
+    dataIndex: 'createdTime'
+  },
+  {
+    align: 'center',
+    title: '操作',
+    scopedSlots: { customRender: 'action' }
+  }
+]
+
+export default {
+  name: 'contingency-management-medicines-cabinet-config',
+  components: {
+    AddForm: AddForm,
+  },
+  data() {
+    return {
+      columns: columns,
+      dataSource: [],
+      pagination: {
+        current: 1,
+      },
+      loading: false,
+      searchParam: {},
+      visible: false,
+      bindEnterFn: null,
+    }
+  },
+  computed: {},
+  watch: {
+    $route: {
+      handler: function (to, from) {
+        if (to.name === 'contingency-management-medicines-cabinet-config') {
+          this.init()
+        }
+      },
+      immediate: true,
+    },
+  },
+  mounted() {
+    let that = this
+    let ele = document.querySelector('.wdf-custom-wrapper')
+    that.bindEnterFn = (event) => {
+      if (event.type === 'keyup' && event.keyCode === 13) {
+        //Enter
+        that.searchAction()
+      }
+    }
+    if (ele) {
+      ele.addEventListener('keyup', that.bindEnterFn)
+    }
+  },
+  beforeDestroy() {
+    let that = this
+    let ele = document.querySelector('.wdf-custom-wrapper')
+    ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
+  },
+  methods: {
+    moment,
+    init() {
+      let that = this
+      this.searchAction()
+    },
+    searchAction(opt) {
+      let that = this
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
+      console.log('执行搜索...', _searchParam)
+      that.loading = true
+      emergencyCabinetTypeList(_searchParam)
+        .then((res) => {
+          that.loading = false
+          that.dataSource = res.data.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+        })
+        .catch((err) => (that.loading = false))
+    },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.searchAction()
+    },
+    doAction(type, record) {
+      let that = this
+      if (type === 'add' || type === 'edit' || type === 'view') {
+        this.$refs.addForm.query(type, record)
+        return
+      }
+      if (type === 'del') {
+        emergencyCabinetTypeDel(`typeId=${record.id}`)
+          .then((res) => {
+            that.$message.info(res.msg)
+            if(+res.code === 200){
+              that.searchAction()
+            }
+          })
+          .catch((err) => {
+            that.$message.info(`错误：${err.message}`)
+          })
+        return
+      }
+    }
+  },
+}
+</script>
+<style scoped>
+.wdf-custom-wrapper {
+  background-color: #fff;
+  padding: 10px 20px;
+}
+.wdf-custom-wrapper .search-wrapper * {
+  margin: 10px 15px 0 0;
+}
+.main-wrapper {
+  margin-top: 20px;
+}
+</style>

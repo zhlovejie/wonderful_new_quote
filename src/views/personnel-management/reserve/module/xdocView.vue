@@ -48,6 +48,9 @@ export default {
       if (suffixName === '.jpg' || suffixName === '.jpeg' || suffixName === '.png' || suffixName === '.gif') {
         isImage = true
       }
+      if (suffixName === '.pdf') {
+        isImage = true
+      }
 
       if (isImage) {
         that.xdocUrl = xdocUrl

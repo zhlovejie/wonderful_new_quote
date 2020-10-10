@@ -89,7 +89,12 @@ export default {
     },
     init(iccid) {
       this.iccid=iccid
-      this.searchAction({iccId:iccid,current:1})
+
+      this.searchParam = {
+        iccId:iccid,current:1
+      }
+
+      this.searchAction()
       // 获取流量详情
       getSimInformationFlow({iccId:iccid}).then(res=>{
         if(res.code==200){

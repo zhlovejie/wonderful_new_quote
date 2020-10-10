@@ -204,7 +204,7 @@ export default {
     searchAction(opt = {}) {
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
-      console.log('执行搜索...', _searchParam)
+      //console.log('执行搜索...', _searchParam)
       that.loading = true
       workReportSetWeekPage(_searchParam)
         .then(res => {
@@ -223,7 +223,7 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
+      //console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
@@ -242,7 +242,7 @@ export default {
           }
         })
       }else if (actionType === 'del') {
-        console.log(record)
+        //console.log(record)
         workReportSetWeekDelete({ id: record.id })
           .then(res => {
             that.$message.info(res.msg)

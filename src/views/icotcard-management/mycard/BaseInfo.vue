@@ -80,28 +80,28 @@
         <h3 style="font-weight:600">卡所属信息</h3>
         <a-form-item label="所属机构">
           <a-input
-            v-decorator="['orgName',{initialValue:cardmsg.orgName}]"
+            v-decorator="['orgName',{initialValue:crrcardmsg.orgName}]"
             style="width:200px"
             :readOnly="formreadOnly"
           />
         </a-form-item>
         <a-form-item label="所属设备">
           <a-input
-            v-decorator="['manId',{initialValue:cardmsg.manId}]"
+            v-decorator="['manId',{initialValue:crrcardmsg.manId}]"
             style="width:200px"
             :readOnly="formreadOnly"
           />
         </a-form-item>
         <a-form-item label="出厂日期">
           <a-input
-            v-decorator="['outTime',{initialValue:cardmsg.outTime}]"
+            v-decorator="['outTime',{initialValue:crrcardmsg.outTime}]"
             style="width:200px"
             :readOnly="formreadOnly"
           />
         </a-form-item>
         <a-form-item label="SIM卡有限期">
           <a-input
-            v-decorator="['beOverdueTime',{initialValue:cardmsg.beOverdueTime}]"
+            v-decorator="['beOverdueTime',{initialValue:crrcardmsg.beOverdueTime}]"
             style="width:200px"
             :readOnly="formreadOnly"
           />
@@ -143,6 +143,7 @@ export default {
       dataSource: [],
       form: this.$form.createForm(this),
       cardmsg: {},
+      crrcardmsg:{},
       // 发卡日期
       saledate: '',
       // 截止日期
@@ -180,9 +181,13 @@ export default {
           // 判断cardmsg packagemsg是否为null
           const packagemsg = res.data.packagemsg
           const cardmsg = res.data.cardmsg
+          that.crrcardmsg = res.data.crrcardmsg
           if (!cardmsg && typeof cardmsg != 'undefined' && cardmsg != 0) {
             return
           } else {
+            if(cardmsg.activationdate){
+              cardmsg.activationdate = cardmsg.activationdate.slice(0,10)
+            }
             this.cardmsg = cardmsg
             this.saledate = cardmsg.saledate.substr(0, 10)
             this.validdate = cardmsg.validdate.substr(0, 10)

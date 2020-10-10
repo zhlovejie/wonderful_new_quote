@@ -61,6 +61,7 @@ export default {
     handleOk() {
       let that = this
       that.form.validateFields((err, values) => {
+        this.spinning = true
         if (!err) {
           room_update(values)
             .then((res) => {

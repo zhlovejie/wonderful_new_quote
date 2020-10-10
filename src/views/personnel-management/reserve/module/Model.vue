@@ -1,18 +1,29 @@
 <template>
-  <a-upload
-    name="file"
-    :action="uploadUrl"
-    :fileList="fileList"
-    @change="handleChange"
-    :showUploadList="fileUrl"
-  >
-    <a-button class="a-button" type="primary" icon="upload">上传</a-button>
-  </a-upload>
+  <div>
+    <a-upload name="file" :action="uploadUrl" :fileList="fileList" @change="handleChange" :showUploadList="fileUrl">
+      <a-button class="a-button" type="primary" icon="upload">上传</a-button>
+    </a-upload>
+
+    <a-button
+      class="a-button"
+      style="margin-left: 10px"
+      @click="gaoPaiYiDevicesClickHandler"
+      type="primary"
+      icon="upload"
+      >设备上传</a-button
+    >
+    <GaoPaiYiDevices ref="gaoPaiYiDevices" @change="gaoPaiYiDevicesChange" />
+  </div>
 </template>
 <script>
 import { getUploadPath2 } from '@/api/common'
+//高拍仪组件
+import GaoPaiYiDevices from '@/components/GaoPaiYiDevices/Index'
 export default {
   name: 'BecomingForm',
+  components: {
+    GaoPaiYiDevices,
+  },
   data() {
     return {
       uploadUrl: getUploadPath2(),
@@ -32,6 +43,57 @@ export default {
     this.fileList = this.fileName
   },
   methods: {
+    gaoPaiYiDevicesChange(result) {
+      console.log(result)
+      //result 参数 数据结构说明
+      /**
+       * type - 'pdf':'PDF文件','face':'人脸照片','video':'录像文件','photo':'照片文件'
+       * url  - 上传后返回的 文件url
+       */
+      /**
+       * type - idcard -身份证信息  idcardcopy -身份证复印件base64
+       * data - {
+            //0x19:'身份证功能启动成功',0x1a:'身份证功能启动失败',
+            ICStartStatus: null, 
+            //0x1b:'身份证读卡成功',0x1c:'身份证读卡失败',
+            ICGetOneStatus: null,
+            ICName: null, //姓名
+            ICNumber: null, //身份证号码
+            ICSex: null, //性别汉字  男or女
+            ICNation: null, //民族
+            ICBrithday: null, //出生日期
+            ICAddr: null, //地址
+            ICSignOrganization: null,//签发机关
+            ICExpiryBeginDate: null,//生效日期
+            ICExpiryEndDate: null,//过期日期
+            ICModelNumber: null, //安全码
+            ICPhoto: null, //身份证头像 base64 格式
+          }
+       */
+      /**
+       * idcardcopy -身份证复印件base64
+       * data - base64格式图片
+       */
+
+      let { type, url, data } = result
+      //#处理自己的逻辑
+      if (type === 'pdf') {
+        this.$refs.gaoPaiYiDevices.close()
+        let arr = {
+          fileUrl: url,
+          templateName: this.tempName,
+          fileType: 1,
+        }
+        this.$emit('getmsg', arr)
+      }
+      //#处理自己的逻辑END
+      //关闭高拍仪
+    },
+    gaoPaiYiDevicesClickHandler() {
+      //打开高拍仪
+      this.$refs.gaoPaiYiDevices.show()
+    },
+
     handleChange(info) {
       // console.log(arguments)
       let that = this

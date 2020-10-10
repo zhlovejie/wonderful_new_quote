@@ -222,6 +222,18 @@
             <a-col class="col-border" :span="3" justify="center" align="middle"></a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle"></a-col>
           </a-row>
+        <a-row type="flex" style="border-bottom: 1px solid #ddd;" >
+            <a-col class="col-border" :span="3" justify="center" align="middle">备注</a-col>
+            <a-col class="col-border" :span="21" justify="center" align="middle">
+              <a-form-item>
+              <a-textarea 
+                placeholder="备注" 
+                :rows="3" 
+                v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+              />
+              </a-form-item>
+            </a-col>
+          </a-row>
         <a-form-item>
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">创建人</a-col>
@@ -386,6 +398,7 @@ export default {
         that.totalAmountWidtoutFreight = that.totalAmount - that.freightCharge
 
         const record = {
+          'remark':res.data.remark,
           'paperCode': res.data.paperCode,
           'contractNum': res.data.saleContractDetail.contractNum,
           'customerName': res.data.saleContractDetail.customerName,
@@ -411,13 +424,18 @@ export default {
           openUnit:res.data.openUnit
         }
         if (res.data.approveName != undefined && res.data.approveTime != undefined) {
-          this.approveVueBoolean = true
+          that.approveVueBoolean = true
         }
 
-        this.$nextTick(() => {
-          this.form.setFieldsValue({ ...record })
+        that.$nextTick(() => {
+          that.form.setFieldsValue(record)
+          that.$nextTick(() =>{
+            that.form.setFieldsValue(record)
+          })
         })
-        this.maxArrearsMoney = parseFloat(record.totalAmount) - parseFloat(record.refundMoney)
+
+        
+        that.maxArrearsMoney = parseFloat(record.totalAmount) - parseFloat(record.refundMoney)
         console.log('getContractOne : ' + JSON.stringify(res))
       })
 

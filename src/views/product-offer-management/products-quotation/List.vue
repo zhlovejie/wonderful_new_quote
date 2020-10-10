@@ -209,11 +209,16 @@ export default {
       this.$nextTick(() =>this.reset())
     },
     extendProductChange(record) {
-      if (record && record.isProduct && record.checked) {
-        this.$refs.productConfigSub.query(record.id)
+      //debugger
+      if (record && record.isProduct) {
+        if(record.checked){
+          this.$refs.productConfigSub.query(record.id)
+        }else{
+          this.$refs.productConfigSub.reset()
+        }
         return
       }
-      this.$refs.productConfigSub.reset()
+      //this.$refs.productConfigSub.reset()
     },
     selectedHandler(record) {
       this.optInfo = {
@@ -231,7 +236,7 @@ export default {
       } else if (type === 'price-ok') {
         this.visible = false
       } else if (['price-view','price-view-cost'].includes(type)) {
-
+        this.unitPriceView = null
         that.isPriceViewCost = type === 'price-view-cost'
         this.makeViewDataSource()
         this.hackReset = false
@@ -393,6 +398,17 @@ export default {
         calc.retailPrice += parseFloat(item.retailPrice) || 0
         return calc
       }, priceResult.unStandPrice)
+
+      let formatPrice = n => {
+        let _n = Math.round(parseFloat(n))
+        if (_n < 10) return _n
+        return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
+      }
+      //debugger
+      Object.keys(priceResult.totalPrice).map(key =>{
+        priceResult.totalPrice[key] =  formatPrice(priceResult.totalPrice[key])
+      })
+
       this.costPriceAll = {...priceResult}
       this.costPrice = { ...priceResult.totalPrice }
     },

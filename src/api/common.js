@@ -74,3 +74,33 @@ export function customUpload(fileData){
   })
 }
 
+/**高拍仪上传文件代理接口 */
+export function gaopaiyiCustomUpload(url){
+  return axios({
+    url: url,
+    method: 'get'
+  })
+}
+/**
+ * 参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
+ */
+export function gaoPaiYiUploadProxyURL(){
+  return system.gaoPaiYiUploadProxyURL
+}
+
+/**
+ * base64上传接口
+ * var formData = new FormData();
+ * formData.append('picBase64',getbase64data())
+ * 
+ * data:image/jpeg;base64,
+ * @param {*} data 
+ */
+export function customUploadBase64(data){
+  return axios({
+    baseURL: system.baseURL,
+    url: '/common/uploadBase64Pic',
+    method: 'post',
+    data:data
+  })
+}

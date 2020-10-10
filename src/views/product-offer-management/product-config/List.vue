@@ -29,6 +29,13 @@
           <span v-else>{{text}}</span>
         </div>
 
+        <div slot="introduction" slot-scope="text, record, index">
+          <span>{{text ? String(text).slice(0,5)+'...' : ''}}</span>
+        </div>
+
+
+        
+
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="isProductFunctionIntroduction">
             <!-- <a type="primary" @click="doAction('view',record)">预览</a>   -->
@@ -75,12 +82,20 @@ const columns = [
     key: 'itemName',
     scopedSlots: { customRender: 'itemName' }
   },
+  // {
+  //   align: 'center',
+  //   title: '备注',
+  //   dataIndex: 'remarks',
+  //   key: 'remarks',
+  //   scopedSlots: { customRender: 'remarks' }
+  // },
+
   {
     align: 'center',
-    title: '备注',
-    dataIndex: 'remarks',
-    key: 'remarks',
-    scopedSlots: { customRender: 'remarks' }
+    title: '简介',
+    dataIndex: 'introduction',
+    key: 'introduction',
+    scopedSlots: { customRender: 'introduction' }
   },
   {
     align: 'center',

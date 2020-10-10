@@ -85,7 +85,7 @@ export default {
       that.fileList = fileList
     },
     getFiles() {
-      return Object.assign([], this.fileList)
+      return [...(this.fileList || [])]
     },
   },
 }

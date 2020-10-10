@@ -28,6 +28,7 @@
                 </td>
                 <td>
                   <a-checkbox
+                    :disabled="(parseInt(item.aprice) || 0) === 0 && (parseInt(item.bprice) || 0) === 0 && (parseInt(item.cprice) || 0) === 0"
                     :checked="item.checked"
                     @change="optStandChoiceCheckChange(index,$event)"
                   />
@@ -124,7 +125,7 @@
 
       </template>
 
-      <table class="custom-table custom-table-border c-select-color" v-if="optSelect.length > 0">
+      <table class="custom-table custom-table-border c-select-color" v-if="optChoice.length > 0 || optSelect.length > 0">
         <tr>
           <td style="width:150px;">{{prefix}}选配</td>
           <td style="padding:0;">
@@ -702,22 +703,22 @@ export default {
         retailPrice:parseFloat(priceResult.retailPrice - unStandPrice.retailPrice)
       }
 
-      let formatPrice = n => {
-        let _n = Math.round(parseFloat(n))
-        if (_n < 10) return _n
-        return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
-      }
+      // let formatPrice = n => {
+      //   let _n = Math.round(parseFloat(n))
+      //   if (_n < 10) return _n
+      //   return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
+      // }
       
 
-      Object.keys(priceResult).map(k =>{
-        priceResult[k] = formatPrice(priceResult[k])
-      })
-      Object.keys(standPrice).map(k =>{
-        priceResult[k] = formatPrice(priceResult[k])
-      })
-      Object.keys(unStandPrice).map(k =>{
-        priceResult[k] = formatPrice(priceResult[k])
-      })
+      // Object.keys(priceResult).map(k =>{
+      //   priceResult[k] = formatPrice(priceResult[k])
+      // })
+      // Object.keys(standPrice).map(k =>{
+      //   priceResult[k] = formatPrice(priceResult[k])
+      // })
+      // Object.keys(unStandPrice).map(k =>{
+      //   priceResult[k] = formatPrice(priceResult[k])
+      // })
 
       console.log('总价：',priceResult)
       console.log('标配总价：',standPrice)

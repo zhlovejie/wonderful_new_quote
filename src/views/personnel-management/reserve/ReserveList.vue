@@ -9,23 +9,19 @@
         :allowClear="true"
         style="width: 150px"
       >
-        <a-select-option
-          v-for="item in depSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.departmentName}}</a-select-option>
+        <a-select-option v-for="item in depSelectDataSource" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
 
       <a-select placeholder="选择岗位" v-model="stationId" :allowClear="true" style="width: 180px">
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.stationName}}</a-select-option>
+        <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+          item.stationName
+        }}</a-select-option>
       </a-select>
 
-      <a-input placeholder="姓名查询" v-model="userName" allowClear style="width:100px;" />
-      <a-input placeholder="手机号查询" v-model="phoneNumber" allowClear style="width:130px;" />
+      <a-input placeholder="姓名查询" v-model="userName" allowClear style="width: 100px" />
+      <a-input placeholder="手机号查询" v-model="phoneNumber" allowClear style="width: 130px" />
 
       <label>员工状态</label>
       <a-select placeholder="员工状态" v-model="userStatus" :allowClear="true" style="width: 140px">
@@ -41,19 +37,22 @@
         <a-select-option :value="0">否</a-select-option>
         <a-select-option :value="1">是</a-select-option>
       </a-select>
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button class="a-button" type="primary" icon="download" @click="downloadAction">下载</a-button>
       <a
         target="_blank"
         class="a-button ant-btn ant-btn-primary"
         href="https://www.delanshi.cn/images/cloud/20200409/人才储备模板cde1f372-2758-4724-b8a5-6004b411df2f.xlsx"
-      >下载模板</a>
+        >下载模板</a
+      >
       <div class="upload-wrapper">
         <a-upload :beforeUpload="beforeUpload">
           <a-button class="a-button" type="primary" icon="upload" :loading="uploading">上传</a-button>
         </a-upload>
       </div>
-      <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <a-button style="float: right; top: 10px" type="primary" icon="plus" @click="doAction('add', null)"
+        >新增</a-button
+      >
     </div>
     <div class="main-wrapper">
       <a-table
@@ -67,36 +66,33 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="isInterviewed" slot-scope="text, record">
-          <a
-            type="primary"
-            @click="doAction('interviewed',record)"
-          >{{ getInterviewedTxt(record.isInterviewed)}}</a>
+          <a type="primary" @click="doAction('interviewed', record)">{{ getInterviewedTxt(record.isInterviewed) }}</a>
         </div>
 
         <div slot="faceStatus" slot-scope="text, record">
-          <span>{{ getInterviewedTxt(record.faceStatus)}}</span>
+          <span>{{ getInterviewedTxt(record.faceStatus) }}</span>
         </div>
         <div slot="status" slot-scope="text, record">
-          <span>{{ getUserStatusTxt(record.status)}}</span>
+          <span>{{ getUserStatusTxt(record.status) }}</span>
         </div>
         <div slot="sex" slot-scope="text, record">
           <span>{{ record.sex === 1 ? '男' : '女' }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
+          <a type="primary" @click="doAction('view', record)">查看</a>
           <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <a type="primary" @click="doAction('edit', record)">修改</a>
           <a-divider type="vertical" />
-          <a type="primary" @click="doAction('upload',record)">上传简历</a>
-          <template v-if="(record.status === 1 || record.status === 3)">
+          <a type="primary" @click="doAction('upload', record)">上传简历</a>
+          <template v-if="record.status === 1 || record.status === 3">
             <a-divider type="vertical" />
             <a type="primary" @click="uploadFaceAction(record)">上传人脸</a>
           </template>
           <template v-if="!(record.status == 1 || record.status == 3)">
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('ruzhi',record)">入职</a>
+            <a type="primary" @click="doAction('ruzhi', record)">入职</a>
             <a-divider type="vertical" />
-            <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+            <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
               <a>删除</a>
             </a-popconfirm>
           </template>
