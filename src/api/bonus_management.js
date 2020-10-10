@@ -252,3 +252,35 @@ export function capital_Meals_delete(parameter) {
     data: parameter
   })
 }
+
+//罚款单列表
+export function capital_bill_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//自动生成编码
+export function capital_bill_logisticsNum(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/logisticsNum',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+//罚款单新增
+export function capital_bill_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/addAndUpdate ',
+    method: 'post',
+    data: parameter
+  })
+}

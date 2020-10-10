@@ -2941,7 +2941,7 @@ export const asyncRouterMap = [
               name: 'salary_capital_bill',
               component: () => import('@/views/salary-management/capital/bill/bill_list'),
               meta: {
-                title: '票据单',
+                title: '罚款单',
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']
