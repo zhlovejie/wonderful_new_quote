@@ -214,7 +214,15 @@ export function other_withdraw(parameter) {
     params: parameter
   })
 }
-
+//其他奖金删除
+export function other_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/del',
+    method: 'post',
+    data: parameter
+  })
+}
 //其他奖金审批 
 export function other_approval(parameter) {
   return axios({

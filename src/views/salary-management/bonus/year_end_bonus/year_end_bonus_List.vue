@@ -118,7 +118,13 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { year_List, year_bonus_annua, year_send_rule, year_send_annual } from '@/api/bonus_management'
+import {
+  year_List,
+  year_bonus_annua,
+  year_send_rule,
+  year_send_annual,
+  year_annual_addAnddel,
+} from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import Appadd from './module/Appadd'
 

@@ -32,7 +32,7 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('bill:add')">
+      <template v-if="$auth('shuttleBus:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
@@ -43,13 +43,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('bill:list')">
+        <template v-if="$auth('shuttleBus:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('bill:lists')"
+        v-if="$auth('shuttleBus:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -65,12 +65,12 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('bill:view')">
+            <template v-if="$auth('shuttleBus:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <template v-if="$auth('bill:Withdraw')">
+              <template v-if="$auth('shuttleBus:Withdraw')">
                 <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                   <a type="primary">撤回</a>
                 </a-popconfirm>
@@ -78,7 +78,7 @@
             </template>
             <template
               v-if="
-                $auth('bill:edit-salary') &&
+                $auth('shuttleBus:edit-salary') &&
                 (record.status === 3 || record.status === 4) &&
                 +record.createdId === +userInfo.id
               "
@@ -109,7 +109,7 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { capital_bill_List, capital_bill_withdraw, capital_bill_del } from '@/api/bonus_management'
+import { shuttle_Bus_list, shuttle_Bus_withdraw, shuttle_Bus_del } from '@/api/Human_resource_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -123,15 +123,15 @@ const columns = [
   },
   {
     align: 'center',
-    title: '编号',
-    dataIndex: 'fkNum',
-    key: 'fkNum',
-  },
-  {
-    align: 'center',
     title: '部门',
     dataIndex: 'departmentName',
     key: 'departmentName',
+  },
+  {
+    align: 'center',
+    title: '岗位',
+    dataIndex: 'stationName',
+    key: 'stationName',
   },
   {
     align: 'center',
@@ -141,10 +141,11 @@ const columns = [
   },
   {
     align: 'center',
-    title: '罚款',
-    dataIndex: 'amount',
-    key: 'amount',
+    title: '上车位置',
+    dataIndex: 'itemType',
+    key: 'itemType',
   },
+
   {
     align: 'center',
     title: '审核状态',
@@ -208,7 +209,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'salary_capital_bill') {
+        if (to.name === 'Human_shuttle_Bus') {
           this.init()
         }
       },
@@ -226,7 +227,7 @@ export default {
     // 删除
     confirmDelete(record) {
       let that = this
-      capital_bill_del(`id=${record.id}`).then((res) => {
+      shuttle_Bus_del(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -253,7 +254,7 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      capital_bill_withdraw({ id: record.id }).then((res) => {
+      shuttle_Bus_withdraw({ id: record.id }).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })
@@ -264,7 +265,7 @@ export default {
         searchStatus: that.activeKey,
       })
       that.loading = true
-      capital_bill_List(_searchParam)
+      shuttle_Bus_list(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
