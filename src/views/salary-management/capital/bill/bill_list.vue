@@ -109,7 +109,7 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { capital_bill_List, other_withdraw } from '@/api/bonus_management'
+import { capital_bill_List, capital_bill_withdraw, capital_bill_del } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -226,7 +226,7 @@ export default {
     // 删除
     confirmDelete(record) {
       let that = this
-      year_annual_addAnddel(`id=${record.id}`).then((res) => {
+      capital_bill_del(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -253,7 +253,7 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      other_withdraw({ id: record.id }).then((res) => {
+      capital_bill_withdraw({ id: record.id }).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })

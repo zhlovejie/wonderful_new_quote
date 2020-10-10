@@ -284,3 +284,33 @@ export function capital_bill_addAndUpdate(parameter) {
     data: parameter
   })
 }
+
+//罚款单撤回
+export function capital_bill_withdraw(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/withdraw',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//罚款单删除 
+export function capital_bill_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/del ',
+    method: 'post',
+    data: parameter
+  })
+}
+//罚款单审批
+
+export function capital_bill_approval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/approval ',
+    method: 'post',
+    data: parameter
+  })
+}
