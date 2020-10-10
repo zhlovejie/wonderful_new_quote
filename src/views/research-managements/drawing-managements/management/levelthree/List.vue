@@ -17,9 +17,9 @@
         <a-button type="primary" :disabled="!hasSelected" @click="doAction('deleteBatch')">
           批量删除
         </a-button>
-        <!-- <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
+        <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
           批量下载
-        </a-button> -->
+        </a-button>
         <span style="margin-left: 15px">
           <template v-if="hasSelected">
             {{ `已选择 ${selectedRowKeys.length} 项` }}
@@ -89,7 +89,8 @@ import {
   blueprintFileDel,
   blueprintFileAddOrUpdate,
   blueprintFileDeleteBatch,
-  duplicateCheck
+  duplicateCheck,
+  blueprintFileDownloadZip
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import DisposeForm from './DisposeForm'
@@ -316,11 +317,56 @@ export default {
 
         return
       }else if(actionType === 'downloadBatch'){
-        let selectedRows = that.selectedRows
-        for (let j = 0; j < selectedRows.length; j++) {
-          const url = selectedRows[j].fileUrl
-          downloadFile(url)
-        }
+
+        blueprintFileDownloadZip({ids:that.selectedRows.map(r => r.id).join(',')}).then(res =>{
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/msword'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = '图纸.zip'
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function(e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        // let selectedRows = that.selectedRows
+        // for (let j = 0; j < selectedRows.length; j++) {
+        //   const url = selectedRows[j].fileUrl
+        //   downloadFile(url)
+        // }
         return
       }
       else {
