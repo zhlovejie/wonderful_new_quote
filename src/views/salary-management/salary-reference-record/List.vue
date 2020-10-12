@@ -47,6 +47,7 @@
       </a-table>
     </div>
     <AddForm ref="addForm" @finish="searchAction" />
+    <RecordForm ref="recordForm"  />
   </div>
 </template>
 
@@ -61,6 +62,7 @@ import {
   oaSalaryInfoStationStandardDel
 } from '@/api/salaryManagement'
 import AddForm from './AddForm'
+import RecordForm from './RecordForm'
 const columns = [
   {
     align: 'center',
@@ -85,7 +87,8 @@ const columns = [
 export default {
   name:'salary-reference-record',
   components:{
-    AddForm
+    AddForm,
+    RecordForm
   },
   data(){
     return {
@@ -198,10 +201,13 @@ export default {
       let that = this
       if(actionType === 'del'){
         console.log(record)
-        oaSalaryInfoStationStandardDel(`id=${record.id}`).then(res =>{
+        oaSalaryInfoStationStandardDel({depId:record.departmentId}).then(res =>{
           that.$message.info(res.msg)
           that.searchAction()
         })
+        return
+      }else if(actionType === 'edit-record'){
+        this.$refs.recordForm.query(actionType,record)
         return
       }
       this.$refs.addForm.query(actionType,record)

@@ -25,7 +25,7 @@
     <a-form-item hidden>
       <a-input v-decorator="['id']"/>
     </a-form-item>
-    <a-form-item label="选择部门">
+    <a-form-item label="选择部门" v-if="!isDisabled">
       <a-select 
         placeholder="部门" 
         @change="depChange"
@@ -155,15 +155,20 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true
-          console.log(values)
+          //console.log(values)
           let {investAmountList} = values
           let standardList = that.postList.map((item,idx) => {
-            return {
+            let _item = {
               departmentId:item.departmentId,
-              stationId:item.id,
+              stationId:item.stationId,
               salary:investAmountList[idx].investAmount
             }
+            if(that.isEdit){
+              _item.id = that.record.id
+            }
+            return _item
           })
+
           oaSalaryInfoStationStandardAddOrUpdate({standardList}).then(res =>{
             that.spinning = false
             console.log(res)
@@ -197,12 +202,13 @@ export default {
       oaSalaryInfoStationStandardDetail({depId:that.record.departmentId})
         .then(res =>{
           that.$nextTick(() => {
+            that.departmentId = that.record.departmentId
             that.postList = res.data
             let obj = {}
             res.data.map((item,idx) => {
               obj[`investAmountList.${idx}.investAmount`] = item.salary
             })
-            that.form.setFieldsValue(obj)
+            that.$nextTick( () => that.form.setFieldsValue(obj))
           })
         })
         .catch(err => null)
@@ -216,7 +222,12 @@ export default {
           that.postList = []
           return
         }
-        getStationList({ id: dep_id }).then(res =>that.postList = res.data)
+        getStationList({ id: dep_id }).then(res =>{
+          that.postList = res.data.map(item => {
+            item.stationId = item.id
+            return item
+          })
+        })
       })
     },
     investAmountValidatorHandler(){

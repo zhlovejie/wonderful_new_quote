@@ -55,3 +55,13 @@ export function oaSalaryInfoStationStandardIsAddByDepId (parameter) {
     params: parameter
   })
 }
+
+/**根据部门id获取修改记录 */
+export function oaSalaryInfoStationStationStandardChangList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-station-standard-change/getStationStandardChangList',
+    method: 'get',
+    params: parameter
+  })
+}
