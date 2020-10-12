@@ -23,17 +23,15 @@
             <td>
               <a-form-item>
                 <a-select
-                  style="width:200px; margin-right: 10px;"
-                  v-decorator="['departmentId',{ rules: [{ required: true, message: '请选择部门' }]}]"
+                  style="width: 200px; margin-right: 10px"
+                  v-decorator="['departmentId', { rules: [{ required: true, message: '请选择部门' }] }]"
                   :disabled="!isAdd"
-                  @change=" depChangeHandler"
+                  @change="depChangeHandler"
                   placeholder="请选择部门"
                 >
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -42,16 +40,14 @@
               <a-form-item>
                 <a-select
                   placeholder="选择岗位"
-                  v-decorator="['stationId',{ rules: [{ required: true, message: '请选择合岗位' }]}]"
+                  v-decorator="['stationId', { rules: [{ required: true, message: '请选择合岗位' }] }]"
                   :disabled="!isAdd"
                   :allowClear="true"
                   style="width: 200px"
                 >
-                  <a-select-option
-                    v-for="item in postSelectDataSource"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.stationName}}</a-select-option>
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.stationName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -59,58 +55,50 @@
         </table>
         <h3>有保险</h3>
         <table class="custom-table custom-table-border">
-          <tr v-for="(item ,index) in todayList" :key="index">
-            <td style="width:150px;">{{'合同'}}{{index + 1}}</td>
+          <tr v-for="(item, index) in todayList" :key="index">
+            <td style="width: 150px">{{ '合同' }}{{ index + 1 }}</td>
             <td>
               <!-- <a-form-item> -->
               <a-input
                 :disabled="isDisabled"
                 placeholder
                 v-model="todayList[index].contractName"
-                @click="selectCustomer('todayList',index)"
+                @click="selectCustomer('todayList', index)"
               />
             </td>
-            <td style="width:70px;" v-if="!isEdit">
+            <td style="width: 70px" v-if="!isEdit">
               <a-form-item>
-                <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('todayList', index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button
-          :disabled="isDisabled"
-          style="width:100%;"
-          type="dashed"
-          icon="plus"
-          @click="addItem('todayList')"
-        >添加</a-button>
+        <a-button :disabled="isDisabled" style="width: 100%" type="dashed" icon="plus" @click="addItem('todayList')"
+          >添加</a-button
+        >
         <h3>无保险</h3>
         <table class="custom-table custom-table-border">
-          <tr v-for="(item ,index) in planList" :key="index">
-            <td style="width:150px;">{{'合同'}}{{index + 1}}</td>
+          <tr v-for="(item, index) in planList" :key="index">
+            <td style="width: 150px">{{ '合同' }}{{ index + 1 }}</td>
             <td>
               <!-- <a-form-item> -->
               <a-input
                 :disabled="isDisabled"
                 placeholder
                 v-model="planList[index].contractName"
-                @click="selectCustomer('planList',index)"
+                @click="selectCustomer('planList', index)"
               />
             </td>
-            <td style="width:70px;" v-if="!isEdit">
+            <td style="width: 70px" v-if="!isEdit">
               <a-form-item>
-                <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('planList', index)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button
-          :disabled="isDisabled"
-          style="width:100%;"
-          type="dashed"
-          icon="plus"
-          @click="addItem('planList')"
-        >添加</a-button>
+        <a-button :disabled="isDisabled" style="width: 100%" type="dashed" icon="plus" @click="addItem('planList')"
+          >添加</a-button
+        >
       </a-form>
       <ReceiptSaleContract ref="receiptContract" @onSelect="contractChange" />
     </a-spin>
@@ -300,7 +288,6 @@ export default {
       if (this.isAdd) {
         this.form.validateFields((err, values) => {
           if (!err) {
-            console.log(that.todayList)
             values.contractStationMapList = [...that.todayList, ...that.planList]
             that.spinning = true
             postAllocation_Add(values)
@@ -323,7 +310,6 @@ export default {
       } else {
         this.form.validateFields((err, values) => {
           if (!err) {
-            console.log('修改')
             let today = that.todayList.map((item) => {
               return { contractId: item.contractId, insureType: item.insureType }
             })

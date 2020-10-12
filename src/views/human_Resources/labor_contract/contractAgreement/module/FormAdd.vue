@@ -128,7 +128,6 @@ export default {
   methods: {
     moment: moment,
     query(type, record) {
-      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -155,7 +154,6 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
@@ -193,8 +191,6 @@ export default {
     },
     //上传
     normFile(e) {
-      debugger
-      console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e
       }

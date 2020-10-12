@@ -6,24 +6,22 @@
         placeholder="团建类别"
         v-model="queryParam.leagueType"
         :allowClear="true"
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       >
         <a-select-option :value="1">部门团建</a-select-option>
         <a-select-option :value="2">公司团建</a-select-option>
         <a-select-option :value="3">管理层团建</a-select-option>
       </a-select>
       <a-select
-        style="width:200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
         v-model="queryParam.departmentId"
         :allowClear="true"
         placeholder="选择部门"
       >
         <!-- <a-select-option :value="undefined">请选择部门</a-select-option> -->
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
+        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
 
       <a-select
@@ -31,7 +29,7 @@
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       >
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">审批通过</a-select-option>
@@ -42,17 +40,16 @@
       <a-button
         class="a-button"
         type="primary"
-        style="position: relative;top:-1px;"
+        style="position: relative; top: -1px"
         icon="search"
         @click="searchAction"
-      >查询</a-button>
+        >查询</a-button
+      >
 
-      <a-dropdown style="float:right;" v-if="$auth('leagueBuilding:add')">
-        <a-button type="primary" @click="doAction('add',null)">
-          <a-icon type="plus" />新增
-        </a-button>
+      <a-dropdown style="float: right" v-if="$auth('leagueBuilding:add')">
+        <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
       </a-dropdown>
-      <div style="float:right;"></div>
+      <div style="float: right"></div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -79,60 +76,49 @@
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
-        <div slot="operationStatus" slot-scope="text ">
+        <div slot="operationStatus" slot-scope="text">
           <a href="javascript:void(0)">{{ getOperationStatus(text) }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
             <template v-if="record.status === 5">
-              <a type="primary" @click="doAction('view5',record)">查看</a>
+              <a type="primary" @click="doAction('view5', record)">查看</a>
             </template>
             <template v-else>
-              <a type="primary" @click="doAction('view',record)">查看</a>
+              <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template
-              v-if="$auth('leagueBuilding:add') && record.status === 1 && +record.createdId  === +userInfo.id"
-            >
+            <template v-if="$auth('leagueBuilding:add') && record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定撤回"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmWithdraw(record)"
-              >
+              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
-            <template
-              v-if="$auth('leagueBuilding:add') && record.status === 2 && +record.createdId  === +userInfo.id"
-            >
+            <template v-if="$auth('leagueBuilding:add') && record.status === 2 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a type="primary" @click="uploadImg(record)">上传</a>
             </template>
             <template
-              v-if="$auth('leagueBuilding:add') && record.status === 3||record.status === 4 && +record.createdId  === +userInfo.id"
+              v-if="
+                ($auth('leagueBuilding:add') && record.status === 3) ||
+                (record.status === 4 && +record.createdId === +userInfo.id)
+              "
             >
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit-salary',record)">修改</a>
+              <a type="primary" @click="doAction('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定删除"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmDelete(record)"
-              >
+              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
           </template>
 
-          <template v-if="activeKey === 1 && record.status === 1 ">
-            <a type="primary" @click="doAction('edit',record)">审核</a>
+          <template v-if="activeKey === 1 && record.status === 1">
+            <a type="primary" @click="doAction('edit', record)">审核</a>
           </template>
 
-          <template v-if="activeKey === 2 ">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+          <template v-if="activeKey === 2">
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
@@ -329,7 +315,6 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      // console.log(record.id)
       leagueBuilding_Apply(`id=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
@@ -357,7 +342,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

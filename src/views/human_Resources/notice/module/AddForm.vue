@@ -172,7 +172,6 @@ export default {
       queue.push(task1)
     },
     elementChange(key, val) {
-      console.log(val)
       this[key] = val
     },
     scoreChange(type, event) {
@@ -207,7 +206,6 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.isView) {
         that.form.resetFields() // 清空表
@@ -225,7 +223,6 @@ export default {
             NoticeAdd(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
@@ -252,7 +249,6 @@ export default {
         isAdopt: opt.isAdopt,
         opinion: opt.opinion,
       }
-      console.log(values)
       that.spinning = true
       NoticeApproval(values)
         .then((res) => {
@@ -274,7 +270,6 @@ export default {
       let that = this
       //that.opinion = ''
       that.$refs.approval.query()
-      console.log(that.$refs.approval.query())
     },
     opinionChange(opinion) {
       //审批意见

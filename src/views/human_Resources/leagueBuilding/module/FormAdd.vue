@@ -509,7 +509,6 @@ export default {
     moment,
     init() {},
     elementChange(key, val) {
-      console.log(val)
       this[key] = val
     },
     scoreChange(type, event) {
@@ -535,7 +534,6 @@ export default {
         leagueId: this.record.id,
       }
       leagueBuilding_Detail(id).then((res) => {
-        // console.log(res)
         that.recordDetails = res.data
         that.fileList = res.data.annexList.map((item) => {
           return {
@@ -608,7 +606,6 @@ export default {
 
     //上传
     normFile(e) {
-      console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e
       }
@@ -647,7 +644,6 @@ export default {
       let timeData = moment(endTime).diff(moment(beginTime), 'minutes')
       that.duration.hour = parseInt(timeData / 60)
       that.duration.minute = parseInt(timeData % 60)
-      // console.log(that.duration.hour, that.duration.minute)
     },
     dateBeginPickerChange(date, dateStr) {
       let sDate = { ...this.sDate }
@@ -671,7 +667,6 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.isView) {
         that.form.resetFields() // 清空表
@@ -680,7 +675,6 @@ export default {
       } else if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            console.log(values)
             delete values.s_begin_date
             delete values.s_begin_time
             delete values.s_end_date
@@ -734,7 +728,6 @@ export default {
       this.visible = false
     },
     submitAction(opt) {
-      console.log(1231)
       let that = this
       let values = {
         approveId: this.record.id,
@@ -753,7 +746,6 @@ export default {
         .catch((err) => (that.spinning = false))
     },
     passAction() {
-      console.log('tongguo')
       this.submitAction({
         isAdopt: 0,
         // opinion: '通过',

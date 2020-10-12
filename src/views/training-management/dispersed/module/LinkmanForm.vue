@@ -302,7 +302,6 @@ export default {
 
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
-        console.log('先校验，通过表单校验后，才进入下一步', values)
         if (!err) {
           values.beginTime = moment(values.beginTime).format('YYYY-MM-DD HH:mm:ss')
           values.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss')

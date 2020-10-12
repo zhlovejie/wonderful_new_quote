@@ -134,7 +134,6 @@ export default {
   methods: {
     moment: moment,
     query(type, record) {
-      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -195,7 +194,6 @@ export default {
             securitySocial_Add(formData)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)

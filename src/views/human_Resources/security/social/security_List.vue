@@ -1,11 +1,11 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-month-picker style="width:300px;" v-model="queryParam.Dates" />
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+      <a-month-picker style="width: 300px" v-model="queryParam.Dates" />
 
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('social:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -18,10 +18,10 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleSee(record)">查看</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
-          <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
+          <a class="ant-dropdown-link" :href="urls + record.id">下载</a>
+          <template v-if="$auth('social:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
-            <a @click="handleAdd('edit-salary',record)">修改</a>
+            <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>
@@ -139,10 +139,6 @@ export default {
       let that = this
       this.searchAction()
     },
-    check() {
-      let that = this
-      console.log(12312)
-    },
     searchAction(opt) {
       let that = this
       that.loading = true
@@ -165,9 +161,6 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
-    },
-    onChange(date, dateString) {
-      console.log(date, dateString)
     },
     delete_list(id) {
       let that = this

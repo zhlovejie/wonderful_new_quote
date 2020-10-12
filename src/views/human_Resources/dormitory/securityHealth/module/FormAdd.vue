@@ -263,7 +263,6 @@ export default {
     confirm(cpId, index) {
       // 确认删除事件
       this.haveProcess.splice(index, 1)
-      console.log(this.haveProcess)
       let arr = []
       this.haveProcess.map((item) => {
         arr.push(item.id)

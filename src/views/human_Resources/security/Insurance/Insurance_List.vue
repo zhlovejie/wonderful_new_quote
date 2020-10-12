@@ -151,10 +151,8 @@ export default {
       ],
       // 初始化加载 必须为 Promise 对象
       loadData: (parameter) => {
-        // console.log('页面开始加载数据。。。', parameter, this.queryParam)
         return securityInsurance_List(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
-          console.log(res.data)
         })
       },
       selectedRowKeys: [],
@@ -205,7 +203,6 @@ export default {
     },
 
     handle(type, record) {
-      console.log(this.userInfo.id)
       this.$refs.addForm.query(type, record)
       //   this.$refs.modal.add()
     },

@@ -254,11 +254,9 @@ export default {
           }
         })
       })
-      console.log(that.treeData)
       queue.push(task1)
     },
     elementChange(key, val) {
-      console.log(val)
       this[key] = val
     },
     scoreChange(type, event) {
@@ -266,7 +264,6 @@ export default {
     },
     // moment:moment,
     query(type, record) {
-      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -321,7 +318,6 @@ export default {
             securityInsurance_Add(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)

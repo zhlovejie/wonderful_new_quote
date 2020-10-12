@@ -1,31 +1,29 @@
  <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <a-select
-        style="width:200px; margin-right: 10px;"
+        style="width: 200px; margin-right: 10px"
         v-model="queryParam.roomCode"
         placeholder="房间号"
         :allowClear="true"
       >
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.roomCode"
-        >{{ item.roomCode }}</a-select-option>
+        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.roomCode">{{
+          item.roomCode
+        }}</a-select-option>
       </a-select>
       <a-select
         placeholder="状态"
         v-model="queryParam.status"
         :allowClear="true"
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       >
         <a-select-option :value="0">待处理</a-select-option>
         <a-select-option :value="1">完结</a-select-option>
       </a-select>
-      <a-range-picker @change="dateChange" style="width:400px ;margin-right:10px;" />
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
+      <a-range-picker @change="dateChange" style="width: 400px; margin-right: 10px" />
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
       <template v-if="$auth('securityHealth:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -42,7 +40,7 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="status" slot-scope="text, record">
-            <template v-if="record.status===1">
+            <template v-if="record.status === 1">
               <span>完结</span>
             </template>
             <template v-else>
@@ -51,19 +49,19 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template>
-              <a @click="inspect('see' ,record)">查看</a>
+              <a @click="inspect('see', record)">查看</a>
             </template>
-            <template v-if="$auth('securityHealth:add')&&record.status===1">
+            <template v-if="$auth('securityHealth:add') && record.status === 1">
               <a-divider type="vertical" />
-              <a @click="inspect('edit-salary',record)">修改</a>
+              <a @click="inspect('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
               <a @click="download(record)">下载</a>
             </template>
             <template
-              v-if="(','+record.inspectId+',').indexOf(','+userInfo.id+',')!=-1&&record.status===0"
+              v-if="(',' + record.inspectId + ',').indexOf(',' + userInfo.id + ',') != -1 && record.status === 0"
             >
               <a-divider type="vertical" />
-              <a @click="inspect('handle',record)">处理</a>
+              <a @click="inspect('handle', record)">处理</a>
             </template>
           </span>
         </a-table>
@@ -179,7 +177,6 @@ export default {
         this.departmentList = res.data
       })
       this.searchAction()
-      console.log(that.userInfo)
     },
     // 获取时间
     dateChange(date, dateString) {
@@ -212,7 +209,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
