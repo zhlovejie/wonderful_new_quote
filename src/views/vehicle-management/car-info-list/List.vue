@@ -217,7 +217,7 @@ export default {
           //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
           //刷新也不显示数据
           let {current,pages} = res.data
-          if(current > pages){
+          if(+pages > 0 && +current > +pages){
             that.pagination = {...pagination,current:pages}
             that.searchAction()
           }

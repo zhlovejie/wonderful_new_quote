@@ -259,10 +259,12 @@ export default {
       uploadRef.Component.methods.uploadFiles(this.fileList)
     },
     async checkRepeatFiles(fileList) {
+      //debugger
       let that = this
-      let { superiorId } = that.record.params
+      let { superiorId ,id} = that.record.params
       let { haveDuplicate, duplicateNames } = await duplicateCheck({
         menuId: superiorId,
+        permissionId:id,
         names: fileList.map((f) => f.name.split('.')[0]).join(','),
       }).then((res) => res.data)
 

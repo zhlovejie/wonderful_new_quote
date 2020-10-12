@@ -116,7 +116,11 @@ export default {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
+        size:"10",
+        showSizeChanger: true,
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -144,7 +148,11 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let paginationParam = {
+        current:that.pagination.current || 1,
+        size:that.pagination.size || 10
+      }
+      let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       blueprintMenuPageList(_searchParam)
@@ -169,6 +177,13 @@ export default {
       pager.current = pagination.current
       this.pagination = pager
       this.searchAction({ current: pagination.current })
+    },
+    onShowSizeChangeHandler(current,pageSize){
+      let pagination = {...this.pagination}
+      pagination.current = current
+      pagination.size = String(pageSize)
+      this.pagination = pagination
+      this.searchAction()
     },
     doAction(actionType, record={},event) {
       let that = this

@@ -250,7 +250,13 @@ export default {
             that.selectedKeys = [targetNode.key]
             that.cacheSelectedKeys = [targetNode]
 
-            setTimeout(() => {that.autoLocationNode() }, 500);
+            setTimeout(() => {
+              try{
+                that.autoLocationNode()
+              }catch(e){
+                console.log(e)
+              }
+            }, 1500);
           }
         }
       })
@@ -277,6 +283,7 @@ export default {
     },
 
     autoLocationNode(){
+      //debugger
       //点击右侧列表的文件夹或文件 ，左侧树形菜单同步定位并且滚动到该位置
       let treeWrapper = document.querySelector('.menu-tree-list-wrapper')//tree的父节点元素
       let treeNode = document.querySelector('ul[role=tree]',treeWrapper) //tree元素
