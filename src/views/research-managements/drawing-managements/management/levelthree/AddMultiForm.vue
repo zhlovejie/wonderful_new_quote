@@ -222,14 +222,14 @@ export default {
             let fileName = ''
             try {
               
-              fileName = f.name.split('.')[0]
-              pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
+              //fileName = f.name.split('.')[0]
+              //pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
 
               //新文件格式 图号__文件名.pdf   10月1之后执行
-              // let fullName = f.name.split('.')[0]
-              // let _arr = fullName.split('__')
-              // fileName = _arr[1]
-              // pictureNum = _arr[0]
+              let fullName = f.name.split('.')[0]
+              let _arr = fullName.split('__')
+              fileName = _arr[1]
+              pictureNum = _arr[0]
             } catch (err) {
               console.log(err)
               fileName = f.name.split('.')[0]
