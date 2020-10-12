@@ -58,14 +58,7 @@
             <td>设备文件</td>
             <td colspan="3">
               <a-form-item>
-                <a-upload
-                  style="width: 300px"
-                  name="file"
-                  :fileList="fileList"
-                  :beforeUpload="beforeUpload"
-                  @change="handleChange"
-                  accept=".xls, .xlsx"
-                >
+                <a-upload style="width: 300px" name="file" :beforeUpload="beforeUpload" accept=".xls, .xlsx">
                   <a-button> <a-icon type="upload" />导入 </a-button>
                 </a-upload>
               </a-form-item>
@@ -73,8 +66,6 @@
           </tr>
         </table>
       </a-form>
-
-      <!-- <Approval ref="approval" @opinionChange="opinionChange" /> -->
     </a-spin>
   </a-modal>
 </template>
@@ -85,9 +76,7 @@ import moment from 'moment'
 
 export default {
   name: 'BecomingForm',
-  components: {
-    // Approval: Approval,
-  },
+
   data() {
     return {
       visible: false,
@@ -165,17 +154,7 @@ export default {
       this.fileList = this.fileList.slice(-1)
       return false
     },
-    handleChange(info) {
-      this.fileList = []
-      let fileList = [...info.fileList]
-      fileList = fileList.map((file) => {
-        if (file.response && file.response.code === 200) {
-          file.url = file.response.data
-        }
-        return file
-      })
-      this.fileList = fileList
-    },
+
     handleOk() {
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
@@ -202,8 +181,6 @@ export default {
               .catch((err) => (that.spinning = false))
           }
         })
-      } else if (that.isEditSalary) {
-        // that.updateUserBackCardSalary()
       } else {
         that.form.resetFields() // 清空表
         that.visible = false
