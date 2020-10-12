@@ -23,8 +23,8 @@
             <td colspan="3">
               <a-form-item>
                 <a-month-picker
-                  style="width:300px;"
-                  v-decorator="['accountDate',  {rules: [{required: true, message: '请选择日期！',}]}]"
+                  style="width: 300px"
+                  v-decorator="['accountDate', { rules: [{ required: true, message: '请选择日期！' }] }]"
                 />
                 <!-- initialValue:moment(), -->
               </a-form-item>
@@ -35,9 +35,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入公司缴费金额"
-                  v-decorator="['companyPay', {rules: [ {required: true,  message: '请输入公司缴费金额!'},]}]"
+                  v-decorator="['companyPay', { rules: [{ required: true, message: '请输入公司缴费金额!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -47,9 +47,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入个人缴费金额"
-                  v-decorator="['personalPay', {rules: [{required: true,message: '请输入个人缴费金额!',}]}]"
+                  v-decorator="['personalPay', { rules: [{ required: true, message: '请输入个人缴费金额!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -58,17 +58,8 @@
             <td>设备文件</td>
             <td colspan="3">
               <a-form-item>
-                <a-upload
-                  style="width:300px;"
-                  name="file"
-                  :fileList="fileList"
-                  :beforeUpload="beforeUpload"
-                  @change="handleChange"
-                  accept=".xls, .xlsx"
-                >
-                  <a-button>
-                    <a-icon type="upload" />导入
-                  </a-button>
+                <a-upload style="width: 300px" name="file" :beforeUpload="beforeUpload" accept=".xls, .xlsx">
+                  <a-button> <a-icon type="upload" />导入 </a-button>
                 </a-upload>
               </a-form-item>
             </td>
@@ -168,17 +159,17 @@ export default {
       this.fileList = this.fileList.slice(-1)
       return false
     },
-    handleChange(info) {
-      this.fileList = []
-      let fileList = [...info.fileList]
-      fileList = fileList.map((file) => {
-        if (file.response && file.response.code === 200) {
-          file.url = file.response.data
-        }
-        return file
-      })
-      this.fileList = fileList
-    },
+    // handleChange(info) {
+    //   this.fileList = []
+    //   let fileList = [...info.fileList]
+    //   fileList = fileList.map((file) => {
+    //     if (file.response && file.response.code === 200) {
+    //       file.url = file.response.data
+    //     }
+    //     return file
+    //   })
+    //   this.fileList = fileList
+    // },
     handleOk() {
       console.log('你是要提交')
       let that = this
