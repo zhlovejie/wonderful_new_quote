@@ -212,10 +212,11 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
-            if (that.type === 'edit-salary') {
-              values.id = that.record.id
-            }
             let arr = {}
+            if (that.type === 'edit-salary') {
+              arr.id = that.record.id
+            }
+
             arr.departmentId = that.record.depId
             arr.oaSalaryBounsAnnulDetails = this.programme
 
