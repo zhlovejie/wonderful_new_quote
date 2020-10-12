@@ -259,13 +259,14 @@ export default {
       uploadRef.Component.methods.uploadFiles(this.fileList)
     },
     async checkRepeatFiles(fileList) {
-      //debugger
+      
       let that = this
+      let names = that.dataSource.map(item => item.pictureNum).join(',')
       let { superiorId ,id} = that.record.params
       let { haveDuplicate, duplicateNames } = await duplicateCheck({
         menuId: superiorId,
         permissionId:id,
-        names: fileList.map((f) => f.name.split('.')[0]).join(','),
+        names
       }).then((res) => res.data)
 
       if (haveDuplicate === true) {
@@ -429,7 +430,7 @@ export default {
       }
       if (!(file && file.status === 'removed')) {
         if (that.fileList.every((f) => ['done', 'error'].includes(f.status))) {
-          that.checkRepeatFiles([...that.fileList])
+          that.$nextTick(() => that.checkRepeatFiles([...that.fileList]))
         }
       }
     },
