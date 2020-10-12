@@ -142,8 +142,8 @@ const columns = [
   {
     align: 'center',
     title: '上车位置',
-    dataIndex: 'itemType',
-    key: 'itemType',
+    dataIndex: 'onBusAddress',
+    key: 'onBusAddress',
   },
 
   {
