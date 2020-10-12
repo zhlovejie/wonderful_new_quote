@@ -196,3 +196,14 @@ export function blueprintFeedbackPageList (parameter) {
   })
 }
 //---------------------图纸反馈记录 END-----------------------
+
+//批量下载
+export function blueprintFileDownloadZip (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/blueprintFile/download/zip',
+    method: 'get',
+    responseType:'blob',
+    params: parameter
+  })
+}
