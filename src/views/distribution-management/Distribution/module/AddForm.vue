@@ -30,7 +30,10 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="物流名称"
-                  v-decorator="['logisticsCompanyName', { rules: [{ required: true,max:40, message: '请输入物流名称' }] }]"
+                  v-decorator="[
+                    'logisticsCompanyName',
+                    { rules: [{ required: true, max: 40, message: '请输入物流名称' }] },
+                  ]"
                   allowClear
                   style="width：300px"
                 />
@@ -42,7 +45,10 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="负责人名称"
-                  v-decorator="['personChargeName', { rules: [{ required: true, max:10, message: '请输入负责人名称' }] }]"
+                  v-decorator="[
+                    'personChargeName',
+                    { rules: [{ required: true, max: 10, message: '请输入负责人名称' }] },
+                  ]"
                   allowClear
                   style="width：300px"
                 />
@@ -56,7 +62,10 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="负责人电话"
-                  v-decorator="['personChargeTelephone', { rules: [{ required: true,max:20, message: '请输入负责人电话' }] }]"
+                  v-decorator="[
+                    'personChargeTelephone',
+                    { rules: [{ required: true, max: 20, message: '请输入负责人电话' }] },
+                  ]"
                   allowClear
                   style="width：300px"
                 />
@@ -68,7 +77,7 @@
                 <a-input
                   :disabled="isSee"
                   placeholder="微信号"
-                  v-decorator="['wechatNumber', { rules: [{ required: false, max:30, message: '请输入微信号' }] }]"
+                  v-decorator="['wechatNumber', { rules: [{ required: false, max: 30, message: '请输入微信号' }] }]"
                   allowClear
                   style="width：300px"
                 />
@@ -86,14 +95,15 @@
                         <a-select
                           :disabled="isSee"
                           placeholder="省"
-                          v-decorator="['provinces',{rules: [{required: true, message: '请选择省！'}]}]"
+                          v-decorator="['provinces', { rules: [{ required: true, message: '请选择省！' }] }]"
                         >
                           <a-select-option
-                            @click="getCity(1,province.id, province.area)"
+                            @click="getCity(1, province.id, province.area)"
                             v-for="province in this.provinces"
                             :key="province.index"
                             :value="province.id"
-                          >{{ province.area }}</a-select-option>
+                            >{{ province.area }}</a-select-option
+                          >
                         </a-select>
                       </a-form-item>
                     </a-col>
@@ -102,14 +112,15 @@
                         <a-select
                           placeholder="市"
                           :disabled="isSee"
-                          v-decorator="['citys',{rules: [{required: true, message: '请选择市！'}]}]"
+                          v-decorator="['citys', { rules: [{ required: true, message: '请选择市！' }] }]"
                         >
                           <a-select-option
-                            @click="getCity(2,city.id,city.area)"
+                            @click="getCity(2, city.id, city.area)"
                             v-for="city in this.citys"
                             :key="city.index"
                             :value="city.id"
-                          >{{ city.area }}</a-select-option>
+                            >{{ city.area }}</a-select-option
+                          >
                         </a-select>
                       </a-form-item>
                     </a-col>
@@ -118,14 +129,15 @@
                         <a-select
                           placeholder="区"
                           :disabled="isSee"
-                          v-decorator="['areas',{rules: [{required: true, message: '请选择区！'}]}]"
+                          v-decorator="['areas', { rules: [{ required: true, message: '请选择区！' }] }]"
                         >
                           <a-select-option
-                            @click="getCity(3,null,item.area)"
+                            @click="getCity(3, null, item.area)"
                             v-for="item in this.areas"
                             :key="item.index"
                             :value="item.id"
-                          >{{ item.area }}</a-select-option>
+                            >{{ item.area }}</a-select-option
+                          >
                         </a-select>
                       </a-form-item>
                     </a-col>
@@ -134,7 +146,10 @@
                         <a-input
                           :disabled="isSee"
                           placeholder="请输入详细地址"
-                          v-decorator="['detailedAddressName',{rules: [{required: true, min: 5, max: 30, message: '详细地址最少为5个字符！'}]}]"
+                          v-decorator="[
+                            'detailedAddressName',
+                            { rules: [{ required: true, min: 5, max: 30, message: '详细地址最少为5个字符！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -150,7 +165,7 @@
           </tr>
           <tr>
             <td>营业执照</td>
-            <td colspan="3" style="padding-top:30px">
+            <td colspan="3" style="padding-top: 30px">
               <a-form-item>
                 <a-upload
                   :disabled="isSee"
@@ -161,7 +176,7 @@
                   @preview="handlePreview"
                   @change="handleChange"
                 >
-                  <div v-if="fileList.length <5">
+                  <div v-if="fileList.length < 5">
                     <a-icon type="plus" />
                     <div class="ant-upload-text">上传</div>
                   </div>
@@ -175,56 +190,44 @@
           <tr>
             <td colspan="4">
               <b>货物合同</b>
-              <Mdeol
-                v-if="!isSee"
-                style="float: right;"
-                ref="mdeol"
-                @getmsg="getChildMsg"
-                :statusId="2"
-              />
+              <Mdeol v-if="!isSee" style="float: right" ref="mdeol" @getmsg="getChildMsg" :statusId="2" />
             </td>
           </tr>
           <tr>
             <th colspan="3">合同</th>
             <th>操作</th>
           </tr>
-          <tr v-for="(item ,index) in todayList" :key="index">
-            <td colspan="3">{{item.name}}</td>
+          <tr v-for="(item, index) in todayList" :key="index">
+            <td colspan="3">{{ item.name }}</td>
             <td>
               <template>
                 <a href="javascript:void(0);" @click="delSee(item.url)">查看</a>
               </template>
               <template v-if="!isSee">
                 <a-divider type="vertical" />
-                <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('todayList', index)">删除</a>
               </template>
             </td>
           </tr>
           <tr>
             <td colspan="4">
               <b>承接单位法律承诺书</b>
-              <Mdeol
-                v-if="!isSee"
-                style="float: right;"
-                ref="mdeol"
-                @getmsg="getChildMsg"
-                :statusId="3"
-              />
+              <Mdeol v-if="!isSee" style="float: right" ref="mdeol" @getmsg="getChildMsg" :statusId="3" />
             </td>
           </tr>
           <tr>
             <th colspan="3">承接单位法律承诺书</th>
             <th>操作</th>
           </tr>
-          <tr v-for="(item ,index) in planList" :key="'plan'+index">
-            <td colspan="3">{{item.name}}</td>
+          <tr v-for="(item, index) in planList" :key="'plan' + index">
+            <td colspan="3">{{ item.name }}</td>
             <td>
               <template>
                 <a href="javascript:void(0);" @click="delSee(item.url)">查看</a>
               </template>
               <template v-if="!isSee">
                 <a-divider type="vertical" />
-                <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('planList', index)">删除</a>
               </template>
             </td>
           </tr>
@@ -401,8 +404,6 @@ export default {
           that.getCity(1, arr[0], num[0])
           that.getCity(2, arr[1], num[1])
           that.getCity(3, arr[2], num[2])
-          console.log(that.province + ',' + that.city + ',' + that.area)
-
           that.fileList = res.data.data.businessLicenseList
             ? res.data.data.businessLicenseList.map((item) => {
                 return {
@@ -437,7 +438,6 @@ export default {
         that.visible = false
         that.$emit('finish')
       } else {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             if (this.type === 'edit-salary') {
@@ -472,15 +472,13 @@ export default {
               values.annexList = [...arr, ...arr1, ...that.todayList, ...that.planList]
             }
             values.addressName = that.province + ',' + that.city + ',' + that.area
-            console.log(values.addressName)
             values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
-            console.log(values.addressNumber)
             delete values.provinces
             delete values.citys
             delete values.areas
+            that.spinning = true
             DistributionAdd(values).then((res) => {
               that.spinning = false
-              console.log(res)
               that.fileList = []
               that.todayList = []
               that.planList = []

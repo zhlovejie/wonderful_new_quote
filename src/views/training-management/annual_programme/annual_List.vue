@@ -2,11 +2,11 @@
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-date-picker
-        style="width: 280px ;margin-right:10px;"
+        style="width: 280px; margin-right: 10px"
         mode="year"
         placeholder="请选择年份"
         format="YYYY"
-        v-model=" yearPick"
+        v-model="yearPick"
         :open="yearPickShow"
         @panelChange="handlePanelChange"
         @openChange="handleOpenChange"
@@ -14,9 +14,9 @@
       <a-select
         placeholder="审批状态"
         v-if="activeKey === 0"
-        v-model="queryParam.status "
+        v-model="queryParam.status"
         :allowClear="true"
-        style="width: 280px;margin-right:10px;"
+        style="width: 280px; margin-right: 10px"
       >
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">审批通过</a-select-option>
@@ -26,19 +26,18 @@
       <a-button
         class="a-button"
         type="primary"
-        style="position: relative;top:-1px;"
+        style="position: relative; top: -1px"
         icon="search"
         @click="searchAction1"
-      >查询</a-button>
+        >查询</a-button
+      >
       <template v-if="$auth('annual:add')">
-        <a-dropdown style="float:right;">
-          <a-button type="primary" @click="showModal()">
-            <a-icon type="plus" />新增
-          </a-button>
+        <a-dropdown style="float: right">
+          <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
       </template>
 
-      <div style="float:right;"></div>
+      <div style="float: right"></div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -62,66 +61,60 @@
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
-        <div slot="operationStatus" slot-scope="text ">
+        <div slot="operationStatus" slot-scope="text">
           <a href="javascript:void(0)">{{ getOperationStatus(text) }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
             <template v-if="$auth('annual:view')">
-              <a type="primary" @click="doAction('view',record)">查看</a>
+              <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if=" record.status === 1&& +record.createdId  === +userInfo.id  ">
+            <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('annual:Withdraw')">
-                <a-popconfirm
-                  title="是否确定撤回"
-                  ok-text="确定"
-                  cancel-text="取消"
-                  @confirm="confirmWithdraw(record)"
-                >
+                <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                   <a type="primary">撤回</a>
                 </a-popconfirm>
               </template>
             </template>
-            <template v-if="record.status === 2&&$auth('annual:blank')">
+            <template v-if="record.status === 2 && $auth('annual:blank')">
               <a-divider type="vertical" />
               <a type="primary" :href="record.planUrl" target="_blank">下载</a>
             </template>
             <template
-              v-if=" $auth('annual:edit-salary')&&(record.status === 3||record.status === 4 )&& +record.createdId  === +userInfo.id"
+              v-if="
+                $auth('annual:edit-salary') &&
+                (record.status === 3 || record.status === 4) &&
+                +record.createdId === +userInfo.id
+              "
             >
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit-salary',record)">修改</a>
+              <a type="primary" @click="doAction('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定删除"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmDelete(record)"
-              >
+              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
           </template>
 
-          <template v-if="activeKey === 1 && record.status === 1 ">
-            <a type="primary" @click="doAction('edit',record)">审核</a>
+          <template v-if="activeKey === 1 && record.status === 1">
+            <a type="primary" @click="doAction('edit', record)">审核</a>
           </template>
 
-          <template v-if="activeKey === 2 ">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+          <template v-if="activeKey === 2">
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
     </div>
     <a-modal v-model="visible" title="新增年度培训方案" @ok="handleOk">
       <a-date-picker
-        style="width:280px ;margin-left:90px;"
+        style="width: 280px; margin-left: 90px"
         mode="year"
         placeholder="请选择年份"
         format="YYYY"
-        v-model=" yearPick1"
+        v-model="yearPick1"
         :open="yearPickShow1"
         @panelChange="handlePanelChange1"
         @openChange="handleOpenChange1"
@@ -236,7 +229,6 @@ export default {
       this.department()
     },
     searchAction1() {
-      console.log('chaxun')
       if (this.yearPick != null) {
         this.queryParam.year = moment(this.yearPick).format('YYYY')
       } else {
@@ -249,8 +241,6 @@ export default {
       this.yearPick1 = null
     },
     handleOk(e) {
-      console.log(e)
-
       if (this.yearPick1) {
         checkIfExistsYearPlan({ year: moment(this.yearPick1).format('YYYY') }).then((res) => {
           if (res.code === 200) {
@@ -275,7 +265,6 @@ export default {
     // 得到年份选择器的值
     handlePanelChange1(value) {
       this.yearPick1 = value
-      console.log(value)
       this.yearPickShow1 = false
     },
     handleOpenChange1(status) {
@@ -329,7 +318,6 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      // console.log(record.id)
       annualPlan(`oaTrainYearPlanId=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
@@ -357,7 +345,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

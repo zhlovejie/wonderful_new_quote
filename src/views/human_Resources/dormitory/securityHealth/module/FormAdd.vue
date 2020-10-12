@@ -23,16 +23,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:300px;"
+                  style="width: 300px"
                   v-decorator="['deptId', { rules: [{ required: true, message: '请选择部门' }] }]"
                   @change="depChangeHandler"
                   placeholder="请选择部门"
                 >
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -48,11 +46,9 @@
                   :allowClear="true"
                   style="width: 300px"
                 >
-                  <a-select-option
-                    v-for="item in postSelectDataSource"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.trueName }}</a-select-option>
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -63,7 +59,7 @@
               <a-form-item>
                 <a-date-picker
                   show-time
-                  style="width:300px;"
+                  style="width: 300px"
                   v-decorator="['inspectTime', { rules: [{ required: true, message: '请选择日期！' }] }]"
                 />
               </a-form-item>
@@ -74,7 +70,7 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:300px;"
+                  style="width: 300px"
                   mode="multiple"
                   :allowClear="true"
                   :maxTagCount="1"
@@ -85,11 +81,9 @@
                   :filterOption="selectFilter"
                   v-decorator="['roomIds']"
                 >
-                  <a-select-option
-                    v-for="(process, index) in RoomNumber"
-                    :key="index"
-                    :value="process.id"
-                  >{{ process.roomCode }}</a-select-option>
+                  <a-select-option v-for="(process, index) in RoomNumber" :key="index" :value="process.id">{{
+                    process.roomCode
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -111,11 +105,7 @@
                   v-model="haveProcess"
                 >
                   <transition-group name="list">
-                    <div
-                      v-for="(item, index) in haveProcess"
-                      :key="item.id"
-                      class="draggable-columns-item"
-                    >
+                    <div v-for="(item, index) in haveProcess" :key="item.id" class="draggable-columns-item">
                       <div class="draggable-columns draggable-columns-2">{{ item.roomCode }}</div>
                       <div class="draggable-columns draggable-columns-3" title="删除">
                         <a-popconfirm
@@ -217,17 +207,14 @@ export default {
     },
 
     handleOk() {
-      console.log('你这是要提交')
       let that = this
       that.form.validateFields((err, values) => {
-        that.spinning = true
         if (!err) {
           delete values.deptId
           values.inspectTime = moment(values.inspectTime).format('YYYY-MM-DD')
-          console.log(values)
+          that.spinning = true
           securityHealth_List_Add(values).then((res) => {
             that.spinning = false
-            console.log(res)
             that.form.resetFields() // 清空表
             this.haveProcess = []
             that.visible = false

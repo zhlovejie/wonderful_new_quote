@@ -10,12 +10,7 @@
   >
     <template slot="footer">
       <template v-if="isApproval">
-        <a-button
-          class="a-button"
-          type="primary"
-          icon="close"
-          @click="noPassAction(recordDetails)"
-        >不通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction()">通过</a-button>
       </template>
       <template v-else>
@@ -26,25 +21,24 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
-        <h1 style="text-align: center;">{{year}}年度培训方案</h1>
-        <table
-          class="custom-table custom-table-border"
-          v-for="(item,key) in programme"
-          :key="item.key"
-        >
+        <h1 style="text-align: center">{{ year }}年度培训方案</h1>
+        <table class="custom-table custom-table-border" v-for="(item, key) in programme" :key="item.key">
           <tr>
             <th v-show="false">
               <a-form-item>
                 <a-input
                   :disabled="isDisabled"
                   placeholder
-                  v-decorator="[`programme.${key}.month`, {initialValue:item.monthId, rules: [{ required: false, message: '' }] }]"
+                  v-decorator="[
+                    `programme.${key}.month`,
+                    { initialValue: item.monthId, rules: [{ required: false, message: '' }] },
+                  ]"
                 />
               </a-form-item>
             </th>
             <th colspan="3">
-              {{item.month}}月
-              <span style=" float: right;" v-if="!isDisabled">
+              {{ item.month }}月
+              <span style="float: right" v-if="!isDisabled">
                 <a href="javascript:void(0);" @click="delItem(key)">删除</a>
               </span>
             </th>
@@ -54,14 +48,17 @@
             <th>参与人员</th>
             <th>预估时间</th>
           </tr>
-          <tr v-for="(items,index) in item.oaTrainYearPlanItemDetailSaveBoList" :key="items.key">
+          <tr v-for="(items, index) in item.oaTrainYearPlanItemDetailSaveBoList" :key="items.key">
             <td>
               <a-form-item>
                 <a-input
                   :disabled="isDisabled"
                   placeholder
-                  @change="inputChange($event,item.key,items.key,'title')"
-                  v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.title`, {initialValue:items.title, rules: [{ required: true, message: '请输入培训主题' }] }]"
+                  @change="inputChange($event, item.key, items.key, 'title')"
+                  v-decorator="[
+                    `programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.title`,
+                    { initialValue: items.title, rules: [{ required: true, message: '请输入培训主题' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -70,8 +67,11 @@
                 <a-input
                   :disabled="isDisabled"
                   placeholder
-                  @change="inputChange($event,item.key,items.key,'joinPerson')"
-                  v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.joinPerson`, {initialValue:items.joinPerson, rules: [{ required: true, message: '请输入参与人员' }] }]"
+                  @change="inputChange($event, item.key, items.key, 'joinPerson')"
+                  v-decorator="[
+                    `programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.joinPerson`,
+                    { initialValue: items.joinPerson, rules: [{ required: true, message: '请输入参与人员' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -79,9 +79,15 @@
               <a-form-item>
                 <a-range-picker
                   :disabled="isDisabled"
-                  @change="inputChange($event,item.key,items.key,'beginData')"
-                  v-decorator="[`programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.beginData`, {initialValue:items.beginData, rules: [{ required: true, message: '请输入预估时间' }] }]"
-                  :defaultPickerValue="[moment(`${year}-0${item.monthId}-01`, 'YYYY-MM-DD'), moment(`${year}-0${item.monthId}-01`, 'YYYY-MM-DD')]"
+                  @change="inputChange($event, item.key, items.key, 'beginData')"
+                  v-decorator="[
+                    `programme.${key}.oaTrainYearPlanItemDetailSaveBoList.${index}.beginData`,
+                    { initialValue: items.beginData, rules: [{ required: true, message: '请输入预估时间' }] },
+                  ]"
+                  :defaultPickerValue="[
+                    moment(`${year}-0${item.monthId}-01`, 'YYYY-MM-DD'),
+                    moment(`${year}-0${item.monthId}-01`, 'YYYY-MM-DD'),
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -90,7 +96,7 @@
             <td colspan="3">
               <a-button
                 :disabled="isDisabled"
-                style="width:100%;"
+                style="width: 100%"
                 type="dashed"
                 icon="plus"
                 @click="addItem(key)"
@@ -99,13 +105,9 @@
           </tr>
         </table>
       </a-form>
-      <a-button
-        :disabled="isDisabled"
-        style="width:100%;"
-        type="dashed"
-        icon="plus"
-        @click="addItemMonth"
-      >新增月份</a-button>
+      <a-button :disabled="isDisabled" style="width: 100%" type="dashed" icon="plus" @click="addItemMonth"
+        >新增月份</a-button
+      >
       <table class="custom-table custom-table-border">
         <tr>
           <td>备注</td>
@@ -115,18 +117,14 @@
         </tr>
       </table>
       <a-modal v-model="visibleMonth" title="新增月份" @ok="handleOkMonth">
-        <a-select
-          placeholder="月份"
-          v-model="monthsll"
-          :allowClear="true"
-          style="width:280px ;margin-left:90px;"
-        >
+        <a-select placeholder="月份" v-model="monthsll" :allowClear="true" style="width: 280px; margin-left: 90px">
           <a-select-option
             v-for="(item, index) in monthList"
             :key="index"
-            @click="departmentChange(item.name,item.id)"
+            @click="departmentChange(item.name, item.id)"
             :value="item.id"
-          >{{item.name}}</a-select-option>
+            >{{ item.name }}</a-select-option
+          >
         </a-select>
       </a-modal>
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -253,7 +251,6 @@ export default {
         targets[field] = event instanceof Event ? event.target.value : event
         this.programme = programme
       }
-      // console.log(arguments)
     },
     addItem(index) {
       this.programme[index].oaTrainYearPlanItemDetailSaveBoList.push({
@@ -348,12 +345,10 @@ export default {
     },
 
     handleOk() {
-      // console.log('你是要提交')
       let that = this
       if (that.type === 'view') {
         this.visible = false
       } else {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.year = Number(this.year)
@@ -376,9 +371,9 @@ export default {
               values.id = that.record.id
             }
             if (that.type === 'add' || that.type === 'edit-salary') {
+              that.spinning = true
               annualAdd(values)
                 .then((res) => {
-                  console.log(res.data)
                   this.programme = []
                   this.remark = ''
                   this.visible = false
@@ -398,7 +393,6 @@ export default {
       this.visible = false
     },
     submitAction(opt) {
-      console.log(1231)
       let that = this
       let values = {
         approveId: this.record.id,

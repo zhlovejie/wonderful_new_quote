@@ -212,7 +212,6 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
-            that.spinning = true
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
@@ -221,6 +220,7 @@ export default {
             arr.oaSalaryBounsAnnulDetails = this.programme
 
             if (that.type === 'add' || that.type === 'edit-salary') {
+              that.spinning = true
               year_annual_addAndUpdate(arr)
                 .then((res) => {
                   this.programme = []

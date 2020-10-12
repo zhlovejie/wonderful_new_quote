@@ -1,29 +1,29 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
       <a-input
         placeholder="物流名称"
         v-model="queryParam.logisticsCompanyName"
         allowClear
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       />
       <a-input
         placeholder="负责人"
         v-model="queryParam.personChargeName"
         allowClear
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       />
       <a-input
         placeholder="负责人电话"
         v-model="queryParam.personChargeTelephone"
         allowClear
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       />
 
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('Distribution:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -39,10 +39,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleAdd('see',record)">查看</a>
-          <template v-if="$auth('Distribution:add')&&+record.createdId  === +userInfo.id">
+          <a @click="handleAdd('see', record)">查看</a>
+          <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
-            <a @click="handleAdd('edit-salary',record)">修改</a>
+            <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>
@@ -195,10 +195,6 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       this.pagination1.size = pagination.pageSize
       this.pagination1.current = pagination.current
-      // console.log(pagination, filters, sorter)
-      // const pager = { ...this.pagination }
-      // pager.current = pagination.current
-      // this.pagination = pager
       this.searchAction()
     },
     delete_list(id) {

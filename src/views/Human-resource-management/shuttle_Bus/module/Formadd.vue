@@ -258,12 +258,12 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
-            that.spinning = true
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
             if (that.type === 'add' || that.type === 'edit-salary') {
               values.beginDate = moment(values.beginDate).format('YYYY-MM-DD')
+              that.spinning = true
               shuttle_Bus_addAndUpdate(values)
                 .then((res) => {
                   this.programme = []

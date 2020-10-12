@@ -22,11 +22,9 @@
                   v-decorator="['typeDicId', { rules: [{ required: true, message: '选择会议类别' }] }]"
                   :allowClear="true"
                 >
-                  <a-select-option
-                    v-for="item in meetingTypesList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option v-for="item in meetingTypesList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -39,11 +37,9 @@
                   v-decorator="['departmentId', { rules: [{ required: true, message: '选择会议部门' }] }]"
                   :allowClear="true"
                 >
-                  <a-select-option
-                    v-for="item in depList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.departmentName}}</a-select-option>
+                  <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -76,7 +72,7 @@
             <td>是否有考核</td>
             <td colspan="3">
               <a-form-item>
-                <a-radio-group v-decorator="['checkFlag',{initialValue: 0}]">
+                <a-radio-group v-decorator="['checkFlag', { initialValue: 0 }]">
                   <a-radio :value="1">有</a-radio>
                   <a-radio :value="0">无</a-radio>
                 </a-radio-group>
@@ -162,7 +158,6 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true
-          console.log(values)
           values.trainId = that.record.id
           dispersedMeetingEvent(values)
             .then((res) => {
@@ -187,8 +182,6 @@ export default {
       that.record = record || {}
       await that.form.resetFields()
       await that.init()
-
-      console.log(record)
       //填充数据
       if (type === 'edit') {
         meetingSetDetail({ eventId: that.record.meetingEventId })
@@ -200,7 +193,6 @@ export default {
     },
     selectSystemUsers({ decoratorKey, record }) {
       let that = this
-      console.log(decoratorKey, record)
       if (record) {
         that.form.setFieldsValue({
           chargePersonId: record.id,

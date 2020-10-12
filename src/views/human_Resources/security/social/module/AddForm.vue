@@ -23,8 +23,8 @@
             <td colspan="3">
               <a-form-item>
                 <a-month-picker
-                  style="width:300px;"
-                  v-decorator="['accountDate',  {rules: [{required: true, message: '请选择日期！',}]}]"
+                  style="width: 300px"
+                  v-decorator="['accountDate', { rules: [{ required: true, message: '请选择日期！' }] }]"
                 />
                 <!-- initialValue:moment(), -->
               </a-form-item>
@@ -35,9 +35,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入公司缴费金额"
-                  v-decorator="['companyPay', {rules: [ {required: true,  message: '请输入公司缴费金额!'},]}]"
+                  v-decorator="['companyPay', { rules: [{ required: true, message: '请输入公司缴费金额!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -47,9 +47,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入个人缴费金额"
-                  v-decorator="['personalPay', {rules: [{required: true,message: '请输入个人缴费金额!',}]}]"
+                  v-decorator="['personalPay', { rules: [{ required: true, message: '请输入个人缴费金额!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -59,16 +59,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-upload
-                  style="width:300px;"
+                  style="width: 300px"
                   name="file"
                   :fileList="fileList"
                   :beforeUpload="beforeUpload"
                   @change="handleChange"
                   accept=".xls, .xlsx"
                 >
-                  <a-button>
-                    <a-icon type="upload" />导入
-                  </a-button>
+                  <a-button> <a-icon type="upload" />导入 </a-button>
                 </a-upload>
               </a-form-item>
             </td>
@@ -180,10 +178,8 @@ export default {
       this.fileList = fileList
     },
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.accountDate = values.accountDate.format('YYYYMM')
@@ -195,8 +191,7 @@ export default {
             formData.append('companyPay', values.companyPay)
             formData.append('personalPay', values.personalPay)
             formData.append('file', this.fileList[0])
-
-            // console.log(formData.getAll('file'))
+            that.spinning = true
             securitySocial_Add(formData)
               .then((res) => {
                 that.spinning = false

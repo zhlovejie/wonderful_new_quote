@@ -10,12 +10,7 @@
   >
     <template slot="footer">
       <template v-if="isApproval">
-        <a-button
-          class="a-button"
-          type="primary"
-          icon="close"
-          @click="noPassAction(recordDetails)"
-        >不通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
       </template>
       <template v-else>
@@ -73,7 +68,7 @@
                   v-decorator="['deptId']"
                   style="width: 100%"
                   :tree-data="treeData"
-                  :dropdownStyle="{ maxHeight: '300px'}"
+                  :dropdownStyle="{ maxHeight: '300px' }"
                   tree-checkable
                   :show-checked-strategy="SHOW_PARENT"
                   search-placeholder="Please select"
@@ -219,7 +214,6 @@ export default {
         that.visible = false
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.deptId = values.deptId.toString()
@@ -227,6 +221,7 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = that.recordDetails.id
             }
+            that.spinning = true
             NoticeAdd(values)
               .then((res) => {
                 that.spinning = false

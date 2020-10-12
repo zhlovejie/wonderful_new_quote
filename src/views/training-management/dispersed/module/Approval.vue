@@ -1,12 +1,5 @@
 <template>
-  <a-modal
-    title="审批意见"
-    :width="600"
-    :visible="visible"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    :maskClosable="false"
-  >
+  <a-modal title="审批意见" :width="600" :visible="visible" @ok="handleOk" @cancel="handleCancel" :maskClosable="false">
     <a-form :form="form" class="approval-modal-form-wrapper">
       <a-form-item>
         <a-textarea
@@ -30,7 +23,6 @@ export default {
   },
   methods: {
     query(type, record) {
-      console.log(record)
       this.form.resetFields() // 清空表
       this.visible = true
     },

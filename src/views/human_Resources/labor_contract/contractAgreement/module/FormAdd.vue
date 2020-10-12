@@ -23,10 +23,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入合同协议名称"
-                  v-decorator="['contractName', {rules: [ {required: true,  message: '输入合同协议名称!'},
-             ]}]"
+                  v-decorator="['contractName', { rules: [{ required: true, message: '输入合同协议名称!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -36,10 +35,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入版本号"
-                  v-decorator="['version', {rules: [{required: true,message: '请输入版本号!',},
-             ]}]"
+                  v-decorator="['version', { rules: [{ required: true, message: '请输入版本号!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -49,13 +47,17 @@
             <td colspan="3">
               <a-form-item>
                 <a-upload
-                  v-decorator="['contractUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                  v-decorator="[
+                    'contractUrl',
+                    { rules: [{ required: true, message: '请上传方案' }] },
+                    { valuePropName: 'fileList', getValueFromEvent: normFile },
+                  ]"
                   name="file"
                   :fileList="fileList"
                   @change="handleChange"
                   :action="uploadUrl"
                 >
-                  <a-button style="width:300px;">
+                  <a-button style="width: 300px">
                     <a-icon type="upload" />
                   </a-button>
                 </a-upload>
@@ -156,7 +158,6 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             if (that.type !== 'add') {
@@ -170,6 +171,7 @@ export default {
             } else if (that.type === 'edit-salary') {
               values.contractUrl = values.contractUrl.fileList[0].response.data
             }
+            that.spinning = true
             contractAgreement_Add(values)
               .then((res) => {
                 that.spinning = false

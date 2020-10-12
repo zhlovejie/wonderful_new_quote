@@ -322,3 +322,15 @@ export function capital_bill_approval(parameter) {
     data: parameter
   })
 }
+
+// 非销售基本工资表 
+
+
+export function salary_base_record_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-common/pageList',
+    method: 'get',
+    params: parameter
+  })
+}

@@ -56,7 +56,7 @@
               <a-form-item>
                 <a-radio-group
                   @change="authorityType"
-                  v-decorator="['authorityType',{ rules: [{ required: true, message: '请选择权限' }] }]"
+                  v-decorator="['authorityType', { rules: [{ required: true, message: '请选择权限' }] }]"
                 >
                   <a-radio :value="1">公开</a-radio>
                   <a-radio :value="2">私密</a-radio>
@@ -74,12 +74,10 @@
               <td>部门</td>
               <td colspan="2">
                 <a-form-item>
-                  <a-select style="width:200px;" @change="depChangeHandler" placeholder="请选择部门">
-                    <a-select-option
-                      v-for="item in departmentList"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{ item.departmentName }}</a-select-option>
+                  <a-select style="width: 200px" @change="depChangeHandler" placeholder="请选择部门">
+                    <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                      item.departmentName
+                    }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </td>
@@ -87,7 +85,7 @@
               <td colspan="2">
                 <a-form-item>
                   <a-select
-                    style="width:200px;"
+                    style="width: 200px"
                     mode="multiple"
                     :allowClear="true"
                     :maxTagCount="1"
@@ -102,7 +100,8 @@
                       v-for="(process, index) in postSelectDataSource"
                       :key="index"
                       :value="process.id"
-                    >{{ process.trueName }}</a-select-option>
+                      >{{ process.trueName }}</a-select-option
+                    >
                   </a-select>
                 </a-form-item>
               </td>
@@ -127,11 +126,7 @@
                     v-model="haveProcess"
                   >
                     <transition-group name="list">
-                      <div
-                        v-for="(item, index) in haveProcess"
-                        :key="item.id"
-                        class="draggable-columns-item"
-                      >
+                      <div v-for="(item, index) in haveProcess" :key="item.id" class="draggable-columns-item">
                         <div class="draggable-columns draggable-columns-1">{{ item.departmentName }}</div>
                         <div class="draggable-columns draggable-columns-1">{{ item.userName }}</div>
                         <div class="draggable-columns draggable-columns-3" title="删除">
@@ -240,7 +235,6 @@ export default {
       })
       if (type === 'edit-salary') {
         this.addId = record.Id
-        console.log(this.addId)
         this.parentId = record.Id === -1 ? '无' : record.name
         this.dis = record.Id === -1 ? true : false
         this.fillData()
@@ -248,7 +242,6 @@ export default {
       if (type === 'add') {
         this.addId = record.Id
         this.stateType = record.type
-        console.log(record.type)
         this.parentId = record.Id === -1 ? '无' : record.name
         this.dis = record.Id === -1 ? true : false
         if (record.Id != -1) {
@@ -303,7 +296,6 @@ export default {
     },
 
     handleOk() {
-      console.log('你这是要提交')
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
@@ -331,11 +323,9 @@ export default {
           if (this.type === 'folder') {
             values.parentId = this.record.id
           }
-          console.log(values)
           that.spinning = true
           materialsAdd(values).then((res) => {
             that.spinning = false
-            console.log(res)
             that.form.resetFields() // 清空表
             that.haveProcess = []
             that.form.setFieldsValue({
@@ -378,7 +368,6 @@ export default {
       if (!Array.isArray(selectedArray)) return
       selectedArray.map((_ppid) => {
         if (!_ppid) return
-        console.log(that.haveProcess)
         let target = that.haveProcess.find((p) => p.userId === _ppid)
         if (!target) {
           let _p = that.postSelectDataSource.find((_p) => _p.id === _ppid)

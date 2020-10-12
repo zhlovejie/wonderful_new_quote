@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <div style="height: 40px; width: 100%">
-        <template v-if="$auth('electricity:add')">
+        <template v-if="$auth('electricity:add') && this.dataSource.length == 0">
           <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
         </template>
       </div>

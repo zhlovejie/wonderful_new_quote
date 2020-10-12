@@ -231,11 +231,11 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
-            that.spinning = true
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
             if (that.type === 'add' || that.type === 'edit-salary') {
+              that.spinning = true
               senior_worker_addAndUpdate(values)
                 .then((res) => {
                   this.programme = []

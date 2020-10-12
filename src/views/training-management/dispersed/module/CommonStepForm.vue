@@ -47,7 +47,7 @@
           :type="type"
         />
         <step5
-          v-if="currentTab === 4&&type==='view'&&queryonedata.onlineFlag===1"
+          v-if="currentTab === 4 && type === 'view' && queryonedata.onlineFlag === 1"
           ref="step5"
           key="step5"
           @nextStep="nextStep"
@@ -62,7 +62,7 @@
           <a-step title="课程安排" />
           <a-step title="受训人员" />
           <a-step title="培训资料" />
-          <a-step v-if="type==='view'&&queryonedata.onlineFlag===1" title="培训情况" />
+          <a-step v-if="type === 'view' && queryonedata.onlineFlag === 1" title="培训情况" />
         </a-steps>
       </a-card>
     </a-card>
@@ -137,16 +137,13 @@ export default {
       }
       if (this.type != 'add') {
         dispersedDetailVo({ trainId: record.id }).then((res) => {
-          console.log(res.data)
           this.queryonedata = { ...res.data }
         })
       }
     },
 
     nextStep(data) {
-      console.log(data)
       this.queryonedata = { ...this.queryonedata, ...data }
-      console.log(this.queryonedata)
       if (this.currentTab < 5) {
         this.currentTab = this.currentTab + 1
       }
@@ -188,7 +185,6 @@ export default {
     },
     // handler
     prevStep(e) {
-      // console.log('点击上一步，相当于修改操作,带过来的参数', e)
       if (this.currentTab > 0) {
         this.currentTab -= 1
       }

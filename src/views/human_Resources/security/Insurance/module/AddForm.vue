@@ -23,17 +23,15 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:400px;"
-                  @change=" depChangeHandler"
-                  v-decorator="['departmentId',{ rules: [{ required: true, message: '选择部门' }] }, ]"
+                  style="width: 400px"
+                  @change="depChangeHandler"
+                  v-decorator="['departmentId', { rules: [{ required: true, message: '选择部门' }] }]"
                   :disabled="isDisabled"
                   placeholder="请选择部门"
                 >
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -42,12 +40,12 @@
             <td>岗位</td>
             <td colspan="3">
               <a-form-item>
-                <template v-if="this.type==='add'">
+                <template v-if="this.type === 'add'">
                   <a-tree-select
-                    v-decorator="['stationIds',{ rules: [{ required: true, message: '选择岗位' }] }]"
+                    v-decorator="['stationIds', { rules: [{ required: true, message: '选择岗位' }] }]"
                     style="width: 400px"
                     :tree-data="postSelectDataSource"
-                    :dropdownStyle="{ maxHeight: '300px'}"
+                    :dropdownStyle="{ maxHeight: '300px' }"
                     tree-checkable
                     :show-checked-strategy="SHOW_PARENT"
                     search-placeholder="Please select"
@@ -56,17 +54,15 @@
                 </template>
                 <template v-else>
                   <a-select
-                    style="width:400px;"
+                    style="width: 400px"
                     :allowClear="true"
-                    v-decorator="['stationId',{ rules: [{ required: true, message: '选择岗位' }] },]"
+                    v-decorator="['stationId', { rules: [{ required: true, message: '选择岗位' }] }]"
                     :disabled="isDisabled"
                     placeholder="请选择岗位"
                   >
-                    <a-select-option
-                      v-for="item in SingleChoice"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{item.stationName}}</a-select-option>
+                    <a-select-option v-for="item in SingleChoice" :key="item.id" :value="item.id">{{
+                      item.stationName
+                    }}</a-select-option>
                   </a-select>
                 </template>
               </a-form-item>
@@ -77,7 +73,7 @@
             <td colspan="3">
               <a-form-item>
                 <a-tree-select
-                  v-decorator="['insuranceInfoList',{ rules: [{ required: true, message: '试用期时间' }] },]"
+                  v-decorator="['insuranceInfoList', { rules: [{ required: true, message: '试用期时间' }] }]"
                   placeholder="请选择试用期时间"
                   style="width: 400px"
                   :tree-data="treeData"
@@ -94,16 +90,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:400px;"
-                  v-decorator="['neutral',{ rules: [{ required: true, message: '选择入职空挡期' }] },]"
+                  style="width: 400px"
+                  v-decorator="['neutral', { rules: [{ required: true, message: '选择入职空挡期' }] }]"
                   :disabled="isDisabled"
                   placeholder="请选择入职空档期"
                 >
-                  <a-select-option
-                    v-for="item in InsuranceList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.text }}</a-select-option>
+                  <a-select-option v-for="item in InsuranceList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -113,16 +107,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:400px;"
-                  v-decorator="['probationPeriod',{ rules: [{ required: true, message: '选择试用期保险' }] },]"
+                  style="width: 400px"
+                  v-decorator="['probationPeriod', { rules: [{ required: true, message: '选择试用期保险' }] }]"
                   :disabled="isDisabled"
                   placeholder="请选择试用期保险"
                 >
-                  <a-select-option
-                    v-for="item in InsuranceList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.text }}</a-select-option>
+                  <a-select-option v-for="item in InsuranceList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -132,16 +124,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:400px;"
-                  v-decorator="['turnJust',{ rules: [{ required: true, message: '选择转正保险' }] },]"
+                  style="width: 400px"
+                  v-decorator="['turnJust', { rules: [{ required: true, message: '选择转正保险' }] }]"
                   :disabled="isDisabled"
                   placeholder="请选择转正保险"
                 >
-                  <a-select-option
-                    v-for="item in InsuranceList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.text }}</a-select-option>
+                  <a-select-option v-for="item in InsuranceList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -311,15 +301,12 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.isView) {
         that.form.resetFields() // 清空表
         that.visible = false
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
-        debugger
-        this.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.insuranceInfoList = values.insuranceInfoList.map((item, index) => {
@@ -330,6 +317,7 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = that.recordDetails.id
             }
+            this.spinning = true
             securityInsurance_Add(values)
               .then((res) => {
                 that.spinning = false

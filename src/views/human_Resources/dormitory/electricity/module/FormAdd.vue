@@ -23,9 +23,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="请输入房间号"
-                  v-decorator="['roomCode', {rules: [ {required: true,  message: '请输入房间号'},]}]"
+                  v-decorator="['roomCode', { rules: [{ required: true, message: '请输入房间号' }] }]"
                 />
               </a-form-item>
             </td>
@@ -35,9 +35,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="请输入房间床位数"
-                  v-decorator="['bedNumber', {rules: [{required: true,message: '请输入房间床位数!',},]}]"
+                  v-decorator="['bedNumber', { rules: [{ required: true, message: '请输入房间床位数!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -47,9 +47,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="请输入电表号"
-                  v-decorator="['meterCode', {rules: [ {required: true,  message: '请输入房间号'},]}]"
+                  v-decorator="['meterCode', { rules: [{ required: true, message: '请输入房间号' }] }]"
                 />
               </a-form-item>
             </td>
@@ -59,7 +59,7 @@
             <td colspan="3">
               <a-form-item>
                 <a-textarea
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="请输入备注"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
@@ -136,12 +136,12 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             if (that.type !== 'add') {
               values.id = that.record.id
             }
+            that.spinning = true
             electricity_Add(values)
               .then((res) => {
                 that.spinning = false
