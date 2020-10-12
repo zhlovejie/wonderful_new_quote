@@ -55,6 +55,7 @@
         <td>
           <a-form-item>
             <a-input-number
+              v-if="!isDisabled"
               style="width:120px;"
               :min="0"
               :step="1"
@@ -68,6 +69,7 @@
                 }
               ]"
             />
+            <span v-else>{{item.salary | moneyFormatNumber}}</span>
           </a-form-item>
         </td>
       </tr>
@@ -99,7 +101,7 @@ export default {
   components:{},
   data(){
     return {
-      departmentId:null,
+      departmentId:undefined,
       depList:[],
       postList:[],
       form: this.$form.createForm(this),
@@ -186,6 +188,8 @@ export default {
       that.visible = true
       that.actionType = type 
       that.record = record || {}
+      that.departmentId = undefined
+      that.postList = []
       await that.form.resetFields() 
       await that.init() 
       if(type === 'add') return 
@@ -194,10 +198,11 @@ export default {
         .then(res =>{
           that.$nextTick(() => {
             that.postList = res.data
-            let obj = {
-              
-            }
-            that.form.setFieldsValue()
+            let obj = {}
+            res.data.map((item,idx) => {
+              obj[`investAmountList.${idx}.investAmount`] = item.salary
+            })
+            that.form.setFieldsValue(obj)
           })
         })
         .catch(err => null)
