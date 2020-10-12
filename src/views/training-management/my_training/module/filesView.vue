@@ -13,7 +13,7 @@
         :value="deadline"
         format="s秒"
         @finish="onFinish"
-        style="margin-right: 50px;float:right; "
+        style="margin-right: 50px; float: right"
       />
     </a-col>
     <a-spin :spinning="spinning">
@@ -42,7 +42,6 @@ export default {
     onFinish() {
       focusupdateFile(`fileHistoryId=${this.id}`).then((res) => {
         if (res.code === 200) {
-          console.log(res.data)
         } else {
           this.$message.error(res.msg)
         }
