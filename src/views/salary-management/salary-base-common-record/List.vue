@@ -5,6 +5,7 @@
       <a-select
         style="width: 200px; margin-right: 10px"
         v-model="queryParam.departmentId"
+        :allowClear="true"
         @change="depChangeHandler"
         placeholder="请选择部门"
       >
@@ -26,9 +27,9 @@
       />
 
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('Distribution:add')">
-        <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
-      </template>
+      <!-- <template v-if="$auth('Distribution:add')"> -->
+      <!-- <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button> -->
+      <!-- </template> -->
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
@@ -42,15 +43,15 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleAdd('see', record)">查看</a>
-          <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
+        <!-- <span slot="action" slot-scope="text, record"> -->
+        <!-- <a @click="handleAdd('see', record)">查看</a> -->
+        <!-- <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
-          </template>
-        </span>
+          </template> -->
+        <!-- </span> -->
       </a-table>
 
       <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
@@ -103,12 +104,12 @@ const columns = [
     key: 'realitySalary',
     align: 'center',
   },
-  {
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-    align: 'center',
-  },
+  // {
+  //   title: '操作',
+  //   key: 'action',
+  //   scopedSlots: { customRender: 'action' },
+  //   align: 'center',
+  // },
 ]
 export default {
   name: 'RoleManagement',
@@ -209,9 +210,9 @@ export default {
       //   })
     },
     //新增 修改
-    handleAdd(type, record) {
-      this.$refs.addForm.query(type, record)
-    },
+    // handleAdd(type, record) {
+    //   this.$refs.addForm.query(type, record)
+    // },
   },
 }
 </script>

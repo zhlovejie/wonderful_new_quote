@@ -14,10 +14,24 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <div slot="onDutyDays" slot-scope="text, record, index">
+          <div
+            :style="{
+              maxWidth: '300px',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              wordWrap: 'break-word',
+              wordBreak: 'break-all',
+            }"
+            slot="remark"
+            slot-scope="text, record"
+          >
+            {{ record.remark }}
+          </div>
+          <div slot="onDutyDays" slot-scope="text">
             <span>大于等于 {{ text }}</span>
           </div>
-          <div slot="maxLeaveHours" slot-scope="text, record, index">
+          <div slot="maxLeaveHours" slot-scope="text">
             <span>请假时长小于等于 {{ text }} 小时</span>
           </div>
           <span slot="action" slot-scope="text, record">
@@ -90,6 +104,8 @@ export default {
           title: '备注',
           dataIndex: 'remark',
           key: 'remark',
+          width: 250,
+          scopedSlots: { customRender: 'remark' },
         },
         {
           align: 'center',

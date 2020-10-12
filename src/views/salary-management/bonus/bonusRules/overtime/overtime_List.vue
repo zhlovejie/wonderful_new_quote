@@ -17,6 +17,22 @@
           <div slot="productCode" slot-scope="text, record, index">
             <span>1个</span>
           </div>
+
+          <div
+            :style="{
+              maxWidth: '300px',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              wordWrap: 'break-word',
+              wordBreak: 'break-all',
+            }"
+            slot="remark"
+            slot-scope="text, record"
+          >
+            {{ record.remark }}
+          </div>
+
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('electricity:add')">
               <a @click="handle('edit-salary', record)">修改</a>
@@ -80,6 +96,8 @@ export default {
           title: '备注',
           dataIndex: 'remark',
           key: 'remark',
+          width: 250,
+          scopedSlots: { customRender: 'remark' },
         },
         {
           align: 'center',
