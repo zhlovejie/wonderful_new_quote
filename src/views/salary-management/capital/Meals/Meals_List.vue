@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <div style="height: 40px; width: 100%">
-        <template>
+        <template v-if="this.dataSource.length == 0">
           <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
         </template>
       </div>
@@ -10,7 +10,7 @@
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
-        <a-table :columns="columns" :data-source="this.dataSource" v-if="$auth('electricity:list')">
+        <a-table :columns="columns" :data-source="this.dataSource">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>

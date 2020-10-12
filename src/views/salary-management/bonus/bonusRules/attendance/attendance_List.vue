@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <div style="height: 40px; width: 100%">
-        <template v-if="$auth('electricity:add') && this.dataSource.length == 0">
+        <template v-if="this.dataSource.length == 0">
           <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
         </template>
       </div>
@@ -10,7 +10,7 @@
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
-        <a-table :columns="columns" :data-source="this.dataSource" v-if="$auth('electricity:list')">
+        <a-table :columns="columns" :data-source="this.dataSource">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -35,7 +35,7 @@
             <span>请假时长小于等于 {{ text }} 小时</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('electricity:add')">
+            <template>
               <a @click="handle('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
               <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="deleteRoleInfo(record)">
