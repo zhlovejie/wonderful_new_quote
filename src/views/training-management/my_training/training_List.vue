@@ -4,28 +4,22 @@
       <a-form layout="inline" :form="form">
         <a-form-item>
           <a-button-group>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 2}"
-              @click="simpleSearch(2)"
-            >本周</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 3}"
-              @click="simpleSearch(3)"
-            >本月</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
-              @click="simpleSearch(1)"
-            >全部</a-button>
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+              >本周</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+              >本月</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
         <a-form-item>
-          <a-input v-model="trainName" placeholder="培训名称" style="width:200px;" :allowClear="true" />
+          <a-input v-model="trainName" placeholder="培训名称" style="width: 200px" :allowClear="true" />
         </a-form-item>
         <a-form-item label="日期">
-          <a-range-picker v-model="sDate" style="width:280px;" />
+          <a-range-picker v-model="sDate" style="width: 280px" />
         </a-form-item>
         <a-form-item>
           <template>
@@ -36,7 +30,7 @@
     </div>
     <a-row>
       <a-col>
-        <div style=" height: 50px;"></div>
+        <div style="height: 50px"></div>
         <s-table
           style="margin-bottom: 24px"
           ref="table"
@@ -49,23 +43,23 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="onlineFlag" slot-scope="text">
-            <span v-if="text==0">线下</span>
-            <span v-if="text==1">线上</span>
+            <span v-if="text == 0">线下</span>
+            <span v-if="text == 1">线上</span>
           </div>
           <div slot="haveCheckFlag" slot-scope="text">
-            <span v-if="text==0">无</span>
-            <span v-if="text==1">有</span>
+            <span v-if="text == 0">无</span>
+            <span v-if="text == 1">有</span>
           </div>
 
           <span slot="action" slot-scope="text, record">
-            <template v-if="record.onlineFlag===0">
-              <a type="primary" @click="toAdd('view',record)">查看</a>
+            <template v-if="record.onlineFlag === 0">
+              <a type="primary" @click="toAdd('view', record)">查看</a>
             </template>
-            <template v-else-if="record.readFlag===0">
-              <a type="primary" @click="toAdd('examine',record)">处理</a>
+            <template v-else-if="record.readFlag === 0">
+              <a type="primary" @click="toAdd('examine', record)">处理</a>
             </template>
             <template v-else>
-              <a type="primary" @click="toAdd('examine',record)">查看</a>
+              <a type="primary" @click="toAdd('examine', record)">查看</a>
             </template>
           </span>
         </s-table>
@@ -224,7 +218,6 @@ export default {
 
     simpleSearch(type) {
       this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-      console.log(type)
       this.search()
     },
   },

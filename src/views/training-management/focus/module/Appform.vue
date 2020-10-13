@@ -23,10 +23,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入培训文件名称"
-                  v-decorator="['fileName', {rules: [{required: true,message: '请输入培训文件!',},
-             ]}]"
+                  v-decorator="['fileName', { rules: [{ required: true, message: '请输入培训文件!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -36,7 +35,11 @@
             <td colspan="3">
               <a-form-item>
                 <a-upload
-                  v-decorator="['trainUrl',{ rules: [{ required: true, message: '请上传文件' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                  v-decorator="[
+                    'trainUrl',
+                    { rules: [{ required: true, message: '请上传文件' }] },
+                    { valuePropName: 'fileList', getValueFromEvent: normFile },
+                  ]"
                   name="file"
                   accept=".pdf, .doc, .docx"
                   :before-upload="beforeUpload"
@@ -44,7 +47,7 @@
                   @change="handleChange"
                   :action="uploadUrl"
                 >
-                  <a-button style="width:300px;">
+                  <a-button style="width: 300px">
                     <a-icon type="upload" />
                   </a-button>
                 </a-upload>
@@ -90,7 +93,6 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       that.form.validateFields((err, values) => {
         values.trainUrl = values.trainUrl.fileList[0].response.data
@@ -102,8 +104,6 @@ export default {
     },
     //上传
     normFile(e) {
-      debugger
-      console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e
       }

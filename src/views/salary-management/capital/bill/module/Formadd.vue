@@ -67,7 +67,7 @@
                   :precision="2"
                   style="width: 426px"
                   :disabled="isDisabled"
-                  placeholder="输入奖金"
+                  placeholder="输入罚款"
                   v-decorator="['amount', { rules: [{ required: true, message: '请输入罚款!' }] }]"
                 />
               </a-form-item>
@@ -79,6 +79,7 @@
               <a-form-item>
                 <a-date-picker
                   style="width: 426px"
+                  :disabled="isDisabled"
                   v-decorator="['cutDate', { rules: [{ required: true, message: '请选择日期!' }] }]"
                 />
               </a-form-item>
@@ -124,7 +125,7 @@ import {
   // getStationList, //获取部门下面的岗位
   // getUserByStation, //获取人员
 } from '@/api/systemSetting'
-import { capital_bill_logisticsNum, capital_bill_addAndUpdate, other_approval } from '@/api/bonus_management'
+import { capital_bill_logisticsNum, capital_bill_addAndUpdate, capital_bill_approval } from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -153,10 +154,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改其他奖金'
+        return '修改罚款单'
       }
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}其他奖金`
+      return `${txt}罚款单`
     },
     isView() {
       //查看
@@ -189,7 +190,7 @@ export default {
   },
   methods: {
     moment,
-    //选择岗位
+    //选择人员
     depChangeHandler(dep_id) {
       let that = this
       that.depart = dep_id
@@ -198,13 +199,7 @@ export default {
         that.postSelectDataSource = res.data
       })
     },
-    //选择人员
-    // postChangeHandler(stationId) {
-    //   this.personSelectDataSource = []
-    //   getUserByStation({ stationId: stationId, showLeaveFlag: 1 }).then(
-    //     (res) => (this.personSelectDataSource = res.data)
-    //   )
-    // },
+
     //接受数据
     query(type, record) {
       console.log(this.record)
@@ -218,12 +213,9 @@ export default {
         })
       }
       if (type !== 'add') {
-        getUserByDep({ id: record.departmentId }).then((res) => {
+        getUserByDep({ departmentId: record.departmentId }).then((res) => {
           this.postSelectDataSource = res.data
         })
-        // getUserByStation({ stationId: record.stationId, showLeaveFlag: 1 }).then(
-        //   (res) => (this.personSelectDataSource = res.data)
-        // )
         this.fillData()
       }
     },
@@ -231,12 +223,12 @@ export default {
     fillData() {
       let that = this
       this.$nextTick(() => {
+        this.logisCode = this.record.fkNum
         this.form.setFieldsValue({
           amount: this.record.amount,
           departmentId: this.record.departmentId,
-          itemType: this.record.itemType,
+          cutDate: moment(this.record.cutDate),
           reason: this.record.reason,
-          stationId: this.record.stationId,
           userId: this.record.userId,
           remark: this.record.remark,
         })
@@ -256,6 +248,7 @@ export default {
             }
             if (that.type === 'add' || that.type === 'edit-salary') {
               values.fkNum = that.logisCode
+              values.cutDate = moment(values.cutDate).format('YYYY-MM-DD')
               capital_bill_addAndUpdate(values)
                 .then((res) => {
                   this.programme = []
@@ -285,7 +278,7 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      other_approval(values)
+      capital_bill_approval(values)
         .then((res) => {
           that.spinning = false
           that.form.resetFields() // 清空表

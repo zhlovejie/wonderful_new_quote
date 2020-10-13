@@ -85,16 +85,14 @@ export default {
       queryParam: {
         productModel: undefined,
         productName: undefined,
-        productType: undefined,
+        productType: 0,
       },
-
       saleCustomers: [],
       consumerNam: null,
       consumerId: null,
       loading: false,
       pagination: {
         current: 1,
-        productType: 0,
       },
       priewVisible: false,
     }
@@ -133,6 +131,7 @@ export default {
     },
     //选择客户
     handlerSelected(record, index) {
+      record.productType = this.queryParam.productType
       this.$emit('selected', record)
       this.priewVisible = false
     },

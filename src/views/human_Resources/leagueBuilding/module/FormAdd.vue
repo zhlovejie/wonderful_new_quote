@@ -10,12 +10,7 @@
   >
     <template slot="footer">
       <template v-if="isApproval">
-        <a-button
-          class="a-button"
-          type="primary"
-          icon="close"
-          @click="noPassAction(recordDetails)"
-        >不通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction()">通过</a-button>
       </template>
       <template v-else>
@@ -24,7 +19,7 @@
       </template>
     </template>
 
-    <template v-if="this.type==='view5'">
+    <template v-if="this.type === 'view5'">
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="详情">
           <a-form :form="form" class="becoming-form-wrapper">
@@ -35,11 +30,11 @@
                   <a-form-item>
                     <a-select
                       @change="department"
-                      style="width: 350px;"
+                      style="width: 350px"
                       :allowClear="true"
                       :disabled="isDisabled"
                       placeholder="请选择团建类别"
-                      v-decorator="['leagueType',{ rules: [{ required: true, message: '请选择团建类别' }] },]"
+                      v-decorator="['leagueType', { rules: [{ required: true, message: '请选择团建类别' }] }]"
                     >
                       <a-select-option :value="1">部门团建</a-select-option>
                       <a-select-option :value="2">公司团建</a-select-option>
@@ -57,60 +52,84 @@
                       tree-checkable
                       search-placeholder="选择部门"
                       :disabled="isDisabled"
-                      :dropdownStyle="{ maxHeight: '300px'}"
+                      :dropdownStyle="{ maxHeight: '300px' }"
                     />
                   </a-form-item>
                 </td>
               </tr>
               <tr>
                 <td>开始时间</td>
-                <td style="width: 400px;">
-                  <div style="display:flex;" v-if="!isDisabled">
+                <td style="width: 400px">
+                  <div style="display: flex" v-if="!isDisabled">
                     <a-form-item>
                       <a-date-picker
-                        v-decorator="['s_begin_date',{initialValue:detail.beginTime ? moment(detail.beginTime) : undefined,rules: [{required: true,message: '请选择日期'}]}]"
+                        v-decorator="[
+                          's_begin_date',
+                          {
+                            initialValue: detail.beginTime ? moment(detail.beginTime) : undefined,
+                            rules: [{ required: true, message: '请选择日期' }],
+                          },
+                        ]"
                         @change="dateBeginPickerChange"
                       />
                     </a-form-item>
-                    <a-form-item style="margin-left:10px;">
+                    <a-form-item style="margin-left: 10px">
                       <a-time-picker
                         :minute-step="5"
                         :second-step="60"
-                        v-decorator="['s_begin_time',{initialValue:detail.beginTime ? moment(detail.beginTime) :undefined,rules: [{required: true,message: '请选择时间'}]}]"
+                        v-decorator="[
+                          's_begin_time',
+                          {
+                            initialValue: detail.beginTime ? moment(detail.beginTime) : undefined,
+                            rules: [{ required: true, message: '请选择时间' }],
+                          },
+                        ]"
                         @change="dateBeginTimeChange"
                       />
                     </a-form-item>
                   </div>
-                  <a-form-item v-else>{{detail.beginTime}}</a-form-item>
+                  <a-form-item v-else>{{ detail.beginTime }}</a-form-item>
                 </td>
                 <td>结束时间</td>
-                <td style="width: 350px;">
-                  <div style="display:flex;" v-if="!isDisabled">
+                <td style="width: 350px">
+                  <div style="display: flex" v-if="!isDisabled">
                     <a-form-item>
                       <a-date-picker
-                        v-decorator="['s_end_date',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择日期'}]}]"
+                        v-decorator="[
+                          's_end_date',
+                          {
+                            initialValue: detail.endTime ? moment(detail.endTime) : undefined,
+                            rules: [{ required: true, message: '请选择日期' }],
+                          },
+                        ]"
                         @change="dateEndPickerChange"
                       />
                     </a-form-item>
-                    <a-form-item style="margin-left:10px;">
+                    <a-form-item style="margin-left: 10px">
                       <a-time-picker
                         :minute-step="5"
                         :second-step="60"
-                        v-decorator="['s_end_time',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择时间'}]}]"
+                        v-decorator="[
+                          's_end_time',
+                          {
+                            initialValue: detail.endTime ? moment(detail.endTime) : undefined,
+                            rules: [{ required: true, message: '请选择时间' }],
+                          },
+                        ]"
                         @change="dateEndTimeChange"
                       />
                     </a-form-item>
                   </div>
-                  <a-form-item v-else>{{detail.endTime}}</a-form-item>
+                  <a-form-item v-else>{{ detail.endTime }}</a-form-item>
                 </td>
               </tr>
               <tr>
                 <td>时长</td>
                 <td>
                   <a-form-item>
-                    <template
-                      v-if="duration.hour !== undefined"
-                    >{{duration.hour + '小时'+duration.minute+'分钟'}}</template>
+                    <template v-if="duration.hour !== undefined">{{
+                      duration.hour + '小时' + duration.minute + '分钟'
+                    }}</template>
                   </a-form-item>
                 </td>
                 <td>团建地点</td>
@@ -141,15 +160,17 @@
               <tr>
                 <td>方案</td>
                 <td colspan="3">
-                  <a-form-item v-if="type==='add'||type==='edit-salary'">
+                  <a-form-item v-if="type === 'add' || type === 'edit-salary'">
                     <a-upload
-                      v-decorator="['planUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                      v-decorator="[
+                        'planUrl',
+                        { rules: [{ required: true, message: '请上传方案' }] },
+                        { valuePropName: 'fileList', getValueFromEvent: normFile },
+                      ]"
                       name="file"
                       :action="uploadUrl"
                     >
-                      <a-button>
-                        <a-icon type="upload" />上传方案
-                      </a-button>
+                      <a-button> <a-icon type="upload" />上传方案 </a-button>
                     </a-upload>
                   </a-form-item>
                   <template v-else>
@@ -199,11 +220,11 @@
               <a-form-item>
                 <a-select
                   @change="department"
-                  style="width: 350px;"
+                  style="width: 350px"
                   :allowClear="true"
                   :disabled="isDisabled"
                   placeholder="请选择团建类别"
-                  v-decorator="['leagueType',{ rules: [{ required: true, message: '请选择团建类别' }] },]"
+                  v-decorator="['leagueType', { rules: [{ required: true, message: '请选择团建类别' }] }]"
                 >
                   <a-select-option :value="1">部门团建</a-select-option>
                   <a-select-option :value="2">公司团建</a-select-option>
@@ -220,61 +241,85 @@
                   :tree-data="treeData"
                   tree-checkable
                   search-placeholder="选择部门"
-                  :disabled="isDisabled||ment"
-                  :dropdownStyle="{ maxHeight: '300px'}"
+                  :disabled="isDisabled || ment"
+                  :dropdownStyle="{ maxHeight: '300px' }"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
             <td>开始时间</td>
-            <td style="width: 400px;">
-              <div style="display:flex;" v-if="!isDisabled">
+            <td style="width: 400px">
+              <div style="display: flex" v-if="!isDisabled">
                 <a-form-item>
                   <a-date-picker
-                    v-decorator="['s_begin_date',{initialValue:detail.beginTime ? moment(detail.beginTime) : undefined,rules: [{required: true,message: '请选择日期'}]}]"
+                    v-decorator="[
+                      's_begin_date',
+                      {
+                        initialValue: detail.beginTime ? moment(detail.beginTime) : undefined,
+                        rules: [{ required: true, message: '请选择日期' }],
+                      },
+                    ]"
                     @change="dateBeginPickerChange"
                   />
                 </a-form-item>
-                <a-form-item style="margin-left:10px;">
+                <a-form-item style="margin-left: 10px">
                   <a-time-picker
                     :minute-step="5"
                     :second-step="60"
-                    v-decorator="['s_begin_time',{initialValue:detail.beginTime ? moment(detail.beginTime) :undefined,rules: [{required: true,message: '请选择时间'}]}]"
+                    v-decorator="[
+                      's_begin_time',
+                      {
+                        initialValue: detail.beginTime ? moment(detail.beginTime) : undefined,
+                        rules: [{ required: true, message: '请选择时间' }],
+                      },
+                    ]"
                     @change="dateBeginTimeChange"
                   />
                 </a-form-item>
               </div>
-              <a-form-item v-else>{{detail.beginTime}}</a-form-item>
+              <a-form-item v-else>{{ detail.beginTime }}</a-form-item>
             </td>
             <td>结束时间</td>
-            <td style="width: 350px;">
-              <div style="display:flex;" v-if="!isDisabled">
+            <td style="width: 350px">
+              <div style="display: flex" v-if="!isDisabled">
                 <a-form-item>
                   <a-date-picker
-                    v-decorator="['s_end_date',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择日期'}]}]"
+                    v-decorator="[
+                      's_end_date',
+                      {
+                        initialValue: detail.endTime ? moment(detail.endTime) : undefined,
+                        rules: [{ required: true, message: '请选择日期' }],
+                      },
+                    ]"
                     @change="dateEndPickerChange"
                   />
                 </a-form-item>
-                <a-form-item style="margin-left:10px;">
+                <a-form-item style="margin-left: 10px">
                   <a-time-picker
                     :minute-step="5"
                     :second-step="60"
-                    v-decorator="['s_end_time',{initialValue:detail.endTime ? moment(detail.endTime) : undefined,rules: [{required: true,message: '请选择时间'}]}]"
+                    v-decorator="[
+                      's_end_time',
+                      {
+                        initialValue: detail.endTime ? moment(detail.endTime) : undefined,
+                        rules: [{ required: true, message: '请选择时间' }],
+                      },
+                    ]"
                     @change="dateEndTimeChange"
                   />
                 </a-form-item>
               </div>
-              <a-form-item v-else>{{detail.endTime}}</a-form-item>
+              <a-form-item v-else>{{ detail.endTime }}</a-form-item>
             </td>
           </tr>
           <tr>
             <td>时长</td>
             <td>
               <a-form-item>
-                <template
-                  v-if="duration.hour !== undefined"
-                >{{duration.hour + '小时'+duration.minute+'分钟'}}</template>
+                <template v-if="duration.hour !== undefined">{{
+                  duration.hour + '小时' + duration.minute + '分钟'
+                }}</template>
               </a-form-item>
             </td>
             <td>团建地点</td>
@@ -305,17 +350,19 @@
           <tr>
             <td>方案</td>
             <td colspan="3">
-              <a-form-item v-if="type==='add'||type==='edit-salary'">
+              <a-form-item v-if="type === 'add' || type === 'edit-salary'">
                 <a-upload
-                  v-decorator="['planUrl',{ rules: [{ required: true, message: '请上传方案' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                  v-decorator="[
+                    'planUrl',
+                    { rules: [{ required: true, message: '请上传方案' }] },
+                    { valuePropName: 'fileList', getValueFromEvent: normFile },
+                  ]"
                   :fileList="fileListl"
                   @change="handleChange1"
                   name="file"
                   :action="uploadUrl"
                 >
-                  <a-button>
-                    <a-icon type="upload" />上传方案
-                  </a-button>
+                  <a-button> <a-icon type="upload" />上传方案 </a-button>
                 </a-upload>
               </a-form-item>
               <template v-else>
@@ -462,7 +509,6 @@ export default {
     moment,
     init() {},
     elementChange(key, val) {
-      console.log(val)
       this[key] = val
     },
     scoreChange(type, event) {
@@ -488,7 +534,6 @@ export default {
         leagueId: this.record.id,
       }
       leagueBuilding_Detail(id).then((res) => {
-        // console.log(res)
         that.recordDetails = res.data
         that.fileList = res.data.annexList.map((item) => {
           return {
@@ -561,7 +606,6 @@ export default {
 
     //上传
     normFile(e) {
-      console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e
       }
@@ -600,7 +644,6 @@ export default {
       let timeData = moment(endTime).diff(moment(beginTime), 'minutes')
       that.duration.hour = parseInt(timeData / 60)
       that.duration.minute = parseInt(timeData % 60)
-      // console.log(that.duration.hour, that.duration.minute)
     },
     dateBeginPickerChange(date, dateStr) {
       let sDate = { ...this.sDate }
@@ -624,17 +667,14 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.isView) {
         that.form.resetFields() // 清空表
         that.visible = false
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
-            console.log(values)
             delete values.s_begin_date
             delete values.s_begin_time
             delete values.s_end_date
@@ -660,6 +700,7 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
+            that.spinning = true
             leagueBuilding_add(values)
               .then((res) => {
                 that.spinning = false
@@ -687,7 +728,6 @@ export default {
       this.visible = false
     },
     submitAction(opt) {
-      console.log(1231)
       let that = this
       let values = {
         approveId: this.record.id,
@@ -706,7 +746,6 @@ export default {
         .catch((err) => (that.spinning = false))
     },
     passAction() {
-      console.log('tongguo')
       this.submitAction({
         isAdopt: 0,
         // opinion: '通过',

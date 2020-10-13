@@ -2,18 +2,13 @@
   <!--公告管理 -->
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-input
-        placeholder="标题"
-        v-model="queryParam.title"
-        allowClear
-        style="width: 200px;margin-right:10px;"
-      />
+      <a-input placeholder="标题" v-model="queryParam.title" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
         v-if="activeKey === 0"
         placeholder="公告状态"
         v-model="queryParam.status"
         :allowClear="true"
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       >
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">通过</a-select-option>
@@ -22,22 +17,17 @@
         <a-select-option :value="5">已撤回</a-select-option>
         <a-select-option :value="6">已完结</a-select-option>
       </a-select>
-      <a-range-picker
-        @change="dateChange"
-        style="width:400px ;margin-right:10px;"
-        v-model="queryParam.rangeDate"
-      />
+      <a-range-picker @change="dateChange" style="width: 400px; margin-right: 10px" v-model="queryParam.rangeDate" />
       <a-button
         class="a-button"
         type="primary"
-        style="position: relative;top:-1px;"
+        style="position: relative; top: -1px"
         icon="search"
         @click="searchAction"
-      >查询</a-button>
-      <a-dropdown style="float:right;" v-if="$auth('human_Resources_notice:add')">
-        <a-button type="primary" @click="doAction('add',null)">
-          <a-icon type="plus" />新增
-        </a-button>
+        >查询</a-button
+      >
+      <a-dropdown style="float: right" v-if="$auth('human_Resources_notice:add')">
+        <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
       </a-dropdown>
     </div>
     <div class="main-wrapper">
@@ -61,72 +51,47 @@
         </div>
 
         <div slot="status" slot-scope="text, record">
-          <a
-            href="javascript:void(0)"
-            @click="approvalPreview(record)"
-          >{{ getleagueTypeText(text) }}</a>
+          <a href="javascript:void(0)" @click="approvalPreview(record)">{{ getleagueTypeText(text) }}</a>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
             <template v-if="$auth('human_Resources_notice:add') && record.status === 1">
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定撤回"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmWithdraw(record)"
-              >
+              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
             <template v-if="$auth('human_Resources_notice:add') && record.status === 2">
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定发布"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmRelease(record)"
-              >
+              <a-popconfirm title="是否确定发布" ok-text="确定" cancel-text="取消" @confirm="confirmRelease(record)">
                 <a type="primary">发布</a>
               </a-popconfirm>
             </template>
-            <template
-              v-if="$auth('human_Resources_notice:add') && record.status === 3||record.status === 5"
-            >
+            <template v-if="($auth('human_Resources_notice:add') && record.status === 3) || record.status === 5">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit-salary',record)">修改</a>
+              <a type="primary" @click="doAction('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定删除"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmDelete(record)"
-              >
+              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
             <template v-if="$auth('human_Resources_notice:add') && record.status === 4">
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否撤回"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="confirmWithdraw(record)"
-              >
+              <a-popconfirm title="是否撤回" ok-text="是" cancel-text="否" @confirm="confirmWithdraw(record)">
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
           </template>
 
-          <template v-if="activeKey === 1 && record.status === 1 ">
-            <a type="primary" @click="doAction('edit',record)">审核</a>
+          <template v-if="activeKey === 1 && record.status === 1">
+            <a type="primary" @click="doAction('edit', record)">审核</a>
           </template>
 
           <template v-if="activeKey === 2">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
@@ -306,7 +271,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

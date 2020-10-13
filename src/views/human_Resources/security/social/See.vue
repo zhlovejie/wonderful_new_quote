@@ -16,22 +16,18 @@
     </template>
 
     <a-spin :spinning="spinning">
-      <div class="search-wrapper" style="margin-bottom:10px;">
-        <a-input
-          placeholder="姓名"
-          v-model="queryParam.userName"
-          allowClear
-          style="width: 200px;margin-right:10px;"
-        />
+      <div class="search-wrapper" style="margin-bottom: 10px">
+        <a-input placeholder="姓名" v-model="queryParam.userName" allowClear style="width: 200px; margin-right: 10px" />
         <a-button
           class="a-button"
           type="primary"
-          style="position: relative;top:-1px;"
+          style="position: relative; top: -1px"
           icon="search"
           @click="searchActionsee"
-        >查询</a-button>
+          >查询</a-button
+        >
         <template>
-          <a-button style="float:right;" type="primary" @click="handleGo()">返回</a-button>
+          <a-button style="float: right" type="primary" @click="handleGo()">返回</a-button>
         </template>
       </div>
       <a-table
@@ -133,7 +129,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

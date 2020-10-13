@@ -4,30 +4,19 @@
       <a-form layout="inline" :form="form">
         <a-form-item>
           <a-button-group>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 2}"
-              @click="simpleSearch(2)"
-            >本周</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 3}"
-              @click="simpleSearch(3)"
-            >本月</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
-              @click="simpleSearch(1)"
-            >全部</a-button>
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+              >本周</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+              >本月</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
         <a-form-item v-show="show">
-          <a-select
-            style="width: 150px"
-            placeholder="审批状态"
-            v-model="approvalStatusSelect"
-            :allowClear="true"
-          >
+          <a-select style="width: 150px" placeholder="审批状态" v-model="approvalStatusSelect" :allowClear="true">
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
@@ -35,20 +24,18 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-input v-model="trainName" placeholder="培训名称" style="width:200px;" :allowClear="true" />
+          <a-input v-model="trainName" placeholder="培训名称" style="width: 200px" :allowClear="true" />
         </a-form-item>
         <a-form-item label="日期">
-          <a-range-picker v-model="sDate" style="width:280px;" />
+          <a-range-picker v-model="sDate" style="width: 280px" />
         </a-form-item>
         <a-form-item>
           <template>
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
         </a-form-item>
-        <a-dropdown style="float:right;" v-if="$auth('focus:add')">
-          <a-button type="primary" @click="toAdd('add',null)">
-            <a-icon type="plus" />新增
-          </a-button>
+        <a-dropdown style="float: right" v-if="$auth('focus:add')">
+          <a-button type="primary" @click="toAdd('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
       </a-form>
     </div>
@@ -76,67 +63,66 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="haveCheckFlag" slot-scope="text">
-            <span v-if="text==0">无</span>
-            <span v-if="text==1">有</span>
+            <span v-if="text == 0">无</span>
+            <span v-if="text == 1">有</span>
           </div>
           <div slot="status" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">通过</a>
-            <a @click="handleClick(record)" v-if="text==3">不通过</a>
-            <a @click="handleClick(record)" v-if="text==4">已撤回</a>
+            <a @click="handleClick(record)" v-if="text == 1">待审批</a>
+            <a @click="handleClick(record)" v-if="text == 2">通过</a>
+            <a @click="handleClick(record)" v-if="text == 3">不通过</a>
+            <a @click="handleClick(record)" v-if="text == 4">已撤回</a>
           </div>
 
           <span slot="action" slot-scope="text, record">
-            <template v-if="audit==0||audit==2">
-              <a type="primary" @click="toAdd('view',record)">查看</a>
+            <template v-if="audit == 0 || audit == 2">
+              <a type="primary" @click="toAdd('view', record)">查看</a>
             </template>
             <template
-              v-if=" $auth('focus:Withdraw')&&audit==0&&record.status === 1 && +record.createdId  === +userInfo.id"
+              v-if="$auth('focus:Withdraw') && audit == 0 && record.status === 1 && +record.createdId === +userInfo.id"
             >
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定撤回"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmWithdraw(record)"
-              >
+              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
                 <a type="primary">撤回</a>
               </a-popconfirm>
             </template>
             <template
-              v-if=" $auth('focus:meetingEventId')&&audit==0 &&record.status == 2 && record.onlineFlag==0 && +record.createdId  === +userInfo.id"
+              v-if="
+                $auth('focus:meetingEventId') &&
+                audit == 0 &&
+                record.status == 2 &&
+                record.onlineFlag == 0 &&
+                +record.createdId === +userInfo.id
+              "
             >
-              <template v-if=" record.meetingEventId">
+              <template v-if="record.meetingEventId">
                 <a-divider type="vertical" />
-                <a type="primary" @click="doAction('edit',record)">修改会议事件</a>
+                <a type="primary" @click="doAction('edit', record)">修改会议事件</a>
               </template>
               <template v-else>
                 <a-divider type="vertical" />
-                <a type="primary" @click="doAction('add',record)">会议事件</a>
+                <a type="primary" @click="doAction('add', record)">会议事件</a>
               </template>
 
               <template v-if="record.meetingNum">
                 <a-divider type="vertical" />
-                <a type="primary" @click="meeting('view',record)">会议记录</a>
+                <a type="primary" @click="meeting('view', record)">会议记录</a>
               </template>
             </template>
             <template
-              v-if="$auth('focus:edit-salary')&&audit==0&& record.status === 3||record.status === 4&& +record.createdId  === +userInfo.id "
+              v-if="
+                ($auth('focus:edit-salary') && audit == 0 && record.status === 3) ||
+                (record.status === 4 && +record.createdId === +userInfo.id)
+              "
             >
               <a-divider type="vertical" />
-              <a type="primary" @click="toAdd('edit-salary',record)">修改</a>
+              <a type="primary" @click="toAdd('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否确定删除"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmDelete(record)"
-              >
+              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
-            <template v-if="$auth('focus:examine')&&audit==1&&record.status === 1 ">
-              <a type="primary" @click="toAdd('examine',record)">审核</a>
+            <template v-if="$auth('focus:examine') && audit == 1 && record.status === 1">
+              <a type="primary" @click="toAdd('examine', record)">审核</a>
             </template>
           </span>
         </s-table>
@@ -378,7 +364,6 @@ export default {
 
     simpleSearch(type) {
       this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-      console.log(type)
       this.search()
     },
   },

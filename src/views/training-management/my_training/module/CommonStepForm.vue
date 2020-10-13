@@ -150,9 +150,7 @@ export default {
     },
 
     nextStep(data) {
-      console.log(data)
       this.queryonedata = { ...this.queryonedata, ...data }
-      console.log(this.queryonedata)
       if (this.currentTab < 4) {
         this.currentTab = this.currentTab + 1
       }
@@ -183,7 +181,6 @@ export default {
     },
     // handler
     prevStep(e) {
-      // console.log('点击上一步，相当于修改操作,带过来的参数', e)
       if (this.currentTab > 0) {
         this.currentTab -= 1
       }

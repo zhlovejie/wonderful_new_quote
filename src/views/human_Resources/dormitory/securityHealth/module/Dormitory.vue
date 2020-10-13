@@ -14,24 +14,24 @@
         <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
       </template>
     </template>
-    <h1 style=" text-align: center;">员工宿舍检查表</h1>
-    <span style="  margin-right: 100px;">
+    <h1 style="text-align: center">员工宿舍检查表</h1>
+    <span style="margin-right: 100px">
       <strong>检查人:</strong>
-      {{this.securityHealthDetail.inspectName}}
+      {{ this.securityHealthDetail.inspectName }}
     </span>
     <span>
       <strong>检查时间 :</strong>
-      {{this.securityHealthDetail.inspectTime}}
+      {{ this.securityHealthDetail.inspectTime }}
     </span>
-    <a-spin :spinning="spinning" style="margin-top: 10px;">
+    <a-spin :spinning="spinning" style="margin-top: 10px">
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <th style="width:50px">序号</th>
+            <th style="width: 50px">序号</th>
             <th>项目</th>
             <th>检查内容</th>
             <th>
-              {{this.securityHealthDetail.roomCode}}
+              {{ this.securityHealthDetail.roomCode }}
               <br />检查情况
             </th>
           </tr>
@@ -64,7 +64,10 @@
             <td>
               <a-form-item>
                 <a-radio-group
-                  v-decorator="['electricPrivateConnection', { rules: [{ required: true, message: '请选择你的评价' }] }]"
+                  v-decorator="[
+                    'electricPrivateConnection',
+                    { rules: [{ required: true, message: '请选择你的评价' }] },
+                  ]"
                   :disabled="isDisabled"
                 >
                   <a-radio value="1">优秀</a-radio>
@@ -233,7 +236,6 @@ export default {
 
     fillData() {
       securityHealth_Detail({ id: this.record.id }).then((res) => {
-        console.log(res.data)
         this.securityHealthDetail = res.data.data
         if (this.type === 'see' || this.type === 'edit-salary') {
           this.form.setFieldsValue({
@@ -251,7 +253,6 @@ export default {
     },
 
     handleOk() {
-      console.log('你这是要提交')
       let that = this
       if (that.isView) {
         that.form.resetFields() // 清空表
@@ -263,7 +264,6 @@ export default {
             values.id = this.record.id
             securityHealth_List_update(values).then((res) => {
               that.spinning = false
-              console.log(res)
               that.form.resetFields() // 清空表
               this.haveProcess = []
               that.visible = false

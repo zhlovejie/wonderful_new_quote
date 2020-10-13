@@ -22,7 +22,7 @@
             <td>上级</td>
             <td colspan="3">
               <a-form-item>
-                <a-input style="width:300px;" disabled v-model="parentId" />
+                <a-input style="width: 300px" disabled v-model="parentId" />
               </a-form-item>
             </td>
           </tr>
@@ -31,10 +31,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入文件名称"
-                  v-decorator="['fileName', {rules: [{required: true,message: '输入文件名称!',},
-             ]}]"
+                  v-decorator="['fileName', { rules: [{ required: true, message: '输入文件名称!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -44,13 +43,17 @@
             <td colspan="3">
               <a-form-item>
                 <a-upload
-                  v-decorator="['fileUrl',{ rules: [{ required: true, message: '请上传文件' }] },{valuePropName: 'fileList',getValueFromEvent: normFile,},]"
+                  v-decorator="[
+                    'fileUrl',
+                    { rules: [{ required: true, message: '请上传文件' }] },
+                    { valuePropName: 'fileList', getValueFromEvent: normFile },
+                  ]"
                   name="file"
                   :fileList="fileList"
                   @change="handleChange"
                   :action="uploadUrl"
                 >
-                  <a-button style="width:300px;">
+                  <a-button style="width: 300px">
                     <a-icon type="upload" />
                   </a-button>
                 </a-upload>
@@ -62,7 +65,7 @@
             <td colspan="4">
               <a-form-item>
                 <a-textarea
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="备注信息"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '请输入备注信息' }] }]"
@@ -129,7 +132,6 @@ export default {
   created() {},
   methods: {
     query(type, record) {
-      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -150,7 +152,6 @@ export default {
       const that = this
       that.$nextTick(() => {
         getFolderDetail({ fileId: that.record.id }).then((res) => {
-          console.log(res.data)
           that.form.setFieldsValue({
             fileName: res.data.fileName,
             fileUrl: res.data.fileUrl,
@@ -159,7 +160,6 @@ export default {
           that.addId = res.data.folderId
           that.parentId = res.data.folderName
           let arr = res.data.fileUrl.split('/')
-          console.log(arr)
           that.fileList.push({
             uid: '-1',
             name: arr[arr.length - 1],
@@ -171,12 +171,10 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary' || that.type === 'folder') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            console.log(values)
             if (that.type === 'edit-salary') {
               values.id = this.record.id
             }
@@ -211,8 +209,6 @@ export default {
     },
     //上传
     normFile(e) {
-      debugger
-      console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e
       }

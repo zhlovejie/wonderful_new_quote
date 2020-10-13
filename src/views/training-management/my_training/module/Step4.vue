@@ -6,9 +6,9 @@
     <div>
       <a-form class="form wdf-form">
         <table
-          v-if="type1==='view'&&trainType1===1"
+          v-if="type1 === 'view' && trainType1 === 1"
           class="custom-table custom-table-border"
-          style="margin-top:20px"
+          style="margin-top: 20px"
         >
           <tr>
             <th>
@@ -18,8 +18,8 @@
               <b>操作</b>
             </th>
           </tr>
-          <tr v-for="(item,index) in goodsList " :key="index">
-            <td>{{item.fileName}}</td>
+          <tr v-for="(item, index) in goodsList" :key="index">
+            <td>{{ item.fileName }}</td>
             <td>
               <a class="ant-dropdown-link" @click="delete_list(item.trainUrl)">查看</a>
               <a-divider type="vertical" />
@@ -31,7 +31,7 @@
             </td>
           </tr>
         </table>
-        <table class="custom-table custom-table-border" v-if="type1==='view'&&trainType1===2">
+        <table class="custom-table custom-table-border" v-if="type1 === 'view' && trainType1 === 2">
           <template>
             <tr>
               <th>
@@ -41,13 +41,13 @@
                 <b>操作</b>
               </th>
             </tr>
-            <tr v-for="(item,index) in haveProcess " :key="index">
-              <td>{{item.folderName}}</td>
+            <tr v-for="(item, index) in haveProcess" :key="index">
+              <td>{{ item.folderName }}</td>
               <td></td>
             </tr>
           </template>
         </table>
-        <table class="custom-table custom-table-border" v-if="type1==='examine'">
+        <table class="custom-table custom-table-border" v-if="type1 === 'examine'">
           <template>
             <tr>
               <th>
@@ -57,13 +57,13 @@
                 <b>操作</b>
               </th>
             </tr>
-            <tr v-for="(item,index) in readHistoryList " :key="index">
+            <tr v-for="(item, index) in readHistoryList" :key="index">
               <td>
-                <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">{{item.fileName}}</a>
+                <a class="ant-dropdown-link" @click="delete_list(item.fileUrl)">{{ item.fileName }}</a>
               </td>
               <td>
-                <template v-if="item.readFlag===0">
-                  <a class="ant-dropdown-link" @click="delete_lists(item.id,item.fileUrl)">处理</a>
+                <template v-if="item.readFlag === 0">
+                  <a class="ant-dropdown-link" @click="delete_lists(item.id, item.fileUrl)">处理</a>
                 </template>
                 <template v-else>
                   <span class="ant-dropdown-link">已阅</span>
@@ -76,7 +76,7 @@
         <filesView ref="xdocViews" @filesV="serve" />
         <div class="btns-grop">
           <template>
-            <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+            <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
             <a-button type="primary" @click="nextStep">退出</a-button>
           </template>
         </div>
@@ -147,7 +147,6 @@ export default {
     this.type1 = this.type
     this.trainId1 = this.trainId
     this.trainType1 = this.trainType
-    console.log(this.trainType1)
     if (this.type1 === 'view') {
       this.isSee = true
     }
@@ -166,9 +165,7 @@ export default {
         this.goodsList = qt.fileList
       }
       if (this.type1 === 'examine') {
-        // this.readHistoryList = qt.readHistoryList
         meetinglistMyFileWithoutDetail({ trainId: this.trainId1 }).then((res) => {
-          console.log(res.data)
           this.readHistoryList = res.data
         })
       }
@@ -176,7 +173,6 @@ export default {
 
     serve() {
       meetinglistMyFileWithoutDetail({ trainId: this.trainId1 }).then((res) => {
-        console.log(res.data)
         this.readHistoryList = res.data
       })
     },

@@ -26,9 +26,11 @@
                   show-time
                   placeholder="日期"
                   format="YYYY-MM"
-                  style="width: 300px;"
-                  v-decorator="['surfaceDate', {initialValue:moment(),rules: [{required: true,message: '输入本月度数!',},
-             ]}]"
+                  style="width: 300px"
+                  v-decorator="[
+                    'surfaceDate',
+                    { initialValue: moment(), rules: [{ required: true, message: '输入本月度数!' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -40,15 +42,12 @@
                 <a-select
                   placeholder="房间号"
                   :allowClear="true"
-                  style="width:300px;"
-                  v-decorator="['roomId', {rules: [{required: true,message: '输入本月度数!',},
-             ]}]"
+                  style="width: 300px"
+                  v-decorator="['roomId', { rules: [{ required: true, message: '输入本月度数!' }] }]"
                 >
-                  <a-select-option
-                    v-for="item in postSelectDataSource"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.roomCode}}</a-select-option>
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.roomCode
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -58,10 +57,9 @@
             <td colspan="3">
               <a-form-item>
                 <a-input
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="输入本月度数"
-                  v-decorator="['thisMonthDegree', {rules: [{required: true,message: '输入本月度数!',},
-             ]}]"
+                  v-decorator="['thisMonthDegree', { rules: [{ required: true, message: '输入本月度数!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -100,7 +98,6 @@ export default {
   methods: {
     moment: moment,
     query(type, record) {
-      console.log(type, record)
       this.visible = true
       this.type = type
       this.record = record
@@ -110,17 +107,15 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
 
       that.form.validateFields((err, values) => {
         if (!err) {
-          that.spinning = true
           values.surfaceDate = moment(values.surfaceDate).format('YYYY-MM')
+          that.spinning = true
           room_Add(values)
             .then((res) => {
               that.spinning = false
-              console.log(res)
               that.form.resetFields() // 清空表
               that.visible = false
               that.$message.info(res.msg)

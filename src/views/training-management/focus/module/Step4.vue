@@ -1,14 +1,14 @@
 <template>
   <div class="content-wrap">
-    <a-row type="flex" style="margin-bottom:30px">
+    <a-row type="flex" style="margin-bottom: 30px">
       <a-col :span="24" class="basic-tit" justify="center" align="middle">培训文件</a-col>
     </a-row>
     <div>
       <a-form class="form wdf-form">
         <template v-if="!isSee">
-          <a-button style="float:right;" type="primary" icon="plus" @click="applyFor('add',null)">新增</a-button>
+          <a-button style="float: right" type="primary" icon="plus" @click="applyFor('add', null)">新增</a-button>
         </template>
-        <table class="custom-table custom-table-border" style="margin-top:20px">
+        <table class="custom-table custom-table-border" style="margin-top: 20px">
           <tr>
             <th>
               <b>文件名称</b>
@@ -17,8 +17,8 @@
               <b>操作</b>
             </th>
           </tr>
-          <tr v-for="(item,index) in goodsList " :key="index">
-            <td>{{item.fileName}}</td>
+          <tr v-for="(item, index) in goodsList" :key="index">
+            <td>{{ item.fileName }}</td>
             <td>
               <a class="ant-dropdown-link" @click="delete_list(item.trainUrl)">查看</a>
               <a-divider type="vertical" />
@@ -35,19 +35,15 @@
         <XdocView ref="xdocView" />
         <div class="btns-grop">
           <template v-if="isApproval">
-            <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+            <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
             <a-button class="a-button" type="primary" icon="close" @click="noPassAction()">不通过</a-button>
             <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
           </template>
           <template v-else>
-            <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+            <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
             <a-button v-if="!isSee" type="primary" :loading="spinning" @click="nextStep">保存</a-button>
-            <a-button
-              v-if="isSee&&queryonedata1.onlineFlag===1"
-              type="primary"
-              @click="nextStep"
-            >下一步</a-button>
-            <a-button v-if="isSee&&queryonedata1.onlineFlag===0" type="primary" @click="nextStep">退出</a-button>
+            <a-button v-if="isSee && queryonedata1.onlineFlag === 1" type="primary" @click="nextStep">下一步</a-button>
+            <a-button v-if="isSee && queryonedata1.onlineFlag === 0" type="primary" @click="nextStep">退出</a-button>
           </template>
         </div>
       </a-form>
@@ -182,7 +178,6 @@ export default {
         isAdopt: opt.isAdopt,
         opinion: opt.opinion,
       }
-      console.log(values)
       that.spinning = true
       dispersedExamine(values)
         .then((res) => {

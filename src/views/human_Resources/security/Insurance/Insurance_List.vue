@@ -1,29 +1,26 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <a-select
-        style="width:200px; margin-right: 10px;"
+        style="width: 200px; margin-right: 10px"
         v-model="queryParam.departmentId"
-        @change=" depChangeHandler"
+        :allowClear="true"
+        @change="depChangeHandler"
         placeholder="请选择部门"
       >
         <a-select-option :value="undefined">请选择部门</a-select-option>
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
+        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
-      <a-select placeholder="选择岗位" v-model="stationId" :allowClear="true" style="width: 200px">
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.stationName}}</a-select-option>
+      <a-select placeholder="选择岗位" v-model="queryParam.stationId" :allowClear="true" style="width: 200px">
+        <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+          item.stationName
+        }}</a-select-option>
       </a-select>
-      <a-button style="margin-left:10px;" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
       <template v-if="$auth('Insurance:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -43,18 +40,13 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template>
-              <a @click="handle('edit',record)">查看</a>
+              <a @click="handle('edit', record)">查看</a>
             </template>
-            <template v-if="$auth('Insurance:add')&&+record.createdId  === +userInfo.id">
+            <template v-if="$auth('Insurance:add') && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a @click="handle('edit-salary',record)">修改</a>
+              <a @click="handle('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否删除"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="deleteRoleInfo(record)"
-              >
+              <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="deleteRoleInfo(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
@@ -159,10 +151,8 @@ export default {
       ],
       // 初始化加载 必须为 Promise 对象
       loadData: (parameter) => {
-        // console.log('页面开始加载数据。。。', parameter, this.queryParam)
         return securityInsurance_List(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
-          console.log(res.data)
         })
       },
       selectedRowKeys: [],
@@ -213,7 +203,6 @@ export default {
     },
 
     handle(type, record) {
-      console.log(this.userInfo.id)
       this.$refs.addForm.query(type, record)
       //   this.$refs.modal.add()
     },

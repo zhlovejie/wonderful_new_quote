@@ -114,7 +114,7 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { other_add, other_withdraw } from '@/api/bonus_management'
+import { other_add, other_withdraw, other_del } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -238,7 +238,7 @@ export default {
     // 删除
     confirmDelete(record) {
       let that = this
-      year_annual_addAnddel(`id=${record.id}`).then((res) => {
+      other_del(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)

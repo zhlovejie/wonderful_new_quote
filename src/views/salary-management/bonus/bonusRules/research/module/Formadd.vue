@@ -173,6 +173,7 @@ export default {
       postSelectDataSource: [], //人员
       haveProcess: [],
       productId: '',
+      productType: '', //常规非常规
       depart: '',
       _d: {
         departmentId: '',
@@ -223,6 +224,7 @@ export default {
     //产品代码组件返回值
     handlerCustomerSelected(record) {
       this.productId = record.id
+      this.productType = record.productType
       this.form.setFieldsValue({
         productCode: record.productModel,
         productName: record.productName,
@@ -242,6 +244,9 @@ export default {
       this.record = record
       if (type === 'edit-salary') {
         this.fillData()
+        getDevisionList().then((res) => {
+          this.departmentList = res.data
+        })
       }
     },
 
@@ -252,6 +257,7 @@ export default {
           this.productName = res.data.productName
           this.productCode = res.data.productCode
           this.haveProcess = res.data.oaSalaryBounsPercentageRuleDetails
+          this.productType = res.data.productType
         })
       })
     },
@@ -260,7 +266,6 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             let arr = {}
@@ -270,6 +275,7 @@ export default {
             arr.productCode = values.productCode
             arr.productName = values.productName
             arr.productId = that.productId
+            arr.productType = that.productType
             arr.oaSalaryBounsPercentageRuleDetails = that.haveProcess.map((item) => {
               return {
                 departmentId: item.departmentId,
@@ -277,6 +283,7 @@ export default {
                 bounsToilt: item.bounsToilt,
               }
             })
+            that.spinning = true
             oaSalaryInfo_addAndUpdate(arr)
               .then((res) => {
                 that.spinning = false
@@ -311,9 +318,9 @@ export default {
       if (!Array.isArray(selectedArray)) return
       selectedArray.map((_ppid) => {
         if (!_ppid) return
-        let target = that.haveProcess.find((p) => p.id === _ppid)
+        let target = that.haveProcess.find((p) => p.userId == _ppid)
         if (!target) {
-          let _p = that.postSelectDataSource.find((_p) => _p.id === _ppid)
+          let _p = that.postSelectDataSource.find((_p) => _p.id == _ppid)
           _p.userId = _p.id
           _p.trueName = _p.trueName
           _p.bounsToilt = undefined
@@ -334,12 +341,10 @@ export default {
     confirm(cpId, index) {
       // 确认删除事件
       this.haveProcess.splice(index, 1)
-      console.log(this.haveProcess)
       let arr = []
       this.haveProcess.map((item) => {
-        arr.push(item.id)
+        arr.push(item.userId)
       })
-      console.log(this.haveProcess)
       this.form.setFieldsValue({
         authTrainFolderBoList: arr,
       })

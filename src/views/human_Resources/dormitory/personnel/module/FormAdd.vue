@@ -23,16 +23,14 @@
             <td colspan="3">
               <a-form-item>
                 <a-select
-                  style="width:300px; margin-right: 10px;"
-                  v-decorator="['deptId',  {rules: [{required: true, message: '请选择部门',}]}]"
-                  @change=" depChangeHandler"
+                  style="width: 300px; margin-right: 10px"
+                  v-decorator="['deptId', { rules: [{ required: true, message: '请选择部门' }] }]"
+                  @change="depChangeHandler"
                   placeholder="请选择部门"
                 >
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -43,15 +41,13 @@
               <a-form-item>
                 <a-select
                   placeholder="请选择人员"
-                  v-decorator="['userId',  {rules: [{required: true, message: '请选择人员',}]}]"
+                  v-decorator="['userId', { rules: [{ required: true, message: '请选择人员' }] }]"
                   :allowClear="true"
                   style="width: 300px"
                 >
-                  <a-select-option
-                    v-for="item in postSelectDataSource"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.trueName}}</a-select-option>
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -62,15 +58,13 @@
               <a-form-item>
                 <a-select
                   placeholder="请选择房间号"
-                  v-decorator="['roomId',  {rules: [{required: true, message: '请选择房间号',}]}]"
+                  v-decorator="['roomId', { rules: [{ required: true, message: '请选择房间号' }] }]"
                   :allowClear="true"
                   style="width: 300px"
                 >
-                  <a-select-option
-                    v-for="item in RoomNumber"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.roomCode}}</a-select-option>
+                  <a-select-option v-for="item in RoomNumber" :key="item.id" :value="item.id">{{
+                    item.roomCode
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -81,8 +75,8 @@
               <a-form-item>
                 <a-date-picker
                   show-time
-                  style="width:300px;"
-                  v-decorator="['checkInTime',  {rules: [{required: true, message: '请选择日期！',}]}]"
+                  style="width: 300px"
+                  v-decorator="['checkInTime', { rules: [{ required: true, message: '请选择日期！' }] }]"
                 />
               </a-form-item>
             </td>
@@ -92,7 +86,7 @@
             <td colspan="3">
               <a-form-item>
                 <a-textarea
-                  style="width:300px;"
+                  style="width: 300px"
                   placeholder="请输入备注"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
@@ -180,13 +174,13 @@ export default {
     handleOk() {
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.checkInTime = moment(values.checkInTime).format('YYYY-MM-DD HH:mm:ss')
             if (that.type !== 'add') {
               values.id = this.record.id
             }
+            that.spinning = true
             personnel_Add(values)
               .then((res) => {
                 that.spinning = false

@@ -9,14 +9,9 @@
         <a-col :span="6"></a-col>
         <a-col :span="12">
           <template v-if="!isSee">
-            <a-button
-              style="float:right;"
-              type="primary"
-              icon="plus"
-              @click="applyFor('add',null)"
-            >新增</a-button>
+            <a-button style="float: right" type="primary" icon="plus" @click="applyFor('add', null)">新增</a-button>
           </template>
-          <table class="custom-table custom-table-border" style="margin-top:20px">
+          <table class="custom-table custom-table-border" style="margin-top: 20px">
             <tr>
               <th>
                 <b>文件名称</b>
@@ -25,8 +20,8 @@
                 <b>操作</b>
               </th>
             </tr>
-            <tr v-for="(item,index) in goodsList " :key="index">
-              <td>{{item.name}}</td>
+            <tr v-for="(item, index) in goodsList" :key="index">
+              <td>{{ item.name }}</td>
               <td>
                 <a class="ant-dropdown-link" @click="delete_list(item.url)">查看</a>
                 <a-divider type="vertical" />
@@ -43,7 +38,7 @@
 
       <a-form class="form wdf-form">
         <a-form-item class="btns-grop" style="border-left: none">
-          <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
+          <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
           <template v-if="!isSee">
             <a-button type="primary" :loading="spinning" @click="nextStep()">保存</a-button>
           </template>
@@ -129,12 +124,13 @@ export default {
     // 点击下一步
     nextStep(status) {
       const that = this
-      that.spinning = true
+
       let params = {
         logisticsGoodsContracts: that.goodsList,
       }
       let valuer = { ...that.queryonedata, ...params }
       if (that.goodsList.length > 0) {
+        that.spinning = true
         logisticsPreservation(valuer).then((res) => {
           if (res.code === 200) {
             that.spinning = false

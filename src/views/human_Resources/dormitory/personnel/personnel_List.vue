@@ -1,40 +1,26 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-input
-        placeholder="房间号"
-        v-model="queryParam.roomCode"
-        allowClear
-        style="width: 200px;margin-right:10px;"
-      />
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+      <a-input placeholder="房间号" v-model="queryParam.roomCode" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
-        style="width:200px; margin-right: 10px;"
+        style="width: 200px; margin-right: 10px"
         v-model="queryParam.deptId"
         :allowClear="true"
-        @change=" depChangeHandler"
+        @change="depChangeHandler"
         placeholder="请选择部门"
       >
-        <a-select-option
-          v-for="item in departmentList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
+        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
-      <a-select
-        placeholder="人员"
-        v-model="queryParam.userId"
-        :allowClear="true"
-        style="width: 200px"
-      >
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.trueName}}</a-select-option>
+      <a-select placeholder="人员" v-model="queryParam.userId" :allowClear="true" style="width: 200px">
+        <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+          item.trueName
+        }}</a-select-option>
       </a-select>
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
       <template v-if="$auth('personnel:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -51,23 +37,18 @@
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('personnel:add')&& record.status===0">
-              <a-popconfirm title="是否退房" ok-text="是" cancel-text="否" @confirm="Check (record)">
+            <template v-if="$auth('personnel:add') && record.status === 0">
+              <a-popconfirm title="是否退房" ok-text="是" cancel-text="否" @confirm="Check(record)">
                 <a type="primary">退房</a>
               </a-popconfirm>
             </template>
             <template>
-              <template v-if="$auth('personnel:add')&&record.status===0">
+              <template v-if="$auth('personnel:add') && record.status === 0">
                 <a-divider type="vertical" />
-                <a @click="handle('edit-salary',record)">修改</a>
+                <a @click="handle('edit-salary', record)">修改</a>
               </template>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否删除"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="deleteRoleInfo(record)"
-              >
+              <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="deleteRoleInfo(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
@@ -213,7 +194,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
@@ -237,7 +217,6 @@ export default {
     },
     //退房
     Check(record) {
-      console.log(record)
       personnel_Check({ id: record.id }).then((res) => {
         if (res.code === 200) {
           this.searchAction()
@@ -250,7 +229,6 @@ export default {
     // 删除
     deleteRoleInfo(record) {
       let that = this
-      console.log(record)
       personnel_delete({ id: record.id }).then((res) => {
         if (res.code === 200) {
           this.searchAction()

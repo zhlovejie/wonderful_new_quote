@@ -1,26 +1,19 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-month-picker placeholder="日期" @change="onChange" style="width: 200px ;margin-right:10px;" />
-      <a-select
-        placeholder="房间号"
-        v-model="queryParam.roomCode"
-        :allowClear="true"
-        style="width: 200px "
-      >
-        <a-select-option
-          v-for="item in postSelectDataSource"
-          :key="item.id"
-          :value="item.roomCode"
-        >{{item.roomCode}}</a-select-option>
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+      <a-month-picker placeholder="日期" @change="onChange" style="width: 200px; margin-right: 10px" />
+      <a-select placeholder="房间号" v-model="queryParam.roomCode" :allowClear="true" style="width: 200px">
+        <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.roomCode">{{
+          item.roomCode
+        }}</a-select-option>
       </a-select>
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
-      <a-button style="margin-left:10px;" type="primary" @click="download()">下载</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="download()">下载</a-button>
       <template v-if="$auth('room:cost')">
-        <a-button style="float:right; margin-left:10px;" type="primary" @click="configures()">费用设置</a-button>
+        <a-button style="float: right; margin-left: 10px" type="primary" @click="configures()">费用设置</a-button>
       </template>
       <template v-if="$auth('room:add')">
-        <a-button style="float:right  " type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -177,7 +170,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

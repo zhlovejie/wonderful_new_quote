@@ -710,15 +710,13 @@
             <XdocView ref="xdocView" />
           </a-tab-pane>
           <a-tab-pane key="4" tab="证件信息">
-            <h1>普通证件</h1>
+            <h1>普通证件 <a-button type="link" @click="gaoPaiYiDevicesClickHandler"> 拍照上传 </a-button></h1>
             <UploadP ref="normalCard" :msgId="certificateList" :name="type" />
-
-            <a-button @click="gaoPaiYiDevicesClickHandler">拍照上传</a-button>
-
+            <!-- <a-button @click="gaoPaiYiDevicesClickHandler">拍照上传</a-button> -->
             <GaoPaiYiDevices ref="gaoPaiYiDevices" @change="gaoPaiYiDevicesChange" />
-            <h1>专业证件</h1>
+            <h1>专业证件 <a-button type="link" @click="gaoPaiYiDevicesClickZhuanye"> 拍照上传 </a-button></h1>
             <UploadZ ref="normalUpload" :msgId="specialList" :name="type" />
-            <a-button @click="gaoPaiYiDevicesClickZhuanye">拍照上传</a-button>
+            <!-- <a-button @click="gaoPaiYiDevicesClickZhuanye">拍照上传</a-button>  -->
           </a-tab-pane>
         </a-tabs>
       </a-form>
@@ -1453,28 +1451,28 @@ export default {
       let { type, url, data } = result
       //#处理自己的逻辑
       //#处理自己的逻辑END
-      if (type==='photo'){
+      if (type === 'photo') {
         const file = result.url.split('/')
-      const fileName = file[file.length - 1]
-      if (this.fileTypes===2){
+        const fileName = file[file.length - 1]
+        if (this.fileTypes === 2) {
           this.certificateList.push({
-        uid: uuid(),
-        name: '1',
-        fileName: fileName,
-        status: 'done',
-        fileType: this.fileTypes,
-        url: result.url,
-      })
-      }else{
-            this.specialList.push({
-        uid: uuid(),
-        name: '1',
-        fileName: fileName,
-        status: 'done',
-        fileType: this.fileTypes,
-        url: result.url,
-      })
-      }
+            uid: uuid(),
+            name: '1',
+            fileName: fileName,
+            status: 'done',
+            fileType: this.fileTypes,
+            url: result.url,
+          })
+        } else {
+          this.specialList.push({
+            uid: uuid(),
+            name: '1',
+            fileName: fileName,
+            status: 'done',
+            fileType: this.fileTypes,
+            url: result.url,
+          })
+        }
       }
       //关闭高拍仪
       this.$refs.gaoPaiYiDevices.close()

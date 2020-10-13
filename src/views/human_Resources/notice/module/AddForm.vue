@@ -10,12 +10,7 @@
   >
     <template slot="footer">
       <template v-if="isApproval">
-        <a-button
-          class="a-button"
-          type="primary"
-          icon="close"
-          @click="noPassAction(recordDetails)"
-        >不通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
       </template>
       <template v-else>
@@ -73,7 +68,7 @@
                   v-decorator="['deptId']"
                   style="width: 100%"
                   :tree-data="treeData"
-                  :dropdownStyle="{ maxHeight: '300px'}"
+                  :dropdownStyle="{ maxHeight: '300px' }"
                   tree-checkable
                   :show-checked-strategy="SHOW_PARENT"
                   search-placeholder="Please select"
@@ -177,7 +172,6 @@ export default {
       queue.push(task1)
     },
     elementChange(key, val) {
-      console.log(val)
       this[key] = val
     },
     scoreChange(type, event) {
@@ -212,14 +206,12 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.isView) {
         that.form.resetFields() // 清空表
         that.visible = false
         return
       } else if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.deptId = values.deptId.toString()
@@ -227,10 +219,10 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = that.recordDetails.id
             }
+            that.spinning = true
             NoticeAdd(values)
               .then((res) => {
                 that.spinning = false
-                console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
@@ -257,7 +249,6 @@ export default {
         isAdopt: opt.isAdopt,
         opinion: opt.opinion,
       }
-      console.log(values)
       that.spinning = true
       NoticeApproval(values)
         .then((res) => {
@@ -279,7 +270,6 @@ export default {
       let that = this
       //that.opinion = ''
       that.$refs.approval.query()
-      console.log(that.$refs.approval.query())
     },
     opinionChange(opinion) {
       //审批意见

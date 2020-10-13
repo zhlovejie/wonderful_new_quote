@@ -1,24 +1,14 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-input
-        placeholder="房间号"
-        v-model="queryParam.roomCode"
-        allowClear
-        style="width: 200px;margin-right:10px;"
-      />
-      <a-input
-        placeholder="空床位"
-        v-model="queryParam.emptyBed"
-        allowClear
-        style="width: 200px;margin-right:10px;"
-      />
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction">查询</a-button>
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+      <a-input placeholder="房间号" v-model="queryParam.roomCode" allowClear style="width: 200px; margin-right: 10px" />
+      <a-input placeholder="空床位" v-model="queryParam.emptyBed" allowClear style="width: 200px; margin-right: 10px" />
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
       <template v-if="$auth('electricity:Check')">
-        <a-button style="margin-left:10px;" type="primary" @click="Occupancys()">入住情况</a-button>
+        <a-button style="margin-left: 10px" type="primary" @click="Occupancys()">入住情况</a-button>
       </template>
       <template v-if="$auth('electricity:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handle('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -35,15 +25,10 @@
             <span>{{ index + 1 }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('electricity:add')&&+record.createdId">
-              <a @click=" handle('edit-salary',record)">修改</a>
+            <template v-if="$auth('electricity:add') && +record.createdId">
+              <a @click="handle('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="是否删除"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="deleteRoleInfo(record)"
-              >
+              <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="deleteRoleInfo(record)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
@@ -191,7 +176,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      // console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
@@ -205,7 +189,6 @@ export default {
     },
     //打开入住情况
     Occupancys() {
-      console.log(12312)
       this.$refs.occupancy.query()
     },
     handle(type, record) {

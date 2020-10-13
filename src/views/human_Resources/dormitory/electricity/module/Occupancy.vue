@@ -19,22 +19,22 @@
       <template>
         <a-card class="fl" v-for="item in recordDetails" :key="item.roomCode">
           <div>
-            <span class="title">{{item.roomCode}}</span>
-            <template v-if="item.emptyBed!== 0 ">
-              <span style="  margin-left:10px; color:#52c41a;">有空余</span>
+            <span class="title">{{ item.roomCode }}</span>
+            <template v-if="item.emptyBed !== 0">
+              <span style="margin-left: 10px; color: #52c41a">有空余</span>
             </template>
             <template v-else>
-              <span style="  margin-left:10px; color:red;">满员</span>
+              <span style="margin-left: 10px; color: red">满员</span>
             </template>
           </div>
           <table class="custom-table custom-table-border">
             <tr>
               <td>床位</td>
-              <td>{{item.bedNumber}}</td>
+              <td>{{ item.bedNumber }}</td>
             </tr>
             <tr>
               <td>空床位</td>
-              <td>{{item.emptyBed}}</td>
+              <td>{{ item.emptyBed }}</td>
             </tr>
             <tr>
               <td colspan="2">入住情况</td>
@@ -44,9 +44,9 @@
               <td>人员</td>
             </tr>
             <template>
-              <tr v-for=" items in  item.roomUserVos" :key="items.deptName">
-                <td>{{items.deptName}}</td>
-                <td>{{items.userName}}</td>
+              <tr v-for="items in item.roomUserVos" :key="items.deptName">
+                <td>{{ items.deptName }}</td>
+                <td>{{ items.userName }}</td>
               </tr>
               <tr></tr>
             </template>
@@ -83,14 +83,7 @@ export default {
     fillData() {
       let that = this
       electricity_PageRoomUser().then((res) => {
-        console.log(res)
         that.recordDetails = res.data
-        // that.form.setFieldsValue({
-        //   roomCode: res.data.roomCode,
-        //   bedNumber: res.data.bedNumber,
-        //   meterCode: res.data.meterCode,
-        //   remark: res.data.remark,
-        // })
       })
     },
 

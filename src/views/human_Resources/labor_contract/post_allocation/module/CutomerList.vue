@@ -1,12 +1,5 @@
 <template>
-  <a-modal
-    title="选择合同"
-    :width="600"
-    v-model="visible"
-    :maskClosable="false"
-    @cancel="handleCancel"
-    :footer="null"
-  >
+  <a-modal title="选择合同" :width="600" v-model="visible" :maskClosable="false" @cancel="handleCancel" :footer="null">
     <a-table
       :columns="columns"
       :dataSource="dataSource"
@@ -18,7 +11,7 @@
         <span>{{ index + 1 }}</span>
       </div>
       <div slot="contractNum" slot-scope="text, record">
-        <a href="javascript:void(0);" @click="selected(record)">{{text}}</a>
+        <a href="javascript:void(0);" @click="selected(record)">{{ text }}</a>
       </div>
     </a-table>
   </a-modal>
@@ -64,7 +57,6 @@ export default {
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {}, {
         searchStatus: that.activeKey,
       })
-      //   console.log('执行搜索...', _searchParam)
       that.loading = true
       postAllocation_Version(_searchParam)
         .then((res) => {
@@ -93,7 +85,6 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager

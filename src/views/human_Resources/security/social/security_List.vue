@@ -152,10 +152,6 @@ export default {
       let that = this
       this.searchAction()
     },
-    check() {
-      let that = this
-      console.log(12312)
-    },
     searchAction(opt) {
       let that = this
       that.loading = true
@@ -178,9 +174,6 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
-    },
-    onChange(date, dateString) {
-      console.log(date, dateString)
     },
     delete_list(id) {
       let that = this

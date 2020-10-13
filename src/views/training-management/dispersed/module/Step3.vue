@@ -1,42 +1,29 @@
 <template>
   <div class="content-wrap">
-    <a-row type="flex" style="margin-bottom:30px">
-      <a-col
-        :span="24"
-        class="basic-tit"
-        justify="center"
-        align="middle"
-        style="margin-bottom：50px"
-      >受训人员</a-col>
+    <a-row type="flex" style="margin-bottom: 30px">
+      <a-col :span="24" class="basic-tit" justify="center" align="middle" style="margin-bottom：50px">受训人员</a-col>
     </a-row>
     <div>
       <a-form :form="form" class="form wdf-form">
         <table class="custom-table custom-table-border">
           <template>
             <tr v-if="!isSee">
-              <td style="text-align: right;">部门</td>
+              <td style="text-align: right">部门</td>
               <td colspan="2">
-                <a-form-item style="padding-top: 24px;">
-                  <a-select
-                    :disabled="isSee"
-                    style="width:200px;"
-                    @change="depChangeHandler"
-                    placeholder="请选择部门"
-                  >
-                    <a-select-option
-                      v-for="item in departmentList"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{ item.departmentName }}</a-select-option>
+                <a-form-item style="padding-top: 24px">
+                  <a-select :disabled="isSee" style="width: 200px" @change="depChangeHandler" placeholder="请选择部门">
+                    <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                      item.departmentName
+                    }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </td>
-              <td style="text-align: right;">人员</td>
+              <td style="text-align: right">人员</td>
               <td colspan="2">
-                <a-form-item style="padding-top: 24px;">
+                <a-form-item style="padding-top: 24px">
                   <a-select
                     :disabled="isSee"
-                    style="width:200px;"
+                    style="width: 200px"
                     mode="multiple"
                     :allowClear="true"
                     :maxTagCount="1"
@@ -51,7 +38,8 @@
                       v-for="(process, index) in postSelectDataSource"
                       :key="index"
                       :value="process.id"
-                    >{{ process.trueName }}</a-select-option>
+                      >{{ process.trueName }}</a-select-option
+                    >
                   </a-select>
                 </a-form-item>
               </td>
@@ -73,11 +61,7 @@
                     v-model="haveProcess"
                   >
                     <transition-group name="list">
-                      <div
-                        v-for="(item, index) in haveProcess"
-                        :key="item.userId"
-                        class="draggable-columns-item"
-                      >
+                      <div v-for="(item, index) in haveProcess" :key="item.userId" class="draggable-columns-item">
                         <div class="draggable-columns draggable-columns-1">{{ item.departmentName }}</div>
                         <div class="draggable-columns draggable-columns-1">{{ item.userName }}</div>
                         <div v-if="!isSee" class="draggable-columns draggable-columns-3" title="删除">
@@ -99,7 +83,7 @@
           </template>
         </table>
         <div class="btns-grop">
-          <a-button style="margin-left:8px;" @click="prevStep">上一步</a-button>
+          <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
           <a-button type="primary" @click="nextStep">下一步</a-button>
         </div>
       </a-form>
@@ -218,12 +202,10 @@ export default {
     confirm(cpId, index) {
       // 确认删除事件
       this.haveProcess.splice(index, 1)
-      console.log(this.haveProcess)
       let arr = []
       this.haveProcess.map((item) => {
         arr.push(item.id)
       })
-      console.log(this.haveProcess)
       this.form.setFieldsValue({
         authTrainFolderBoList: arr,
       })
@@ -245,11 +227,9 @@ export default {
         form: { validateFields },
       } = this
 
-      console.log(that.type1)
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
         if (that.haveProcess.length > 0) {
-          console.log(that.haveProcess)
           let params = {}
           let List = that.haveProcess.map((item) => {
             return {

@@ -14,10 +14,11 @@
                 placeholder=" 身份证号码"
                 :disabled="isSee"
                 v-decorator="['cardNo', { rules: [{ required: true, message: '请输入身份证号码' }] }]"
-                style="width: 70%"
+                style="width: 60%"
                 enter-button
                 @search="onSearch"
               />
+              <a-button type="link" @click="scanning">扫描</a-button>
             </a-form-item>
           </a-col>
         </a-row>
@@ -116,7 +117,7 @@
               :span="10"
             >
               <UploadP style="margin-left: 100px" ref="normalUpload" :msgId="specialList" :name="isSee" />
-              <a-button @click="gaoPaiYiDevicesClickHandler">拍照上传</a-button>
+              <a-button style="margin-right: 338px" @click="gaoPaiYiDevicesClickHandler">拍照上传</a-button>
             </a-col>
           </a-row>
         </a-form-item>
@@ -222,9 +223,40 @@ export default {
         this.domEles[flag] = el
       }
     },
+    scanning() {
+      this.$refs.gaoPaiYiDevices.show()
+    },
     onSearch(value) {
       let that = this
-      this.$refs.gaoPaiYiDevices.show()
+      getCardNo({ cardNo: value }).then((res) => {
+        that.certificateList = res.data[0].logisticsPilotAnnuxes.filter((item) => item.statusType === 1)
+        that.certificateList = that.certificateList.map((item, index) => {
+          return {
+            uid: index,
+            name: '1',
+            fileName: item.name,
+            status: 'done',
+            url: item.url,
+          }
+        })
+        that.specialList = res.data[0].logisticsPilotAnnuxes.filter((item) => item.statusType === 2)
+        that.specialList = that.specialList.map((item, index) => {
+          return {
+            uid: index,
+            name: '1',
+            fileName: item.name,
+            status: 'done',
+            url: item.url,
+          }
+        })
+        that.form.setFieldsValue({
+          cardNo: res.data[0].cardNo,
+          driveNo: res.data[0].driveNo,
+          fullName: res.data[0].fullName,
+          telephone: res.data[0].telephone,
+          wechatNumber: res.data[0].wechatNumber,
+        })
+      })
     },
     gaoPaiYiDevicesClickHandler() {
       //打开高拍仪

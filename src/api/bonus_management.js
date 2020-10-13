@@ -214,7 +214,15 @@ export function other_withdraw(parameter) {
     params: parameter
   })
 }
-
+//其他奖金删除
+export function other_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/del',
+    method: 'post',
+    data: parameter
+  })
+}
 //其他奖金审批 
 export function other_approval(parameter) {
   return axios({
@@ -282,5 +290,69 @@ export function capital_bill_addAndUpdate(parameter) {
     url: '/oaSalaryInfo/oa-salary-fine-apply/addAndUpdate ',
     method: 'post',
     data: parameter
+  })
+}
+
+//罚款单撤回
+export function capital_bill_withdraw(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/withdraw',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//罚款单删除 
+export function capital_bill_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/del ',
+    method: 'post',
+    data: parameter
+  })
+}
+//罚款单审批
+
+export function capital_bill_approval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 基本工资表 
+
+
+export function salary_base_record_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-common/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//基本工资表导入
+export function salary_base_record_ImportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-common/importExcel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//销售基本工资列表
+
+export function salary_base_sale_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler/pageList',
+    method: 'get',
+    params: parameter
   })
 }
