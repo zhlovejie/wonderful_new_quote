@@ -155,7 +155,7 @@ let columns = [
 ]
 
 export default {
-  name: 'AddForm',
+  name: 'AddMultiForm',
   components: {},
   props: {
     param: {
@@ -213,7 +213,7 @@ export default {
       let dataSource = []
       let getFile = (f) => that.dataSource.find((item) => item.__url === f.url)
       val.map((f) => {
-        if (f.url) {
+        if (f.url && f.status === 'done') {
           let item = getFile(f)
           if (item) {
             dataSource.push(Object.assign({}, item))
@@ -271,9 +271,10 @@ export default {
 
       if (haveDuplicate === true) {
         const h = that.$createElement
+        let duplicateFiles = that.dataSource.filter(item => duplicateNames.includes(item.pictureNum))
         let msgArr = [
-          h('p', '检测到以下文件重复，可以选择执行以下操作'),
-          ...duplicateNames.map((fName) => h('p', fName)),
+          h('p', '检测到以下文件图号重复，可以选择执行以下操作'),
+          duplicateFiles.map((item) => h('p', `文件：【${item.uploadFileName}】 图号：【${item.pictureNum}】`)),
         ]
         that.$confirm({
           title: '文件重复提示',
@@ -291,7 +292,7 @@ export default {
           },
           onCancel() {
             that.fileList = fileList.map((f) => {
-              if (duplicateNames.includes(f.name.split('.')[0])) {
+              if (duplicateFiles.find(item => item.uploadFileName === f.name)) {
                 ;(f.status = 'error'), (f.__repeat = true)
               }
               return f

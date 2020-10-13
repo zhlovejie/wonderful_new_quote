@@ -119,6 +119,7 @@ export default {
         current: 1,
         size:"10",
         showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
@@ -220,7 +221,8 @@ export default {
         on:{
           click:(event)=>{
             //console.log(record)
-            that.$emit('rowhover',{menuId:record.id})
+            //that.$emit('rowhover',{menuId:record.id})
+            that.$emit('rowhover',Object.assign({},record))
           }
         }
       }

@@ -5,7 +5,7 @@
       <a-col :span="5">
         <div
           class="menu-tree-list-wrapper"
-          style="width:100%;overflow:auto;box-shadow: 7px 0px 7px -7px #ddd;height: 800px;"
+          style="width:100%;overflow:auto;box-shadow: 7px 0px 7px -7px #ddd;height: auto;min-height:800px;max-height:2000px;"
         >
           <a-tree
             :treeData="orgTree"
@@ -119,12 +119,13 @@ export default {
       // or, you can remove all expanded children keys.
       this.expandedKeys = expandedKeys
       this.autoExpandParent = false
-      this.cacheExpandedKeys = this.expandedKeys.map((key) => this.findNodeByKey(this.orgTree[0], key))
     },
     initTreeData(actionType = 'normal') {
       let that = this
       return blueprintMenuTreeList({ superiorId: that.superiorId, type: 1 }).then((res) => {
         that.orgTree = [that.fillParentNode(res.data)]
+        //return
+        //debugger
         if (actionType !== 'refresh') {
           //展开根目录
           //that.$nextTick(() => {
@@ -136,40 +137,36 @@ export default {
           that.selectedKeys = [rootKey]
           that.currentItem = that.orgTree[0]
 
-          that.cacheSelectedKeys = [that.orgTree[0]]
-          that.cacheExpandedKeys = that.expandedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
+          //that.cacheSelectedKeys = [that.orgTree[0]]
+          //that.cacheExpandedKeys = that.expandedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
           //})
         } else {
           //debugger
-          that.expandedKeys = that.cacheExpandedKeys
-            .map((item) => that.findNode(that.orgTree[0], item.id))
-            .map((node) => node.key)
+          // that.expandedKeys = that.cacheExpandedKeys
+          //   .map((item) => that.findNode(that.orgTree[0], item.id,item.superiorId))
+          //   .map((node) => node.key)
 
-          that.selectedKeys = that.cacheSelectedKeys
-            .map((item) => that.findNode(that.orgTree[0], item.id))
-            .map((node) => node.key)
+          // that.selectedKeys = that.cacheSelectedKeys
+          //   .map((item) => that.findNode(that.orgTree[0], item.id,item.superiorId))
+          //   .map((node) => node.key)
         }
       })
     },
     handleClick(selectedKeys, nodes) {
       // 点击树结构菜单
-      //debugger
       let that = this
       that.selectedKeys = selectedKeys
       that.currentItem = Object.assign({}, nodes.node.dataRef)
-
-      that.cacheSelectedKeys = that.selectedKeys.map((key) => that.findNodeByKey(that.orgTree[0], key))
-
-      that.$nextTick(() => {
-        that.$refs.levelOne && that.$refs.levelOne.searchAction()
-      })
     },
     fillParentNode(node) {
       let fillParentId = (n) => {
         if (n && Array.isArray(n.subList) && n.subList.length > 0) {
+          let _parentKey = `${n.id}_${n.superiorId}`
           for (let _n of n.subList) {
             _n.superiorId = n.id
-            _n.key = uuid()
+            //_n.key = uuid()
+            _n.key = `${_n.id}_${_n.superiorId}`
+            _n.parentKey = _parentKey
             if (+_n.type === 2) {
               //产品层 禁止选择
               _n.selectable = false
@@ -180,27 +177,10 @@ export default {
         }
         return n
       }
-      node.key = uuid()
+      //node.key = uuid()
+      node.key = `${node.id}_${node.superiorId}`
+      node.parentKey = null
       return fillParentId(node)
-    },
-    findNode(node, id) {
-      //查找指定ID的节点
-      let res = null
-      let fNode = (obj) => {
-        if (obj.id === id) {
-          return obj
-        }
-        if (obj && obj.subList) {
-          for (let i = 0, len = obj.subList.length; i < len; i++) {
-            res = fNode(obj.subList[i])
-            if (res !== null) {
-              return res
-            }
-          }
-        }
-        return null
-      }
-      return fNode(node)
     },
     findNodeByKey(node, key) {
       //查找指定key的节点
@@ -221,15 +201,15 @@ export default {
       }
       return fNode(node)
     },
-    getNodePath(node, id) {
+    getNodePath(node, key) {
       let that = this
       let res = []
-      let pid = id
+      let pid = key
       while (pid !== null) {
-        let target = that.findNode(that.orgTree[0], pid)
+        let target = that.findNodeByKey(that.orgTree[0], pid)
         if (target) {
           res.unshift(target)
-          pid = target.superiorId
+          pid = target.parentKey
         } else {
           break
         }
@@ -237,49 +217,31 @@ export default {
       return res
     },
     rowhoverChange(record) {
-      let that = this
       let { menuId, permissionId } = record
-      that.initTreeData().then(() => {
-        let nodePaths = that.getNodePath(that.orgTree[0], menuId)
-        that.expandedKeys = nodePaths.map((node) => node.key)
-        that.cacheExpandedKeys = [...nodePaths]
-        let node = nodePaths[nodePaths.length - 1]
-        if (Array.isArray(node.subList)) {
-          let targetNode = node.subList.find((n) => +n.id === +permissionId)
-          if (targetNode) {
-            that.selectedKeys = [targetNode.key]
-            that.cacheSelectedKeys = [targetNode]
-
-            setTimeout(() => {
-              try{
-                that.autoLocationNode()
-              }catch(e){
-                console.log(e)
-              }
-            }, 1500);
-          }
-        }
-      })
+      this.customExpandNode(`${permissionId}_${menuId}`,1,true)
     },
     rowhoverChange2(record) {
+      let { id, superiorId } = record
+      this.customExpandNode(`${superiorId}_${id}`,2)
+    },
+    customExpandNode(key,nodePos,fillCurrent=false){
       let that = this
-      let { menuId, permissionId } = record
-      that.initTreeData().then(() => {
-        let nodePaths = that.getNodePath(that.orgTree[0], menuId)
+      let nodePaths = that.getNodePath(that.orgTree[0], key)
+      if(Array.isArray(nodePaths) && nodePaths.length >= nodePos ){
         that.expandedKeys = nodePaths.map((node) => node.key)
-        that.cacheExpandedKeys = [...nodePaths]
-        let node = nodePaths[nodePaths.length - 1]
-        that.selectedKeys = [node.key]
-        that.cacheSelectedKeys = [node]
-
+        let item = nodePaths[nodePaths.length - nodePos]
+        that.selectedKeys = [item.key]
+        if(fillCurrent){
+          that.currentItem = item
+        }
         setTimeout(() => {
           try{
             that.autoLocationNode()
           }catch(e){
             console.log(e)
           }
-        }, 1500);
-      })
+        }, 600);
+      }
     },
 
     autoLocationNode(){
