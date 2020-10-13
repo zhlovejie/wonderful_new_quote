@@ -1,27 +1,33 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
-      <a-month-picker style="width:300px;" v-model="queryParam.Dates" />
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+      <a-month-picker style="width: 300px" v-model="queryParam.Dates" />
 
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('social:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <!-- <a-layout-content> -->
-      <a-table :columns="columns" :data-source="dataSource" v-if="$auth('social:list')">
+      <a-table
+        :columns="columns"
+        :pagination="pagination"
+        @change="handleTableChange"
+        :data-source="dataSource"
+        v-if="$auth('social:list')"
+      >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
           <a @click="handleSee(record)">查看</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link" :href="urls+record.id">下载</a>
-          <template v-if="$auth('social:add')&&+record.createdId  === +userInfo.id">
+          <a class="ant-dropdown-link" :href="urls + record.id">下载</a>
+          <template v-if="$auth('social:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
-            <a @click="handleAdd('edit-salary',record)">修改</a>
+            <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>
@@ -107,6 +113,13 @@ export default {
       columns,
       pagination: {
         current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.paginationType.size = pageSize), this.searchAction()),
+      },
+      paginationType: {
+        current: 1,
       },
       queryParam: {},
       hiddenBoolean: false,
@@ -150,7 +163,7 @@ export default {
         let date = that.queryParam.Dates.format('YYYYMM')
         this.queryParam.accountDate = date
       }
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.paginationType }, opt || {})
       securitySocial_List(_searchParam)
         .then((res) => {
           that.loading = false
@@ -179,6 +192,16 @@ export default {
           that.$message.error(res.msg)
         }
       })
+    },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      console.log(pagination)
+      this.paginationType.size = pagination.pageSize
+      this.paginationType.current = pagination.current
+      // const pager = { ...this.pagination }
+      // pager.current = pagination.current
+      // this.pagination = pager
+      this.searchAction()
     },
     //新增 修改
     handleAdd(type, record) {

@@ -58,7 +58,14 @@
             <td>设备文件</td>
             <td colspan="3">
               <a-form-item>
-                <a-upload style="width: 300px" name="file" :beforeUpload="beforeUpload" accept=".xls, .xlsx">
+                <a-upload
+                  style="width: 300px"
+                  name="file"
+                  @change="handleChange"
+                  :fileList="fileList"
+                  :beforeUpload="beforeUpload"
+                  accept=".xls, .xlsx"
+                >
                   <a-button> <a-icon type="upload" />导入 </a-button>
                 </a-upload>
               </a-form-item>
@@ -86,9 +93,11 @@ export default {
       visible: false,
       spinning: false,
       type: 'add',
+      fileUrl: false,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       uploadUrl: getUploadPath2(),
       //   上传文件
+      fileList1: [],
       fileList: [],
     }
   },
@@ -127,8 +136,9 @@ export default {
   methods: {
     moment: moment,
     query(type, record) {
-      console.log(type, record)
       this.visible = true
+      this.fileList = []
+      this.fileList1 = []
       this.type = type
       this.record = record
       if (type === 'edit-salary') {
@@ -155,26 +165,25 @@ export default {
     },
 
     beforeUpload(file) {
-      this.fileList = [...this.fileList, file]
-      this.fileList = this.fileList.slice(-1)
+      this.fileList1 = [...this.fileList1, file]
+      this.fileList1 = this.fileList1.slice(-1)
       return false
     },
-    // handleChange(info) {
-    //   this.fileList = []
-    //   let fileList = [...info.fileList]
-    //   fileList = fileList.map((file) => {
-    //     if (file.response && file.response.code === 200) {
-    //       file.url = file.response.data
-    //     }
-    //     return file
-    //   })
-    //   this.fileList = fileList
-    // },
+    handleChange(info) {
+      this.fileList = []
+      let fileList = [...info.fileList]
+      fileList = fileList.map((file) => {
+        if (file.response && file.response.code === 200) {
+          file.url = file.response.data
+        }
+        return file
+      })
+      this.fileList = fileList
+    },
     handleOk() {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             values.accountDate = values.accountDate.format('YYYYMM')
@@ -185,9 +194,8 @@ export default {
             formData.append('accountDate', values.accountDate)
             formData.append('companyPay', values.companyPay)
             formData.append('personalPay', values.personalPay)
-            formData.append('file', this.fileList[0])
-
-            // console.log(formData.getAll('file'))
+            formData.append('file', this.fileList1[0])
+            that.spinning = true
             securitySocial_Add(formData)
               .then((res) => {
                 that.spinning = false
@@ -209,6 +217,7 @@ export default {
     },
     handleCancel() {
       this.fileList = []
+      this.fileList1 = []
       this.form.resetFields() // 清空表
       this.visible = false
     },
