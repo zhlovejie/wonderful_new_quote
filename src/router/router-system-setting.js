@@ -1,6 +1,14 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
 export default {
   path: '/system-setting',
@@ -159,6 +167,15 @@ export default {
           component: () => import('@/views/system-setting/work-box/AndroidVersion'),
           meta: {
             title: '安卓版本信息',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/system-setting/work-box/AndroidequipmentType',
+          name: 'AndroidequipmentType',
+          component: () => import('@/views/system-setting/work-box/AndroidequipmentType'),
+          meta: {
+            title: '安卓设备类型',
             permission: ['permission']
           }
         }

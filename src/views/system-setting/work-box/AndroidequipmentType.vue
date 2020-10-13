@@ -9,6 +9,18 @@
         <a-form-item label="名称">
           <a-input v-model.trim="queryParam.versionName" placeholder="根据版本名称查询" />
         </a-form-item>
+        <a-form-item label="设备类型">
+          <a-select
+            placeholder="设备类型"
+            v-model="queryParam.type"
+            :allowClear="true"
+            style="width: 200px; margin-right: 10px"
+          >
+            <a-select-option v-for="item in equipmentType" :key="item.code" :value="item.code">{{
+              item.text
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
         <template v-if="$auth('androidVersion:list')">
           <a-form-item>
             <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
@@ -67,14 +79,15 @@
 import { STable } from '@/components'
 import { getFileManagementList, downloadFile, delFileManagement } from '@/api/OperationalScheme'
 import {
-  uploadAndroidApk,
-  deleteAndroidVersion,
-  editAndroidVersion,
-  addAndroidVersion,
-  listAndroidVersion,
+  uploadAndroidApkEquipment,
+  deleteAndroidVersionEquipment,
+  editAndroidVersionEquipment,
+  addAndroidVersionEquipment,
+  listAndroidVersionEquipment,
+  queryCode,
 } from '@/api/workBox'
 
-import Modal from './modules/AndroidModal'
+import Modal from './modules/newEquipment'
 
 export default {
   name: 'AndroidVersion',
@@ -83,6 +96,7 @@ export default {
     STable,
     Modal,
   },
+
   data() {
     return {
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
@@ -90,6 +104,8 @@ export default {
       selectedRows: [],
       // 查询参数
       queryParam: {},
+      //设备类型
+      equipmentType: [],
       // 表头
       columns: [
         {
@@ -128,7 +144,7 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
-        return listAndroidVersion(Object.assign(parameter, this.queryParam))
+        return listAndroidVersionEquipment(Object.assign(parameter, this.queryParam))
           .then((res) => {
             return res
           })
@@ -137,6 +153,11 @@ export default {
           })
       },
     }
+  },
+  created() {
+    queryCode({ code: 'az_00' }).then((res) => {
+      this.equipmentType = res.data
+    })
   },
   methods: {
     handleEdit(record) {
@@ -161,7 +182,7 @@ export default {
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          deleteAndroidVersion({ versionId: record.id })
+          deleteAndroidVersionEquipment({ versionId: record.id })
             .then((data) => {
               if (data.code == 200) {
                 _this.$message.success('删除成功')
