@@ -1,6 +1,14 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
 
 import routerDashboard from '@/router/router-dashboard'
@@ -19,24 +27,27 @@ import distributionManagement from '@/router/router-distribution-management'
 import vehicleManagement from '@/router/router-vehicle-management'
 import contingencyManagement from '@/router/router-contingency-management'
 import trainingManagement from '@/router/router-training-management'
+import salaryManagemen from '@/router/router-salary-management'
+
 
 const __ROUTER_MAP__ = [
-  routerDashboard,//仪表盘
-  systemSetting,//系统设置
-  salesManagement,//销售管理
-  production,//生产管理
-  personnelManagement,//人事管理
-  productOfferManagement,//产品报价管理
-  workReportManagement,//工作上报管理
-  meetingManagement,//会议管理
-  attendanceManagement,//考勤管理
-  icotcardManagement,//物联卡管理
-  researchManagements,//研发管理
-  humanResources,//人力资源
-  distributionManagement,//物流管理
-  vehicleManagement,//车辆管理
-  contingencyManagement,//应急管理
-  trainingManagement,//培训管理
+  routerDashboard, //仪表盘
+  systemSetting, //系统设置
+  salesManagement, //销售管理
+  production, //生产管理
+  personnelManagement, //人事管理
+  productOfferManagement, //产品报价管理
+  workReportManagement, //工作上报管理
+  meetingManagement, //会议管理
+  attendanceManagement, //考勤管理
+  icotcardManagement, //物联卡管理
+  researchManagements, //研发管理
+  humanResources, //人力资源
+  distributionManagement, //物流管理
+  vehicleManagement, //车辆管理
+  contingencyManagement, //应急管理
+  trainingManagement, //培训管理
+  salaryManagemen, // 薪酬管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
