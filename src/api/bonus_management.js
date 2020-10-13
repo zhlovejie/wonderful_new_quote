@@ -317,19 +317,41 @@ export function capital_bill_del(parameter) {
 export function capital_bill_approval(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-fine-apply/approval ',
+    url: '/oaSalaryInfo/oa-salary-fine-apply/approval',
     method: 'post',
     data: parameter
   })
 }
 
-// 非销售基本工资表 
+// 基本工资表 
 
 
 export function salary_base_record_List(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-base-common/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//基本工资表导入
+export function salary_base_record_ImportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-common/importExcel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//销售基本工资列表
+
+export function salary_base_sale_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler/pageList',
     method: 'get',
     params: parameter
   })

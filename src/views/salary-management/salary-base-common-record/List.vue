@@ -1,7 +1,6 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-      <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
       <a-select
         style="width: 200px; margin-right: 10px"
         v-model="queryParam.departmentId"
@@ -14,7 +13,12 @@
           item.departmentName
         }}</a-select-option>
       </a-select>
-      <a-select placeholder="选择岗位" v-model="queryParam.stationId" :allowClear="true" style="width: 200px">
+      <a-select
+        placeholder="选择岗位"
+        v-model="queryParam.stationId"
+        :allowClear="true"
+        style="width: 200px; margin-right: 10px"
+      >
         <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
           item.stationName
         }}</a-select-option>
@@ -27,9 +31,9 @@
       />
 
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
-      <!-- <template v-if="$auth('Distribution:add')"> -->
-      <!-- <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button> -->
-      <!-- </template> -->
+      <a-upload :beforeUpload="beforeUpload" style="margin-left: 10px" :showUploadList="false">
+        <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
+      </a-upload>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
@@ -43,18 +47,7 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <!-- <span slot="action" slot-scope="text, record"> -->
-        <!-- <a @click="handleAdd('see', record)">查看</a> -->
-        <!-- <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
-            <a-divider type="vertical" />
-            <a @click="handleAdd('edit-salary', record)">修改</a>
-            <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
-          </template> -->
-        <!-- </span> -->
       </a-table>
-
-      <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
     </a-layout>
   </a-card>
 </template>
@@ -62,8 +55,7 @@
 <script>
 import moment from 'moment'
 import { getDevisionList, getStationList } from '@/api/systemSetting'
-import { salary_base_record_List } from '@/api/bonus_management'
-// import AddForm from './module/AddForm'
+import { salary_base_record_List, salary_base_record_ImportExcel } from '@/api/bonus_management'
 
 const columns = [
   {
@@ -113,9 +105,6 @@ const columns = [
 ]
 export default {
   name: 'RoleManagement',
-  components: {
-    // AddForm: AddForm,
-  },
   data() {
     return {
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -140,6 +129,14 @@ export default {
       departmentList: [],
       // 角色列表
       roleList: {},
+      uploading: false,
+      fileList: [],
+      aceptFileTypes: [
+        '.xls',
+        '.xlsx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel',
+      ],
     }
   },
   // 初始化搜索条件钩子函数
@@ -157,9 +154,86 @@ export default {
   },
   methods: {
     moment: moment,
+    beforeUpload(file) {
+      let _aceptFileTypes = this.aceptFileTypes
+      const isDocType = _aceptFileTypes.includes(file.type)
+      if (!isDocType) {
+        this.$message.error('只支持上传.xls,.xlsx的Excel!')
+      }
+      const isLt10M = file.size / 1024 / 1024 < 10
+      if (!isLt10M) {
+        this.$message.error('Excel文档必须小于10M!')
+      }
+      if (isDocType && isLt10M) {
+        this.fileList = [file]
+        this.handleUpload()
+      }
+      return false
+    },
+    handleUpload() {
+      const { fileList } = this
+      const formData = new FormData()
+      fileList.forEach((file) => {
+        formData.append('file', file)
+      })
+      this.uploading = true
+      salary_base_record_ImportExcel(formData)
+        .then((res) => {
+          this.uploading = false
+          let that = this
+          if (res.code === 200) {
+            that.$message.info(res.msg || '操作成功')
+          } else {
+            that.$message.error(res.msg)
+          }
+          // if (res instanceof Blob) {
+          //   let action = {
+          //     isFile: res.type === 'application/x-download',
+          //     isJson: res.type === 'application/json',
+          //   }
+          //   if (action.isFile) {
+          //     const objectUrl = URL.createObjectURL(res)
+          //     const a = document.createElement('a')
+          //     document.body.appendChild(a)
+          //     a.style = 'display: none'
+          //     a.href = objectUrl
+          //     a.download = 'error.xlsx'
+          //     a.click()
+          //     document.body.removeChild(a)
 
+          //     that.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
+          //     return
+          //   } else if (action.isJson) {
+          //     var reader = new FileReader()
+          //     reader.onload = function (e) {
+          //       let _res = null
+          //       try {
+          //         _res = JSON.parse(e.target.result)
+          //       } catch (err) {
+          //         _res = null
+          //         console.log('JSON.parse error...', e.target.result)
+          //       }
+          //       if (_res !== null) {
+          //         that.$message.info(_res.msg || '操作成功')
+          //         that.fileList = []
+          //       }
+          //     }
+          //     reader.readAsText(res)
+          //   }
+          // } else {
+          //   console.log('未知错误：')
+          //   console.log('类型：' + typeof res)
+          //   console.log(res)
+          // }
+        })
+        .catch((err) => {
+          this.uploading = false
+          console.log(err)
+        })
+    },
     init() {
       let that = this
+
       getDevisionList().then((res) => {
         this.departmentList = res.data
       })

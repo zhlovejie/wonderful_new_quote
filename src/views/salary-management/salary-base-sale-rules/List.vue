@@ -1,26 +1,7 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-      <!-- <a-month-picker style="width:300px;" v-model="queryParam.Dates" /> -->
-      <!-- <a-select
-        style="width: 200px; margin-right: 10px"
-        v-model="queryParam.departmentId"
-        :allowClear="true"
-        @change="depChangeHandler"
-        placeholder="请选择部门"
-      >
-        <a-select-option :value="undefined">请选择部门</a-select-option>
-        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
-          item.departmentName
-        }}</a-select-option>
-      </a-select>
-      <a-select placeholder="选择岗位" v-model="queryParam.stationId" :allowClear="true" style="width: 200px">
-        <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
-          item.stationName
-        }}</a-select-option>
-      </a-select> -->
       <a-input placeholder="名称" v-model="queryParam.userName" allowClear style="width: 200px; margin-right: 10px" />
-
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('Distribution:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
@@ -39,7 +20,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleAdd('see', record)">查看</a>
+          <a @click="handleAdd('see', record)">添加规则</a>
+          <a-divider type="vertical" />
+          <a @click="handleAdd('see', record)">规则明细</a>
+          <!-- <a @click="handleAdd('see', record)">查看</a> -->
           <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary', record)">修改</a>
@@ -56,7 +40,7 @@
 <script>
 import moment from 'moment'
 import { getDevisionList, getStationList } from '@/api/systemSetting'
-import { salary_base_record_List } from '@/api/bonus_management'
+import { salary_base_sale_List } from '@/api/bonus_management'
 // import AddForm from './module/AddForm'
 
 const columns = [
@@ -69,26 +53,26 @@ const columns = [
   },
   {
     title: '名称',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    dataIndex: 'name',
+    key: 'name',
     align: 'center',
   },
   {
     title: '适用人员',
-    dataIndex: 'stationName',
-    key: 'stationName',
+    dataIndex: 'userNames',
+    key: 'userNames',
     align: 'center',
   },
   {
     title: '奖金名称',
-    dataIndex: 'userName',
-    key: 'userName',
+    dataIndex: 'bounsDicNames',
+    key: 'bounsDicNames',
     align: 'center',
   },
   {
     title: '备注',
-    dataIndex: 'realityProbationSalary',
-    key: 'realityProbationSalary',
+    dataIndex: 'remark',
+    key: 'remark',
     align: 'center',
   },
   {
@@ -163,7 +147,7 @@ export default {
       let that = this
       that.loading = true
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
-      salary_base_record_List(_searchParam)
+      salary_base_sale_List(_searchParam)
         .then((res) => {
           that.loading = false
           this.queryParam.accountDate = ''
