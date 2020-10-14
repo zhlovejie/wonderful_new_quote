@@ -125,38 +125,51 @@ export default {
         {
           title: '序号',
           scopedSlots: { customRender: 'serial' },
+          align: 'center',
         },
         {
+          align: 'center',
           title: '版本名称',
           dataIndex: 'versionName',
         },
         {
+          align: 'center',
           title: '版本编号',
           dataIndex: 'versionCode',
         },
         {
+          align: 'center',
           title: '设备类型',
           dataIndex: 'typeName',
         },
+        {
+          align: 'center',
+          title: '设备类型编码',
+          dataIndex: 'type',
+        },
 
         {
+          align: 'center',
           title: '版本连接',
           dataIndex: 'downloadUrl',
           width: 300,
-                    scopedSlots: { customRender: 'downloadUrl' },
+          scopedSlots: { customRender: 'downloadUrl' },
           // sorter: true
         },
         {
+          align: 'center',
           title: '创建人',
           dataIndex: 'modifyUserName',
           // sorter: true
         },
         {
+          align: 'center',
           title: '创建时间',
           dataIndex: 'modifyTime',
           // sorter: true
         },
         {
+          align: 'center',
           title: '操作',
           dataIndex: 'action',
           width: '200px',
