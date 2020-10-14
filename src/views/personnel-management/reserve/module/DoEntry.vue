@@ -1451,7 +1451,7 @@ export default {
       let { type, url, data } = result
       //#处理自己的逻辑
       //#处理自己的逻辑END
-      if (type === 'photo') {
+      if (type === 'photo' || type === 'face') {
         const file = result.url.split('/')
         const fileName = file[file.length - 1]
         if (this.fileTypes === 2) {
