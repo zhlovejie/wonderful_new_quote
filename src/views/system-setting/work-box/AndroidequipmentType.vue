@@ -4,10 +4,10 @@
     <div class="operational-scheme-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="版本号">
-          <a-input v-model.trim="queryParam.versionCode" placeholder="根据版本号查询" />
+          <a-input :allowClear="true" v-model.trim="queryParam.versionCode" placeholder="根据版本号查询" />
         </a-form-item>
         <a-form-item label="名称">
-          <a-input v-model.trim="queryParam.versionName" placeholder="根据版本名称查询" />
+          <a-input :allowClear="true" v-model.trim="queryParam.versionName" placeholder="根据版本名称查询" />
         </a-form-item>
         <a-form-item label="设备类型">
           <a-select
@@ -48,6 +48,20 @@
       :alert="false"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <div
+        :style="{
+          maxWidth: '300px',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          wordWrap: 'break-word',
+          wordBreak: 'break-all',
+        }"
+        slot="downloadUrl"
+        slot-scope="text, record"
+      >
+        {{ record.downloadUrl }}
+      </div>
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
@@ -121,8 +135,15 @@ export default {
           dataIndex: 'versionCode',
         },
         {
+          title: '设备类型',
+          dataIndex: 'typeName',
+        },
+
+        {
           title: '版本连接',
           dataIndex: 'downloadUrl',
+          width: 300,
+                    scopedSlots: { customRender: 'downloadUrl' },
           // sorter: true
         },
         {

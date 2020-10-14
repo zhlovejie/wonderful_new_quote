@@ -205,7 +205,6 @@ export default {
         // 验证表单没错误
         if (!err) {
           _this.confirmLoading = true
-          debugger
           if (_this.addOredit == 'save') {
             addAndroidVersionEquipment(values)
               .then((data) => {
