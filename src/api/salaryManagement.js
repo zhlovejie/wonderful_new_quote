@@ -65,3 +65,60 @@ export function oaSalaryInfoStationStationStandardChangList (parameter) {
     params: parameter
   })
 }
+
+//---------------------薪资项设置-----------------------
+export function oaSalaryConsistAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-consist/addAndUpdateConsist',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function oaSalaryConsistDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-consist/consistDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oaSalaryConsistDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-consist/delConsist',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oaSalaryConsistPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-consist/getConsistPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**岗位验重 */
+export function oaSalaryConsistIsAddByStationId (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-consist/isAddByStationId',
+    method: 'get',
+    params: parameter
+  })
+}
+/**验证 */
+export function oaSalaryConsistValidate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-consist/validateConsist',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------薪资项设置-END----------------------
