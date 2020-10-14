@@ -48,7 +48,7 @@
         <th>岗位</th>
         <th>参照工资(元)</th>
       </tr>
-      <tr v-for="(item,idx) in postList" :key="item.id">
+      <tr v-for="(item,idx) in postList" :key="item.key">
         <td>{{idx + 1}}</td>
         <td>{{departmentName}}</td>
         <td>{{item.stationName}}</td>
@@ -94,7 +94,7 @@ import {
 } from '@/api/salaryManagement'
 import moment from 'moment' 
 
-
+let uuid = () =>Math.random().toString(32).slice(-10)
 
 export default {
   name:'AddForm',
@@ -108,6 +108,7 @@ export default {
       visible:false,
       actionType:'add',
       spinning:false,
+      isRepeatPost:false //岗位是否重复
     }
   },
   computed:{
@@ -152,6 +153,18 @@ export default {
         that.handleCancel()
         return 
       }
+      if(!that.departmentId){
+        that.$message.info('请选择部门')
+        return
+      }
+      if(that.isRepeatPost){
+        that.$message.info('该部门已经添加，禁止重复添加。')
+        return
+      }
+      if(that.postList.length === 0){
+        that.$message.info('该部门下暂无岗位，禁止操作。')
+        return
+      }
       this.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true
@@ -195,6 +208,7 @@ export default {
       that.record = record || {}
       that.departmentId = undefined
       that.postList = []
+      that.isRepeatPost = false
       await that.form.resetFields() 
       await that.init() 
       if(type === 'add') return 
@@ -215,15 +229,20 @@ export default {
     },
     depChange(dep_id){
       let that = this
+      that.departmentId = dep_id
+      that.isRepeatPost = false
       oaSalaryInfoStationStandardIsAddByDepId({depId:dep_id}).then(res =>{
         let {code,msg} = res
         if(+code === 500){
-          that.$message.info(msg)
+          //that.$message.info(msg)
+          that.$message.info('该部门已经添加，禁止重复添加。')
+          that.isRepeatPost = true
           that.postList = []
           return
         }
         getStationList({ id: dep_id }).then(res =>{
           that.postList = res.data.map(item => {
+            item.key = uuid()
             item.stationId = item.id
             return item
           })
