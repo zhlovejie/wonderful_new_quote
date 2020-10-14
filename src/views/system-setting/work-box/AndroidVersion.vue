@@ -27,15 +27,30 @@
         </div>
       </a-form>
     </div>
+    <!-- :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" -->
     <s-table
+      style="margin-top: 20px"
       ref="table"
       size="default"
       rowKey="id"
       :columns="columns"
       :data="loadData"
       :alert="false"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <div
+        :style="{
+          maxWidth: '300px',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          wordWrap: 'break-word',
+          wordBreak: 'break-all',
+        }"
+        slot="downloadUrl"
+        slot-scope="text, record"
+      >
+        {{ record.downloadUrl }}
+      </div>
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
@@ -86,7 +101,7 @@ export default {
   data() {
     return {
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
-      selectedRowKeys: [],
+      // selectedRowKeys: [],
       selectedRows: [],
       // 查询参数
       queryParam: {},
@@ -107,6 +122,7 @@ export default {
         {
           title: '版本连接',
           dataIndex: 'downloadUrl',
+          scopedSlots: { customRender: 'downloadUrl' },
           // sorter: true
         },
         {
@@ -223,11 +239,11 @@ export default {
     //     })
     //   })
     // },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      console.log('onSelectChange 点击了', selectedRows)
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
-    },
+    // onSelectChange(selectedRowKeys, selectedRows) {
+    //   console.log('onSelectChange 点击了', selectedRows)
+    //   this.selectedRowKeys = selectedRowKeys
+    //   this.selectedRows = selectedRows
+    // },
   },
 }
 </script>

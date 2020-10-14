@@ -40,14 +40,15 @@
       </a-form>
     </div>
     <s-table
+      style="margin-top: 20px"
       ref="table"
       size="default"
       rowKey="id"
       :columns="columns"
       :data="loadData"
       :alert="false"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <!-- :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" -->
       <div
         :style="{
           maxWidth: '300px',
@@ -114,8 +115,8 @@ export default {
   data() {
     return {
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
-      selectedRowKeys: [],
-      selectedRows: [],
+      // selectedRowKeys: [],
+      // selectedRows: [],
       // 查询参数
       queryParam: {},
       //设备类型
@@ -278,11 +279,11 @@ export default {
     //     })
     //   })
     // },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      console.log('onSelectChange 点击了', selectedRows)
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
-    },
+    // onSelectChange(selectedRowKeys, selectedRows) {
+    //   console.log('onSelectChange 点击了', selectedRows)
+    //   this.selectedRowKeys = selectedRowKeys
+    //   this.selectedRows = selectedRows
+    // },
   },
 }
 </script>

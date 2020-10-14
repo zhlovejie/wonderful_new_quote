@@ -94,6 +94,12 @@ const columns = [
   },
   {
     align: 'center',
+    title: '编码',
+    dataIndex: 'code',
+    key: 'code',
+  },
+  {
+    align: 'center',
     title: '操作人',
     key: 'modifierName',
     dataIndex: 'modifierName',
