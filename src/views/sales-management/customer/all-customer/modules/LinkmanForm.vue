@@ -20,7 +20,7 @@
         <a-input v-decorator="['position',{rules: [{required: true, min: 2, message: '职位最少为2个字符！'}]}]"/>
       </a-form-item>
       <a-form-item label="手机号" :labelCol="labelCol" :wrapperCol="wrapperCol" class="stepFormText">
-        <a-input @blur="checkPhone()" v-decorator="['phone',{rules: [{required: true, min: 11, max: 11, pattern: '^[0-9]*$', message: '手机号必须为11位纯数字！'}],trim: true}]"/>
+        <a-input @blur="checkPhone()" v-decorator="['phone',{rules: [{required: true, pattern: '^[0-9]*$', message: '手机号不可为空且必须为纯数字！'}],trim: true}]"/>
       </a-form-item>
       <a-form-item label="微信号" :labelCol="labelCol" :wrapperCol="wrapperCol" class="stepFormText">
         <a-input v-decorator="['weixin',{rules: [{required: false}]}]"/>
