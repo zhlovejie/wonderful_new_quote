@@ -4,10 +4,22 @@
     <div class="operational-scheme-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="版本号">
-          <a-input v-model.trim="queryParam.versionCode" placeholder="根据版本号查询" />
+          <a-input :allowClear="true" v-model.trim="queryParam.versionCode" placeholder="根据版本号查询" />
         </a-form-item>
         <a-form-item label="名称">
-          <a-input v-model.trim="queryParam.versionName" placeholder="根据版本名称查询" />
+          <a-input :allowClear="true" v-model.trim="queryParam.versionName" placeholder="根据版本名称查询" />
+        </a-form-item>
+        <a-form-item label="设备类型">
+          <a-select
+            placeholder="设备类型"
+            v-model="queryParam.type"
+            :allowClear="true"
+            style="width: 200px; margin-right: 10px"
+          >
+            <a-select-option v-for="item in equipmentType" :key="item.code" :value="item.code">{{
+              item.text
+            }}</a-select-option>
+          </a-select>
         </a-form-item>
         <template v-if="$auth('androidVersion:list')">
           <a-form-item>
@@ -27,7 +39,6 @@
         </div>
       </a-form>
     </div>
-    <!-- :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" -->
     <s-table
       style="margin-top: 20px"
       ref="table"
@@ -37,6 +48,7 @@
       :data="loadData"
       :alert="false"
     >
+      <!-- :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" -->
       <div
         :style="{
           maxWidth: '300px',
@@ -82,14 +94,15 @@
 import { STable } from '@/components'
 import { getFileManagementList, downloadFile, delFileManagement } from '@/api/OperationalScheme'
 import {
-  uploadAndroidApk,
-  deleteAndroidVersion,
-  editAndroidVersion,
-  addAndroidVersion,
-  listAndroidVersion,
+  uploadAndroidApkEquipment,
+  deleteAndroidVersionEquipment,
+  editAndroidVersionEquipment,
+  addAndroidVersionEquipment,
+  listAndroidVersionEquipment,
+  queryCode,
 } from '@/api/workBox'
 
-import Modal from './modules/AndroidModal'
+import Modal from './modules/newEquipment'
 
 export default {
   name: 'AndroidVersion',
@@ -98,44 +111,66 @@ export default {
     STable,
     Modal,
   },
+
   data() {
     return {
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
       // selectedRowKeys: [],
-      selectedRows: [],
+      // selectedRows: [],
       // 查询参数
       queryParam: {},
+      //设备类型
+      equipmentType: [],
       // 表头
       columns: [
         {
           title: '序号',
           scopedSlots: { customRender: 'serial' },
+          align: 'center',
         },
         {
+          align: 'center',
           title: '版本名称',
           dataIndex: 'versionName',
         },
         {
+          align: 'center',
           title: '版本编号',
           dataIndex: 'versionCode',
         },
         {
+          align: 'center',
+          title: '设备类型',
+          dataIndex: 'typeName',
+        },
+        {
+          align: 'center',
+          title: '设备类型编码',
+          dataIndex: 'type',
+        },
+
+        {
+          align: 'center',
           title: '版本连接',
           dataIndex: 'downloadUrl',
+          width: 300,
           scopedSlots: { customRender: 'downloadUrl' },
           // sorter: true
         },
         {
+          align: 'center',
           title: '创建人',
           dataIndex: 'modifyUserName',
           // sorter: true
         },
         {
+          align: 'center',
           title: '创建时间',
           dataIndex: 'modifyTime',
           // sorter: true
         },
         {
+          align: 'center',
           title: '操作',
           dataIndex: 'action',
           width: '200px',
@@ -144,7 +179,7 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
-        return listAndroidVersion(Object.assign(parameter, this.queryParam))
+        return listAndroidVersionEquipment(Object.assign(parameter, this.queryParam))
           .then((res) => {
             return res
           })
@@ -153,6 +188,11 @@ export default {
           })
       },
     }
+  },
+  created() {
+    queryCode({ code: 'az_00' }).then((res) => {
+      this.equipmentType = res.data
+    })
   },
   methods: {
     handleEdit(record) {
@@ -177,7 +217,7 @@ export default {
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          deleteAndroidVersion({ versionId: record.id })
+          deleteAndroidVersionEquipment({ versionId: record.id })
             .then((data) => {
               if (data.code == 200) {
                 _this.$message.success('删除成功')

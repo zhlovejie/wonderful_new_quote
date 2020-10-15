@@ -32,7 +32,7 @@
             <div slot="action" slot-scope="record">
               <template v-if="$auth('dictionary:edit')">
                 <a @click="showModal('edit', record)">修改</a>
-                <a-divider type="vertical"/>
+                <a-divider type="vertical" />
               </template>
               <template v-if="$auth('dictionary:del')">
                 <a @click="showDeleteConfirm(record)">删除</a>
@@ -50,33 +50,19 @@
       cancelText="取消"
       :maskClosable="false"
     >
-      <a-form
-        :form="currentRecord"
-      >
-        <a-form-item
-          label="上级"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-        >
-          <span>{{ (currentRecord && currentRecord.parent && currentRecord.parent.text)|| '无' }}</span>
+      <a-form :form="form">
+        <a-form-item label="上级" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+          <span>{{ (currentRecord && currentRecord.parent && currentRecord.parent.text) || '无' }}</span>
         </a-form-item>
-        <a-form-item
-          label="名称"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-        >
-          <a-input
-            v-model="currentRecord.text"
-          />
+        <a-form-item label="名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+          <a-input v-decorator="['text', { rules: [{ required: true, message: '请输入名称！' }] }]" />
         </a-form-item>
-        <a-form-item
-          label="备注"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-        >
-          <a-textarea v-model="currentRecord.remarks" :rows="4"/>
+        <a-form-item label="编码" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+          <a-input v-decorator="['code', { rules: [{ required: true, message: '请输入编码！' }] }]" />
         </a-form-item>
-
+        <a-form-item label="备注" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+          <a-textarea v-decorator="['remarks', { rules: [{ required: false, message: '请输入编码！' }] }]" :rows="4" />
+        </a-form-item>
       </a-form>
     </a-modal>
   </a-card>
@@ -89,7 +75,7 @@ import {
   DictionaryModify,
   dictionaryAdd,
   DictionaryDelete,
-  getDictionaryByText
+  getDictionaryByText,
 } from '../../../api/workBox'
 
 const columns = [
@@ -98,38 +84,44 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '名称',
     dataIndex: 'text',
-    key: 'text'
+    key: 'text',
+  },
+  {
+    align: 'center',
+    title: '编码',
+    dataIndex: 'code',
+    key: 'code',
   },
   {
     align: 'center',
     title: '操作人',
     key: 'modifierName',
-    dataIndex: 'modifierName'
+    dataIndex: 'modifierName',
   },
   {
     align: 'center',
     title: '操作时间',
     key: 'modifyTime',
-    dataIndex: 'modifyTime'
+    dataIndex: 'modifyTime',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 export default {
   name: 'DataDictionary',
   components: {},
   props: {},
-  data () {
+  data() {
     return {
       columns: columns,
       data: [],
@@ -146,44 +138,45 @@ export default {
       parentId: '', // 树父节点id
       text: '', // 名称
       formLayout: 'horizontal',
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
     }
   },
   computed: {},
   watch: {},
-  cerated () {
-  },
-  mounted () {
+  cerated() {},
+  mounted() {
     this.init()
   },
   methods: {
-    init () {
+    init() {
       this.getList()
-      gettreeList().then(res => {
+      gettreeList().then((res) => {
         this.treeData = res.data
       })
     },
 
     // 获取数据字典页面列表
-    getList (params = {}) {
+    getList(params = {}) {
       params = {
-        parentId: this.parentId || 0
+        parentId: this.parentId || 0,
         // current: params.current || 1,
       }
       this.loading = true
-      getDictionaryList(params).then((res) => {
-        const pagination = { ...this.pagination }
-        pagination.total = res.data.total || 0
-        this.loading = false
-        this.data = res.data
-        this.pagination = pagination
-      }).catch(error => {
-        this.loading = false
-        console.error(error)
-      })
+      getDictionaryList(params)
+        .then((res) => {
+          const pagination = { ...this.pagination }
+          pagination.total = res.data.total || 0
+          this.loading = false
+          this.data = res.data
+          this.pagination = pagination
+        })
+        .catch((error) => {
+          this.loading = false
+          console.error(error)
+        })
     },
     // 表格变化，分页
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       console.log(pagination)
       const pager = { ...this.pagination }
       pager.current = pagination.current
@@ -193,17 +186,24 @@ export default {
         current: pagination.current,
         sortField: sorter.field,
         sortOrder: sorter.order,
-        ...filters
+        ...filters,
       })
     },
     // 显示新增，修改弹出层
-    showModal (action, record) {
+    showModal(action, record) {
       console.log('显示删除', record)
       this.action = action
       if (action === 'edit') {
         this.dialogTitle = '修改'
+        this.form.setFieldsValue({
+          text: record.text,
+          code: record.code,
+          remarks: record.remarks,
+        })
         this.currentRecord = { ...record, Authorization: this.token }
       } else if (action === 'add') {
+        // 清空表单
+        this.form.resetFields()
         let parentId = ''
         let text = ''
         this.dialogTitle = '新增'
@@ -213,12 +213,13 @@ export default {
           text = ''
           this.currentRecord = {
             parent: {
-              text: this.selectedTreeData.title
+              text: this.selectedTreeData.title,
             },
             Authorization: this.token,
             remarks: '',
+            code: '',
             text: text,
-            parentId: this.parentId
+            parentId: this.parentId,
           }
         } else {
           text = ''
@@ -226,48 +227,80 @@ export default {
       }
       this.visible = true
     },
-    doEdit () {
+    doEdit() {
       // 取数据
-      const { id, Authorization, text, remarks } = this.currentRecord
-      // 组装接口需要的数据
-      const params = { id, Authorization, text, remarks }
-      this.loading = true
-      DictionaryModify(params).then((data) => {
-        this.visible = false
-        this.getList()
-      }).catch(error => {
-        console.error(error)
-      }).finally(() => {
-        this.loading = false
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          this.currentRecord.text = values.text
+          this.currentRecord.code = values.code
+          this.currentRecord.remarks = values.remarks
+          const { id, Authorization, text, remarks, code } = this.currentRecord
+          const params = { id, Authorization, text, remarks, code }
+          this.loading = true
+          DictionaryModify(params)
+            .then((data) => {
+              if (data.code === 200) {
+                this.visible = false
+                this.getList()
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+            .catch((error) => {
+              console.error(error)
+            })
+            .finally(() => {
+              this.loading = false
+            })
+        }
       })
     },
-    doAdd () {
+    doAdd() {
       // 取数据
-      const { text, Authorization, remarks, parentId } = this.currentRecord
-      // 组装接口需要的数据
-      const params = { text, parentId, Authorization, remarks }
-      this.loading = true
-      dictionaryAdd(params).then(() => {
-        this.visible = false
-        this.init()
-      }).catch(error => {
-        console.error(error)
-      }).finally(() => {
-        this.loading = false
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          this.currentRecord.text = values.text
+          this.currentRecord.code = values.code
+          this.currentRecord.remarks = values.remarks
+          const { text, Authorization, remarks, parentId, code } = this.currentRecord
+          // 组装接口需要的数据
+          const params = { code, text, parentId, Authorization, remarks }
+          this.loading = true
+          dictionaryAdd(params)
+            .then((res) => {
+              if (res.code === 200) {
+                this.visible = false
+                this.init()
+              } else {
+                this.$message.error(res.msg)
+              }
+            })
+            .catch((error) => {
+              console.error(error)
+            })
+            .finally(() => {
+              this.loading = false
+            })
+        }
       })
     },
     // 点击确定提交
-    handleSubmit () {
+    handleSubmit() {
       this.form.validateFields((err, values) => {
         if (err === true) {
           console.error('表单验证失败：', values)
           return false
         }
-        const params = { 'text': this.currentRecord.text.trim() }
+        const params = { text: this.currentRecord.text.trim() }
         var _this = this
+        console.log(params)
         getDictionaryByText(params).then((res) => {
           if (this.action === 'edit') {
-            if (res.data.length > 0 && _this.currentRecord.id !== res.data[0].id && (_this.parentId === 0 || _this.parentId === '')) {
+            if (
+              res.data.length > 0 &&
+              _this.currentRecord.id !== res.data[0].id &&
+              (_this.parentId === 0 || _this.parentId === '')
+            ) {
               this.$message.error('名称重复')
               return
             }
@@ -283,20 +316,20 @@ export default {
       })
     },
     /**
-       * 选中树节点触发
-       * @param selectedKeys
-       * @param selected
-       * @param node
-       * 参数的解构赋值
-       */
-    onSelect (selectedKeys, { selected, node }) {
+     * 选中树节点触发
+     * @param selectedKeys
+     * @param selected
+     * @param node
+     * 参数的解构赋值
+     */
+    onSelect(selectedKeys, { selected, node }) {
       if (selected === false) {
         this.selectedTreeData = {}
       } else {
         const { title } = node
         this.selectedTreeData = {
           key: selectedKeys[0],
-          title
+          title,
         }
       }
       this.selectedKeys = selectedKeys
@@ -304,11 +337,12 @@ export default {
       // 字典-通过父id查找列表
       this.getList()
     },
-    onExpand () { // 树展开
+    onExpand() {
+      // 树展开
       console.log('Trigger Expand')
     },
     // 删除操作
-    showDeleteConfirm (record) {
+    showDeleteConfirm(record) {
       const self = this
       console.log('点击删除弹出来的时候record', record)
       self.currentRecord = { ...record, Authorization: self.token }
@@ -319,50 +353,53 @@ export default {
         okText: '确定',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           const { id, Authorization } = self.currentRecord
           const params = { id: self.currentRecord.id, Authorization }
           console.log('确定要删除的参数', params)
-          DictionaryDelete(params).then((data) => {
-            console.log('确定要删除', data)
-            // self.getList()
-            self.init()
-          }).catch(error => {
-            console.error(error)
-          }).finally(() => {
-            self.loading = false
-          })
+          DictionaryDelete(params)
+            .then((data) => {
+              console.log('确定要删除', data)
+              // self.getList()
+              self.init()
+            })
+            .catch((error) => {
+              console.error(error)
+            })
+            .finally(() => {
+              self.loading = false
+            })
           // 这儿需要调取删除按钮
           console.log('删除了')
         },
-        onCancel () {
+        onCancel() {
           console.log('取消删除')
-        }
+        },
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-  .fl-r {
-    float: right;
-  }
+.fl-r {
+  float: right;
+}
 
-  .clearfix:after {
-    display: block;
-    content: '';
-    clear: both;
-    visibility: hidden;
-    height: 0;
-    font-size: 0;
-  }
+.clearfix:after {
+  display: block;
+  content: '';
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  font-size: 0;
+}
 
-  .clearfix {
-    zoom: 1;
-  }
+.clearfix {
+  zoom: 1;
+}
 
-  .btn-delete {
-    margin-left: 12px;
-  }
+.btn-delete {
+  margin-left: 12px;
+}
 </style>

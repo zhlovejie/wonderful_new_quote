@@ -1,4 +1,6 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 
 // eslint-disable-next-line no-unused-vars
@@ -26,11 +28,85 @@ const api = {
   androidVersionAdd: '/android-version/addVersion',
   androidVersionEdit: '/android-version/updateVersion',
   androidVersionDelete: '/android-version/deleteVersion',
-  androidApkUpload: '/android-version/uploadApkFile'
+  androidApkUpload: '/android-version/uploadApkFile',
+  androidVersionEquipmentList: '/android-version-equipment/queryList',
+  androidVersionEquipmentAdd: '/android-version-equipment/addVersion',
+  androidVersionEquipmentEdit: '/android-version-equipment/updateVersion',
+  androidVersionEquipmentDelete: '/android-version-equipment/deleteVersion',
+  androidApkEquipmentUpload: '/android-version-equipment/uploadApkFile',
+  //数据字典接口 
+  getListByCode: 'dictionary/getListByCode'
 }
 
+//数据字典 
+export function queryCode(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getListByCode,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+// 上传android设备 apk
+export function uploadAndroidApkEquipment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.androidApkEquipmentUpload,
+    method: 'post',
+    data: parameter
+  })
+}
+
+// android设备分页列表
+export function listAndroidVersionEquipment(parameter) {
+  console.log('listAndroidVersion---param``````', parameter)
+  return axios({
+    baseURL: system.baseURL,
+    url: api.androidVersionEquipmentList,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 删除android设备
+export function deleteAndroidVersionEquipment(parameter) {
+  console.log('deleteAndroidVersion---param``````', parameter)
+  return axios({
+    baseURL: system.baseURL,
+    url: api.androidVersionEquipmentDelete,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 修改android设备
+export function editAndroidVersionEquipment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.androidVersionEquipmentEdit,
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 新增android设备
+export function addAndroidVersionEquipment(parameter) {
+  console.log('param``````', parameter)
+  return axios({
+    baseURL: system.baseURL,
+    url: api.androidVersionEquipmentAdd,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+// ---------------------------------------分界线-------------------------
 // 上传android apk
-export function uploadAndroidApk (parameter) {
+export function uploadAndroidApk(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.androidApkUpload,
@@ -40,7 +116,7 @@ export function uploadAndroidApk (parameter) {
 }
 
 // android版本分页列表
-export function listAndroidVersion (parameter) {
+export function listAndroidVersion(parameter) {
   console.log('listAndroidVersion---param``````', parameter)
   return axios({
     baseURL: system.baseURL,
@@ -51,7 +127,7 @@ export function listAndroidVersion (parameter) {
 }
 
 // 删除android版本
-export function deleteAndroidVersion (parameter) {
+export function deleteAndroidVersion(parameter) {
   console.log('deleteAndroidVersion---param``````', parameter)
   return axios({
     baseURL: system.baseURL,
@@ -62,7 +138,7 @@ export function deleteAndroidVersion (parameter) {
 }
 
 // 修改android版本
-export function editAndroidVersion (parameter) {
+export function editAndroidVersion(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.androidVersionEdit,
@@ -72,7 +148,7 @@ export function editAndroidVersion (parameter) {
 }
 
 // 新增android版本
-export function addAndroidVersion (parameter) {
+export function addAndroidVersion(parameter) {
   console.log('param``````', parameter)
   return axios({
     baseURL: system.baseURL,
@@ -86,7 +162,7 @@ export function addAndroidVersion (parameter) {
 
 
 // 修改软件产品
-export function editSoftwareProduct (parameter) {
+export function editSoftwareProduct(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.editSoftwareProduct,
@@ -96,7 +172,7 @@ export function editSoftwareProduct (parameter) {
 }
 
 // 新增软件产品
-export function addSoftwareProduct (parameter) {
+export function addSoftwareProduct(parameter) {
   console.log('param``````', parameter)
   return axios({
     baseURL: system.baseURL,
@@ -107,7 +183,7 @@ export function addSoftwareProduct (parameter) {
 }
 
 // 软件产品分页列表
-export function softwareProductList (parameter) {
+export function softwareProductList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.softwareProductList,
@@ -117,7 +193,7 @@ export function softwareProductList (parameter) {
 }
 
 // 下载
-export function dunloadProjectCase (parameter) {
+export function dunloadProjectCase(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.dunloadProjectCase,
@@ -129,7 +205,7 @@ export function dunloadProjectCase (parameter) {
 
 
 // 修改工程案例
-export function editProjectCase (parameter) {
+export function editProjectCase(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.editProjectCase,
@@ -139,7 +215,7 @@ export function editProjectCase (parameter) {
 }
 
 // 删除工程案例
-export function delProjectCase (parameter) {
+export function delProjectCase(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.delProjectCase,
@@ -149,7 +225,7 @@ export function delProjectCase (parameter) {
 }
 
 // 新增工程案例
-export function addProjectCase (parameter) {
+export function addProjectCase(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.addProjectCase,
@@ -159,7 +235,7 @@ export function addProjectCase (parameter) {
 }
 
 // 获取工程案例分页列表
-export function checkCaseName (parameter) {
+export function checkCaseName(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.checkCaseName,
@@ -169,7 +245,7 @@ export function checkCaseName (parameter) {
 }
 
 // 获取工程案例分页列表
-export function projectCaseList (parameter) {
+export function projectCaseList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.projectCaseList,
@@ -179,7 +255,7 @@ export function projectCaseList (parameter) {
 }
 
 // 修改公章
-export function editSeal (parameter) {
+export function editSeal(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.editSeal,
@@ -189,7 +265,7 @@ export function editSeal (parameter) {
 }
 
 // 删除公章
-export function delSeal (parameter) {
+export function delSeal(parameter) {
   console.log('param', parameter)
   return axios({
     baseURL: system.baseURL,
@@ -200,7 +276,7 @@ export function delSeal (parameter) {
 }
 
 // 新增公章
-export function addSeal (parameter) {
+export function addSeal(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.addSeal,
@@ -210,7 +286,7 @@ export function addSeal (parameter) {
 }
 
 // 判断是否有重复的公章代码
-export function checkSealCode (parameter) {
+export function checkSealCode(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.checkSealCode,
@@ -220,7 +296,7 @@ export function checkSealCode (parameter) {
 }
 
 // 获取公章分页列表
-export function sealList (parameter) {
+export function sealList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.sealList,
@@ -229,7 +305,7 @@ export function sealList (parameter) {
   })
 }
 
-export function getPDF (parameter) {
+export function getPDF(parameter) {
   return axios({
     baseURL: system.baseURL, // 服务器ip和端口
     url: api.getPDF,
@@ -239,7 +315,7 @@ export function getPDF (parameter) {
 }
 
 // 产品分页列表
-export function getProductList (parameter) {
+export function getProductList(parameter) {
   return axios({
     headers: {
       'Authorization': parameter.token
@@ -252,7 +328,7 @@ export function getProductList (parameter) {
 }
 
 // 检查产品名是否有重复
-export function checkName (parameter) {
+export function checkName(parameter) {
   return axios({
     baseURL: system.baseURL, // 服务器ip和端口
     url: api.checkName,
@@ -261,7 +337,7 @@ export function checkName (parameter) {
   })
 }
 
-export function addProduct (parameter) {
+export function addProduct(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.addProduct,
@@ -270,7 +346,7 @@ export function addProduct (parameter) {
   })
 }
 
-export function delProduct (parameter) {
+export function delProduct(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.delProduct,
@@ -280,7 +356,7 @@ export function delProduct (parameter) {
 }
 
 // 修改产品信息
-export function editProduct (parameter) {
+export function editProduct(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: api.editProduct,
@@ -290,7 +366,7 @@ export function editProduct (parameter) {
 }
 
 // 获取数据字典列表
-export function getDictionaryList (parameter) {
+export function getDictionaryList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/queryList',
@@ -299,7 +375,7 @@ export function getDictionaryList (parameter) {
   })
 }
 // 获取数据字典列表
-export function getListByText (parameter) {
+export function getListByText(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/query',
@@ -308,7 +384,7 @@ export function getListByText (parameter) {
   })
 }
 // 获取数据字典左侧树结构
-export function gettreeList (parameter) {
+export function gettreeList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/queryTree',
@@ -318,7 +394,7 @@ export function gettreeList (parameter) {
 }
 
 // 修改字典项目
-export function DictionaryModify (parameter) {
+export function DictionaryModify(parameter) {
   // const token = parameter.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -328,7 +404,7 @@ export function DictionaryModify (parameter) {
   })
 }
 // 新增字典项目
-export function dictionaryAdd (parameter) {
+export function dictionaryAdd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/save',
@@ -337,7 +413,7 @@ export function dictionaryAdd (parameter) {
   })
 }
 // 删除数据字典项目
-export function DictionaryDelete (parameter) {
+export function DictionaryDelete(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/remove',
@@ -346,7 +422,7 @@ export function DictionaryDelete (parameter) {
   })
 }
 // 验证重名
-export function getDictionaryByText (parameter) {
+export function getDictionaryByText(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/queryList',
@@ -355,18 +431,18 @@ export function getDictionaryByText (parameter) {
   })
 }
 // 产品信息导入
-export function importExcel (parameter) {
+export function importExcel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/productInformation/importExcel',
     method: 'post',
-    responseType:'blob',
+    responseType: 'blob',
     data: parameter
   })
 }
 
 // 产品区域信息接口
-export function queryTreeByArea () {
+export function queryTreeByArea() {
   return axios({
     baseURL: system.baseURL,
     url: '/dictionary/queryTreeByArea',
@@ -375,26 +451,26 @@ export function queryTreeByArea () {
 }
 
 // 返回产品A价、B价、C价 的计算比例
-export function dictionaryQueryOne (id) {
+export function dictionaryQueryOne(id) {
   return axios({
     baseURL: system.baseURL,
-    url: '/dictionary/queryOne?id='+id,
+    url: '/dictionary/queryOne?id=' + id,
     method: 'get'
   })
 }
 
 // 返回产品A价、B价、C价 的计算比例
-export function queryPriceByArea (id) {
+export function queryPriceByArea(id) {
   return axios({
     baseURL: system.baseURL,
-    url: '/dictionary/queryPriceByArea?id='+id,
+    url: '/dictionary/queryPriceByArea?id=' + id,
     method: 'get'
   })
 }
 
 //---------------------产品价格系数------------------
 /**产品价格系数新增和修改 */
-export function productPriceCoefficientAddAndUpdate (parameter) {
+export function productPriceCoefficientAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/productPriceCoefficient/price-coefficient/addAndUpdatePriceCoefficient',
@@ -403,7 +479,7 @@ export function productPriceCoefficientAddAndUpdate (parameter) {
   })
 }
 /**产品价格系数删除 */
-export function productPriceCoefficientDelete (parameter) {
+export function productPriceCoefficientDelete(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/productPriceCoefficient/price-coefficient/delPriceCoefficient',
@@ -412,7 +488,7 @@ export function productPriceCoefficientDelete (parameter) {
   })
 }
 /**产品价格系数详情 */
-export function productPriceCoefficientDetail (parameter) {
+export function productPriceCoefficientDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/productPriceCoefficient/price-coefficient/getPriceCoefficientDetail',
@@ -421,7 +497,7 @@ export function productPriceCoefficientDetail (parameter) {
   })
 }
 /**产品价格系数列表无分页 */
-export function productPriceCoefficientListWithoutPage (parameter) {
+export function productPriceCoefficientListWithoutPage(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/productPriceCoefficient/price-coefficient/getPriceCoefficientList',
@@ -430,7 +506,7 @@ export function productPriceCoefficientListWithoutPage (parameter) {
   })
 }
 /**产品价格系数列表 */
-export function productPriceCoefficientList (parameter) {
+export function productPriceCoefficientList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/productPriceCoefficient/price-coefficient/getPriceCoefficientPage',
@@ -440,10 +516,10 @@ export function productPriceCoefficientList (parameter) {
 }
 //---------------------产品价格系数------------------
 //工具箱-工程案例 批量下载专用
-export function WorkBoxBatchDownload (url) {
+export function WorkBoxBatchDownload(url) {
   return axios({
     url: url,
     method: 'get',
-    responseType:'blob'
+    responseType: 'blob'
   })
 }
