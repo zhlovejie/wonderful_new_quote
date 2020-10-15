@@ -122,3 +122,103 @@ export function oaSalaryConsistValidate (parameter) {
   })
 }
 //---------------------薪资项设置-END----------------------
+
+
+
+
+//多类补贴规则（1工伤 2代班 3 大夜班 4中夜班 5延时餐补）   补贴规则
+export function nightRuleAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-night-rule/addAndUpdateNightRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function nightRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-night-rule/delNightRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function nightRulePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-night-rule/getNightRulePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//多类补贴规则（1工伤 2代班 3 大夜班 4中夜班 5延时餐补）   补贴规则END
+
+//岗位等级补贴规则（1 油补规则 2  通讯补贴 3 高级工程师补贴） 
+export function levelRuleAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-level-rule/addAndUpdateLevelRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function levelRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-level-rule/delLevelRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function levelRulePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-level-rule/getLevelRulePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//岗位等级补贴规则（1 油补规则 2  通讯补贴 3 高级工程师补贴） END
+
+
+//工龄补贴规则
+export function lengthServiceRuleAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/addAndUpdateLengthServiceRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function lengthServiceRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/delLengthServiceRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function lengthServiceRulePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/getLengthServiceRulePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function lengthServiceRuleDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/lengthServiceRuleDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//工龄补贴规则END
