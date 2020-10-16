@@ -222,3 +222,91 @@ export function lengthServiceRuleDetail (parameter) {
   })
 }
 //工龄补贴规则END
+
+//加班补贴规则
+export function overWorkRuleAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-over-work-rule/addAndUpdateOverWorkRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function overWorkRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-over-work-rule/delOverWorkRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function overWorkRulePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-over-work-rule/getOverWorkRulePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//加班补贴规则END
+
+
+//交通补贴规则
+export function trafficRuleAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-traffic-rule/addAndUpdateTrafficRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function trafficRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-traffic-rule/delTrafficRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function trafficRulePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-traffic-rule/getTrafficRulePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//交通补贴规则END
+
+//高温补贴规则
+export function hignTemRuleRuleAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-hign-tem-rule/addAndUpdateHignTemRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function hignTemRuleDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-hign-tem-rule/delHignTemRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function hignTemRulePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-hign-tem-rule/getHignTemRulePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//高温补贴规则END
