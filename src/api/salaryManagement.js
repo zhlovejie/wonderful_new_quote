@@ -310,3 +310,50 @@ export function hignTemRulePageList (parameter) {
   })
 }
 //高温补贴规则END
+
+//油补申请
+export function oilApplyAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/addAndUpdateOilApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function oilApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/approvalOilApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function oilApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/delOilApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oilApplyPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/getOilApplyPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function oilApplyRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/revocationOilApply',
+    method: 'get',
+    params: parameter
+  })
+}
+//油补申请END
