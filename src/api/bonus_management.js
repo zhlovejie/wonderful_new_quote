@@ -356,3 +356,64 @@ export function salary_base_sale_List(parameter) {
     params: parameter
   })
 }
+
+
+//添加销售规则明细
+export function salary_sale_saveOrUpdateSalerRule(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler-rule/saveOrUpdateSalerRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 销售明细列表
+export function salary_listSalerRule(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler-rule/listSalerRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//销售人员
+export function salary_getUserByType(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'department/getUserByType',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//销售基本工资新增
+export function salary_Sale_SaveOrUpdateSalaryBaseSaler(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler/saveOrUpdateSalaryBaseSaler',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 销售基本工资删除
+export function salary_Sale_RemoveSalaryBaseSaler(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler/removeSalaryBaseSaler',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 销售基本工资规则明细删除
+export function salary_Sale_RemoveSalerRule(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-saler-rule/removeSalerRule',
+    method: 'post',
+    data: parameter
+  })
+}

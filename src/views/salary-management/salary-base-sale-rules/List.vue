@@ -20,11 +20,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleAdd('see', record)">添加规则</a>
+          <a @click="AddRule('add', record)">添加规则</a>
           <a-divider type="vertical" />
-          <a @click="handleAdd('see', record)">规则明细</a>
-          <!-- <a @click="handleAdd('see', record)">查看</a> -->
-          <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
+          <a @click="RuleDetails(record)">规则明细</a>
+          <template>
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
@@ -32,7 +31,8 @@
           </template>
         </span>
       </a-table>
-      <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
+      <AddForm ref="addForm" @finish="searchAction()" />
+      <AppFrom ref="appFrom" />
     </a-layout>
   </a-card>
 </template>
@@ -40,14 +40,15 @@
 <script>
 import moment from 'moment'
 import { getDevisionList, getStationList } from '@/api/systemSetting'
-import { salary_base_sale_List } from '@/api/bonus_management'
-// import AddForm from './module/AddForm'
+import { salary_base_sale_List, salary_Sale_RemoveSalaryBaseSaler } from '@/api/bonus_management'
+import AddForm from './module/Formadd'
+import AppFrom from './module/AppFrom'
 
 const columns = [
   {
-    dataIndex: 'name',
+    dataIndex: 'order',
     title: '序号',
-    key: 'name',
+    key: 'order',
     align: 'center',
     scopedSlots: { customRender: 'order' },
   },
@@ -85,7 +86,8 @@ const columns = [
 export default {
   name: 'RoleManagement',
   components: {
-    // AddForm: AddForm,
+    AddForm,
+    AppFrom,
   },
   data() {
     return {
@@ -171,19 +173,27 @@ export default {
     },
     delete_list(id) {
       let that = this
-      //   DistributionDelete({ id: id }).then((res) => {
-      //     if (res.code === 200) {
-      //       this.searchAction()
-      //       that.$message.info(res.msg)
-      //     } else {
-      //       that.$message.error(res.msg)
-      //     }
-      //   })
+      salary_Sale_RemoveSalaryBaseSaler(`id=${id}`).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          that.$message.error(res.msg)
+        }
+      })
     },
     //新增 修改
-    // handleAdd(type, record) {
-    //   this.$refs.addForm.query(type, record)
-    // },
+    handleAdd(type, record) {
+      this.$refs.addForm.query(type, record)
+    },
+    AddRule(type, record) {
+      this.$refs.appFrom.query(type, record)
+    },
+    //规则明细
+    RuleDetails(record) {
+      this.$router.push({ name: 'salary-base-sale-module', params: { id: record.id } })
+      // this.$refs.ruleDetails.query(type, record)
+    },
   },
 }
 </script>
