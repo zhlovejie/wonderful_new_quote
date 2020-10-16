@@ -49,7 +49,7 @@
       :alert="false"
     >
       <!-- :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" -->
-      <div
+      <!-- <div
         :style="{
           maxWidth: '300px',
           whiteSpace: 'nowrap',
@@ -62,7 +62,7 @@
         slot-scope="text, record"
       >
         {{ record.downloadUrl }}
-      </div>
+      </div> -->
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
@@ -153,8 +153,8 @@ export default {
           align: 'center',
           title: '版本连接',
           dataIndex: 'downloadUrl',
-          width: 300,
-          scopedSlots: { customRender: 'downloadUrl' },
+          width: 400,
+          // scopedSlots: { customRender: 'downloadUrl' },
           // sorter: true
         },
         {
