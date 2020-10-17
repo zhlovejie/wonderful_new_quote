@@ -87,11 +87,13 @@
             </template>
             <template v-if="+record.status === 4 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit', record)">修改</a>
+              <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
             </template>
 
-            <a-divider type="vertical" />
-            <a v-download="record.applyUrl">下载</a>
+            <template v-if="record.applyUrl">
+              <a-divider type="vertical" />
+              <a target="_blank" v-download="record.applyUrl">下载</a>
+            </template>
 
             <template v-if="(+record.status === 4 || +record.status === 3) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
@@ -299,7 +301,7 @@ export default {
       if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
-        oilApplyDel(`id=${record.id}`)
+        oilApplyDel({id:record.id})
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -308,7 +310,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        oilApplyRevocation(`id=${record.id}`)
+        oilApplyRevocation({id:record.id})
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()

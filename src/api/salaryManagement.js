@@ -357,3 +357,203 @@ export function oilApplyRevocation (parameter) {
   })
 }
 //油补申请END
+
+//通讯申请
+export function ComApplyAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-com-apply/addAndUpdateComApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function ComApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-com-apply/approvalComApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function ComApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-com-apply/delComApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function ComApplyPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-com-apply/getComApplyPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function ComApplyRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-com-apply/revocationComApply',
+    method: 'get',
+    params: parameter
+  })
+}
+//通讯申请END
+
+
+//代班补贴申请
+export function SelinaApplyAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/addAndUpdateSelinaApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function SelinaApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/approvalSelinaApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function SelinaApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/delSelinaApply',
+    method: 'get',
+    params: parameter
+  })
+}
+/**手动完结 */
+export function SelinaApplyEnd (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/endSelinaApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function SelinaApplyPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/getSelinaApplyPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function SelinaApplyRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/revocationSelinaApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//代班补贴申请 END
+
+//其他补贴申请 
+export function OtherApplyAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-other-apply/addAndUpdateOtherApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function OtherApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-other-apply/approvalOtherApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function OtherApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-other-apply/delOtherApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function OtherApplyPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-other-apply/getOtherApplyPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function OtherApplyRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-other-apply/revocationOtherApply',
+    method: 'get',
+    params: parameter
+  })
+}
+//其他补贴申请 END
+
+
+//工伤补贴申请 
+export function InjuryApplyAddOrUpdate (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/addAndUpdateInjuryApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function InjuryApplyApproval (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/approvalInjuryApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function InjuryApplyDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/delInjuryApply',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function InjuryApplyPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/getInjuryApplyPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function InjuryApplyRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/revocationInjuryApply',
+    method: 'get',
+    params: parameter
+  })
+}
+//工伤补贴申请 END
