@@ -417,3 +417,82 @@ export function salary_Sale_RemoveSalerRule(parameter) {
     data: parameter
   })
 }
+
+//部门列表
+export function bonus_getDepartmentByType(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'department/getDepartmentByType',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 研发提成列表接口
+export function bonus_pageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//验证接口是否能新增 
+export function bonus_checkDeveloperPercentApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/checkDeveloperPercentApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//研发提成新增
+
+export function bonus_PercentageApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/SaveOrUpdateOaSalaryDeveloperPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+//研发提成撤回
+export function bonus_withdrawDeveloper(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/withdrawDeveloperSalerPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//研发提成撤回
+export function bonus_removeDeveloper(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/removeDeveloperSalerPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+//研发提成审批
+export function bonus_DeveloperPercentageApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/approvalOaSalaryDeveloperPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+// 研发详情 
+export function bonus_PercentageDetailt(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/getDeveloperSalerPercentageDetail',
+    method: 'get',
+    params: parameter
+  })
+}

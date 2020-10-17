@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="1200"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -21,128 +21,150 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
-        <table class="custom-table custom-table-border">
-          <tr>
-            <td>部门</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  :disabled="isDisabled"
-                  @change="depChangeHandler"
-                  placeholder="请选择部门"
-                  v-decorator="['departmentId', { rules: [{ required: true, message: '请选择部门!' }] }]"
-                >
-                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
-                    item.departmentName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>职位</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  :disabled="isDisabled"
-                  @change="postChangeHandler"
-                  placeholder="请选择职位"
-                  v-decorator="['stationId', { rules: [{ required: true, message: '请选择职位!' }] }]"
-                >
-                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
-                    item.stationName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>姓名</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  :disabled="isDisabled"
-                  placeholder="请选择人员"
-                  v-decorator="['userId', { rules: [{ required: true, message: '请选择人员!' }] }]"
-                >
-                  <a-select-option v-for="item in personSelectDataSource" :key="item.id" :value="item.id">{{
-                    item.trueName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>工作业绩</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-textarea
-                  placeholder="工作业绩"
-                  :disabled="isDisabled"
-                  :rows="2"
-                  v-decorator="['workAchievement', { rules: [{ required: true, message: '请输入工作业绩' }] }]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>备注</td>
-            <td colspan="4">
-              <a-form-item>
-                <a-textarea
-                  placeholder="备注"
-                  :disabled="isDisabled"
-                  :rows="2"
-                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-        </table>
+        <a-row>
+          <a-col :span="24" class="basic-tit" justify="center" align="middle">2020年5月份研发部收款统计表</a-col>
+        </a-row>
+        <!-- <a-card class="card" title="产品信息" :bordered="false"> -->
+        <a-table
+          :columns="baseColumns"
+          :scroll="{ x: 2000 }"
+          :dataSource="dataSource"
+          :pagination="false"
+          :loading="memberLoading"
+          rowKey="id"
+        >
+          <template slot="productCode" slot-scope="text, record">
+            <a-input
+              :value="text"
+              read-only="read-only"
+              @click="openModel(record)"
+              v-decorator="['productCode', { rules: [{ required: true, message: '选择产品代码' }] }]"
+            />
+          </template>
+          <template slot="productName" slot-scope="text, record">
+            <a-input :value="text" read-only="read-only" />
+          </template>
+          <template slot="amountBigDecimal" slot-scope="text, record">
+            <a-input-number
+              :value="text"
+              :precision="0"
+              :min="0"
+              ref="amountBigDecimal"
+              @change="requirementDescriptionChange(record, $event)"
+              v-decorator="['amountBigDecimal', { rules: [{ required: true, message: '输入数量' }] }]"
+            />
+          </template>
+          <template slot="operation" slot-scope="text, record">
+            <template>
+              <span>
+                <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </span>
+            </template>
+          </template>
+        </a-table>
+        <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember"
+          >添加行</a-button
+        >
+
+        <a-row style="margin-top: 40px" v-if="isView">
+          <a-col :span="24" class="basic-tit" justify="center" align="middle">2020年5月份研发部奖金统计表</a-col>
+        </a-row>
+        <a-table v-if="isView" :columns="columns1" rowKey="id" :dataSource="saleCustomers"> </a-table>
       </a-form>
+      <product-model ref="productModel" @selected="productChange"></product-model>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import {
-  departmentList, //所有部门
-  getStationList, //获取部门下面的岗位
-  getUserByStation, //获取人员
-} from '@/api/systemSetting'
-import { senior_worker_addAndUpdate, senior_worker_approval } from '@/api/Human_resource_management'
+import { getUserByDep } from '@/api/systemSetting' //获取部门下人员
+import { bonus_PercentageApply, bonus_DeveloperPercentageApply, bonus_PercentageDetailt } from '@/api/bonus_management'
 import Approval from './Approval'
+import ProductModel from './appForm'
 import moment from 'moment'
-
-// let uuid = () => Math.random().toString(32).slice(-10)
+let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 export default {
   name: 'BecomingForm',
   components: {
     Approval: Approval,
+    ProductModel,
   },
   data() {
     return {
       remark: '',
       visible: false,
-
-      personSelectDataSource: [], //人员
-      departmentList: [], //部门
-      postSelectDataSource: [], //职位
+      memberLoading: false,
+      dataSource: [],
+      userList: [],
+      saleCustomers: [],
+      columns1: [
+        {
+          align: 'center',
+          title: '姓名',
+          key: 'userName',
+          dataIndex: 'userName',
+        },
+        {
+          align: 'center',
+          title: '岗位',
+          dataIndex: 'stationName',
+          key: 'stationName',
+        },
+        {
+          align: 'center',
+          title: '提成奖金(元)',
+          dataIndex: 'amount',
+          key: 'amount',
+        },
+      ],
+      columns: [
+        {
+          align: 'center',
+          title: '产品代码',
+          dataIndex: 'productCode',
+          key: 'productCode',
+          scopedSlots: { customRender: 'productCode' },
+        },
+        {
+          align: 'center',
+          title: '产品名称',
+          dataIndex: 'productName',
+          key: 'productName',
+          scopedSlots: { customRender: 'productName' },
+        },
+        {
+          align: 'center',
+          title: '合计',
+          dataIndex: 'amountBigDecimal',
+          key: 'amountBigDecimal',
+          // width: '20%',
+          scopedSlots: { customRender: 'amountBigDecimal' },
+        },
+        {
+          title: '操作',
+          key: 'action',
+          width: '160px',
+          scopedSlots: { customRender: 'operation' },
+        },
+      ],
       spinning: false,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'view',
       record: {},
+      assetTypeList: undefined,
     }
   },
 
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改高级工程师'
+        return '修改研发提成奖金'
       }
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}高级工程师`
+      return `${txt}研发提成奖金`
     },
     isView() {
       //查看
@@ -167,44 +189,130 @@ export default {
     isDisabled() {
       return this.isView || this.isEdit || this.isView5
     },
-  },
-  created() {
-    departmentList().then((res) => {
-      this.departmentList = res.data
-    })
+
+    baseColumns() {
+      let _columns = []
+      //debugger
+      // this.dataSource.map((item, idx) => {
+      this.userList.map((_item, idx1) => {
+        if (!_columns.find((c) => c.title === _item.trueName)) {
+          _columns.push({
+            title: _item.trueName,
+            dataIndex: `bounsItemRetio_${_item.id}`,
+            align: 'center',
+          })
+        }
+      })
+      // })${_item.key}
+      let __columns = [...this.columns]
+      let idx = __columns.findIndex((item) => item.key === 'action')
+      if (idx >= 0) {
+        __columns.splice(idx, 0, ..._columns)
+      }
+
+      return __columns
+    },
   },
   methods: {
     moment,
-    //选择岗位
-    depChangeHandler(dep_id) {
-      let that = this
-      that.depart = dep_id
-      that.postSelectDataSource = []
-      return getStationList({ id: dep_id }).then((res) => {
-        that.postSelectDataSource = res.data
+    // 添加行
+    newMember() {
+      const length = this.dataSource.length
+      this.dataSource.push({
+        key: length === 0 ? '1' : (parseInt(this.dataSource[length - 1].key) + 1).toString(),
+        productCode: '',
+        productName: undefined,
+        oaSalaryDeveloperPercentageDivProductBoList: undefined,
+        productId: undefined,
+        productType: undefined,
       })
     },
-    //选择人员
-    postChangeHandler(stationId) {
-      this.personSelectDataSource = []
-      getUserByStation({ stationId: stationId, showLeaveFlag: 1 }).then(
-        (res) => (this.personSelectDataSource = res.data)
-      )
+    // 删除行
+    remove(key) {
+      const newData = this.dataSource.filter((item) => item.key !== key)
+      this.dataSource = newData
     },
+    // 产品代码弹出框
+    openModel(record) {
+      this.openKey = record.key
+      console.log('openKey :' + this.openKey)
+      this.$refs.productModel.query()
+    },
+    productChange(data) {
+      console.log(data)
+      let that = this
+      data.oaSalaryBounsPercentageRuleDetails = data.oaSalaryBounsPercentageRuleDetails.map((item) => {
+        return {
+          amountBigDecimal: undefined,
+          userId: item.userId,
+          bounsToilt: item.bounsToilt,
+        }
+      })
+
+      for (const key of that.dataSource) {
+        if (key.key == that.openKey) {
+          key.productCode = data.productCode // 所依据产品代码  ---------
+          key.productName = data.productName // 产品名称  ----
+          key.oaSalaryDeveloperPercentageDivProductBoList = data.oaSalaryBounsPercentageRuleDetails // 人员 ----
+          key.productId = data.productId
+          key.productType = data.productType
+        }
+      }
+      that.dataSource = that.dataSource.map((item, index) => {
+        let _item = { ...item }
+        let bounsItemVoList = [..._item.oaSalaryDeveloperPercentageDivProductBoList]
+        bounsItemVoList.map((v) => {
+          v.key = that.assetTypeList[v.userId]
+          _item[`bounsItemRetio_${v.userId}`] = v.amountBigDecimal
+          return v
+        })
+        _item.oaSalaryDeveloperPercentageDivProductBoList = bounsItemVoList
+        return _item
+      })
+    },
+
+    requirementDescriptionChange(record, e) {
+      let that = this
+      let dataSource = [...that.dataSource]
+      let _record = dataSource.find((item) => item.key === record.key)
+      const v = e
+      record.amountBigDecimal = v
+      _record.oaSalaryDeveloperPercentageDivProductBoList = record.oaSalaryDeveloperPercentageDivProductBoList.map(
+        (_item) => {
+          for (const i in _record) {
+            let str = `${i}`
+            let str1 = str.split('_')[1]
+            if (str1 == _item.userId) {
+              _record[i] = parseFloat(v * _item.bounsToilt).toFixed(2)
+            }
+          }
+          return {
+            amountBigDecimal: parseFloat(v * _item.bounsToilt).toFixed(2),
+            userId: _item.userId,
+            bounsToilt: _item.bounsToilt,
+          }
+          _record[`bounsItemRetio_${_item.userId}`] = _item.amountBigDecimal
+        }
+      )
+      that.dataSource = dataSource
+    },
+
     //接受数据
     query(type, record) {
-      console.log(this.record)
-      this.form.resetFields() // 清空表
-      this.visible = true
-      this.type = type
-      this.record = record
-      if (type !== 'add') {
-        getStationList({ id: record.departmentId }).then((res) => {
-          this.postSelectDataSource = res.data
+      let _that = this
+      _that.form.resetFields() // 清空表
+      _that.visible = true
+      _that.type = type
+      _that.record = record
+      getUserByDep({ departmentId: record.departmentId }).then((res) => {
+        _that.userList = res.data
+        let obj = {}
+        res.data.map((item) => {
+          obj[item.id] = uuid()
         })
-        getUserByStation({ stationId: record.stationId, showLeaveFlag: 1 }).then(
-          (res) => (this.personSelectDataSource = res.data)
-        )
+        _that.assetTypeList = obj
+      })
+      if (type !== 'add') {
         this.fillData()
       }
     },
@@ -212,15 +320,30 @@ export default {
     fillData() {
       let that = this
       this.$nextTick(() => {
-        this.form.setFieldsValue({
-          // amount: this.record.amount,
-          departmentId: this.record.departmentId,
-          // itemType: this.record.itemType,
-          workAchievement: this.record.workAchievement,
-          stationId: this.record.stationId,
-          userId: this.record.userId,
-          remark: this.record.remark,
+        bonus_PercentageDetailt({ id: that.record.id }).then((res) => {
+          this.saleCustomers =
+            res.data.oaSalaryDeveloperPercentageStaticsDetailVo.oaSalaryDeveloperPercentageStaticsUserVoList
+          that.dataSource = res.data.productList.map((item, index) => {
+            let _item = { ...item }
+            let bounsItemVoList = [..._item.oaSalaryDeveloperPercentageDivProductVoList]
+            bounsItemVoList.map((v) => {
+              v.key = that.assetTypeList[v.userId]
+              _item[`bounsItemRetio_${v.userId}`] = v.amountDeciaml
+              return v
+            })
+            _item.oaSalaryDeveloperPercentageDivProductBoList = bounsItemVoList
+            return _item
+          })
         })
+        // this.form.setFieldsValue({
+        //   // amount: this.record.amount,
+        //   departmentId: this.record.departmentId,
+        //   // itemType: this.record.itemType,
+        //   workAchievement: this.record.workAchievement,
+        //   stationId: this.record.stationId,
+        //   userId: this.record.userId,
+        //   remark: this.record.remark,
+        // })
       })
     },
     //提交
@@ -234,16 +357,52 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
-            if (that.type === 'add' || that.type === 'edit-salary') {
+            if ((that.type === 'add' || that.type === 'edit-salary') && that.dataSource.length > 0) {
+              console.log(values)
+              for (let i = 0, len = that.dataSource.length; i < len; i++) {
+                let item = that.dataSource[i]
+                if (item.productCode === '') {
+                  that.$message.error('请选择产品代码')
+                  return
+                }
+                if (item.amountBigDecimal === '') {
+                  that.$message.error('请选择输入合计')
+                  return
+                }
+              }
+              let arr = {}
+              arr.departmentId = that.record.departmentId
+              arr.month = that.record.month
+              arr.oaSalaryDeveloperPercentageProductListBoList = this.dataSource.map((_iten) => {
+                _iten.oaSalaryDeveloperPercentageDivProductBoList = _iten.oaSalaryDeveloperPercentageDivProductBoList.map(
+                  (inx) => {
+                    return {
+                      amountBigDecimal: inx.amountBigDecimal,
+                      userId: inx.userId,
+                    }
+                  }
+                )
+                return {
+                  productId: _iten.productId,
+                  productType: _iten.productType,
+                  amountBigDecimal: _iten.amountBigDecimal,
+                  oaSalaryDeveloperPercentageDivProductBoList: _iten.oaSalaryDeveloperPercentageDivProductBoList,
+                }
+              })
+              console.log(arr)
               that.spinning = true
-              senior_worker_addAndUpdate(values)
+              bonus_PercentageApply(arr)
                 .then((res) => {
-                  this.programme = []
-                  this.visible = false
-                  that.spinning = false
-                  that.form.resetFields() // 清空表
-                  that.$message.info(res.msg)
-                  that.$emit('finish')
+                  if (res.code === 200) {
+                    this.programme = []
+                    this.visible = false
+                    that.spinning = false
+                    that.dataSource = []
+                    that.$message.info(res.msg)
+                    that.$emit('finish')
+                  } else {
+                    that.$message.error(res.msg)
+                  }
                 })
                 .catch((err) => (that.spinning = false))
             }
@@ -265,7 +424,7 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      senior_worker_approval(values)
+      bonus_DeveloperPercentageApply(values)
         .then((res) => {
           that.spinning = false
           that.form.resetFields() // 清空表
