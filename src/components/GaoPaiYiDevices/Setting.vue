@@ -291,7 +291,6 @@ export default {
           SetWiseCapture(config.captureModel)
         }
       }else if(key1 === 'captureTime'){
-        debugger
         config.captureTime > 0 && SetWiseCapture(1,config.captureTime * 1000)
       }else if(key1 === 'autoExposure'){
         SetAutoExposure(config.autoExposure)

@@ -51,7 +51,7 @@
                 </a-row>
                 <a-row :gutter="16" class="camera-action-row" v-show="+activeKey === 1">
                   <a-col :span="6">
-                    <a-button style="width: 100%" icon="cloud-upload" @click="captureUpload">拍照上传</a-button>
+                    <a-button style="width: 100%" icon="cloud-upload" @click="() => capture(true)">拍照上传</a-button>
                   </a-col>
                 </a-row>
                 <a-row :gutter="16" class="camera-action-row" v-show="+activeKey === 1">
@@ -76,7 +76,7 @@
                     <a-button style="width: 100%" icon="redo" @click="() => RoateR(1)">向右旋转</a-button>
                   </a-col>
                   <a-col :span="6">
-                    <a-button style="width: 100%" icon="camera" @click="capture">拍照</a-button>
+                    <a-button style="width: 100%" icon="camera" @click="() => capture(false)">拍照</a-button>
                   </a-col>
                   <a-col :span="6">
                     <a-button style="width: 100%" @click="funConvertToPDF">合并为PDF</a-button>
@@ -806,8 +806,9 @@ export default {
     settingAction() {
       this.$refs.setting.show()
     },
-    capture() {
+    capture(isCaptureUpload=false) {
       //debugger
+      this.isCaptureUpload = isCaptureUpload
       let type = this.$refs.setting.config.cutType || 0
       console.log('CaptureImage', type)
       this.CaptureImage(type)
@@ -874,11 +875,6 @@ export default {
         let _pdfPath = that.pdfCacheList[that.pdfCacheList.length - 1]
         that.customMsg('pdf',_pdfPath.path)
       })
-    },
-    captureUpload(){
-      let that = this
-      that.isCaptureUpload = true
-      that.capture()
     },
     customMsg(type,path){
       let that = this
