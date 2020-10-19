@@ -53,7 +53,7 @@
         <td>{{departmentName}}</td>
         <td>{{item.stationName}}</td>
         <td>
-          <a-form-item>
+          <a-form-item :key="item.key">
             <a-input-number
               v-if="!isDisabled"
               style="width:120px;"
@@ -104,12 +104,17 @@ export default {
       departmentId:undefined,
       depList:[],
       postList:[],
-      form: this.$form.createForm(this),
+      //form: null,
+      //form:this.$form.createForm(this),
       visible:false,
       actionType:'add',
       spinning:false,
       isRepeatPost:false //岗位是否重复
     }
+  },
+  beforeCreate(){
+    this.form = this.$form.createForm(this);
+    this.form.getFieldDecorator('keys', { initialValue: [], preserve: true });
   },
   computed:{
     modalTitle(){
@@ -165,10 +170,12 @@ export default {
         that.$message.info('该部门下暂无岗位，禁止操作。')
         return
       }
-      this.form.validateFields((err, values) => {
+      
+      this.form.validateFields(null,{force: true},(err, values) => {
+        //debugger
         if (!err) {
           that.spinning = true
-          //console.log(values)
+          console.log(values)
           let {investAmountList} = values
           let standardList = that.postList.map((item,idx) => {
             let _item = {
@@ -209,7 +216,10 @@ export default {
       that.departmentId = undefined
       that.postList = []
       that.isRepeatPost = false
-      await that.form.resetFields() 
+      if(that.form !== null){
+        await that.form.resetFields() 
+      }
+      
       await that.init() 
       if(type === 'add') return 
       //填充数据
@@ -241,10 +251,16 @@ export default {
           return
         }
         getStationList({ id: dep_id }).then(res =>{
-          that.postList = res.data.map(item => {
+          //debugger
+          let keys = that.form.getFieldValue('keys') || []
+          that.postList = res.data.map((item,idx) => {
             item.key = uuid()
             item.stationId = item.id
+            keys.push(item.key)
             return item
+          })
+          that.$nextTick(() =>{
+            that.form.setFieldsValue({keys});
           })
         })
       })
