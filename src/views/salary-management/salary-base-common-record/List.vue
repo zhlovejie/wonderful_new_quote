@@ -183,6 +183,7 @@ export default {
           let that = this
           if (res.code === 200) {
             that.$message.info(res.msg || '操作成功')
+            this.searchAction()
           } else {
             that.$message.error(res.msg)
           }

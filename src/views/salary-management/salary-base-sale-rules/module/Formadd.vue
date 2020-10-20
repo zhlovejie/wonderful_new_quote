@@ -31,7 +31,7 @@
             </td>
           </tr>
           <tr>
-            <td>适用人员</td>
+            <td>适用岗位</td>
             <td colspan="2">
               <a-form-item>
                 <a-select
@@ -39,9 +39,9 @@
                   :allowClear="true"
                   :maxTagCount="4"
                   showSearch
-                  placeholder="请选择人员"
+                  placeholder="请选择岗位"
                   optionFilterProp="children"
-                  v-decorator="['stationIds', { rules: [{ required: true, message: '请选择适用人员' }] }]"
+                  v-decorator="['stationIds', { rules: [{ required: true, message: '请选择适用岗位' }] }]"
                   style="width: 400px"
                 >
                   <a-select-option v-for="i in getUserByType" :key="i.stationId" :value="i.stationId">

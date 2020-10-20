@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-      <a-input placeholder="名称" v-model="queryParam.userName" allowClear style="width: 200px; margin-right: 10px" />
+      <a-input placeholder="名称" v-model="queryParam.name" allowClear style="width: 200px; margin-right: 10px" />
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
       <template v-if="$auth('Distribution:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>

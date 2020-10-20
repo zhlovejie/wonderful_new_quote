@@ -51,7 +51,7 @@
         </span></a-table
       >
     </a-spin>
-    <AppFrom ref="appFrom" />
+    <AppFrom ref="appFrom" @finish="searchActionsee()" />
   </a-card>
 
   <!-- </a-modal> -->
