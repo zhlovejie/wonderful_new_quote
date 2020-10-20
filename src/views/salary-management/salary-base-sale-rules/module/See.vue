@@ -117,7 +117,7 @@ export default {
         })
       })
       let __columns = [...columns]
-      let idx = __columns.findIndex((item) => item.dataIndex === 'salaryBigDeciaml')
+      let idx = __columns.findIndex((item) => item.dataIndex === 'createdUserName')
       if (idx >= 0) {
         __columns.splice(idx, 0, ..._columns)
       }

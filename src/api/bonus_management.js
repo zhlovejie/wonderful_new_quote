@@ -487,11 +487,114 @@ export function bonus_DeveloperPercentageApply(parameter) {
     data: parameter
   })
 }
-// 研发详情 
+// 研发提成详情 
 export function bonus_PercentageDetailt(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/getDeveloperSalerPercentageDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//销售提成列表 
+export function sale_PercentageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//销售提成详情
+export function sale_PercentageDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/getSalarySalerPercentageDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//销售提成详情
+export function sale_checkSalerPercentApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/checkSalerPercentApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//销售提成撤回
+export function sale_Withdraw(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/withdrawSalarySalerPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//销售提成审核
+export function sale_ApprovalSalary(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/approvalSalarySalerPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+//销售提成删除 
+export function sale_Remove(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/removeSalarySalerPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//销售提成经理人员 
+export function sale_ByDepId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salesman/getSaleAssistantByDepId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//销售提成新增修改 
+
+export function sale_add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/SaveOrUpdateOaSalarySalerPercentageApply',
+    method: 'post',
+    data: parameter
+  })
+}
+// 销售岗位 
+
+export function getSaleStation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salesman/getSaleStation',
+    method: 'get',
+    params: parameter
+  })
+}
+//销汇总查询 
+export function sale_SalerMonthCollectDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-month-collect/getSalarySalerMonthCollectDetail',
     method: 'get',
     params: parameter
   })

@@ -59,9 +59,9 @@ const columns = [
     align: 'center',
   },
   {
-    title: '适用人员',
-    dataIndex: 'userNames',
-    key: 'userNames',
+    title: '适用岗位',
+    dataIndex: 'stationNames',
+    key: 'stationNames',
     align: 'center',
   },
   {

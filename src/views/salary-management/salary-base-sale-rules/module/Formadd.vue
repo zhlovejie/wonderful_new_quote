@@ -41,11 +41,11 @@
                   showSearch
                   placeholder="请选择人员"
                   optionFilterProp="children"
-                  v-decorator="['userIds', { rules: [{ required: true, message: '请选择适用人员' }] }]"
+                  v-decorator="['stationIds', { rules: [{ required: true, message: '请选择适用人员' }] }]"
                   style="width: 400px"
                 >
-                  <a-select-option v-for="i in getUserByType" :key="i.id" :value="i.id">
-                    {{ i.trueName }}
+                  <a-select-option v-for="i in getUserByType" :key="i.stationId" :value="i.stationId">
+                    {{ i.stationName }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
@@ -90,7 +90,7 @@
   </a-modal>
 </template>
 <script>
-import { salary_getUserByType, salary_Sale_SaveOrUpdateSalaryBaseSaler } from '@/api/bonus_management'
+import { getSaleStation, salary_Sale_SaveOrUpdateSalaryBaseSaler } from '@/api/bonus_management'
 import { getDictionaryList } from '@/api/workBox'
 import vueLs from 'vue-ls'
 
@@ -103,7 +103,7 @@ export default {
       spinning: false,
       record: undefined,
       assetTypeList: [],
-      getUserByType: [], //销售人员
+      getUserByType: [], //销售岗位
       type: 'View',
       form: this.$form.createForm(this),
     }
@@ -139,7 +139,8 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      salary_getUserByType({ type: 1 }).then((res) => (this.getUserByType = res.data))
+      getSaleStation({ type: 1 }).then((res) => (this.getUserByType = res.data))
+
       getDictionaryList({ parentId: 616 }).then((res) => (this.assetTypeList = res.data))
       if (type === 'edit-salary') {
         this.fillData()
@@ -149,18 +150,18 @@ export default {
     fillData() {
       this.$nextTick(() => {
         this.record.bounsDicIds = this.record.bounsDicIds.split(',')
-        this.record.userIds = this.record.userIds.split(',')
+        this.record.stationIds = this.record.stationIds.split(',')
         this.record.bounsDicIds.forEach((item, index) => {
           this.record.bounsDicIds[index] = parseInt(this.record.bounsDicIds[index])
         })
-        this.record.userIds.forEach((item, index) => {
-          this.record.userIds[index] = parseInt(this.record.userIds[index])
+        this.record.stationIds.forEach((item, index) => {
+          this.record.stationIds[index] = parseInt(this.record.stationIds[index])
         })
 
         this.form.setFieldsValue({
           name: this.record.name,
           bounsDicIds: this.record.bounsDicIds,
-          userIds: this.record.userIds,
+          stationIds: this.record.stationIds,
           remark: this.record.remark,
         })
       })
@@ -172,7 +173,7 @@ export default {
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            values.userIds = values.userIds.toString()
+            values.stationIds = values.stationIds.toString()
             values.bounsDicIds = values.bounsDicIds.toString()
             if (that.type !== 'add') {
               values.id = this.record.id

@@ -1,7 +1,7 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px" v-model="queryParam.Dates" />
+      <a-month-picker style="width: 200px" v-model="queryParam.month" />
       <a-select
         style="width: 200px; margin-left: 10px; margin-right: 10px"
         placeholder="选择部门"
@@ -288,9 +288,9 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      if (that.queryParam.Dates) {
-        let date = that.queryParam.Dates.format('YYYYMM')
-        that.queryParam.accountDate = date
+      if (that.queryParam.month) {
+        let date = moment(that.queryParam.month).format('YYYY-MM')
+        that.queryParam.month = date
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,

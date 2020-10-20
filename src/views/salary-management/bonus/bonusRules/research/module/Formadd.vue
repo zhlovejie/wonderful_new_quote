@@ -92,7 +92,7 @@
               <a-form-item>
                 <div class="process_header_wrapper">
                   <div class="draggable-columns draggable-columns-1">人员</div>
-                  <div class="draggable-columns draggable-columns-1">奖金系数</div>
+                  <div class="draggable-columns draggable-columns-1">奖金系数（%）</div>
                   <div class="draggable-columns draggable-columns-3">
                     <a href="javascript:void(0);" @click="processClearAction">清空</a>
                   </div>
@@ -182,6 +182,13 @@ export default {
     }
   },
   computed: {
+    commonReceiveBigDecimal() {
+      return this.haveProcess.reduce((addr, item) => {
+        addr = Number(addr) + Number(item.bounsToilt || 0)
+        return parseFloat(addr).toFixed(2)
+      }, 0)
+    },
+
     modalTitle() {
       if (this.isEditSalary) {
         return '修改研发提成奖金规则'
@@ -268,6 +275,9 @@ export default {
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
+            if (that.commonReceiveBigDecimal > 1) {
+              return this.$message.error('系数总和不能大于1')
+            }
             let arr = {}
             if (that.type !== 'add') {
               arr.id = this.record.id

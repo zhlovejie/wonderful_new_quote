@@ -22,7 +22,7 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
         <a-row>
-          <a-col :span="24" class="basic-tit" justify="center" align="middle">2020年5月份研发部收款统计表</a-col>
+          <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}研发部收款统计表</a-col>
         </a-row>
         <!-- <a-card class="card" title="产品信息" :bordered="false"> -->
         <a-table
@@ -36,17 +36,19 @@
           <template slot="productCode" slot-scope="text, record">
             <a-input
               :value="text"
+              :disabled="isDisabled"
               read-only="read-only"
               @click="openModel(record)"
               v-decorator="['productCode', { rules: [{ required: true, message: '选择产品代码' }] }]"
             />
           </template>
           <template slot="productName" slot-scope="text, record">
-            <a-input :value="text" read-only="read-only" />
+            <a-input :disabled="isDisabled" :value="text" read-only="read-only" />
           </template>
           <template slot="amountBigDecimal" slot-scope="text, record">
             <a-input-number
               :value="text"
+              :disabled="isDisabled"
               :precision="0"
               :min="0"
               ref="amountBigDecimal"
@@ -55,7 +57,7 @@
             />
           </template>
           <template slot="operation" slot-scope="text, record">
-            <template>
+            <template v-if="!isDisabled">
               <span>
                 <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
                   <a>删除</a>
@@ -68,10 +70,11 @@
           >添加行</a-button
         >
 
-        <a-row style="margin-top: 40px" v-if="isView">
-          <a-col :span="24" class="basic-tit" justify="center" align="middle">2020年5月份研发部奖金统计表</a-col>
+        <a-row style="margin-top: 40px" v-if="isDisabled">
+          <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}研发部奖金统计表</a-col>
         </a-row>
-        <a-table v-if="isView" :columns="columns1" rowKey="id" :dataSource="saleCustomers"> </a-table>
+        <a-table v-if="isDisabled" :columns="columns1" :pagination="false" rowKey="id" :dataSource="saleCustomers">
+        </a-table>
       </a-form>
       <product-model ref="productModel" @selected="productChange"></product-model>
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -99,6 +102,8 @@ export default {
       memberLoading: false,
       dataSource: [],
       userList: [],
+      month: undefined,
+      departmentId: undefined,
       saleCustomers: [],
       columns1: [
         {
@@ -219,7 +224,7 @@ export default {
     newMember() {
       const length = this.dataSource.length
       this.dataSource.push({
-        key: length === 0 ? '1' : (parseInt(this.dataSource[length - 1].key) + 1).toString(),
+        key: uuid(),
         productCode: '',
         productName: undefined,
         oaSalaryDeveloperPercentageDivProductBoList: undefined,
@@ -258,17 +263,17 @@ export default {
           key.productType = data.productType
         }
       }
-      that.dataSource = that.dataSource.map((item, index) => {
-        let _item = { ...item }
-        let bounsItemVoList = [..._item.oaSalaryDeveloperPercentageDivProductBoList]
-        bounsItemVoList.map((v) => {
-          v.key = that.assetTypeList[v.userId]
-          _item[`bounsItemRetio_${v.userId}`] = v.amountBigDecimal
-          return v
-        })
-        _item.oaSalaryDeveloperPercentageDivProductBoList = bounsItemVoList
-        return _item
-      })
+      for (const key of that.dataSource) {
+        if (key.key == that.openKey) {
+          key.oaSalaryDeveloperPercentageDivProductBoList.map((v) => {
+            v.key = that.assetTypeList[v.userId]
+            key[`bounsItemRetio_${v.userId}`] = v.amountBigDecimal
+            return v
+          })
+        }
+      }
+
+      // })
     },
 
     requirementDescriptionChange(record, e) {
@@ -301,6 +306,7 @@ export default {
     query(type, record) {
       let _that = this
       _that.form.resetFields() // 清空表
+      _that.dataSource = []
       _that.visible = true
       _that.type = type
       _that.record = record
@@ -313,15 +319,40 @@ export default {
         _that.assetTypeList = obj
       })
       if (type !== 'add') {
-        this.fillData()
+        _that.fillData()
+      } else {
+        _that.month = record.month
+        _that.departmentId = record.departmentId
       }
     },
     // 详情
     fillData() {
       let that = this
-      this.$nextTick(() => {
+      that.$nextTick(() => {
         bonus_PercentageDetailt({ id: that.record.id }).then((res) => {
-          this.saleCustomers =
+          that.month = res.data.month
+          res.data.productList = res.data.productList.map((i) => {
+            i.oaSalaryDeveloperPercentageDivProductVoList = i.oaSalaryDeveloperPercentageDivProductVoList.map((v) => {
+              return {
+                amountDeciaml: v.amountDeciaml,
+                userId: v.userId,
+                userName: v.userName,
+                bounsToilt: i.amountBigDecimal / v.amountDeciaml / 1000,
+              }
+            })
+            return {
+              key: uuid(),
+              amountBigDecimal: i.amountBigDecimal,
+              applyId: i.applyId,
+              productCode: i.productCode,
+              productId: i.productId,
+              productName: i.productName,
+              productType: i.productType,
+              oaSalaryDeveloperPercentageDivProductVoList: i.oaSalaryDeveloperPercentageDivProductVoList,
+            }
+          })
+
+          that.saleCustomers =
             res.data.oaSalaryDeveloperPercentageStaticsDetailVo.oaSalaryDeveloperPercentageStaticsUserVoList
           that.dataSource = res.data.productList.map((item, index) => {
             let _item = { ...item }
@@ -335,15 +366,6 @@ export default {
             return _item
           })
         })
-        // this.form.setFieldsValue({
-        //   // amount: this.record.amount,
-        //   departmentId: this.record.departmentId,
-        //   // itemType: this.record.itemType,
-        //   workAchievement: this.record.workAchievement,
-        //   stationId: this.record.stationId,
-        //   userId: this.record.userId,
-        //   remark: this.record.remark,
-        // })
       })
     },
     //提交
@@ -354,8 +376,9 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
+            let arr = {}
             if (that.type === 'edit-salary') {
-              values.id = that.record.id
+              arr.id = that.record.id
             }
             if ((that.type === 'add' || that.type === 'edit-salary') && that.dataSource.length > 0) {
               console.log(values)
@@ -370,7 +393,7 @@ export default {
                   return
                 }
               }
-              let arr = {}
+
               arr.departmentId = that.record.departmentId
               arr.month = that.record.month
               arr.oaSalaryDeveloperPercentageProductListBoList = this.dataSource.map((_iten) => {
@@ -402,6 +425,7 @@ export default {
                     that.$emit('finish')
                   } else {
                     that.$message.error(res.msg)
+                    that.spinning = false
                   }
                 })
                 .catch((err) => (that.spinning = false))
