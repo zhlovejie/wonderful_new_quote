@@ -41,13 +41,13 @@
               <span v-else>{{detail.ybNum}}</span>
             </td>
             <td>部门</td>
-            <td>{{userInfo.departmentName}}</td>
+            <td>{{detail.departmentName || userInfo.departmentName}}</td>
           </tr>
           <tr>
             <td>岗位</td>
-            <td>{{userInfo.stationName}}</td>
+            <td>{{detail.stationName || userInfo.stationName}}</td>
             <td>姓名</td>
-            <td>{{userInfo.trueName}}</td>
+            <td>{{detail.createdName || userInfo.trueName}}</td>
           </tr>
 
           <tr>
@@ -103,20 +103,29 @@
             <td>行驶证</td>
             <td colspan="3">
               <a-form-item v-if="!isDisabled">
-                <UploadFile ref="uploadVehicleLisence" maxFileCount="1" />
+                <UploadFile ref="uploadVehicleLisence" maxFileCount="2" />
                 <a-input hidden v-decorator="['vehicleLisenceUrl', {initialValue:detail['vehicleLisenceUrl'],rules: [{ required: true, message: '请输入行驶证' }]}]" />
               </a-form-item>
-              <img v-else @click="() => showImg(detail.vehicleLisenceUrl)" :src="detail.vehicleLisenceUrl" style="width:96px;height:auto;border:none;" alt="">
+              <template v-else>
+                <div v-if="detail.vehicleLisenceUrl">
+                <img v-for="url in detail.vehicleLisenceUrl.split(',')" :key="url" @click="() => showImg(url)" :src="url" style="width:96px;height:auto;border:none;border-radius: 3px;box-shadow: 0 0 3px #ddd;margin-right: 10px;cursor: pointer;" alt="">
+                </div>
+              </template>
             </td>
           </tr>
           <tr>
             <td>驾驶证</td>
             <td colspan="3">
               <a-form-item v-if="!isDisabled">
-                <UploadFile ref="uploadDriverLisence" maxFileCount="1" />
+                <UploadFile ref="uploadDriverLisence" maxFileCount="2" />
                 <a-input hidden v-decorator="['driverLisenceUrl', {initialValue:detail['driverLisenceUrl'],rules: [{ required: true, message: '请输入驾驶证' }]}]" />
               </a-form-item>
-              <img v-else  @click="() => showImg(detail.driverLisenceUrl)" :src="detail.driverLisenceUrl" style="width:96px;height:auto;border:none;" alt="">
+              <template v-else>
+                <div v-if="detail.driverLisenceUrl">
+                <img v-for="url in detail.driverLisenceUrl.split(',')" :key="url" @click="() => showImg(url)" :src="url" style="width:96px;height:auto;border:none;border-radius: 3px;box-shadow: 0 0 3px #ddd;margin-right: 10px;cursor: pointer;" alt="">
+                </div>
+              </template>
+              
             </td>
           </tr>
           <tr>
@@ -151,6 +160,8 @@ import {
   oilApplyApproval,
   oilApplyAddOrUpdate
 } from '@/api/salaryManagement'
+import {queryStationLevel} from '@/api/common'
+import {levelRulePageList } from '@/api/salaryManagement'
 import UploadFile from '@/components/CustomerList/UploadFile'
 import ImgView from '@/components/CustomerList/ImgView'
 import Approval from './Approval'
@@ -216,19 +227,36 @@ export default {
       that.detail = {}
       await that.init()
       that.visible = true
-      if (that.isAdd) {
-        that.detail = {}
-        return
-      }
-      that.detail = { ...that.record }
+      // if (that.isAdd) {
+      //   that.detail = {}
+      //   return
+      // }
 
+      let money = +that.record.amount || 0
+      try{
+        if(money === 0){
+          let stationLevel = await queryStationLevel({id:that.userInfo.stationId}).then(res => res && res.data && res.data.level ? res.data.level : null)
+          let records = await levelRulePageList({current:1,size:10,levelType:stationLevel}).then(res => res.data.records)
+          if(Array.isArray(records) && records.length > 0){
+            money = +records[0].oilAmount || 0
+          }
+        }
+      }catch(err){
+        console.log(err)
+      }
+      that.detail = { ...that.record,amount:money }
+      
       that.$nextTick(() =>{
         if(that.detail.vehicleLisenceUrl){
-          that.$refs.uploadVehicleLisence && that.$refs.uploadVehicleLisence.setFiles([{url:that.detail.vehicleLisenceUrl}])
+          that.$refs.uploadVehicleLisence && that.$refs.uploadVehicleLisence.setFiles(
+            that.detail.vehicleLisenceUrl.split(',').map(url =>{url})
+          )
         }
 
         if(that.detail.driverLisenceUrl){
-          that.$refs.uploadDriverLisence && that.$refs.uploadDriverLisence.setFiles([{url:that.detail.driverLisenceUrl}])
+          that.$refs.uploadDriverLisence && that.$refs.uploadDriverLisence.setFiles(
+            that.detail.driverLisenceUrl.split(',').map(url =>{url})
+          )
         }
       })
 
@@ -239,10 +267,10 @@ export default {
       let uploadDriverLisence = that.$refs.uploadDriverLisence.getFiles()
 
       if(Array.isArray(uploadVehicleLisence) && uploadVehicleLisence.length > 0){
-        that.form.setFieldsValue({ vehicleLisenceUrl: uploadVehicleLisence[0].url })
+        that.form.setFieldsValue({ vehicleLisenceUrl: uploadVehicleLisence.map(f =>f.url).join(',')})
       }
       if(Array.isArray(uploadDriverLisence) && uploadDriverLisence.length > 0){
-        that.form.setFieldsValue({ driverLisenceUrl: uploadDriverLisence[0].url })
+        that.form.setFieldsValue({ driverLisenceUrl: uploadDriverLisence.map(f => f.url).join(',') })
       }
 
 

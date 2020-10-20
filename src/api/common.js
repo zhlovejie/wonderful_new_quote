@@ -104,3 +104,16 @@ export function customUploadBase64(data){
     data:data
   })
 }
+
+/**
+ * @description 根据岗位编号查询对于的岗位等级
+ * @param {object} params {id:stationID}
+ */
+export function queryStationLevel(params){
+  return axios({
+    baseURL: system.baseURL,
+    url: '/station/queryOne',
+    method: 'get',
+    params:params
+  })
+}

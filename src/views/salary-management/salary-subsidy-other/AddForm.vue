@@ -41,13 +41,13 @@
               <span v-else>{{detail.otNum}}</span>
             </td>
             <td style="width:150px;">部门</td>
-            <td style="width:220px;">{{userInfo.departmentName}}</td>
+            <td style="width:220px;">{{detail.departmentName || userInfo.departmentName}}</td>
           </tr>
           <tr>
             <td>岗位</td>
-            <td>{{userInfo.stationName}}</td>
+            <td>{{detail.stationName || userInfo.stationName}}</td>
             <td>姓名</td>
-            <td>{{userInfo.trueName}}</td>
+            <td>{{detail.createdName || userInfo.trueName}}</td>
           </tr>
 
           <tr>

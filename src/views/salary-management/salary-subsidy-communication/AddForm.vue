@@ -38,16 +38,16 @@
             <td style="width:150px;">编号</td>
             <td style="width:220px;">
               <span v-if="!isDisabled" style="color:#999;">系统自动生成</span>
-              <span v-else>{{detail.ybNum}}</span>
+              <span v-else>{{detail.txNum}}</span>
             </td>
             <td style="width:150px;">部门</td>
-            <td style="width:220px;">{{userInfo.departmentName}}</td>
+            <td style="width:220px;">{{detail.departmentName || userInfo.departmentName}}</td>
           </tr>
           <tr>
             <td>岗位</td>
-            <td>{{userInfo.stationName}}</td>
+            <td>{{detail.stationName || userInfo.stationName}}</td>
             <td>姓名</td>
-            <td>{{userInfo.trueName}}</td>
+            <td>{{detail.createdName || userInfo.trueName}}</td>
           </tr>
 
           <tr>
@@ -134,6 +134,8 @@ import {
   ComApplyApproval,
   ComApplyAddOrUpdate
 } from '@/api/salaryManagement'
+import {queryStationLevel} from '@/api/common'
+import {levelRulePageList } from '@/api/salaryManagement'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -194,11 +196,23 @@ export default {
       that.detail = {}
       await that.init()
       that.visible = true
-      if (that.isAdd) {
-        that.detail = {}
-        return
+      // if (that.isAdd) {
+      //   that.detail = {}
+      //   return
+      // }
+      let money = +that.record.amount || 0
+      try{
+        if(money === 0){
+          let stationLevel = await queryStationLevel({id:that.userInfo.stationId}).then(res => res && res.data && res.data.level ? res.data.level : null)
+          let records = await levelRulePageList({current:1,size:10,levelType:stationLevel}).then(res => res.data.records)
+          if(Array.isArray(records) && records.length > 0){
+            money = +records[0].comAmount || 0
+          }
+        }
+      }catch(err){
+        console.log(err)
       }
-      that.detail = { ...that.record }
+      that.detail = { ...that.record,amount:money }
     },
     handleSubmit() {
       let that = this

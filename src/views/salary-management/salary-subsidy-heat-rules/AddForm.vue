@@ -51,7 +51,7 @@
               </div>
             </td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>部门</td>
             <td>
               <a-form-item >
@@ -63,7 +63,7 @@
                     `departmentId`,
                     {
                       initialValue: detail.departmentId,
-                      rules: [{ required: true, message: '请输入天数' }],
+                      rules: [{ required: true, message: '请选择部门' }],
                     },
                   ]"
                 >
@@ -74,7 +74,7 @@
                 <span v-else>{{detail.departmentName}}</span>
               </a-form-item>
             </td>
-          </tr>
+          </tr> -->
           <tr>
             <td>高温补贴(元/天)</td>
             <td>

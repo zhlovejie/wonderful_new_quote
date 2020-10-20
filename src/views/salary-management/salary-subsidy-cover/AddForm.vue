@@ -41,13 +41,13 @@
               <span v-else>{{detail.isNum}}</span>
             </td>
             <td style="width:150px;">部门</td>
-            <td style="width:210px;">{{userInfo.departmentName}}</td>
+            <td style="width:210px;">{{detail.departmentName || userInfo.departmentName}}</td>
           </tr>
           <tr>
             <td>岗位</td>
-            <td>{{userInfo.stationName}}</td>
+            <td>{{detail.stationName || userInfo.stationName}}</td>
             <td>姓名</td>
-            <td>{{userInfo.trueName}}</td>
+            <td>{{detail.createdName || userInfo.trueName}}</td>
           </tr>
 
           <tr>
@@ -197,10 +197,19 @@ export default {
       that.sDateChange(sDate)
     },
     sDateChange(arr){
+      let that = this
       if(Array.isArray(arr) && arr.length === 2 && arr[0] instanceof moment && arr[1] instanceof moment){
-        this.days = arr[1].diff(arr[0],'days')
+        //debugger
+        let isInOneMonths = arr[1].diff(arr[0],'months') === 0
+        if(!isInOneMonths){
+          that.$message.info('代班开始时间和结束时间必须在同一个月内')
+          that.days = 0
+          that.$nextTick(() => that.form.setFieldsValue({sDate:undefined}))
+          return
+        }
+        that.days = arr[1].diff(arr[0],'days')
       }else{
-        this.days = 0
+        that.days = 0
       }
     },
     handleSubmit() {
