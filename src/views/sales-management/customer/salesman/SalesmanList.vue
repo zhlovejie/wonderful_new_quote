@@ -118,6 +118,10 @@ export default {
           dataIndex: 'leaderName'
         },
         {
+          title: '对应销售助理',
+          dataIndex: 'assistantName'
+        },
+        {
           title: '被分配权限',
           dataIndex: 'canDistribute',
           scopedSlots: { customRender: 'canDistribute' }

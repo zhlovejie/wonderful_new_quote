@@ -92,6 +92,20 @@
         </a-form-item>
         
         <a-form-item
+          label="部门类型"
+          :label-col="{ span: 6 }"
+          :wrapper-col="{ span: 18 }"
+        >
+          <a-select placeholder="选择部门类型" v-model="currentRecord.type">
+            <a-select-option :value="0">其他</a-select-option>
+            <a-select-option :value="1">销售部</a-select-option>
+            <a-select-option :value="2">研发部</a-select-option>
+            <a-select-option :value="3">车间部门</a-select-option>
+          </a-select>
+        </a-form-item>
+
+
+        <a-form-item
           label="选择部门等级"
           :label-col="{ span: 6 }"
           :wrapper-col="{ span: 18 }"
@@ -367,14 +381,16 @@ export default {
     },
     doEdit () {
       // 取数据
-      const { id, status, Authorization, departmentName, remarks ,leader,level} = this.currentRecord
+      const { id, status, Authorization, departmentName, remarks ,leader,level,type} = this.currentRecord
       // 组装接口需要的数据
-      const params = { id: id, status: status, Authorization, departmentName, remarks ,leader,level}
+      const params = { id: id, status: status, Authorization, departmentName, remarks ,leader,level,type}
       this.loading = true
       departmentModify(params).then((data) => {
+        this.$message.info(data.msg)
         this.visible = false
         this.init()
       }).catch(error => {
+        this.loading = false
         console.error(error)
       }).finally(() => {
         this.loading = false
@@ -382,15 +398,17 @@ export default {
     },
     doAdd () {
       // 取数据
-      const { status, Authorization, departmentName, remarks, parentId ,leader,level} = this.currentRecord
+      const { status, Authorization, departmentName, remarks, parentId ,leader,level,type} = this.currentRecord
       // 组装接口需要的数据
-      const params = { parentId, status: status, Authorization, departmentName, remarks ,leader,level}
+      const params = { parentId, status: status, Authorization, departmentName, remarks ,leader,level,type}
       console.log('新增部门参数：', params)
       this.loading = true
-      departmentAdd(params).then(() => {
+      departmentAdd(params).then((res) => {
+        this.$message.info(res.msg)
         this.visible = false
         this.init()
       }).catch(error => {
+        this.loading = false
         console.error(error)
       }).finally(() => {
         this.loading = false

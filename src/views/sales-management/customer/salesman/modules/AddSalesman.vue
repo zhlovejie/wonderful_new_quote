@@ -32,9 +32,22 @@
             showSearch
             placeholder="请选择对应领导"
             optionFilterProp="children"
-            :filterOption="userFilter"
+            :filterOption="userFilter" 
+            @change="leaderChange"
             v-decorator="['leader',{rules: [{required: true, message: '请选择对应领导'}]}]">
             <a-select-option v-for="user in allUser" :key="user.index" :value="user.id">{{ user.trueName }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item label="选择对应销售助理" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            showSearch
+            placeholder="请选择对应销售助理"
+            optionFilterProp="children"
+            :filterOption="userFilter"
+            v-decorator="['assistantId',{rules: [{required: true, message: '请选择对应销售助理'}]}]">
+            <a-select-option v-for="user in salesAssistantList" :key="user.index" :value="user.id">{{ user.trueName }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -76,7 +89,7 @@
 
 <script>
 import ATextarea from 'ant-design-vue/es/input/TextArea'
-import { getAllUser, addSalesman, getOneSalesman, editSalesman } from '@/api/customer/salesman'
+import { getAllUser, addSalesman, getOneSalesman, editSalesman ,getSaleAssistant} from '@/api/customer/salesman'
 
 export default {
   name: 'AddSalesman',
@@ -102,7 +115,8 @@ export default {
       cedsc: true,
       ceosc: true,
       cecsc: true,
-      op: true
+      op: true,
+      salesAssistantList:[] //销售助理列表
     }
   },
   created () {
@@ -115,6 +129,9 @@ export default {
     })
   },
   methods: {
+    leaderChange(leaderID){
+      return getSaleAssistant({id:leaderID}).then(res => this.salesAssistantList = res.data)
+    },
     checkUser (value) {
       getOneSalesman({ userId: value }).then(res => {
         if (res.code === 200) {
@@ -188,7 +205,11 @@ export default {
             canEnterCommon: record.canEnterCommon,
             overduePunish: record.overduePunish,
             maximum: record.maximum,
-            recoverTime: record.recoverTime
+            recoverTime: record.recoverTime,
+            //assistantId:record.assistantId
+          })
+          this.leaderChange(record.leader).then(() =>{
+            this.form.setFieldsValue({assistantId:record.assistantId})
           })
         })
         this.cdsc = record.canDistribute === 1 ? true : false

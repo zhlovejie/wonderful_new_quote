@@ -68,3 +68,13 @@ export function getAllUser () {
     method: 'get'
   })
 }
+
+// 根据领导人id，获取领导人部门下所有销售助理
+export function getSaleAssistant (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salesman/getSaleAssistant',
+    method: 'get',
+    params:params
+  })
+}

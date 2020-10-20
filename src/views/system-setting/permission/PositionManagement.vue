@@ -122,6 +122,18 @@
             <a-select-option v-for="level in levelList" :key="level" :value="level">{{ level }}</a-select-option>
           </a-select>
         </a-form-item>
+
+        <a-form-item
+          label="岗位类型"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 12 }"
+        >
+          <a-select placeholder="选择岗位类型" v-model="currentRecord.type">
+            <a-select-option :value="0">其他</a-select-option>
+            <a-select-option :value="1">销售助理</a-select-option>
+          </a-select>
+        </a-form-item>
+
         <a-form layout="inline">
           <a-row>
             <a-col :span="4" style="text-align: right;height: 39px;line-height: 39px;">
@@ -283,7 +295,7 @@ export default {
       departmentList: {},
       roleDepartmentId: 0, // 角色的部门id
       roleId: 0, // 角色Id
-      type: 0
+      type: 0,
     }
   },
   mounted () {
@@ -509,7 +521,7 @@ export default {
     // 修改岗位
     doEdit () {
       // 取数据
-      const { id, status, Authorization, stationName, remarks, roleId ,setNum} = this.currentRecord
+      const { id, status, Authorization, stationName, remarks, roleId ,setNum,type} = this.currentRecord
       // 组装接口需要的数据
       const params = {
         id: id,
@@ -520,13 +532,15 @@ export default {
         parentId: this.selectedStationParentId,
         level: this.selectedLevel,
         roleId: this.roleId,
-        setNum
+        setNum,
+        type
       }
       console.log('修改的参数=======', params)
       this.loading = true
       positionModify(params)
         .then(data => {
           console.log('点击了提交按钮，并且已经调取修改岗位接口成功了', data)
+          this.$message.info(data.msg)
           this.visible = false
           this.handleCancel()
           this.init()
@@ -540,7 +554,7 @@ export default {
     },
     doAdd () {
       // 取数据
-      const { id, status, Authorization, stationName, remarks, parentId, departmentId, roleId ,setNum} = this.currentRecord
+      const { id, status, Authorization, stationName, remarks, parentId, departmentId, roleId ,setNum,type} = this.currentRecord
       // 组装接口需要的数据
       const params = {
         stationName,
@@ -551,7 +565,8 @@ export default {
         level: this.selectedLevel,
         remarks,
         roleId,
-        setNum
+        setNum,
+        type
       }
       console.log('新增岗位参数：', params)
       this.loading = true
