@@ -119,13 +119,13 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
             let arr = {}
             if (that.type !== 'add') {
               values.id = this.record.id
             }
+            that.spinning = true
             capital_Meals_addAndUpdate(values)
               .then((res) => {
                 that.spinning = false
