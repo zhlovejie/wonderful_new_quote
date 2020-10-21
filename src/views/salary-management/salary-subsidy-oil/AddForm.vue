@@ -58,8 +58,8 @@
                   v-if="!isDisabled"
                   placeholder="车牌号"
                   :allowClear="true" 
-                  
-                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '输入车牌号'}]}]"
+                  @click="openCarSelect" 
+                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '输入或选择车牌号'}]}]"
                 />
                 <span v-else>{{detail.carNo}}</span>
               </a-form-item>
@@ -152,6 +152,7 @@
 
     <Approval ref="approval" @opinionChange="opinionChange" />
     <ImgView ref="imgView" title="图片预览"/>
+    <CarSelect ref="carSelect" @select="carSelectHandler" />
   </a-modal>
 </template>
 <script>
@@ -166,12 +167,13 @@ import UploadFile from '@/components/CustomerList/UploadFile'
 import ImgView from '@/components/CustomerList/ImgView'
 import Approval from './Approval'
 import moment from 'moment'
+import CarSelect from '@/components/CustomerList/CarSelect'
 
 let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { Approval ,UploadFile,ImgView},
+  components: { Approval ,UploadFile,ImgView,CarSelect},
   data() {
     return {
       form: this.$form.createForm(this),
@@ -217,6 +219,18 @@ export default {
     },
     showImg(url){
       this.$refs.imgView.show(url)
+    },
+    openCarSelect(){
+      this.$refs.carSelect.query()
+    },
+    carSelectHandler(record){
+      console.log(record)
+      this.form.setFieldsValue({
+        carNo:record.carCode
+      })
+      let detail = {...this.detail}
+      detail.carNo = record.carCode
+      this.detail = detail
     },
     async query(type, record) {
       //debugger
