@@ -271,6 +271,17 @@ export function capital_bill_List(parameter) {
   })
 }
 
+//下载罚款单
+// export function capital_download(parameter) {
+//   return axios({
+//     baseURL: system.baseURL,
+//     url: '/oaSalaryInfo/oa-salary-fine-apply/download',
+//     method: 'get',
+//     params: parameter
+//   })
+// }
+
+
 //自动生成编码
 export function capital_bill_logisticsNum(parameter) {
   return axios({

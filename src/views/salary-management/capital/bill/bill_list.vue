@@ -68,6 +68,10 @@
             <template v-if="$auth('bill:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a type="primary" target="_blank" :href="url + record.id">下载</a>
+            </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('bill:Withdraw')">
@@ -109,10 +113,11 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { capital_bill_List, capital_bill_withdraw, capital_bill_del } from '@/api/bonus_management'
+import { capital_bill_List, capital_bill_withdraw, capital_bill_del, capital_download } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
+import system from '@/config/defaultSettings'
 const columns = [
   {
     align: 'center',
@@ -183,6 +188,7 @@ export default {
       visible: false,
       depList: [],
       queryParam: {},
+      url: system.baseURL + '/oaSalaryInfo/oa-salary-fine-apply/download?id=',
       pagination1: { current: 1 },
       pagination: {
         showSizeChanger: true,
@@ -222,7 +228,6 @@ export default {
       that.searchAction()
       departmentList().then((res) => (this.depList = res.data))
     },
-
     // 删除
     confirmDelete(record) {
       let that = this

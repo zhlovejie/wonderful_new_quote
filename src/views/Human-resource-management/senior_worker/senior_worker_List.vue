@@ -68,6 +68,11 @@
             <template v-if="$auth('seniorWorker:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="record.status === 2">
+              <a-popconfirm title="是否确定撤销" ok-text="确定" cancel-text="取消" @confirm="confirmRevoke(record)">
+                <a type="primary">撤销</a>
+              </a-popconfirm>
+            </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('seniorWorker:Withdraw')">
@@ -244,6 +249,8 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
+    //撤销
+    confirmRevoke() {},
 
     // 撤回
     confirmWithdraw(record) {
