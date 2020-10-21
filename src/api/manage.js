@@ -1,4 +1,6 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 
 const api = {
@@ -10,23 +12,27 @@ const api = {
   orgTree: '/org/tree',
   uploadPath: system.baseURL + '/upload/fileList',
   uploadVideoPath: system.baseURL + '/upload/fileVideo',
-  uploadApkPath: system.baseURL + '/common/uploadFile'
+  uploadApkPath: system.baseURL + '/common/uploadFile',
+  uploadAddressPath: system.baseURL + '/rDFileUpload/uploadFile'
 }
 
 export default api
 
-export function getApkUploadPath (parameter) {
+export function uploadAddress(parameter) {
+  return api.uploadAddressPath
+}
+export function getApkUploadPath(parameter) {
   return api.uploadApkPath
 }
 
-export function getUploadPath (parameter) {
+export function getUploadPath(parameter) {
   return api.uploadPath
 }
-export function getUploadVideoPath (parameter) {
+export function getUploadVideoPath(parameter) {
   return api.uploadVideoPath
 }
 
-export function getUserList (parameter) {
+export function getUserList(parameter) {
   return axios({
     url: api.user,
     method: 'get',
@@ -34,7 +40,7 @@ export function getUserList (parameter) {
   })
 }
 
-export function getRoleList (parameter) {
+export function getRoleList(parameter) {
   return axios({
     url: api.role,
     method: 'get',
@@ -42,7 +48,7 @@ export function getRoleList (parameter) {
   })
 }
 
-export function getServiceList (parameter) {
+export function getServiceList(parameter) {
   console.log('getServiceList' + JSON.stringify(parameter))
   return axios({
     url: api.service,
@@ -51,7 +57,7 @@ export function getServiceList (parameter) {
   })
 }
 
-export function getPermissions (parameter) {
+export function getPermissions(parameter) {
   return axios({
     url: api.permissionNoPager,
     method: 'get',
@@ -59,7 +65,7 @@ export function getPermissions (parameter) {
   })
 }
 
-export function getOrgTree (parameter) {
+export function getOrgTree(parameter) {
   console.log('manages : ' + parameter)
   return axios({
     url: api.orgTree,
@@ -70,7 +76,7 @@ export function getOrgTree (parameter) {
 
 // id == 0 add     post
 // id != 0 update  put
-export function saveService (parameter) {
+export function saveService(parameter) {
   return axios({
     url: api.service,
     method: parameter.id === 0 ? 'post' : 'put',
