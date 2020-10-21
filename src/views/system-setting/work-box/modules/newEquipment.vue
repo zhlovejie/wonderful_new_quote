@@ -70,6 +70,16 @@
             }}</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="上传地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-radio-group
+            v-decorator="['innetType', { initialValue: 1, rules: [{ required: true, message: '请选择上传地址！' }] }]"
+            @change="address"
+          >
+            <a-radio :value="1"> 外网 </a-radio>
+            <a-radio :value="2"> 内网 </a-radio>
+          </a-radio-group>
+        </a-form-item>
+
         <a-form-item label="更新说明" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-textarea
             :disabled="queryBoolean"
@@ -96,7 +106,7 @@
             accept=".apk,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             name="file"
             :multiple="true"
-            :action="this.uploadPath"
+            :action="this.path === 1 ? this.uploadPath : this.uploadAdd"
             :fileList="fileList"
             @change="handleChange"
           >
@@ -122,7 +132,7 @@ import {
   addAndroidVersionEquipment,
   queryCode,
 } from '@/api/workBox'
-import { getApkUploadPath } from '@/api/manage'
+import { getApkUploadPath, uploadAddress } from '@/api/manage'
 
 export default {
   name: 'AndroidModal',
@@ -144,10 +154,12 @@ export default {
       previewVisible: false, // 图片预览框是否可见
       previewImage: '', //  预览图片的src值
       fileList: [],
+      path: 1,
       fileName: '',
       downloadUrl: '',
       id: 0,
       uploadPath: getApkUploadPath(),
+      uploadAdd: uploadAddress(),
     }
   },
   beforeCreate() {
@@ -197,6 +209,9 @@ export default {
     close() {
       this.$emit('ok')
       this.visible = false
+    },
+    address(e) {
+      this.path = e.target.value
     },
     handleOk() {
       const _this = this
