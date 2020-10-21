@@ -69,6 +69,7 @@
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
             <template v-if="record.status === 2">
+              <a-divider type="vertical" />
               <a-popconfirm title="是否确定撤销" ok-text="确定" cancel-text="取消" @confirm="confirmRevoke(record)">
                 <a type="primary">撤销</a>
               </a-popconfirm>
@@ -114,7 +115,12 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { shuttle_Bus_list, shuttle_Bus_withdraw, shuttle_Bus_del } from '@/api/Human_resource_management'
+import {
+  shuttle_Bus_list,
+  shuttle_Bus_withdraw,
+  shuttle_Bus_del,
+  shuttle_BusRevoke,
+} from '@/api/Human_resource_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -247,7 +253,7 @@ export default {
         2: '审核通过',
         3: '审核未通过',
         4: '已撤回',
-        5: '已完结',
+        5: '已销毁',
       }
       return stateMap[state] || `未知状态:${state}`
     },
@@ -256,7 +262,12 @@ export default {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
     // 撤销
-    confirmRevoke(record) {},
+    confirmRevoke(record) {
+      shuttle_BusRevoke({ id: record.id }).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
+      })
+    },
 
     // 撤回
     confirmWithdraw(record) {
