@@ -69,6 +69,9 @@
               <a-form-item>
                 <span>请假时长小于等于</span>
                 <a-input-number
+                  :min="0"
+                  :max="100000"
+                  :precision="0.1"
                   style="width: 130px; margin: 0 10px"
                   placeholder="输入小时"
                   v-decorator="['maxLeaveHours', { rules: [{ required: true, message: '请输入小时!' }] }]"
