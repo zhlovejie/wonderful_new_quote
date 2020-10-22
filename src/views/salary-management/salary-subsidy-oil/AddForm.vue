@@ -52,22 +52,24 @@
 
           <tr>
             <td>车牌号</td>
-            <td style="width:220px;">
-              <a-form-item v-if="carNoOptions.length === 0">
+            <td style="width:220px;" v-if="carNoOptions.length === 0">
+              <a-form-item>
                 <a-input 
                   v-if="!isDisabled"
                   placeholder="车牌号"
                   :allowClear="true" 
-                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '请输入车牌号'}]}]"
+                  v-decorator="[`carNo_input`,{initialValue:detail.carNo,rules: [{required: true,message: '请输入车牌号'}]}]"
                 />
                 <span v-else>{{detail.carNo}}</span>
               </a-form-item>
-              <a-form-item v-else>
+            </td>
+            <td style="width:220px;" v-if="carNoOptions.length > 0">
+              <a-form-item>
                 <a-select 
                   v-if="!isDisabled"
                   placeholder="车牌号"
                   :allowClear="true" 
-                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '请选择车牌号'}]}]"
+                  v-decorator="[`carNo_select`,{initialValue:detail.carNo,rules: [{required: true,message: '请选择车牌号'}]}]"
                 >
                   <a-select-option v-for="item in carNoOptions" :key="item.key" :value="item.carcode">{{item.carcode}}</a-select-option>
                 </a-select>
@@ -318,7 +320,14 @@ export default {
 
       this.form.validateFields((err, values) => {
         if (!err) {
-          
+          if(values.carNo_input){
+            values.carNo = values.carNo_input
+          }else if(values.carNo_select){
+            values.carNo = values.carNo_select
+          }
+
+          delete values.carNo_input
+          delete values.carNo_select
           values.createdId = that.userInfo.id
           if (that.isEdit) {
             values.id = that.record.id
