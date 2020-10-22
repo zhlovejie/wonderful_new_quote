@@ -574,11 +574,11 @@
                       name="haveSecurity"
                       v-decorator="[
                         'haveSecurity',
-                        { initialValue: 1, rules: [{ required: true, message: '选择是否缴纳社保' }] },
+                        { initialValue: 0, rules: [{ required: true, message: '选择是否缴纳社保' }] },
                       ]"
                     >
+                      <a-radio :value="0">否</a-radio>
                       <a-radio :value="1">是</a-radio>
-                      <a-radio :value="2">否</a-radio>
                     </a-radio-group>
                   </a-form-item>
                 </td>
@@ -850,6 +850,7 @@ export default {
     callback(key) {
       let that = this
       if (key === '3') {
+        console.log(123)
         Personnel_Reserve({
           departmentId: that.department.departmentId,
           stationId: that.department.stationId,
@@ -1228,36 +1229,6 @@ export default {
               values.certificateSaveBoList = [...that.todauuplate, ...arr, ...num, ...arr1, ...num1]
             }
           }
-          // if (this.type === 'ruzhi') {
-          //   let arr10 = that.$refs.normalCard
-          //     ? that.$refs.normalCard.getFiles().map((file) => {
-          //         if (file.response && file.response.code === 200 && file.name !== '1') {
-          //           let arr = {
-          //             fileUrl: file.response.data,
-          //             fileType: 2,
-          //             fileName: file.name,
-          //           }
-          //           return arr
-          //         }
-          //       })
-          //     : []
-
-          //   let num10 = that.$refs.normalUpload
-          //     ? that.$refs.normalUpload.getFiles().map((file) => {
-          //         if (file.response && file.response.code === 200 && file.name !== '1') {
-          //           let arr = {
-          //             fileUrl: file.response.data,
-          //             fileType: 3,
-          //             fileName: file.name,
-          //           }
-          //           return arr
-          //         }
-          //       })
-          //     : []
-          //   if (that.todauuplate || arr || num) {
-          //     values.certificateSaveBoList = [...that.todauuplate, ...arr10, ...num10]
-          //   }
-          // }
 
           values.bankCardList = _bankChoiceResult.values.bank || []
           //values.nativePlace = '江苏徐州'
