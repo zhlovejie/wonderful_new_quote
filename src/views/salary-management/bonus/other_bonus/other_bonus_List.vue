@@ -172,7 +172,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '提交人日期',
+    title: '提交时间',
     dataIndex: 'createdTime',
     key: 'createdTime',
   },

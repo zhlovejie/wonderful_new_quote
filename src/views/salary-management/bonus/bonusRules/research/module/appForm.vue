@@ -1,6 +1,6 @@
 
 <template>
-  <a-modal title="选择产品" :width="800" v-model="priewVisible" :footer="null" :maskClosable="false">
+  <a-modal title="选择产品" :width="1000" v-model="priewVisible" :footer="null" :maskClosable="false">
     <div class="search-options">
       <a-input
         class="main-items"
@@ -60,6 +60,7 @@ let columns = [
   {
     align: 'center',
     title: '产品代码',
+    width: 150,
     dataIndex: 'productModel',
     key: 'productModel',
     scopedSlots: { customRender: 'name' },
@@ -67,6 +68,7 @@ let columns = [
   {
     align: 'center',
     title: '产品名称',
+    width: 150,
     dataIndex: 'productName',
     key: 'productName',
   },

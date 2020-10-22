@@ -19,8 +19,8 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>加班时长(h)</td>
-            <td colspan="2">1个</td>
+            <td style="height: 51px">加班时长(h)</td>
+            <td colspan="2" style="height: 51px">1</td>
           </tr>
           <tr>
             <td>奖金(元/h)</td>

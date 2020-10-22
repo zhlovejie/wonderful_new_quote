@@ -23,6 +23,7 @@
         <a-select-option :value="2">审批通过</a-select-option>
         <a-select-option :value="3">审批不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
+        <a-select-option :value="5">已缴纳</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -246,7 +247,7 @@ export default {
         2: '审核通过',
         3: '审核未通过',
         4: '已撤回',
-        5: '已完结',
+        5: '已缴纳',
       }
       return stateMap[state] || `未知状态:${state}`
     },
