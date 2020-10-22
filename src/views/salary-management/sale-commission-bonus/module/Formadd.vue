@@ -22,12 +22,14 @@
     <a-spin :spinning="spinning">
       <a-row>
         <a-col :span="8" class="basic-tit" justify="center" align="middle"
-          >{{ commonReceiveBigDecimal }} 常规产品实际收款</a-col
+          >总实际收款：{{ allReceiveBigDecimal }}</a-col
+        >
+        <a-col :span="8" class="basic-tit" justify="center" align="middle">
+          常规产品实际收款：{{ commonReceiveBigDecimal }}</a-col
         >
         <a-col :span="8" class="basic-tit" justify="center" align="middle"
-          >{{ regularReceiveBigDecimal }}智能产品实际收款</a-col
+          >智能产品实际收款：{{ regularReceiveBigDecimal }}</a-col
         >
-        <a-col :span="8" class="basic-tit" justify="center" align="middle">{{ allReceiveBigDecimal }}总实际收款</a-col>
       </a-row>
       <a-row>
         <a-col
@@ -36,7 +38,7 @@
           style="margin-top: 30px; margin-bottom: 20px"
           justify="center"
           align="middle"
-          >{{ month }}销售部收款统计表</a-col
+          >{{ month }}销售部收入统计表</a-col
         >
       </a-row>
 
@@ -255,7 +257,7 @@
       </a-table>
 
       <a-row style="margin-top: 40px" v-if="isDisabled">
-        <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}销售部奖金统计表</a-col>
+        <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}销售部提成奖金统计表</a-col>
       </a-row>
       <a-table v-if="isDisabled" :columns="baseColumns" :pagination="false" rowKey="id" :dataSource="saleCustomers">
       </a-table>
