@@ -287,7 +287,6 @@ export default {
       component: RouteView,
       meta: {
         title: '奖金管理',
-        icon: 'select',
         keepAlive: false,
         permission: ['permission']
       },
@@ -366,7 +365,6 @@ export default {
       component: RouteView,
       meta: {
         title: '应扣资金',
-        icon: 'select',
         keepAlive: false,
         permission: ['permission']
       },

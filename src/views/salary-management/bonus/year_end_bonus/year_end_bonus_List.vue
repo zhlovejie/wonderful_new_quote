@@ -12,7 +12,7 @@
         }}</a-select-option>
       </a-select>
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"

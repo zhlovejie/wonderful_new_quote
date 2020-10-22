@@ -13,7 +13,7 @@
       </a-select>
       <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
