@@ -143,7 +143,7 @@ export default {
       visible: false,
       actionType: 'add',
       spinning: false,
-      detail: {},
+      detail: {}
     }
   },
   computed: {
@@ -202,6 +202,19 @@ export default {
       let detail = {...that.detail}
       let detailRules = detail.detailRules || []
       
+      if(field === 'ageNum'){ //年限重复提示
+        let idx = detailRules.findIndex(item => item.key === key)
+        let selectedAgeNums = detailRules.map(item => item.ageNum).filter(v => +v > 0)
+        if(selectedAgeNums.includes(+val)){
+          that.$message.info('工作年限不能重复选择')
+          that.$nextTick(() =>{
+            that.form.setFieldsValue({[`detailRules.${idx}.ageNum`]:undefined})
+          })
+          return 
+        }
+      }
+
+
       let target = detailRules.find(item => item.key === key)
       if(target){
         target[field] = +val

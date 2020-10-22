@@ -66,11 +66,11 @@ const columns = [
     dataIndex: 'date',
     scopedSlots: { customRender: 'date' }
   },
-  {
-    align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName'
-  },
+  // {
+  //   align: 'center',
+  //   title: '部门',
+  //   dataIndex: 'departmentName'
+  // },
   {
     align: 'center',
     title: '高温补贴(元/天)',

@@ -557,3 +557,13 @@ export function InjuryApplyRevocation (parameter) {
   })
 }
 //工伤补贴申请 END
+
+/**根据用户编号获取对应车牌号 */
+export function getUserInfoById (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/user/getUserInfoById',
+    method: 'get',
+    params: parameter
+  })
+}

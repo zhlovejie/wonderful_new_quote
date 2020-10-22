@@ -53,14 +53,24 @@
           <tr>
             <td>车牌号</td>
             <td style="width:220px;">
-              <a-form-item>
+              <a-form-item v-if="carNoOptions.length === 0">
                 <a-input 
                   v-if="!isDisabled"
                   placeholder="车牌号"
                   :allowClear="true" 
-                  @click="openCarSelect" 
-                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '输入或选择车牌号'}]}]"
+                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '请输入车牌号'}]}]"
                 />
+                <span v-else>{{detail.carNo}}</span>
+              </a-form-item>
+              <a-form-item v-else>
+                <a-select 
+                  v-if="!isDisabled"
+                  placeholder="车牌号"
+                  :allowClear="true" 
+                  v-decorator="[`carNo`,{initialValue:detail.carNo,rules: [{required: true,message: '请选择车牌号'}]}]"
+                >
+                  <a-select-option v-for="item in carNoOptions" :key="item.key" :value="item.carcode">{{item.carcode}}</a-select-option>
+                </a-select>
                 <span v-else>{{detail.carNo}}</span>
               </a-form-item>
             </td>
@@ -159,7 +169,8 @@
 
 import {
   oilApplyApproval,
-  oilApplyAddOrUpdate
+  oilApplyAddOrUpdate,
+  getUserInfoById
 } from '@/api/salaryManagement'
 import {queryStationLevel} from '@/api/common'
 import {levelRulePageList } from '@/api/salaryManagement'
@@ -184,7 +195,8 @@ export default {
       record: {},
       spinning: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      festivalDetails:[]
+      festivalDetails:[],
+      carNoOptions:[]
     }
   },
   computed: {
@@ -245,7 +257,6 @@ export default {
       //   that.detail = {}
       //   return
       // }
-
       let money = +that.record.amount || 0
       try{
         if(money === 0){
@@ -257,19 +268,36 @@ export default {
         }
       }catch(err){
         console.log(err)
+        money = 0
       }
+
+      getUserInfoById({userId:that.userInfo.id}).then(res =>{
+        console.log(res)
+        let {licensePlateNum /*常用车牌号*/,spareLicensePlateNum/*备用车牌号*/} = res.data
+        let arr = []
+        if(licensePlateNum){
+          arr.push({carcode:licensePlateNum,key:uuid()})
+        }
+        if(spareLicensePlateNum){
+          arr.push({carcode:spareLicensePlateNum,key:uuid()})
+        }
+        that.carNoOptions = arr
+      })
+
+
       that.detail = { ...that.record,amount:money }
       
       that.$nextTick(() =>{
+        console.log(that.detail)
         if(that.detail.vehicleLisenceUrl){
           that.$refs.uploadVehicleLisence && that.$refs.uploadVehicleLisence.setFiles(
-            that.detail.vehicleLisenceUrl.split(',').map(url =>{url})
+            that.detail.vehicleLisenceUrl.split(',').map(url =>{return {url}})
           )
         }
 
         if(that.detail.driverLisenceUrl){
           that.$refs.uploadDriverLisence && that.$refs.uploadDriverLisence.setFiles(
-            that.detail.driverLisenceUrl.split(',').map(url =>{url})
+            that.detail.driverLisenceUrl.split(',').map(url =>{return {url}})
           )
         }
       })

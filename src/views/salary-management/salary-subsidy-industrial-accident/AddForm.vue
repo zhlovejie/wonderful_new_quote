@@ -60,7 +60,8 @@
                   :min="0"
                   :max="99999"
                   :step="1"
-                  :precision="2"
+                  :precision="0" 
+                  @change="daysChange"
                   v-decorator="['days', {initialValue:detail['days'], rules: [{ required: true, message: '请输入天数' }]}]"
                 />
                 <span v-else>{{detail['days']}}</span>
@@ -131,7 +132,8 @@
 
 import {
   InjuryApplyApproval,
-  InjuryApplyAddOrUpdate
+  InjuryApplyAddOrUpdate,
+  nightRulePageList
 } from '@/api/salaryManagement'
 import Approval from './Approval'
 import moment from 'moment'
@@ -151,7 +153,8 @@ export default {
       record: {},
       spinning: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      festivalDetails:[]
+      festivalDetails:[],
+      OtherSubsidyAmountCache:{}
     }
   },
   computed: {
@@ -197,7 +200,43 @@ export default {
         that.detail = {}
         return
       }
+
       that.detail = { ...that.record }
+    },
+    async daysChange(days){
+      let amount = await this.getOtherSubsidyAmount(1) || 0
+      let total = days * amount
+      this.form.setFieldsValue({amount:total})
+    },
+    getOtherSubsidyAmount(type){
+      let that = this
+      /** 
+       * <a-select-option :value="1">工伤</a-select-option>
+                  <a-select-option :value="2">代班</a-select-option>
+                  <a-select-option :value="3">大夜班</a-select-option>
+                  <a-select-option :value="4">中夜班</a-select-option>
+                  <a-select-option :value="5">延时餐补</a-select-option>
+       * **/
+      if(that.OtherSubsidyAmountCache.length > 0){
+        let target = that.OtherSubsidyAmountCache.find(item => +item.type === type)
+        if(target){
+          return +target.amount || 0
+        }
+        return 0
+      }
+
+      return nightRulePageList({current:1,size:100})
+        .then((res) => {
+          if(res && res.data && res.data.records && Array.isArray(res.data.records) && res.data.records.length > 0){
+            that.OtherSubsidyAmountCache = res.data.records
+            let target = that.OtherSubsidyAmountCache.find(item => +item.type === type)
+            if(target){
+              return +target.amount || 0
+            }
+            return 0
+          }
+          return 0
+        })
     },
     handleSubmit() {
       let that = this

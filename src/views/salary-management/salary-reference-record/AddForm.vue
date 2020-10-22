@@ -184,7 +184,7 @@ export default {
               salary:investAmountList[idx].investAmount
             }
             if(that.isEdit){
-              _item.id = that.record.id
+              _item.id = item.id
             }
             return _item
           })
