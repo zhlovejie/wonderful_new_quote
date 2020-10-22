@@ -46,7 +46,7 @@
             placeholder="请选择对应销售助理"
             optionFilterProp="children"
             :filterOption="userFilter"
-            v-decorator="['assistantId',{rules: [{required: true, message: '请选择对应销售助理'}]}]">
+            v-decorator="['assistantId',{rules: [{required: false, message: '请选择对应销售助理'}]}]">
             <a-select-option v-for="user in salesAssistantList" :key="user.index" :value="user.id">{{ user.trueName }}
             </a-select-option>
           </a-select>
