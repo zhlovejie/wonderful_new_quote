@@ -137,6 +137,15 @@ export default {
             title: '软件合同模板',
             permission: ['permission']
           }
+        },
+        {
+          path: '/sales-management/contract-template-management/agencyContractTemplate',
+          name: 'agencyContractTemplate',
+          component: () => import('@/views/sales-management/contract-template-management/agencyContractTemplate'),
+          meta: {
+            title: '代理合同模板',
+            permission: ['permission']
+          }
         }
       ]
     },
@@ -679,9 +688,16 @@ export default {
             permission: ['permission']
           }
         },
-
-        //   ]
-        // },
+        {
+          path: '/sales-management/software-contract-management/agencyContractList',
+          name: 'agencyContractList',
+          component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
+          meta: {
+            title: '代理合同',
+            keepAlive: true,
+            permission: ['permission']
+          }
+        }
       ]
     },
     {
