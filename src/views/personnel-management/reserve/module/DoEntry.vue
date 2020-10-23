@@ -852,17 +852,11 @@ export default {
       let that = this
       this.activeKey = parseInt(key)
       let arr = this.form.getFieldsValue().haveSecurity
-      let num = 1
-      if (arr === 0) {
-        num = 2
-      } else {
-        num = 1
-      }
       if (key === '3') {
         Personnel_Reserve({
           departmentId: that.department.departmentId,
           stationId: that.department.stationId,
-          insureType: num,
+          insureType: this.form.getFieldsValue().haveSecurity,
         }).then((res) => {
           that.todayList = res.data
           console.log(res.data)
