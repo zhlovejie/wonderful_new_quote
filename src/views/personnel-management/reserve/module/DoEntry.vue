@@ -873,7 +873,6 @@ export default {
     // 模板数据接收
     getChildMsg(data) {
       let that = this
-      console.log(data)
       if (that.todauuplate.length == 0) {
         that.todauuplate.push(data)
       } else {
@@ -884,8 +883,6 @@ export default {
           that.$message.error('不能重复上传同一个模板')
         }
       }
-
-      console.log(that.todauuplate)
     },
     //删除上传模板
     deletes(i) {
@@ -1171,14 +1168,10 @@ export default {
         that.visible = false
         return
       }
-
       let _bankChoiceResult = await that.$refs.bankChoice.validateFields()
       console.log('_bankChoiceResult', _bankChoiceResult)
-
       that.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
-
           if (_bankChoiceResult.err) {
             return
           }
@@ -1262,7 +1255,6 @@ export default {
           }
 
           values.reserveId = that.record.id
-          console.log(values)
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit' || that.type === 'add') {
             // if (that.todauuplate.length !== that.todayList.length) {
