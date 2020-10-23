@@ -10,7 +10,7 @@
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" class="do_entry_form-wrapper">
-        <a-tabs default-active-key="1" @change="callback">
+        <a-tabs :activeKey="String(activeKey)" default-active-key="1" @change="callback">
           <a-tab-pane key="1" tab="基本信息">
             <table class="custom-table custom-table-border">
               <tr>
@@ -777,6 +777,7 @@ export default {
   data() {
     return {
       visible: false,
+      activeKey: 1,
       form: this.$form.createForm(this, { name: 'do_entry' }),
       type: 'view',
       birthplaceOptions: [], //籍贯 级联 省市
@@ -849,12 +850,19 @@ export default {
     },
     callback(key) {
       let that = this
+      this.activeKey = parseInt(key)
+      let arr = this.form.getFieldsValue().haveSecurity
+      let num = 1
+      if (arr === 0) {
+        num = 2
+      } else {
+        num = 1
+      }
       if (key === '3') {
-        console.log(123)
         Personnel_Reserve({
           departmentId: that.department.departmentId,
           stationId: that.department.stationId,
-          insureType: this.form.getFieldsValue().haveSecurity,
+          insureType: num,
         }).then((res) => {
           that.todayList = res.data
           console.log(res.data)
@@ -986,6 +994,7 @@ export default {
         //人员状态：默认为0浏览，1试用期，2试用期不通过，3在职，4离职
         //0为入职前，其他的都为入职后
         // 合同模板接口
+        that.activeKey = 1
         let isDoEntryBefore = record.status === 0 ? true : false
         let entryDetailApi = isDoEntryBefore ? getEntityBeforeDetail : reserveGetDetail
         entryDetailApi({ reserveId: record.id }).then((res) => {

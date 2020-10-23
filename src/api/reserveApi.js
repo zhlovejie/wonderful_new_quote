@@ -146,6 +146,21 @@ export function reserveFaceAdd(parameter) {
     }
   })
 }
+//采集人脸信息，传入照片返回特征值
+export function reserveFaceUrl(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'reserve/faceAddByUrl',
+    method: 'post',
+    data: parameter,
+    config: {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    }
+  })
+}
+
 
 //检索人脸，传入照片返回匹配用户
 export function reserveFaceSearch(parameter) {
