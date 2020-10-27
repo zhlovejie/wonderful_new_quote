@@ -2,6 +2,17 @@
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.month" />
+      <a-select
+        placeholder="审核状态"
+        v-if="activeKey === 0"
+        v-model="queryParam.status"
+        :allowClear="true"
+        style="width: 200px; margin-right: 10px"
+      >
+        <a-select-option :value="1">待审批</a-select-option>
+        <a-select-option :value="2">审批通过</a-select-option>
+        <a-select-option :value="3">审批不通过</a-select-option>
+      </a-select>
       <a-button
         class="a-button"
         type="primary"

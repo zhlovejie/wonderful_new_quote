@@ -12,9 +12,8 @@
           item.departmentName
         }}</a-select-option>
       </a-select>
-      <!-- <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
@@ -24,7 +23,7 @@
         <a-select-option :value="2">审批通过</a-select-option>
         <a-select-option :value="3">审批不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
-      </a-select> -->
+      </a-select>
       <a-button
         class="a-button"
         type="primary"
@@ -33,7 +32,7 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('seniorWorker:add')">
+      <template v-if="$auth('research:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
@@ -44,13 +43,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('seniorWorker:list')">
+        <template v-if="$auth('research:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('seniorWorker:lists')"
+        v-if="$auth('research:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -66,18 +65,22 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('seniorWorker:view')">
+            <template v-if="$auth('research:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 1">
+            <template v-if="$auth('research:Withdraw') && record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <template>
-                <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
-                  <a type="primary">撤回</a>
-                </a-popconfirm>
-              </template>
+              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
+                <a type="primary">撤回</a>
+              </a-popconfirm>
             </template>
-            <template v-if="record.status === 3 || record.status === 4">
+            <template
+              v-if="
+                $auth('research:edit-salary') &&
+                (record.status === 3 || record.status === 4) &&
+                +record.createdId === +userInfo.id
+              "
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary', record)">修改</a>
               <a-divider type="vertical" />

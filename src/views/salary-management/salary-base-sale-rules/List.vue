@@ -3,7 +3,7 @@
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <a-input placeholder="名称" v-model="queryParam.name" allowClear style="width: 200px; margin-right: 10px" />
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('Distribution:add')">
+      <template v-if="$auth('saleRules:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
       </template>
     </div>
@@ -14,16 +14,18 @@
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
-        v-if="$auth('Distribution:list')"
+        v-if="$auth('saleRules:list')"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="AddRule('add', record)">添加规则</a>
-          <a-divider type="vertical" />
-          <a @click="RuleDetails(record)">规则明细</a>
-          <template>
+          <template v-if="$auth('saleRules:AddRule')">
+            <a @click="AddRule('add', record)">添加规则</a>
+            <a-divider type="vertical" />
+            <a @click="RuleDetails(record)">规则明细</a>
+          </template>
+          <template v-if="$auth('saleRules:delete')">
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />

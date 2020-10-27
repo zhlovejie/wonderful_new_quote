@@ -33,17 +33,17 @@
           :loading="memberLoading"
           rowKey="id"
         >
+          <!-- @click="openModel(record)" -->
           <template slot="productCode" slot-scope="text, record">
             <a-input
               :value="text"
-              :disabled="isDisabled"
+              :disabled="false"
               read-only="read-only"
-              @click="openModel(record)"
               v-decorator="['productCode', { rules: [{ required: true, message: '选择产品代码' }] }]"
             />
           </template>
           <template slot="productName" slot-scope="text, record">
-            <a-input :disabled="isDisabled" :value="text" read-only="read-only" />
+            <a-input :disabled="false" :value="text" read-only="read-only" />
           </template>
           <template slot="amountBigDecimal" slot-scope="text, record">
             <a-input-number
@@ -229,25 +229,12 @@ export default {
     // 添加行
     newMember() {
       const length = this.dataSource.length
-      this.dataSource.push({
-        key: uuid(),
-        productCode: '',
-        productName: undefined,
-        oaSalaryDeveloperPercentageDivProductBoList: undefined,
-        productId: undefined,
-        productType: undefined,
-      })
+      this.$refs.productModel.query()
     },
     // 删除行
     remove(key) {
       const newData = this.dataSource.filter((item) => item.key !== key)
       this.dataSource = newData
-    },
-    // 产品代码弹出框
-    openModel(record) {
-      this.openKey = record.key
-      console.log('openKey :' + this.openKey)
-      this.$refs.productModel.query()
     },
     productChange(data) {
       console.log(data)
@@ -260,17 +247,33 @@ export default {
         }
       })
 
-      for (const key of that.dataSource) {
-        if (key.key == that.openKey) {
-          key.productCode = data.productCode // 所依据产品代码  ---------
-          key.productName = data.productName // 产品名称  ----
-          key.oaSalaryDeveloperPercentageDivProductBoList = data.oaSalaryBounsPercentageRuleDetails // 人员 ----
-          key.productId = data.productId
-          key.productType = data.productType
+      if (that.dataSource.length == 0) {
+        this.dataSource.push({
+          key: uuid(),
+          productCode: data.productCode,
+          productName: data.productName,
+          oaSalaryDeveloperPercentageDivProductBoList: data.oaSalaryBounsPercentageRuleDetails,
+          productId: data.productId,
+          productType: data.productType,
+        })
+      } else {
+        let arr = that.dataSource.some((item) => data.productName === item.productName)
+        if (!arr) {
+          this.dataSource.push({
+            key: uuid(),
+            productCode: data.productCode,
+            productName: data.productName,
+            oaSalaryDeveloperPercentageDivProductBoList: data.oaSalaryBounsPercentageRuleDetails,
+            productId: data.productId,
+            productType: data.productType,
+          })
+        } else {
+          that.$message.error('不能重复选择同一产品')
         }
       }
+
       for (const key of that.dataSource) {
-        if (key.key == that.openKey) {
+        if (key.productName == data.productName) {
           key.oaSalaryDeveloperPercentageDivProductBoList.map((v) => {
             v.key = that.assetTypeList[v.userId]
             key[`bounsItemRetio_${v.userId}`] = v.amountBigDecimal
@@ -340,7 +343,7 @@ export default {
           res.data.productList = res.data.productList.map((i) => {
             i.oaSalaryDeveloperPercentageDivProductVoList = i.oaSalaryDeveloperPercentageDivProductVoList.map((v) => {
               return {
-                amountDeciaml: v.amountDeciaml,
+                amountBigDecimal: v.amountDeciaml,
                 userId: v.userId,
                 userName: v.userName,
                 bounsToilt: i.amountBigDecimal / v.amountDeciaml / 1000,
@@ -365,7 +368,7 @@ export default {
             let bounsItemVoList = [..._item.oaSalaryDeveloperPercentageDivProductVoList]
             bounsItemVoList.map((v) => {
               v.key = that.assetTypeList[v.userId]
-              _item[`bounsItemRetio_${v.userId}`] = v.amountDeciaml
+              _item[`bounsItemRetio_${v.userId}`] = v.amountBigDecimal
               return v
             })
             _item.oaSalaryDeveloperPercentageDivProductBoList = bounsItemVoList

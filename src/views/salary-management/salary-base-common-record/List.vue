@@ -44,13 +44,7 @@
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <a-table
-        :columns="columns"
-        :data-source="dataSource"
-        :pagination="pagination"
-        @change="handleTableChange"
-        v-if="$auth('Distribution:list')"
-      >
+      <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" @change="handleTableChange">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -197,7 +191,7 @@ export default {
         })
         .catch((err) => {
           this.uploading = false
-           that.$message.error(res.msg)
+          that.$message.error(res.msg)
           console.log(err)
         })
     },

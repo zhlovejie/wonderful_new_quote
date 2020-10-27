@@ -249,11 +249,11 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
+      getDevisionList().then((res) => {
+        this.departmentList = res.data
+      })
       if (type === 'edit-salary') {
         this.fillData()
-        getDevisionList().then((res) => {
-          this.departmentList = res.data
-        })
       }
     },
 
@@ -275,8 +275,8 @@ export default {
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            if (that.commonReceiveBigDecimal > 1) {
-              return this.$message.error('系数总和不能大于1')
+            if (that.haveProcess.length == 0) {
+              return this.$message.error('请选择人员')
             }
             let arr = {}
             if (that.type !== 'add') {

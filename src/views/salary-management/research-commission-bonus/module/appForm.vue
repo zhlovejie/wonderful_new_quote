@@ -131,7 +131,6 @@ export default {
     },
     //选择客户
     handlerSelected(record, index) {
-      record.productType = this.queryParam.productType
       this.$emit('selected', record)
       this.priewVisible = false
     },
