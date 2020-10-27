@@ -66,9 +66,15 @@
             </template>
           </template>
         </a-table>
-        <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember"
-          >添加行</a-button
-        >
+        <template v-if="!isDisabled">
+          <a-button
+            style="width: 100%; margin-top: 16px; margin-bottom: 8px"
+            type="dashed"
+            icon="plus"
+            @click="newMember"
+            >添加行</a-button
+          >
+        </template>
 
         <a-row style="margin-top: 40px" v-if="isDisabled">
           <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}研发部奖金统计表</a-col>

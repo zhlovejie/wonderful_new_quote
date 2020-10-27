@@ -34,6 +34,13 @@
       <a-upload :beforeUpload="beforeUpload" style="margin-left: 10px" :showUploadList="false">
         <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
       </a-upload>
+      <a
+        target="_blank"
+        style="margin-left: 10px"
+        class="a-button ant-btn ant-btn-primary"
+        href="https://www.delanshi.cn/images/cloud/20200409/人才储备模板cde1f372-2758-4724-b8a5-6004b411df2f.xlsx"
+        >下载模板</a
+      >
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
@@ -187,48 +194,10 @@ export default {
           } else {
             that.$message.error(res.msg)
           }
-          // if (res instanceof Blob) {
-          //   let action = {
-          //     isFile: res.type === 'application/x-download',
-          //     isJson: res.type === 'application/json',
-          //   }
-          //   if (action.isFile) {
-          //     const objectUrl = URL.createObjectURL(res)
-          //     const a = document.createElement('a')
-          //     document.body.appendChild(a)
-          //     a.style = 'display: none'
-          //     a.href = objectUrl
-          //     a.download = 'error.xlsx'
-          //     a.click()
-          //     document.body.removeChild(a)
-
-          //     that.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
-          //     return
-          //   } else if (action.isJson) {
-          //     var reader = new FileReader()
-          //     reader.onload = function (e) {
-          //       let _res = null
-          //       try {
-          //         _res = JSON.parse(e.target.result)
-          //       } catch (err) {
-          //         _res = null
-          //         console.log('JSON.parse error...', e.target.result)
-          //       }
-          //       if (_res !== null) {
-          //         that.$message.info(_res.msg || '操作成功')
-          //         that.fileList = []
-          //       }
-          //     }
-          //     reader.readAsText(res)
-          //   }
-          // } else {
-          //   console.log('未知错误：')
-          //   console.log('类型：' + typeof res)
-          //   console.log(res)
-          // }
         })
         .catch((err) => {
           this.uploading = false
+           that.$message.error(res.msg)
           console.log(err)
         })
     },

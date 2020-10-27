@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="1300"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -18,104 +18,123 @@
         <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
       </template>
     </template>
-
     <a-spin :spinning="spinning">
-      <a-form :form="form" class="becoming-form-wrapper">
-        <table class="custom-table custom-table-border">
-          <tr>
-            <td>部门</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  :disabled="isDisabled"
-                  @change="depChangeHandler"
-                  placeholder="请选择部门"
-                  v-decorator="['departmentId', { rules: [{ required: true, message: '请选择部门!' }] }]"
-                >
-                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
-                    item.departmentName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>职位</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  :disabled="isDisabled"
-                  @change="postChangeHandler"
-                  placeholder="请选择职位"
-                  v-decorator="['stationId', { rules: [{ required: true, message: '请选择职位!' }] }]"
-                >
-                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
-                    item.stationName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>姓名</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-select
-                  :disabled="isDisabled"
-                  placeholder="请选择人员"
-                  v-decorator="['userId', { rules: [{ required: true, message: '请选择人员!' }] }]"
-                >
-                  <a-select-option v-for="item in personSelectDataSource" :key="item.id" :value="item.id">{{
-                    item.trueName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>工作业绩</td>
-            <td colspan="2">
-              <a-form-item>
-                <a-textarea
-                  placeholder="工作业绩"
-                  :disabled="isDisabled"
-                  :rows="2"
-                  v-decorator="['workAchievement', { rules: [{ required: true, message: '请输入工作业绩' }] }]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>备注</td>
-            <td colspan="4">
-              <a-form-item>
-                <a-textarea
-                  placeholder="备注"
-                  :disabled="isDisabled"
-                  :rows="2"
-                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-        </table>
-      </a-form>
+      <a-row style="margin-top: 30px; margin-bottom: 30px" v-if="isDisabled">
+        <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}工资条</a-col>
+      </a-row>
+      <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+        <a-select
+          style="width: 200px; margin-right: 10px"
+          v-model="queryParam.departmentId"
+          :allowClear="true"
+          placeholder="请选择部门"
+        >
+          <a-select-option :value="undefined">请选择部门</a-select-option>
+          <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+            item.departmentName
+          }}</a-select-option>
+        </a-select>
+        <a-input
+          placeholder="员工姓名"
+          v-model="queryParam.userName"
+          allowClear
+          style="width: 200px; margin-right: 10px"
+        />
+
+        <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
+      </div>
+      <a-table
+        :scroll="{ x: 4000 }"
+        bordered
+        :columns="baseColumns"
+        :data-source="dataSource"
+        :pagination="pagination"
+        @change="handleTableChange"
+        v-if="$auth('Distribution:list')"
+      >
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
+      </a-table>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import {
-  departmentList, //所有部门
-  getStationList, //获取部门下面的岗位
-  getUserByStation, //获取人员
-} from '@/api/systemSetting'
-import { senior_worker_addAndUpdate, senior_worker_approval } from '@/api/Human_resource_management'
+import { getDevisionList, getStationList } from '@/api/systemSetting'
+import { wages_Detail, wages_ListDic, wages_instance } from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
 // let uuid = () => Math.random().toString(32).slice(-10)
 
+const columns = [
+  {
+    dataIndex: 'name',
+    title: '序号',
+    key: 'order',
+    align: 'center',
+    scopedSlots: { customRender: 'order' },
+  },
+  {
+    title: '部门',
+    dataIndex: 'departmentName',
+    key: 'departmentName',
+    align: 'center',
+  },
+  {
+    title: '职位',
+    dataIndex: 'stationName',
+    key: 'stationName',
+    align: 'center',
+  },
+  {
+    title: '姓名',
+    dataIndex: 'userName',
+    key: 'userName',
+    align: 'center',
+  },
+  {
+    title: '工资',
+    align: 'center',
+    children: [],
+  },
+  {
+    title: '奖金',
+    align: 'center',
+    children: [],
+  },
+  {
+    title: '奖励',
+    align: 'center',
+    children: [],
+  },
+  {
+    title: '扣款',
+    align: 'center',
+    children: [],
+  },
+
+  {
+    title: '应发工资(元)',
+    dataIndex: 'shouldSalaryBigDecimal',
+    key: 'shouldSalaryBigDecimal',
+    align: 'center',
+  },
+
+  {
+    title: '社保扣款(元)',
+    dataIndex: 'socinsAmountBigDecimal',
+    key: 'socinsAmountBigDecimal',
+    align: 'center',
+  },
+  {
+    title: '实发工资(元)',
+    dataIndex: 'realSalaryBigDecimal',
+    key: 'realSalaryBigDecimal',
+    align: 'center',
+  },
+]
 export default {
   name: 'BecomingForm',
   components: {
@@ -123,34 +142,41 @@ export default {
   },
   data() {
     return {
-      remark: '',
+      departmentList: [], // 部门列表
+      month: '',
+      userInfo: this.$store.getters.userInfo, // 当前登录人
+      dataSource: [],
+      columns,
+      pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+      },
+      pagination1: {},
+      queryParam: {
+        current: 1,
+        applyId: undefined,
+      },
       visible: false,
-
-      personSelectDataSource: [], //人员
-      departmentList: [], //部门
-      postSelectDataSource: [], //职位
       spinning: false,
-      form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'view',
       record: {},
+      salaryItemBase: [],
+      bounsItemBase: [],
+      allowanceItemBase: [],
+      fineItemBase: [],
     }
   },
 
   computed: {
     modalTitle() {
-      if (this.isEditSalary) {
-        return '修改高级工程师'
-      }
-      let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}高级工程师`
+      let txt = this.isView ? '查看' : this.isEdit ? '审核' : '新增'
+      return `${txt}工资条`
     },
     isView() {
       //查看
       return this.type === 'view'
-    },
-    isView5() {
-      //查看
-      return this.type === 'view5'
     },
     isEdit() {
       //审核
@@ -167,93 +193,144 @@ export default {
     isDisabled() {
       return this.isView || this.isEdit || this.isView5
     },
+    baseColumns() {
+      let _columns = []
+
+      this.columns.map((item) => {
+        if (item.title === '工资') {
+          item.children = this.salaryItemBase
+        }
+        if (item.title === '奖金') {
+          item.children = this.bounsItemBase
+        }
+        if (item.title === '奖励') {
+          item.children = this.allowanceItemBase
+        }
+        if (item.title === '扣款') {
+          item.children = this.fineItemBase
+        }
+      })
+      let __columns = [...this.columns]
+      return __columns
+    },
   },
   created() {
-    departmentList().then((res) => {
+    getDevisionList().then((res) => {
       this.departmentList = res.data
+    })
+    wages_ListDic().then((res) => {
+      this.salaryItemBase = res.data.salaryItemBase.map((item) => {
+        return {
+          title: item.text,
+          dataIndex: item.code,
+          key: item.code,
+          align: 'center',
+        }
+      })
+      this.bounsItemBase = res.data.bounsItemBase.map((item) => {
+        return {
+          title: item.text,
+          dataIndex: item.code,
+          key: item.code,
+          align: 'center',
+        }
+      })
+      this.allowanceItemBase = res.data.allowanceItemBase.map((item) => {
+        return {
+          title: item.text,
+          dataIndex: item.code,
+          key: item.code,
+          align: 'center',
+        }
+      })
+      this.fineItemBase = res.data.fineItemBase.map((item) => {
+        return {
+          title: item.text,
+          dataIndex: item.code,
+          key: item.code,
+          align: 'center',
+        }
+      })
     })
   },
   methods: {
     moment,
-    //选择岗位
-    depChangeHandler(dep_id) {
-      let that = this
-      that.depart = dep_id
-      that.postSelectDataSource = []
-      return getStationList({ id: dep_id }).then((res) => {
-        that.postSelectDataSource = res.data
-      })
-    },
-    //选择人员
-    postChangeHandler(stationId) {
-      this.personSelectDataSource = []
-      getUserByStation({ stationId: stationId, showLeaveFlag: 1 }).then(
-        (res) => (this.personSelectDataSource = res.data)
-      )
-    },
+
     //接受数据
     query(type, record) {
       console.log(this.record)
-      this.form.resetFields() // 清空表
       this.visible = true
       this.type = type
       this.record = record
-      if (type !== 'add') {
-        getStationList({ id: record.departmentId }).then((res) => {
-          this.postSelectDataSource = res.data
-        })
-        getUserByStation({ stationId: record.stationId, showLeaveFlag: 1 }).then(
-          (res) => (this.personSelectDataSource = res.data)
-        )
-        this.fillData()
-      }
+      this.month = record.month
+      this.queryParam.applyId = record.id
+      this.searchAction({ applyId: record.id })
     },
-    // 详情
-    fillData() {
+    searchAction(opt) {
       let that = this
-      this.$nextTick(() => {
-        this.form.setFieldsValue({
-          // amount: this.record.amount,
-          departmentId: this.record.departmentId,
-          // itemType: this.record.itemType,
-          workAchievement: this.record.workAchievement,
-          stationId: this.record.stationId,
-          userId: this.record.userId,
-          remark: this.record.remark,
+      that.loading = true
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
+      wages_Detail(_searchParam)
+        .then((res) => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            let _item = { ...item }
+            let salaryList = [..._item.salaryList]
+            let bounsList = [..._item.bounsList]
+            let allowanceList = [..._item.allowanceList]
+            let fineList = [..._item.fineList]
+            salaryList.map((v) => {
+              v.key = v.dicCode
+              _item[`${v.key}`] = v.amountBigDecimal
+              return v
+            })
+
+            bounsList.map((v) => {
+              v.key = v.dicCode
+              _item[`${v.key}`] = v.amountBigDecimal
+              return v
+            })
+            allowanceList.map((v) => {
+              v.key = v.dicCode
+              _item[`${v.key}`] = v.amountBigDecimal
+              return v
+            })
+            fineList.map((v) => {
+              v.key = v.dicCode
+              _item[`${v.key}`] = v.amountBigDecimal
+              return v
+            })
+
+            _item.salaryList = salaryList
+            _item.bounsList = bounsList
+            _item.allowanceList = allowanceList
+            _item.fineList = fineList
+            return _item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
         })
-      })
+        .catch((err) => (that.loading = false))
     },
+
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
+    },
+
     //提交
     handleOk() {
       let that = this
-      if (that.type === 'view') {
-        this.visible = false
-      } else {
-        that.form.validateFields((err, values) => {
-          if (!err) {
-            if (that.type === 'edit-salary') {
-              values.id = that.record.id
-            }
-            if (that.type === 'add' || that.type === 'edit-salary') {
-              that.spinning = true
-              senior_worker_addAndUpdate(values)
-                .then((res) => {
-                  this.programme = []
-                  this.visible = false
-                  that.spinning = false
-                  that.form.resetFields() // 清空表
-                  that.$message.info(res.msg)
-                  that.$emit('finish')
-                })
-                .catch((err) => (that.spinning = false))
-            }
-          }
-        })
-      }
+      that.visible = false
     },
     handleCancel() {
-      this.programme = []
-      this.remark = '' // 清空表
+      // this.programme = []
+      // this.remark = '' // 清空表
       this.visible = false
     },
     // 审批
@@ -265,10 +342,9 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      senior_worker_approval(values)
+      wages_instance(values)
         .then((res) => {
           that.spinning = false
-          that.form.resetFields() // 清空表
           that.visible = false
           that.$message.info(res.msg)
           that.$emit('finish')

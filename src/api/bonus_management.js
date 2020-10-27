@@ -610,3 +610,42 @@ export function sale_SalerMonthCollectDetail(parameter) {
     params: parameter
   })
 }
+// 工资条列表
+export function wages_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryMonthInstance/oa-salary-month-instance/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//工资条字典数据 
+export function wages_ListDic(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-month-bouns-detail/listDic',
+    method: 'get',
+    params: parameter
+  })
+}
+//工资条详情数据 
+export function wages_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-month-detail/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//工资条审核
+export function wages_instance(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryMonthInstance/oa-salary-month-instance/approvalSalaryMonthInstanceApply',
+    method: 'post',
+    data: parameter
+  })
+}

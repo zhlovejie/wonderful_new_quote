@@ -54,12 +54,14 @@ const columns = [
   },
   {
     title: '名称',
+    width: '150px',
     dataIndex: 'name',
     key: 'name',
     align: 'center',
   },
   {
     title: '适用岗位',
+
     dataIndex: 'stationNames',
     key: 'stationNames',
     align: 'center',
@@ -74,11 +76,13 @@ const columns = [
     title: '备注',
     dataIndex: 'remark',
     key: 'remark',
+    width: '150px',
     align: 'center',
   },
   {
     title: '操作',
     key: 'action',
+    width: '300px',
     scopedSlots: { customRender: 'action' },
     align: 'center',
   },
