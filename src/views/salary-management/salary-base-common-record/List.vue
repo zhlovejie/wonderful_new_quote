@@ -38,7 +38,7 @@
         target="_blank"
         style="margin-left: 10px"
         class="a-button ant-btn ant-btn-primary"
-        href="https://www.delanshi.cn/images/cloud/20200409/人才储备模板cde1f372-2758-4724-b8a5-6004b411df2f.xlsx"
+        href="https://www.delanshi.cn/images/cloud/20201027/salaryc931dda2-1bfc-4562-87af-86cc9c77e169.xlsx"
         >下载模板</a
       >
     </div>
