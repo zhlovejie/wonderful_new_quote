@@ -104,3 +104,12 @@ export function customUploadBase64(data){
     data:data
   })
 }
+
+export function getAllArea (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/areaDic/getAllArea',
+    method: 'get',
+    params: params
+  })
+}

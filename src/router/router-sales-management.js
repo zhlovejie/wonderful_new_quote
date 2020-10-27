@@ -689,7 +689,7 @@ export default {
           }
         },
         {
-          path: '/sales-management/software-contract-management/agencyContractList',
+          path: '/sales-management/agency-contract-management/agencyContractList',
           name: 'agencyContractList',
           component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
           meta: {
@@ -697,7 +697,16 @@ export default {
             keepAlive: true,
             permission: ['permission']
           }
-        }
+        },
+        {
+          path: '/sales-management/agency-contract-management/preview/agencyContractView',
+          name: 'agencyContractView',
+          component: () => import('@/views/sales-management/agency-contract-management/agencyContractView'),
+          meta: {
+            title: '代理合同预览',
+            permission: ['permission']
+          }
+        },
       ]
     },
     {
