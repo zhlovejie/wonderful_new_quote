@@ -27,7 +27,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('salaryDetails:list')">
+        <template v-if="$auth('salaryDetails:approve')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
