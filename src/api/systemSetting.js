@@ -1,10 +1,14 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 //取消请求
-import {CancelToken} from 'axios'
+import {
+  CancelToken
+} from 'axios'
 
 // 获取部门列表
-export function getDevisionManagementList (parameter) {
+export function getDevisionManagementList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/department/query',
@@ -12,9 +16,19 @@ export function getDevisionManagementList (parameter) {
     params: parameter
   })
 }
+//批量设置权限
+export function getSaveRoleMenu(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/Role/saveRoleMenu',
+    method: 'post',
+    data: parameter
+  })
+}
 
+//
 // 获取用户列表
-export function getUserList (parameter) {
+export function getUserList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/query',
@@ -24,7 +38,7 @@ export function getUserList (parameter) {
 }
 
 // 获取部门下面的所有人员
-export function getUserByDep (parameter) {
+export function getUserByDep(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/userByDep',
@@ -34,7 +48,7 @@ export function getUserByDep (parameter) {
 }
 
 //删除角色
-export function deleteRole (parameter) {
+export function deleteRole(parameter) {
   console.log('deleteRole  : ' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -45,7 +59,7 @@ export function deleteRole (parameter) {
 }
 
 // 获取部门下面的所有人员  stationId
-export function getUserByStation (parameter) {
+export function getUserByStation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/userByStation',
@@ -55,7 +69,7 @@ export function getUserByStation (parameter) {
 }
 
 // 条件收索
-export function getList (parameter) {
+export function getList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/queryList',
@@ -64,7 +78,7 @@ export function getList (parameter) {
   })
 }
 // 无分页列表
-export function getUserListNoPage (parameter) {
+export function getUserListNoPage(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/getList',
@@ -73,7 +87,7 @@ export function getUserListNoPage (parameter) {
   })
 }
 // 获取部门树
-export function gettreeList (parameter) {
+export function gettreeList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/department/queryTree',
@@ -83,7 +97,7 @@ export function gettreeList (parameter) {
 }
 
 // 获取全部部门
-export function getDevisionList () {
+export function getDevisionList() {
   return axios({
     baseURL: system.baseURL,
     url: '/department/queryAllList',
@@ -91,7 +105,7 @@ export function getDevisionList () {
   })
 }
 // 修改部门信息
-export function departmentModify (data) {
+export function departmentModify(data) {
   const token = data.Authorization
 
   return axios({
@@ -105,7 +119,7 @@ export function departmentModify (data) {
   })
 }
 // 部门-新建部门
-export function departmentAdd (data) {
+export function departmentAdd(data) {
   const token = data.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -119,7 +133,7 @@ export function departmentAdd (data) {
 }
 
 // 获取岗位列表
-export function getpositionManagementList (parameter) {
+export function getpositionManagementList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/station/query',
@@ -129,7 +143,7 @@ export function getpositionManagementList (parameter) {
 }
 
 // 获取岗位管理页面下拉 选择部门
-export function getSelectdepartmentList (parameter) {
+export function getSelectdepartmentList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/department/queryList',
@@ -139,7 +153,7 @@ export function getSelectdepartmentList (parameter) {
 }
 
 // 获取部门列表
-export function departmentList (parameter) {
+export function departmentList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/department/queryList',
@@ -148,7 +162,7 @@ export function departmentList (parameter) {
   })
 }
 // 获取岗位列表
-export function stationList (parameter) {
+export function stationList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/station/queryList',
@@ -157,7 +171,7 @@ export function stationList (parameter) {
   })
 }
 // 新增岗位
-export function positionAdd (data) {
+export function positionAdd(data) {
   const token = data.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -170,7 +184,7 @@ export function positionAdd (data) {
   })
 }
 // 修改岗位信息
-export function positionModify (data) {
+export function positionModify(data) {
   const token = data.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -184,18 +198,18 @@ export function positionModify (data) {
 }
 
 // 获取父岗位 下拉列表
-export function getParentStationList (parameter) {
+export function getParentStationList(parameter) {
   return axios({
     baseURL: system.baseURL,
     //url: '/station/queryByDepartmentId',
-    url:'/station/getStationByDepartmentId',
+    url: '/station/getStationByDepartmentId',
     method: 'get',
     params: parameter
   })
 }
 
 // 添加用户
-export function userAdd (data) {
+export function userAdd(data) {
   const token = data.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -208,7 +222,7 @@ export function userAdd (data) {
   })
 }
 // 修改用户
-export function userModify (data) {
+export function userModify(data) {
   const token = data.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -221,7 +235,7 @@ export function userModify (data) {
   })
 }
 // 修改用户状态
-export function modifyStatus (data) {
+export function modifyStatus(data) {
   const token = data.Authorization
   return axios({
     baseURL: system.baseURL,
@@ -235,7 +249,7 @@ export function modifyStatus (data) {
 }
 
 // 获取岗位管理弹窗 选择等级
-export function getSelectLevelList (parameter) {
+export function getSelectLevelList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/station/queryStationLevel',
@@ -244,7 +258,7 @@ export function getSelectLevelList (parameter) {
   })
 }
 // 获取用户工号
-export function getJobNum (parameter) {
+export function getJobNum(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/getJobNum',
@@ -253,7 +267,7 @@ export function getJobNum (parameter) {
   })
 }
 
-export function getRoleManagementList (parameter) {
+export function getRoleManagementList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/Role/query',
@@ -262,7 +276,7 @@ export function getRoleManagementList (parameter) {
   })
 }
 // 根据id获取角色
-export function queryOne (parameter) {
+export function queryOne(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/Role/queryOne',
@@ -271,7 +285,7 @@ export function queryOne (parameter) {
   })
 }
 // 修改角色
-export function editRole (parameter) {
+export function editRole(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/Role/modify',
@@ -280,7 +294,7 @@ export function editRole (parameter) {
   })
 }
 // 新增保存角色
-export function saveRole (parameter) {
+export function saveRole(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/Role/save',
@@ -289,7 +303,7 @@ export function saveRole (parameter) {
   })
 }
 // 获取部门下所有角色
-export function queryRoleListById (parameter) {
+export function queryRoleListById(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/Role/queryList',
@@ -302,7 +316,7 @@ export function queryRoleListById (parameter) {
  * 根据角色id获取菜单权限
  * @returns {*}
  */
-export function queryRoleMenu (parameter) {
+export function queryRoleMenu(parameter) {
   // 发送 get 请求
   return axios({
     baseURL: system.baseURL,
@@ -318,7 +332,7 @@ export function queryRoleMenu (parameter) {
  * @returns {*}
  * @constructor
  */
-export function editAuthority (parameter) {
+export function editAuthority(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/route/saveRoleRoute',
@@ -333,7 +347,7 @@ export function editAuthority (parameter) {
  * @returns {*}
  * @constructor
  */
-export function editAuthorityWithCancel (parameter,callback) {
+export function editAuthorityWithCancel(parameter, callback) {
   return axios({
     baseURL: system.baseURL,
     url: '/route/saveRoleRoute',
@@ -347,7 +361,7 @@ export function editAuthorityWithCancel (parameter,callback) {
 
 // 系统用户模块
 // 获取部门下所有岗位
-export function queryPositionList () {
+export function queryPositionList() {
   return axios({
     baseURL: system.baseURL,
     url: '/department/queryDepForStation',
@@ -355,7 +369,7 @@ export function queryPositionList () {
   })
 }
 // 系统用户模块，根据部门id，获取部门下相应的岗位下拉列表
-export function getStationList (parameter) {
+export function getStationList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/station/queryByDepartment',
@@ -365,7 +379,7 @@ export function getStationList (parameter) {
 }
 
 // 获取所有销售人员
-export function listUserBySale () {
+export function listUserBySale() {
   return axios({
     baseURL: system.baseURL,
     url: '/user/listUserBySale',
@@ -373,7 +387,7 @@ export function listUserBySale () {
   })
 }
 // 获取当前登录人员信息
-export function getLoginUser () {
+export function getLoginUser() {
   return axios({
     baseURL: system.baseURL,
     url: '/user/loginUser',
@@ -381,7 +395,7 @@ export function getLoginUser () {
   })
 }
 //获取系统日志分页列表
-export function getSysLogList(parameter){
+export function getSysLogList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/syslog/listLogPage',
@@ -390,7 +404,7 @@ export function getSysLogList(parameter){
   })
 }
 //删除系统日志
-export function deleteSysLog(parameter){
+export function deleteSysLog(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/syslog/deleteLog',

@@ -68,7 +68,6 @@
 
           <a-table
             style="margin-top: 40px"
-            v-if="$auth('seniorWorker:lists')"
             :columns="columns"
             :dataSource="dataSource"
             :pagination="false"
@@ -91,7 +90,13 @@
 
 <script>
 import { routeTreeList } from '@/api/system/menu'
-import { editAuthority, editAuthorityWithCancel, getDevisionList, queryRoleListById } from '@/api/systemSetting'
+import {
+  editAuthority,
+  editAuthorityWithCancel,
+  getDevisionList,
+  queryRoleListById,
+  getSaveRoleMenu,
+} from '@/api/systemSetting'
 const columns = [
   {
     align: 'center',
@@ -134,6 +139,7 @@ export default {
       checkedKeys: [],
       selectedKeys: [],
       treeData: [],
+      roleIdList: [],
       loading: false,
       cancelTag: null,
       form: this.$form.createForm(this),
@@ -201,6 +207,7 @@ export default {
 
     handleChange(value) {
       let that = this
+      this.roleIdList = value
       if (!Array.isArray(value)) return
       value.map((_ppid) => {
         if (!_ppid) return
@@ -224,38 +231,41 @@ export default {
       })
     },
     handleOk() {
-      const _this = this
-      //   const canShu = {
-      //     menuIdList: this.checkedKeys,
-      //     // 未全选中的节点
-      //     roleId: this.roleId
-      //   }
-      //   this.loading = true
-      //   _this.cancelTag = null
-      //   editAuthorityWithCancel(canShu,function(c){
-      //     _this.cancelTag = c
-      //   }).then(data => {
-      //     if (data.code === 200) {
-      //       _this.$message.success('保存成功')
-      //       _this.$emit('close')
-      //     }
-      //   }).catch(error => {
-      //     console.error('editAuthority 请求错误', error)
-      //   }).finally(() => {
-      //     _this.close()
-      //     this.loading = false
-      //     _this.cancelTag = null
-      //   })
+      if (this.checkedKeys.length == 0) {
+        return this.$message.error('请选择菜单')
+      }
+      if (this.roleIdList.length == 0) {
+        return this.$message.error('请选择角色')
+      }
+      let arr = {}
+      arr.roleIdList = this.roleIdList
+      arr.menuIdList = this.checkedKeys
+      arr.notAllMenuIdList = []
+      this.loading = true
+      getSaveRoleMenu(arr)
+        .then((res) => {
+          if (res.code === 200) {
+            this.visible = false
+            this.loading = false
+            this.$message.info(res.msg)
+            this.checkedKeys = []
+            this.queryParam = {}
+            that.form.resetFields() // 清空表
+            this.dataSource = []
+          } else {
+            this.$message.info(res.msg)
+            this.loading = false
+          }
+        })
+        .catch((error) => {
+          this.$message.info(error.msg)
+        })
     },
     handleCancel() {
-      //关闭时 请求尚未结束，取消该请求
-      if (this.cancelTag !== null) {
-        this.cancelTag()
-        this.$nextTick(() => (this.cancelTag = null))
-      }
-      this.defaultCheckedKeys = []
+      this.visible = false
       this.checkedKeys = []
-      this.roleId = ''
+      this.form.resetFields() // 清空表
+      this.dataSource = []
     },
   },
 }
