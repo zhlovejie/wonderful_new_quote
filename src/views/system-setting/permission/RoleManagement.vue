@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
       <a-select
-        style="width: 200px"
+        style="width: 200px; margin-bottom: 20px"
         v-model="queryParam.departmentId"
         @change="handleProvinceChange"
         placeholder="请选择部门"
@@ -17,6 +17,7 @@
         <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{ item.roleName }}</a-select-option>
       </a-select>
       <a-button style="margin-left: 10px" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="handleBatch()">批量分配菜单</a-button>
       <template v-if="$auth('role:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handleAdd">新建角色</a-button>
       </template>
@@ -60,7 +61,8 @@
     <role-modal ref="editModal" @ok="handleEditOk" @close="handleEditOk" />
     <role-modal ref="queryModal" @ok="handleEditOk" @close="handleEditOk" />
     <role-tree-modal ref="role" @ok="handleEditOk" @close="handleEditOk"></role-tree-modal>
-    <CopyRole ref="copyrole" />
+    <CopyRole ref="copyrole" @ok="handleSaveOk" />
+    <BatchDistribution ref="Batch" @ok="handleSaveOk" />
   </a-card>
 </template>
 
@@ -76,6 +78,7 @@ import {
 import { STable } from '@/components'
 import RoleModal from './modules/RoleModal'
 import CopyRole from './modules/CopyRole'
+import BatchDistribution from './modules/BatchDistribution'
 import RoleTreeModal from './modules/RoleTreeModal'
 import ACol from 'ant-design-vue/es/grid/Col'
 
@@ -87,6 +90,7 @@ export default {
     RoleModal,
     CopyRole,
     RoleTreeModal,
+    BatchDistribution,
   },
   data() {
     return {
@@ -223,6 +227,11 @@ export default {
         this.$refs.role.setCheckedNodes(res.data, record.id)
       })
     },
+    //批量分配权限
+    handleBatch() {
+      this.$refs.Batch.setCheckedNodes()
+    },
+    //复制角色
     handleCopy(record) {
       this.$refs.copyrole.query(record)
     },

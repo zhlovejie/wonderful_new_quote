@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { getDevisionList, queryRoleMenu } from '@/api/systemSetting'
+import { getDevisionList, queryRoleMenu, saveRole } from '@/api/systemSetting'
 
 export default {
   name: 'CopyModal',
@@ -83,45 +83,24 @@ export default {
             _this.$message.error('角色名过长')
             return
           }
-          //   _this.confirmLoading = true
-          //   // 模拟后端请求 2000 毫秒延迟
-          //   // setTimeout(() => resolve(), 2000)
-          //   console.log('this.addOredit :' + _this.addOredit)
-          //   if (_this.addOredit == 'save') {
-          //     _this.$set(values, 'departmentId', _this.Selected)
-          //     _this.$set(values, 'Authorization', _this.$store.getters.token)
-          // saveRole(values).then((data) => {
-          //   if (data.code == 200) {
-          //     _this.$message.success('保存成功')
-          //     _this.$emit('ok')
-          //   } else {
-          //     _this.$message.error(data.msg)
-          //   }
-          // }).catch(() => {
-          //   // Do something
-          // }).finally(() => {
-          //   _this.confirmLoading = false
-          //   _this.form.resetFields()
-          //   _this.close()
-          // })
-          //   } else if (this.addOredit == 'edit') {
-          //     _this.$set(values, 'departmentId', _this.Selected)
-          //     _this.$set(values, 'Authorization', _this.$store.getters.token)
-          //     editRole(values).then((data) => {
-          //       if (data.code == 200) {
-          //         _this.$message.success('保存成功')
-          //         _this.$emit('ok')
-          //       } else {
-          //         _this.$message.error(data.msg)
-          //       }
-          //     }).catch(() => {
-          //       // Do something
-          //     }).finally(() => {
-          //       _this.confirmLoading = false
-          //       _this.form.resetFields()
-          //       _this.close()
-          //     })
-          //   }
+          values.saveTreeVo = {
+            menuIdList: _this.queryRole,
+            notAllMenuIdList: [],
+          }
+          _this.confirmLoading = true
+          saveRole(values)
+            .then((data) => {
+              if (data.code == 200) {
+                _this.$message.success('复制成功')
+                _this.confirmLoading = false
+                this.visible = true
+                _this.$emit('ok')
+              } else {
+                _this.$message.error(data.msg)
+                _this.confirmLoading = true
+              }
+            })
+            .catch((err) => (that.visible = false))
         }
       })
     },
