@@ -68,15 +68,18 @@
             <template v-if="$auth('commissionBonus:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="record.status === 5">
+              <a-divider type="vertical" />
+              <a type="primary" target="_blank" :href="record.salaryUrl">下载</a>
+            </template>
             <template
               v-if="$auth('commissionBonus:Withdraw') && record.status === 1 && +record.createdId === +userInfo.id"
             >
               <a-divider type="vertical" />
-              <template>
-                <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
-                  <a type="primary">撤回</a>
-                </a-popconfirm>
-              </template>
+
+              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
+                <a type="primary">撤回</a>
+              </a-popconfirm>
             </template>
             <template
               v-if="
