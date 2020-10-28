@@ -27,13 +27,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('seniorWorker:list')">
+        <template v-if="$auth('salaryDetails:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('seniorWorker:lists')"
+        v-if="$auth('salaryDetails:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
