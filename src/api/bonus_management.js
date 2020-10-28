@@ -12,6 +12,19 @@ export function oaSalaryInfo_list(parameter) {
     params: parameter
   })
 }
+//验证重复产品
+export function oaSalaryIsSalary(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-percentage-rule/isSalaryBounsPercentageRule',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+
 /**研发新增接口 */
 export function oaSalaryInfo_addAndUpdate(parameter) {
   return axios({

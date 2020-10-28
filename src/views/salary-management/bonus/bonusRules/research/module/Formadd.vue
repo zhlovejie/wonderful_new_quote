@@ -149,9 +149,13 @@
   </a-modal>
 </template>
 <script>
-import { getDevisionList } from '@/api/systemSetting'
 import { queryList } from '@/api/humanResources'
-import { oaSalaryInfo_addAndUpdate, oaSalaryInfo_getId } from '@/api/bonus_management'
+import {
+  oaSalaryInfo_addAndUpdate,
+  oaSalaryInfo_getId,
+  bonus_getDepartmentByType,
+  oaSalaryIsSalary,
+} from '@/api/bonus_management'
 import vuedraggable from 'vuedraggable'
 import Approval from './appForm'
 
@@ -218,23 +222,29 @@ export default {
     },
   },
   created() {
-    getDevisionList().then((res) => {
-      this.departmentList = res.data
-    })
+    bonus_getDepartmentByType({ type: 2 }).then((res) => (this.departmentList = res.data))
+    // getDevisionList().then((res) => {
+    //   this.departmentList = res.data
+    // })
   },
   methods: {
     //打开产品代码列表
     handleCustomerClick() {
-      console.log(123)
       this.$refs.approval.query()
     },
     //产品代码组件返回值
     handlerCustomerSelected(record) {
-      this.productId = record.id
-      this.productType = record.productType
-      this.form.setFieldsValue({
-        productCode: record.productModel,
-        productName: record.productName,
+      oaSalaryIsSalary({ productType: record.productType, productId: record.id }).then((res) => {
+        if (res.code === 200) {
+          this.productId = record.id
+          this.productType = record.productType
+          this.form.setFieldsValue({
+            productCode: record.productModel,
+            productName: record.productName,
+          })
+        } else {
+          this.$message.error(res.msg)
+        }
       })
     },
     inputChange(event, keys, field) {
@@ -249,9 +259,10 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      getDevisionList().then((res) => {
-        this.departmentList = res.data
-      })
+      bonus_getDepartmentByType({ type: 2 }).then((res) => (this.departmentList = res.data))
+      // getDevisionList().then((res) => {
+      //   this.departmentList = res.data
+      // })
       if (type === 'edit-salary') {
         this.fillData()
       }
