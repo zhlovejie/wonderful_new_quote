@@ -6,23 +6,9 @@
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
+    :footer="null"
   >
-    <template slot="footer">
-      <template v-if="isApproval">
-        <div style="text-align: center">
-          <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
-          <a-button key="submit" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
-        </div>
-      </template>
-      <template v-else>
-        <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
-        <div style="text-align: center">
-          <a-button v-if="isDisabled" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
-          <a-button v-if="!isDisabled" key="submit2" type="primary" @click="() => handleSubmit(2)">保存</a-button>
-          <a-button v-if="!isDisabled" key="submit3" type="primary" @click="() => handleSubmit(3)">提交审批</a-button>
-        </div>
-      </template>
-    </template>
+    
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
         <a-form-item hidden>
@@ -96,6 +82,14 @@
                   ]"
                 />
                 <span v-else>{{ detail.customerName }}</span>
+              </a-form-item>
+              <a-form-item hidden>
+                <a-input
+                  v-decorator="[
+                    'customerName',
+                    { initialValue: detail.customerName },
+                  ]"
+                />
               </a-form-item>
             </td>
           </tr>
@@ -480,6 +474,22 @@
           </tr>
         </table>
       </a-form>
+      <div style="margin:20px 0">
+        <template v-if="isApproval">
+          <div style="text-align: center">
+            <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
+            <a-button key="submit" style="margin-left:10px;" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
+          </div>
+        </template>
+        <template v-else>
+          <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
+          <div style="text-align: center">
+            <a-button v-if="isDisabled" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
+            <a-button v-if="!isDisabled" style="margin-left:10px;" key="submit2" type="primary" @click="() => handleSubmit(2)">保存</a-button>
+            <a-button v-if="!isDisabled" style="margin-left:10px;" key="submit3" type="primary" @click="() => handleSubmit(3)">提交审批</a-button>
+          </div>
+        </template>
+      </div>
     </a-spin>
 
     <Approval ref="approval" @opinionChange="opinionChange" />
@@ -596,7 +606,10 @@ export default {
       return Promise.all(queue)
     },
     handleCustomerSelected(item) {
-      this.form.setFieldsValue({ customerId: item && item.id ? item.id : undefined })
+      this.form.setFieldsValue({ 
+        customerId: item && item.id ? item.id : undefined ,
+        customerName:item.name
+      })
     },
     depositChange(e) {
       const v = e.target.value

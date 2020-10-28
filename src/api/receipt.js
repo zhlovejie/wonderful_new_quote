@@ -177,6 +177,15 @@ export function getSoftContractProductListById (parameter) {
 }
 
 
+export function getReceiptAgencyContractListById (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/agencyContract/pageListForReceipt',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export function getSoftContractListById (parameter) {
   console.log('getSoftContractListById', JSON.stringify(parameter))
   return axios({

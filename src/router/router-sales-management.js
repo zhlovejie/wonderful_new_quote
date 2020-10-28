@@ -341,6 +341,16 @@ export default {
           }
         },
         {
+          path: '/sale/receipt/ReceiptAgency',
+          name: 'ReceiptAgency',
+          hidden: true,
+          component: () => import('@/views/sale/receipt/ReceiptAgencyForm'),
+          meta: {
+            title: '代理收款单',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/sale/receipt/ReceiptVue',
           name: 'ReceiptVue',
           hidden: true,
