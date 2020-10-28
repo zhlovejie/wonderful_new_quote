@@ -68,7 +68,7 @@
             <template v-if="$auth('research:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 5">
+            <template v-if="record.status === 2">
               <a-divider type="vertical" />
               <a type="primary" target="_blank" :href="record.salaryUrl">下载</a>
             </template>
