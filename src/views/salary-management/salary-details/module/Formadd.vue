@@ -105,7 +105,7 @@ const columns = [
     children: [],
   },
   {
-    title: '奖励',
+    title: '补贴',
     align: 'center',
     children: [],
   },
