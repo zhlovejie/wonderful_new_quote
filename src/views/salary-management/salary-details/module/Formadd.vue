@@ -202,7 +202,7 @@ export default {
         if (item.title === '奖金') {
           item.children = this.bounsItemBase
         }
-        if (item.title === '奖励') {
+        if (item.title === '补贴') {
           item.children = this.allowanceItemBase
         }
         if (item.title === '扣款') {
