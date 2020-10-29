@@ -115,7 +115,8 @@
             <td>
               <a-form-item>
                 <a-select
-                  v-if="!isDisabled"
+                  v-if="!isDisabled" 
+                  mode="multiple" 
                   placeholder="产品"
                   :allowClear="true"
                   v-decorator="[
@@ -677,7 +678,7 @@ export default {
 
       await agencyContractDetail({ id: record.id }).then((res) => {
         //console.log(res)
-        debugger
+        //debugger
         if (res.data.salesArea) {
           let _arr = res.data.salesArea.split(';')
           res.data.salesAreaVal = _arr.length >= 1 ? _arr[0].split(',') : []
@@ -685,7 +686,7 @@ export default {
         }
         if (res.data.products) {
           let _arr = res.data.products.split(';')
-          res.data.productsVal = _arr.length >= 1 ? +_arr[0] : undefined
+          res.data.productsVal = _arr.length >= 1 ? _arr[0].split(',').map(v => +v) : []
           res.data.productsTxt = _arr.length === 2 ? _arr[1] : undefined
         }
         if (res.data.salesmanId) {
@@ -733,10 +734,16 @@ export default {
 
           delete values.validityDate
 
-          let target = that.productCategoryList.find((item) => +item.id === +values.products)
-          if (target) {
-            values.products = `${target.id};${target.text}`
+          if(Array.isArray(values.products)){
+            let ids = values.products.join(',')
+            let strs = values.products.map(v => {
+              let target = that.productCategoryList.find((item) => +item.id === +v)
+              return target.text
+            }).join(',')
+
+            values.products = `${ids};${strs}`
           }
+          
           //productCategoryList
           console.log('Received values of form: ', values)
           //return
