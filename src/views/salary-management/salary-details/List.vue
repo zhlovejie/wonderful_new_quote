@@ -51,7 +51,7 @@
             <a type="primary" @click="doAction('view', record)">查看</a>
             <template v-if="$auth('salaryDetails:download') && record.status === 2">
               <a-divider type="vertical" />
-              <a type="primary" @click="outPort(record)">下载</a>
+              <a type="primary" :href="urls + record.id">下载</a>
             </template>
           </template>
 
@@ -71,8 +71,8 @@
   </div>
 </template>
 <script>
-// import { departmentList } from '@/api/systemSetting'
-import { wages_List, getExportList } from '@/api/bonus_management'
+import system from '@/config/defaultSettings'
+import { wages_List } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -115,6 +115,7 @@ export default {
   data() {
     return {
       visible: false,
+      urls: system.baseURL + '/oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel?applyId=',
       queryParam: {},
       pagination1: { current: 1 },
       pagination: {
@@ -156,15 +157,16 @@ export default {
     },
 
     // 下载
-    outPort(record) {
-      getExportList({ applyId: record.id })
-        .then((res) => {
-          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-          let objectUrl = URL.createObjectURL(blob)
-          window.location.href = objectUrl
-        })
-        .catch((err) => this.$message.error('下载异常'))
-    },
+    // outPort(record) {
+    //   getExportList({ applyId: record.id })
+    //     .then((res) => {
+    //       debugger
+    //       let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+    //       let objectUrl = URL.createObjectURL(blob)
+    //       window.location.href = objectUrl
+    //     })
+    //     .catch((err) => this.$message.error('下载异常'))
+    // },
     getStateText(state) {
       let stateMap = {
         1: '待审批',

@@ -24,15 +24,15 @@ export function oaSalaryIsSalary(parameter) {
 
 // 工资条下载 
 
-export function getExportList(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: 'oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
-    method: 'get',
-    responseType: 'blob',
-    params: parameter
-  })
-}
+// export function getExportList(parameter) {
+//   return axios({
+//     baseURL: system.baseURL,
+//     url: 'oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
+//     method: 'get',
+//     responseType: 'blob',
+//     params: parameter
+//   })
+// }
 
 
 
