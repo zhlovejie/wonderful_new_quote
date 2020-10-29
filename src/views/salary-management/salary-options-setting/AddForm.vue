@@ -276,7 +276,7 @@ export default {
 
           let fromSalary = [...that.fromSalary]
           fromSalary.map((item) => {
-            item.val = result[item.skey].split(',').map((v) => +v)
+            item.val = result[item.skey] ? result[item.skey].split(',').map((v) => +v) : []
             return item
           })
           that.fromSalary = fromSalary

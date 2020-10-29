@@ -27,6 +27,7 @@
     </a-form-item>
     <a-form-item label="选择部门" v-if="!isDisabled">
       <a-select 
+        :disabled="isEdit"
         placeholder="部门" 
         @change="depChange"
         v-model="departmentId"

@@ -157,6 +157,11 @@ const columns = [
   },
   {
     align: 'center',
+    title: '是否结束代班',
+    dataIndex: 'overFlagTxt',
+  },
+  {
+    align: 'center',
     title: '审批状态',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
@@ -249,6 +254,7 @@ export default {
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             item.dbDate = `${item.beginDate} ~ ${item.endDate}`
+            item.overFlagTxt = +item.overFlag === 1 ? '已结束' : '未结束'
             return item
           })
 
