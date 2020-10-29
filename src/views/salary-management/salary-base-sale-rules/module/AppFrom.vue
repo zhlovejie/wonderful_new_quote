@@ -143,33 +143,36 @@ export default {
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
-            if (that.type === 'add') {
-              values.baseSalerId = this.record.id
-              values.bounsItemBoList = values.bounsDicNames.map((item, index) => {
-                return {
-                  bounsDicId: that.bounsDicIds[index],
-                  bounsItemRetio: item.bounsItemRetio,
-                }
-              })
+            let target = values.bounsDicNames.every((p) => p.bounsItemRetio < 1)
+            if (target) {
+              if (that.type === 'add') {
+                values.baseSalerId = this.record.id
+                values.bounsItemBoList = values.bounsDicNames.map((item, index) => {
+                  return {
+                    bounsDicId: that.bounsDicIds[index],
+                    bounsItemRetio: item.bounsItemRetio,
+                  }
+                })
+              } else {
+                values.baseSalerId = this.record.routerId
+                values.id = this.record.id
+                values.bounsItemBoList = values.bounsDicNames.map((item, index) => {
+                  return {
+                    bounsDicId: that.bounsDicNames[index].bounsDicId,
+                    bounsItemRetio: item.bounsItemRetio,
+                  }
+                })
+              }
             } else {
-              values.baseSalerId = this.record.routerId
-              values.id = this.record.id
-              values.bounsItemBoList = values.bounsDicNames.map((item, index) => {
-                return {
-                  bounsDicId: that.bounsDicNames[index].bounsDicId,
-                  bounsItemRetio: item.bounsItemRetio,
-                }
-              })
+              return this.$message.error('单个系数不能大于1')
             }
 
             delete values.bounsDicNames
-
+            that.spinning = true
             salary_sale_saveOrUpdateSalerRule(values)
               .then((res) => {
                 that.spinning = false
