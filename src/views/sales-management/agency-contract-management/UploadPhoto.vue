@@ -113,9 +113,9 @@ export default {
   },
   watch:{
     accessoryList(val){
-      console.log('..........123')
+      //console.log('..........123')
       if(Array.isArray(val)){
-        this.dataSource = val.map(item =>{
+        this.dataSource = val.filter(item => item.status === 'done').map(item =>{
           return {
             key:uuid(),
             attachmentName:item.attachmentName,
@@ -173,6 +173,9 @@ export default {
       
     },
     accessoryChange ({ file, fileList }) {
+      if(file.status === 'error'){
+        this.$message.error(`文件[${file.name}]上传失败`)
+      }
       this.accessoryList = [...fileList]
     },
     handleCancel () {
