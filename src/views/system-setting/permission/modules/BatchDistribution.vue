@@ -11,7 +11,7 @@
   >
     <a-spin :spinning="loading" tip="处理中...">
       <a-row>
-        <a-col :span="8">
+        <a-col :span="8" style="height: 600px; overflow-y: auto; overflow: auto">
           <div class="spin-content">
             <a-tree
               ref="aTree"
@@ -35,7 +35,6 @@
                 <a-form-item>
                   <a-select
                     style="width: 300px; margin-bottom: 10px"
-                    v-model="queryParam.departmentId"
                     @change="handleProvinceChange"
                     placeholder="请选择部门"
                   >
@@ -68,6 +67,7 @@
 
           <a-table
             style="margin-top: 40px"
+            :scroll="{ y: 400 }"
             :columns="columns"
             :dataSource="dataSource"
             :pagination="false"
@@ -189,7 +189,7 @@ export default {
       if (value != undefined) {
         // 获取部门下的角色
         this.depart = value
-        queryRoleListById({ departmentId: value })
+        queryRoleListById({ departmentId: value, status: 0 })
           .then((rs) => {
             this.roleList = rs.data
           })
@@ -203,6 +203,9 @@ export default {
     setCheckedNodes(res, id) {
       let that = this
       this.visible = true
+      this.checkedKeys = []
+      this.dataSource = []
+      this.form.resetFields() // 清空表
     },
 
     handleChange(value) {
@@ -245,9 +248,10 @@ export default {
       getSaveRoleMenu(arr)
         .then((res) => {
           if (res.code === 200) {
+            this.$message.info(res.msg)
+            console.log(res.msg)
             this.visible = false
             this.loading = false
-            this.$message.info(res.msg)
             this.checkedKeys = []
             this.queryParam = {}
             that.form.resetFields() // 清空表
@@ -257,9 +261,7 @@ export default {
             this.loading = false
           }
         })
-        .catch((error) => {
-          this.$message.info(error.msg)
-        })
+        .catch((err) => (this.visible = false))
     },
     handleCancel() {
       this.visible = false

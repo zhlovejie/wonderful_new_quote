@@ -61,16 +61,11 @@ export default {
   },
   methods: {
     query(record) {
-      //   this.queryBoolean = true
-      //   console.log('query :' + JSON.stringify(record))
-      //   this.mdl = Object.assign({}, record)
+      this.form.resetFields() // 清空表
       this.visible = true
       queryRoleMenu({ id: record.id }).then((res) => {
         this.queryRole = res.data
       })
-      //   this.$nextTick(() => {
-      //     this.form.setFieldsValue({ ...record })
-      //   })
     },
 
     handleOk() {
@@ -91,9 +86,10 @@ export default {
           saveRole(values)
             .then((data) => {
               if (data.code == 200) {
+                this.form.resetFields() // 清空表
                 _this.$message.success('复制成功')
                 _this.confirmLoading = false
-                this.visible = true
+                 this.visible = false
                 _this.$emit('ok')
               } else {
                 _this.$message.error(data.msg)
@@ -106,6 +102,7 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.form.resetFields() // 清空表
     },
   },
 }
