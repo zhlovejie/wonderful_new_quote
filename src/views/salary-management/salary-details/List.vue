@@ -51,6 +51,10 @@
             <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
 
+          <template v-if="activeKey === 0 && $auth(' salary:exportSalaryExcel')">
+            <a type="primary" @click="outPort(record)">下载</a>
+          </template>
+
           <template v-if="activeKey === 1 && record.status === 1">
             <a type="primary" @click="doAction('edit', record)">审核</a>
           </template>
@@ -68,7 +72,7 @@
 </template>
 <script>
 // import { departmentList } from '@/api/systemSetting'
-import { wages_List } from '@/api/bonus_management'
+import { wages_List, getExportList } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -151,18 +155,57 @@ export default {
       that.searchAction()
     },
 
-    // 删除
-    // confirmDelete(record) {
-    //   let that = this
-    //   senior_worker_del(`id=${record.id}`).then((res) => {
-    //     if (res.code === 200) {
-    //       this.searchAction()
-    //       that.$message.info(res.msg)
-    //     } else {
-    //       _this.$message.error(res.msg)
-    //     }
-    //   })
-    // },
+    // 下载
+    outPort(record) {
+      getExportList(`applyId=${record.id}`)
+        .then((res) => {
+          this.loading = false
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            //const isFile = res.type === 'application/msword'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = '工资条.xls'
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => (this.loading = false))
+    },
     getStateText(state) {
       let stateMap = {
         1: '待审批',

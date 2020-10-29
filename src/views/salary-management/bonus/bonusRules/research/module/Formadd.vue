@@ -172,11 +172,13 @@ export default {
       productName: undefined,
       productCode: undefined,
       type: 'View',
+      record: {},
       form: this.$form.createForm(this),
       departmentList: [], //部门
       postSelectDataSource: [], //人员
       haveProcess: [],
       productId: '',
+      prodId: '',
       productType: '', //常规非常规
       depart: '',
       _d: {
@@ -234,18 +236,27 @@ export default {
     },
     //产品代码组件返回值
     handlerCustomerSelected(record) {
-      oaSalaryIsSalary({ productType: record.productType, productId: record.id }).then((res) => {
-        if (res.code === 200) {
-          this.productId = record.id
-          this.productType = record.productType
-          this.form.setFieldsValue({
-            productCode: record.productModel,
-            productName: record.productName,
-          })
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
+      if (this.type === 'edit-salary' && record.id === this.prodId) {
+        this.productId = record.id
+        this.productType = record.productType
+        this.form.setFieldsValue({
+          productCode: record.productModel,
+          productName: record.productName,
+        })
+      } else {
+        oaSalaryIsSalary({ productType: record.productType, productId: record.id }).then((res) => {
+          if (res.code === 200) {
+            this.productId = record.id
+            this.productType = record.productType
+            this.form.setFieldsValue({
+              productCode: record.productModel,
+              productName: record.productName,
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      }
     },
     inputChange(event, keys, field) {
       let haveProcess = [...this.haveProcess]
@@ -276,6 +287,8 @@ export default {
           this.productCode = res.data.productCode
           this.haveProcess = res.data.oaSalaryBounsPercentageRuleDetails
           this.productType = res.data.productType
+          this.productId = res.data.productId
+          this.prodId = res.data.productId
         })
       })
     },

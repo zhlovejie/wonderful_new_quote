@@ -22,6 +22,18 @@ export function oaSalaryIsSalary(parameter) {
   })
 }
 
+// 工资条下载 
+
+export function getExportList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
 
 
 
@@ -284,15 +296,17 @@ export function capital_bill_List(parameter) {
   })
 }
 
-//下载罚款单
-// export function capital_download(parameter) {
-//   return axios({
-//     baseURL: system.baseURL,
-//     url: '/oaSalaryInfo/oa-salary-fine-apply/download',
-//     method: 'get',
-//     params: parameter
-//   })
-// }
+//罚款单销毁
+
+export function capital_destruction(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/destruction',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 
 //自动生成编码

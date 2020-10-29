@@ -71,6 +71,12 @@
             </template>
             <template v-if="record.status === 2">
               <a-divider type="vertical" />
+              <a-popconfirm title="是否确定完结" ok-text="确定" cancel-text="取消" @confirm="confirmRevoke(record)">
+                <a type="primary">完结</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="record.status === 5">
+              <a-divider type="vertical" />
               <a type="primary" target="_blank" :href="url + record.id">下载</a>
             </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
@@ -114,7 +120,13 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { capital_bill_List, capital_bill_withdraw, capital_bill_del, capital_download } from '@/api/bonus_management'
+import {
+  capital_bill_List,
+  capital_bill_withdraw,
+  capital_bill_del,
+  capital_download,
+  capital_destruction,
+} from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -255,7 +267,13 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-
+    // 完结
+    confirmRevoke(record) {
+      capital_destruction({ id: record.id }).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
+      })
+    },
     // 撤回
     confirmWithdraw(record) {
       let that = this
