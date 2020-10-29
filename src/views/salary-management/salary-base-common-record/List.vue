@@ -31,20 +31,30 @@
       />
 
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
-      <a-upload :beforeUpload="beforeUpload" style="margin-left: 10px" :showUploadList="false">
-        <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
-      </a-upload>
-      <a
-        target="_blank"
-        style="margin-left: 10px"
-        class="a-button ant-btn ant-btn-primary"
-        href="https://www.delanshi.cn/images/cloud/20201027/salaryc931dda2-1bfc-4562-87af-86cc9c77e169.xlsx"
-        >下载模板</a
-      >
+      <template v-if="$auth('baseSalaryCommon:import')">
+        <a-upload :beforeUpload="beforeUpload" style="margin-left: 10px" :showUploadList="false">
+          <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
+        </a-upload>
+      </template>
+      <template v-if="$auth('baseSalaryCommon:download')">
+        <a
+          target="_blank"
+          style="margin-left: 10px"
+          class="a-button ant-btn ant-btn-primary"
+          href="https://www.delanshi.cn/images/cloud/20201027/salaryc931dda2-1bfc-4562-87af-86cc9c77e169.xlsx"
+          >下载模板</a
+        >
+      </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
-      <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" @change="handleTableChange">
+      <a-table
+        v-if="$auth('baseSalaryCommon:list')"
+        :columns="columns"
+        :data-source="dataSource"
+        :pagination="pagination"
+        @change="handleTableChange"
+      >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
