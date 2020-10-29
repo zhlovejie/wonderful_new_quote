@@ -51,7 +51,7 @@
             <a type="primary" @click="doAction('view', record)">查看</a>
             <template v-if="$auth('salaryDetails:download') && record.status === 2">
               <a-divider type="vertical" />
-              <a type="primary" :href="urls + record.id">下载</a>
+              <a type="primary" @click="outPort(record)">下载</a>
             </template>
           </template>
 
@@ -71,8 +71,8 @@
   </div>
 </template>
 <script>
-import system from '@/config/defaultSettings'
-import { wages_List } from '@/api/bonus_management'
+// import { departmentList } from '@/api/systemSetting'
+import { wages_List, getExportList } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -115,7 +115,6 @@ export default {
   data() {
     return {
       visible: false,
-      urls: system.baseURL + '/oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel?applyId=',
       queryParam: {},
       pagination1: { current: 1 },
       pagination: {
@@ -157,16 +156,22 @@ export default {
     },
 
     // 下载
-    // outPort(record) {
-    //   getExportList({ applyId: record.id })
-    //     .then((res) => {
-    //       debugger
-    //       let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-    //       let objectUrl = URL.createObjectURL(blob)
-    //       window.location.href = objectUrl
-    //     })
-    //     .catch((err) => this.$message.error('下载异常'))
-    // },
+    outPort(record) {
+      getExportList({ applyId: record.id })
+        .then((res) => {
+          // debugger
+          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          let objectUrl = URL.createObjectURL(blob)
+          let link = document.createElement('a')
+          link.style = 'display: none'
+          link.target = '_blank'
+          link.href = objectUrl
+          link.download = record.month + '工资表' // 自定义文件名
+          link.click() // 下载文件
+          URL.revokeObjectURL(objectUrl) // 释放内存
+        })
+        .catch((err) => (that.spinningView = true))
+    },
     getStateText(state) {
       let stateMap = {
         1: '待审批',
@@ -190,9 +195,8 @@ export default {
     // },
     searchAction(opt) {
       let that = this
-      if (that.queryParam.Dates) {
-        let date = that.queryParam.month.format('YYYY-MM')
-        that.queryParam.accountDate = date
+      if (that.queryParam.month) {
+        that.queryParam.month = that.queryParam.month.format('YYYY-MM')
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
