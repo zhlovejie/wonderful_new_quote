@@ -50,7 +50,6 @@
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
-        v-if="$auth('Distribution:list')"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>

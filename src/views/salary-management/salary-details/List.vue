@@ -49,10 +49,10 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view', record)">查看</a>
-          </template>
-
-          <template v-if="activeKey === 0 && $auth(' salary:exportSalaryExcel')">
-            <a type="primary" @click="outPort(record)">下载</a>
+            <template v-if="$auth('salaryDetails:download') && record.status === 2">
+              <a-divider type="vertical" />
+              <a type="primary" @click="outPort(record)">下载</a>
+            </template>
           </template>
 
           <template v-if="activeKey === 1 && record.status === 1">
@@ -157,54 +157,13 @@ export default {
 
     // 下载
     outPort(record) {
-      getExportList(`applyId=${record.id}`)
+      getExportList({ applyId: record.id })
         .then((res) => {
-          this.loading = false
-          console.log(res)
-          if (res instanceof Blob) {
-            const isFile = res.type === 'application/vnd.ms-excel'
-            //const isFile = res.type === 'application/msword'
-            const isJson = res.type === 'application/json'
-            if (isFile) {
-              //返回文件 则下载
-              const objectUrl = URL.createObjectURL(res)
-              const a = document.createElement('a')
-              document.body.appendChild(a)
-              a.style = 'display: none'
-              a.href = objectUrl
-              a.download = '工资条.xls'
-              a.click()
-              document.body.removeChild(a)
-              that.$message.info('下载成功')
-              return
-            } else if (isJson) {
-              //返回json处理
-              var reader = new FileReader()
-              reader.onload = function (e) {
-                let _res = null
-                try {
-                  _res = JSON.parse(e.target.result)
-                } catch (err) {
-                  _res = null
-                }
-                if (_res !== null) {
-                  if (_res.code !== 0) {
-                    that.$message.info(_res.message)
-                  } else {
-                    that.$message.info('下载成功')
-                  }
-                } else {
-                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
-                  return
-                }
-              }
-              reader.readAsText(res)
-            } else {
-              that.$message.info('不支持的类型:' + res)
-            }
-          }
+          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          let objectUrl = URL.createObjectURL(blob)
+          window.location.href = objectUrl
         })
-        .catch((err) => (this.loading = false))
+        .catch((err) => this.$message.error('下载异常'))
     },
     getStateText(state) {
       let stateMap = {
