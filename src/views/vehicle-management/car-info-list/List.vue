@@ -25,6 +25,7 @@
       </a-select>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
       <a-button 
+        v-if="!isForSelect"
         class="a-button"
         style="float:right;"
         type="primary"
@@ -48,6 +49,15 @@
         <div slot="status" slot-scope="text">
           {{ {'0':'未使用','1':'使用中'}[text] }}
         </div>
+
+        <div slot="carCode" slot-scope="text, record, index">
+          <span v-if="!isForSelect">{{text}}</span>
+          <template v-else>
+            <a href="javascript:void(0);" @click="() => carCodeClick(record)">{{text}}</a>
+          </template>
+        </div>
+
+        
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view',record)">查看</a>
           <!-- <template v-if="$auth('contingency-management-medicines:edit')"> -->
@@ -92,7 +102,8 @@ const columns = [
   {
     align: 'center',
     title: '车牌号',
-    dataIndex: 'carCode'
+    dataIndex: 'carCode',
+    scopedSlots: { customRender: 'carCode' },
   },
   {
     align: 'center',
@@ -145,13 +156,16 @@ const columns = [
 
 export default {
   name: 'vehicle-management-car-info-list',
+  props:{
+    isForSelect:false //弹出框选择车牌号用
+  },
   components: {
     AddForm: AddForm,
   },
   data() {
     return {
       sDate: [undefined, undefined],
-      columns: columns,
+      //columns: columns,
       dataSource: [],
       pagination: {
         current: 1,
@@ -162,7 +176,15 @@ export default {
       bindEnterFn: null,
     }
   },
-  computed: {},
+  computed: {
+    columns(){
+      if(this.isForSelect){
+        let dataIndexs = ['order','carName','carCode','seatNum','engineCode','status','careUserName']
+        return columns.filter(item => dataIndexs.includes(item.dataIndex))
+      }
+      return columns
+    }
+  },
   watch: {
     $route: {
       handler: function (to, from) {
@@ -217,7 +239,7 @@ export default {
           //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
           //刷新也不显示数据
           let {current,pages} = res.data
-          if(current > pages){
+          if(+pages > 0 && +current > +pages){
             that.pagination = {...pagination,current:pages}
             that.searchAction()
           }
@@ -263,6 +285,9 @@ export default {
         }
       }
     },
+    carCodeClick(record){
+      this.$emit('select',record)
+    }
   },
 }
 </script>

@@ -171,7 +171,7 @@ export default {
               name: 'salary-subsidy-rules-record',
               component: () => import('@/views/salary-management/salary-subsidy-rules-record/List'),
               meta: {
-                title: '补贴规则',
+                title: '多类补贴',
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']

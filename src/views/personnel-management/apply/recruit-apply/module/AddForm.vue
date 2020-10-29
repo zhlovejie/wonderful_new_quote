@@ -286,7 +286,10 @@
           <a-form-item>
             <!-- <a-input :disabled="isDisabled"  v-decorator="['salary',{rules: [{required: false,message: '输入建议薪资'}]}]" placeholder="输入建议薪资"/> -->
             <!-- <a-input-number style="width:100%;" :disabled="isDisabled" :min="0" :step="0.01" :precision=2 v-decorator="['salary', { rules: [{ required: true, message: '输入建议薪资(元)' }] }]"/> -->
-            <a-input style="width:100%;" :disabled="isDisabled" v-decorator="['salary', { rules: [{ required: true, message: '输入建议薪资(元)' }] }]"/>
+            <a-tooltip>
+              <template slot="title" v-if="gtPostBaseSalary">薪资大于岗位设定薪资</template>
+              <a-input :style="{width:'100%','color':gtPostBaseSalary ? 'red' : ''}" :disabled="isDisabled" @change="salaryChange" v-decorator="['salary', { rules: [{ required: true, message: '输入建议薪资(元)' }] }]"/>
+            </a-tooltip>
           </a-form-item>
         </td>
         <td colspan="2"></td>
@@ -395,6 +398,7 @@ import {
 import { getParentStationList ,getSelectLevelList} from '@/api/systemSetting'
 
 import SystemUserSelect from '@/components/CustomerList/SystemUserSelect'
+import { oaSalaryInfoStationStandardDetail } from '@/api/salaryManagement'
 import moment from 'moment' 
 import Approval from './Approval'
 export default {
@@ -423,7 +427,9 @@ export default {
       isAddDepartment:false,
       isAddStation:false,
       opinion:'', //审批意见
-      spinning:false
+      spinning:false,
+      postSalaryList:[],
+      gtPostBaseSalary:false //输入薪资是否大于 基础岗位工资  大于标红
     }
   },
   computed:{
@@ -450,6 +456,13 @@ export default {
     },
     isDisabled(){
       return this.isView || this.isApproval
+    },
+    postBaseSalary(){
+      let target = this.postSalaryList.find(item => item.stationId === this.postID)
+      if(target){
+        return +target.salary || 0
+      }
+      return 0
     }
   },
   methods:{
@@ -470,6 +483,7 @@ export default {
     depChangeHandler(dep_id){
       let that = this
       that.depID = dep_id
+      that.gtPostBaseSalary = false
       //重置岗位
       that.postSelectDataSource = []
       that.form.resetFields(['stationId'])
@@ -491,6 +505,7 @@ export default {
     stationChangeHandler(stationId){
       let that = this
       that.postID = stationId
+      that.gtPostBaseSalary = false
       // if(stationId === 'add' && (that.isAddDepartment || that.depID === undefined)){
       //   that.$message.info('您还没有选择部门')
       //   that.$nextTick(() =>{
@@ -519,6 +534,18 @@ export default {
         let qualification = (res && res.data && res.data.qualification) || ''
         that.$nextTick(() => that.form.setFieldsValue({'qualification':qualification}))
       })
+      
+      that.postSalary = 0
+      oaSalaryInfoStationStandardDetail({depId:that.depID})
+        .then(res =>{
+          that.postSalaryList = res.data
+
+          that.$nextTick(() =>{
+            that.form.setFieldsValue({salary:that.postBaseSalary || undefined})
+          })
+        })
+        .catch(err => that.postSalaryList = [])
+
     },
     addDepChangeHandler(dep_id){
       let that = this
@@ -630,16 +657,20 @@ export default {
       that.haveInnerFlag = 0
       that.isAddDepartment = false
       that.isAddStation = false
+      that.gtPostBaseSalary = false
 
       await that.init() 
       that.visible = true
 
       that.$nextTick(() =>console.log(that.form.getFieldsValue()))
       if(that.isAdd) return 
+
       getPersonAdvertInfoDetail({advertId:that.record.id}).then(res =>{
         console.log(res)
         let data = Object.assign({},res.data)
         let stationId = data.stationId
+        that.depID = data.departmentId
+        that.postID = data.stationId
         delete data.stationId
 
         data.dutyDate = that.moment(data.dutyDate)
@@ -656,7 +687,14 @@ export default {
             that.currentStationNum = data.stationNum || 0
           })
         })
-        
+
+        oaSalaryInfoStationStandardDetail({depId:data.departmentId})
+        .then(res =>{
+          that.postSalaryList = res.data
+
+          that.$nextTick(() => that.gtPostBaseSalary = +that.postBaseSalary > 0 && +data.salary > +that.postBaseSalary)
+        })
+        .catch(err => that.postSalaryList = [])
       })
     },
     submitAction(opt){
@@ -693,6 +731,12 @@ export default {
         opinion:opinion
       })
     },
+    salaryChange(e){
+      let val = e.target.value
+      val = +val.trim() || 0
+      console.log(val)
+      this.gtPostBaseSalary = this.postBaseSalary > 0 && val > this.postBaseSalary
+    }
   }
 }
 </script>

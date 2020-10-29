@@ -10,16 +10,16 @@
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
       <!-- <a-button v-if="!globalSearch" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
-      <a-button v-if="$auth('blueprintFile:add')" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <a-button v-if="!globalSearch && $auth('blueprintFile:add')" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
     </div>
     <div class="main-wrapper">
       <div style="margin-bottom: 16px" v-if="$auth('blueprintFile:delete')">
         <a-button type="primary" :disabled="!hasSelected" @click="doAction('deleteBatch')">
           批量删除
         </a-button>
-        <!-- <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
+        <a-button style="margin-left: 15px" type="primary" :disabled="!hasSelected" @click="doAction('downloadBatch')">
           批量下载
-        </a-button> -->
+        </a-button>
         <span style="margin-left: 15px">
           <template v-if="hasSelected">
             {{ `已选择 ${selectedRowKeys.length} 项` }}
@@ -42,6 +42,9 @@
         <div slot="fileType" slot-scope="text, record, index">
           <span>{{ {1:'研发图纸',2:'工艺图纸'}[text] }}</span>
         </div>
+        <div slot="fileName" slot-scope="text, record, index">
+          <div style="width:250px;word-break: break-all;">{{text}}</div>
+        </div>
         <div slot="remark" slot-scope="text, record, index">
           <a-tooltip v-if="String(text).length > 10">
             <template slot="title">{{text}}</template>
@@ -51,8 +54,13 @@
         </div>
 
         <div slot="createdTime" slot-scope="text, record, index">
-          <div>创建时间：{{text}}</div>
-          <div v-if="record.modifyTime">修改时间：{{record.modifyTime}}</div>
+          <a-tooltip >
+            <template slot="title">
+              <div>创建时间：{{text}}</div>
+              <div v-if="record.modifyTime">修改时间：{{record.modifyTime}}</div>
+            </template>
+            {{ text }}
+          </a-tooltip>
         </div>
         
         <div class="action-btns" slot="action" slot-scope="text, record" @click.stop="(e) =>{/*防止触发 rowclick 事件*/}">
@@ -89,7 +97,8 @@ import {
   blueprintFileDel,
   blueprintFileAddOrUpdate,
   blueprintFileDeleteBatch,
-  duplicateCheck
+  duplicateCheck,
+  blueprintFileDownloadZip
 } from '@/api/researchManagement'
 import AddForm from './AddForm'
 import DisposeForm from './DisposeForm'
@@ -106,20 +115,24 @@ const columns = [
   },
   {
     title: '名称',
-    dataIndex: 'fileName'
+    dataIndex: 'fileName',
+    scopedSlots: { customRender: 'fileName' }
   },
   {
     title: '代码',
-    dataIndex: 'productCode'
+    dataIndex: 'productCode',
+    width:"150px"
   },
   {
     title: '图号',
-    dataIndex: 'pictureNum'
+    dataIndex: 'pictureNum',
+    width:"150px"
   },
   {
     title: '类型',
     dataIndex: 'fileType',
-    scopedSlots: { customRender: 'fileType' }
+    scopedSlots: { customRender: 'fileType' },
+    width:"100px"
   },
   {
     title: '备注',
@@ -174,7 +187,10 @@ export default {
       dataSource: [],
       pagination: {
         current: 1,
-        size:"middle"
+        size:"10",
+        showSizeChanger: true,
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -217,9 +233,11 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let pagination = {...this.pagination}
-      delete pagination.size
-      let _searchParam = Object.assign({}, { ...this.searchParam }, pagination, opt)
+      let paginationParam = {
+        current:that.pagination.current || 1,
+        size:that.pagination.size || 10
+      }
+      let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       blueprintFilePageList(_searchParam)
@@ -237,7 +255,7 @@ export default {
           //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
           //刷新也不显示数据
           let {current,pages} = res.data
-          if(current > pages){
+          if(+pages > 0 && +current > +pages){
             that.pagination = {...pagination,current:pages}
             that.searchAction()
           }
@@ -252,6 +270,15 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
+
+    onShowSizeChangeHandler(current,pageSize){
+      let pagination = {...this.pagination}
+      pagination.current = current
+      pagination.size = String(pageSize)
+      this.pagination = pagination
+      this.searchAction()
+    },
+
     customRowFunction(record,index){
       let that = this
       return {
@@ -284,7 +311,7 @@ export default {
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
-            that.$emit('finish')
+            //that.$emit('finish')
           })
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
@@ -316,11 +343,56 @@ export default {
 
         return
       }else if(actionType === 'downloadBatch'){
-        let selectedRows = that.selectedRows
-        for (let j = 0; j < selectedRows.length; j++) {
-          const url = selectedRows[j].fileUrl
-          downloadFile(url)
-        }
+
+        blueprintFileDownloadZip({ids:that.selectedRows.map(r => r.id).join(',')}).then(res =>{
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/msword'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = '图纸.zip'
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function(e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        // let selectedRows = that.selectedRows
+        // for (let j = 0; j < selectedRows.length; j++) {
+        //   const url = selectedRows[j].fileUrl
+        //   downloadFile(url)
+        // }
         return
       }
       else {
