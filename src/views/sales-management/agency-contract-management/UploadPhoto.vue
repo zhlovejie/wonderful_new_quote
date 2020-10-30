@@ -116,9 +116,12 @@ export default {
       //console.log('..........123')
       if(Array.isArray(val)){
         this.dataSource = val.filter(item => item.status === 'done').map(item =>{
+          //debugger
+          let target = this.dataSource.find(v => v.key === item.uid)
+          let attachmentName = item.attachmentName || (target ? target.attachmentName : undefined)
           return {
-            key:uuid(),
-            attachmentName:item.attachmentName,
+            key:item.uid,
+            attachmentName,
             fileUrl:item.url ? item.url : (item.response ? item.response.data : null),
             contractId:item.contractId || this.cId,
             id:item.__id || null
@@ -191,13 +194,12 @@ export default {
 
       let queue = []
       that.dataSource.map(item =>{
-        if(!item.id){
-          queue.push(agencyContractAttachmentAddOrUpdate({
-            contractId:item.contractId,
-            attachmentName:item.attachmentName,
-            fileUrl:item.fileUrl
-          }))
-        }
+        queue.push(agencyContractAttachmentAddOrUpdate({
+          contractId:item.contractId,
+          attachmentName:item.attachmentName,
+          fileUrl:item.fileUrl,
+          id:item.id
+        }))
       })
 
       that.confirmLoading = true

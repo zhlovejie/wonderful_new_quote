@@ -112,7 +112,10 @@
           <div slot="price" slot-scope="text">
             <span>{{ text | moneyFormatNumber }}</span>
           </div>
-
+          <div slot="receivable" slot-scope="text">
+            <span>{{ text | moneyFormatNumber }}</span>
+          </div>
+          
           <template slot="paidMoney" slot-scope="text, record">
             <template v-if="!isDisabled">
               <editable-cell :text="String(text)" @change="onCellChange(record.id, 'paidMoney', $event)" />
@@ -298,6 +301,7 @@ export default {
         {
           title: '已收金额(元)',
           dataIndex: 'receivable',
+          scopedSlots: { customRender: 'receivable' },
           width: '150px',
         },
         {
@@ -419,6 +423,7 @@ export default {
         ;(p.productName = _arr.length > 1 ? _arr[1] : receiptDetailResult.products),
           (p.price = (+receiptDetailResult.deposit || 0) )
         p.currencyNew = p.currency
+        //p.receivable = p.accountPaid || 0
         return p
       })
       //产品信息内的产品列表
@@ -457,7 +462,7 @@ export default {
             key: uuid(),
             productName: _arr.length > 1 ? _arr[1] : res.products,
             price: +data.deposit * 10000, //代理合同详情接口 保证金的单位是 万元 所以这里 * 10000
-            receivable: 0,
+            receivable: data.accountPaid || 0,
             paidMoney: 0,
             settlementDiscount: 0,
             currency: 1,

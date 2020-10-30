@@ -10,21 +10,21 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item label="客户名称">
-          <a-input v-model="customerName"/>
+          <a-input v-model="customerName" :allowClear="true"/>
         </a-form-item>
 
         <a-form-item label="销售人员">
           <a-select
             class="a-select"
-            style="width: 150px"
-            v-model="userId"
+            style="width: 150px" 
+            :allowClear="true" 
+            v-model="salesmanId"
             defaultValue="0"
             showSearch
             placeholder="销售人员"
             optionFilterProp="children"
             :filterOption="filterCustomerOption"
           >
-            <a-select-option :value="0">请选择销售人员</a-select-option>
             <a-select-option v-for="val in saleUsers" :key="val.id" :value="val.id">{{ val.trueName }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -73,7 +73,7 @@ export default {
       customerName: '',
       loading: true,
       saleUsers: [],
-      userId: 0,
+      salesmanId: undefined,
       contractType: "1",
       contractTypes: [],
       columns: [
@@ -122,7 +122,7 @@ export default {
     },
     search () {
       this.$set(this.queryParam, 'customerName', this.customerName)
-      this.$set(this.queryParam, 'userId', this.userId)
+      this.$set(this.queryParam, 'salesmanId', this.salesmanId)
       this.$refs.table.refresh(true)
     },
     close () {

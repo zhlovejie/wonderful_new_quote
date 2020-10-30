@@ -6,12 +6,16 @@
         <a-form-item>
           <a-input style="width: 200px" :allowClear="true" placeholder="合同编号" v-model="searchParam.contractNum" />
         </a-form-item>
-        <CustomerSelect
+        <a-form-item>
+          <a-input style="width: 200px" :allowClear="true" placeholder="客户名称" v-model="searchParam.customerName" />
+        </a-form-item>
+        
+        <!-- <CustomerSelect
           ref="customerSelect"
           :options="customerSelectOptions"
           @selected="(e) => customAction('select', e)"
           @inputClear="(e) => customAction('clear', null)"
-        />
+        /> -->
         <a-form-item>
           <a-select placeholder="销售人员" v-model="searchParam.salesmanId" style="width: 150px" :allowClear="true">
             <a-select-option v-for="val in saleUsers" :key="val.id" :value="val.id">{{ val.trueName }}</a-select-option>
@@ -112,8 +116,10 @@
               </a-popconfirm>
             </template>
 
-            <a-divider type="vertical" />
-            <a target="_blank" v-download="record.pdfUrl">下载</a>
+            <template v-if="+record.state === 5 && record.pdfUrl">
+              <a-divider type="vertical" />
+              <a target="_blank" v-download="record.pdfUrl">下载</a>
+            </template>
             <a-divider type="vertical" />
             <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
           </template>
