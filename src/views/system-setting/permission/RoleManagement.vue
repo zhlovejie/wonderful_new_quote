@@ -1,30 +1,31 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
-      <a-select style="width:200px;" v-model="queryParam.departmentId" @change="handleProvinceChange" placeholder="请选择部门" >
+      <a-select
+        style="width: 200px; margin-bottom: 20px"
+        v-model="queryParam.departmentId"
+        @change="handleProvinceChange"
+        placeholder="请选择部门"
+      >
         <a-select-option :value="undefined">请选择部门</a-select-option>
-        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{ item.departmentName }}</a-select-option>
+        <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
-      <a-select style="width:200px;margin-left:10px;" v-model="queryParam.id" placeholder="请选择角色" >
+      <a-select style="width: 200px; margin-left: 10px" v-model="queryParam.id" placeholder="请选择角色">
         <a-select-option :value="undefined">请选择角色</a-select-option>
         <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{ item.roleName }}</a-select-option>
       </a-select>
-      <a-button style="margin-left:10px;" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="handleBatch()">批量分配菜单</a-button>
       <template v-if="$auth('role:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="handleAdd">新建角色</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="handleAdd">新建角色</a-button>
       </template>
-
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
-        <s-table
-          ref="table"
-          size="default"
-          :columns="columns"
-          :data="loadData"
-          :alert="false"
-        >
+        <s-table ref="table" size="default" :columns="columns" :data="loadData" :alert="false">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -32,9 +33,10 @@
             <template v-if="$auth('role:edit')">
               <a-switch
                 checkedChildren="启用"
-                :checked="(text === 0) ? true : false"
+                :checked="text === 0 ? true : false"
                 unCheckedChildren="禁用"
-                @click="checkStates(text,record)"/>
+                @click="checkStates(text, record)"
+              />
             </template>
             <template v-if="!$auth('role:edit')">
               <span v-if="text === 0">启用</span>
@@ -44,27 +46,39 @@
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('role:edit')">
               <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
               <a @click="deleteRoleInfo(record)">删除</a>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
               <a @click="handleMenu(record)">菜单权限</a>
+              <a-divider type="vertical" />
+              <a @click="handleCopy(record)">复制角色</a>
             </template>
           </span>
         </s-table>
       </a-layout-content>
     </a-layout>
-    <role-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
-    <role-modal ref="editModal" @ok="handleEditOk" @close="handleEditOk"/>
-    <role-modal ref="queryModal" @ok="handleEditOk" @close="handleEditOk"/>
-    <role-modal ref="copyModal" @ok="handleEditOk" @close="handleEditOk"/>
-    <role-tree-modal ref="role" @ok="handleEditOk" @close="handleEditOk" ></role-tree-modal>
+    <role-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
+    <role-modal ref="editModal" @ok="handleEditOk" @close="handleEditOk" />
+    <role-modal ref="queryModal" @ok="handleEditOk" @close="handleEditOk" />
+    <role-tree-modal ref="role" @ok="handleEditOk" @close="handleEditOk"></role-tree-modal>
+    <CopyRole ref="copyrole" @ok="handleSaveOk" />
+    <BatchDistribution ref="Batch" @ok="handleSaveOk" />
   </a-card>
 </template>
 
 <script>
-import { deleteRole, getRoleManagementList, editRole, getDevisionList, queryRoleListById, queryRoleMenu } from '../../../api/systemSetting'
+import {
+  deleteRole,
+  getRoleManagementList,
+  editRole,
+  getDevisionList,
+  queryRoleListById,
+  queryRoleMenu,
+} from '../../../api/systemSetting'
 import { STable } from '@/components'
 import RoleModal from './modules/RoleModal'
+import CopyRole from './modules/CopyRole'
+import BatchDistribution from './modules/BatchDistribution'
 import RoleTreeModal from './modules/RoleTreeModal'
 import ACol from 'ant-design-vue/es/grid/Col'
 
@@ -74,9 +88,11 @@ export default {
     ACol,
     STable,
     RoleModal,
-    RoleTreeModal
+    CopyRole,
+    RoleTreeModal,
+    BatchDistribution,
   },
-  data () {
+  data() {
     return {
       openKeys: ['id'],
       parentId: 0,
@@ -93,54 +109,53 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           align: 'center',
           title: '部门',
           key: 'departmentName',
-          dataIndex: 'departmentName'
+          dataIndex: 'departmentName',
         },
         {
           align: 'center',
           title: '角色',
           dataIndex: 'roleName',
-          key: 'roleName'
+          key: 'roleName',
         },
         {
           align: 'center',
           title: '状态',
           dataIndex: 'status',
           key: 'status',
-          scopedSlots: { customRender: 'status' }
+          scopedSlots: { customRender: 'status' },
         },
         {
           align: 'center',
           title: '操作人',
           key: 'modifierName',
-          dataIndex: 'modifierName'
+          dataIndex: 'modifierName',
         },
         {
           align: 'center',
           title: '操作时间',
           key: 'modifyTime',
-          dataIndex: 'modifyTime'
+          dataIndex: 'modifyTime',
         },
         {
           align: 'center',
           title: '操作',
           key: 'action',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       // 初始化加载 必须为 Promise 对象
-      loadData: parameter => {
+      loadData: (parameter) => {
         console.log('页面开始加载数据。。。', parameter, this.queryParam)
-        return getRoleManagementList(Object.assign(parameter, this.queryParam))
-          .then(res => {
-            console.log(res.data)
-            return res
-          })
+        return getRoleManagementList(Object.assign(parameter, this.queryParam)).then((res) => {
+          console.log(res.data)
+          return res
+        })
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -148,137 +163,143 @@ export default {
       // 部门列表
       departmentList: [],
       // 角色列表
-      roleList: {}
+      roleList: {},
     }
   },
   // 初始化搜索条件钩子函数
-  created () {
-    getDevisionList().then(res => {
+  created() {
+    getDevisionList().then((res) => {
       this.departmentList = res.data
     })
   },
   methods: {
-
     // 获取部门角色联动
-    handleProvinceChange (value) {
+    handleProvinceChange(value) {
       if (value != undefined) {
         // 获取部门下的角色
-        queryRoleListById({ departmentId: value }).then((rs) => {
-          this.roleList = rs.data
-          this.$set(this.queryParam, 'id', undefined)
-        }).catch(error => {
-          console.error(error)
-        })
+        queryRoleListById({ departmentId: value })
+          .then((rs) => {
+            this.roleList = rs.data
+            this.$set(this.queryParam, 'id', undefined)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       } else {
         this.$set(this.queryParam, 'id', undefined)
         this.roleList = []
       }
     },
     // 改变select
-    handleChange (value) {
+    handleChange(value) {
       console.log(`selected ${value}`)
     },
     // 清空、重置
-    emptyQueryParam () {
+    emptyQueryParam() {
       this.queryParam = {}
       this.roleList = {}
     },
 
     // 新增
-    handleAdd (item) {
+    handleAdd(item) {
       this.$refs.modal.add()
     },
-    deleteRoleInfo (record) {
+    deleteRoleInfo(record) {
       const that = this
       // 删除角色角色
-      deleteRole({ 'id': record.id }).then((res) => {
-        if(res && res.code && parseInt(res.code) === 500){
-          that.$message.error(res.msg);
-          return
-        } else {
-          that.$message.success('删除成功')
-          that.$refs.table.refresh(true)
-        }
-      }).catch(error => {
-        console.error(error)
-      })
+      deleteRole({ id: record.id })
+        .then((res) => {
+          if (res && res.code && parseInt(res.code) === 500) {
+            that.$message.error(res.msg)
+            return
+          } else {
+            that.$message.success('删除成功')
+            that.$refs.table.refresh(true)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
-    handleMenu (record) {
+    handleMenu(record) {
       // 获取权限数组
-      queryRoleMenu({ 'id': record.id }).then(res => {
+      queryRoleMenu({ id: record.id }).then((res) => {
         this.$refs.role.setCheckedNodes(res.data, record.id)
       })
     },
-    handleCopy (record) {
-
+    //批量分配权限
+    handleBatch() {
+      this.$refs.Batch.setCheckedNodes()
+    },
+    //复制角色
+    handleCopy(record) {
+      this.$refs.copyrole.query(record)
     },
     // 修改状态
-    checkStates (text, record) {
+    checkStates(text, record) {
       this.$set(record, 'Authorization', this.$store.getters.token)
       if (text == 0) {
         record.status = 1
       } else if (text == 1) {
         record.status = 0
       }
-      editRole(record).then(res => {
+      editRole(record).then((res) => {
         this.$refs.table.refresh(true)
       })
     },
-    searchLog(){
+    searchLog() {
       this.$router.push({ name: 'sysLog' })
-     // this.$router.push('sysLog')
+      // this.$router.push('sysLog')
     },
     // 修改详情
-    handleEdit (e) {
+    handleEdit(e) {
       this.$refs.editModal.edit(e)
     },
-    handleSaveOk () {
+    handleSaveOk() {
       this.$refs.table.refresh(true)
     },
-    handleSaveClose () {
-
-    },
-    handleEditOk () {
+    handleSaveClose() {},
+    handleEditOk() {
       this.$refs.table.refresh(false)
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       console.log('onSelectChange 点击了')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  .search {
-    margin-bottom: 54px;
-  }
+.search {
+  margin-bottom: 54px;
+}
 
+.fold {
+  width: calc(100% - 216px);
+  display: inline-block;
+}
+
+.operator {
+  margin-bottom: 18px;
+}
+
+@media screen and (max-width: 900px) {
   .fold {
-    width: calc(100% - 216px);
-    display: inline-block
-  }
-
-  .operator {
-    margin-bottom: 18px;
-  }
-
-  @media screen and (max-width: 900px) {
-    .fold {
-      width: 100%;
-    }
-  }
-
-  .left-tree {
-    display: flex;
-  }
-
-  .treewrap {
-    margin-right: 24px;
-  }
-
-  .righttab {
     width: 100%;
   }
+}
+
+.left-tree {
+  display: flex;
+}
+
+.treewrap {
+  margin-right: 24px;
+}
+
+.righttab {
+  width: 100%;
+}
 </style>
