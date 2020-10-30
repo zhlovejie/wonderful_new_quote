@@ -234,7 +234,6 @@ export default {
       })
     },
     handleOk() {
-      debugger
       if (this.checkedKeys.length == 0) {
         return this.$message.error('请选择菜单')
       }
