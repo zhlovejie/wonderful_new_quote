@@ -22,6 +22,7 @@
         :allowClear="true"
         style="width: 200px; margin-right: 10px"
       >
+        <a-select-option :value="-1">全部</a-select-option>
         <a-select-option :value="0">常规产品</a-select-option>
         <a-select-option :value="1">非常规产品</a-select-option>
       </a-select>
@@ -82,17 +83,17 @@ export default {
   data() {
     return {
       columns,
-      queryParam: {
-        productModel: undefined,
-        productName: undefined,
-        productType: 0,
-      },
+      queryParam: {},
       saleCustomers: [],
       consumerNam: null,
       consumerId: null,
       loading: false,
+      pagination1: { current: 1 },
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       priewVisible: false,
     }
@@ -105,16 +106,14 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
     //点击查询
     searchAction() {
       const that = this
-      let _param = Object.assign({}, that.pagination, that.queryParam)
+      let _param = Object.assign({}, that.pagination1, that.queryParam)
       that.loading = true
       return oaSalaryInfo_list(_param)
         .then((res) => {

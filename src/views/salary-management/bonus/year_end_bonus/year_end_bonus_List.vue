@@ -244,6 +244,7 @@ export default {
 
     showModal() {
       this.visible = true
+      year_send_rule().then((res) => (this.rule_List = res.data))
     },
     handleOk(e) {
       if (this.depId && this.rule_List.length > 0) {

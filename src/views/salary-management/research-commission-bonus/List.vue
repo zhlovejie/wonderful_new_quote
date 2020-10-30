@@ -105,7 +105,7 @@
       </a-table>
     </div>
     <a-modal v-model="visible" title="新增研发提成奖金" @ok="handleOk">
-      <a-month-picker style="width: 300px; margin-left: 90px" v-model="Dates" />
+      <a-month-picker :disabled-date="disabledDate" style="width: 300px; margin-left: 90px" v-model="Dates" />
       <a-select
         style="width: 300px; margin-top: 30px; margin-left: 90px"
         placeholder="选择部门"
@@ -231,6 +231,9 @@ export default {
   },
   methods: {
     moment,
+    disabledDate(current) {
+      return current && current > moment().subtract(30, 'days')
+    },
     init() {
       let that = this
       that.searchAction()

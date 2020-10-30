@@ -2,11 +2,29 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <a-input
-        placeholder="产品名称"
-        v-model="queryParam.productName"
-        allowClear
+        class="main-items"
         style="width: 200px; margin-right: 10px"
+        placeholder="产品代码"
+        allowClear
+        v-model="queryParam.productCode"
       />
+      <a-input
+        class="main-items"
+        style="width: 200px; margin-right: 10px"
+        placeholder="产品名称"
+        allowClear
+        v-model="queryParam.productName"
+      />
+      <a-select
+        placeholder="产品状态"
+        v-model="queryParam.productType"
+        :allowClear="true"
+        style="width: 200px; margin-right: 10px"
+      >
+        <a-select-option :value="-1">全部</a-select-option>
+        <a-select-option :value="0">常规产品</a-select-option>
+        <a-select-option :value="1">非常规产品</a-select-option>
+      </a-select>
       <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
       <template v-if="$auth('electricity:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
@@ -27,6 +45,14 @@
           </div>
           <div slot="emptyBed" slot-scope="text, record, index">
             <span>月度</span>
+          </div>
+          <div slot="productType" slot-scope="text, record, index">
+            <template v-if="record.productType == 0">
+              <span>常规产品</span>
+            </template>
+            <template v-else>
+              <span>非常规产品</span>
+            </template>
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('electricity:add') && +record.createdId">
@@ -93,6 +119,13 @@ export default {
         },
         {
           align: 'center',
+          title: '类型',
+          dataIndex: 'productType',
+          key: 'productType',
+          scopedSlots: { customRender: 'productType' },
+        },
+        {
+          align: 'center',
           title: '释放周期',
           dataIndex: 'emptyBed',
           key: 'emptyBed',
@@ -129,11 +162,7 @@ export default {
     searchAction() {
       let that = this
       that.loading = true
-      let _searchParam = Object.assign(
-        { socialSecurityId: that.recordId },
-        { ...this.queryParam },
-        { ...this.pagination1 }
-      )
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 })
       oaSalaryInfo_list(_searchParam)
         .then((res) => {
           that.loading = false
