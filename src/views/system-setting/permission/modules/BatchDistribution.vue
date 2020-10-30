@@ -234,10 +234,11 @@ export default {
       })
     },
     handleOk() {
+      debugger
       if (this.checkedKeys.length == 0) {
         return this.$message.error('请选择菜单')
       }
-      if (this.roleIdList.length == 0) {
+      if (this.dataSource.length == 0) {
         return this.$message.error('请选择角色')
       }
       let arr = {}
