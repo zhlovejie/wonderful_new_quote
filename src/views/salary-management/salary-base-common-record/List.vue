@@ -31,18 +31,29 @@
       />
 
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
-      <a-upload :beforeUpload="beforeUpload" style="margin-left: 10px" :showUploadList="false">
-        <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
-      </a-upload>
+      <template v-if="$auth('baseSalaryCommon:import')">
+        <a-upload :beforeUpload="beforeUpload" style="margin-left: 10px" :showUploadList="false">
+          <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
+        </a-upload>
+      </template>
+      <template v-if="$auth('baseSalaryCommon:download')">
+        <a
+          target="_blank"
+          style="margin-left: 10px"
+          class="a-button ant-btn ant-btn-primary"
+          href="https://www.delanshi.cn/images/cloud/20201027/salaryc931dda2-1bfc-4562-87af-86cc9c77e169.xlsx"
+          >下载模板</a
+        >
+      </template>
     </div>
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-table
+        v-if="$auth('baseSalaryCommon:list')"
         :columns="columns"
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
-        v-if="$auth('Distribution:list')"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -183,51 +194,14 @@ export default {
           let that = this
           if (res.code === 200) {
             that.$message.info(res.msg || '操作成功')
+            this.searchAction()
           } else {
             that.$message.error(res.msg)
           }
-          // if (res instanceof Blob) {
-          //   let action = {
-          //     isFile: res.type === 'application/x-download',
-          //     isJson: res.type === 'application/json',
-          //   }
-          //   if (action.isFile) {
-          //     const objectUrl = URL.createObjectURL(res)
-          //     const a = document.createElement('a')
-          //     document.body.appendChild(a)
-          //     a.style = 'display: none'
-          //     a.href = objectUrl
-          //     a.download = 'error.xlsx'
-          //     a.click()
-          //     document.body.removeChild(a)
-
-          //     that.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
-          //     return
-          //   } else if (action.isJson) {
-          //     var reader = new FileReader()
-          //     reader.onload = function (e) {
-          //       let _res = null
-          //       try {
-          //         _res = JSON.parse(e.target.result)
-          //       } catch (err) {
-          //         _res = null
-          //         console.log('JSON.parse error...', e.target.result)
-          //       }
-          //       if (_res !== null) {
-          //         that.$message.info(_res.msg || '操作成功')
-          //         that.fileList = []
-          //       }
-          //     }
-          //     reader.readAsText(res)
-          //   }
-          // } else {
-          //   console.log('未知错误：')
-          //   console.log('类型：' + typeof res)
-          //   console.log(res)
-          // }
         })
         .catch((err) => {
           this.uploading = false
+          that.$message.error(res.msg)
           console.log(err)
         })
     },

@@ -238,7 +238,7 @@
                         :min="0" 
                         :max="100000000" 
                         :step="1" 
-                        v-decorator="['fullMemberSalary']" 
+                        v-decorator="['fullMemberSalary',{rules: [{required: true,message: '输入转正后薪资'}]}]" 
                       />
                       <!-- <a-input  :disabled="disabled"  v-decorator="['fullMemberSalary', { rules: [{ required: false, message: '输入转正后薪资' }] }]"/> -->
                     </a-form-item>

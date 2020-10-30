@@ -13,7 +13,7 @@
       </a-select>
       <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
@@ -23,6 +23,7 @@
         <a-select-option :value="2">审批通过</a-select-option>
         <a-select-option :value="3">审批不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
+        <a-select-option :value="5">已缴纳</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -68,6 +69,16 @@
             <template v-if="$auth('bill:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否确定完结" ok-text="确定" cancel-text="取消" @confirm="confirmRevoke(record)">
+                <a type="primary">完结</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="record.status === 5">
+              <a-divider type="vertical" />
+              <a type="primary" target="_blank" :href="url + record.id">下载</a>
+            </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('bill:Withdraw')">
@@ -109,10 +120,17 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { capital_bill_List, capital_bill_withdraw, capital_bill_del } from '@/api/bonus_management'
+import {
+  capital_bill_List,
+  capital_bill_withdraw,
+  capital_bill_del,
+  capital_download,
+  capital_destruction,
+} from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
+import system from '@/config/defaultSettings'
 const columns = [
   {
     align: 'center',
@@ -183,6 +201,7 @@ export default {
       visible: false,
       depList: [],
       queryParam: {},
+      url: system.baseURL + '/oaSalaryInfo/oa-salary-fine-apply/download?id=',
       pagination1: { current: 1 },
       pagination: {
         showSizeChanger: true,
@@ -222,7 +241,6 @@ export default {
       that.searchAction()
       departmentList().then((res) => (this.depList = res.data))
     },
-
     // 删除
     confirmDelete(record) {
       let that = this
@@ -241,7 +259,7 @@ export default {
         2: '审核通过',
         3: '审核未通过',
         4: '已撤回',
-        5: '已完结',
+        5: '已缴纳',
       }
       return stateMap[state] || `未知状态:${state}`
     },
@@ -249,7 +267,13 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-
+    // 完结
+    confirmRevoke(record) {
+      capital_destruction({ id: record.id }).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
+      })
+    },
     // 撤回
     confirmWithdraw(record) {
       let that = this

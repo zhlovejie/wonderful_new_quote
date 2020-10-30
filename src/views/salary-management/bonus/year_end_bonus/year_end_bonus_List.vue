@@ -12,7 +12,7 @@
         }}</a-select-option>
       </a-select>
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
@@ -35,6 +35,8 @@
         <a-dropdown style="float: right">
           <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
+      </template>
+      <template v-if="$auth('year:Distribution')">
         <a-dropdown style="float: right; margin-right: 10px">
           <a-button type="primary" @click="Distribution()">发放规则</a-button>
         </a-dropdown>
@@ -105,11 +107,16 @@
       </a-table>
     </div>
     <a-modal v-model="visible" title="新增年终奖金" @ok="handleOk">
-      <a-select style="width: 280px; margin-left: 90px" placeholder="选择部门" :allowClear="true" v-model="depId">
-        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
-          item.departmentName
-        }}</a-select-option>
-      </a-select>
+      <tr>
+        <td>选择添加部门</td>
+        <td>
+          <a-select style="width: 280px; margin-left: 20px" placeholder="选择部门" :allowClear="true" v-model="depId">
+            <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
+          </a-select>
+        </td>
+      </tr>
     </a-modal>
     <AddForm ref="addForm" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
@@ -159,7 +166,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '提交人日期',
+    title: '提交时间',
     dataIndex: 'createdTime',
     key: 'createdTime',
   },

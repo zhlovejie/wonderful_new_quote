@@ -1,8 +1,18 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.Dates" />
-      <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
+      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.month" />
+      <a-select
+        placeholder="审核状态"
+        v-if="activeKey === 0"
+        v-model="queryParam.status"
+        :allowClear="true"
+        style="width: 200px; margin-right: 10px"
+      >
+        <a-select-option :value="1">待审批</a-select-option>
+        <a-select-option :value="2">审批通过</a-select-option>
+        <a-select-option :value="3">审批不通过</a-select-option>
+      </a-select>
       <a-button
         class="a-button"
         type="primary"
@@ -11,24 +21,19 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('seniorWorker:add')">
-        <a-dropdown style="float: right">
-          <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
-        </a-dropdown>
-      </template>
 
       <div style="float: right"></div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('seniorWorker:list')">
+        <template v-if="$auth('salaryDetails:approve')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('seniorWorker:lists')"
+        v-if="$auth('salaryDetails:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -42,32 +47,11 @@
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('seniorWorker:view')">
-              <a type="primary" @click="doAction('view', record)">查看</a>
-            </template>
-            <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
+            <a type="primary" @click="doAction('view', record)">查看</a>
+            <template v-if="$auth('salaryDetails:download') && record.status === 2">
               <a-divider type="vertical" />
-              <template v-if="$auth('seniorWorker:Withdraw')">
-                <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
-                  <a type="primary">撤回</a>
-                </a-popconfirm>
-              </template>
-            </template>
-            <template
-              v-if="
-                $auth('seniorWorker:edit-salary') &&
-                (record.status === 3 || record.status === 4) &&
-                +record.createdId === +userInfo.id
-              "
-            >
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit-salary', record)">修改</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
-                <a type="primary">删除</a>
-              </a-popconfirm>
+              <a type="primary" @click="outPort(record)">下载</a>
             </template>
           </template>
 
@@ -87,8 +71,8 @@
   </div>
 </template>
 <script>
-import { departmentList } from '@/api/systemSetting'
-import { senior_worker_list, senior_worker_withdraw, senior_worker_del } from '@/api/Human_resource_management'
+// import { departmentList } from '@/api/systemSetting'
+import { wages_List, getExportList } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -102,21 +86,9 @@ const columns = [
   },
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
-  },
-  {
-    align: 'center',
-    title: '岗位',
-    dataIndex: 'stationName',
-    key: 'stationName',
-  },
-  {
-    align: 'center',
-    title: '姓名',
-    dataIndex: 'trueName',
-    key: 'trueName',
+    title: '日期',
+    key: 'month',
+    dataIndex: 'month',
   },
 
   {
@@ -125,18 +97,6 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-  },
-  {
-    align: 'center',
-    title: '提交人',
-    key: 'createdName',
-    dataIndex: 'createdName',
-  },
-  {
-    align: 'center',
-    title: '提交人日期',
-    dataIndex: 'createdTime',
-    key: 'createdTime',
   },
   {
     align: 'center',
@@ -195,25 +155,28 @@ export default {
       that.searchAction()
     },
 
-    // 删除
-    confirmDelete(record) {
-      let that = this
-      senior_worker_del(`id=${record.id}`).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          _this.$message.error(res.msg)
-        }
-      })
+    // 下载
+    outPort(record) {
+      getExportList({ applyId: record.id })
+        .then((res) => {
+          // debugger
+          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          let objectUrl = URL.createObjectURL(blob)
+          let link = document.createElement('a')
+          link.style = 'display: none'
+          link.target = '_blank'
+          link.href = objectUrl
+          link.download = record.month + '工资表' // 自定义文件名
+          link.click() // 下载文件
+          URL.revokeObjectURL(objectUrl) // 释放内存
+        })
+        .catch((err) => (that.spinningView = true))
     },
     getStateText(state) {
       let stateMap = {
         1: '待审批',
-        2: '审核通过',
+        2: '通过',
         3: '审核未通过',
-        4: '已撤回',
-        5: '已完结',
       }
       return stateMap[state] || `未知状态:${state}`
     },
@@ -223,24 +186,23 @@ export default {
     },
 
     // 撤回
-    confirmWithdraw(record) {
-      let that = this
-      senior_worker_withdraw({ id: record.id }).then((res) => {
-        this.searchAction()
-        that.$message.info(res.msg)
-      })
-    },
+    // confirmWithdraw(record) {
+    //   let that = this
+    //   senior_worker_withdraw({ id: record.id }).then((res) => {
+    //     this.searchAction()
+    //     that.$message.info(res.msg)
+    //   })
+    // },
     searchAction(opt) {
       let that = this
-      if (that.queryParam.Dates) {
-        let date = that.queryParam.Dates.format('YYYYMM')
-        that.queryParam.accountDate = date
+      if (that.queryParam.month) {
+        that.queryParam.month = that.queryParam.month.format('YYYY-MM')
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
       })
       that.loading = true
-      senior_worker_list(_searchParam)
+      wages_List(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

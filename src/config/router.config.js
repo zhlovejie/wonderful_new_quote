@@ -28,7 +28,7 @@ import vehicleManagement from '@/router/router-vehicle-management'
 import contingencyManagement from '@/router/router-contingency-management'
 import trainingManagement from '@/router/router-training-management'
 import salaryManagemen from '@/router/router-salary-management'
-import humanResourceManagement from '@/router/router-Human_resource_management'
+
 
 
 const __ROUTER_MAP__ = [
@@ -49,7 +49,6 @@ const __ROUTER_MAP__ = [
   contingencyManagement, //应急管理
   trainingManagement, //培训管理
   salaryManagemen, // 薪酬管理
-  humanResourceManagement, //人力资源管理 
 ]
 /*
 会有权限筛选处理，并作为菜单显示

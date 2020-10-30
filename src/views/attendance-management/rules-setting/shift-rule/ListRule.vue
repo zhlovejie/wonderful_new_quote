@@ -9,14 +9,20 @@
     :maskClosable="false"
   >
     <a-spin :spinning="spinning">
-      <a-table
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="false"
-        :loading="loading"
-      >
+      <a-table :columns="columns" :dataSource="dataSource" :pagination="false" :loading="loading">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
+        </div>
+        <div slot="classType" slot-scope="text, record, index">
+          <template v-if="text === 1">
+            <span>白班</span>
+          </template>
+          <template v-if="text === 2">
+            <span>大夜</span>
+          </template>
+          <template v-if="text === 3">
+            <span>中夜</span>
+          </template>
         </div>
         <div slot="beginDate" slot-scope="text, record, index">
           <span>{{ record.beginDate }}~{{ record.endDate }}</span>
@@ -25,19 +31,19 @@
           <span>{{ record.lunchBeginTime }}~{{ record.lunchEndTime }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
             <a type="primary" href="javascript:;">删除</a>
           </a-popconfirm>
           <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <a type="primary" @click="doAction('edit', record)">修改</a>
         </div>
       </a-table>
     </a-spin>
-    <AddFormRule ref="addFormRule" @finish="finish"/>
+    <AddFormRule ref="addFormRule" @finish="finish" />
   </a-modal>
 </template>
 <script>
-import {classRuleConfigList , classRuleConfigDetail , classRuleConfigDel} from '@/api/attendanceManagement'
+import { classRuleConfigList, classRuleConfigDetail, classRuleConfigDel } from '@/api/attendanceManagement'
 import AddFormRule from './AddFormRule'
 const columns = [
   {
@@ -45,79 +51,88 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
+  },
+  {
+    align: 'center',
+    title: '序号',
+    key: 'classType',
+    width: '70px',
+    dataIndex: 'classType',
+    scopedSlots: { customRender: 'classType' },
   },
   {
     align: 'center',
     title: '时间范围',
     dataIndex: 'beginDate',
-    scopedSlots: { customRender: 'beginDate' }
+    scopedSlots: { customRender: 'beginDate' },
   },
   {
     align: 'center',
     title: '上班时间',
     dataIndex: 'workBeginTime',
-    scopedSlots: { customRender: 'workBeginTime' }
+    scopedSlots: { customRender: 'workBeginTime' },
   },
   {
     align: 'center',
     title: '午休时间',
     dataIndex: 'lunchBeginTime',
-    scopedSlots: { customRender: 'lunchBeginTime' }
+    scopedSlots: { customRender: 'lunchBeginTime' },
   },
   {
     align: 'center',
     title: '下班时间',
     dataIndex: 'workEndTime',
-    scopedSlots: { customRender: 'workEndTime' }
+    scopedSlots: { customRender: 'workEndTime' },
   },
   {
     align: 'center',
     title: '处理',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 export default {
-  name:'shift-rule-config-list-add',
-  components:{AddFormRule},
-  data(){
+  name: 'shift-rule-config-list-add',
+  components: { AddFormRule },
+  data() {
     return {
-      visible:false,
+      visible: false,
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
-      spinning:false,
-      searchParam:{}
+      spinning: false,
+      searchParam: {},
     }
   },
-  computed:{
-    modalTitle(){
+  computed: {
+    modalTitle() {
       //let m = {'view':'查看','add':'新增','edit' : '修改','approval':'审批'}
       //return `${m[this.actionType]}`
       return '规则明细'
     },
-    isView(){
+    isView() {
       return this.actionType === 'view'
     },
-    isAdd(){
+    isAdd() {
       return this.actionType === 'add'
     },
-    isEdit(){
+    isEdit() {
       return this.actionType === 'edit'
     },
-    isApproval(){
+    isApproval() {
       return this.actionType === 'approval'
     },
-    isDisabled(){ //此状态下表单元素被禁用
+    isDisabled() {
+      //此状态下表单元素被禁用
       return this.isView || this.isApproval
-    }
+    },
   },
-  methods:{
-    finish(){
+  methods: {
+    finish() {
       this.searchAction()
     },
     searchAction(opt = {}) {
@@ -126,7 +141,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       classRuleConfigList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -139,58 +154,54 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
-    query(type,record){
+    query(type, record) {
       this.visible = true
       this.searchParam = {
-        classRuleId:record.id
+        classRuleId: record.id,
       }
       this.searchAction()
     },
-    handleSubmit(){
+    handleSubmit() {
       this.handleCancel()
     },
-    handleCancel(){
-      this.$nextTick(() =>this.visible = false)
+    handleCancel() {
+      this.$nextTick(() => (this.visible = false))
     },
     doAction(actionType, record) {
       let that = this
-      if(actionType === 'edit'){
+      if (actionType === 'edit') {
         that.$refs.addFormRule.query(
           actionType,
-          Object.assign(
-            {},
-            record,
-            {
-              classRuleId:that.searchParam.classRuleId,
-              classRuleDetailId:record.id
-            }
-          )
+          Object.assign({}, record, {
+            classRuleId: that.searchParam.classRuleId,
+            classRuleDetailId: record.id,
+          })
         )
-      }else if(actionType === 'del'){
+      } else if (actionType === 'del') {
         classRuleConfigDel(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
-.wdf-custom-add-form-wrapper >>> .ant-form-item{
-  display:flex;
+.wdf-custom-add-form-wrapper >>> .ant-form-item {
+  display: flex;
 }
 
-.ant-form-item >>> .ant-form-item-label{
-  width:80px;
+.ant-form-item >>> .ant-form-item-label {
+  width: 80px;
 }
-.ant-form-item >>> .ant-form-item-control-wrapper{
-  flex:1;
+.ant-form-item >>> .ant-form-item-control-wrapper {
+  flex: 1;
 }
 </style>

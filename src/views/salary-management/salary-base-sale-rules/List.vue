@@ -1,9 +1,9 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-      <a-input placeholder="名称" v-model="queryParam.userName" allowClear style="width: 200px; margin-right: 10px" />
+      <a-input placeholder="名称" v-model="queryParam.name" allowClear style="width: 200px; margin-right: 10px" />
       <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
-      <template v-if="$auth('Distribution:add')">
+      <template v-if="$auth('saleRules:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
       </template>
     </div>
@@ -14,17 +14,18 @@
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
-        v-if="$auth('Distribution:list')"
+        v-if="$auth('saleRules:list')"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleAdd('see', record)">添加规则</a>
-          <a-divider type="vertical" />
-          <a @click="handleAdd('see', record)">规则明细</a>
-          <!-- <a @click="handleAdd('see', record)">查看</a> -->
-          <template v-if="$auth('Distribution:add') && +record.createdId === +userInfo.id">
+          <template v-if="$auth('saleRules:AddRule')">
+            <a @click="AddRule('add', record)">添加规则</a>
+            <a-divider type="vertical" />
+            <a @click="RuleDetails(record)">规则明细</a>
+          </template>
+          <template v-if="$auth('saleRules:delete')">
             <a-divider type="vertical" />
             <a @click="handleAdd('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
@@ -32,7 +33,8 @@
           </template>
         </span>
       </a-table>
-      <!-- <AddForm ref="addForm" @finish="searchAction()" /> -->
+      <AddForm ref="addForm" @finish="searchAction()" />
+      <AppFrom ref="appFrom" />
     </a-layout>
   </a-card>
 </template>
@@ -40,27 +42,30 @@
 <script>
 import moment from 'moment'
 import { getDevisionList, getStationList } from '@/api/systemSetting'
-import { salary_base_sale_List } from '@/api/bonus_management'
-// import AddForm from './module/AddForm'
+import { salary_base_sale_List, salary_Sale_RemoveSalaryBaseSaler } from '@/api/bonus_management'
+import AddForm from './module/Formadd'
+import AppFrom from './module/AppFrom'
 
 const columns = [
   {
-    dataIndex: 'name',
+    dataIndex: 'order',
     title: '序号',
-    key: 'name',
+    key: 'order',
     align: 'center',
     scopedSlots: { customRender: 'order' },
   },
   {
     title: '名称',
+    width: '150px',
     dataIndex: 'name',
     key: 'name',
     align: 'center',
   },
   {
-    title: '适用人员',
-    dataIndex: 'userNames',
-    key: 'userNames',
+    title: '适用岗位',
+
+    dataIndex: 'stationNames',
+    key: 'stationNames',
     align: 'center',
   },
   {
@@ -73,11 +78,13 @@ const columns = [
     title: '备注',
     dataIndex: 'remark',
     key: 'remark',
+    width: '150px',
     align: 'center',
   },
   {
     title: '操作',
     key: 'action',
+    width: '300px',
     scopedSlots: { customRender: 'action' },
     align: 'center',
   },
@@ -85,7 +92,8 @@ const columns = [
 export default {
   name: 'RoleManagement',
   components: {
-    // AddForm: AddForm,
+    AddForm,
+    AppFrom,
   },
   data() {
     return {
@@ -171,19 +179,27 @@ export default {
     },
     delete_list(id) {
       let that = this
-      //   DistributionDelete({ id: id }).then((res) => {
-      //     if (res.code === 200) {
-      //       this.searchAction()
-      //       that.$message.info(res.msg)
-      //     } else {
-      //       that.$message.error(res.msg)
-      //     }
-      //   })
+      salary_Sale_RemoveSalaryBaseSaler(`id=${id}`).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          that.$message.error(res.msg)
+        }
+      })
     },
     //新增 修改
-    // handleAdd(type, record) {
-    //   this.$refs.addForm.query(type, record)
-    // },
+    handleAdd(type, record) {
+      this.$refs.addForm.query(type, record)
+    },
+    AddRule(type, record) {
+      this.$refs.appFrom.query(type, record)
+    },
+    //规则明细
+    RuleDetails(record) {
+      this.$router.push({ name: 'salary-base-sale-module', params: { id: record.id } })
+      // this.$refs.ruleDetails.query(type, record)
+    },
   },
 }
 </script>

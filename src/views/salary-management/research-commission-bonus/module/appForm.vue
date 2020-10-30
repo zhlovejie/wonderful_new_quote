@@ -1,6 +1,6 @@
 
 <template>
-  <a-modal title="选择产品" :width="1000" v-model="priewVisible" :footer="null" :maskClosable="false">
+  <a-modal title="选择产品" :width="800" v-model="priewVisible" :footer="null" :maskClosable="false">
     <div class="search-options">
       <a-input
         class="main-items"
@@ -47,7 +47,7 @@
 
 <script>
 // import { DistributionList } from '@/api/distribution-management'
-import { getProductType } from '@/api/contractListManagement'
+import { oaSalaryInfo_list } from '@/api/bonus_management'
 
 let columns = [
   {
@@ -60,23 +60,21 @@ let columns = [
   {
     align: 'center',
     title: '产品代码',
-    width: 150,
-    dataIndex: 'productModel',
-    key: 'productModel',
+    dataIndex: 'productCode',
+    key: 'productCode',
     scopedSlots: { customRender: 'name' },
   },
   {
     align: 'center',
     title: '产品名称',
-    width: 150,
     dataIndex: 'productName',
     key: 'productName',
   },
-  {
-    title: '规格型号',
-    dataIndex: 'productStandard',
-    key: 'productStandard',
-  },
+  // {
+  //   title: '规格型号',
+  //   dataIndex: 'productStandard',
+  //   key: 'productStandard',
+  // },
 ]
 
 export default {
@@ -93,34 +91,32 @@ export default {
       consumerNam: null,
       consumerId: null,
       loading: false,
-      pagination1: { current: 1 },
       pagination: {
-        showSizeChanger: true,
-        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        current: 1,
       },
       priewVisible: false,
     }
   },
   methods: {
-    query(queryParam) {
+    query() {
       let that = this
       that.priewVisible = true
       that.searchAction()
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
+      console.log(pagination, filters, sorter)
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
       this.searchAction()
     },
     //点击查询
     searchAction() {
       const that = this
+      let _param = Object.assign({}, that.pagination, that.queryParam)
       that.loading = true
-      let _param = Object.assign({}, that.pagination1, that.queryParam)
-      return getProductType(_param)
+      return oaSalaryInfo_list(_param)
         .then((res) => {
           that.saleCustomers = res.data.records
           that.loading = false
@@ -135,7 +131,6 @@ export default {
     },
     //选择客户
     handlerSelected(record, index) {
-      record.productType = this.queryParam.productType
       this.$emit('selected', record)
       this.priewVisible = false
     },

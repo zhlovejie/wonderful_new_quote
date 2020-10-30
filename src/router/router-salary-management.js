@@ -21,8 +21,7 @@ export default {
     permission: ['permission']
   },
   redirect: '/salary-management',
-  children: [
-    {//工资参照表
+  children: [{ //工资参照表
       path: '/salary-management/salary-reference-record',
       name: 'salary-reference-record',
       component: () => import('@/views/salary-management/salary-reference-record/List'),
@@ -33,7 +32,7 @@ export default {
         permission: ['permission']
       },
     },
-    {//薪资项设置
+    { //薪资项设置
       path: '/salary-management/salary-options-setting',
       name: 'salary-options-setting',
       component: () => import('@/views/salary-management/salary-options-setting/List'),
@@ -73,6 +72,17 @@ export default {
           meta: {
             title: '销售基本工资规则',
             icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }, {
+          path: '/salary-management/salary-base-sale-rules/module',
+          name: 'salary-base-sale-module',
+          component: () => import('@/views/salary-management/salary-base-sale-rules/module/See'),
+          meta: {
+            title: '销售基本工资规则明细',
+            icon: 'select',
+            hidden: true,
             keepAlive: false,
             permission: ['permission']
           },
@@ -135,8 +145,7 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [
-        {
+      children: [{
           path: '/salary-management/salary-subsidy-rules',
           name: 'salary-subsidy-rules',
           component: RouteView,
@@ -278,7 +287,6 @@ export default {
       component: RouteView,
       meta: {
         title: '奖金管理',
-        icon: 'select',
         keepAlive: false,
         permission: ['permission']
       },
@@ -357,7 +365,6 @@ export default {
       component: RouteView,
       meta: {
         title: '应扣资金',
-        icon: 'select',
         keepAlive: false,
         permission: ['permission']
       },
@@ -397,17 +404,16 @@ export default {
       },
       redirect: '/salary-management/salary-year-rules',
       children: [{
-          path: '/salary-management/salary-year-rules',
-          name: 'salary-year-rules',
-          component: () => import('@/views/salary-management/salary-year-rules/List'),
-          meta: {
-            title: '年薪制规则',
-            icon: 'select',
-            keepAlive: false,
-            permission: ['permission']
-          },
-        }
-      ]
+        path: '/salary-management/salary-year-rules',
+        name: 'salary-year-rules',
+        component: () => import('@/views/salary-management/salary-year-rules/List'),
+        meta: {
+          title: '年薪制规则',
+          icon: 'select',
+          keepAlive: false,
+          permission: ['permission']
+        },
+      }]
     }
   ]
 }

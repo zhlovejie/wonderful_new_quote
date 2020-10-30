@@ -19,35 +19,50 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>用餐次数(次)</td>
-            <td colspan="2">1</td>
-          </tr>
-          <tr>
-            <td>扣款(元)</td>
+            <td>销售额（万元）</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
                   :precision="2"
-                  style="width: 400px"
+                  style="width: 190px"
                   placeholder="输入扣款"
-                  v-decorator="['amount', { rules: [{ required: true, message: '请输入扣款!' }] }]"
+                  v-decorator="['salerAmountBegin', { rules: [{ required: true, message: '请输入销售额起始值' }] }]"
+                />
+                <span> 至 </span>
+                <a-input-number
+                  :precision="2"
+                  style="width: 190px"
+                  placeholder="输入扣款"
+                  v-decorator="['salerAmountEnd', { rules: [{ required: true, message: '请输入销售额结束值' }] }]"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>发放周期</td>
-            <td colspan="2">按月</td>
-          </tr>
-          <tr>
-            <td>备注</td>
+            <td>基本工资</td>
             <td colspan="2">
               <a-form-item>
-                <a-textarea
+                <a-input-number
+                  :precision="2"
                   style="width: 400px"
-                  placeholder="请输入备注"
-                  :rows="3"
-                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+                  placeholder="输入基本工资"
+                  v-decorator="['salaryBigDeciaml', { rules: [{ required: true, message: '请输入扣款!' }] }]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr v-for="(item, index) in bounsDicNames" :key="item.index">
+            <td>{{ item.bounsDicName }}</td>
+            <td colspan="2">
+              <a-form-item>
+                <a-input-number
+                  :precision="6"
+                  style="width: 400px"
+                  placeholder="输入系数"
+                  v-decorator="[
+                    `bounsDicNames.${index}.bounsItemRetio`,
+                    { initialValue: item.bounsItemRetio, rules: [{ required: true, message: '请输入系数!' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -58,7 +73,7 @@
   </a-modal>
 </template>
 <script>
-import { capital_Meals_addAndUpdate } from '@/api/bonus_management'
+import { salary_sale_saveOrUpdateSalerRule } from '@/api/bonus_management'
 
 export default {
   name: 'BecomingForm',
@@ -68,6 +83,8 @@ export default {
       visible: false,
       spinning: false,
       record: undefined,
+      bounsDicNames: [],
+      bounsDicIds: [],
       type: 'View',
       form: this.$form.createForm(this),
     }
@@ -75,10 +92,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改餐费扣款规则'
+        return '修改规则'
       }
       if (this.isView) {
-        return '新增餐费扣款规则'
+        return '新增规则'
       }
     },
     isView() {
@@ -100,7 +117,15 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'edit-salary') {
+      if (type === 'add') {
+        this.bounsDicNames = record.bounsDicNames.split(',')
+        this.bounsDicNames = this.bounsDicNames.map((item) => {
+          return {
+            bounsDicName: item,
+          }
+        })
+        this.bounsDicIds = record.bounsDicIds.split(',')
+      } else {
         this.fillData()
       }
     },
@@ -108,25 +133,47 @@ export default {
     fillData() {
       this.$nextTick(() => {
         console.log(this.record)
+        this.bounsDicNames = this.record.bounsItemVoList
         this.form.setFieldsValue({
-          amount: this.record.amount,
-          remark: this.record.remark,
+          salerAmountBegin: this.record.salerAmountBegin,
+          salerAmountEnd: this.record.salerAmountEnd,
+          salaryBigDeciaml: this.record.salaryBigDeciaml,
         })
       })
     },
 
     handleOk() {
-      console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            let arr = {}
-            if (that.type !== 'add') {
-              values.id = this.record.id
+            let target = values.bounsDicNames.every((p) => p.bounsItemRetio < 1)
+            if (target) {
+              if (that.type === 'add') {
+                values.baseSalerId = this.record.id
+                values.bounsItemBoList = values.bounsDicNames.map((item, index) => {
+                  return {
+                    bounsDicId: that.bounsDicIds[index],
+                    bounsItemRetio: item.bounsItemRetio,
+                  }
+                })
+              } else {
+                values.baseSalerId = this.record.routerId
+                values.id = this.record.id
+                values.bounsItemBoList = values.bounsDicNames.map((item, index) => {
+                  return {
+                    bounsDicId: that.bounsDicNames[index].bounsDicId,
+                    bounsItemRetio: item.bounsItemRetio,
+                  }
+                })
+              }
+            } else {
+              return this.$message.error('单个系数不能大于1')
             }
+
+            delete values.bounsDicNames
             that.spinning = true
-            capital_Meals_addAndUpdate(values)
+            salary_sale_saveOrUpdateSalerRule(values)
               .then((res) => {
                 that.spinning = false
                 that.form.resetFields() // 清空表
@@ -138,8 +185,8 @@ export default {
           }
         })
       } else {
-        that.form.resetFields() // 清空表
-        that.visible = false
+        // that.form.resetFields() // 清空表
+        // that.visible = false
       }
     },
 

@@ -14,12 +14,20 @@
           <a-col :span="24">
             <a-form-item label="时间范围">
               <a-range-picker
-              dropdownClassName='myPicker'
-                v-decorator="['sDate',{rules: [{required: true,message: '选择时间范围'},{
-                validator:this.checkDate}]
-                }]"
+                dropdownClassName="myPicker"
+                v-decorator="[
+                  'sDate',
+                  {
+                    rules: [
+                      { required: true, message: '选择时间范围' },
+                      {
+                        validator: this.checkDate,
+                      },
+                    ],
+                  },
+                ]"
                 format="MM-DD"
-                style="width:100%;"
+                style="width: 100%"
                 :allowClear="true"
                 :disabledDate="disabledDate"
                 @change="sdateChange"
@@ -31,9 +39,9 @@
           <a-col :span="24">
             <a-form-item label="上班时间">
               <a-time-picker
-                style="width:100%;"
+                style="width: 100%"
                 format="HH:mm:ss"
-                v-decorator="['workBeginTime',{rules: [{required: true,message: '输入上班时间'}]}]"
+                v-decorator="['workBeginTime', { rules: [{ required: true, message: '输入上班时间' }] }]"
                 placeholder="输入上班时间"
               />
             </a-form-item>
@@ -44,13 +52,13 @@
             <a-form-item label="午休时间">
               <a-time-picker
                 format="HH:mm:ss"
-                v-decorator="['lunchBeginTime',{rules: [{required: true,message: '输入午休开始时间'}]}]"
+                v-decorator="['lunchBeginTime', { rules: [{ required: true, message: '输入午休开始时间' }] }]"
                 placeholder="开始时间"
               />
-              <span style="margin:0 10px;">~</span>
+              <span style="margin: 0 10px">~</span>
               <a-time-picker
                 format="HH:mm:ss"
-                v-decorator="['lunchEndTime',{rules: [{required: true,message: '输入午休结束时间'}]}]"
+                v-decorator="['lunchEndTime', { rules: [{ required: true, message: '输入午休结束时间' }] }]"
                 placeholder="结束时间"
               />
             </a-form-item>
@@ -60,11 +68,26 @@
           <a-col :span="24">
             <a-form-item label="下班时间">
               <a-time-picker
-                style="width:100%;"
+                style="width: 100%"
                 format="HH:mm:ss"
-                v-decorator="['workEndTime',{rules: [{required: true,message: '输入下班时间'}]}]"
+                v-decorator="['workEndTime', { rules: [{ required: true, message: '输入下班时间' }] }]"
                 placeholder="输入下班时间"
               />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24">
+            <a-form-item label="班次类型">
+              <a-select
+                placeholder="班次类型"
+                v-decorator="['classType', { initialValue: 1, rules: [{ required: true, message: '输入班次类型' }] }]"
+                style="width: 100%"
+              >
+                <a-select-option :value="1">白班</a-select-option>
+                <a-select-option :value="2">大夜</a-select-option>
+                <a-select-option :value="3">中夜</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -73,10 +96,10 @@
   </a-modal>
 </template>
 <script>
-import { 
-  classRuleConfigDetail, 
+import {
+  classRuleConfigDetail,
   classRuleConfigAddAndUpdate,
-  classRuleConfigValidationTime 
+  classRuleConfigValidationTime,
 } from '@/api/attendanceManagement'
 import moment from 'moment'
 
@@ -90,7 +113,7 @@ export default {
       actionType: 'view',
       detail: {},
       spinning: false,
-      validationTimeStatus:true
+      validationTimeStatus: true,
     }
   },
   computed: {
@@ -112,29 +135,28 @@ export default {
     isDisabled() {
       //此状态下表单元素被禁用
       return this.isView || this.isApproval
-    }
+    },
   },
   methods: {
     checkDate(rule, value, callback) {
-      if(value){
+      if (value) {
         const moment1 = value[0]._d.toLocaleDateString()
         const moment2 = value[1]._d.toLocaleDateString()
         if (moment1 === moment2) {
           callback('时间范围不能重复')
-        } 
+        }
         callback()
-      }else{
+      } else {
         callback()
       }
     },
     moment,
-    disabledDate(currentDate){
+    disabledDate(currentDate) {
       let startDate = moment().startOf('year')
       let endDate = moment().endOf('year')
       return currentDate < startDate || currentDate > endDate
     },
     query(type, record) {
-      
       let that = this
       that.actionType = type
       that.detail = Object.assign({}, record)
@@ -147,7 +169,7 @@ export default {
       }
       if (record) {
         //this.form.setFieldsValue({className:record.className})
-        classRuleConfigDetail({ id: record.id }).then(res => {
+        classRuleConfigDetail({ id: record.id }).then((res) => {
           //debugger
 
           let obj = {}
@@ -158,9 +180,9 @@ export default {
           //console.log('2020-'+res.data.endDate+' 00:00:00')
           obj.sDate = [
             that.moment('2020-' + res.data.beginDate + ' 00:00:00'),
-            that.moment('2020-' + res.data.endDate + ' 00:00:00')
+            that.moment('2020-' + res.data.endDate + ' 00:00:00'),
           ]
-
+          obj.classType = res.data.classType
           obj.workBeginTime = that.moment(tmpYear + res.data.workBeginTime)
           obj.workEndTime = that.moment(tmpYear + res.data.workEndTime)
           obj.lunchBeginTime = that.moment(tmpYear + res.data.lunchBeginTime)
@@ -180,7 +202,7 @@ export default {
       let that = this
       console.log(this.detail)
 
-      if(!that.validationTimeStatus){
+      if (!that.validationTimeStatus) {
         that.$message.info('日期范围有重复请重新选择')
         return
       }
@@ -188,8 +210,8 @@ export default {
         if (!err) {
           console.log('Received values of form: ', values)
           that.spinning = true
-          values.id=this.actionType==='edit'?this.detail.id:''
-          values.classRuleId =this.actionType==='add'?that.detail.id:undefined
+          values.id = this.actionType === 'edit' ? this.detail.id : ''
+          values.classRuleId = this.actionType === 'add' ? that.detail.id : undefined
           values.beginDate = values.sDate[0].format('MM-DD')
           values.endDate = values.sDate[1].format('MM-DD')
 
@@ -199,13 +221,13 @@ export default {
           values.workEndTime = values.workEndTime.format('HH:mm:ss')
 
           classRuleConfigAddAndUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.$message.info(res.msg)
               that.spinning = false
               that.handleCancel()
               that.$emit('finish')
             })
-            .catch(err => {
+            .catch((err) => {
               that.spinning = false
             })
         }
@@ -215,27 +237,27 @@ export default {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
-    sdateChange(arrMoment,arrStrs){
+    sdateChange(arrMoment, arrStrs) {
       //debugger
       let that = this
-      if(arrMoment.length === 0){
+      if (arrMoment.length === 0) {
         return
       }
       classRuleConfigValidationTime({
-        beginDate:arrMoment[0].format('YYYY-MM-DD'),
-        endDate:arrMoment[1].format('YYYY-MM-DD'),
-        ruleId:that.detail.classRuleId,
-        id:that.detail.classRuleDetailId
-      }).then(res =>{
+        beginDate: arrMoment[0].format('YYYY-MM-DD'),
+        endDate: arrMoment[1].format('YYYY-MM-DD'),
+        ruleId: that.detail.classRuleId,
+        id: that.detail.classRuleDetailId,
+      }).then((res) => {
         console.log(res)
         that.validationTimeStatus = +res.code === 200
-        if(!that.validationTimeStatus){
+        if (!that.validationTimeStatus) {
           that.$message.info(res.msg)
           //that.form.setFieldsValue({sDate:undefined})
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
@@ -249,5 +271,4 @@ export default {
 .ant-form-item >>> .ant-form-item-control-wrapper {
   flex: 1;
 }
-
 </style>

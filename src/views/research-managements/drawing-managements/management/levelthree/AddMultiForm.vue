@@ -259,7 +259,6 @@ export default {
       uploadRef.Component.methods.uploadFiles(this.fileList)
     },
     async checkRepeatFiles(fileList) {
-      
       let that = this
       let names = that.dataSource.map(item => item.pictureNum).join(',')
       let { superiorId ,id} = that.record.params

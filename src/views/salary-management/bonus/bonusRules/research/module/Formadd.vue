@@ -92,7 +92,7 @@
               <a-form-item>
                 <div class="process_header_wrapper">
                   <div class="draggable-columns draggable-columns-1">人员</div>
-                  <div class="draggable-columns draggable-columns-1">奖金系数</div>
+                  <div class="draggable-columns draggable-columns-1">奖金系数（%）</div>
                   <div class="draggable-columns draggable-columns-3">
                     <a href="javascript:void(0);" @click="processClearAction">清空</a>
                   </div>
@@ -149,9 +149,13 @@
   </a-modal>
 </template>
 <script>
-import { getDevisionList } from '@/api/systemSetting'
 import { queryList } from '@/api/humanResources'
-import { oaSalaryInfo_addAndUpdate, oaSalaryInfo_getId } from '@/api/bonus_management'
+import {
+  oaSalaryInfo_addAndUpdate,
+  oaSalaryInfo_getId,
+  bonus_getDepartmentByType,
+  oaSalaryIsSalary,
+} from '@/api/bonus_management'
 import vuedraggable from 'vuedraggable'
 import Approval from './appForm'
 
@@ -168,11 +172,13 @@ export default {
       productName: undefined,
       productCode: undefined,
       type: 'View',
+      record: {},
       form: this.$form.createForm(this),
       departmentList: [], //部门
       postSelectDataSource: [], //人员
       haveProcess: [],
       productId: '',
+      prodId: '',
       productType: '', //常规非常规
       depart: '',
       _d: {
@@ -182,6 +188,13 @@ export default {
     }
   },
   computed: {
+    commonReceiveBigDecimal() {
+      return this.haveProcess.reduce((addr, item) => {
+        addr = Number(addr) + Number(item.bounsToilt || 0)
+        return parseFloat(addr).toFixed(2)
+      }, 0)
+    },
+
     modalTitle() {
       if (this.isEditSalary) {
         return '修改研发提成奖金规则'
@@ -211,24 +224,39 @@ export default {
     },
   },
   created() {
-    getDevisionList().then((res) => {
-      this.departmentList = res.data
-    })
+    bonus_getDepartmentByType({ type: 2 }).then((res) => (this.departmentList = res.data))
+    // getDevisionList().then((res) => {
+    //   this.departmentList = res.data
+    // })
   },
   methods: {
     //打开产品代码列表
     handleCustomerClick() {
-      console.log(123)
       this.$refs.approval.query()
     },
     //产品代码组件返回值
     handlerCustomerSelected(record) {
-      this.productId = record.id
-      this.productType = record.productType
-      this.form.setFieldsValue({
-        productCode: record.productModel,
-        productName: record.productName,
-      })
+      if (this.type === 'edit-salary' && record.id === this.prodId) {
+        this.productId = record.id
+        this.productType = record.productType
+        this.form.setFieldsValue({
+          productCode: record.productModel,
+          productName: record.productName,
+        })
+      } else {
+        oaSalaryIsSalary({ productType: record.productType, productId: record.id }).then((res) => {
+          if (res.code === 200) {
+            this.productId = record.id
+            this.productType = record.productType
+            this.form.setFieldsValue({
+              productCode: record.productModel,
+              productName: record.productName,
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      }
     },
     inputChange(event, keys, field) {
       let haveProcess = [...this.haveProcess]
@@ -242,11 +270,12 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
+      bonus_getDepartmentByType({ type: 2 }).then((res) => (this.departmentList = res.data))
+      // getDevisionList().then((res) => {
+      //   this.departmentList = res.data
+      // })
       if (type === 'edit-salary') {
         this.fillData()
-        getDevisionList().then((res) => {
-          this.departmentList = res.data
-        })
       }
     },
 
@@ -258,6 +287,8 @@ export default {
           this.productCode = res.data.productCode
           this.haveProcess = res.data.oaSalaryBounsPercentageRuleDetails
           this.productType = res.data.productType
+          this.productId = res.data.productId
+          this.prodId = res.data.productId
         })
       })
     },
@@ -268,6 +299,9 @@ export default {
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
+            if (that.haveProcess.length == 0) {
+              return this.$message.error('请选择人员')
+            }
             let arr = {}
             if (that.type !== 'add') {
               arr.id = this.record.id

@@ -19,25 +19,57 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>用餐次数(次)</td>
-            <td colspan="2">1</td>
-          </tr>
-          <tr>
-            <td>扣款(元)</td>
+            <td>名称</td>
             <td colspan="2">
               <a-form-item>
-                <a-input-number
-                  :precision="2"
+                <a-input
                   style="width: 400px"
-                  placeholder="输入扣款"
-                  v-decorator="['amount', { rules: [{ required: true, message: '请输入扣款!' }] }]"
+                  placeholder="输入名称"
+                  v-decorator="['name', { rules: [{ required: true, message: '请输入名称' }] }]"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>发放周期</td>
-            <td colspan="2">按月</td>
+            <td>适用岗位</td>
+            <td colspan="2">
+              <a-form-item>
+                <a-select
+                  mode="multiple"
+                  :allowClear="true"
+                  :maxTagCount="4"
+                  showSearch
+                  placeholder="请选择岗位"
+                  optionFilterProp="children"
+                  v-decorator="['stationIds', { rules: [{ required: true, message: '请选择适用岗位' }] }]"
+                  style="width: 400px"
+                >
+                  <a-select-option v-for="i in getUserByType" :key="i.stationId" :value="i.stationId">
+                    {{ i.stationName }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>奖金名称</td>
+            <td colspan="2">
+              <a-form-item>
+                <a-select
+                  mode="multiple"
+                  :allowClear="true"
+                  showSearch
+                  :maxTagCount="4"
+                  style="width: 400px"
+                  placeholder="选择奖金名称"
+                  v-decorator="['bounsDicIds', { rules: [{ required: true, message: '请选择奖金名称' }] }]"
+                >
+                  <a-select-option v-for="item in assetTypeList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
           </tr>
           <tr>
             <td>备注</td>
@@ -58,7 +90,9 @@
   </a-modal>
 </template>
 <script>
-import { capital_Meals_addAndUpdate } from '@/api/bonus_management'
+import { getSaleStation, salary_Sale_SaveOrUpdateSalaryBaseSaler } from '@/api/bonus_management'
+import { getDictionaryList } from '@/api/workBox'
+import vueLs from 'vue-ls'
 
 export default {
   name: 'BecomingForm',
@@ -68,6 +102,8 @@ export default {
       visible: false,
       spinning: false,
       record: undefined,
+      assetTypeList: [],
+      getUserByType: [], //销售岗位
       type: 'View',
       form: this.$form.createForm(this),
     }
@@ -75,10 +111,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改餐费扣款规则'
+        return '修改销售基本工资规则'
       }
       if (this.isView) {
-        return '新增餐费扣款规则'
+        return '新增销售基本工资规则'
       }
     },
     isView() {
@@ -96,10 +132,16 @@ export default {
   },
   watch: {},
   methods: {
+    handleChange(value) {
+      console.log(`selected ${value}`)
+    },
     query(type, record) {
       this.visible = true
       this.type = type
       this.record = record
+      getSaleStation({ type: 1 }).then((res) => (this.getUserByType = res.data))
+
+      getDictionaryList({ parentId: 616 }).then((res) => (this.assetTypeList = res.data))
       if (type === 'edit-salary') {
         this.fillData()
       }
@@ -107,9 +149,19 @@ export default {
 
     fillData() {
       this.$nextTick(() => {
-        console.log(this.record)
+        this.record.bounsDicIds = this.record.bounsDicIds.split(',')
+        this.record.stationIds = this.record.stationIds.split(',')
+        this.record.bounsDicIds.forEach((item, index) => {
+          this.record.bounsDicIds[index] = parseInt(this.record.bounsDicIds[index])
+        })
+        this.record.stationIds.forEach((item, index) => {
+          this.record.stationIds[index] = parseInt(this.record.stationIds[index])
+        })
+
         this.form.setFieldsValue({
-          amount: this.record.amount,
+          name: this.record.name,
+          bounsDicIds: this.record.bounsDicIds,
+          stationIds: this.record.stationIds,
           remark: this.record.remark,
         })
       })
@@ -121,12 +173,13 @@ export default {
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            let arr = {}
+            values.stationIds = values.stationIds.toString()
+            values.bounsDicIds = values.bounsDicIds.toString()
             if (that.type !== 'add') {
               values.id = this.record.id
             }
             that.spinning = true
-            capital_Meals_addAndUpdate(values)
+            salary_Sale_SaveOrUpdateSalaryBaseSaler(values)
               .then((res) => {
                 that.spinning = false
                 that.form.resetFields() // 清空表
