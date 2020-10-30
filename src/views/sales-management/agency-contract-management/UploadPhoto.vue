@@ -146,7 +146,15 @@ export default {
     doRemoveAction(key) {
       let target = this.dataSource.find((item) => item.key === key)
       if (target) {
-        this.accessoryList = this.accessoryList.filter((f) => f.url !== target.fileUrl)
+        this.accessoryList = this.accessoryList.filter((f) => {
+          let url = null
+          if(f.url){
+            url = f.url
+          }else if(f.response){
+            url = f.response.data
+          }
+          return url !== target.fileUrl
+        })
         target.id && agencyContractAttachmentDel(`id=${target.id}`)
       }
     },
