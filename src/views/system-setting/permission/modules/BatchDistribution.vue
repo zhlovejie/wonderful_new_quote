@@ -11,7 +11,7 @@
   >
     <a-spin :spinning="loading" tip="处理中...">
       <a-row>
-        <a-col :span="8" style="height: 600px; overflow-y: auto; overflow: auto">
+        <a-col :span="7" style="height: 661; overflow-y: auto; overflow: auto; padding-right: 10px">
           <div class="spin-content">
             <a-tree
               ref="aTree"
@@ -28,13 +28,13 @@
             />
           </div>
         </a-col>
-        <a-col :span="16">
-          <div class="table-page-search-wrapper">
+        <a-col :span="17">
+          <a-row :gutter="24">
             <a-form :form="form" class="form wdf-form">
               <a-col :span="12">
-                <a-form-item>
+                <a-form-item style="margin-bottom: 0">
                   <a-select
-                    style="width: 300px; margin-bottom: 10px"
+                    style="width: 300px; margin-bottom: 10px; margin-left: 10px"
                     @change="handleProvinceChange"
                     placeholder="请选择部门"
                   >
@@ -46,7 +46,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item>
+                <a-form-item class="form wdf-form">
                   <a-select
                     mode="multiple"
                     style="width: 300px; margin-left: 10px"
@@ -63,16 +63,9 @@
                 </a-form-item>
               </a-col>
             </a-form>
-          </div>
+          </a-row>
 
-          <a-table
-            style="margin-top: 40px"
-            :scroll="{ y: 400 }"
-            :columns="columns"
-            :dataSource="dataSource"
-            :pagination="false"
-            :loading="loading"
-          >
+          <a-table style="margin-left: 10px" :columns="columns" :dataSource="dataSource">
             <div slot="order" slot-scope="text, record, index">
               <span>{{ index + 1 }}</span>
             </div>
@@ -120,6 +113,7 @@ const columns = [
   {
     align: 'center',
     title: '操作',
+    width: 150,
     key: 'action',
     scopedSlots: { customRender: 'action' },
   },
@@ -249,7 +243,7 @@ export default {
         .then((res) => {
           if (res.code === 200) {
             this.$message.info(res.msg)
-            console.log(res.msg)
+
             this.visible = false
             this.loading = false
             this.checkedKeys = []
@@ -257,11 +251,14 @@ export default {
             that.form.resetFields() // 清空表
             this.dataSource = []
           } else {
-            this.$message.info(res.msg)
+            this.$message.error(res.msg)
             this.loading = false
           }
         })
-        .catch((err) => (this.visible = false))
+        .catch((err) => {
+          this.$message.error(err.msg)
+          this.loading = false
+        })
     },
     handleCancel() {
       this.visible = false
@@ -273,5 +270,5 @@ export default {
 }
 </script>
 
-<style scoped>
+<style  scoped>
 </style>
