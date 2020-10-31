@@ -50,7 +50,7 @@
               </div>
               <div class="title-num-item">
                 <span>签订时间 :</span>
-                <span :style="{color: detail.signedDate === moment().format('YYYY-MM-DD') ? 'red' : ''}" >{{ detail.signedDate }}</span>
+                <span :style="{color: detail.signedDate !== moment().format('YYYY-MM-DD') ? 'red' : ''}" >{{ detail.signedDate }}</span>
               </div>
             </div>
           </div>

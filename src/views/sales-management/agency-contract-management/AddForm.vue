@@ -39,7 +39,7 @@
                   ]"
                   style="width: 100%"
                 />
-                <span v-else :style="{color: moment().format('YYYY-MM-DD') === detail.signedDate ? 'red' : '' }">{{ detail.signedDate }}</span>
+                <span v-else :style="{color: moment().format('YYYY-MM-DD') !== detail.signedDate ? 'red' : '' }">{{ detail.signedDate }}</span>
               </a-form-item>
             </td>
           </tr>
