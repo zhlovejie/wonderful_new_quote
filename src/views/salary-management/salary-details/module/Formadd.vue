@@ -119,6 +119,8 @@ const columns = [
     dataIndex: 'shouldSalaryBigDecimal',
     key: 'shouldSalaryBigDecimal',
     align: 'center',
+    fixed: 'right',
+    width: 100,
   },
 
   {
@@ -126,12 +128,16 @@ const columns = [
     dataIndex: 'socinsAmountBigDecimal',
     key: 'socinsAmountBigDecimal',
     align: 'center',
+    fixed: 'right',
+    width: 100,
   },
   {
     title: '实发工资(元)',
     dataIndex: 'realSalaryBigDecimal',
     key: 'realSalaryBigDecimal',
     align: 'center',
+    fixed: 'right',
+    width: 100,
   },
 ]
 export default {
