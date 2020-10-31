@@ -446,6 +446,15 @@ export function approvePositionAndSalaryChange (parameter) {
     data: parameter
   })
 }
+/**根据用户id获取基本工资 */
+export function getSalaryBaseCommonByUserId (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-base-common/getSalaryBaseCommonByUserId',
+    method: 'get',
+    params: parameter
+  })
+}
 
 //----------------------调岗调薪接口END
 
