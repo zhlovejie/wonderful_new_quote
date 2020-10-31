@@ -52,7 +52,7 @@
             </td>
           </tr>
           <tr v-for="(item, index) in bounsDicNames" :key="item.index">
-            <td>{{ item.bounsDicName }}</td>
+            <td>{{ item.bounsDicName }}系数</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
