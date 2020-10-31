@@ -104,12 +104,11 @@ export default {
   computed: {
     baseColumns() {
       let _columns = []
-      //debugger
       this.dataSource.map((item, idx) => {
         item.bounsItemVoList.map((_item, idx1) => {
           if (!_columns.find((c) => c.title === _item.bounsDicName)) {
             _columns.push({
-              title: _item.bounsDicName,
+              title: `${_item.bounsDicName}系数`,
               dataIndex: `bounsItemRetio_${_item.key}`,
               align: 'center',
             })
@@ -121,13 +120,6 @@ export default {
       if (idx >= 0) {
         __columns.splice(idx, 0, ..._columns)
       }
-
-      // if (this.dataSource.bounsItemVoList.lentth)
-      // if (fasle) {
-      //   return columns.slice(3, 1)
-      // } else {
-      //   return columns
-      // }
       return __columns
     },
   },
@@ -151,16 +143,11 @@ export default {
       immediate: true,
     },
   },
+
   methods: {
     handleGo() {
       this.$router.go(-1)
     },
-    // query(type, record) {
-    //   this.visible = true
-    //   this.type = type
-    //   this.record = record
-    //   this.searchActionsee()
-    // },
     searchActionsee() {
       let that = this
       that.loading = true
