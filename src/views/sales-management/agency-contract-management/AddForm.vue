@@ -39,7 +39,7 @@
                   ]"
                   style="width: 100%"
                 />
-                <span v-else>{{ detail.signedDate }}</span>
+                <span v-else :style="{color: moment().format('YYYY-MM-DD') === detail.signedDate ? 'red' : '' }">{{ detail.signedDate }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -49,6 +49,7 @@
               <a-form-item>
                 <a-select
                   v-if="!isDisabled"
+                  :disabled="isEdit"
                   :allowClear="true"
                   v-decorator="[
                     'salesmanId',
@@ -57,8 +58,8 @@
                   placeholder="请选择销售人员"
                   @change="saleUserChange"
                 >
-                  <a-select-option v-for="item in saleUsers" :value="item.id" :key="item.id">{{
-                    item.trueName
+                  <a-select-option v-for="item in saleUsers" :value="item.userId" :key="item.userId">{{
+                    item.salesmanName
                   }}</a-select-option>
                 </a-select>
                 <span v-else>{{ detail.salemanName }}</span>
@@ -68,7 +69,8 @@
             <td>
               <CustomerSelect
                 v-if="!isDisabled"
-                ref="customerSelect"
+                ref="customerSelect" 
+                :needOptions="needOptions" 
                 :options="customerSelectOptions"
                 @selected="handleCustomerSelected"
               />
@@ -142,7 +144,10 @@
                   v-decorator="[
                     'validityDate',
                     {
-                      initialValue: [moment(detail.validityDateStart), moment(detail.validityDateEnd)],
+                      initialValue: [
+                        detail.validityDateStart ? moment(detail.validityDateStart) : undefined, 
+                        detail.validityDateEnd ? moment(detail.validityDateEnd) : undefined
+                      ],
                       rules: [{ required: true, message: '请选择协议有效期' }],
                     },
                   ]"
@@ -480,6 +485,7 @@
           <div style="text-align: center">
             <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
             <a-button key="submit" style="margin-left:10px;" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
+            <a-button key="submit4" type="primary" @click="() => handleSubmit(1)">预览</a-button>
           </div>
         </template>
         <template v-else>
@@ -513,7 +519,7 @@ import {
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getAreaByParent } from '@/api/common'
-import { listUserBySale } from '@/api/systemSetting'
+import { getAllSalesman } from '@/api/customer/salesman'
 import { getListByText } from '@/api/workBox'
 import Approval from './Approval'
 import moment from 'moment'
@@ -587,7 +593,7 @@ export default {
         that.productCategoryList = res.data.records
       })
       queue.push(task1)
-      let task2 = listUserBySale().then((res) => {
+      let task2 = getAllSalesman().then((res) => {
         that.saleUsers = res.data
       })
       queue.push(task2)
@@ -624,7 +630,7 @@ export default {
       this.form.setFieldsValue({ customerId: undefined, customerName: undefined })
       //debugger
       //特殊处理
-      let target = this.saleUsers.find((user) => +user.id === parseInt(saleUserId))
+      let target = this.saleUsers.find((user) => +user.userId === parseInt(saleUserId))
       //console.log(target)
       if (target) {
         let salesmanEmail = undefined,
@@ -659,8 +665,8 @@ export default {
       }
     },
     getSaleManName(id) {
-      let target = this.saleUsers.find((item) => +item.id === +id)
-      return target ? target.trueName : ''
+      let target = this.saleUsers.find((item) => +item.userId === +id)
+      return target ? target.salesmanName : ''
     },
     async query(type, record) {
       //debugger
@@ -821,6 +827,8 @@ export default {
 
 .ant-form-item >>> .ant-form-item-label {
   width: 150px;
+  text-align: left;
+  padding-left: 20px;
 }
 .ant-form-item >>> .ant-form-item-control-wrapper {
   flex: 1;

@@ -119,11 +119,12 @@ export default {
       listUserBySale().then((res) => {
         this.saleUsers = res.data
       })
+      this.search()
     },
     search () {
       this.$set(this.queryParam, 'customerName', this.customerName)
       this.$set(this.queryParam, 'salesmanId', this.salesmanId)
-      this.$refs.table.refresh(true)
+      this.$refs.table && this.$refs.table.refresh(true)
     },
     close () {
       this.$emit('close')

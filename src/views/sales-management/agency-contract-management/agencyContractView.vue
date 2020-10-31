@@ -40,7 +40,7 @@
               </div>
               <div>
                 <span>需方(乙方)：</span>
-                <span> {{ detail.customerName }}</span>
+                <span> <span class="span-underline"> {{ detail.customerName }} </span></span>
               </div>
             </div>
             <div class="contract-title-num">
@@ -50,28 +50,28 @@
               </div>
               <div class="title-num-item">
                 <span>签订时间 :</span>
-                <span>{{ detail.signedDate }}</span>
+                <span :style="{color: detail.signedDate === moment().format('YYYY-MM-DD') ? 'red' : ''}" >{{ detail.signedDate }}</span>
               </div>
             </div>
           </div>
           <div class="main-content-wrap">
             <div class="content-p">一、代理产品范围、期限及区域：</div>
-            <div class="content-p p-text-index">1.1甲方授权乙方产品 （{{ detail.productsName }}）</div>
+            <div class="content-p p-text-index">1.1甲方授权乙方产品 （<span class="span-underline">{{ detail.productsName }}</span> ）</div>
             <div class="content-p p-text-index">
-              1.2 本协议有效期 {{ detail.validityDateStartTxt }} 至 {{ detail.validityDateEndTxt }} 在甲方指定的 （{{
+              1.2 本协议有效期 <span class="span-underline"> {{ detail.validityDateStartTxt }} </span> 至 <span class="span-underline">{{ detail.validityDateEndTxt }} </span>在甲方指定的 （<span class="span-underline"> {{
                 detail.salesArea ? detail.salesArea.split(';')[1] : ''
-              }}） （以下称销售区域）行政区域内销售甲方产品，成为甲方产品在上述区域内的代理商。
+              }}</span>） （以下称销售区域）行政区域内销售甲方产品，成为甲方产品在上述区域内的代理商。
             </div>
 
             <div class="content-p">二、销售任务、代理保证金及返点</div>
             <div class="content-p p-text-index">
-              2.1 乙方要保证在有效期内完成任务 {{ detail.quotas | moneyFormatNumber }} 万元（不包含配件销售）。
+              2.1 乙方要保证在有效期内完成任务 <span class="span-underline"> {{ detail.quotas | moneyFormatNumber }} </span> 万元（不包含配件销售）。
             </div>
             <div v-if="+detail.haveDeposit === 1" class="content-p p-text-index">
-              2.2 合同签订3个工作日内乙方向甲方缴纳 {{ detail.deposit | moneyFormatNumber }} 万元区域代理保证金。
+              2.2 合同签订3个工作日内乙方向甲方缴纳 <span class="span-underline"> {{ detail.deposit | moneyFormatNumber }} </span>万元区域代理保证金。
             </div>
             <div v-if="+detail.haveRepay === 1" class="content-p p-text-index">
-              2.3 任务完成后甲方给予乙方完成额 3% 比例的返点奖励。
+              2.3 任务完成后甲方给予乙方完成额 <span class="span-underline"> 3% </span> 比例的返点奖励。
             </div>
             <!-- 规则：(保证金：有、无。勾选。选择有，则显示2.2。选择无，不显示此条款。-->
             <!-- 返点：有、无。勾选。选择有，则显示2.3。3%固定。选择无，不显示此条款。) -->
@@ -220,7 +220,7 @@
                 人民法院裁决和管辖。诉讼费用由败诉方承担，除非诉讼裁决另有裁定。
               </div>
 
-              <div class="card-wrap clearfix">
+              <div class="card-wrap" style="overflow:hidden;">
                 <div class="card">
                   <p class="card-tit">供方（甲方）</p>
                   <p style="position: relative">
@@ -552,6 +552,7 @@ export default {
 .span-underline {
   padding: 6px 10px;
   border-bottom: 1px solid #000;
+  color: red;
 }
 .card {
   width: 500px;
@@ -566,17 +567,17 @@ export default {
   text-align: center;
 }
 .card-wrap {
-  width: 100%;
-  padding: 16px;
+  display: flex;
+  justify-content:space-around;
+  margin: 20px auto;
 }
 .card-wrap .card {
-  width: 44%;
-  float: left;
+  flex: 40% 0 0;
   margin: 0;
+  padding: 20px 0 20px 35px;
+  width: auto !important;
 }
-.card-wrap .card ~ .card {
-  margin-left: 3%;
-}
+
 .card-wrap .card p {
   margin-bottom: 0;
 }

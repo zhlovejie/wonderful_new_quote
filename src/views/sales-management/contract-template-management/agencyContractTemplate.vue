@@ -272,7 +272,7 @@ export default {
     return {
       enterpriseName: '江苏万德福公共设施科技有限公司',
       enterpriseNameEnglish: 'JiangSu Wonderful Infrastructure Manufacturing co.,Ltd',
-      contractTitle: '软件合同',
+      contractTitle: '代理合同',
       supplier: '江苏万德福公共设施科技有限公司', // 供方（甲方）
       placeholder: '***',
     }

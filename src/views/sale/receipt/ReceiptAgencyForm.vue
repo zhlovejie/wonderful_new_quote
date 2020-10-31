@@ -24,8 +24,7 @@
               </a-form-item>
               <a-form-item label="收款编号">
                 <a-input 
-                  v-if="!isDisabled"
-                  disabled 
+                  :disabled="isDisabled" 
                   placeholder="收款编号"
                   v-decorator="[
                     'receiptCode',
@@ -35,35 +34,35 @@
                     },
                   ]"
                 />
-                <span v-else>{{receiptDetailResult.receiptCode}}</span>
               </a-form-item>
             </a-col>
             <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24">
               <a-form-item label="合同编号">
                 <a-input 
-                  v-if="!isDisabled"
-                  read-only="read-only"
+                  :disabled="isDisabled" 
+                  read-only="read-only" 
+                  
                   @click="openModel"
                   placeholder="请选择合同编号"
                   v-decorator="[
                     'contractNum',
-                    { rules: [{ required: true, message: '请选择合同编号', whitespace: true }] },
+                    { 
+                      initialValue: receiptDetailResult.contractNum, 
+                      rules: [{ required: true, message: '请选择合同编号', whitespace: true }] },
                   ]"
                 />
-                <span v-else>{{receiptDetailResult.contractNum}}</span>
               </a-form-item>
             </a-col>
             <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24">
               <a-form-item label="客户名称"> 
-                <a-input v-if="!isDisabled" disabled placeholder="请选择客户名称" v-decorator="['customerName']" />
-                <span v-else>{{receiptDetailResult.saleCustomerName}}</span>
+                <a-input :disabled="isDisabled"  placeholder="请选择客户名称" v-decorator="['customerName',{initialValue: receiptDetailResult.saleCustomerName}]" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row class="form-row" :gutter="16">
             <a-col :lg="6" :md="12" :sm="24">
               <a-form-item label="结算方式">
-                <a-select v-if="!isDisabled" v-decorator="['moneyType', { rules: [{ required: true, message: '请选择结算方式' }] }]">
+                <a-select :disabled="isDisabled" v-decorator="['moneyType', {initialValue: receiptDetailResult.moneyType, rules: [{ required: true, message: '请选择结算方式' }] }]">
                   <a-select-option
                     @click="writeAccountNum(item)"
                     v-for="item in moneyTypes"
@@ -73,26 +72,23 @@
                     {{ item.unitName }}
                   </a-select-option>
                 </a-select>
-                <span v-else>{{receiptDetailResult.payTypeName}}</span>
               </a-form-item>
             </a-col>
             <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24">
               <a-form-item label="收款账号">
-                <a-input v-if="!isDisabled" disabled placeholder="请输入帐号" v-decorator="['accountNum']" />
-                <span v-else>{{receiptDetailResult.payNumber}}</span>
+                <a-input :disabled="isDisabled" placeholder="请输入帐号" v-decorator="['accountNum',{initialValue: receiptDetailResult.accountNum}]" />
               </a-form-item>
             </a-col>
             <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24">
               <a-form-item label="收款日期">
                 <a-date-picker 
-                  v-if="!isDisabled"
+                  :disabled="isDisabled"
                   style="width: 100%"
                   v-decorator="[
                     'receiptTime',
-                    { initialValue: moment(), rules: [{ required: true, message: '请选择收款日期' }] },
+                    { initialValue: receiptDetailResult.receiptTime ? moment(receiptDetailResult.receiptTime) : undefined, rules: [{ required: true, message: '请选择收款日期' }] },
                   ]"
                 />
-                <span v-else>{{receiptDetailResult.receiptTime ? receiptDetailResult.receiptTime.slice(0,10) : ''}}</span>
               </a-form-item>
             </a-col>
           </a-row>
@@ -166,8 +162,7 @@
           <a-col :span="24" class="basic-vice-tit" justify="center">
             备注
             <a-form-item>
-              <a-input v-if="!isDisabled" placeholder="请输入备注信息" v-model="remark" />
-              <span v-else>{{remark}}</span>
+              <a-input :disabled="isDisabled" placeholder="请输入备注信息" v-model="remark" />
             </a-form-item>
           </a-col>
         </a-row>

@@ -116,7 +116,7 @@
               </a-popconfirm>
             </template>
 
-            <template v-if="+record.state === 5 && record.pdfUrl">
+            <template v-if="+record.state !== 1">
               <a-divider type="vertical" />
               <a target="_blank" v-download="record.pdfUrl">下载</a>
             </template>
