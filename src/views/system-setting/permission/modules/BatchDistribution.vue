@@ -255,7 +255,7 @@ export default {
           }
         })
         .catch((err) => {
-          this.$message.error(res.msg)
+          this.$message.error(err.msg)
           this.loading = false
         })
     },
