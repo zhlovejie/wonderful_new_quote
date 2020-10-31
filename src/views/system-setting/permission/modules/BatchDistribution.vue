@@ -11,7 +11,7 @@
   >
     <a-spin :spinning="loading" tip="处理中...">
       <a-row>
-        <a-col :span="7" style="height: 661; overflow-y: auto; overflow: auto; padding-right: 10px">
+        <a-col :span="7" style="height: 661px; overflow-y: auto; overflow: auto; padding-right: 10px">
           <div class="spin-content">
             <a-tree
               ref="aTree"
