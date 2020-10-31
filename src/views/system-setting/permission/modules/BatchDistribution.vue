@@ -243,20 +243,19 @@ export default {
         .then((res) => {
           if (res.code === 200) {
             this.$message.info(res.msg)
-
             this.visible = false
-            this.loading = false
             this.checkedKeys = []
             this.queryParam = {}
-            that.form.resetFields() // 清空表
+            this.form.resetFields() // 清空表
             this.dataSource = []
+            this.loading = false
           } else {
             this.$message.error(res.msg)
             this.loading = false
           }
         })
         .catch((err) => {
-          this.$message.error(err.msg)
+          this.$message.error(res.msg)
           this.loading = false
         })
     },
