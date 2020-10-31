@@ -7,7 +7,7 @@
         style="width: 200px; margin-right: 10px"
         placeholder="产品代码"
         allowClear
-        v-model="queryParam.productModel"
+        v-model="queryParam.productCode"
       />
       <a-input
         class="main-items"
