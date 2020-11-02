@@ -118,7 +118,7 @@
 
             <template v-if="+record.state !== 1">
               <a-divider type="vertical" />
-              <a target="_blank" v-download="record.pdfUrl">下载</a>
+              <a target="_blank" :href="record.pdfUrl">下载</a>
             </template>
             <a-divider type="vertical" />
             <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
