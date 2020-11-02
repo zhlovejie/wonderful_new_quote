@@ -137,6 +137,15 @@ export default {
             title: '软件合同模板',
             permission: ['permission']
           }
+        },
+        {
+          path: '/sales-management/contract-template-management/agencyContractTemplate',
+          name: 'agencyContractTemplate',
+          component: () => import('@/views/sales-management/contract-template-management/agencyContractTemplate'),
+          meta: {
+            title: '代理合同模板',
+            permission: ['permission']
+          }
         }
       ]
     },
@@ -328,6 +337,16 @@ export default {
           component: () => import('@/views/sale/receipt/ReceiptSoftwareAdd'),
           meta: {
             title: '软件收款添加',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/receipt/ReceiptAgency',
+          name: 'ReceiptAgency',
+          hidden: true,
+          component: () => import('@/views/sale/receipt/ReceiptAgencyForm'),
+          meta: {
+            title: '代理收款单',
             permission: ['permission']
           }
         },
@@ -679,9 +698,25 @@ export default {
             permission: ['permission']
           }
         },
-
-        //   ]
-        // },
+        {
+          path: '/sales-management/agency-contract-management/agencyContractList',
+          name: 'agencyContractList',
+          component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
+          meta: {
+            title: '代理合同',
+            keepAlive: true,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/agency-contract-management/preview/agencyContractView',
+          name: 'agencyContractView',
+          component: () => import('@/views/sales-management/agency-contract-management/agencyContractView'),
+          meta: {
+            title: '代理合同预览',
+            permission: ['permission']
+          }
+        },
       ]
     },
     {
