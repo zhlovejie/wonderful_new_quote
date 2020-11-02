@@ -170,7 +170,7 @@ export default {
           link.click() // 下载文件
           URL.revokeObjectURL(objectUrl) // 释放内存
         })
-        .catch((err) => (that.spinningView = true))
+        .catch((err) => this.$message.error(err.msg))
     },
     getStateText(state) {
       let stateMap = {

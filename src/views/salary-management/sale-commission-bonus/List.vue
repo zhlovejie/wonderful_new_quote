@@ -68,9 +68,9 @@
             <template v-if="$auth('commissionBonus:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 2">
+            <template v-if="record.status === 2 && $auth('commissionBonus:download')">
               <a-divider type="vertical" />
-              <a type="primary" target="_blank" :href="record.salaryUrl">下载</a>
+              <a type="primary" @click="outPort(record)">下载</a>
             </template>
             <template
               v-if="$auth('commissionBonus:Withdraw') && record.status === 1 && +record.createdId === +userInfo.id"
@@ -107,7 +107,7 @@
         </div>
       </a-table>
     </div>
-    <a-modal v-model="visible" title="新增研发提成奖金" @ok="handleOk">
+    <a-modal v-model="visible" title="新增销售提成奖金" @ok="handleOk">
       <a-month-picker :disabled-date="disabledDate" style="width: 300px; margin-left: 90px" v-model="Dates" />
       <a-select
         style="width: 300px; margin-top: 30px; margin-left: 90px"
@@ -132,6 +132,7 @@ import {
   sale_checkSalerPercentApply,
   sale_Withdraw,
   sale_Remove,
+  getSalerPercentageExcel,
 } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -236,6 +237,23 @@ export default {
     moment,
     disabledDate(current) {
       return current && current > moment().subtract(30, 'days')
+    },
+    // 下载
+    outPort(record) {
+      getSalerPercentageExcel({ applyId: record.id })
+        .then((res) => {
+          // debugger
+          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          let objectUrl = URL.createObjectURL(blob)
+          let link = document.createElement('a')
+          link.style = 'display: none'
+          link.target = '_blank'
+          link.href = objectUrl
+          link.download = record.month + '销售提成表' // 自定义文件名
+          link.click() // 下载文件
+          URL.revokeObjectURL(objectUrl) // 释放内存
+        })
+        .catch((err) => this.$message.error(err.msg))
     },
     init() {
       let that = this

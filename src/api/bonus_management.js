@@ -27,7 +27,28 @@ export function oaSalaryIsSalary(parameter) {
 export function getExportList(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: 'oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
+    url: '/oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+//销售提成下载 
+export function getSalerPercentageExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-saler-percentage-apply/exportSalerPercentageExcel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+//研发提成下载 
+export function getPercentageExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/exportDeveloperPercentageExcel',
     method: 'get',
     responseType: 'blob',
     params: parameter

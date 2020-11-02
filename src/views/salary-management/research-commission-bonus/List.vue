@@ -68,9 +68,9 @@
             <template v-if="$auth('research:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 2">
+            <template v-if="record.status === 2 && $auth('research:download')">
               <a-divider type="vertical" />
-              <a type="primary" target="_blank" :href="record.salaryUrl">下载</a>
+              <a type="primary" @click="outPort(record)">下载</a>
             </template>
             <template v-if="$auth('research:Withdraw') && record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
@@ -122,13 +122,13 @@
   </div>
 </template>
 <script>
-// import { departmentList } from '@/api/systemSetting'
 import {
   bonus_pageList,
   bonus_getDepartmentByType,
   bonus_checkDeveloperPercentApply,
   bonus_withdrawDeveloper,
   bonus_removeDeveloper,
+  getPercentageExcel,
 } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -233,6 +233,23 @@ export default {
     moment,
     disabledDate(current) {
       return current && current > moment().subtract(30, 'days')
+    },
+    // 下载
+    outPort(record) {
+      getPercentageExcel({ applyId: record.id })
+        .then((res) => {
+          // debugger
+          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          let objectUrl = URL.createObjectURL(blob)
+          let link = document.createElement('a')
+          link.style = 'display: none'
+          link.target = '_blank'
+          link.href = objectUrl
+          link.download = record.month + '研发提成表' // 自定义文件名
+          link.click() // 下载文件
+          URL.revokeObjectURL(objectUrl) // 释放内存
+        })
+        .catch((err) => this.$message.error(err.msg))
     },
     init() {
       let that = this
