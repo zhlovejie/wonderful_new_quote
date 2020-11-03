@@ -4,27 +4,47 @@
       <a-form layout="inline" :form="form">
         <a-form-item>
           <a-button-group>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 1}" @click="simpleSearch(1)">今天</a-button>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 2}" @click="simpleSearch(2)">本周</a-button>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 3}" @click="simpleSearch(3)">本月</a-button>
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+              >今天</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+              >本周</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+              >本月</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
-        <a-form-item >
-          <a-input v-model="customerName" placeholder="客户名称模糊查询" style="width:200px;" :allowClear="true"/>
+        <a-form-item>
+          <a-input v-model="customerName" placeholder="客户名称模糊查询" style="width: 200px" :allowClear="true" />
         </a-form-item>
-        <a-form-item >
-          <a-input v-model="delayedPaymentNum" placeholder="延迟付款编号模糊查询" style="width:200px;" :allowClear="true"/>
+        <a-form-item>
+          <a-input
+            v-model="delayedPaymentNum"
+            placeholder="延迟付款编号模糊查询"
+            style="width: 200px"
+            :allowClear="true"
+          />
         </a-form-item>
         <a-form-item v-show="show">
-          <a-select style="width: 150px" placeholder="审批状态" v-model="approvalStatusSelect" :allowClear="true" defaultValue="0">
+          <a-select
+            style="width: 150px"
+            placeholder="审批状态"
+            v-model="approvalStatusSelect"
+            :allowClear="true"
+            defaultValue="0"
+          >
             <a-select-option :value="0">请选择审批状态</a-select-option>
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="日期" >
-        <a-range-picker v-model="sDate" style="width:280px;" />
+        <a-form-item label="日期">
+          <a-range-picker v-model="sDate" style="width: 280px" />
         </a-form-item>
         <a-form-item>
           <template v-if="$auth('payment:list')">
@@ -44,8 +64,8 @@
             <template v-if="$auth('payment:approval')">
               <a-tab-pane tab="待审批" key="1"></a-tab-pane>
               <a-tab-pane tab="已审批" key="2"></a-tab-pane>
-            </template>
-          </a-tabs>·
+            </template> </a-tabs
+          >·
         </div>
         <s-table
           style="margin-bottom: 24px"
@@ -66,37 +86,33 @@
             <span v-if="text==2">已结</span>
           </a>-->
           <div slot="approvalStatus" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">通过</a>
-            <a @click="handleClick(record)" v-if="text==3">拒绝</a>
-            <a @click="handleClick(record)" v-if="text==4">审批中</a>
+            <a @click="handleClick(record)" v-if="text == 1">待审批</a>
+            <a @click="handleClick(record)" v-if="text == 2">通过</a>
+            <a @click="handleClick(record)" v-if="text == 3">拒绝</a>
+            <a @click="handleClick(record)" v-if="text == 4">审批中</a>
           </div>
 
           <div slot="delayedDays" slot-scope="text, record">
-            {{calcDelayedDays(record)}}
+            {{ calcDelayedDays(record) }}
           </div>
-          <div slot="totalAmount" slot-scope="text, record">{{text | moneyFormatNumber}}</div>
-          <div slot="delayedAmount" slot-scope="text, record">{{text | moneyFormatNumber}}</div>
+          <div slot="totalAmount" slot-scope="text, record">{{ text | moneyFormatNumber }}</div>
+          <div slot="delayedAmount" slot-scope="text, record">{{ text | moneyFormatNumber }}</div>
 
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('payment:one')">
               <a @click="handleSee(record)">查看</a>
             </template>
-            <a-divider v-if="audit==0&&record.approvalStatus==2" type="vertical" />
-            <a v-if="audit==0&&record.approvalStatus==2" target="_blank" :href="record.wordUrl">欠款单</a>
-            <a-divider v-if="audit==0&&record.approvalStatus==2" type="vertical" />
-            <a
-              v-if="audit==0&&record.approvalStatus==2"
-              target="_blank"
-              @click="UploadFile(record)"
-            >上传</a>
+            <a-divider v-if="audit == 0 && record.approvalStatus == 2" type="vertical" />
+            <a v-if="audit == 0 && record.approvalStatus == 2" target="_blank" :href="record.wordUrl">欠款单</a>
+            <a-divider v-if="audit == 0 && record.approvalStatus == 2" type="vertical" />
+            <a v-if="audit == 0 && record.approvalStatus == 2" target="_blank" @click="UploadFile(record)">上传</a>
             <template v-if="$auth('payment:edit')">
-              <a-divider v-if="audit==1&&userInfo.id!=1" type="vertical" />
-              <a v-if="audit==1&&userInfo.id!=1" @click="handleApproval(record)">审核</a>
+              <a-divider v-if="audit == 1 && userInfo.id != 1" type="vertical" />
+              <a v-if="audit == 1 && userInfo.id != 1" @click="handleApproval(record)">审核</a>
             </template>
             <template v-if="$auth('payment:one')">
-              <a-divider v-if="audit==0&&record.approvalStatus==3" type="vertical" />
-              <a v-if="audit==0&&record.approvalStatus==3" @click="Resubmit(record)">重新提交</a>
+              <a-divider v-if="audit == 0 && record.approvalStatus == 3" type="vertical" />
+              <a v-if="audit == 0 && record.approvalStatus == 3" @click="Resubmit(record)">重新提交</a>
             </template>
           </span>
         </s-table>
@@ -122,7 +138,7 @@ export default {
     UploadFile,
     Tendering,
     InvestigateNode,
-    STable
+    STable,
   },
   data() {
     return {
@@ -130,16 +146,16 @@ export default {
       // 查询参数
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
       queryParam: {
-        dayWeekMonth:1
+        dayWeekMonth: 1,
       },
       recordResult: {},
       queryRecord: {},
       contractState: 0,
       saleCustomer: 0,
       customerName: undefined,
-      delayedPaymentNum:undefined,
-      sDate:[undefined,undefined],
-      dayWeekMonth:1,
+      delayedPaymentNum: undefined,
+      sDate: [undefined, undefined],
+      dayWeekMonth: 1,
       vueBoolean: this.$store.getters.vueBoolean,
       saleCustomers: [],
       audit: 0,
@@ -155,77 +171,77 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           title: '合同编号',
           dataIndex: 'contractNum',
           // key: 'title',
-          scopedSlots: { customRender: 'contractNum' }
+          scopedSlots: { customRender: 'contractNum' },
         },
         {
           title: '延迟付款单编号',
           dataIndex: 'delayedPaymentNum',
-          scopedSlots: { customRender: 'delayedPaymentNum' }
+          scopedSlots: { customRender: 'delayedPaymentNum' },
         },
         {
           title: '客户名称',
           dataIndex: 'customerName',
-          scopedSlots: { customRender: 'customerName' }
+          scopedSlots: { customRender: 'customerName' },
         },
         {
           title: '承诺付款时间',
-          dataIndex: 'promiseTime'
+          dataIndex: 'promiseTime',
         },
         {
           align: 'center',
           title: '延迟天数',
           key: 'delayedDays',
-          scopedSlots: { customRender: 'delayedDays' }
+          scopedSlots: { customRender: 'delayedDays' },
         },
         {
           align: 'center',
           title: '延迟付款金额',
           key: 'delayedAmount',
           dataIndex: 'delayedAmount',
-          scopedSlots: { customRender: 'delayedAmount' }
+          scopedSlots: { customRender: 'delayedAmount' },
         },
         {
           align: 'center',
           title: '总金额',
           key: 'totalAmount',
           dataIndex: 'totalAmount',
-          scopedSlots: { customRender: 'totalAmount' }
+          scopedSlots: { customRender: 'totalAmount' },
         },
 
         {
           title: '单据状态',
           dataIndex: 'approvalStatus',
-          scopedSlots: { customRender: 'approvalStatus' }
+          scopedSlots: { customRender: 'approvalStatus' },
         },
         {
           title: '申请人',
-          dataIndex: 'createName'
+          dataIndex: 'createName',
         },
         {
           title: '申请时间',
-          dataIndex: 'createTime'
+          dataIndex: 'createTime',
         },
         {
           title: '操作',
           dataIndex: 'id',
           width: '200px',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return getDelayedList(Object.assign(parameter, this.queryParam)).then(res => {
+      loadData: (parameter) => {
+        return getDelayedList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
     }
   },
   watch: {
@@ -233,7 +249,7 @@ export default {
       if (to.name === 'delayedPayment') {
         this.$refs.table.refresh(true)
       }
-    }
+    },
   },
   mounted() {
     this.init()
@@ -242,12 +258,13 @@ export default {
     moment: moment,
     init() {
       // 获取当前登录用户信息
-      getLoginUser().then(res => {
+      getLoginUser().then((res) => {
         this.userInfo = res.data
       })
     },
     search(opt = {}) {
-      let startTime = undefined,endTime = undefined
+      let startTime = undefined,
+        endTime = undefined
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
         startTime = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
         endTime = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
@@ -256,11 +273,11 @@ export default {
         customerName: this.customerName,
         audit: this.audit,
         arrearsStatus: this.arrearsState,
-        delayedPaymentNum:this.delayedPaymentNum,
-        startTime:startTime,
-        endTime:endTime,
-        dayWeekMonth:this.dayWeekMonth,
-        ...opt
+        delayedPaymentNum: this.delayedPaymentNum,
+        startTime: startTime,
+        endTime: endTime,
+        dayWeekMonth: this.dayWeekMonth,
+        ...opt,
       }
       if (this.audit == 0) {
         this.queryParam['approvalStatus'] = this.approvalStatusSelect
@@ -334,7 +351,7 @@ export default {
       this.$refs.invoiceContract.query()
     },
     checkIsEnd(record) {
-      changeState(record).then(res => {
+      changeState(record).then((res) => {
         if (res.code === 200) {
           this.$refs.table.refresh(true)
         }
@@ -346,20 +363,25 @@ export default {
     calcDelayedDays(record) {
       var ptime = this.moment(record.promiseTime)
       var dtime = this.moment(record.delayedTime)
-      if(!ptime.isValid() || !dtime.isValid){
+      if (!ptime.isValid() || !dtime.isValid) {
         return '-'
       }
       return moment(dtime).diff(moment(ptime), 'days')
     },
-    simpleSearch(type){
-      this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-      this.search()
+    simpleSearch(type) {
+      if (type === 4) {
+        this.dayWeekMonth = undefined
+        this.search()
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.search()
+      }
     },
     /* handleAdd (record) {
       // 跳转到申请延迟付款单界面
       this.$router.push({ name: 'addSoftDelayedPayment', params: { id: record.id ,contractType:"2"} })
     }*/
-  }
+  },
 }
 </script>
 
@@ -385,5 +407,7 @@ export default {
   background-color: #fff;
   padding: 12px;
 }
-.currentDayWeekMonth{opacity: .7;}
+.currentDayWeekMonth {
+  opacity: 0.7;
+}
 </style>
