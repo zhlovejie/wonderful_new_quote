@@ -4,11 +4,19 @@
       <a-form layout="inline">
         <a-form-item>
           <a-button-group>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 1}" @click="simpleSearch(1)">今天</a-button>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 2}" @click="simpleSearch(2)">本周</a-button>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 3}" @click="simpleSearch(3)">本月</a-button>
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+              >今天</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+              >本周</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+              >本月</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+              >全部</a-button
+            >
           </a-button-group>
-
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
@@ -22,7 +30,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :expandedRowKeys="expandedRowKeys" 
+      :expandedRowKeys="expandedRowKeys"
       @expand="expandHandler"
     >
       <div slot="order" slot-scope="text, record, index">
@@ -30,10 +38,10 @@
       </div>
       <div slot="customerName" slot-scope="text">
         <a-tooltip v-if="String(text).length > 15">
-          <template slot="title">{{text}}</template>
-          {{ String(text).slice(0,15) }}...
+          <template slot="title">{{ text }}</template>
+          {{ String(text).slice(0, 15) }}...
         </a-tooltip>
-        <span v-else>{{text}}</span>
+        <span v-else>{{ text }}</span>
       </div>
 
       <a-table
@@ -46,24 +54,24 @@
       >
         <div slot="productName" slot-scope="text">
           <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 15) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
         <div slot="productStand" slot-scope="text">
           <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 15) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
         <div slot="productCode" slot-scope="text">
           <a-tooltip v-if="String(text).length > 15">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,15) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 15) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
       </a-table>
     </a-table>
@@ -82,138 +90,138 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '订单编号',
-    dataIndex: 'orderNum'
+    dataIndex: 'orderNum',
   },
   {
     title: '日期',
-    dataIndex: 'orderCreatedTime'
+    dataIndex: 'orderCreatedTime',
   },
   {
     title: '客户名称',
     dataIndex: 'customerName',
     scopedSlots: { customRender: 'customerName' },
-    width: '300px'
+    width: '300px',
   },
   {
     title: '对应销售',
-    dataIndex: 'saleUserName'
+    dataIndex: 'saleUserName',
   },
   {
     align: 'center',
     title: '是否含运费',
-    dataIndex: 'freightType'
+    dataIndex: 'freightType',
   },
   {
     align: 'center',
     title: '运费金额',
-    dataIndex: 'freightAmount'
-  }
+    dataIndex: 'freightAmount',
+  },
 ]
 
 const innerColumns = [
   {
     align: 'center',
     title: '产品代码',
-    dataIndex: 'productCode'
+    dataIndex: 'productCode',
   },
   {
     align: 'center',
     title: '产品名称',
     dataIndex: 'productName',
     scopedSlots: { customRender: 'productName' },
-    width: '200px'
+    width: '200px',
   },
   {
     align: 'center',
     title: '规格型号',
     dataIndex: 'productStand',
     scopedSlots: { customRender: 'productStand' },
-    width: '200px'
+    width: '200px',
   },
   {
     align: 'center',
     title: '单位',
-    dataIndex: 'company'
+    dataIndex: 'company',
   },
   {
     align: 'center',
     title: '数量',
-    dataIndex: 'count'
+    dataIndex: 'count',
   },
   {
     align: 'center',
     title: '含税单价',
-    dataIndex: 'taxUnitPrice'
+    dataIndex: 'taxUnitPrice',
   },
   {
     align: 'center',
     title: '含税金额',
-    dataIndex: 'taxAmount'
+    dataIndex: 'taxAmount',
   },
   {
     align: 'center',
     title: '不含税单价',
-    dataIndex: 'unitPrice'
+    dataIndex: 'unitPrice',
   },
   {
     align: 'center',
     title: '不含税金额',
-    dataIndex: 'amount'
+    dataIndex: 'amount',
   },
   {
     align: 'center',
     title: '产品代码',
     dataIndex: 'productCode',
     scopedSlots: { customRender: 'productCode' },
-    width: '200px'
+    width: '200px',
   },
   {
     align: 'center',
     title: '是否发货',
-    dataIndex: 'sendFlag'
+    dataIndex: 'sendFlag',
   },
   {
     align: 'center',
     title: '税率',
-    dataIndex: 'taxRate'
-  }
+    dataIndex: 'taxRate',
+  },
 ]
 
 export default {
   name: 'SaleOrderReport',
   components: {
-    SearchForm: SearchForm
+    SearchForm: SearchForm,
   },
   data() {
     return {
       columns: columns,
       innerColumns: innerColumns,
       searchParam: {
-        dayWeekMonth:1
+        dayWeekMonth: 1,
       },
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
-      dayWeekMonth:1,
-      isExpanded:false, //是否展开列表子数据
-      expandedRowKeys:[]
+      dayWeekMonth: 1,
+      isExpanded: false, //是否展开列表子数据
+      expandedRowKeys: [],
     }
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'SaleOrderReport') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     init() {
@@ -226,13 +234,13 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       pageListSaleOrderReport(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             item.freightType = item.freightType === 0 ? '是' : '否'
             item.freightAmount = Accounting.formatMoney(item.freightAmount || 0, '¥')
-            item.productList.map(p => {
+            item.productList.map((p) => {
               p.company = companyFormat(p.company)
               p.unitPrice = Accounting.formatMoney(p.unitPrice || 0, '¥')
               p.taxUnitPrice = Accounting.formatMoney(p.taxUnitPrice || 0, '¥')
@@ -245,14 +253,14 @@ export default {
             return item
           })
 
-          that.expandedRowKeys = that.isExpanded ?  that.dataSource.map(item => item.key) : []
+          that.expandedRowKeys = that.isExpanded ? that.dataSource.map((item) => item.key) : []
 
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -263,10 +271,16 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-      this.isExpanded = false
-      this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-      this.searchParam.dayWeekMonth = this.dayWeekMonth
-      this.searchAction()
+      if (type === 4) {
+        this.dayWeekMonth = undefined
+        this.searchParam.dayWeekMonth = undefined
+        this.searchAction()
+      } else {
+        this.isExpanded = false
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.searchParam.dayWeekMonth = this.dayWeekMonth
+        this.searchAction()
+      }
     },
     openSearchModel() {
       this.$refs.searchForm.query()
@@ -276,18 +290,20 @@ export default {
       this.isExpanded = true
       this.searchAction()
     },
-    expandHandler(expanded,record){
+    expandHandler(expanded, record) {
       console.log(arguments)
-      if(expanded){
-        this.expandedRowKeys = [...this.expandedRowKeys,record.key]
-      }else{
-        this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
+      if (expanded) {
+        this.expandedRowKeys = [...this.expandedRowKeys, record.key]
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-  .currentDayWeekMonth{opacity: .7;}
+.currentDayWeekMonth {
+  opacity: 0.7;
+}
 </style>

@@ -20,8 +20,8 @@ export default {
   // baseURL: 'http://106.14.246.246:8091',    // 正式服
   //baseURL:'http://ihcvvw.natappfree.cc/oa',
   //baseURL: 'http://23yd043297.51mypc.cn/oa',   //张恒
-  //baseURL:'http://192.168.99.166:8999/oa',
-  baseURL:'http://192.168.13.253/oa',
+  baseURL: 'http://192.168.13.2:8999/oa',
+  // baseURL:'http://192.168.13.253/oa',
   //baseURL:'http://192.168.99.166:8999/oa',
   //baseURL: 'http://192.168.99.118:8999/oa', // 张恒
   //baseURL: 'http://192.168.99.130:8995', // 玉堂

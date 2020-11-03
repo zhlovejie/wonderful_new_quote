@@ -13,6 +13,9 @@
             <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
               >本月</a-button
             >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
         <a-form-item>
@@ -38,7 +41,6 @@
             <a-menu slot="overlay" @click="handleAdd">
               <a-menu-item key="1"><a-icon type="file" />销售收款单</a-menu-item>
               <a-menu-item key="2"><a-icon type="file" />软件收款单</a-menu-item>
-              <a-menu-item key="3"><a-icon type="file" />代理收款单</a-menu-item>
             </a-menu>
             <a-button type="primary" style="margin-left: 8px"> 新建 <a-icon type="plus" /> </a-button>
           </a-dropdown>
@@ -382,13 +384,12 @@ export default {
       this.searchAction()
     },
     handleAdd(e) {
-      if (+e.key === 1) {
+      if (e.key === '1') {
         //点击返回，返回核价单列表页
         this.$router.push({ name: 'ReceiptAdd', params: { id: null, action: 'add', contractType: e.key } })
-      } else if (+e.key === 2) {
+      }
+      if (e.key === '2') {
         this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: null, action: 'add', contractType: e.key } })
-      } else if (+e.key === 3) {
-        this.$router.push({ name: 'ReceiptAgency', params: { id: null, action: 'add', contractType: e.key } })
       }
     },
     onSelectChange(selectedRowKeys, selectedRows) {
@@ -465,11 +466,6 @@ export default {
             }
           }
         })
-      } else if (record.contractType === 3) {
-        this.$router.push({
-          name: 'agencyContractView',
-          params: { id: record.contractId, action: 'view', from: 'receiptList' },
-        })
       } else {
         console.log('未知')
       }
@@ -499,12 +495,11 @@ export default {
       console.log(key)
     },
     handleVue(e) {
-      if (+e.contractType === 1) {
+      if (e.contractType === 1) {
         this.$router.push({ name: 'ReceiptVue', params: { id: e.id } })
-      } else if (+e.contractType === 2) {
+      }
+      if (e.contractType === 2) {
         this.$router.push({ name: 'ReceiptSoftwareVue', params: { id: e.id } })
-      } else if (+e.contractType === 3) {
-        this.$router.push({ name: 'ReceiptAgency', params: { id: e.id, action: 'view', contractType: e.key } })
       }
     },
     handleAudit(e) {
@@ -515,10 +510,9 @@ export default {
       }
       if (e.contractType === 1) {
         this.$router.push({ name: 'ReceiptAudit', params: { id: e.id } })
-      } else if (e.contractType === 2) {
+      }
+      if (e.contractType === 2) {
         this.$router.push({ name: 'ReceiptSoftwareAudit', params: { id: e.id } })
-      } else if (e.contractType === 3) {
-        this.$router.push({ name: 'ReceiptAgency', params: { id: e.id, action: 'approval', contractType: e.key } })
       }
     },
     handleAuditOk() {
@@ -530,10 +524,9 @@ export default {
     handleEdit(record) {
       if (record.contractType === 1) {
         this.$router.push({ name: 'ReceiptAdd', params: { id: record.id, action: 'edit' } })
-      } else if (record.contractType === 2) {
+      }
+      if (record.contractType === 2) {
         this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: record.id, action: 'edit' } })
-      } else if (e.contractType === 3) {
-        this.$router.push({ name: 'ReceiptAgency', params: { id: record.id, action: 'edit', contractType: e.key } })
       }
     },
     getPayType(type) {
@@ -556,11 +549,19 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-      this.isExpanded = false
-      this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-      this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
-      this.searchAction()
+      if (type === 4) {
+        this.queryParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      } else {
+        this.isExpanded = false
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      }
     },
+
     expandHandler(expanded, record) {
       console.log(arguments)
       if (expanded) {

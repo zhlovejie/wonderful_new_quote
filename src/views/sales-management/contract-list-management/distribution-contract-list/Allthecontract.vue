@@ -1,101 +1,189 @@
 <template>
   <div>
     <a-spin :spinning="spinning">
-    <a-table
-      ref="table"
-      :columns="columns"
-      rowKey="id"
-      :dataSource="data"
-      :pagination="pagination"
-      :loading="loading"
-      @change="handleTableChange"
-    >
-      <div slot="order" slot-scope="text,record,index">
-        <span>{{ index+1 }}</span>
-      </div>
-      <a slot="customerName" slot-scope="text,record" @click="consumerInfo(record)">{{ text }}</a>
-      <a slot="approvalStatus" slot-scope="text,record" @click="approvalPreview(record)">
-        <span v-if="parseInt(text) === -1">待提交</span>
-        <span v-else-if="parseInt(text) === 0 || parseInt(text)==4">待审批</span>
-        <span v-else-if="parseInt(text) === 2">通过</span>
-        <span v-else>不通过</span>
-      </a>
-      <div slot="contractStatus" slot-scope="text">
-        <span v-if="text===-1">请选择合同状态</span>
-        <span v-if="text===0">未启动</span>
-        <span v-if="text===1">已启动</span>
-        <span v-if="text===2">已作废</span>
-      </div>
-      <div slot="freightCharge" slot-scope="text, record">
-        <span>{{record.freightType === 0 ? (Math.ceil(record.isTax === 1 ? record.freightCharge * 1.13 : record.freightCharge) || 0) : '0'}}</span>
-      </div>
-      <span slot="isDisabled" slot-scope="text,record">
-        <template v-if="$auth('distributionContract:edit')">
-          <a-switch v-if="record.createdId===user.id" :checked="record.isDisabled === 0" :disabled="record.isDisabled === 1" checkedChildren="启用" :defaultChecked="(text === 0) ? true : false" unCheckedChildren="禁用" @change="changeDisabled(text,record)" />
-        </template>
-        <template v-if="!$auth('distributionContract:edit')">
-          <span v-if="text === 0">启用</span>
-          <span v-if="text === 1">禁用</span>
-        </template>
-      </span>
-      <div class="action-btns" slot="action" slot-scope="text, record">
-        <template v-if="$auth('distributionContract:one')">
-          <a type="primary" v-if="record.contractStatus===1" @click="copyContract(record)">复制合同</a>
-          <a-divider v-if="record.contractStatus===1" type="vertical" />
-        </template>
-        <template v-if="$auth('distributionContract:one')">
-          <a type="primary" @click="showModal('edit', record)">查看</a>
-        </template>
-        <template v-if="$auth('distributionContract:change') && (record.approvalStatus === 2 || record.operatorStatus === 1 || record.operatorStatus === 2) ">
-          <a-divider  type="vertical" />
-          <a type="primary" @click="editSaleContract(record)">修改</a>
-        </template>
-        <template v-if="$auth('distributionContract:change') && record.approvalStatus === 3">
-          <a-divider  type="vertical" />
-          <a type="primary" @click="editSaleContract(record)">修改</a>
-        </template>
-        <template v-if="$auth('distributionContract:changeProduct') && (record.approvalStatus === 5 || record.operatorStatus === 3)">
-          <a-divider  type="vertical" />
-          <a type="primary" @click="splitOrderAction(record)">重新拆分</a>
-        </template>
-        <template v-if="$auth('distributionContract:one')">
-          <a-divider v-if="record.contractStatus===1&&record.orderNum!=null" type="vertical" />
-          <a type="primary" v-if="record.contractStatus===1&&record.orderNum!=null" @click="viewSalesOrders(record.id)">查看销售订单</a>
-        </template>
-        <template v-if="$auth('distributionContract:edit')">
-          <a-divider v-if="record.contractStatus===1" type="vertical" />
-          <a
-            type="primary"
-            v-if="record.contractStatus===1 && record.approvalStatus === 2"
-            @click="addDelayedPayment(record)"
-          >申请延迟付款单</a>
-        </template>
-        <template v-if="$auth('distributionContract:edit')">
-          <a-divider
-            v-if="record.contractStatus===1 && record.approvalStatus === 2"
-            type="vertical"
-          />
-          <a
-            type="primary"
-            v-if="record.contractStatus===1 && record.approvalStatus === 2"
-            @click="uploadPhoto(record)"
-          >附件</a>
-        </template>
-        <template v-if="$auth('distributionContract:change') && record.approvalStatus === -1">
-          <a-divider  type="vertical" />
-          <a type="primary" @click="submitApprove(record)">提交审批</a>
-        </template>
-        <template v-if="$auth('distributionContract:delete')">
-          <a-divider  type="vertical" />
-          <a type="primary" @click="deleteCurrentContract(record)">删除</a>
-        </template>
-        <template v-if="userInfo.id === 1">
-          <a-divider  type="vertical" />
-          <a type="primary" @click="createPdf(record)">生成pdf</a>
-        </template>
+      <a-table
+        ref="table"
+        :columns="columns"
+        rowKey="id"
+        :dataSource="data"
+        :pagination="pagination"
+        :loading="loading"
+        @change="handleTableChange"
+      >
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
+        <a slot="customerName" slot-scope="text, record" @click="consumerInfo(record)">{{ text }}</a>
+        <a slot="approvalStatus" slot-scope="text, record" @click="approvalPreview(record)">
+          <span v-if="parseInt(text) === -1">待提交</span>
+          <span v-else-if="parseInt(text) === 0 || parseInt(text) == 4">待审批</span>
+          <span v-else-if="parseInt(text) === 2">通过</span>
+          <span v-else>不通过</span>
+        </a>
+        <div slot="contractStatus" slot-scope="text">
+          <span v-if="text === -1">请选择合同状态</span>
+          <span v-if="text === 0">未启动</span>
+          <span v-if="text === 1">已启动</span>
+          <span v-if="text === 2">已作废</span>
+        </div>
+        <div slot="freightCharge" slot-scope="text, record">
+          <span>{{
+            record.freightType === 0
+              ? Math.ceil(record.isTax === 1 ? record.freightCharge * 1.13 : record.freightCharge) || 0
+              : '0'
+          }}</span>
+        </div>
+        <span slot="isDisabled" slot-scope="text, record">
+          <template v-if="$auth('distributionContract:edit')">
+            <a-switch
+              v-if="record.createdId === user.id"
+              :checked="record.isDisabled === 0"
+              :disabled="record.isDisabled === 1"
+              checkedChildren="启用"
+              :defaultChecked="text === 0 ? true : false"
+              unCheckedChildren="禁用"
+              @change="changeDisabled(text, record)"
+            />
+          </template>
+          <template v-if="!$auth('distributionContract:edit')">
+            <span v-if="text === 0">启用</span>
+            <span v-if="text === 1">禁用</span>
+          </template>
+        </span>
+        <div class="action-btns" slot="action" slot-scope="text, record">
+          <template v-if="$auth('distributionContract:one')">
+            <a type="primary" @click="showModal('edit', record)">查看</a>
+          </template>
+          <template>
+            <a-divider type="vertical" />
+            <a-dropdown :trigger="['click']">
+              <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">更多 <a-icon type="down" /> </a>
+              <a-menu slot="overlay" @click="handleMenuClick">
+                <a-menu-item key="1" v-if="$auth('distributionContract:one') && record.contractStatus === 1">
+                  <a type="primary" @click="copyContract(record)">复制合同</a></a-menu-item
+                >
+                <a-menu-item
+                  key="2"
+                  v-if="
+                    $auth('distributionContract:change') &&
+                    (record.approvalStatus === 2 || record.operatorStatus === 1 || record.operatorStatus === 2) &&
+                    record.approvalStatus === 3
+                  "
+                >
+                  <a type="primary" @click="editSaleContract(record)">修改</a></a-menu-item
+                >
+                <a-menu-item
+                  key="3"
+                  v-if="
+                    $auth('distributionContract:changeProduct') &&
+                    (record.approvalStatus === 5 || record.operatorStatus === 3)
+                  "
+                >
+                  <a type="primary" @click="splitOrderAction(record)">重新拆分</a></a-menu-item
+                >
+                <a-menu-item
+                  key="4"
+                  v-if="$auth('distributionContract:one') && record.contractStatus === 1 && record.orderNum != null"
+                >
+                  <a type="primary" @click="viewSalesOrders(record.id)">查看销售订单</a></a-menu-item
+                >
+                <a-menu-item
+                  key="5"
+                  v-if="
+                    $auth('distributionContract:edit') && record.contractStatus === 1 && record.approvalStatus === 2
+                  "
+                >
+                  <a type="primary" @click="addDelayedPayment(record)">申请延迟付款单</a></a-menu-item
+                >
+                <a-menu-item
+                  key="6"
+                  v-if="
+                    $auth('distributionContract:edit') && record.contractStatus === 1 && record.approvalStatus === 2
+                  "
+                >
+                  <a type="primary" @click="uploadPhoto(record)">附件</a></a-menu-item
+                >
+                <a-menu-item key="7" v-if="$auth('distributionContract:change') && record.approvalStatus === -1">
+                  <a type="primary" @click="submitApprove(record)">提交审批</a>
+                </a-menu-item>
+                <a-menu-item key="8" v-if="userInfo.id === 1">
+                  <a type="primary" @click="createPdf(record)">生成pdf</a>
+                </a-menu-item>
+                <a-menu-item key="9" v-if="$auth('distributionContract:delete')">
+                  <a type="primary" @click="deleteCurrentContract(record)">删除</a>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+          </template>
 
-      </div>
-    </a-table>
+          <!-- <template v-if="$auth('distributionContract:one')">
+            <a type="primary" v-if="record.contractStatus === 1" @click="copyContract(record)">复制合同</a>
+            <a-divider v-if="record.contractStatus === 1" type="vertical" />
+          </template> -->
+
+          <!-- <template
+            v-if="
+              $auth('distributionContract:change') &&
+              (record.approvalStatus === 2 || record.operatorStatus === 1 || record.operatorStatus === 2)
+            "
+          >
+            <a-divider type="vertical" />
+            <a type="primary" @click="editSaleContract(record)">修改</a>
+          </template>
+          <template v-if="$auth('distributionContract:change') && record.approvalStatus === 3">
+            <a-divider type="vertical" />
+            <a type="primary" @click="editSaleContract(record)">修改</a>
+          </template> -->
+          <!-- <template
+            v-if="
+              $auth('distributionContract:changeProduct') &&
+              (record.approvalStatus === 5 || record.operatorStatus === 3)
+            "
+          >
+            <a-divider type="vertical" />
+            <a type="primary" @click="splitOrderAction(record)">重新拆分</a>
+          </template> -->
+          <!-- <template v-if="$auth('distributionContract:one')">
+            <a-divider v-if="record.contractStatus === 1 && record.orderNum != null" type="vertical" />
+            <a
+              type="primary"
+              v-if="record.contractStatus === 1 && record.orderNum != null"
+              @click="viewSalesOrders(record.id)"
+              >查看销售订单</a
+            >
+          </template> -->
+          <!-- <template v-if="$auth('distributionContract:edit')">
+            <a-divider v-if="record.contractStatus === 1" type="vertical" />
+            <a
+              type="primary"
+              v-if="record.contractStatus === 1 && record.approvalStatus === 2"
+              @click="addDelayedPayment(record)"
+              >申请延迟付款单</a
+            >
+          </template> -->
+          <!-- <template v-if="$auth('distributionContract:edit')">
+            <a-divider v-if="record.contractStatus === 1 && record.approvalStatus === 2" type="vertical" />
+            <a
+              type="primary"
+              v-if="record.contractStatus === 1 && record.approvalStatus === 2"
+              @click="uploadPhoto(record)"
+              >附件</a
+            >
+          </template> -->
+          <!-- <template v-if="$auth('distributionContract:change') && record.approvalStatus === -1">
+            <a-divider type="vertical" />
+            <a type="primary" @click="submitApprove(record)">提交审批</a>
+          </template> -->
+          <!-- <template v-if="$auth('distributionContract:delete')">
+            <a-divider type="vertical" />
+            <a type="primary" @click="deleteCurrentContract(record)">删除</a>
+          </template> -->
+          <!-- <template v-if="userInfo.id === 1">
+            <a-divider type="vertical" />
+            <a type="primary" @click="createPdf(record)">生成pdf</a>
+          </template> -->
+        </div>
+      </a-table>
     </a-spin>
     <a-modal title="客户信息" v-model="visible" :footer="null" :maskClosable="false">
       <p>客户名称：{{ customerName }}</p>
@@ -105,13 +193,7 @@
       <p>地址：{{ customerAddress }}</p>
     </a-modal>
     <a-modal title="审批预览" v-model="priewVisible" :footer="null" :maskClosable="false">
-      <a-table
-        :columns="priewColumns"
-        rowKey="id"
-        :dataSource="priewData"
-        :pagination="false"
-        :loading="loading"
-      >
+      <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="false" :loading="loading">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -123,7 +205,15 @@
 </template>
 
 <script>
-import { buildCreateWork, getSalesList, getsaveAdditionalClause, editContract,startSaleContractProcess, deleteContract ,copyContract} from '../../../../api/contractListManagement'
+import {
+  buildCreateWork,
+  getSalesList,
+  getsaveAdditionalClause,
+  editContract,
+  startSaleContractProcess,
+  deleteContract,
+  copyContract,
+} from '../../../../api/contractListManagement'
 import { getCustomerInfo } from '../../../../api/pricingModule'
 import UploadPhoto from './UploadPhoto'
 import PhotoView from './PhotoView'
@@ -133,7 +223,7 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
@@ -195,7 +285,7 @@ const columns = [
     title: '使用状态',
     key: 'isDisabled',
     dataIndex: 'isDisabled',
-    scopedSlots: { customRender: 'isDisabled' }
+    scopedSlots: { customRender: 'isDisabled' },
   },
   {
     align: 'center',
@@ -217,60 +307,60 @@ const columns = [
     key: 'action',
     scopedSlots: { customRender: 'action' },
     width: '200px',
-  }
+  },
 ]
 const priewColumns = [
   {
     align: 'center',
     title: '序号',
     key: 'order',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '审核人',
     dataIndex: 'userName',
     key: 'userName',
-    scopedSlots: { customRender: 'userName' }
+    scopedSlots: { customRender: 'userName' },
   },
   {
     align: 'center',
     title: '审核时间',
     key: 'createTime',
-    dataIndex: 'createTime'
+    dataIndex: 'createTime',
   },
   {
     align: 'center',
     title: '备注',
     key: 'code',
-    dataIndex: 'code'
-  }
+    dataIndex: 'code',
+  },
 ]
 export default {
   name: 'AllTheContract',
   components: {
     UploadPhoto,
-    PhotoView
+    PhotoView,
   },
   props: {
     contractNum: {
       // 属性传值：合同编号
       type: String,
-      required: true
+      required: true,
     },
     customerId: {
       // type:Number,
-      required: true
+      required: true,
     },
     contractStatus: {
       // type:Number,
-      required: true
+      required: true,
     },
-    approveStatus:{
-      required: true
-    }
+    approveStatus: {
+      required: true,
+    },
   },
-  data () {
+  data() {
     return {
       userInfo: this.$store.getters.userInfo,
       data: [],
@@ -290,39 +380,41 @@ export default {
       selectedRows: [],
       user: this.$store.getters.userInfo, // 当前登录人,
       status: 0,
-      spinning:false //加载中状态
+      spinning: false, //加载中状态
     }
   },
   computed: {},
   watch: {},
-  cerated () {},
-  mounted () {
+  cerated() {},
+  mounted() {
     this.init()
   },
   methods: {
-    changeDisabled (text, record) {
+    changeDisabled(text, record) {
       let isDisabled = 0
       if (text === 0) {
         isDisabled = 1
       }
       this.$set(record, 'isDisabled', isDisabled)
-      editContract(record).then(res => {
-        if (res.code === 200) {
-          this.$message.success('修改成功')
-        } else {
-          this.$message.error(res.msg)
-          this.$set(record, 'isDisabled', isDisabled === 0 ? 1 : 0)
-        }
-      }).catch(function (err) {
-        console.log(err)
-      })
+      editContract(record)
+        .then((res) => {
+          if (res.code === 200) {
+            this.$message.success('修改成功')
+          } else {
+            this.$message.error(res.msg)
+            this.$set(record, 'isDisabled', isDisabled === 0 ? 1 : 0)
+          }
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
     },
-    uploadPhoto (record) {
+    uploadPhoto(record) {
       this.$refs.uploadPhoto.showForm(record)
     },
-    submitApprove(record){
+    submitApprove(record) {
       const _this = this
-      const param = {"contractId":record.id};
+      const param = { contractId: record.id }
       //console.log(_this)
       //return
 
@@ -331,29 +423,30 @@ export default {
         content: `确认提交合同？`,
         okText: '确定',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           // 在这里调用删除接口
           _this.spinning = true
           startSaleContractProcess(param)
-          .then((res) => {
-            if (res.code === 200) {
+            .then((res) => {
+              if (res.code === 200) {
+                _this.spinning = false
+                _this.$message.success('提交成功')
+                //console.log(_this)
+                //_this.$refs.table.refresh(true)
+                _this.init()
+              } else {
+                _this.$message.error(res.msg)
+              }
+            })
+            .catch((err) => {
               _this.spinning = false
-              _this.$message.success('提交成功')
-              //console.log(_this)
-              //_this.$refs.table.refresh(true)
-              _this.init()
-            } else {
-              _this.$message.error(res.msg)
-            }
-          }).catch(err =>{
-            _this.spinning = false
-          })
-        }
+            })
+        },
       })
     },
-    deleteCurrentContract(record){
+    deleteCurrentContract(record) {
       const _this = this
-      const param = {"contractId":record.id};
+      const param = { contractId: record.id }
       //console.log(_this)
       //return
 
@@ -362,41 +455,41 @@ export default {
         content: `确认删除合同？`,
         okText: '确定',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           // 在这里调用删除接口
           deleteContract(param)
-          .then((res) => {
-            if (res.code === 200) {
-              _this.$message.success('删除成功')
-              //console.log(_this)
-              //_this.$refs.table.refresh(true)
-              _this.init()
-            } else {
-              _this.$message.error(res.msg)
-            }
-          }).catch(err =>{
-          })
-        }
+            .then((res) => {
+              if (res.code === 200) {
+                _this.$message.success('删除成功')
+                //console.log(_this)
+                //_this.$refs.table.refresh(true)
+                _this.init()
+              } else {
+                _this.$message.error(res.msg)
+              }
+            })
+            .catch((err) => {})
+        },
       })
     },
-    init () {
+    init() {
       // 获取销售合同列表数据
       this.getList()
     },
     // 获取列表
-    getList (params = {}) {
-      console.log("approveStatus----:" + this.approveStatus)
+    getList(params = {}) {
+      console.log('approveStatus----:' + this.approveStatus)
       params = {
         status: this.status,
         contractStatus: this.contractStatus, // 合同状态：0未启动 1已启动，不传查所有
         current: params.current || 1,
         contractNum: this.contractNum || '', // 不传入合同编号模糊获取到的是所有的信息
         customerId: this.customerId || '', // 不传入客户id获取到的是所有的信息
-        approveStatus: this.approveStatus
+        approveStatus: this.approveStatus,
       }
       this.loading = true
       getSalesList(params)
-        .then(res => {
+        .then((res) => {
           console.log('获取销售合同列表结果', res)
           const pagination = { ...this.pagination }
           pagination.total = res.data.total || 0
@@ -405,13 +498,13 @@ export default {
           console.log('获取销售合同列表结果this.data', this.data)
           this.pagination = pagination
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
     // 分页
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       console.log(pagination)
       const pager = { ...this.pagination }
       pager.current = pagination.current
@@ -421,29 +514,29 @@ export default {
         current: pagination.current,
         sortField: sorter.field,
         sortOrder: sorter.order,
-        ...filters
+        ...filters,
       })
     },
 
     // 客户信息弹框
-    consumerInfo (record) {
+    consumerInfo(record) {
       console.log('客户信息弹框record', record)
       this.visible = true
       const params = {
-        id: record.customerId
+        id: record.customerId,
       }
       console.log('客户信息弹框params', params)
       // 获取客户信息
       getCustomerInfo(params)
-        .then(res => {
+        .then((res) => {
           console.log('//获取客户信息', res)
           ;(this.customerName = res.data.customerName),
-          (this.linkManName = res.data.linkManName),
-          (this.linkManPhone = res.data.linkManPhone),
-          (this.customerAddress = res.data.customerAddress),
-          (this.linkManWeChat = res.data.linkManWeChat)
+            (this.linkManName = res.data.linkManName),
+            (this.linkManPhone = res.data.linkManPhone),
+            (this.customerAddress = res.data.customerAddress),
+            (this.linkManWeChat = res.data.linkManWeChat)
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
@@ -452,95 +545,104 @@ export default {
       // 保存信息成功之后，调取生成合同PDF的接口，留作列表页导出使用
       const _this = this
       const paramsc = {
-        id: record.id
+        id: record.id,
       }
       buildCreateWork(paramsc)
-      .then(res => {
-        _this.$message.success('生成pdf成功')
-        console.log('调取生成合同PDF的接口，留作列表页导出使用', res)
-      })
-      .catch(error => {
-        console.error(error)
-      })
+        .then((res) => {
+          _this.$message.success('生成pdf成功')
+          console.log('调取生成合同PDF的接口，留作列表页导出使用', res)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     // 审批预览弹出层
-    approvalPreview (record) {
+    approvalPreview(record) {
       this.priewVisible = true
       const params = {
-        contractId: record.id
+        contractId: record.id,
       }
       // 获取审批预览信息
       getsaveAdditionalClause(params)
-        .then(res => {
+        .then((res) => {
           this.priewData = res.data
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
     // 查看销售订单,跳转到销售订单页面，并向目标页面传递参数
-    viewSalesOrders (record) {
+    viewSalesOrders(record) {
       this.$router.push({ name: 'orderModule', params: { contractId: record, show: true, type: 1 } })
     },
     editSaleContract(record) {
-      this.$router.push({ name: 'basicInformation1', params: { id:  record.id , action:'edit' , from : 'distributionContractList'}})
+      this.$router.push({
+        name: 'basicInformation1',
+        params: { id: record.id, action: 'edit', from: 'distributionContractList' },
+      })
     },
-    splitOrderAction(record){ //拆分订单
-      this.$router.push({ name: 'basicInformation1', params: { id:  record.id , action:'split' , from : 'distributionContractList'}})
+    splitOrderAction(record) {
+      //拆分订单
+      this.$router.push({
+        name: 'basicInformation1',
+        params: { id: record.id, action: 'split', from: 'distributionContractList' },
+      })
     },
     // 导出多选框
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
       console.log('导出多选框selectedRowKeys:', selectedRowKeys)
       console.log('导出多选框selectedRows:', selectedRows)
     },
-    addDelayedPayment (record) {
+    addDelayedPayment(record) {
       // 跳转到申请延迟付款单界面
-      this.$router.push({ name: 'addDelayedPayment', params: { id: record.id ,contractType:"1"} })
+      this.$router.push({ name: 'addDelayedPayment', params: { id: record.id, contractType: '1' } })
     },
-    showModal (action, record) {
+    showModal(action, record) {
       if (record.contractAttribute === 1) {
         // 选择三方合同
-        this.$router.push({ name: 'previewTripartiteContract', params: { queryOneData: record , action: action} })
+        this.$router.push({ name: 'previewTripartiteContract', params: { queryOneData: record, action: action } })
         console.log('queryOneData:record', record)
       } else {
         if (record.isTax === 1) {
           // 含税--选择销售合同
-          this.$router.push({ name: 'previewSalesContract', params: { queryOneData: record , action: action} })
+          this.$router.push({ name: 'previewSalesContract', params: { queryOneData: record, action: action } })
           console.log('queryOneData:record', record)
         } else {
-          this.$router.push({ name: 'previewProductOrderForm', params: { queryOneData: record , action: action} })
+          this.$router.push({ name: 'previewProductOrderForm', params: { queryOneData: record, action: action } })
           console.log('queryOneData:record', record)
         }
       }
     },
-    copyContract(record){
+    copyContract(record) {
       const _this = this
-      const param = { "id": record.id };
+      const param = { id: record.id }
       this.$confirm({
         title: '提示',
-        content: `确认复制合同编号为`+record.contractNum+`的合同吗？`,
+        content: `确认复制合同编号为` + record.contractNum + `的合同吗？`,
         okText: '确定',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           _this.spinning = true
-          copyContract(param).then((res) => {
-            _this.spinning = false
-            if (res.code === 200) {
-              _this.$message.success('复制成功')
-              _this.init()
-            } else {
-              _this.$message.error(res.msg)
-            }
-          }).catch(err =>{
-            _this.spinning = false
-          })
-        }
+          copyContract(param)
+            .then((res) => {
+              _this.spinning = false
+              if (res.code === 200) {
+                _this.$message.success('复制成功')
+                _this.init()
+              } else {
+                _this.$message.error(res.msg)
+              }
+            })
+            .catch((err) => {
+              _this.spinning = false
+            })
+        },
       })
     },
-    exportWord (record) {
+    exportWord(record) {
       const link = document.createElement('a')
       link.href = record.wordUrl
       link.download = 'lslsls'
@@ -552,10 +654,10 @@ export default {
       link.dispatchEvent(evt)
       document.body.removeChild(link)
     },
-    handleSaveOk () {
+    handleSaveOk() {
       this.init()
-    }
-  }
+    },
+  },
 }
 </script>
 
