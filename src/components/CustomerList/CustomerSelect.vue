@@ -16,7 +16,7 @@
           @click="handleCustomerClick" 
           v-decorator="['customerName',{rules: [{ required: cOptions.inputRequired, message: '选择客户名称'}]}]"
         >
-          <a-tooltip slot="suffix" title="清空" v-if="cOptions.inputAllowClear && this.form.getFieldValue('customerName')">
+          <a-tooltip slot="suffix" title="清空" v-if="cOptions.inputAllowClear && this.form.getFieldValue('customerName') && cOptions.inputDisable === false">
             <a-icon type="close-circle" @click="handleClear" />
           </a-tooltip>
         </a-input>
