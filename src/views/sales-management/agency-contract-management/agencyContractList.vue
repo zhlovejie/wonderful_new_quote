@@ -9,7 +9,7 @@
         <a-form-item>
           <a-input style="width: 200px" :allowClear="true" placeholder="客户名称" v-model="searchParam.customerName" />
         </a-form-item>
-        
+
         <!-- <CustomerSelect
           ref="customerSelect"
           :options="customerSelectOptions"
@@ -82,47 +82,78 @@
         <a slot="customerName" slot-scope="text, record" @click="consumerInfoShow(record)">{{ text }}</a>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
+          <template v-if="+activeKey === 3 || activeKey === 1">
+            <a type="primary" @click="doAction('view', record)">查看</a>
+          </template>
+
           <template v-if="+activeKey === 2">
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
-          <template v-if="+activeKey === 3">
-            <a type="primary" @click="doAction('view', record)">查看</a>
-          </template>
 
           <template v-if="+activeKey === 1">
-            <a type="primary" @click="doAction('view', record)">查看</a>
+            <a-divider type="vertical" />
+            <a-dropdown :trigger="['click']">
+              <a class="ant-dropdown-link" @click="(e) => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
+              <a-menu slot="overlay">
+                <a-menu-item key="0" v-if="+record.state === 2">
+                  <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+                    <a type="primary" href="javascript:;">撤回</a>
+                  </a-popconfirm>
+                </a-menu-item>
+                <a-menu-item key="1" v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:edit')">
+                  <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item key="2" v-if="+record.state === 1">
+                  <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
+                </a-menu-item>
+                <a-menu-item key="3" v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:del')">
+                  <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                    <a type="primary" href="javascript:;">删除</a>
+                  </a-popconfirm>
+                </a-menu-item>
+                <a-menu-item key="4" v-if="+record.state !== 1">
+                  <a target="_blank" :href="record.pdfUrl">下载</a>
+                </a-menu-item>
+                <a-menu-item key="5" v-if="+record.state !== 1">
+                  <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+          </template>
 
-            <template v-if="+record.state === 2">
+          <!-- <template v-if="+activeKey === 1"> -->
+          <!-- <template v-if="+record.state === 2">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
-            </template>
+            </template> -->
 
-            <template v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:edit')">
+          <!-- <template v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:edit')">
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
-            </template>
-
+            </template> -->
+          <!-- 
             <template v-if="+record.state === 1">
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
-            </template>
-
+            </template> -->
+          <!-- 
             <template v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:del')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
-            </template>
+            </template> -->
 
-            <template v-if="+record.state !== 1">
+          <!-- <template v-if="+record.state !== 1">
               <a-divider type="vertical" />
               <a target="_blank" :href="record.pdfUrl">下载</a>
             </template>
             <a-divider type="vertical" />
             <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
-          </template>
+          </template> -->
         </div>
       </a-table>
     </div>
