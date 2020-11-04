@@ -13,7 +13,7 @@
       </a-select>
       <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
@@ -23,6 +23,7 @@
         <a-select-option :value="2">审批通过</a-select-option>
         <a-select-option :value="3">审批不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
+        <a-select-option :value="5">已销毁</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -68,6 +69,12 @@
             <template v-if="$auth('shuttleBus:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否确定撤销" ok-text="确定" cancel-text="取消" @confirm="confirmRevoke(record)">
+                <a type="primary">撤销</a>
+              </a-popconfirm>
+            </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('shuttleBus:Withdraw')">
@@ -109,7 +116,12 @@
 </template>
 <script>
 import { departmentList } from '@/api/systemSetting'
-import { shuttle_Bus_list, shuttle_Bus_withdraw, shuttle_Bus_del } from '@/api/Human_resource_management'
+import {
+  shuttle_Bus_list,
+  shuttle_Bus_withdraw,
+  shuttle_Bus_del,
+  shuttle_BusRevoke,
+} from '@/api/Human_resource_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -242,13 +254,20 @@ export default {
         2: '审核通过',
         3: '审核未通过',
         4: '已撤回',
-        5: '已完结',
+        5: '已销毁',
       }
       return stateMap[state] || `未知状态:${state}`
     },
     //审批流组件
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    // 撤销
+    confirmRevoke(record) {
+      shuttle_BusRevoke({ id: record.id }).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
+      })
     },
 
     // 撤回

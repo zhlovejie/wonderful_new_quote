@@ -1,9 +1,9 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 300px" v-model="queryParam.Dates" />
+      <a-month-picker style="width: 200px" v-model="queryParam.month" />
       <a-select
-        style="width: 200px; margin-right: 10px"
+        style="width: 200px; margin-left: 10px; margin-right: 10px"
         placeholder="选择部门"
         :allowClear="true"
         v-model="queryParam.departmentId"
@@ -12,9 +12,8 @@
           item.departmentName
         }}</a-select-option>
       </a-select>
-      <a-input placeholder="姓名" v-model="queryParam.trueName" allowClear style="width: 200px; margin-right: 10px" />
       <a-select
-        placeholder="审批状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
         v-model="queryParam.status"
         :allowClear="true"
@@ -33,9 +32,9 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('seniorWorker:add')">
+      <template v-if="$auth('research:add')">
         <a-dropdown style="float: right">
-          <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
+          <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
       </template>
 
@@ -44,13 +43,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('seniorWorker:list')">
+        <template v-if="$auth('research:list')">
           <a-tab-pane tab="待审批" key="1" />
           <a-tab-pane tab="已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('seniorWorker:lists')"
+        v-if="$auth('research:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -66,20 +65,22 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('seniorWorker:view')">
+            <template v-if="$auth('research:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
+            <template v-if="record.status === 2 && $auth('research:download')">
               <a-divider type="vertical" />
-              <template v-if="$auth('seniorWorker:Withdraw')">
-                <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
-                  <a type="primary">撤回</a>
-                </a-popconfirm>
-              </template>
+              <a type="primary" @click="outPort(record)">下载</a>
+            </template>
+            <template v-if="$auth('research:Withdraw') && record.status === 1 && +record.createdId === +userInfo.id">
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
+                <a type="primary">撤回</a>
+              </a-popconfirm>
             </template>
             <template
               v-if="
-                $auth('seniorWorker:edit-salary') &&
+                $auth('research:edit-salary') &&
                 (record.status === 3 || record.status === 4) &&
                 +record.createdId === +userInfo.id
               "
@@ -103,14 +104,32 @@
         </div>
       </a-table>
     </div>
-
+    <a-modal v-model="visible" title="新增研发提成奖金" @ok="handleOk">
+      <a-month-picker :disabled-date="disabledDate" style="width: 300px; margin-left: 90px" v-model="Dates" />
+      <a-select
+        style="width: 300px; margin-top: 30px; margin-left: 90px"
+        placeholder="选择部门"
+        :allowClear="true"
+        v-model="Sector"
+      >
+        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
+      </a-select>
+    </a-modal>
     <AddForm ref="addForm" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
 <script>
-import { departmentList } from '@/api/systemSetting'
-import { senior_worker_list, senior_worker_withdraw, senior_worker_del } from '@/api/Human_resource_management'
+import {
+  bonus_pageList,
+  bonus_getDepartmentByType,
+  bonus_checkDeveloperPercentApply,
+  bonus_withdrawDeveloper,
+  bonus_removeDeveloper,
+  getPercentageExcel,
+} from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -122,23 +141,19 @@ const columns = [
     width: '70px',
     scopedSlots: { customRender: 'order' },
   },
+
+  {
+    align: 'center',
+    title: '日期',
+    dataIndex: 'month',
+    key: 'month',
+  },
+
   {
     align: 'center',
     title: '部门',
     dataIndex: 'departmentName',
     key: 'departmentName',
-  },
-  {
-    align: 'center',
-    title: '岗位',
-    dataIndex: 'stationName',
-    key: 'stationName',
-  },
-  {
-    align: 'center',
-    title: '姓名',
-    dataIndex: 'trueName',
-    key: 'trueName',
   },
 
   {
@@ -148,15 +163,16 @@ const columns = [
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
   },
+
   {
     align: 'center',
     title: '提交人',
-    key: 'createdName',
-    dataIndex: 'createdName',
+    key: 'createdUserName',
+    dataIndex: 'createdUserName',
   },
   {
     align: 'center',
-    title: '提交人日期',
+    title: '提交人时间',
     dataIndex: 'createdTime',
     key: 'createdTime',
   },
@@ -177,6 +193,8 @@ export default {
   data() {
     return {
       visible: false,
+      Dates: undefined,
+      Sector: undefined,
       depList: [],
       queryParam: {},
       pagination1: { current: 1 },
@@ -204,7 +222,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'Human_senior_worker') {
+        if (to.name === 'research-commission-bonus') {
           this.init()
         }
       },
@@ -213,16 +231,57 @@ export default {
   },
   methods: {
     moment,
+    disabledDate(current) {
+      return current && current > moment().subtract(30, 'days')
+    },
+    // 下载
+    outPort(record) {
+      getPercentageExcel({ applyId: record.id })
+        .then((res) => {
+          // debugger
+          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          let objectUrl = URL.createObjectURL(blob)
+          let link = document.createElement('a')
+          link.style = 'display: none'
+          link.target = '_blank'
+          link.href = objectUrl
+          link.download = record.month + '研发提成表' // 自定义文件名
+          link.click() // 下载文件
+          URL.revokeObjectURL(objectUrl) // 释放内存
+        })
+        .catch((err) => this.$message.error(err.msg))
+    },
     init() {
       let that = this
       that.searchAction()
-      departmentList().then((res) => (this.depList = res.data))
+      bonus_getDepartmentByType({ type: 2 }).then((res) => (this.depList = res.data))
     },
-
+    showModal() {
+      this.date = undefined
+      this.Sector = undefined
+      this.visible = true
+    },
+    handleOk() {
+      let _that = this
+      let date = moment(_that.Dates).format('YYYY-MM')
+      // this.$message.info(date)
+      if (_that.Dates && _that.Sector) {
+        bonus_checkDeveloperPercentApply({ month: date, departmentId: _that.Sector }).then((res) => {
+          if (res.code === 200) {
+            _that.visible = false
+            _that.doAction('add', { month: date, departmentId: _that.Sector })
+          } else {
+            _that.$message.error(res.msg)
+          }
+        })
+      } else {
+        _that.$message.error('请选择月份或部门')
+      }
+    },
     // 删除
     confirmDelete(record) {
       let that = this
-      senior_worker_del(`id=${record.id}`).then((res) => {
+      bonus_removeDeveloper(`id=${record.id}`).then((res) => {
         if (res.code === 200) {
           this.searchAction()
           that.$message.info(res.msg)
@@ -249,22 +308,22 @@ export default {
     // 撤回
     confirmWithdraw(record) {
       let that = this
-      senior_worker_withdraw({ id: record.id }).then((res) => {
+      bonus_withdrawDeveloper(`id=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })
     },
     searchAction(opt) {
       let that = this
-      if (that.queryParam.Dates) {
-        let date = that.queryParam.Dates.format('YYYYMM')
-        that.queryParam.accountDate = date
+      if (that.queryParam.month) {
+        let date = moment(that.queryParam.month).format('YYYY-MM')
+        that.queryParam.month = date
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
       })
       that.loading = true
-      senior_worker_list(_searchParam)
+      bonus_pageList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

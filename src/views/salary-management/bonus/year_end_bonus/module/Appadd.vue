@@ -23,7 +23,6 @@
             <td colspan="2">
               <a-form-item>
                 <a-input-number
-                  :precision="2"
                   style="width: 200px"
                   placeholder="请输入一期比列"
                   v-decorator="['firPart', { rules: [{ required: true, message: '请输入一期比列' }] }]"
@@ -50,7 +49,6 @@
             <td colspan="2">
               <a-form-item>
                 <a-input-number
-                  :precision="2"
                   style="width: 200px"
                   placeholder="请输入一期比列"
                   v-decorator="['secPar', { rules: [{ required: true, message: '请输入二期比列' }] }]"
@@ -63,7 +61,6 @@
                 <a-date-picker
                   style="border: none; width: 60%"
                   show-time
-                  :precision="0"
                   placeholder="年月日"
                   format="YYYY-MM-DD"
                   v-decorator="['secSendDate', { rules: [{ required: true, message: '请选择预提货日期' }] }]"
@@ -76,7 +73,6 @@
             <td colspan="2">
               <a-form-item>
                 <a-input-number
-                  :precision="2"
                   style="width: 200px"
                   placeholder="请输入三期比列"
                   v-decorator="['thrPar', { rules: [{ required: true, message: '请输入三期比列' }] }]"
@@ -159,9 +155,9 @@ export default {
           firSendDate: moment(this.record.firSendDate),
           secSendDate: moment(this.record.secSendDate),
           thrSendDate: moment(this.record.thrSendDate),
-          thrPar: this.record.thrPar,
-          secPar: this.record.secPar,
-          firPart: this.record.firPart,
+          thrPar: Number(this.record.thrPar * 100).toFixed(1),
+          secPar: Number(this.record.secPar * 100).toFixed(1),
+          firPart: Number(this.record.firPart * 100).toFixed(1),
         })
       })
     },
@@ -170,25 +166,33 @@ export default {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
-        // that.spinning = true
         that.form.validateFields((err, values) => {
           if (!err) {
-            values.firSendDate = moment(values.firSendDate).format('YYYY-MM-DD')
-            values.secSendDate = moment(values.secSendDate).format('YYYY-MM-DD')
-            values.thrSendDate = moment(values.thrSendDate).format('YYYY-MM-DD')
-            console.log(values)
-            if (that.type !== 'add') {
-              values.id = this.record.id
+            let arr = Number(values.thrPar) + Number(values.secPar) + Number(values.firPart)
+            if (arr == 100) {
+              values.thrPar = values.thrPar / 100
+              values.secPar = values.secPar / 100
+              values.firPart = values.firPart / 100
+
+              values.firSendDate = moment(values.firSendDate).format('YYYY-MM-DD')
+              values.secSendDate = moment(values.secSendDate).format('YYYY-MM-DD')
+              values.thrSendDate = moment(values.thrSendDate).format('YYYY-MM-DD')
+              console.log(values)
+              if (that.type !== 'add') {
+                values.id = this.record.id
+              }
+              year_delete_addAndUpdate(values)
+                .then((res) => {
+                  that.spinning = false
+                  that.form.resetFields() // 清空表
+                  that.visible = false
+                  that.$message.info(res.msg)
+                  that.$emit('finish')
+                })
+                .catch((err) => (that.spinning = false))
+            } else {
+              this.$message.error('比例数相加要等于100')
             }
-            year_delete_addAndUpdate(values)
-              .then((res) => {
-                that.spinning = false
-                that.form.resetFields() // 清空表
-                that.visible = false
-                that.$message.info(res.msg)
-                that.$emit('finish')
-              })
-              .catch((err) => (that.spinning = false))
           }
         })
       } else {

@@ -15,7 +15,7 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="productCode" slot-scope="text, record, index">
-            <span>1个</span>
+            <span>1</span>
           </div>
 
           <div

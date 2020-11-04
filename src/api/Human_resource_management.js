@@ -49,6 +49,16 @@ export function senior_worker_approval(parameter) {
     data: parameter
   })
 }
+//高级工程师销毁
+export function senior_BusRevoke(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-senior-engineer-apply/destruction',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 /**班车记录列表接口 */
 export function shuttle_Bus_list(parameter) {
@@ -59,6 +69,17 @@ export function shuttle_Bus_list(parameter) {
     params: parameter
   })
 }
+
+// 班车记录撤销 
+export function shuttle_BusRevoke(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-regular-bus-apply/destruction',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 /**班车记录新增接口 */
 export function shuttle_Bus_addAndUpdate(parameter) {

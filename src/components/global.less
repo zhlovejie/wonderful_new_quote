@@ -558,3 +558,7 @@ body {
 ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(255,0,0,0.4);
 }
+// fix 消息框被遮挡问题 默认下拉框的z-index:1050  消息框的 z-index:1010 
+.ant-message{
+  z-index: 9999 !important;
+}

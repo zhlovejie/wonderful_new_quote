@@ -68,27 +68,20 @@
             <td colspan="2">
               <a-form-item>
                 <span>请假时长小于等于</span>
-                <a-select
-                  placeholder="选择小时"
-                  v-decorator="['maxLeaveHours', { rules: [{ required: true, message: '请选择小时' }] }]"
-                  :allowClear="true"
+                <a-input-number
+                  :min="0"
+                  :max="100000"
+                  :precision="0.1"
                   style="width: 130px; margin: 0 10px"
-                >
-                  <a-select-option :value="1">1</a-select-option>
-                  <a-select-option :value="2">2</a-select-option>
-                  <a-select-option :value="3">3</a-select-option>
-                  <a-select-option :value="4">4</a-select-option>
-                  <a-select-option :value="5">5</a-select-option>
-                  <a-select-option :value="6">6</a-select-option>
-                  <a-select-option :value="7">7</a-select-option>
-                  <a-select-option :value="8">8</a-select-option>
-                </a-select>
-                <span>每小时</span>
+                  placeholder="输入小时"
+                  v-decorator="['maxLeaveHours', { rules: [{ required: true, message: '请输入小时!' }] }]"
+                />
+                <span>小时</span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>奖金(元/h)</td>
+            <td>奖金(元)</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number

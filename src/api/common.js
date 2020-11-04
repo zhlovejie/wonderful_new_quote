@@ -92,9 +92,9 @@ export function gaoPaiYiUploadProxyURL(){
  * base64上传接口
  * var formData = new FormData();
  * formData.append('picBase64',getbase64data())
- * 
+ *
  * data:image/jpeg;base64,
- * @param {*} data 
+ * @param {*} data
  */
 export function customUploadBase64(data){
   return axios({
@@ -102,5 +102,27 @@ export function customUploadBase64(data){
     url: '/common/uploadBase64Pic',
     method: 'post',
     data:data
+  })
+}
+
+/**
+ * @description 根据岗位编号查询对于的岗位等级
+ * @param {object} params {id:stationID}
+ */
+export function queryStationLevel(params){
+  return axios({
+    baseURL: system.baseURL,
+    url: '/station/queryOne',
+    method: 'get',
+    params:params
+  })
+}
+
+export function getAllArea (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/areaDic/getAllArea',
+    method: 'get',
+    params: params
   })
 }
