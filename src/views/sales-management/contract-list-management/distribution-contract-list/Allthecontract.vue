@@ -35,18 +35,19 @@
         </div>
         <span slot="isDisabled" slot-scope="text, record">
           <template v-if="$auth('distributionContract:edit') && record.createdId === user.id">
+            <!-- :checked="record.isDisabled === 0" -->
+            <!-- :disabled="record.isDisabled === 1" -->
+            <!-- :defaultChecked="text === 0 ? true : false" -->
             <a-switch
-              :checked="record.isDisabled === 0"
-              :disabled="record.isDisabled === 1"
+              :defaultChecked="record.isDisabled === 1 ? true : false"
               checkedChildren="启用"
-              :defaultChecked="text === 0 ? true : false"
               unCheckedChildren="禁用"
-              @change="changeDisabled(text, record)"
+              @change="changeDisabled($event, record)"
             />
           </template>
           <template v-else>
-            <span v-if="record.isDisabled === 0">启用</span>
-            <span v-if="record.isDisabled === 1">禁用</span>
+            <span v-if="record.isDisabled === 1">启用</span>
+            <span v-if="record.isDisabled === 0">禁用</span>
           </template>
         </span>
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -178,13 +179,6 @@ const columns = [
     key: 'saleUserTrueName',
     dataIndex: 'saleUserTrueName',
     scopedSlots: { customRender: 'saleUserTrueName' },
-    width: '100px',
-  },
-  {
-    align: 'center',
-    title: '预定最近交货日期',
-    key: 'latelyDeliveryDate',
-    dataIndex: 'latelyDeliveryDate',
     width: '100px',
   },
   {
@@ -323,15 +317,13 @@ export default {
   },
   methods: {
     changeDisabled(text, record) {
-      let isDisabled = 0
-      if (text === 0) {
-        isDisabled = 1
-      }
-      this.$set(record, 'isDisabled', isDisabled)
+      let arr = text === true ? 1 : 0
+      record.isDisabled = arr
       editContract(record)
         .then((res) => {
           if (res.code === 200) {
             this.$message.success('修改成功')
+            this.getList()
           } else {
             this.$message.error(res.msg)
             this.$set(record, 'isDisabled', isDisabled === 0 ? 1 : 0)
