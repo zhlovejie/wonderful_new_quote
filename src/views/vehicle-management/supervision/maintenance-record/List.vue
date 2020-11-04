@@ -28,7 +28,7 @@
         :allowClear="true"
       />
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="() => searchAction({current:1})">查询</a-button>
     </div>
     <div class="main-wrapper">
       <a-table

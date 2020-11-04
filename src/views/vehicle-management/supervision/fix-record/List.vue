@@ -69,14 +69,14 @@
       <table class="custom-table custom-table-border">
         <tr>
           <td>序号</td>
-          <td>维修方案</td>
+          <!-- <td>维修方案</td> -->
           <td>价格</td>
           <td>维修地</td>
           <td>购买零部件型号</td>
         </tr>
         <tr v-for="(item,idx) in planList" :key="item">
           <td>{{idx+1}}</td>
-          <td>{{item.planName}}</td>
+          <!-- <td>{{item.planName}}</td> -->
           <td>{{item.price}}</td>
           <td>{{item.repairPlace}}</td>
           <td>{{item.partsCode}}</td>

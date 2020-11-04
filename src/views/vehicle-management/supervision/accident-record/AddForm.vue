@@ -53,8 +53,8 @@
                 <a-date-picker
                   v-if="!isView"
                   show-time 
-                  placeholder="购买时间"
-                  v-decorator="['happenTime',{initialValue:detail.happenTime ? moment(detail.happenTime) :undefined,rules: [{required: true,message: '选择购买时间'}]}]"
+                  placeholder="违法时间"
+                  v-decorator="['happenTime',{initialValue:detail.happenTime ? moment(detail.happenTime) :undefined,rules: [{required: true,message: '选择违法时间'}]}]"
                   style="width:100%;"
                 />
                 <span v-if="isView">{{detail.happenTime}}</span>
