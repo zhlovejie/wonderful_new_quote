@@ -1,9 +1,17 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
-export default {//考勤管理
-        
+export default { //考勤管理
+
   path: '/attendance-management',
   name: 'attendance-management',
   component: PageView,
@@ -221,6 +229,18 @@ export default {//考勤管理
       component: () => import('@/views/attendance-management/attendance-device/List'),
       meta: {
         title: '考勤设备',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+
+    {
+      path: '/attendance-management/no_rules',
+      name: 'attendance-no_rules',
+      component: () => import('@/views/attendance-management/no_rules/no_rules_LIst'),
+      meta: {
+        title: '未设规则用户',
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
