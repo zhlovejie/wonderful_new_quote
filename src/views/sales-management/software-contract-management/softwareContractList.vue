@@ -70,10 +70,7 @@
             <span v-if="text === 2">已作废</span>
           </div>
           <span slot="isDisabled" slot-scope="text, record">
-            <template v-if="$auth('softwareContract:edit')">
-              <!-- :disabled="record.contractStatus === 2" -->
-              <!-- :checked="record.contractStatus === 0 || record.contractStatus === 1" -->
-              <!-- :defaultChecked="record.contractStatus === 0 || record.contractStatus === 1 ? true : false" -->
+            <template v-if="$auth('softwareContract:edit') && record.createdId === userInfo.id">
               <a-switch
                 :defaultChecked="record.contractStatus === 0 || record.contractStatus === 1 ? true : false"
                 checkedChildren="启用"
@@ -81,7 +78,6 @@
                 @change="changeDisabled($event, record)"
               />
             </template>
-
             <template v-else>
               <span v-if="record.contractStatus === 0 || record.contractStatus === 1">启用</span>
               <span v-else>禁用</span>
@@ -275,6 +271,7 @@ export default {
   },
   data() {
     return {
+      userInfo: this.$store.getters.userInfo,
       contractNum: '', //合同编号
       customerId: '', //客户名称编号
       contractStatus: -1, //合同状态 0 未启动  1已启动 2已作废

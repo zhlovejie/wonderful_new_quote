@@ -34,9 +34,8 @@
           }}</span>
         </div>
         <span slot="isDisabled" slot-scope="text, record">
-          <template v-if="$auth('distributionContract:edit')">
+          <template v-if="$auth('distributionContract:edit') && record.createdId === user.id">
             <a-switch
-              v-if="record.createdId === user.id"
               :checked="record.isDisabled === 0"
               :disabled="record.isDisabled === 1"
               checkedChildren="启用"
@@ -45,9 +44,9 @@
               @change="changeDisabled(text, record)"
             />
           </template>
-          <template v-if="!$auth('distributionContract:edit')">
-            <span v-if="text === 0">启用</span>
-            <span v-if="text === 1">禁用</span>
+          <template v-else>
+            <span v-if="record.isDisabled === 0">启用</span>
+            <span v-if="record.isDisabled === 1">禁用</span>
           </template>
         </span>
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -58,7 +57,7 @@
             <a-divider type="vertical" />
             <a-dropdown :trigger="['click']">
               <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">更多 <a-icon type="down" /> </a>
-              <a-menu slot="overlay" @click="handleMenuClick">
+              <a-menu slot="overlay">
                 <a-menu-item key="1" v-if="$auth('distributionContract:one') && record.contractStatus === 1">
                   <a type="primary" @click="copyContract(record)">复制合同</a></a-menu-item
                 >
@@ -115,73 +114,6 @@
               </a-menu>
             </a-dropdown>
           </template>
-
-          <!-- <template v-if="$auth('distributionContract:one')">
-            <a type="primary" v-if="record.contractStatus === 1" @click="copyContract(record)">复制合同</a>
-            <a-divider v-if="record.contractStatus === 1" type="vertical" />
-          </template> -->
-
-          <!-- <template
-            v-if="
-              $auth('distributionContract:change') &&
-              (record.approvalStatus === 2 || record.operatorStatus === 1 || record.operatorStatus === 2)
-            "
-          >
-            <a-divider type="vertical" />
-            <a type="primary" @click="editSaleContract(record)">修改</a>
-          </template>
-          <template v-if="$auth('distributionContract:change') && record.approvalStatus === 3">
-            <a-divider type="vertical" />
-            <a type="primary" @click="editSaleContract(record)">修改</a>
-          </template> -->
-          <!-- <template
-            v-if="
-              $auth('distributionContract:changeProduct') &&
-              (record.approvalStatus === 5 || record.operatorStatus === 3)
-            "
-          >
-            <a-divider type="vertical" />
-            <a type="primary" @click="splitOrderAction(record)">重新拆分</a>
-          </template> -->
-          <!-- <template v-if="$auth('distributionContract:one')">
-            <a-divider v-if="record.contractStatus === 1 && record.orderNum != null" type="vertical" />
-            <a
-              type="primary"
-              v-if="record.contractStatus === 1 && record.orderNum != null"
-              @click="viewSalesOrders(record.id)"
-              >查看销售订单</a
-            >
-          </template> -->
-          <!-- <template v-if="$auth('distributionContract:edit')">
-            <a-divider v-if="record.contractStatus === 1" type="vertical" />
-            <a
-              type="primary"
-              v-if="record.contractStatus === 1 && record.approvalStatus === 2"
-              @click="addDelayedPayment(record)"
-              >申请延迟付款单</a
-            >
-          </template> -->
-          <!-- <template v-if="$auth('distributionContract:edit')">
-            <a-divider v-if="record.contractStatus === 1 && record.approvalStatus === 2" type="vertical" />
-            <a
-              type="primary"
-              v-if="record.contractStatus === 1 && record.approvalStatus === 2"
-              @click="uploadPhoto(record)"
-              >附件</a
-            >
-          </template> -->
-          <!-- <template v-if="$auth('distributionContract:change') && record.approvalStatus === -1">
-            <a-divider type="vertical" />
-            <a type="primary" @click="submitApprove(record)">提交审批</a>
-          </template> -->
-          <!-- <template v-if="$auth('distributionContract:delete')">
-            <a-divider type="vertical" />
-            <a type="primary" @click="deleteCurrentContract(record)">删除</a>
-          </template> -->
-          <!-- <template v-if="userInfo.id === 1">
-            <a-divider type="vertical" />
-            <a type="primary" @click="createPdf(record)">生成pdf</a>
-          </template> -->
         </div>
       </a-table>
     </a-spin>
