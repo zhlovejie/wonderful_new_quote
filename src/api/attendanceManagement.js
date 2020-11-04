@@ -1,12 +1,15 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
 
 
+
 //---------------------班次设置-----------------------
 /**班次规则列表 */
-export function classRuleList (parameter) {
+export function classRuleList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRule/class-rule/getClassRuleList',
@@ -15,7 +18,7 @@ export function classRuleList (parameter) {
   })
 }
 /**删除班次规则 */
-export function classRuleDel (parameter) {
+export function classRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRule/class-rule/delClassRule',
@@ -25,7 +28,7 @@ export function classRuleDel (parameter) {
 }
 
 /**班次规则详情 */
-export function classRuleDetail (parameter) {
+export function classRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRule/class-rule/classRuleDetail',
@@ -34,7 +37,7 @@ export function classRuleDetail (parameter) {
   })
 }
 /**班次规则新增或修改 */
-export function classRuleAddAndUpdate (parameter) {
+export function classRuleAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRule/class-rule/addAndUpdateClassRule',
@@ -44,7 +47,7 @@ export function classRuleAddAndUpdate (parameter) {
 }
 
 
-export function classRuleConfigList (parameter) {
+export function classRuleConfigList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRuleConfig/class-rule-config/getClassRuleConfigList',
@@ -53,7 +56,7 @@ export function classRuleConfigList (parameter) {
   })
 }
 
-export function classRuleConfigDel (parameter) {
+export function classRuleConfigDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRuleConfig/class-rule-config/delClassRuleConfig',
@@ -62,7 +65,7 @@ export function classRuleConfigDel (parameter) {
   })
 }
 
-export function classRuleConfigDetail (parameter) {
+export function classRuleConfigDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRuleConfig/class-rule-config/classRuleConfigDetail',
@@ -71,7 +74,7 @@ export function classRuleConfigDetail (parameter) {
   })
 }
 /**班次规则配置 */
-export function classRuleConfigAddAndUpdate (parameter) {
+export function classRuleConfigAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRuleConfig/class-rule-config/addAndUpdateClassRuleConfig',
@@ -81,7 +84,7 @@ export function classRuleConfigAddAndUpdate (parameter) {
 }
 
 /**效验时间 */
-export function classRuleConfigValidationTime (parameter) {
+export function classRuleConfigValidationTime(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/classRuleConfig/class-rule-config/validationTime',
@@ -93,7 +96,7 @@ export function classRuleConfigValidationTime (parameter) {
 //---------------------班次设置---END-----------------
 
 //---------------------补卡规则-----------------------
-export function attenceRecardRuleDetail (parameter) {
+export function attenceRecardRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceRecardRule/detail',
@@ -102,7 +105,7 @@ export function attenceRecardRuleDetail (parameter) {
   })
 }
 
-export function attenceRecardRuleDel (parameter) {
+export function attenceRecardRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceRecardRule/delete',
@@ -111,7 +114,7 @@ export function attenceRecardRuleDel (parameter) {
   })
 }
 
-export function attenceRecardRuleAddOrUpdate (parameter) {
+export function attenceRecardRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceRecardRule/addOrUpdate',
@@ -122,7 +125,7 @@ export function attenceRecardRuleAddOrUpdate (parameter) {
 //---------------------补卡规则--END------------------
 
 //---------------------加班设置-----------------------
-export function overworkRuleAddAndUpdate (parameter) {
+export function overworkRuleAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkRule/overwork-rule/addAndUpdateOverworkRule',
@@ -131,7 +134,7 @@ export function overworkRuleAddAndUpdate (parameter) {
   })
 }
 
-export function overworkRuleDel (parameter) {
+export function overworkRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkRule/overwork-rule/delOverworkRule',
@@ -140,7 +143,7 @@ export function overworkRuleDel (parameter) {
   })
 }
 
-export function overworkRuleList (parameter) {
+export function overworkRuleList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkRule/overwork-rule/getOverworkRuleList',
@@ -149,7 +152,7 @@ export function overworkRuleList (parameter) {
   })
 }
 
-export function overworkRuleDetail (parameter) {
+export function overworkRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkRule/overwork-rule/overworkRuleDetail',
@@ -161,7 +164,7 @@ export function overworkRuleDetail (parameter) {
 
 
 //---------------------出勤规则设置-----------------------
-export function attenceDutyRuleAddAndUpdate (parameter) {
+export function attenceDutyRuleAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceDutyRule/addOrUpdate',
@@ -170,7 +173,7 @@ export function attenceDutyRuleAddAndUpdate (parameter) {
   })
 }
 
-export function attenceDutyRuleDel (parameter) {
+export function attenceDutyRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceDutyRule/delete',
@@ -179,7 +182,7 @@ export function attenceDutyRuleDel (parameter) {
   })
 }
 
-export function attenceDutyRuleDetail (parameter) {
+export function attenceDutyRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceDutyRule/detail',
@@ -188,7 +191,7 @@ export function attenceDutyRuleDetail (parameter) {
   })
 }
 
-export function attenceDutyRuleList (parameter) {
+export function attenceDutyRuleList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceDutyRule/pageList',
@@ -197,7 +200,7 @@ export function attenceDutyRuleList (parameter) {
   })
 }
 /**根据出勤规则获取需要排班的所有用户 */
-export function attenceDutyRuleUsersForArrange (parameter) {
+export function attenceDutyRuleUsersForArrange(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceDutyRule/usersForArrange',
@@ -206,7 +209,7 @@ export function attenceDutyRuleUsersForArrange (parameter) {
   })
 }
 
-export function attenceChangeApproveApprove (parameter) {
+export function attenceChangeApproveApprove(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceChangeApprove/approve',
@@ -215,7 +218,7 @@ export function attenceChangeApproveApprove (parameter) {
   })
 }
 
-export function attenceChangeApproveDetail (parameter) {
+export function attenceChangeApproveDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceChangeApprove/detail',
@@ -224,7 +227,7 @@ export function attenceChangeApproveDetail (parameter) {
   })
 }
 
-export function attenceChangeApproveList (parameter) {
+export function attenceChangeApproveList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceChangeApprove/pageList',
@@ -234,7 +237,7 @@ export function attenceChangeApproveList (parameter) {
 }
 
 /**根据出勤规则id和月份获取该规则下所有人员的排班信息 */
-export function attenceArrangeUserList (parameter) {
+export function attenceArrangeUserList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceArrange/arrangeList',
@@ -244,7 +247,7 @@ export function attenceArrangeUserList (parameter) {
 }
 
 /**排班 */
-export function attenceArrangeDoArrange (parameter) {
+export function attenceArrangeDoArrange(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceArrange/doArrange',
@@ -254,7 +257,7 @@ export function attenceArrangeDoArrange (parameter) {
 }
 
 /**根据绑定类型和绑定的id判断该id是否已经有了出勤规则 */
-export function attenceDutyRuleHaveRule (parameter) {
+export function attenceDutyRuleHaveRule(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceDutyRule/haveRule',
@@ -267,7 +270,7 @@ export function attenceDutyRuleHaveRule (parameter) {
 
 //---------------------假期规则设置-----------------------
 
-export function holidayRuleAddAndUpdate (parameter) {
+export function holidayRuleAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/holidayRule/holiday-rule/addAndUpdateHolidayRule',
@@ -277,7 +280,7 @@ export function holidayRuleAddAndUpdate (parameter) {
 }
 
 
-export function holidayRuleDel (parameter) {
+export function holidayRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/holidayRule/holiday-rule/delHolidayRule',
@@ -286,7 +289,7 @@ export function holidayRuleDel (parameter) {
   })
 }
 
-export function holidayRuleList (parameter) {
+export function holidayRuleList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/holidayRule/holiday-rule/getHolidayRuleList',
@@ -295,7 +298,7 @@ export function holidayRuleList (parameter) {
   })
 }
 
-export function holidayRuleDetail (parameter) {
+export function holidayRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/holidayRule/holiday-rule/holidayRuleDetail',
@@ -307,7 +310,7 @@ export function holidayRuleDetail (parameter) {
 
 
 //---------------------节假日设置-----------------------
-export function festivalRuleAddAndUpdate (parameter) {
+export function festivalRuleAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/addAndUpdateFestivalRule',
@@ -316,7 +319,7 @@ export function festivalRuleAddAndUpdate (parameter) {
   })
 }
 
-export function festivalRuleApproval (parameter) {
+export function festivalRuleApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/approvalFestivalRule',
@@ -325,7 +328,7 @@ export function festivalRuleApproval (parameter) {
   })
 }
 
-export function festivalRuleDel (parameter) {
+export function festivalRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/delFestivalRule',
@@ -334,7 +337,7 @@ export function festivalRuleDel (parameter) {
   })
 }
 
-export function festivalRuleDetail (parameter) {
+export function festivalRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/getFestivalRuleDetail',
@@ -343,7 +346,7 @@ export function festivalRuleDetail (parameter) {
   })
 }
 
-export function festivalRuleList (parameter) {
+export function festivalRuleList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/getFestivalRuleList',
@@ -352,7 +355,7 @@ export function festivalRuleList (parameter) {
   })
 }
 /**发布 */
-export function festivalRulePublish (parameter) {
+export function festivalRulePublish(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/publishFestivalRule',
@@ -361,7 +364,7 @@ export function festivalRulePublish (parameter) {
   })
 }
 /**撤回 */
-export function festivalRuleWithdraw (parameter) {
+export function festivalRuleWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/festivalRule/festival-rule/withdrawFestivalRule',
@@ -372,7 +375,7 @@ export function festivalRuleWithdraw (parameter) {
 //---------------------节假日设置--END------------------
 
 //---------------------加班申请-----------------------
-export function overworkApplyAddAndUpdate (parameter) {
+export function overworkApplyAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/addAndUpdateOverworkApply',
@@ -381,7 +384,7 @@ export function overworkApplyAddAndUpdate (parameter) {
   })
 }
 
-export function overworkApplyApproval (parameter) {
+export function overworkApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/approvalOverworkApply',
@@ -390,7 +393,7 @@ export function overworkApplyApproval (parameter) {
   })
 }
 
-export function overworkApplyDel (parameter) {
+export function overworkApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/delOverworkApply',
@@ -399,7 +402,7 @@ export function overworkApplyDel (parameter) {
   })
 }
 
-export function overworkApplyDetail (parameter) {
+export function overworkApplyDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/getOverworkApplyDetail',
@@ -408,7 +411,7 @@ export function overworkApplyDetail (parameter) {
   })
 }
 
-export function overworkApplyList (parameter) {
+export function overworkApplyList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/getOverworkApplyList',
@@ -417,7 +420,7 @@ export function overworkApplyList (parameter) {
   })
 }
 
-export function overworkApplyHours (parameter) {
+export function overworkApplyHours(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/overworkHours',
@@ -426,7 +429,7 @@ export function overworkApplyHours (parameter) {
   })
 }
 
-export function overworkApplyWithdraw (parameter) {
+export function overworkApplyWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/withdrawOverworkApply',
@@ -438,7 +441,7 @@ export function overworkApplyWithdraw (parameter) {
  * 填充加班申请的 开始时间和结束时间
  * @param {*} parameter 
  */
-export function overworkApplyInitTime (parameter) {
+export function overworkApplyInitTime(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/overworkApply/overwork-apply/getOverWorkApplyInitTime',
@@ -453,7 +456,7 @@ export function overworkApplyInitTime (parameter) {
  * userId 	用户id
  * @param {object} parameter 
  */
-export function signExceptionByCondition (parameter) {
+export function signExceptionByCondition(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/exception/listSignExceptionByCondition',
@@ -467,7 +470,7 @@ export function signExceptionByCondition (parameter) {
 
 
 //---------------------补卡申请-----------------------
-export function resignApplyAddAndUpdate (parameter) {
+export function resignApplyAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/addAndUpdateResignApply',
@@ -476,7 +479,7 @@ export function resignApplyAddAndUpdate (parameter) {
   })
 }
 
-export function resignApplyApproval (parameter) {
+export function resignApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/approvalResignApply',
@@ -485,7 +488,7 @@ export function resignApplyApproval (parameter) {
   })
 }
 
-export function resignApplyDel (parameter) {
+export function resignApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/delResignApply',
@@ -494,7 +497,7 @@ export function resignApplyDel (parameter) {
   })
 }
 
-export function resignApplyDetail (parameter) {
+export function resignApplyDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/getResignApplyDetail',
@@ -503,7 +506,7 @@ export function resignApplyDetail (parameter) {
   })
 }
 
-export function resignApplyList (parameter) {
+export function resignApplyList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/getResignApplyList',
@@ -512,7 +515,7 @@ export function resignApplyList (parameter) {
   })
 }
 /**根据用户id获取已提交次数 */
-export function resignApplySubmittedCount (parameter) {
+export function resignApplySubmittedCount(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/submittedCount',
@@ -521,7 +524,7 @@ export function resignApplySubmittedCount (parameter) {
   })
 }
 
-export function resignApplyWithdraw (parameter) {
+export function resignApplyWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/resignApply/resign-apply/withdrawResignApply',
@@ -536,7 +539,7 @@ export function resignApplyWithdraw (parameter) {
 //---------------------出差申请-----------------------
 
 /**查询当前登录人最新的卡号 */
-export function attenceTravelApplyGetNewstAccount (parameter) {
+export function attenceTravelApplyGetNewstAccount(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceTravelApply/getNewstAccount',
@@ -547,7 +550,7 @@ export function attenceTravelApplyGetNewstAccount (parameter) {
 
 
 /**添加行程 */
-export function attenceTravelRouteAdd (parameter) {
+export function attenceTravelRouteAdd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelRoute/addRoute',
@@ -557,7 +560,7 @@ export function attenceTravelRouteAdd (parameter) {
 }
 
 
-export function attenceTravelApplyAddAndUpdate (parameter) {
+export function attenceTravelApplyAddAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/addOrUpdate',
@@ -566,7 +569,7 @@ export function attenceTravelApplyAddAndUpdate (parameter) {
   })
 }
 
-export function attenceTravelApplyApprove (parameter) {
+export function attenceTravelApplyApprove(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/approve',
@@ -575,7 +578,7 @@ export function attenceTravelApplyApprove (parameter) {
   })
 }
 
-export function attenceTravelApplyDel (parameter) {
+export function attenceTravelApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/delete',
@@ -584,7 +587,7 @@ export function attenceTravelApplyDel (parameter) {
   })
 }
 
-export function attenceTravelApplyDetail (parameter) {
+export function attenceTravelApplyDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceTravelApply/detail',
@@ -594,7 +597,7 @@ export function attenceTravelApplyDetail (parameter) {
 }
 
 /**财务完结 */
-export function attenceTravelApplyFinanceFinish (parameter) {
+export function attenceTravelApplyFinanceFinish(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/financeFinish',
@@ -604,7 +607,7 @@ export function attenceTravelApplyFinanceFinish (parameter) {
 }
 
 /**结束出差 */
-export function attenceTravelApplyFinishTravel (parameter) {
+export function attenceTravelApplyFinishTravel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/finishTravel',
@@ -613,7 +616,7 @@ export function attenceTravelApplyFinishTravel (parameter) {
   })
 }
 
-export function attenceTravelApplyList (parameter) {
+export function attenceTravelApplyList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceTravelApply/pageList',
@@ -622,7 +625,7 @@ export function attenceTravelApplyList (parameter) {
   })
 }
 /**提交出差单 */
-export function attenceTravelApplySubmit (parameter) {
+export function attenceTravelApplySubmit(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/submit',
@@ -631,7 +634,7 @@ export function attenceTravelApplySubmit (parameter) {
   })
 }
 /**撤回 */
-export function attenceTravelApplyWithdraw (parameter) {
+export function attenceTravelApplyWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'attenceTravelApply/withdraw',
@@ -643,7 +646,7 @@ export function attenceTravelApplyWithdraw (parameter) {
 //出差申请单里的出差人员接口
 
 /**判断用户是否有未完结的出差，返回true则有，false为无 */
-export function attenceTravelUserCheckUserTravel (parameter) {
+export function attenceTravelUserCheckUserTravel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceTravelUser/checkUserTravel',
@@ -653,7 +656,7 @@ export function attenceTravelUserCheckUserTravel (parameter) {
 }
 
 /**根据出差单获取该出差单里的所有出差人员 */
-export function attenceTravelUserGetUsersForTravel (parameter) {
+export function attenceTravelUserGetUsersForTravel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceTravelUser/getUsersForTravel',
@@ -666,7 +669,7 @@ export function attenceTravelUserGetUsersForTravel (parameter) {
 
 
 //---------------------请假申请-----------------------
-export function attenceLeaveApplyAddOrUpdate (parameter) {
+export function attenceLeaveApplyAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/addOrUpdate',
@@ -675,7 +678,7 @@ export function attenceLeaveApplyAddOrUpdate (parameter) {
   })
 }
 
-export function attenceLeaveApplyApprove (parameter) {
+export function attenceLeaveApplyApprove(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/approve',
@@ -684,7 +687,7 @@ export function attenceLeaveApplyApprove (parameter) {
   })
 }
 //计算请假时长
-export function attenceLeaveApplyComputeLeaveTime (parameter) {
+export function attenceLeaveApplyComputeLeaveTime(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/computeLeaveTime',
@@ -693,7 +696,7 @@ export function attenceLeaveApplyComputeLeaveTime (parameter) {
   })
 }
 
-export function attenceLeaveApplyDel (parameter) {
+export function attenceLeaveApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/delete',
@@ -702,7 +705,7 @@ export function attenceLeaveApplyDel (parameter) {
   })
 }
 
-export function attenceLeaveApplyDetail (parameter) {
+export function attenceLeaveApplyDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/detail',
@@ -711,7 +714,7 @@ export function attenceLeaveApplyDetail (parameter) {
   })
 }
 
-export function attenceLeaveApplyList (parameter) {
+export function attenceLeaveApplyList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/pageList',
@@ -720,7 +723,7 @@ export function attenceLeaveApplyList (parameter) {
   })
 }
 
-export function attenceLeaveApplyWithdraw (parameter) {
+export function attenceLeaveApplyWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/withdraw',
@@ -729,7 +732,7 @@ export function attenceLeaveApplyWithdraw (parameter) {
   })
 }
 
-export function attenceLeaveApplyAllHoliday (parameter) {
+export function attenceLeaveApplyAllHoliday(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/getAllHoliday',
@@ -744,7 +747,7 @@ export function attenceLeaveApplyAllHoliday (parameter) {
  * hourType 请假类型ID
  * userId
  */
-export function attenceLeaveApplyUserRestHoursRecord (parameter) {
+export function attenceLeaveApplyUserRestHoursRecord(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/restHoursRecord/rest-hours-record/getUserRestHoursRecord',
@@ -758,7 +761,7 @@ export function attenceLeaveApplyUserRestHoursRecord (parameter) {
  * @param {string} holidayId
  * @param {string} userId
  */
-export function attenceLeaveApplyCheckHolidayUsed (parameter) {
+export function attenceLeaveApplyCheckHolidayUsed(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/attenceLeaveApply/checkHolidayUsed',
@@ -773,7 +776,7 @@ export function attenceLeaveApplyCheckHolidayUsed (parameter) {
 //---------------------请假申请-----------------------
 
 /**工作餐统计根据工作餐id获取客户餐详情pc */
-export function getCustomerLunchById (parameter) {
+export function getCustomerLunchById(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/orderLunch/order-lunch/getCustomerLunchById',
@@ -783,7 +786,7 @@ export function getCustomerLunchById (parameter) {
 }
 
 /**工作餐统计带分页pc */
-export function getWorkLunchCensus (parameter) {
+export function getWorkLunchCensus(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/orderLunch/order-lunch/getWorkLunchCensus',
@@ -793,7 +796,7 @@ export function getWorkLunchCensus (parameter) {
 }
 
 /**工作餐统计pc */
-export function getWorkLunchNum (parameter) {
+export function getWorkLunchNum(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/orderLunch/order-lunch/getWorkLunchNum',
@@ -805,7 +808,7 @@ export function getWorkLunchNum (parameter) {
 //---------------------请假申请--END------------------
 
 //---------------------考勤异常事件-----------------------
-export function signExceptionList (parameter) {
+export function signExceptionList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/exception/listSignExceptionByPage',
@@ -815,7 +818,7 @@ export function signExceptionList (parameter) {
 }
 
 /**处理 */
-export function signExceptionUpdate (parameter) {
+export function signExceptionUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/exception/updateSignException',
@@ -825,7 +828,7 @@ export function signExceptionUpdate (parameter) {
 }
 
 /**删除 */
-export function signExceptionDel (parameter) {
+export function signExceptionDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/exception/removeSignException',
@@ -840,19 +843,19 @@ export function signExceptionDel (parameter) {
 //---------------------考勤月历-----------------------
 
 /**考勤月历下载 */
-export function attenceMonthStatiticsExportExcel (parameter) {
+export function attenceMonthStatiticsExportExcel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/exportExcel',
     method: 'get',
-    responseType:'blob',
+    responseType: 'blob',
     params: parameter
   })
 }
 
 
 /**考勤月统计汇总分页查询 */
-export function attenceMonthStatiticsCollectList (parameter) {
+export function attenceMonthStatiticsCollectList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/listAttenceMonthStatiticsCollectListVoByPage',
@@ -862,7 +865,7 @@ export function attenceMonthStatiticsCollectList (parameter) {
 }
 
 /**考勤月历分页查询 */
-export function monthStatiticsList (parameter) {
+export function monthStatiticsList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/listMonthStatiticsByPage',
@@ -872,7 +875,7 @@ export function monthStatiticsList (parameter) {
 }
 
 /**考勤月汇总下载 */
-export function attenceMonthStatiticsMonthExportExcel (parameter) {
+export function attenceMonthStatiticsMonthExportExcel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/month/exportExcel',
@@ -882,7 +885,7 @@ export function attenceMonthStatiticsMonthExportExcel (parameter) {
 }
 
 /**考勤月历修改记录分页查询 */
-export function attenceMonthStatiticsChangeUpdateList (parameter) {
+export function attenceMonthStatiticsChangeUpdateList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/attenceMonthChange/listAttenceMonthStatiticsChangeListByPage',
@@ -892,7 +895,7 @@ export function attenceMonthStatiticsChangeUpdateList (parameter) {
 }
 
 /**考勤月历修改记录的新增 */
-export function attenceMonthStatiticsChangeAdd (parameter) {
+export function attenceMonthStatiticsChangeAdd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/attenceMonthChange/saveAttenceMonthStatiticsChange',
@@ -920,7 +923,7 @@ export function DownFaceRecordList(parameter) {
     baseURL: system.baseURL,
     url: '/sign/sign-history/exportExcel',
     method: 'get',
-    responseType:'blob',
+    responseType: 'blob',
     params: parameter
   })
 }
@@ -1007,8 +1010,17 @@ export function downStatisticsList(parameter) {
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/month/exportExcel',
     method: 'get',
-    responseType:'blob',
+    responseType: 'blob',
     params: parameter
   })
 }
-//-------------------考勤统计--END------------------
+//-------------------没设规则用户--END------------------
+/** 没设规则用户 */
+export function no_rules_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceDutyRule/listUserWithoutRule',
+    method: 'get',
+    params: parameter
+  })
+}
