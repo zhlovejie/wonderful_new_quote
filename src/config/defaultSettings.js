@@ -21,7 +21,8 @@ export default {
   //baseURL:'http://ihcvvw.natappfree.cc/oa',
   //baseURL: 'http://23yd043297.51mypc.cn/oa',   //张恒
   //baseURL:'http://192.168.99.166:8999/oa',
-  baseURL:'http://192.168.13.253/oa',
+  baseURL: 'http://192.168.13.138:8995',
+  // baseURL:'http://192.168.13.253/oa',
   //baseURL:'http://192.168.99.166:8999/oa',
   //baseURL: 'http://192.168.99.118:8999/oa', // 张恒
   //baseURL: 'http://192.168.99.130:8995', // 玉堂

@@ -1,4 +1,6 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
@@ -6,7 +8,7 @@ import system from '@/config/defaultSettings'
 
 //---------------------试用期调查表-----------------------
 // 获取试用期调查表列表
-export function getProbationSurveyList (parameter) {
+export function getProbationSurveyList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/probationSurvey/getPageList',
@@ -15,8 +17,21 @@ export function getProbationSurveyList (parameter) {
   })
 }
 
+//调查表申请撤回
+
+export function getProbationCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/probationSurvey/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
 // 试用期调查表详情
-export function handleProbationSurvey (parameter) {
+export function handleProbationSurvey(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/probationSurvey/handleProbationSurvey',
@@ -26,7 +41,7 @@ export function handleProbationSurvey (parameter) {
 }
 
 // 审批查看试用期调查表
-export function approvalLookProbationSurvey (parameter) {
+export function approvalLookProbationSurvey(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/probationSurvey/approvalLookProbationSurvey',
@@ -36,7 +51,7 @@ export function approvalLookProbationSurvey (parameter) {
 }
 
 // 审批试用期调查表
-export function approvalProbationSurvey (parameter) {
+export function approvalProbationSurvey(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/probationSurvey/approvalProbationSurvey',
@@ -46,7 +61,7 @@ export function approvalProbationSurvey (parameter) {
 }
 
 // 提交处理结果试用期调查表
-export function saveHandleProbationSurvey (parameter) {
+export function saveHandleProbationSurvey(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/probationSurvey/saveHandleProbationSurvey',
@@ -55,7 +70,7 @@ export function saveHandleProbationSurvey (parameter) {
   })
 }
 //试用期考评状态
-export function getProbationEvaluationByProbationSurveyId (parameter) {
+export function getProbationEvaluationByProbationSurveyId(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/ProbationEvaluation/getProbationEvaluationByProbationSurveyId',
@@ -65,7 +80,7 @@ export function getProbationEvaluationByProbationSurveyId (parameter) {
 }
 
 //查询本月出勤天数
-export function getAttenceMonthStatiticsCollect (parameter) {
+export function getAttenceMonthStatiticsCollect(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sign/monthDayStatitics/getAttenceMonthStatiticsCollect',
@@ -91,7 +106,7 @@ export function getAttenceMonthStatiticsCollect (parameter) {
 
 
 // 面试记录列表
-export function getInterviewRecordList (parameter) {
+export function getInterviewRecordList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/interviewRecord/pageList',
@@ -101,7 +116,7 @@ export function getInterviewRecordList (parameter) {
 }
 
 // 新增面试记录
-export function interviewRecordAdd (parameter) {
+export function interviewRecordAdd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/interviewRecord/add',
@@ -110,7 +125,7 @@ export function interviewRecordAdd (parameter) {
   })
 }
 // 修改面试记录
-export function interviewRecordUpdate (parameter) {
+export function interviewRecordUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/interviewRecord/update',
@@ -120,7 +135,7 @@ export function interviewRecordUpdate (parameter) {
 }
 
 // 面试记录详情
-export function handleInterviewRecord (parameter) {
+export function handleInterviewRecord(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/interviewRecord/handleInterviewRecord',
@@ -133,7 +148,7 @@ export function handleInterviewRecord (parameter) {
 
 //----------------------招聘申请
 //招聘申请的新增或修改
-export function addPersonAdvertInfo (parameter) {
+export function addPersonAdvertInfo(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personAdvert/addPersonAdvertInfo',
@@ -143,7 +158,7 @@ export function addPersonAdvertInfo (parameter) {
 }
 
 //招聘申请的审批
-export function approvePersonAdvertInfo (parameter) {
+export function approvePersonAdvertInfo(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personAdvert/approvePersonAdvertInfo',
@@ -153,7 +168,7 @@ export function approvePersonAdvertInfo (parameter) {
 }
 
 //删除部门或者岗位信息
-export function deleteOrag (parameter) {
+export function deleteOrag(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/deleteOrag',
@@ -163,7 +178,7 @@ export function deleteOrag (parameter) {
 }
 
 //查询招聘申请部门列表
-export function getDepartmentList (parameter) {
+export function getDepartmentList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getDepartmentList',
@@ -173,7 +188,7 @@ export function getDepartmentList (parameter) {
 }
 
 //查询招聘申请详情信息
-export function getPersonAdvertInfoDetail (parameter) {
+export function getPersonAdvertInfoDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getPersonAdvertInfoDetail',
@@ -183,7 +198,7 @@ export function getPersonAdvertInfoDetail (parameter) {
 }
 
 //查询岗位在职资格说明
-export function getStationExplain (parameter) {
+export function getStationExplain(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getStationExplain',
@@ -193,7 +208,7 @@ export function getStationExplain (parameter) {
 }
 
 //查询招聘申请岗位列表
-export function getStationList (parameter) {
+export function getStationList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getStationList',
@@ -203,7 +218,7 @@ export function getStationList (parameter) {
 }
 
 //查询岗位在职人数
-export function getStationPersonNum (parameter) {
+export function getStationPersonNum(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getStationPersonNum',
@@ -213,7 +228,7 @@ export function getStationPersonNum (parameter) {
 }
 
 //招聘申请分页列表
-export function pageList (parameter) {
+export function pageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/pageList',
@@ -222,7 +237,16 @@ export function pageList (parameter) {
   })
 }
 
-export function updateIsEnd (parameter) {
+//招聘申请撤回
+export function pageCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personAdvert/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+export function updateIsEnd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/updateIsEnd',
@@ -236,7 +260,7 @@ export function updateIsEnd (parameter) {
 //----------------------转正申请
 
 //新增部门，新增岗位 api  adverInfoId
-export function personnelFullMemberApply_GetDepartmentList (parameter) {
+export function personnelFullMemberApply_GetDepartmentList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getDepartmentList',
@@ -245,7 +269,7 @@ export function personnelFullMemberApply_GetDepartmentList (parameter) {
   })
 }
 
-export function personnelFullMemberApply_GetStationList (parameter) {
+export function personnelFullMemberApply_GetStationList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personAdvert/getStationList',
@@ -256,7 +280,7 @@ export function personnelFullMemberApply_GetStationList (parameter) {
 //新增部门，新增岗位 api END
 
 //转正申请列表
-export function personnelFullMemberApply_PageList (parameter) {
+export function personnelFullMemberApply_PageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personnelFullMemberApply/getPageList',
@@ -265,7 +289,7 @@ export function personnelFullMemberApply_PageList (parameter) {
   })
 }
 //转正详细
-export function personnelFullMemberApply_HandleFullMemberApply (parameter) {
+export function personnelFullMemberApply_HandleFullMemberApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personnelFullMemberApply/handleFullMemberApply',
@@ -274,7 +298,7 @@ export function personnelFullMemberApply_HandleFullMemberApply (parameter) {
   })
 }
 //转正处理
-export function personnelFullMemberApply_Save (parameter) {
+export function personnelFullMemberApply_Save(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personnelFullMemberApply/saveHandleProbationSurvey',
@@ -284,7 +308,7 @@ export function personnelFullMemberApply_Save (parameter) {
 }
 
 //转正申请审批查看
-export function personnelFullMemberApply_ApprovalLook (parameter) {
+export function personnelFullMemberApply_ApprovalLook(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personnelFullMemberApply/approvalLookFullMemberApply',
@@ -293,7 +317,7 @@ export function personnelFullMemberApply_ApprovalLook (parameter) {
   })
 }
 //转正申请审批
-export function personnelFullMemberApply_Approval (parameter) {
+export function personnelFullMemberApply_Approval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personnelFullMemberApply/approvalFullMemberApply',
@@ -303,7 +327,7 @@ export function personnelFullMemberApply_Approval (parameter) {
 }
 
 //财务人员修改工资分配金额
-export function personnelFullMemberApply_updateUserBackCardSalary (parameter) {
+export function personnelFullMemberApply_updateUserBackCardSalary(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personnelFullMemberApply/updateUserBackCardSalary',
@@ -317,7 +341,7 @@ export function personnelFullMemberApply_updateUserBackCardSalary (parameter) {
 //----------------------调岗调薪接口
 
 //调岗调薪申请分页列表
-export function getPositionApplyListByPage (parameter) {
+export function getPositionApplyListByPage(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/getApplyListByPage',
@@ -327,7 +351,7 @@ export function getPositionApplyListByPage (parameter) {
 }
 
 //调岗申请详情查询 applyId
-export function getPositionChangeDetail (parameter) {
+export function getPositionChangeDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/getPositionChangeDetail',
@@ -337,7 +361,7 @@ export function getPositionChangeDetail (parameter) {
 }
 
 //查询部门主管
-export function getPositionManager (parameter) {
+export function getPositionManager(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/getPositionManager',
@@ -347,7 +371,7 @@ export function getPositionManager (parameter) {
 }
 
 //调岗申请单的新增或者修改
-export function saveOrUpdatePositionChangeApply (parameter) {
+export function saveOrUpdatePositionChangeApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/saveOrUpdatePositionChangeApply',
@@ -357,7 +381,7 @@ export function saveOrUpdatePositionChangeApply (parameter) {
 }
 
 //调岗申请单的审批
-export function approvePositionChangeAplly (parameter) {
+export function approvePositionChangeAplly(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/approvePositionChangeAplly',
@@ -367,7 +391,7 @@ export function approvePositionChangeAplly (parameter) {
 }
 
 //查询申请用户的部门和岗位信息 //applyUserId
-export function getApplyUserOrag (parameter) {
+export function getApplyUserOrag(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/getApplyUserOrag',
@@ -376,7 +400,7 @@ export function getApplyUserOrag (parameter) {
   })
 }
 //查询申请用户的部门和岗位信息 //departmentId
-export function getDepartmentUser (parameter) {
+export function getDepartmentUser(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionApply/getDepartmentUser',
@@ -391,7 +415,7 @@ export function getDepartmentUser (parameter) {
 
 
 //调薪申请详情查询
-export function getSalaryChangeDetail (parameter) {
+export function getSalaryChangeDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salaryApply/getSalaryChangeDetail',
@@ -400,7 +424,7 @@ export function getSalaryChangeDetail (parameter) {
   })
 }
 //调薪申请单的新增或者修改
-export function saveOrUpdateSalaryChangeApply (parameter) {
+export function saveOrUpdateSalaryChangeApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salaryApply/saveOrUpdateSalaryChangeApply',
@@ -410,7 +434,7 @@ export function saveOrUpdateSalaryChangeApply (parameter) {
 }
 
 //调薪审批
-export function approveSalaryChangeApply (parameter) {
+export function approveSalaryChangeApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salaryApply/approveSalaryChangeApply',
@@ -420,7 +444,7 @@ export function approveSalaryChangeApply (parameter) {
 }
 
 //调岗调薪
-export function getPositionAndSalaryChangeDetail (parameter) {
+export function getPositionAndSalaryChangeDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionAndSalaryApply/getPositionAndSalaryChangeDetail',
@@ -429,7 +453,7 @@ export function getPositionAndSalaryChangeDetail (parameter) {
   })
 }
 
-export function saveOrUpdatePositionAndSalaryChangeApply (parameter) {
+export function saveOrUpdatePositionAndSalaryChangeApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionAndSalaryApply/saveOrUpdatePositionAndSalaryChangeApply',
@@ -438,7 +462,7 @@ export function saveOrUpdatePositionAndSalaryChangeApply (parameter) {
   })
 }
 
-export function approvePositionAndSalaryChange (parameter) {
+export function approvePositionAndSalaryChange(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionAndSalaryApply/approvePositionAndSalaryChange',
@@ -447,7 +471,7 @@ export function approvePositionAndSalaryChange (parameter) {
   })
 }
 /**根据用户id获取基本工资 */
-export function getSalaryBaseCommonByUserId (parameter) {
+export function getSalaryBaseCommonByUserId(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-base-common/getSalaryBaseCommonByUserId',
@@ -462,7 +486,7 @@ export function getSalaryBaseCommonByUserId (parameter) {
 //----------------------组织架构
 
 //部门组织架构
-export function getDepStructure (parameter) {
+export function getDepStructure(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/orgStructure/getDepStructure',
@@ -472,7 +496,7 @@ export function getDepStructure (parameter) {
 }
 
 //岗位组织架构
-export function getStationStructure (parameter) {
+export function getStationStructure(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/orgStructure/getStationStructure',
@@ -485,7 +509,7 @@ export function getStationStructure (parameter) {
 //----------------------事故调查报告
 
 //事故调查报告分页列表
-export function personIncidentPageList (parameter) {
+export function personIncidentPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personIncident/pageList',
@@ -495,7 +519,7 @@ export function personIncidentPageList (parameter) {
 }
 
 //事故调查报告详情查询接口
-export function getPersonnelIncidentInvReportDetail (parameter) {
+export function getPersonnelIncidentInvReportDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personIncident/getPersonnelIncidentInvReportDetail',
@@ -505,7 +529,7 @@ export function getPersonnelIncidentInvReportDetail (parameter) {
 }
 
 //事故调查报告详情删除接口  applyId
-export function deletePersonnelIncidentInvReport (parameter) {
+export function deletePersonnelIncidentInvReport(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personIncident/deletePersonnelIncidentInvReport',
@@ -515,7 +539,7 @@ export function deletePersonnelIncidentInvReport (parameter) {
 }
 
 //事故调查报告的新增或者修改
-export function saveOrUpdatePersonnelIncidentInvReport (parameter) {
+export function saveOrUpdatePersonnelIncidentInvReport(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personIncident/saveOrUpdatePersonnelIncidentInvReport',
@@ -525,7 +549,7 @@ export function saveOrUpdatePersonnelIncidentInvReport (parameter) {
 }
 
 //事故调查报告单的审批
-export function approvePersonnelIncidentInvReport (parameter) {
+export function approvePersonnelIncidentInvReport(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personIncident/approvePersonnelIncidentInvReport',
@@ -541,7 +565,7 @@ export function approvePersonnelIncidentInvReport (parameter) {
 //----------------------离职协议
 
 //获取离职协议列表
-export function personnelLeaveOfficeAgreementPageList (parameter) {
+export function personnelLeaveOfficeAgreementPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personnelLeaveOfficeAgreement/getPageList',
@@ -551,7 +575,7 @@ export function personnelLeaveOfficeAgreementPageList (parameter) {
 }
 
 //获取已审批完的离职协议列表
-export function personnelLeaveOfficeAgreementAllFinishPageList (parameter) {
+export function personnelLeaveOfficeAgreementAllFinishPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personnelLeaveOfficeAgreement/getAllFinishPageList',
@@ -561,7 +585,7 @@ export function personnelLeaveOfficeAgreementAllFinishPageList (parameter) {
 }
 
 //获取离职协议详情  id
-export function getLeaveOfficeAgreement (parameter) {
+export function getLeaveOfficeAgreement(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personnelLeaveOfficeAgreement/getLeaveOfficeAgreement',
@@ -571,7 +595,7 @@ export function getLeaveOfficeAgreement (parameter) {
 }
 
 //变更单据状态是否完结 id
-export function personnelLeaveOfficeAgreementChangeIsEnd (parameter) {
+export function personnelLeaveOfficeAgreementChangeIsEnd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'personnelLeaveOfficeAgreement/changeIsEnd',
@@ -581,7 +605,7 @@ export function personnelLeaveOfficeAgreementChangeIsEnd (parameter) {
 }
 
 //新增离职协议或修改
-export function addLeaveOfficeAgreementAndUpdate (parameter) {
+export function addLeaveOfficeAgreementAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personnelLeaveOfficeAgreement/addLeaveOfficeAgreementAndUpdate',
@@ -591,7 +615,7 @@ export function addLeaveOfficeAgreementAndUpdate (parameter) {
 }
 
 //离职协议的审批
-export function approveLeaveOfficeAgreement (parameter) {
+export function approveLeaveOfficeAgreement(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personnelLeaveOfficeAgreement/approveLeaveOfficeAgreement',
@@ -604,7 +628,7 @@ export function approveLeaveOfficeAgreement (parameter) {
 //----------------------离职申请
 
 //离职申请列表
-export function personLeaveApplyPageList (parameter) {
+export function personLeaveApplyPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personLeaveApply/pageList',
@@ -613,7 +637,7 @@ export function personLeaveApplyPageList (parameter) {
   })
 }
 //离职申请的删除  applyId
-export function deletePersonnelLeaveApply (parameter) {
+export function deletePersonnelLeaveApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personLeaveApply/deletePersonnelLeaveApply',
@@ -622,7 +646,7 @@ export function deletePersonnelLeaveApply (parameter) {
   })
 }
 
-export function saveOrUpdatePersonnelLeaveApply (parameter) {
+export function saveOrUpdatePersonnelLeaveApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personLeaveApply/saveOrUpdatePersonnelLeaveApply',
@@ -633,7 +657,7 @@ export function saveOrUpdatePersonnelLeaveApply (parameter) {
 
 //上传离职相关文档
 
-export function uploadDocPersonnelLeaveApply (parameter) {
+export function uploadDocPersonnelLeaveApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/personLeaveApply/uploadDoc',
