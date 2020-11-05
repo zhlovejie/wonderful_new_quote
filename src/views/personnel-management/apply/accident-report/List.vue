@@ -303,6 +303,7 @@ export default {
         0: '待审批',
         1: '通过',
         2: '不通过',
+        3: '已撤回',
       }
       return stateMap[state] || `未知状态:${state}`
     },
