@@ -1,5 +1,5 @@
 <template>
-  <!-- 退款单 -->
+  <!-- 赠送单 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
       <a-input placeholder="退款编号模糊查询" :allowClear="true"  v-model="presentNum" style="width: 200px;"/>
@@ -68,9 +68,15 @@
           <!-- 单据审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <template v-if="$auth('present:edit') && record.status === 2">
+            <template v-if="$auth('present:edit') && (record.status === 2 || record.status === 9)">
               <a-divider type="vertical"  />
               <a type="primary"  @click="doAction('edit',record)">修改</a>
+            </template>
+            <template v-if="record.status === 0">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
             </template>
           </template>
 
@@ -115,7 +121,7 @@
 <script>
 import {getListSaleContractUser } from '@/api/contractListManagement'
 import {
-  presentPageList
+  presentPageList,presentRevocation
 } from '@/api/receipt'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -295,14 +301,23 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      console.log(type)
+      //console.log(type)
+      
+      if(type === 'reback'){
+        presentRevocation({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
       that.$refs.addForm.query(type, record)
     },
     getStatusText(state) {
       let stateMap = {
         0: '待审批',
         1: '通过',
-        2: '不通过'
+        2: '不通过',
+        9: '已撤回'
       }
       return stateMap[state] || `未知状态:${state}`
     },

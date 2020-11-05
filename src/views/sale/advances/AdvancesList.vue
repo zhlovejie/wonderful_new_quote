@@ -67,9 +67,10 @@
             <span v-if="text==4">支付宝</span>
           </div>
           <div slot="advancesStatus" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">通过</a>
-            <a @click="handleClick(record)" v-if="text==3">不通过</a>
+            <a @click="handleClick(record)" v-if="+text === 1">待审批</a>
+            <a @click="handleClick(record)" v-if="+text === 2">通过</a>
+            <a @click="handleClick(record)" v-if="+text === 3">不通过</a>
+            <a @click="handleClick(record)" v-if="+text === 9">已撤回</a>
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('advances:one')">
@@ -79,13 +80,19 @@
               <a-divider type="vertical"/>
               <a @click="handleAudit(record)">审核</a>
             </template>
-            <template v-if="$auth('advances:del') && !audit && userInfo.id === record.createdId && record.advancesStatus === 2">
+            <template v-if="$auth('advances:del') && !audit && userInfo.id === record.createdId && +record.advancesStatus === 2">
               <a-divider type="vertical"/>
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="$auth('advances:edit') && record.advancesStatus == 3 && userInfo.id === record.createdId">
+            <template v-if="$auth('advances:edit') && (+record.advancesStatus === 3 || +record.advancesStatus === 9) && userInfo.id === record.createdId">
               <a-divider type="vertical"/>
               <a @click="handleEdit(record)">重新提交</a>
+            </template>
+            <template v-if="!audit && +record.advancesStatus === 1">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
             </template>
           </span>
         </s-table>
@@ -101,7 +108,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getServiceList, deleteById } from '@/api/advances'
+import { getServiceList, deleteById ,revocationAdvances} from '@/api/advances'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import AdvancesAdd from './AdvancesAdd'
@@ -317,7 +324,18 @@ export default {
       //this.$refs.advanceAudit.detail(e.id,'edit')
 
       this.$refs.add.add(e.id,'edit')
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationAdvances({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.search()
+        })
+        return
+      }
     }
+    
   }
 }
 

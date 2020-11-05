@@ -170,3 +170,13 @@ export function invoiceDetailById (parameter) {
     method: 'get'
   })
 }
+
+/**产品调试任务单 撤回 */
+export function revocationAfterSale (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-sale/revocation',
+    method: 'get',
+    params: parameter
+  })
+}

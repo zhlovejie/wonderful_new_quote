@@ -15,16 +15,18 @@
         </div>
         <a slot="customerName" slot-scope="text, record" @click="consumerInfo(record)">{{ text }}</a>
         <a slot="approvalStatus" slot-scope="text, record" @click="approvalPreview(record)">
-          <span v-if="parseInt(text) === -1">待提交</span>
+          {{ {'-1':'待提交',0:'待审批',2:'通过',4:'待审批',9:'已撤回'}[text] || '不通过' }}
+          <!-- <span v-if="parseInt(text) === -1">待提交</span>
           <span v-else-if="parseInt(text) === 0 || parseInt(text) == 4">待审批</span>
           <span v-else-if="parseInt(text) === 2">通过</span>
-          <span v-else>不通过</span>
+          <span v-else>不通过</span> -->
         </a>
         <div slot="contractStatus" slot-scope="text">
-          <span v-if="text === -1">请选择合同状态</span>
+          {{ {'-1':'请选择合同状态',0:'未启动',1:'已启动',2:'已作废'}[text] }}
+          <!-- <span v-if="text === -1">请选择合同状态</span>
           <span v-if="text === 0">未启动</span>
           <span v-if="text === 1">已启动</span>
-          <span v-if="text === 2">已作废</span>
+          <span v-if="text === 2">已作废</span> -->
         </div>
         <div slot="freightCharge" slot-scope="text, record">
           <span>{{
@@ -66,8 +68,7 @@
                   key="2"
                   v-if="
                     $auth('distributionContract:change') &&
-                    (record.approvalStatus === 2 || record.operatorStatus === 1 || record.operatorStatus === 2) &&
-                    record.approvalStatus === 3
+                    (((record.operatorStatus === 1 || record.operatorStatus === 2) && record.approvalStatus === 3) || record.approvalStatus === 9)
                   "
                 >
                   <a type="primary" @click="editSaleContract(record)">修改</a></a-menu-item
@@ -112,6 +113,11 @@
                 <a-menu-item key="9" v-if="$auth('distributionContract:delete')">
                   <a type="primary" @click="deleteCurrentContract(record)">删除</a>
                 </a-menu-item>
+                <a-menu-item key="10" v-if="[0,4].includes(+record.approvalStatus)">
+                  <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                    <a type="primary" href="javascript:;">撤回</a>
+                  </a-popconfirm>
+                </a-menu-item>
               </a-menu>
             </a-dropdown>
           </template>
@@ -146,6 +152,7 @@ import {
   startSaleContractProcess,
   deleteContract,
   copyContract,
+  revocationContract
 } from '../../../../api/contractListManagement'
 import { getCustomerInfo } from '../../../../api/pricingModule'
 import UploadPhoto from './UploadPhoto'
@@ -581,6 +588,16 @@ export default {
     handleSaveOk() {
       this.init()
     },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationContract({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.init()
+        })
+        return
+      }
+    }
   },
 }
 </script>

@@ -28,11 +28,9 @@
         </a-form-item>-->
         <a-form-item label="授权合同状态">
           <a-select style="width: 150px" v-model="contractState" defaultValue="0">
-            <a-select-option
-              v-for="val in contractStatus"
-              :key="val.id"
-              :value="val.id"
-            >{{ val.name }}</a-select-option>
+            <a-select-option v-for="val in contractStatus" :key="val.id" :value="val.id">{{
+              val.name
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -50,9 +48,7 @@
               <a-menu-item key="1">公司模板</a-menu-item>
               <a-menu-item key="2">指定模板</a-menu-item>
             </a-menu>
-            <a-button type="primary">
-              新增 <a-icon type="down" />
-            </a-button>
+            <a-button type="primary"> 新增 <a-icon type="down" /> </a-button>
           </a-dropdown>
         </template>
       </div>
@@ -69,14 +65,7 @@
             </template>
           </a-tabs>
         </div>
-        <s-table
-          rowKey="id"
-          ref="table"
-          size="default"
-          :columns="columns"
-          :data="loadData"
-          :alert="false"
-        >
+        <s-table rowKey="id" ref="table" size="default" :columns="columns" :data="loadData" :alert="false">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -84,7 +73,7 @@
             <a @click="handleVue(record)">{{ text }}</a>
           </span>
           <span slot="modifyTime" slot-scope="text, record">
-            {{record.modifyTime || record.createdTime}}
+            {{ record.modifyTime || record.createdTime }}
           </span>
 
           <span slot="saleCustomerName" slot-scope="text, record">
@@ -94,38 +83,44 @@
             <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
           </div>
           <div slot="states" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">通过</a>
-            <a @click="handleClick(record)" v-if="text==3">不通过</a>
+            <a @click="handleClick(record)" >{{ {1:'待审批',2:'通过',3:'不通过',9:'已撤回'}[text] }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('investigate:one')">
+            <template v-if="+approvalStatus === 0">
               <a @click="handleVue(record)">查看</a>
+
+              <template v-if="record.approvalStatus == 2">
+                <a-divider type="vertical" />
+                <a target="_blank" :href="record.wordUrl">下载</a>
+              </template>
+
+              <template v-if="$auth('investigate:edit') && [3,9].includes(+record.approvalStatus)">
+                <a-divider type="vertical" />
+                <a @click="updateProject(record)">修改</a>
+              </template>
+
+              <template v-if="$auth('investigate:del') && record.approvalStatus == 2 && userInfo.id == record.createdId ">
+                <a-divider type="vertical" />
+                <a @click="() => del(record)">删除</a>
+              </template>
+
+              <template v-if="+record.approvalStatus === 1">
+                <a-divider type="vertical"/>
+                <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                  <a type="primary" href="javascript:;">撤回</a>
+                </a-popconfirm>
+              </template>
+
             </template>
-            <template v-if="$auth('investigate:edit') && isLook==1">
-              <a-divider type="vertical" />
+
+            <template v-if="+approvalStatus === 1">
               <a @click="handleAudit(record)">审批</a>
             </template>
-            <template v-if="$auth('investigate:one') && record.approvalStatus == 2">
-              <a-divider type="vertical" />
-              <a
-                v-if="record.approvalStatus == 2 && isLook==0"
-                target="_blank"
-                :href="record.wordUrl"
-              >下载</a>
+
+            <template v-if="+approvalStatus === 2">
+              <a @click="handleVue(record)">查看</a>
             </template>
 
-            <template v-if="$auth('investigate:edit') && parseInt(record.approvalStatus,10) === 3">
-              <a-divider type="vertical" />
-              <a v-if="isLook==0" @click="updateProject(record)">修改</a>
-            </template>
-
-            <template
-              v-if="$auth('investigate:del') && record.approvalStatus == 2 && userInfo.id == record.createdId && isLook==0"
-            >
-              <a-divider type="vertical" />
-              <a class="delete" @click="() => del(record)">删除</a>
-            </template>
           </span>
         </s-table>
       </a-col>
@@ -140,7 +135,7 @@
 
 <script>
 import { STable } from '@/components'
-import { customerList, deleteInvestigate, getServiceList, goAdd } from '@/api/investigate'
+import { customerList, deleteInvestigate, getServiceList, goAdd ,investigateRevocation} from '@/api/investigate'
 import InvestigateForm from './InvestigateAdd'
 import Tendering from './TenderingUnit'
 import InvestigateNode from './InvestigateNode'
@@ -151,12 +146,12 @@ import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 const statusMap = {
   2: {
     status: 'success',
-    text: '已授权'
+    text: '已授权',
   },
   1: {
     status: 'error',
-    text: '待授权'
-  }
+    text: '待授权',
+  },
 }
 
 export default {
@@ -168,7 +163,7 @@ export default {
     Tendering,
     InvestigateForm,
     STable,
-    CustomerSelect
+    CustomerSelect,
   },
   data() {
     return {
@@ -188,16 +183,16 @@ export default {
       contractStatus: [
         {
           id: 0,
-          name: '请选择状态'
+          name: '请选择状态',
         },
         {
           id: 1,
-          name: '待授权'
+          name: '待授权',
         },
         {
           id: 2,
-          name: '已授权'
-        }
+          name: '已授权',
+        },
       ],
       // 表头
       columns: [
@@ -206,61 +201,61 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           title: '授权编号',
-          dataIndex: 'authorizationCode'
+          dataIndex: 'authorizationCode',
         },
         {
           title: '项目编号',
           dataIndex: 'projectCode',
           // key: 'title',
-          scopedSlots: { customRender: 'projectCode' }
+          scopedSlots: { customRender: 'projectCode' },
         },
         {
           title: '项目名称',
-          dataIndex: 'projectName'
+          dataIndex: 'projectName',
         },
         {
           title: '招标单位名称',
           dataIndex: 'tenderingUnitName',
-          scopedSlots: { customRender: 'tenderingUnitName' }
+          scopedSlots: { customRender: 'tenderingUnitName' },
         },
         {
           title: '被授权单位名称',
           dataIndex: 'saleCustomerName',
-          scopedSlots: { customRender: 'saleCustomerName' }
+          scopedSlots: { customRender: 'saleCustomerName' },
         },
         {
           title: '授权合同状态',
           dataIndex: 'contractStatus',
-          scopedSlots: { customRender: 'contractStatus' }
+          scopedSlots: { customRender: 'contractStatus' },
         },
         {
           title: '审批进度',
           dataIndex: 'approvalStatus',
-          scopedSlots: { customRender: 'states' }
+          scopedSlots: { customRender: 'states' },
         },
         {
           title: '操作人',
-          dataIndex: 'modifierName'
+          dataIndex: 'modifierName',
         },
         {
           title: '操作时间',
           dataIndex: 'modifyTime',
-          scopedSlots: { customRender: 'modifyTime' }
+          scopedSlots: { customRender: 'modifyTime' },
         },
         {
           title: '操作',
           dataIndex: 'id',
           width: '200px',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return getServiceList(Object.assign(parameter, this.queryParam)).then(res => {
+      loadData: (parameter) => {
+        return getServiceList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
       },
@@ -273,13 +268,13 @@ export default {
         formLayout: 'horizontal',
         formItemLayout: {
           labelCol: { span: '' },
-          wrapperCol: { span: '' }
+          wrapperCol: { span: '' },
         },
         inputRequired: false,
         inputAllowClear: true,
         inputLabel: '被授权单位名称',
-        inputPlaceholder: '被授权单位名称'
-      }
+        inputPlaceholder: '被授权单位名称',
+      },
     }
   },
   beforeCreate() {
@@ -294,14 +289,14 @@ export default {
     },
     statusTypeFilter(status) {
       return statusMap[status].status
-    }
+    },
   },
   watch: {
     $route(to, from) {
       if (from.fullPath === '/sale/receipt/ReceiptAdd' || from.fullPath === '/sale/receipt/ReceiptAudit') {
         this.$refs.table.refresh(true)
       }
-    }
+    },
   },
   methods: {
     search() {
@@ -309,7 +304,7 @@ export default {
         projectName: this.projectName,
         contractStatus: this.contractState,
         saleCustomerId: this.saleCustomer,
-        approvalStatus: this.approvalStatus
+        approvalStatus: this.approvalStatus,
       }
       this.$refs.table.refresh(true)
     },
@@ -318,17 +313,17 @@ export default {
 
       // })
       this.$refs.modal.actionType = 'add'
-        this.$refs.modal.templateType = type
-        this.$refs.modal.edit({})
+      this.$refs.modal.templateType = type
+      this.$refs.modal.edit({})
     },
     updateProject(record) {
       // goAdd().then(res => {
 
       // })
       this.$refs.modal.actionType = 'edit'
-        this.$refs.modal.templateType = record.templateType
-        this.$refs.modal.projectRecord = record
-        this.$refs.modal.edit({})
+      this.$refs.modal.templateType = record.templateType
+      this.$refs.modal.projectRecord = record
+      this.$refs.modal.edit({})
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
@@ -352,10 +347,10 @@ export default {
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          deleteInvestigate({ id: row.id }).then(res => {
+          deleteInvestigate({ id: row.id }).then((res) => {
             _this.$refs.table.refresh(false)
           })
-        }
+        },
       })
     },
     tenderingClick(record) {
@@ -397,10 +392,20 @@ export default {
     handleCustomerClear() {
       this.saleCustomer = 0
     },
-    handleMenuClick(e){
-      this.handleAdd(parseInt(e.key,10))
+    handleMenuClick(e) {
+      this.handleAdd(parseInt(e.key, 10))
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        investigateRevocation({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.search()
+        })
+        return
+      }
     }
-  }
+  },
 }
 </script>
 

@@ -129,3 +129,13 @@ export function getProductById (parameter) {
     params: parameter
   })
 }
+
+/**发货单 撤回 */
+export function revocationInvoice (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/invoice/revocation',
+    method: 'get',
+    params: parameter
+  })
+}

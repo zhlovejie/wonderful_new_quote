@@ -547,6 +547,7 @@ export default {
     },
     //填充合同
     fillContract(data){
+      debugger
       console.log('data', data)
       this.form.setFieldsValue({ contractNum: data.contractNum })
       this.form.setFieldsValue({ customerName: data.customerName })

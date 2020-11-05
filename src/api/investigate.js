@@ -149,3 +149,23 @@ export function saleRecordApproval (parameter) {
   })
 }
 //--------------------新项目备案--END-----------
+
+//项目备案撤回
+export function saleRecordRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/saleRecord/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//项目授权撤回
+export function investigateRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/investigate/revocation',
+    method: 'get',
+    params: parameter
+  })
+}

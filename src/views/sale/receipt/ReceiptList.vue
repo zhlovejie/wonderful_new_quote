@@ -81,6 +81,7 @@
             <a @click="handleClick(record)" v-if="text == 1">待审批</a>
             <a @click="handleClick(record)" v-if="text == 2">通过</a>
             <a @click="handleClick(record)" v-if="text == 3">不通过</a>
+            <a @click="handleClick(record)" v-if="text == 9">已撤回</a>
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('receipt:one')">
@@ -91,7 +92,7 @@
               <a @click="handleAudit(record)">审核</a>
             </template>
             <template
-              v-if="$auth('receipt:edit') && parseInt(record.receiptStatus) === 3 && userInfo.id === record.createdId"
+              v-if="$auth('receipt:edit') && (+record.receiptStatus === 3 || +record.receiptStatus === 9) && userInfo.id === record.createdId"
             >
               <a-divider type="vertical" />
               <a @click="handleEdit(record)">重新提交</a>
@@ -101,6 +102,14 @@
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
+            </template>
+            <template
+              v-if="!audit && record.receiptStatus === 1"
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
             </template>
           </span>
 
@@ -154,7 +163,7 @@
 
 <script>
 import { STable } from '@/components'
-import { deleteReceipt, getContractOne, getServiceList } from '@/api/receipt'
+import { deleteReceipt, getContractOne, getServiceList,revocationReceipt } from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
@@ -570,6 +579,16 @@ export default {
         this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
       }
     },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationReceipt({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+    }
   },
 }
 </script>

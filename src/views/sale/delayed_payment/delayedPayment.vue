@@ -90,6 +90,7 @@
             <a @click="handleClick(record)" v-if="text == 2">通过</a>
             <a @click="handleClick(record)" v-if="text == 3">拒绝</a>
             <a @click="handleClick(record)" v-if="text == 4">审批中</a>
+            <a @click="handleClick(record)" v-if="text == 9">已撤回</a>
           </div>
 
           <div slot="delayedDays" slot-scope="text, record">
@@ -99,21 +100,30 @@
           <div slot="delayedAmount" slot-scope="text, record">{{ text | moneyFormatNumber }}</div>
 
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('payment:one')">
-              <a @click="handleSee(record)">查看</a>
+            <a @click="handleSee(record)">查看</a>
+            <template v-if="+audit === 0">
+              <template v-if="record.approvalStatus == 1">
+                <a-divider type="vertical"/>
+                <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                  <a type="primary" href="javascript:;">撤回</a>
+                </a-popconfirm>
+              </template>
+              <template v-if="record.approvalStatus == 2">
+                <a-divider type="vertical"/>
+                <a target="_blank" :href="record.wordUrl">欠款单</a>
+                <a-divider type="vertical"/>
+                <a target="_blank" @click="UploadFile(record)">上传</a>
+              </template>
+              <template v-if="+record.approvalStatus === 3 || +record.approvalStatus === 9">
+                <a-divider type="vertical"/>
+                <a @click="Resubmit(record)">重新提交</a>
+              </template>
             </template>
-            <a-divider v-if="audit == 0 && record.approvalStatus == 2" type="vertical" />
-            <a v-if="audit == 0 && record.approvalStatus == 2" target="_blank" :href="record.wordUrl">欠款单</a>
-            <a-divider v-if="audit == 0 && record.approvalStatus == 2" type="vertical" />
-            <a v-if="audit == 0 && record.approvalStatus == 2" target="_blank" @click="UploadFile(record)">上传</a>
-            <template v-if="$auth('payment:edit')">
-              <a-divider v-if="audit == 1 && userInfo.id != 1" type="vertical" />
-              <a v-if="audit == 1 && userInfo.id != 1" @click="handleApproval(record)">审核</a>
+            <template v-if="+audit === 1">
+              <a-divider type="vertical" v-if="userInfo.id != 1" />
+              <a v-if="userInfo.id != 1" @click="handleApproval(record)">审核</a>
             </template>
-            <template v-if="$auth('payment:one')">
-              <a-divider v-if="audit == 0 && record.approvalStatus == 3" type="vertical" />
-              <a v-if="audit == 0 && record.approvalStatus == 3" @click="Resubmit(record)">重新提交</a>
-            </template>
+            <template v-if="+audit === 2"></template>
           </span>
         </s-table>
       </a-col>
@@ -126,7 +136,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getDelayedList, changeState } from '@/api/delayedPayment'
+import { getDelayedList, changeState ,revocationDelayedPayment} from '@/api/delayedPayment'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getLoginUser } from '@api/systemSetting'
@@ -381,6 +391,17 @@ export default {
       // 跳转到申请延迟付款单界面
       this.$router.push({ name: 'addSoftDelayedPayment', params: { id: record.id ,contractType:"2"} })
     }*/
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationDelayedPayment({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.search()
+        })
+        return
+      }
+    }
+    
   },
 }
 </script>

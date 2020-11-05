@@ -64,11 +64,12 @@
             <span v-if="text==3">万德福自提</span>
           </div>
           <div slot="invoiceStatus" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">出库</a>
-            <a @click="handleClick(record)" v-if="text==3">拒绝</a>
-            <a @click="handleClick(record)" v-if="text==4">待确认</a>
-            <a @click="handleClick(record)" v-if="text==5">待出库</a>
+            <a @click="handleClick(record)" v-if="+text === 1">待审批</a>
+            <a @click="handleClick(record)" v-if="+text === 2">出库</a>
+            <a @click="handleClick(record)" v-if="+text === 3">拒绝</a>
+            <a @click="handleClick(record)" v-if="+text === 4">待确认</a>
+            <a @click="handleClick(record)" v-if="+text === 5">待出库</a>
+            <a @click="handleClick(record)" v-if="+text === 9">已撤回</a>
           </div>
           <a slot="isEnd" slot-scope="text, record" @click="checkIsEnd(record)">
             <span v-if="text==0">未完结</span>
@@ -87,7 +88,7 @@
               <a v-if="audit==1&&userInfo.id!=1" @click="handleApproval(record)">审核</a>
             </template>
 
-            <template v-if="$auth('invoice:edit') && record.invoiceStatus === 3 && userInfo.id === record.createdId">
+            <template v-if="$auth('invoice:edit') && (+record.invoiceStatus === 3 || +record.invoiceStatus === 9) && userInfo.id === record.createdId">
               <a-divider type="vertical"/>
               <a @click="updateInvoice(record)">重新提交</a>
             </template>
@@ -100,6 +101,13 @@
                 okText="是"
                 cancelText="否">
                 <a href="#">删除</a>
+              </a-popconfirm>
+            </template>
+
+            <template v-if="+record.invoiceStatus === 1">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
           </span>
@@ -150,7 +158,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getInvoiceList, update, deleteInvoice } from '@/api/invoice'
+import { getInvoiceList, update, deleteInvoice ,revocationInvoice} from '@/api/invoice'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getLoginUser } from '@api/systemSetting'
@@ -486,6 +494,16 @@ export default {
         this.expandedRowKeys = [...this.expandedRowKeys,record.key]
       }else{
         this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
+      }
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationInvoice({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
       }
     }
   }

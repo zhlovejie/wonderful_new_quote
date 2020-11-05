@@ -160,3 +160,13 @@ export function updateValencyProduct (parameter) {
     data: parameter
   })
 }
+
+/**核价单 撤回 */
+export function revocationPriceList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/api/revocation',
+    method: 'get',
+    params: parameter
+  })
+}

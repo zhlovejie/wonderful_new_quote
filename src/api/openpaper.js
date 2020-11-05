@@ -140,4 +140,14 @@ export function updatePaper (parameter) {
   })
 }
 
+/**开票单 撤回 */
+export function revocationOpenpaper (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/openpaper/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 

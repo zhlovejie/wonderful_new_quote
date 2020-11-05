@@ -15,6 +15,16 @@ export function getServiceList (parameter) {
   })
 }
 
+/**预收款单 撤回 */
+export function revocationAdvances (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/advances/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /**
  * 去列表页面
  * @param parameter

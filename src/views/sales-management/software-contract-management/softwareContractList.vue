@@ -56,11 +56,14 @@
           </div>
           <a slot="customerName" slot-scope="text, record" @click="consumerInfoShow(record)">{{ text }}</a>
           <div slot="approvalStatus" slot-scope="text, record">
+
+            <!-- {{ {'-1':'待提交',0:'待审批',1:'通过',2:'不通过',9:'已撤回'} }} -->
             <span v-if="text === -1">待提交</span>
             <a v-else @click="approvalPreview(record)">
               <span v-if="text === 0">待审批</span>
               <span v-else-if="text === 1">通过</span>
               <span v-else-if="text === 2">不通过</span>
+              <span v-else-if="text === 9">已撤回</span>
               <span v-else>未知</span>
             </a>
           </div>
@@ -126,6 +129,11 @@
                     <a-menu-item key="6" v-if="$auth('softwareContract:del')">
                       <a type="primary" @click="deleteCurrentContract(record.id)">删除</a>
                     </a-menu-item>
+                    <a-menu-item key="7" v-if="record.approvalStatus === 0">
+                      <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                        <a type="primary" href="javascript:;">撤回</a>
+                      </a-popconfirm>
+                    </a-menu-item>
                   </a-menu>
                 </a-dropdown>
               </template>
@@ -183,6 +191,7 @@ import {
   updateSoftwareContract,
   startProcess,
   copySoftContract,
+  revocationSoftwareContract
 } from '@/api/contractListManagement'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import CustomerInfo from '@/components/CustomerList/CustomerInfo'
@@ -496,6 +505,16 @@ export default {
     handleSaveOk() {
       this.searchAction()
     },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationSoftwareContract({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+    }
   },
 }
 </script>

@@ -69,9 +69,10 @@
             <span v-if="text==2">特殊开票</span>
           </div>
           <div slot="paperStatue" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">通过</a>
-            <a @click="handleClick(record)" v-if="text==3">不通过</a>
+            <a @click="handleClick(record)" v-if="+text === 1">待审批</a>
+            <a @click="handleClick(record)" v-if="+text === 2">通过</a>
+            <a @click="handleClick(record)" v-if="+text === 3">不通过</a>
+            <a @click="handleClick(record)" v-if="+text === 9">已撤回</a>
           </div>
           <div slot="paperIsend" slot-scope="text, record">
             <span v-if="text==1">未完结</span>
@@ -89,11 +90,16 @@
               <a-divider type="vertical"/>
               <a v-if="!audit" class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="$auth('paper:edit') && record.paperStatue === 3 && record.createdId === userInfo.id">
+            <template v-if="$auth('paper:edit') && (+record.paperStatue === 3 || +record.paperStatue === 9) && record.createdId === userInfo.id">
               <a-divider type="vertical"/>
               <a @click="handleEdit(record)">重新提交</a>
             </template>
-
+            <template v-if="+record.paperStatue === 1">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
           </span>
         </s-table>
       </a-col>
@@ -105,7 +111,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getServiceList, openPaperDelete } from '@/api/openpaper'
+import { getServiceList, openPaperDelete ,revocationOpenpaper} from '@/api/openpaper'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 
@@ -301,6 +307,16 @@ export default {
         this.$router.push({ name: 'openPaperVue', params: { 'id': e.id, 'auditBoolean': true } })
       } else if (contractType == 2) {
         this.$router.push({ name: 'softwareOpenPaperView', params: { 'id': e.id, 'auditBoolean': true } })
+      }
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationOpenpaper({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.search()
+        })
+        return
       }
     }
   }

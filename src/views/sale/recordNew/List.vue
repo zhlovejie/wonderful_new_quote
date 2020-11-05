@@ -52,14 +52,24 @@
           </a-popover>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <!-- 单据审批状态：0 待审批，1 审批通过，2 审批驳回 -->
+          <!-- 单据审批状态：0 待审批，1 审批通过，2 审批驳回  9已撤回-->
           <template v-if="activeKey === 0">
+            <a type="primary" @click="doAction('view',record)">查看</a>
             <template v-if="record.status !== 0 && $auth('recordNewList:del')">
-              <a type="primary" @click="doAction('del',record)">删除</a>
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
             </template>
-            <template v-if="record.status === 2">
-              <a-divider type="vertical" v-if="record.status !== 0"/>
+            <template v-if="[2,9].includes(+record.status)">
+              <a-divider type="vertical"/>
               <a type="primary" @click="doAction('edit',record)">修改</a>
+            </template>
+            <template v-if="record.status === 0">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
             </template>
           </template>
 
@@ -76,7 +86,8 @@
 <script>
 import {
   saleRecordPageList,
-  saleRecordDelete
+  saleRecordDelete,
+  saleRecordRevocation
 } from '@/api/investigate'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo' 
@@ -240,6 +251,12 @@ export default {
           that.searchAction()
         })
         return 
+      }else if(type === 'reback'){
+        saleRecordRevocation({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
       }
       that.$refs.addForm.query(type,record)
       //this.$message.info('功能尚未实现...')
@@ -248,7 +265,8 @@ export default {
       let stateMap = {
         0:'待审批',
         1:'通过',
-        2:'驳回'
+        2:'驳回',
+        9:'已撤回'
       }
       return stateMap[state] || `未知状态:${state}`
     },

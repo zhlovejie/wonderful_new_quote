@@ -207,8 +207,12 @@
           if(_this.isEdit){
             values.id = _this.id 
             advancesUpdate(values).then((data) => {
-              _this.$message.success('保存成功')
-              _this.$emit('ok')
+              if(data && +data.code === 200){
+                _this.$emit('ok')
+              }
+              if(data && data.msg){
+                _this.$message.success(data.msg)
+              }
             }).catch((err) => {
               console.log(err)
               // Do something

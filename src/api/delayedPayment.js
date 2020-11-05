@@ -155,3 +155,12 @@ export function getSoftContractById (parameter) {
     params: parameter
   })
 }
+/**延时付款单 撤回 */
+export function revocationDelayedPayment (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/delayedPayment/revocation',
+    method: 'get',
+    params: parameter
+  })
+}

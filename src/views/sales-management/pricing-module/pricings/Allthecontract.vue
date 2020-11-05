@@ -21,12 +21,13 @@
       </template>
       
       <a slot="valencyStatus" slot-scope="text,record" @click="approvalPreview(record)">
-        <span v-if="text===0">待接收</span>
-        <span v-else-if="text===1">已接收待核价</span>
-        <span v-else-if="text===2">驳回</span>
-        <span v-else-if="text===3">核价通过</span>
-        <span v-else-if="text===4">待生成代码</span>
-        <span v-else-if="text===5">代码已生成</span>
+        <span v-if="+text === 0">待接收</span>
+        <span v-else-if="+text === 1">已接收待核价</span>
+        <span v-else-if="+text === 2">驳回</span>
+        <span v-else-if="+text === 3">核价通过</span>
+        <span v-else-if="+text === 4">待生成代码</span>
+        <span v-else-if="+text === 5">代码已生成</span>
+        <span v-else-if="+text === 9">已撤回</span>
       </a>
       <div slot="action" slot-scope="text, record">
         <template v-if="$auth('pricing:one')">
@@ -36,9 +37,15 @@
           <a-divider type="vertical" />
           <a class="btn-action" type="primary" @click="deleteFunction(record)">删除</a>
         </template>
-        <template v-if="$auth('pricing:edit') && record.valencyStatus === 2">
+        <template v-if="$auth('pricing:edit') && (+record.valencyStatus === 2 || +record.valencyStatus === 9)">
           <a-divider type="vertical" />
           <a class="btn-action" type="primary" @click="showreSubmit(record)">再提交</a>
+        </template>
+        <template v-if="+record.valencyStatus === 0">
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+            <a type="primary" href="javascript:;">撤回</a>
+          </a-popconfirm>
         </template>
         <!-- <template v-if="$auth('pricing:one') && record.valencyStatus >= 3">
           <a-divider type="vertical" />
@@ -191,7 +198,8 @@ import {
   deleteNuclear,
   getSelectsList,
   commit,
-  applyForCode
+  applyForCode,
+  revocationPriceList
 } from '../../../../api/pricingModule'
 const columns = [
   {
@@ -612,6 +620,16 @@ export default {
         this.expandedRowKeys = [...this.expandedRowKeys,record.key]
       }else{
         this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
+      }
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationPriceList({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.init()
+        })
+        return
       }
     }
   }

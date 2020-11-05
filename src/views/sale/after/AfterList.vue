@@ -62,9 +62,10 @@
             <span v-if="text==2">远程调试</span>
           </div>
           <div slot="state" slot-scope="text, record">
-            <a @click="handleClick(record)" v-if="text==1">待审批</a>
-            <a @click="handleClick(record)" v-if="text==2">通过</a>
-            <a @click="handleClick(record)" v-if="text==3">不通过</a>
+            <a @click="handleClick(record)" v-if="+text === 1">待审批</a>
+            <a @click="handleClick(record)" v-if="+text === 2">通过</a>
+            <a @click="handleClick(record)" v-if="+text === 3">不通过</a>
+            <a @click="handleClick(record)" v-if="+text === 9">已撤回</a>
           </div>
           <div slot="aftersaleIsend" slot-scope="text, record">
             <a @click="updateIsEnd(record)" v-if="text==1">未完结</a>
@@ -78,22 +79,30 @@
               <a-divider type="vertical"/>
               <a @click="handleAudit(record)">审核</a>
             </template>
-            <template v-if="$auth('after:del') && !audit && record.state == 2 && userInfo.id === record.createdId">
+            <template v-if="$auth('after:del') && !audit && +record.state === 2 && userInfo.id === record.createdId">
               <a-divider type="vertical"/>
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="$auth('after:edit') && record.state ==2 && record.aftersaleType ==1">
+            <template v-if="$auth('after:edit') && +record.state ===2 && record.aftersaleType ==1">
               <a-divider type="vertical"/>
               <a @click="unloadClick(record)">上传</a>
             </template>
-            <template v-if="$auth('after:one') && record.state == 2 && record.aftersaleType == 1 && record.acceptanceUrl != undefined">
+            <template v-if="$auth('after:one') && +record.state === 2 && record.aftersaleType == 1 && record.acceptanceUrl != undefined">
               <a-divider type="vertical"/>
               <a @click="handleDownload(record)">下载验收单</a>
             </template>
-            <template v-if="$auth('after:one') && record.state == 3 && userInfo.id === record.createdId">
+            <template v-if="$auth('after:one') && (+record.state === 3 || +record.state === 9) && userInfo.id === record.createdId">
               <a-divider type="vertical"/>
               <a @click="handleEdotVue(record)">重新提交</a>
             </template>
+
+            <template v-if="+record.state === 1">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+
           </span>
         </s-table>
       </a-col>
@@ -131,7 +140,7 @@
 
 <script>
 import { STable } from '@/components'
-import { deleteAfterSale, getServiceList, updateAfterSale } from '@/api/after'
+import { deleteAfterSale, getServiceList, updateAfterSale ,revocationAfterSale} from '@/api/after'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getUploadPath } from '@/api/manage'
@@ -426,6 +435,16 @@ export default {
       let r = records.find(record => record.id === this.id)
       if(r && r.aftersaleIsend === 1 && r.acceptanceUrl !== null){
         this.updateIsEndSilent(r)
+      }
+    },
+    doAction(type,record){
+      let that = this
+      if(type === 'reback'){
+        revocationAfterSale({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.search()
+        })
+        return
       }
     }
   }

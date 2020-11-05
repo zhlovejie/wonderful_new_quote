@@ -97,6 +97,16 @@ export function deleteContract (parameter) {
   })
 }
 
+// 撤销销售合同
+export function revocationContract (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 删除软件合同
 export function deleteSoftwareContract (parameter) {
   return axios({
@@ -492,6 +502,16 @@ export function copyContract(params){
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/copySaleContract',
+    method: 'get',
+    params: params
+  })
+}
+
+//撤回软件合同
+export function revocationSoftwareContract(params){
+  return axios({
+    baseURL: system.baseURL,
+    url: '/software-contract/revocation',
     method: 'get',
     params: params
   })

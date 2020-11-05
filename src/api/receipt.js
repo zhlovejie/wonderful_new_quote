@@ -16,6 +16,17 @@ export function getServiceList (parameter) {
   })
 }
 
+/**收款单 撤回 */
+export function revocationReceipt (parameter) {
+  console.log('getServiceList manages' + JSON.stringify(parameter))
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receipt/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /**
  * 去新增页面
  * @param parameter
@@ -287,6 +298,15 @@ export function refundGetSaleContractReceipt (parameter) {
   })
 }
 
+/**退款单 撤回 */
+export function refundRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/saleRefund/refund/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
 
 //----------------------退款单-END------------------
 
@@ -343,6 +363,15 @@ export function presentSaveOrUpdate (parameter) {
   })
 }
 
+/**赠送单 撤回 */
+export function presentRevocation (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salePresent/present/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
 //----------------------退款单-END------------------
 
 //----------------------进款单----------------------
