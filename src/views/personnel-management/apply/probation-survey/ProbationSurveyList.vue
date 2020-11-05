@@ -19,6 +19,7 @@
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">通过</a-select-option>
         <a-select-option :value="3">不通过</a-select-option>
+        <a-select-option :value="4">已撤回</a-select-option>
       </a-select>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
     </div>
@@ -51,13 +52,6 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="activeKey === 0">
-            <!-- && record.createdId === userInfo.id -->
-            <template v-if="record.state === 1">
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
-                <a type="primary" href="javascript:;">撤回</a>
-              </a-popconfirm>
-            </template>
             <template v-if="$auth('probationSurvey:money-one') && record.state !== 0">
               <a type="primary" @click="doAction('approval_view', record)">查看</a>
             </template>
@@ -66,9 +60,18 @@
             </template>
 
             <template
+              v-if="$auth('probationSurvey:Withdraw') && record.state === 1 && record.createdId === userInfo.id"
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+
+            <template
               v-if="
                 $auth('probationSurvey:edit') &&
-                (record.state === 3 || record.state === 0) &&
+                (record.state === 3 || record.state === 0 || record.state === 4) &&
                 record.showModifyButtonFlag === 1
               "
             >
@@ -192,6 +195,7 @@ export default {
   },
   data() {
     return {
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       activeKey: 0,
       dep_id: undefined,
       person_name: undefined,
@@ -287,6 +291,7 @@ export default {
         1: '待审批',
         2: '通过',
         3: '不通过',
+        4: '已撤回',
       }
       return stateMap[state] || `未知状态:${state}`
     },

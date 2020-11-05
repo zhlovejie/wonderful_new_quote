@@ -288,6 +288,15 @@ export function personnelFullMemberApply_PageList(parameter) {
     params: parameter
   })
 }
+//转正申请撤回
+export function personnelFullMemberApply_Cancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personnelFullMemberApply/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
 //转正详细
 export function personnelFullMemberApply_HandleFullMemberApply(parameter) {
   return axios({
@@ -349,6 +358,18 @@ export function getPositionApplyListByPage(parameter) {
     params: parameter
   })
 }
+
+//调岗调薪申请撤回
+
+export function getPositionApplyListByCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/positionApply/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+
 
 //调岗申请详情查询 applyId
 export function getPositionChangeDetail(parameter) {
@@ -517,6 +538,16 @@ export function personIncidentPageList(parameter) {
     params: parameter
   })
 }
+//事故调查报告撤回
+export function personIncidentPageCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personIncident/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+
 
 //事故调查报告详情查询接口
 export function getPersonnelIncidentInvReportDetail(parameter) {
@@ -571,6 +602,15 @@ export function personnelLeaveOfficeAgreementPageList(parameter) {
     url: 'personnelLeaveOfficeAgreement/getPageList',
     method: 'get',
     params: parameter
+  })
+}
+//获取离职协议撤回
+export function personnelLeaveOfficeAgreementCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personnelLeaveOfficeAgreement/cancel',
+    method: 'post',
+    data: parameter
   })
 }
 
