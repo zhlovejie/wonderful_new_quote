@@ -301,6 +301,7 @@ export default {
         // 全部
         this.disabled = false
         this.dayWeekMonth = 3
+        this.searchParam.statiticsMonthDate = ''
         this.downParam.userName = ''
         this.downParam.statiticsMonthDate = ''
         this.downParam.departmentId = ''
