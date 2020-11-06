@@ -73,7 +73,7 @@
 
 <script>
 import { STable } from '@/components'
-import { receiptSaleContract} from '@/api/receipt'
+import { receiptSaleContractNoType} from '@/api/receipt'
 import { listUserBySale } from '@/api/systemSetting'
 import ContractInfo from '@/components/CustomerList/ContractInfo'
 export default {
@@ -123,7 +123,7 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return receiptSaleContract(Object.assign(parameter,{documentType:2}, this.queryParam))
+        return receiptSaleContractNoType(Object.assign(parameter,{documentType:2}, this.queryParam))
           .then(res => {
             return res
           })
@@ -133,6 +133,7 @@ export default {
   methods: {
     query (record) {
       // this.mdl = Object.assign({}, record)
+      debugger
       if (record != undefined) {
         this.$set(this.queryParam, 'type', record.type)
       }

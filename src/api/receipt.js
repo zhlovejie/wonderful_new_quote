@@ -58,6 +58,20 @@ export function receiptSaleContract (parameter) {
 }
 
 /**
+ * 收款单 查询合同列表
+ * @param parameter
+ * @returns {*}
+ */
+export function receiptSaleContractNoType (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/listBySaleReceiptType',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**
  * 所有的软件合同分页列表
  * @param {} parameter 
  */
