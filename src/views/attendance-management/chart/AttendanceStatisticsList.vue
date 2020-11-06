@@ -221,7 +221,6 @@ export default {
     // },
     searchAction(opt = {}) {
       this.disabled = false
-      this.dayWeekMonth = 0
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
@@ -257,6 +256,7 @@ export default {
     onChange(date, dateString) {
       if (typeof dateString === 'string') {
         this.searchParam.statiticsMonthDate = dateString
+        this.dayWeekMonth = 0
       }
     },
     getList(params) {
