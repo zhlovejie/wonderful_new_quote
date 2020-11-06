@@ -36,7 +36,7 @@
           />
         </a-form-item>
         <a-form-item>
-          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction()">查询</a-button>
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="download" @click="downAction">下载</a-button>
@@ -181,6 +181,7 @@ export default {
             '-' +
             (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
           this.init({ current: 1, statiticsMonthDate: nowDate })
+          this.searchParam.statiticsMonthDate = nowDate
         }
       },
       immediate: true,
@@ -192,6 +193,7 @@ export default {
       '-' +
       (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
     this.init({ current: 1, statiticsMonthDate: nowDate })
+    this.searchParam.statiticsMonthDate = nowDate
   },
   methods: {
     disabledDate(current) {
@@ -204,6 +206,7 @@ export default {
       let task1 = departmentList().then((res) => (that.depList = res.data))
       queue.push(task1)
       // that.searchAction(params)
+
       let nowDate =
         new Date().getFullYear() +
         '-' +
@@ -211,6 +214,7 @@ export default {
       this.downParam.userName = ''
       this.downParam.statiticsMonthDate = nowDate
       this.downParam.departmentId = ''
+      this.searchParam.statiticsMonthDate = nowDate
       that.getList(params)
       return Promise.all(queue)
     },
