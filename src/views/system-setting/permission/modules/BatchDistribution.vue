@@ -134,6 +134,7 @@ export default {
       selectedKeys: [],
       treeData: [],
       roleIdList: [],
+      halfCheckedKeys: [],
       loading: false,
       cancelTag: null,
       form: this.$form.createForm(this),
@@ -172,6 +173,7 @@ export default {
     onCheck(checkedKeys, info) {
       console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
+      this.halfCheckedKeys = info.halfCheckedKeys
       console.log(this.checkedKeys)
     },
     onSelect(selectedKeys, info) {
@@ -237,7 +239,7 @@ export default {
       let arr = {}
       arr.roleIdList = this.roleIdList
       arr.menuIdList = this.checkedKeys
-      arr.notAllMenuIdList = []
+      arr.notAllMenuIdList = this.halfCheckedKeys
       this.loading = true
       getSaveRoleMenu(arr)
         .then((res) => {
