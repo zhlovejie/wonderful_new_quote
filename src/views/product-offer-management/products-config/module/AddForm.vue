@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="850"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -94,7 +94,7 @@
               @click="ShowModule('optSelect')"
             >添加选择配置</a-button>
           </a-form-item>
-
+          <a-form-item label="选择项">
           <div
             class="opt-choice-item"
             :label="`选择项 ${index+1}`"
@@ -119,12 +119,13 @@
               @click="ShowModule('optChoice',index)"
             >添加</a-button>
           </div>
-          <a-form-item>
-            <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
+
+          <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
           </a-form-item>
+
         </div>
 
-        <a-form-item label="备注">
+        <a-form-item label="备注" style="margin-top:10px;">
           <a-textarea
             placeholder="备注"
             :rows="5"
@@ -281,7 +282,7 @@ export default {
                   itemId: item.id,
                   mainBody: 2,
                   orderNo: item.serialNum,
-                  type: item.isRequire ? 4 : 5,
+                  type: item.isRequire,
                   productId: values.id || ''
                 })
               })
@@ -332,8 +333,9 @@ export default {
       }
 
       priceAdjustProductConfigDetail({ id: record.id }).then(res => {
+        
         res.data.productPic && that.$refs.uploadFile && that.$refs.uploadFile.setFiles([{
-          name:res.data.productPic,
+          name:res.data.productPic.split('/').slice(-1).join(''),
           url:res.data.productPic
         }])
         //debugger
@@ -430,11 +432,12 @@ export default {
             key: item.itemId,
             order: index + 1,
             serialNum: index + 1,
-            productId: item.productId
+            productId: item.productId,
           }
-          if ([4, 5].includes(item.type)) {
-            _item.isRequire = item.type === 4 ? true : false
-          }
+          // if ([4, 5,6].includes(item.type)) {
+          //   _item.isRequire = +item.type
+          // }
+          _item.isRequire = +item.type
           return _item
         })
       }
@@ -448,7 +451,7 @@ export default {
         .filter(item => item.mainBody === 2 && item.type === 3)
         .sort((a, b) => a.orderNo - b.orderNo)
 
-      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5,6].includes(item.type))
       
       let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
@@ -478,11 +481,20 @@ export default {
 }
 
 .add-form-wrapper >>> .ant-form-item {
+  display: flex;
   margin-bottom: 10px;
 }
 
 .add-form-wrapper >>> .custom-table {
   margin-bottom: 0;
+}
+
+.add-form-wrapper >>> .ant-form-item  .ant-form-item-label {
+  width: 120px;
+  text-align: left;
+}
+.add-form-wrapper >>> .ant-form-item  .ant-form-item-control-wrapper {
+  flex: 1;
 }
 
 .add-shadow {

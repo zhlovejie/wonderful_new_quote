@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="850"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -61,6 +61,7 @@
             >添加选择配置</a-button>
           </a-form-item>
 
+          <a-form-item label="选择项">
           <div
             class="opt-choice-item"
             v-for="(item,index) in optChoice"
@@ -84,12 +85,12 @@
               @click="ShowModule('optChoice',index)"
             >添加</a-button>
           </div>
-          <a-form-item>
-            <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
+
+          <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
           </a-form-item>
         </div>
 
-        <a-form-item label="备注">
+        <a-form-item label="备注" style="margin-top:10px;">
           <a-textarea
             placeholder="备注"
             :rows="5"
@@ -226,7 +227,7 @@ export default {
                   itemId: item.id,
                   mainBody: 1,
                   orderNo: item.serialNum,
-                  type: item.isRequire ? 4 : 5,
+                  type: item.isRequire,
                   zktId: values.id || ''
                 })
               })
@@ -359,9 +360,10 @@ export default {
             serialNum: index + 1,
             zktId: item.zktId
           }
-          if ([4, 5].includes(item.type)) {
-            _item.isRequire = item.type === 4 ? true : false
-          }
+          // if ([4, 5].includes(item.type)) {
+          //   _item.isRequire = item.type === 4 ? true : false
+          // }
+          _item.isRequire = +item.type
           return _item
         })
       }
@@ -371,7 +373,7 @@ export default {
       let optSelectData = data
         .filter(item => item.mainBody === 1 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
-      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5,6].includes(item.type))
 
       let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
@@ -401,10 +403,18 @@ export default {
 
 .add-form-wrapper >>> .ant-form-item {
   margin-bottom: 10px;
+  display: flex;
 }
 
 .add-form-wrapper >>> .custom-table {
   margin-bottom: 0;
+}
+.add-form-wrapper >>> .ant-form-item  .ant-form-item-label {
+  width: 135px;
+  text-align: left;
+}
+.add-form-wrapper >>> .ant-form-item  .ant-form-item-control-wrapper {
+  flex: 1;
 }
 
 .add-shadow {
