@@ -5,49 +5,38 @@
       <a-form layout="inline">
         <a-form-item>
           <a-button-group>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 1}" @click="simpleSearch(1)">上月</a-button>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 2}" @click="simpleSearch(2)">本月</a-button>
-            <a-button type="primary" :class="{currentDayWeekMonth:dayWeekMonth === 3}" @click="simpleSearch(3)">全部</a-button>
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+              >上月</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+              >本月</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
         <a-form-item>
-          <a-input
-            placeholder="员工名模糊查询"
-            v-model="searchParam.userName"
-            allowClear
-            style="width:150px;"
-          />
+          <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width: 150px" />
         </a-form-item>
         <a-form-item>
-          <a-select
-            placeholder="选择部门"
-            v-model="searchParam.departmentId"
-            :allowClear="true"
-            style="width:150px;"
-          >
-            <a-select-option
-              v-for="item in depList"
-              :key="item.id"
-              :value="item.id"
-            >{{item.departmentName}}</a-select-option>
+          <a-select placeholder="选择部门" v-model="searchParam.departmentId" :allowClear="true" style="width: 150px">
+            <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
           <a-month-picker
             @change="onChange"
-            style="width:220px;"
+            style="width: 220px"
             :allowClear="true"
             :disabled-date="disabledDate"
             placeholder="请选择月份"
           />
         </a-form-item>
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            icon="search"
-            @click="searchAction({current:1})"
-          >查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="download" @click="downAction">下载</a-button>
@@ -72,7 +61,7 @@
 
 <script>
 import {
-  departmentList //所有部门
+  departmentList, //所有部门
 } from '@/api/systemSetting'
 import { getStatisticsList, downStatisticsList } from '@/api/attendanceManagement'
 import moment from 'moment'
@@ -83,85 +72,85 @@ const columns = [
     key: 'order',
     width: '70px',
     fixed: 'left',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '考勤月',
     dataIndex: 'statiticsMonth',
-    key: 'statiticsMonth'
+    key: 'statiticsMonth',
   },
   {
     align: 'center',
     title: '工号',
     dataIndex: 'jobNum',
-    key: 'jobNum'
+    key: 'jobNum',
   },
   {
     align: 'center',
     title: '姓名',
     dataIndex: 'userName',
-    key: 'userName'
+    key: 'userName',
   },
   {
     align: 'center',
     title: '部门',
-    dataIndex: 'departmentName'
+    dataIndex: 'departmentName',
   },
   {
     align: 'center',
     title: '工作时长（小时）',
     dataIndex: 'workHours',
-    key: 'workHours'
+    key: 'workHours',
   },
   {
     align: 'center',
     title: '出勤（天）',
     dataIndex: 'workDayNum',
-    key: 'workDayNum'
+    key: 'workDayNum',
   },
   {
     align: 'center',
     title: '请假（h）',
     dataIndex: 'leaveHours',
-    key: 'leaveHours'
+    key: 'leaveHours',
   },
   {
     align: 'center',
     title: '加班（h）',
     key: 'overWorkHours',
-    dataIndex: 'overWorkHours'
+    dataIndex: 'overWorkHours',
   },
   {
     align: 'center',
     title: '出差（天）',
     key: 'travelDayNum',
-    dataIndex: 'travelDayNum'
+    dataIndex: 'travelDayNum',
   },
   {
     align: 'center',
     title: '迟到（h）',
     dataIndex: 'laterHours',
-    key: 'laterHours'
+    key: 'laterHours',
   },
   {
     align: 'center',
     title: '早退（h）',
     dataIndex: 'earlyHours',
-    key: 'earlyHours'
+    key: 'earlyHours',
   },
   {
     align: 'center',
     title: '餐补（次）',
     dataIndex: 'overLunchNum',
-    key: 'overLunchNum'
+    key: 'overLunchNum',
   },
   {
     align: 'center',
     title: '工作餐（天）',
     dataIndex: 'lunchNum',
-    key: 'lunchNum'
-  }
+    key: 'lunchNum',
+  },
 ]
 
 export default {
@@ -172,7 +161,7 @@ export default {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
       searchParam: {},
@@ -180,12 +169,12 @@ export default {
       downParam: {}, //下载参数
       depList: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      dayWeekMonth: 2
+      dayWeekMonth: 2,
     }
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'attendance-statistics') {
           let nowDate =
             new Date().getFullYear() +
@@ -194,8 +183,8 @@ export default {
           this.init({ current: 1, statiticsMonthDate: nowDate })
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   mounted() {
     let nowDate =
@@ -212,7 +201,7 @@ export default {
     init(params) {
       let that = this
       let queue = []
-      let task1 = departmentList().then(res => (that.depList = res.data))
+      let task1 = departmentList().then((res) => (that.depList = res.data))
       queue.push(task1)
       // that.searchAction(params)
       let nowDate =
@@ -232,13 +221,13 @@ export default {
     // },
     searchAction(opt = {}) {
       this.disabled = false
-      this.dayWeekMonth=0
+      this.dayWeekMonth = 0
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getStatisticsList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -251,7 +240,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
       this.downParam.userName = _searchParam.userName
       this.downParam.statiticsMonthDate = _searchParam.statiticsMonthDate
       this.downParam.departmentId = _searchParam.departmentId
@@ -273,7 +262,7 @@ export default {
     getList(params) {
       this.loading = true
       getStatisticsList(params)
-        .then(res => {
+        .then((res) => {
           this.loading = false
           this.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -286,14 +275,14 @@ export default {
           pagination.current = res.data.current || 1
           this.pagination = pagination
         })
-        .catch(err => (this.loading = false))
+        .catch((err) => (this.loading = false))
     },
     simpleSearch(num) {
       console.log(num)
       if (num === 1) {
         // 上月
         this.disabled = true
-        this.dayWeekMonth=1
+        this.dayWeekMonth = 1
         let lastMonth =
           new Date().getFullYear() +
           '-' +
@@ -301,22 +290,27 @@ export default {
         this.getList({ current: 1, statiticsMonthDate: lastMonth })
         // 存储上月参数
         this.downParam.userName = ''
+        this.searchParam.statiticsMonthDate = lastMonth
         this.downParam.statiticsMonthDate = lastMonth
         this.downParam.departmentId = ''
       } else if (num === 3) {
         // 全部
         this.disabled = false
-        this.dayWeekMonth=3
+        this.dayWeekMonth = 3
         this.downParam.userName = ''
         this.downParam.statiticsMonthDate = ''
         this.downParam.departmentId = ''
         this.getList({ current: 1, statiticsMonthDate: undefined })
-      }else if (num ===2){
+      } else if (num === 2) {
         // 本月
         this.disabled = false
-        this.dayWeekMonth=2
-        let month =new Date().getFullYear() +'-' + (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+        this.dayWeekMonth = 2
+        let month =
+          new Date().getFullYear() +
+          '-' +
+          (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
         this.downParam.userName = ''
+        this.searchParam.statiticsMonthDate = month
         this.downParam.statiticsMonthDate = month
         this.downParam.departmentId = ''
         this.getList({ current: 1, statiticsMonthDate: month })
@@ -328,7 +322,7 @@ export default {
       console.log(downListParams)
       this.loading = true
       downStatisticsList(this.downParam)
-        .then(res => {
+        .then((res) => {
           this.loading = false
           if (res instanceof Blob) {
             const isFile = res.type === 'application/vnd.ms-excel'
@@ -349,7 +343,7 @@ export default {
             } else if (isJson) {
               //返回json处理
               var reader = new FileReader()
-              reader.onload = function(e) {
+              reader.onload = function (e) {
                 let _res = null
                 try {
                   _res = JSON.parse(e.target.result)
@@ -373,9 +367,9 @@ export default {
             }
           }
         })
-        .catch(err => (this.loading = false))
-    }
-  }
+        .catch((err) => (this.loading = false))
+    },
+  },
 }
 </script>
 

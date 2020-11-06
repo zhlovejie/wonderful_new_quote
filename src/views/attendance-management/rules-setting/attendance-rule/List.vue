@@ -4,7 +4,7 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input placeholder="考勤组名称" v-model="searchParam.attanceName" allowClear style="width:150px;" />
+          <a-input placeholder="考勤组名称" v-model="searchParam.attanceName" allowClear style="width: 150px" />
         </a-form-item>
         <a-form-item>
           <a-select style="width: 150px" placeholder="考勤类型" :allowClear="true" v-model="searchParam.attanceType">
@@ -20,22 +20,18 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            icon="search"
-            @click="searchAction({current:1})"
-          >查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;">
+        <div class="action-wrapper" style="float: right" v-if="$auth('attendance-rule:add')">
           <a-form-item>
-          <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+            <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
         </div>
       </a-form>
     </div>
     <div class="main-wrapper">
       <a-table
+        v-if="$auth('attendance-rule:list')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -56,40 +52,43 @@
         </div>
         <div slot="caculatorHousType" slot-scope="text, record, index">
           <span v-if="record.caculatorHousType && +record.caculatorHous >= 0">
-            {{ {1:'按月',2:'按周',3:'按日'}[record.caculatorHousType]+'低于'+record.caculatorHous+'小时' }}
+            {{ { 1: '按月', 2: '按周', 3: '按日' }[record.caculatorHousType] + '低于' + record.caculatorHous + '小时' }}
           </span>
           <span v-else></span>
         </div>
         <div slot="attanceUsers" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
-        
+
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template v-if="+record.attanceType === 2">
-            <a type="primary" @click="doAction('paiban',record)">排班</a>
+          <template v-if="+record.attanceType === 2 && $auth('attendance-rule:paiban')">
+            <a type="primary" @click="doAction('paiban', record)">排班</a>
             <a-divider type="vertical" />
           </template>
-          <a type="primary" @click="doAction('edit',record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
-            <a type="primary" href="javascript:;">删除</a>
-          </a-popconfirm>
+          <template v-if="$auth('attendance-rule:edit')">
+            <a type="primary" @click="doAction('edit', record)">修改</a>
+            <a-divider type="vertical" />
+          </template>
+          <template v-if="$auth('attendance-rule:del')">
+            <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+              <a type="primary" href="javascript:;">删除</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
-    <AddForm ref="addForm" @finish="searchAction({current:1})" />
+    <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
 
-    <PaiBan ref="paiBan" @finish="searchAction({current:1})" />
-    
+    <PaiBan ref="paiBan" @finish="searchAction({ current: 1 })" />
   </div>
 </template>
 
 <script>
-import {attenceDutyRuleList , attenceDutyRuleDel} from '@/api/attendanceManagement'
+import { attenceDutyRuleList, attenceDutyRuleDel } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 import PaiBan from './PaiBan'
 import moment from 'moment'
@@ -99,92 +98,92 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '考勤组名称',
-    dataIndex: 'attanceName'
+    dataIndex: 'attanceName',
   },
   {
     align: 'center',
     title: '考勤类型',
     dataIndex: 'attanceType',
-    scopedSlots: { customRender: 'attanceType' }
+    scopedSlots: { customRender: 'attanceType' },
   },
   {
     align: 'center',
     title: '班次',
-    dataIndex: 'className'
+    dataIndex: 'className',
   },
   {
     align: 'center',
     title: '工作日设置',
     dataIndex: 'workDays',
-    scopedSlots: { customRender: 'workDays' }
+    scopedSlots: { customRender: 'workDays' },
   },
   {
     align: 'center',
     title: '时长处理',
     dataIndex: 'isFreeType',
-    scopedSlots: { customRender: 'isFreeType' }
+    scopedSlots: { customRender: 'isFreeType' },
   },
   {
     align: 'center',
     title: '扣除规则',
     dataIndex: 'caculatorHousType',
-    scopedSlots: { customRender: 'caculatorHousType' }
+    scopedSlots: { customRender: 'caculatorHousType' },
   },
   {
     align: 'center',
     title: '考勤组人员',
     dataIndex: 'attanceUsers',
-    scopedSlots: { customRender: 'attanceUsers' }
+    scopedSlots: { customRender: 'attanceUsers' },
   },
   {
     align: 'center',
     title: '提交人',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
     title: '提交时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'attendance-rule-list',
   components: {
     AddForm,
-    PaiBan
+    PaiBan,
   },
   data() {
     return {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
-      searchParam:{}
+      searchParam: {},
     }
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'attendance-rules-setting-attendance-rule') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     moment,
@@ -197,7 +196,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       attenceDutyRuleList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -210,7 +209,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -222,29 +221,31 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if(['add','edit'].includes(actionType)){
-        that.$refs.addForm.query(actionType,record)
-      }else if(actionType === 'del'){
+      if (['add', 'edit'].includes(actionType)) {
+        that.$refs.addForm.query(actionType, record)
+      } else if (actionType === 'del') {
         attenceDutyRuleDel(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
-      }else if(actionType === 'paiban'){
-        
-        that.$refs.paiBan.query(actionType,record)
-        return 
+      } else if (actionType === 'paiban') {
+        that.$refs.paiBan.query(actionType, record)
+        return
       }
     },
-    workDaysFormat(strs){
-      let w = ['','周一','周二','周三','周四','周五','周六','周日']
+    workDaysFormat(strs) {
+      let w = ['', '周一', '周二', '周三', '周四', '周五', '周六', '周日']
       let str = ''
-      return strs.split(',').map(s =>w[s]).join(',')
-    }
-  }
+      return strs
+        .split(',')
+        .map((s) => w[s])
+        .join(',')
+    },
+  },
 }
 </script>
 
@@ -257,5 +258,4 @@ export default {
 .main-wrapper {
   margin-top: 20px;
 }
-
 </style>
