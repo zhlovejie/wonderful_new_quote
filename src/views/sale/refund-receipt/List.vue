@@ -74,7 +74,7 @@
           <!-- 单据审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <template v-if="$auth('refund:edit') && (record.status === 2 || record.status === 9)">
+            <template v-if="$auth('refund:edit') && (+record.status === 2 || +record.status === 9)">
               <a-divider type="vertical"  />
               <a type="primary"  @click="doAction('edit',record)">修改</a>
             </template>
@@ -82,6 +82,12 @@
               <a-divider type="vertical"/>
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
                 <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="(+record.status === 2 || +record.status === 9) ">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
           </template>
@@ -105,7 +111,7 @@
 <script>
 import {getListSaleContractUser } from '@/api/contractListManagement'
 import {
-  refundPageList,refundRevocation
+  refundPageList,refundRevocation,refundDel
 } from '@/api/receipt'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -272,6 +278,14 @@ export default {
 
       if(type === 'reback'){
         refundRevocation({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+
+      if(type === 'del'){
+        refundDel({id:record.id}).then(res =>{
           that.$message.info(res.msg)
           that.searchAction()
         })

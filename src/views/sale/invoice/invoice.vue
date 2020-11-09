@@ -93,7 +93,7 @@
               <a @click="updateInvoice(record)">重新提交</a>
             </template>
 
-            <template v-if="$auth('invoice:del') && userInfo.id === record.createdId && record.invoiceStatus === 2">
+            <template v-if="$auth('invoice:del') && userInfo.id === record.createdId && (+record.invoiceStatus === 2 || +record.invoiceStatus === 9)">
               <a-divider type="vertical"/>
               <a-popconfirm
                 title="确认删除这条数据？"

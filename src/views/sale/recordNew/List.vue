@@ -53,8 +53,9 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 单据审批状态：0 待审批，1 审批通过，2 审批驳回  9已撤回-->
+          <a type="primary" @click="doAction('view',record)">查看</a>
           <template v-if="activeKey === 0">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            
             <template v-if="record.status !== 0 && $auth('recordNewList:del')">
               <a-divider type="vertical"/>
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
@@ -96,7 +97,6 @@ const columns = [
   {
     align: 'center',
     title: '序号',
-    key: 'order',
     width: '70px',
     scopedSlots: { customRender: 'order' }
   },
@@ -104,37 +104,31 @@ const columns = [
     align: 'center',
     title: '备案编号',
     dataIndex: 'recordCode',
-    key: 'recordCode'
   },
   {
     align: 'center',
     title: '项目名称',
     dataIndex: 'projectName',
-    key: 'projectName'
   },
   {
     align: 'center',
     title: '项目地址',
-    key: 'projectAddress',
     dataIndex: 'projectAddress'
   },
   {
     align: 'center',
     title: '项目情况',
-    key: 'projectSituation',
     dataIndex: 'projectSituation',
     scopedSlots: { customRender: 'projectSituation' }
   },
   {
     align: 'center',
     title: '截止日期',
-    key: 'deadline',
     dataIndex: 'deadline'
   },
   {
     align: 'center',
     title: '处理状态',
-    key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' }
   },
@@ -142,18 +136,15 @@ const columns = [
     align: 'center',
     title: '操作人',
     dataIndex: 'createdName',
-    key: 'createdName'
   },
   {
     align: 'center',
     title: '操作时间',
-    key: 'createdTime',
     dataIndex: 'createdTime'
   },
   {
     align: 'center',
     title: '操作',
-    key: 'action',
     scopedSlots: { customRender: 'action' }
   }
 ]

@@ -159,7 +159,7 @@ export default {
     async query(type,record){
       let that = this
       that.actionType = type 
-      that.record = record || {}
+      that.record = {...record || {}}
       that.form.resetFields() 
       that.resetValues()
       await that.init() 

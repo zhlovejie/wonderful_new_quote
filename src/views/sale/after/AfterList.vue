@@ -79,15 +79,15 @@
               <a-divider type="vertical"/>
               <a @click="handleAudit(record)">审核</a>
             </template>
-            <template v-if="$auth('after:del') && !audit && +record.state === 2 && userInfo.id === record.createdId">
+            <template v-if="$auth('after:del') && !audit && (+record.state === 2 || +record.state === 9) && userInfo.id === record.createdId">
               <a-divider type="vertical"/>
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="$auth('after:edit') && +record.state ===2 && record.aftersaleType ==1">
+            <template v-if="$auth('after:edit') && +record.state ===2 && +record.aftersaleType === 1">
               <a-divider type="vertical"/>
               <a @click="unloadClick(record)">上传</a>
             </template>
-            <template v-if="$auth('after:one') && +record.state === 2 && record.aftersaleType == 1 && record.acceptanceUrl != undefined">
+            <template v-if="$auth('after:one') && +record.state === 2 && +record.aftersaleType === 1 && record.acceptanceUrl != undefined">
               <a-divider type="vertical"/>
               <a @click="handleDownload(record)">下载验收单</a>
             </template>

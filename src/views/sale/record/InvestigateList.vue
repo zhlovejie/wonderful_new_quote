@@ -99,7 +99,7 @@
                 <a @click="updateProject(record)">修改</a>
               </template>
 
-              <template v-if="$auth('investigate:del') && record.approvalStatus == 2 && userInfo.id == record.createdId ">
+              <template v-if="$auth('investigate:del') && (+record.approvalStatus === 2 || +record.approvalStatus === 9) && userInfo.id == record.createdId ">
                 <a-divider type="vertical" />
                 <a @click="() => del(record)">删除</a>
               </template>

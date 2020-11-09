@@ -86,7 +86,7 @@
               <a-divider v-if="audit" type="vertical"/>
               <a v-if="audit" @click="handleAudit(record)">审核</a>
             </template>
-            <template v-if="$auth('paper:del') && record.paperStatue === 2 && record.createdId === userInfo.id">
+            <template v-if="$auth('paper:del') && (+record.paperStatue === 2 || +record.paperStatue === 9) && record.createdId === userInfo.id">
               <a-divider type="vertical"/>
               <a v-if="!audit" class="delete" @click="() => del(record)">删除</a>
             </template>

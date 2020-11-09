@@ -78,6 +78,14 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
+
+            <template v-if="(+record.status === 2 || +record.status === 9) ">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
+
           </template>
 
           <template v-if="activeKey === 1">
@@ -121,7 +129,7 @@
 <script>
 import {getListSaleContractUser } from '@/api/contractListManagement'
 import {
-  presentPageList,presentRevocation
+  presentPageList,presentRevocation,presentDel
 } from '@/api/receipt'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -310,6 +318,16 @@ export default {
         })
         return
       }
+
+      if(type === 'del'){
+        presentDel({id:record.id}).then(res =>{
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+
+
       that.$refs.addForm.query(type, record)
     },
     getStatusText(state) {
