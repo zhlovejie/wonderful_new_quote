@@ -14,14 +14,14 @@
 </template>
 
 <script>
-import invoicePresentOrder from './invoicePresentOrder'
+//import invoicePresentOrder from './invoicePresentOrder'
 import invoiceSaleContract from './invoiceSaleContract'
 
 export default {
   name:"ChoiceOrderFactory",
   components:{
     invoiceSaleContract,
-    invoicePresentOrder
+    //invoicePresentOrder
   },
   data(){
     return {
@@ -30,10 +30,12 @@ export default {
       tabs:[{
         name:'合同',
         key:'invoiceSaleContract',
-      },{
-        name:'赠送订单',
-        key:'invoicePresentOrder'
-      }]
+      }
+      // ,{
+      //   name:'赠送订单',
+      //   key:'invoicePresentOrder'
+      // }
+      ]
     }
   },
   computed:{
