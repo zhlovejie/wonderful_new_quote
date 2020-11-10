@@ -54,7 +54,8 @@
         </span>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="$auth('distributionContract:one')">
-            <a type="primary" @click="showModal('edit', record)">查看</a>
+            <!-- <a type="primary" @click="showModal('edit', record)">查看</a> -->
+            <a type="primary" @click="SeeSaleContract(record)">查看</a>
           </template>
           <template>
             <a-divider type="vertical" />
@@ -511,6 +512,12 @@ export default {
         params: { id: record.id, action: 'edit', from: 'distributionContractList' },
       })
     },
+    SeeSaleContract(record) {
+      this.$router.push({
+        name: 'basicInformation1',
+        params: { id: record.id, idx: record, action: 'see', from: 'distributionContractList' },
+      })
+    },
     splitOrderAction(record) {
       //拆分订单
       this.$router.push({
@@ -529,22 +536,22 @@ export default {
       // 跳转到申请延迟付款单界面
       this.$router.push({ name: 'addDelayedPayment', params: { id: record.id, contractType: '1' } })
     },
-    showModal(action, record) {
-      if (record.contractAttribute === 1) {
-        // 选择三方合同
-        this.$router.push({ name: 'previewTripartiteContract', params: { queryOneData: record, action: action } })
-        console.log('queryOneData:record', record)
-      } else {
-        if (record.isTax === 1) {
-          // 含税--选择销售合同
-          this.$router.push({ name: 'previewSalesContract', params: { queryOneData: record, action: action } })
-          console.log('queryOneData:record', record)
-        } else {
-          this.$router.push({ name: 'previewProductOrderForm', params: { queryOneData: record, action: action } })
-          console.log('queryOneData:record', record)
-        }
-      }
-    },
+    // showModal(action, record) {
+    //   if (record.contractAttribute === 1) {
+    //     // 选择三方合同
+    //     this.$router.push({ name: 'previewTripartiteContract', params: { queryOneData: record, action: action } })
+    //     console.log('queryOneData:record', record)
+    //   } else {
+    //     if (record.isTax === 1) {
+    //       // 含税--选择销售合同
+    //       this.$router.push({ name: 'previewSalesContract', params: { queryOneData: record, action: action } })
+    //       console.log('queryOneData:record', record)
+    //     } else {
+    //       this.$router.push({ name: 'previewProductOrderForm', params: { queryOneData: record, action: action } })
+    //       console.log('queryOneData:record', record)
+    //     }
+    //   }
+    // },
     copyContract(record) {
       const _this = this
       const param = { id: record.id }

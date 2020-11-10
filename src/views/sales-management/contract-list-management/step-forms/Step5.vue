@@ -5,22 +5,18 @@
         <a-col :span="24" class="basic-tit" justify="center" align="middle">乙方信息</a-col>
       </a-row>
       <a-form :form="form" @submit="handleSubmit" class="form wdf-form">
-        <a-row class="wdf-row" style="border-radius: 3px;">
+        <a-row class="wdf-row" style="border-radius: 3px">
           <a-col :span="4" justify="center" align="middle">
-            <h3 style="padding:20px;">乙方信息（开票信息）</h3>
+            <h3 style="padding: 20px">乙方信息（开票信息）</h3>
           </a-col>
-          <a-col
-            :span="20"
-            justify="center"
-            align="middle"
-            style="border-left:1px solid #ddd;padding:20px;"
-          >
+          <a-col :span="20" justify="center" align="middle" style="border-left: 1px solid #ddd; padding: 20px">
             <a-row class="inner-row">
               <a-col :span="12">
                 <a-form-item label="微信号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['wx',{rules: [{ required: true, message: '填写微信号'}]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['wx', { rules: [{ required: true, message: '填写微信号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -28,7 +24,8 @@
                 <a-form-item label="电子邮箱" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['email',{rules: [{ required: !isProductOrder, message: '填写电子邮箱' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['email', { rules: [{ required: !isProductOrder, message: '填写电子邮箱' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -43,7 +40,8 @@
                 <a-form-item label="地址" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['address',{rules: [{ required: true,  message: '填写详细地址' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['address', { rules: [{ required: true, message: '填写详细地址' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -51,7 +49,8 @@
                 <a-form-item label="手机号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['mobile',{rules: [{ required: true, message: '填写手机号' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['mobile', { rules: [{ required: true, message: '填写手机号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -73,7 +72,8 @@
                 <a-form-item label="单位全称" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['unitFullName',{rules: [{ required: true, message: '填写单位全称' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['unitFullName', { rules: [{ required: true, message: '填写单位全称' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -81,7 +81,8 @@
                 <a-form-item label="邮政编码" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['zipCode',{rules: [{ required: false, message: '填写邮政编码' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['zipCode', { rules: [{ required: false, message: '填写邮政编码' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -91,7 +92,8 @@
                 <a-form-item label="开户行名称" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['openingBank',{rules: [{ required: false, message: '填写开户行名称' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['openingBank', { rules: [{ required: false, message: '填写开户行名称' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -99,7 +101,8 @@
                 <a-form-item label="银行账号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['bankCardAccount',{rules: [{ required: false, message: '填写银行账号' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['bankCardAccount', { rules: [{ required: false, message: '填写银行账号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -109,7 +112,8 @@
                 <a-form-item label="税号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['dutyParagraph',{rules: [{ required: false, message: '填写税号' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['dutyParagraph', { rules: [{ required: false, message: '填写税号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -117,7 +121,8 @@
                 <a-form-item label="银行账号名称" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
                   <a-input
                     type="text"
-                    v-decorator="['accountTitle',{rules: [{ required: false,  message: '填写银行账号名称' }]}]"
+                    :disabled="this.$parent.routeParams.action === 'see'"
+                    v-decorator="['accountTitle', { rules: [{ required: false, message: '填写银行账号名称' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -126,7 +131,7 @@
         </a-row>
 
         <a-form-item class="btns-grop" style="border-left: none">
-          <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
+          <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
           <a-button type="primary" @click="nextStep">下一步</a-button>
         </a-form-item>
       </a-form>
@@ -142,8 +147,8 @@ export default {
   components: { AFormItem },
   props: {
     queryonedata: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -157,15 +162,15 @@ export default {
       queryOneData: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 3 }
+        sm: { span: 3 },
       },
       wrapper: {
         xs: { span: 24 },
-        sm: { span: 21 }
+        sm: { span: 21 },
       },
       //是否(产品订货单 isTax = 0 )
       //新增需求0612
-      isProductOrder: false
+      isProductOrder: false,
     }
   },
   computed: {},
@@ -174,7 +179,7 @@ export default {
       if (to.fullPath === '/sales-management/contract-list-management/distributionContractList') {
         this.currentTab = 0
       }
-    }
+    },
   },
   created() {},
   mounted() {
@@ -188,14 +193,14 @@ export default {
       if (that.id > 0) {
         console.log('step5 called ... getQueryOne')
         getQueryOne(params)
-          .then(res => {
+          .then((res) => {
             //debugger
             that.queryOneData = res.data
 
             that.isProductOrder = that.queryOneData.isTax === 0 ? true : false
 
             that.form.setFieldsValue({
-              id: res.data.id || 0
+              id: res.data.id || 0,
             })
 
             if (res.data.customerInfo) {
@@ -211,7 +216,7 @@ export default {
                 fax: res.data.customerInfo.fax || '',
                 zipCode: res.data.customerInfo.zipCode || '',
                 bankCardAccount: res.data.customerInfo.bankCardAccount || '',
-                accountTitle: res.data.customerInfo.accountTitle || ''
+                accountTitle: res.data.customerInfo.accountTitle || '',
               })
             }
 
@@ -235,14 +240,14 @@ export default {
                 (that.accountTitle = res.data.customerInfo.accountTitle || '')
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
           })
       } else {
         //
         try {
           that.form.setFieldsValue({
-            id: this.queryonedata.id || 0
+            id: this.queryonedata.id || 0,
           })
 
           if (this.queryonedata.customerInfo) {
@@ -258,7 +263,7 @@ export default {
               fax: this.queryonedata.customerInfo.fax || '',
               zipCode: this.queryonedata.customerInfo.zipCode || '',
               bankCardAccount: this.queryonedata.customerInfo.bankCardAccount || '',
-              accountTitle: this.queryonedata.customerInfo.accountTitle || ''
+              accountTitle: this.queryonedata.customerInfo.accountTitle || '',
             })
           }
         } catch (err) {}
@@ -278,7 +283,7 @@ export default {
     nextStep(status) {
       const that = this
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       console.log('{ form: { validateFields } } = this', this)
       // 先校验，通过表单校验后，才进入下一步
@@ -300,11 +305,11 @@ export default {
             address: values.address,
             fax: values.fax,
             zipCode: values.zipCode,
-            bankCardAccount: values.bankCardAccount
+            bankCardAccount: values.bankCardAccount,
           }
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           saveBInformation(params)
-            .then(res => {
+            .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
               that.loading = false
@@ -317,7 +322,7 @@ export default {
                 that.$message.success('保存成功')
               }
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
         }
@@ -338,8 +343,8 @@ export default {
     transportTypeSelected(e) {
       this.transportType = e.target.value
       console.log('选择自提/代办运输', e.target.value)
-    }
-  }
+    },
+  },
 }
 </script>
 

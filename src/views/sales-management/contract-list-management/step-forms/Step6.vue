@@ -2,20 +2,14 @@
   <a-spin :spinning="spinning">
     <div class="content-wrap">
       <div class="top-right clearfix">
-        <a-button
-          v-if="contractAttribute===0"
-          class="fl-r"
-          type="primary"
-          @click="lastSubmit(1)"
-          icon="backward"
-        >预览</a-button>
-        <a-button
-          v-if="contractAttribute===0"
-          class="fl-r"
-          type="primary"
-          @click="lastSubmit(0)"
-          icon="check"
-        >保存</a-button>
+        <template v-if="!this.$parent.routeParams.action === 'see'">
+          <a-button v-if="contractAttribute === 0" class="fl-r" type="primary" @click="lastSubmit(1)" icon="backward"
+            >预览</a-button
+          >
+          <a-button v-if="contractAttribute === 0" class="fl-r" type="primary" @click="lastSubmit(0)" icon="check"
+            >保存</a-button
+          >
+        </template>
       </div>
       <div class="contact-steps-6-otherinfo-wrapper">
         <a-row>
@@ -30,7 +24,11 @@
             >
               <a-textarea
                 type="text"
-                v-decorator="['requirementSpecification',{rules: [{ required: false, message: '需方产品特殊要求说明' }]}]"
+                :disabled="this.$parent.routeParams.action === 'see'"
+                v-decorator="[
+                  'requirementSpecification',
+                  { rules: [{ required: false, message: '需方产品特殊要求说明' }] },
+                ]"
               />
             </a-form-item>
 
@@ -41,7 +39,8 @@
             >
               <a-radio-group
                 @change="contractDisputeSelected"
-                v-decorator="['contractDispute',{initialValue: 1}]"
+                :disabled="this.$parent.routeParams.action === 'see'"
+                v-decorator="['contractDispute', { initialValue: 1 }]"
               >
                 <a-radio :value="0">提交仲裁委员会仲裁</a-radio>
                 <a-radio :value="1">向甲方所在地人民法院提起诉讼</a-radio>
@@ -49,15 +48,12 @@
               </a-radio-group>
             </a-form-item>
 
-            <a-form-item
-              label="签订形式"
-              :label-col="formItemLayout.labelCol"
-              :wrapper-col="formItemLayout.wrapperCol"
-            >
+            <a-form-item label="签订形式" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
               <a-radio-group
-                style="width: 100%;"
+                :disabled="this.$parent.routeParams.action === 'see'"
+                style="width: 100%"
                 @change="signFormSelected"
-                v-decorator="['signForm',{initialValue: 0}]"
+                v-decorator="['signForm', { initialValue: 0 }]"
               >
                 <a-radio :value="0">邮件</a-radio>
                 <a-radio :value="1">书面</a-radio>
@@ -71,14 +67,14 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input type="text" v-decorator="['emailA']" />
+                <a-input :disabled="this.$parent.routeParams.action === 'see'" type="text" v-decorator="['emailA']" />
               </a-form-item>
               <a-form-item
                 label="乙方邮箱"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input type="text" v-decorator="['emailB']" />
+                <a-input :disabled="this.$parent.routeParams.action === 'see'" type="text" v-decorator="['emailB']" />
               </a-form-item>
             </div>
             <div v-if="parseInt(signForm) === 2">
@@ -87,26 +83,23 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input type="text" v-decorator="['emailA']" />
+                <a-input :disabled="this.$parent.routeParams.action === 'see'" type="text" v-decorator="['emailA']" />
               </a-form-item>
               <a-form-item
                 label="乙方微信号"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input type="text" v-decorator="['emailB']" />
+                <a-input :disabled="this.$parent.routeParams.action === 'see'" type="text" v-decorator="['emailB']" />
               </a-form-item>
             </div>
 
-            <a-form-item
-              label="鲜章"
-              :label-col="formItemLayout.labelCol"
-              :wrapper-col="formItemLayout.wrapperCol"
-            >
+            <a-form-item label="鲜章" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
               <a-radio-group
-                style="width: 100%;"
+                style="width: 100%"
                 @change="freshChaperSelected"
-                v-decorator="['isNeedFreshChaper',{initialValue: 0}]"
+                :disabled="this.$parent.routeParams.action === 'see'"
+                v-decorator="['isNeedFreshChaper', { initialValue: 0 }]"
               >
                 <a-radio :value="0">不要</a-radio>
                 <a-radio :value="1">要</a-radio>
@@ -119,9 +112,10 @@
               :wrapper-col="formItemLayout.wrapperCol"
             >
               <a-radio-group
-                style="width: 100%;"
+                :disabled="this.$parent.routeParams.action === 'see'"
+                style="width: 100%"
                 @change="tecArgsSelected"
-                v-decorator="['isNeedTecArgs',{initialValue: 0}]"
+                v-decorator="['isNeedTecArgs', { initialValue: 0 }]"
               >
                 <a-radio :value="0">否</a-radio>
                 <a-radio :value="1">是</a-radio>
@@ -154,43 +148,33 @@
                   @change="uploadFileChangeHandler"
                   :beforeUpload="beforeUpload"
                 >
-                  <a-button>
-                    <a-icon type="upload" />点击上传技术参数
-                  </a-button>
+                  <a-button> <a-icon type="upload" />点击上传技术参数 </a-button>
                 </a-upload>
               </a-form-item>
-              <div style="color:red;">选择技术参数/上传技术参数只能选择一个</div>
+              <div style="color: red">选择技术参数/上传技术参数只能选择一个</div>
             </div>
           </div>
 
           <div class="from-group">
             <h3>甲方信息</h3>
-            <a-form-item
-              label="微信号"
-              :label-col="formItemLayout.labelCol"
-              :wrapper-col="formItemLayout.wrapperCol"
-            >
+            <a-form-item label="微信号" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
               <a-input
                 type="text"
-                v-decorator="['wxA',{rules: [{ required: false, message: '微信号' }]}]"
+                v-decorator="['wxA', { rules: [{ required: false, message: '微信号' }] }]"
                 disabled
               />
             </a-form-item>
-            <a-form-item
-              label="电子邮箱"
-              :label-col="formItemLayout.labelCol"
-              :wrapper-col="formItemLayout.wrapperCol"
-            >
+            <a-form-item label="电子邮箱" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
               <a-input
                 type="text"
-                v-decorator="['emailA',{rules: [{ required: false, message: '甲方电子邮箱' }]}]"
+                v-decorator="['emailA', { rules: [{ required: false, message: '甲方电子邮箱' }] }]"
                 disabled
               />
             </a-form-item>
           </div>
 
-          <a-form-item style="text-align:center;" :label-col="{span:0}" :wrapper-col="{span:24}">
-            <a-button style="margin-right: 8px;" @click="prevStep">上一步</a-button>
+          <a-form-item style="text-align: center" :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
+            <a-button style="margin-right: 8px" @click="prevStep">上一步</a-button>
             <a-button v-if="contractAttribute == 1" type="primary" @click="nextStep">下一步</a-button>
           </a-form-item>
         </a-form>
@@ -207,12 +191,12 @@ import TecArgsList from '@/components/CustomerList/TecArgsList.vue'
 export default {
   name: 'Step6',
   components: {
-    TecArgsList
+    TecArgsList,
   },
   props: {
     queryonedata: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -225,7 +209,7 @@ export default {
       id: 0,
       formItemLayout: {
         labelCol: { span: 4 },
-        wrapperCol: { span: 18 }
+        wrapperCol: { span: 18 },
       },
       signForm: 0,
       spinning: false,
@@ -240,22 +224,19 @@ export default {
         '.doc',
         '.docx',
         'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       ],
-      
     }
   },
   computed: {
-    signFormTxt:function(){
-      
-    }
+    signFormTxt: function () {},
   },
   watch: {
     $route(to, from) {
       if (to.fullPath === '/sales-management/contract-list-management/distributionContractList') {
         this.currentTab = 0
       }
-    }
+    },
   },
   created() {},
   mounted() {
@@ -268,19 +249,18 @@ export default {
       that.id = that.queryonedata.id
       const params = { id: that.queryonedata.id }
       getQueryOne(params)
-        .then(res => {
+        .then((res) => {
           this.queryOneData = res.data
           console.log('这是点击下一步的时候同样请求queryone接口this.queryOneData', this.queryOneData)
           that.contractId = res.data.id
           that.id = res.data.id
           that.form.setFieldsValue({
-            contractId: res.data.id
+            contractId: res.data.id,
           })
           let otherInfo = res.data.otherInfo
           if (otherInfo) {
             //回显使用
             try {
-              
               that.requirementSpecification = otherInfo.requirementSpecification || ''
               that.contractDispute = otherInfo.contractDispute || 0
               that.signForm = otherInfo.signForm || 0
@@ -301,7 +281,7 @@ export default {
                 emailB: otherInfo.emailB || '',
                 wxA: otherInfo.wxA || '',
                 isNeedFreshChaper: otherInfo.isNeedFreshChaper,
-                isNeedTecArgs: otherInfo.isNeedTecArgs
+                isNeedTecArgs: otherInfo.isNeedTecArgs,
               })
 
               try {
@@ -313,8 +293,8 @@ export default {
                       uid: 1,
                       name: _fileName,
                       status: 'done',
-                      url: otherInfo.tecArgsUrl
-                    }
+                      url: otherInfo.tecArgsUrl,
+                    },
                   ]
                   that.tecArgsName = _fileName
                 }
@@ -325,14 +305,14 @@ export default {
             try {
               that.form.setFieldsValue({
                 emailA: res.data.saleUser.userInfo.email || '',
-                wxA: res.data.saleUser.userInfo.wxNum || ''
+                wxA: res.data.saleUser.userInfo.wxNum || '',
               })
               that.emailA = res.data.saleUser.userInfo.email || ''
               that.wxA = res.data.saleUser.userInfo.wxNum || ''
             } catch (err) {}
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
@@ -358,7 +338,7 @@ export default {
     nextStep(status) {
       const that = this
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       console.log('{ form: { validateFields } } = this', this)
 
@@ -391,7 +371,7 @@ export default {
             wxA: values.wxA,
             isNeedFreshChaper: values.isNeedFreshChaper,
             isNeedTecArgs: values.isNeedTecArgs,
-            tecArgsUrl: that.tecArgsUrl || that.tecArgsUploadUrl
+            tecArgsUrl: that.tecArgsUrl || that.tecArgsUploadUrl,
           }
 
           if (that.$parent.routeParams.action === 'add') {
@@ -407,7 +387,7 @@ export default {
 
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           saveOtherInfo(params)
-            .then(res => {
+            .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
               that.loading = false
@@ -421,7 +401,7 @@ export default {
               }
               //that.$emit('nextStep', { ...res.data })
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
         }
@@ -438,7 +418,7 @@ export default {
       const that = this
 
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       console.log('{ form: { validateFields } } = this', this)
 
@@ -457,7 +437,6 @@ export default {
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
         console.log('先校验，通过表单校验后，才进入下一步', values)
-        debugger
         if (!err) {
           const params = {
             contractId: that.queryonedata.id,
@@ -472,7 +451,7 @@ export default {
             wxA: values.wxA,
             isNeedFreshChaper: values.isNeedFreshChaper,
             isNeedTecArgs: values.isNeedTecArgs,
-            tecArgsUrl: that.tecArgsUrl || that.tecArgsUploadUrl
+            tecArgsUrl: that.tecArgsUrl || that.tecArgsUploadUrl,
           }
 
           if (that.$parent.routeParams.action === 'add') {
@@ -490,7 +469,7 @@ export default {
           that.spinning = true
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           saveOtherInfo(params)
-            .then(res => {
+            .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
               that.loading = false
@@ -500,7 +479,7 @@ export default {
 
               // 保存信息成功之后，调取生成合同PDF的接口，留作列表页导出使用
               buildCreateWork({ id: that.queryonedata.id })
-                .then(res => {
+                .then((res) => {
                   console.log('调取生成合同PDF的接口，留作列表页导出使用', res)
                   that.spinning = false
                   if (__actionMode === 0) {
@@ -513,25 +492,25 @@ export default {
                       // 选择三方合同
                       that.$router.push({
                         name: 'previewTripartiteContract',
-                        params: { queryOneData: that.queryonedata, action: 'edit' }
+                        params: { queryOneData: that.queryonedata, action: 'edit' },
                       })
                     } else {
                       if (that.queryonedata.isTax === 1) {
                         // 含税--选择销售合同
                         that.$router.push({
                           name: 'previewSalesContract',
-                          params: { queryOneData: that.queryonedata, action: 'edit' }
+                          params: { queryOneData: that.queryonedata, action: 'edit' },
                         })
                       } else {
                         that.$router.push({
                           name: 'previewProductOrderForm',
-                          params: { queryOneData: that.queryonedata, action: 'edit' }
+                          params: { queryOneData: that.queryonedata, action: 'edit' },
                         })
                       }
                     }
                   }
                 })
-                .catch(error => {
+                .catch((error) => {
                   console.error(error)
                   that.spinning = false
                 })
@@ -541,7 +520,7 @@ export default {
               //   that.$router.push({ name: that.$parent.routeParams.from })
               // })
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
               that.spinning = false
             })
@@ -554,7 +533,7 @@ export default {
     prevView() {
       const that = this
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       console.log('{ form: { validateFields } } = this', this)
       // 先校验，通过表单校验后，才进入下一步
@@ -569,25 +548,25 @@ export default {
             signForm: values.signForm,
             emailA: values.emailA,
             emailB: values.emailB,
-            wxA: values.wxA
+            wxA: values.wxA,
           }
 
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           saveOtherInfo(params)
-            .then(res => {
+            .then((res) => {
               console.log('校验成功，保存填写的信息，请求后端接口结果', res)
               that.id = res.data.id
               that.loading = false
               const id = that.queryonedata.id
               // 保存信息成功之后，调取生成合同PDF的接口，留作列表页导出使用
               const paramsc = {
-                id: that.queryonedata.id
+                id: that.queryonedata.id,
               }
               buildCreateWork(paramsc)
-                .then(res => {
+                .then((res) => {
                   console.log('调取生成合同PDF的接口，留作列表页导出使用', res)
                 })
-                .catch(error => {
+                .catch((error) => {
                   console.error(error)
                 })
               if (that.contractAttribute === 1) {
@@ -602,7 +581,7 @@ export default {
                 }
               }
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
         }
@@ -632,7 +611,7 @@ export default {
 
       // 展示照片墙
       this.defaultFileList = fileList
-        .map(item => {
+        .map((item) => {
           let _uid = -Date.now()
           item.uid = item.uid || _uid
           if (item.originFileObj) {
@@ -640,7 +619,7 @@ export default {
           }
           return item
         })
-        .filter(item => !!item.status)
+        .filter((item) => !!item.status)
     },
     openTecArgsModel() {
       this.$refs.tecArgsList.init()
@@ -672,8 +651,8 @@ export default {
         this.$message.error('word文档必须小于10M!')
       }
       return isDocType && isLt10M
-    }
-  }
+    },
+  },
 }
 </script>
 
