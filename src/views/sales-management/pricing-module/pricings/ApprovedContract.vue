@@ -5,38 +5,38 @@
       :dataSource="data"
       :pagination="pagination"
       :loading="loading"
-      @change="handleTableChange" 
-      :expandedRowKeys="expandedRowKeys" 
+      @change="handleTableChange"
+      :expandedRowKeys="expandedRowKeys"
       @expand="expandHandler"
     >
-      <div slot="order" slot-scope="text,record,index">
-        <span>{{ index+1 }}</span>
+      <div slot="order" slot-scope="text, record, index">
+        <span>{{ index + 1 }}</span>
       </div>
-      <template slot="customerName" slot-scope="text,record">
+      <template slot="customerName" slot-scope="text, record">
         <span v-if="record.userSign === 2">***</span>
-        <a  @click="consumerInfo(record)" v-else>{{ text }}</a>
+        <a @click="consumerInfo(record)" v-else>{{ text }}</a>
       </template>
-      <a slot="valencyCode" slot-scope="text,record" @click="lookApplyNuclear(record)">{{ text }}</a>
-      <a slot="valencyStatus" slot-scope="text,record" @click="approvalPreview(record)">
-        <span v-if="text===0">待接收</span>
-        <span v-else-if="text===1">已接收待核价</span>
-        <span v-else-if="text===2">驳回</span>
-        <span v-else-if="text===3">核价通过</span>
-        <span v-else-if="text===4">待生成代码</span>
-        <span v-else-if="text===5">代码已生成</span>
+      <a slot="valencyCode" slot-scope="text, record" @click="lookApplyNuclear(record)">{{ text }}</a>
+      <a slot="valencyStatus" slot-scope="text, record" @click="approvalPreview(record)">
+        <span v-if="text === 0">待接收</span>
+        <span v-else-if="text === 1">已接收待核价</span>
+        <span v-else-if="text === 2">驳回</span>
+        <span v-else-if="text === 3">核价通过</span>
+        <span v-else-if="text === 4">待生成代码</span>
+        <span v-else-if="text === 5">代码已生成</span>
       </a>
       <div slot="explainText" slot-scope="text">
         <a-tooltip v-if="String(text).length > 10">
-          <template slot="title">{{text}}</template>
-          {{ String(text).slice(0,10) }}...
+          <template slot="title">{{ text }}</template>
+          {{ String(text).slice(0, 10) }}...
         </a-tooltip>
-        <span v-else>{{text}}</span>
+        <span v-else>{{ text }}</span>
       </div>
       <div slot="action" slot-scope="text, record">
         <a class="btn-action" type="primary" @click="lookApplyNuclear(record)">查看</a>
         <template v-if="record.valencyUserId === userInfo.id && record.valencyStatus === 4">
           <a-divider type="vertical" />
-          <a class="btn-action" type="primary" @click="$refs.addCode.showForm(record.id,'code')">生成代码</a>
+          <a class="btn-action" type="primary" @click="$refs.addCode.showForm(record.id, 'code')">生成代码</a>
         </template>
         <template v-if="record.valencyUserId === userInfo.id && record.valencyStatus >= 3">
           <a-divider type="vertical" />
@@ -49,10 +49,9 @@
         slot-scope="record, index, indent, expanded"
         :columns="innerColumns"
         :dataSource="record.productListVos"
-        :pagination="false" 
+        :pagination="false"
         size="small"
       >
-
         <div slot="costPrice" slot-scope="text, record1">
           <span v-if="record.userSign === 1">***</span>
           <span v-else>{{ record1.costPrice | moneyFormatNumber }}</span>
@@ -66,51 +65,51 @@
         <div slot="cprice" slot-scope="text, record">
           <span>{{ record.cprice | moneyFormatNumber }}</span>
         </div>
-                <div slot="productName" slot-scope="text, record">
+        <div slot="productName" slot-scope="text, record">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
         <div slot="valencySpecs" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
 
         <div slot="toolProductName" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
 
         <div slot="toolProductStandard" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
 
         <div slot="newBasisModel" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
 
         <div slot="toolProductModel" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
-            <template slot="title">{{text}}</template>
-            {{ String(text).slice(0,10) }}...
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
           </a-tooltip>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
       </a-table>
     </a-table>
@@ -121,19 +120,8 @@
       <p>微信号：{{ linkManWeChat }}</p>
       <p>地址：{{ customerAddress }}</p>
     </a-modal>
-    <a-modal
-      title="审批预览"
-      v-model="priewVisible"
-      :footer="null"
-      :maskClosable="false"
-    >
-      <a-table
-        :columns="priewColumns"
-        rowKey="id"
-        :dataSource="priewData"
-        :pagination="false"
-        :loading="loading"
-      >
+    <a-modal title="审批预览" v-model="priewVisible" :footer="null" :maskClosable="false">
+      <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="false" :loading="loading">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -145,60 +133,60 @@
 
 <script>
 import AddCodeAndName from './AddCodeAndName'
-import { getCustomerInfo,getPriceList, getSaleValencyInfo } from '../../../../api/pricingModule'
+import { getCustomerInfo, getPriceList, getSaleValencyInfo } from '../../../../api/pricingModule'
 const columns = [
   {
     align: 'center',
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '核价编号',
     dataIndex: 'valencyCode',
     key: 'valencyCode',
-    scopedSlots: { customRender: 'valencyCode' }
+    scopedSlots: { customRender: 'valencyCode' },
   },
   {
     align: 'center',
     title: '需求日期',
     key: 'demandTime',
-    dataIndex: 'demandTime'
+    dataIndex: 'demandTime',
   },
   {
     align: 'center',
     title: '单据状态',
     dataIndex: 'valencyStatus',
     key: 'valencyStatus',
-    scopedSlots: { customRender: 'valencyStatus' }
+    scopedSlots: { customRender: 'valencyStatus' },
   },
   {
     align: 'center',
     title: '客户名称',
     dataIndex: 'customerName',
     key: 'customerName',
-    scopedSlots: { customRender: 'customerName' }
+    scopedSlots: { customRender: 'customerName' },
   },
   {
     align: 'center',
     title: '核价说明',
     dataIndex: 'explainText',
     key: 'explainText',
-    scopedSlots: { customRender: 'explainText' }
+    scopedSlots: { customRender: 'explainText' },
   },
   {
     align: 'center',
     title: '提交人',
     key: 'applyUserName',
-    dataIndex: 'applyUserName'
+    dataIndex: 'applyUserName',
   },
   {
     align: 'center',
     title: '提交时间',
     key: 'createTime',
-    dataIndex: 'createTime'
+    dataIndex: 'createTime',
   },
 
   // {
@@ -218,8 +206,8 @@ const columns = [
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 const innerColumns = [
   {
@@ -227,7 +215,7 @@ const innerColumns = [
     title: '依据产品代码',
     dataIndex: 'toolProductModel',
     key: 'toolProductModel',
-    width:'200px',
+    width: '200px',
     scopedSlots: { customRender: 'toolProductModel' },
   },
   {
@@ -236,7 +224,7 @@ const innerColumns = [
     dataIndex: 'toolProductName',
     key: 'toolProductName',
     scopedSlots: { customRender: 'toolProductName' },
-    width:'200px'
+    width: '200px',
   },
   {
     align: 'center',
@@ -244,14 +232,14 @@ const innerColumns = [
     dataIndex: 'toolProductStandard',
     key: 'toolProductStandard',
     scopedSlots: { customRender: 'toolProductStandard' },
-    width:'200px'
+    width: '200px',
   },
   {
     align: 'center',
     title: '产品代码',
     dataIndex: 'newBasisModel',
     key: 'newBasisModel',
-    width:'200px',
+    width: '200px',
     scopedSlots: { customRender: 'newBasisModel' },
   },
   {
@@ -260,7 +248,7 @@ const innerColumns = [
     dataIndex: 'productName',
     key: 'productName',
     scopedSlots: { customRender: 'productName' },
-    width:'200px'
+    width: '200px',
   },
   {
     align: 'center',
@@ -268,7 +256,7 @@ const innerColumns = [
     dataIndex: 'valencySpecs',
     key: 'valencySpecs',
     scopedSlots: { customRender: 'valencySpecs' },
-    width:'200px'
+    width: '200px',
   },
   {
     align: 'center',
@@ -276,7 +264,7 @@ const innerColumns = [
     dataIndex: 'costPrice',
     key: 'costPrice',
     scopedSlots: { customRender: 'costPrice' },
-    width:'120px'
+    width: '120px',
   },
   {
     align: 'center',
@@ -284,7 +272,7 @@ const innerColumns = [
     dataIndex: 'aprice',
     key: 'aprice',
     scopedSlots: { customRender: 'aprice' },
-    width:'120px'
+    width: '120px',
   },
   {
     align: 'center',
@@ -292,7 +280,7 @@ const innerColumns = [
     dataIndex: 'bprice',
     key: 'bprice',
     scopedSlots: { customRender: 'bprice' },
-    width:'120px'
+    width: '120px',
   },
   {
     align: 'center',
@@ -300,50 +288,56 @@ const innerColumns = [
     dataIndex: 'cprice',
     key: 'cprice',
     scopedSlots: { customRender: 'cprice' },
-    width:'120px'
-  }
+    width: '120px',
+  },
 ]
 const priewColumns = [
   {
     align: 'center',
     title: '序号',
     key: 'order',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '审核人',
     dataIndex: 'userName',
     key: 'userName',
-    scopedSlots: { customRender: 'userName' }
+    scopedSlots: { customRender: 'userName' },
   },
   {
     align: 'center',
     title: '审核节点',
     dataIndex: 'code',
     key: 'code',
-    scopedSlots: { customRender: 'code' }
+    scopedSlots: { customRender: 'code' },
   },
   {
     align: 'center',
     title: '审核时间',
     key: 'createTime',
-    dataIndex: 'createTime'
-  }
+    dataIndex: 'createTime',
+  },
 ]
 export default {
   name: 'ApprovedContract',
   components: { AddCodeAndName },
 
-  data () {
+  data() {
     return {
       userInfo: this.$store.getters.userInfo,
       data: [],
       priewData: [],
       columns: columns,
-      innerColumns:innerColumns,
+      innerColumns: innerColumns,
       priewColumns: priewColumns,
-      pagination: {},
+      pagination1: { current: 1 },
+      pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.getList()),
+      },
       loading: false,
       visible: false,
       priewVisible: false,
@@ -353,26 +347,25 @@ export default {
       customerAddress: '', // 联系地址
       linkManWeChat: '', // 联系人微信号
       valencyCode: '', // 核价编号
-      searchParams:{},
-      isExpanded:false, //是否展开列表子数据
-      expandedRowKeys:[]
+      searchParams: {},
+      isExpanded: false, //是否展开列表子数据
+      expandedRowKeys: [],
     }
   },
   computed: {},
   watch: {},
-  cerated () {},
-  mounted () {
+  cerated() {},
+  mounted() {
     this.init()
   },
   methods: {
-
-    init () {
+    init() {
       // 获取核价单列表数据
       //this.getList()
     },
     // 获取列表
-    getList (params = {}) {
-      this.searchParams = Object.assign({},this.searchParams,params)
+    getList(params = {}) {
+      this.searchParams = Object.assign({}, { ...this.searchParams }, { ...this.pagination1 }, params)
       // params = {
       //   valencyCode: this.priceModelInput || '', // 不传入核价编号获取到的是所有的岗位信息
       //   customerName: this.customerInput || '', // 不传入客户名称模糊获取到的是所有的岗位信息
@@ -381,65 +374,61 @@ export default {
       // }
       this.loading = true
       console.log(this.searchParams)
-      getPriceList(this.searchParams).then((res) => {
-        console.log('获取核价列表结果', res)
-        const pagination = { ...this.pagination }
-        pagination.total = res.data.total || 0
-        this.loading = false
-        this.data = res.data.records.map((item,index) =>{
-          item.key = index + 1
-          return item
+      getPriceList(this.searchParams)
+        .then((res) => {
+          console.log('获取核价列表结果', res)
+          const pagination = { ...this.pagination }
+          pagination.total = res.data.total || 0
+          this.loading = false
+          this.data = res.data.records.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+          this.expandedRowKeys = this.isExpanded ? this.data.map((item) => item.key) : []
+          this.pagination = pagination
         })
-        this.expandedRowKeys = this.isExpanded ?  this.data.map(item => item.key) : []
-        this.pagination = pagination
-      }).catch(error => {
-        this.loading = false
-        console.error(error)
-      })
+        .catch((error) => {
+          this.loading = false
+          console.error(error)
+        })
     },
     // 分页
-    handleTableChange (pagination, filters, sorter) {
-      console.log(pagination)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.getList({
-        results: pagination.pageSize,
-        current: pagination.current,
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters
-      })
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.getList()
     },
     // 点击核价编号和查看按钮，查看核价订单
-    lookApplyNuclear (record) {
+    lookApplyNuclear(record) {
       const id = record.id
       // 跳转到查看核价详情页面，并携带所要传递的参数传递到目标页面
       this.$router.push({ name: 'LookNuclearPrice', params: { id: id } }) // 跳转至ApplyNuclearPrice路由并传递一个数据
     },
     // 审批预览弹出层
-    approvalPreview (record) {
+    approvalPreview(record) {
       this.priewVisible = true
       const params = {
-        id: record.id
+        id: record.id,
       }
       // 获取审批预览信息
-      getSaleValencyInfo(params).then((res) => {
-        this.priewData = res.data
-      }).catch(error => {
-        this.loading = false
-        console.error(error)
-      })
+      getSaleValencyInfo(params)
+        .then((res) => {
+          this.priewData = res.data
+        })
+        .catch((error) => {
+          this.loading = false
+          console.error(error)
+        })
     },
     // 客户信息弹框
-    consumerInfo (record) {
+    consumerInfo(record) {
       this.visible = true
       const params = {
-        id: record.consumerId
+        id: record.consumerId,
       }
       // 获取客户信息
       getCustomerInfo(params)
-        .then(res => {
+        .then((res) => {
           console.log('//获取客户信息', res)
           ;(this.customerName = res.data.customerName),
             (this.linkManName = res.data.linkManName),
@@ -447,31 +436,31 @@ export default {
             (this.customerAddress = res.data.customerAddress),
             (this.linkManWeChat = res.data.linkManWeChat)
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
-    updateNuclear(record){
+    updateNuclear(record) {
       const id = record.id
       console.log('点击了核价按钮，跳转核价页面', id)
       // 跳转到核价页面，并携带所要传递的参数传递到目标页面
-      this.$router.push({ name: 'NuclearPriceApproval', params: { id: id ,type: 'update'} }) // 跳转至NuclearPriceApproval.vue路由并传递一个数据
+      this.$router.push({ name: 'NuclearPriceApproval', params: { id: id, type: 'update' } }) // 跳转至NuclearPriceApproval.vue路由并传递一个数据
     },
-    expandHandler(expanded,record){
+    expandHandler(expanded, record) {
       console.log(arguments)
-      if(expanded){
-        this.expandedRowKeys = [...this.expandedRowKeys,record.key]
-      }else{
-        this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
+      if (expanded) {
+        this.expandedRowKeys = [...this.expandedRowKeys, record.key]
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  .btn-action~.btn-action{
-    margin-left: 6px;
-  }
+.btn-action ~ .btn-action {
+  margin-left: 6px;
+}
 </style>

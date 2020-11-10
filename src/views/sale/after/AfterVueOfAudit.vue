@@ -484,6 +484,7 @@ import {
   listUserByAfterSale,
   afterUpdate,
   invoiceDetailById,
+  listInvoiceByContractId,
   listInvoiceByPresentId
 } from '@/api/after'
 import { getContractOne } from '@/api/receipt'
@@ -676,6 +677,8 @@ export default {
       this.invoicsDataSource = []
       listInvoiceByContractId(paramter).then(res => {
         this.invoiceList = res.data
+      }).catch(err =>{
+        console.log(err)
       })
       getContractOne(paramter).then(res => {
         this.usingPlatform = res.data.usingPlatform

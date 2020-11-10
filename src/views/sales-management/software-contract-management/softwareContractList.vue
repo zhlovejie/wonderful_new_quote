@@ -56,7 +56,6 @@
           </div>
           <a slot="customerName" slot-scope="text, record" @click="consumerInfoShow(record)">{{ text }}</a>
           <div slot="approvalStatus" slot-scope="text, record">
-
             <!-- {{ {'-1':'待提交',0:'待审批',1:'通过',2:'不通过',9:'已撤回'} }} -->
             <span v-if="text === -1">待提交</span>
             <a v-else @click="approvalPreview(record)">
@@ -130,7 +129,7 @@
                       <a type="primary" @click="deleteCurrentContract(record.id)">删除</a>
                     </a-menu-item>
                     <a-menu-item key="7" v-if="record.approvalStatus === 0">
-                      <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                      <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                         <a type="primary" href="javascript:;">撤回</a>
                       </a-popconfirm>
                     </a-menu-item>
@@ -147,33 +146,6 @@
                 <a type="primary" @click="showSms(record)">短信记录</a>
               </template>
             </template>
-
-            <!-- <template v-if="parseInt(status) === 0"> -->
-            <!-- <a type="primary" v-if="$auth('softwareContract:one')" @click="viewAction('edit', record)">查看</a>
-              <a-divider type="vertical" /> -->
-            <!-- <a type="primary" v-if="$auth('softwareContract:add')" @click="copySoftContract(record.id)">复制合同</a> -->
-            <!-- <template v-if="$auth('softwareContract:edit') && record.approvalStatus === 1"> -->
-            <!-- <a-divider type="vertical" /> -->
-            <!-- <a type="primary" @click="addDelayedPayment(record)">申请延迟付款单</a> -->
-            <!-- <a-divider type="vertical" /> -->
-            <!-- <a type="primary" @click="uploadPhoto(record)">上传附件</a> -->
-            <!-- <a-divider type="vertical" /> -->
-            <!-- <a type="primary" @click="showSms(record)">短信记录</a> -->
-            <!-- </template> -->
-            <!-- <template v-if="$auth('softwareContract:edit') && record.approvalStatus !== 0">
-                <a-divider type="vertical" />
-                <a type="primary" @click="editAction(record)">修改</a>
-              </template> -->
-
-            <!-- <template v-if="$auth('softwareContract:edit') && record.approvalStatus === -1">
-                <a-divider type="vertical" />
-                <a type="primary" @click="startProcess(record.id)">提交审批</a>
-              </template> -->
-            <!-- <template v-if="$auth('softwareContract:del')">
-                <a-divider type="vertical" />
-                <a type="primary" @click="deleteCurrentContract(record.id)">删除</a>
-              </template> -->
-            <!-- </template> -->
           </div>
         </a-table>
       </a-spin>
@@ -191,7 +163,7 @@ import {
   updateSoftwareContract,
   startProcess,
   copySoftContract,
-  revocationSoftwareContract
+  revocationSoftwareContract,
 } from '@/api/contractListManagement'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import CustomerInfo from '@/components/CustomerList/CustomerInfo'
@@ -304,7 +276,13 @@ export default {
       },
       columns: columns,
       contractListDataSource: [],
-      pagination: {},
+      pagination1: { current: 1 },
+      pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+      },
       loading: false,
       current: 1,
     }
@@ -398,7 +376,7 @@ export default {
     },
     searchAction(opt = {}) {
       this.loading = true
-      let _searchParam = Object.assign({}, this.searchParam, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       getSoftwareContractList(_searchParam)
         .then((res) => {
           const pagination = { ...this.pagination }
@@ -423,11 +401,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     tabChange(tagKey) {
       this.status = parseInt(tagKey)
@@ -505,16 +481,16 @@ export default {
     handleSaveOk() {
       this.searchAction()
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'reback'){
-        revocationSoftwareContract({id:record.id}).then(res =>{
+      if (type === 'reback') {
+        revocationSoftwareContract({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
         return
       }
-    }
+    },
   },
 }
 </script>

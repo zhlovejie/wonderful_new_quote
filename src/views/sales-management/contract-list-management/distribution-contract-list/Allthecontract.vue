@@ -15,14 +15,14 @@
         </div>
         <a slot="customerName" slot-scope="text, record" @click="consumerInfo(record)">{{ text }}</a>
         <a slot="approvalStatus" slot-scope="text, record" @click="approvalPreview(record)">
-          {{ {'-1':'待提交',0:'待审批',2:'通过',4:'待审批',9:'已撤回'}[text] || '不通过' }}
+          {{ { '-1': '待提交', 0: '待审批', 2: '通过', 4: '待审批', 9: '已撤回' }[text] || '不通过' }}
           <!-- <span v-if="parseInt(text) === -1">待提交</span>
           <span v-else-if="parseInt(text) === 0 || parseInt(text) == 4">待审批</span>
           <span v-else-if="parseInt(text) === 2">通过</span>
           <span v-else>不通过</span> -->
         </a>
         <div slot="contractStatus" slot-scope="text">
-          {{ {'-1':'请选择合同状态',0:'未启动',1:'已启动',2:'已作废'}[text] }}
+          {{ { '-1': '请选择合同状态', 0: '未启动', 1: '已启动', 2: '已作废' }[text] }}
           <!-- <span v-if="text === -1">请选择合同状态</span>
           <span v-if="text === 0">未启动</span>
           <span v-if="text === 1">已启动</span>
@@ -68,7 +68,8 @@
                   key="2"
                   v-if="
                     $auth('distributionContract:change') &&
-                    (((record.operatorStatus === 1 || record.operatorStatus === 2) && record.approvalStatus === 3) || record.approvalStatus === 9)
+                    (((record.operatorStatus === 1 || record.operatorStatus === 2) && record.approvalStatus === 3) ||
+                      record.approvalStatus === 9)
                   "
                 >
                   <a type="primary" @click="editSaleContract(record)">修改</a></a-menu-item
@@ -113,8 +114,8 @@
                 <a-menu-item key="9" v-if="$auth('distributionContract:delete')">
                   <a type="primary" @click="deleteCurrentContract(record)">删除</a>
                 </a-menu-item>
-                <a-menu-item key="10" v-if="[0,4].includes(+record.approvalStatus)">
-                  <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a-menu-item key="10" v-if="[0, 4].includes(+record.approvalStatus)">
+                  <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                     <a type="primary" href="javascript:;">撤回</a>
                   </a-popconfirm>
                 </a-menu-item>
@@ -152,7 +153,7 @@ import {
   startSaleContractProcess,
   deleteContract,
   copyContract,
-  revocationContract
+  revocationContract,
 } from '../../../../api/contractListManagement'
 import { getCustomerInfo } from '../../../../api/pricingModule'
 import UploadPhoto from './UploadPhoto'
@@ -300,7 +301,13 @@ export default {
       columns: columns,
       priewColumns: priewColumns,
       priewData: [],
-      pagination: {},
+      pagination1: { current: 1 },
+      pagination: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => '共' + total + '条数据', //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.getList()),
+      },
       loading: false,
       visible: false,
       priewVisible: false, // 审批状态弹出层
@@ -413,20 +420,19 @@ export default {
       params = {
         status: this.status,
         contractStatus: this.contractStatus, // 合同状态：0未启动 1已启动，不传查所有
-        current: params.current || 1,
         contractNum: this.contractNum || '', // 不传入合同编号模糊获取到的是所有的信息
         customerId: this.customerId || '', // 不传入客户id获取到的是所有的信息
         approveStatus: this.approveStatus,
       }
+      let _searchParam = Object.assign({}, { ...params }, { ...this.pagination1 } || {})
       this.loading = true
-      getSalesList(params)
+      getSalesList(_searchParam)
         .then((res) => {
-          console.log('获取销售合同列表结果', res)
-          const pagination = { ...this.pagination }
-          pagination.total = res.data.total || 0
           this.loading = false
           this.data = res.data.records
           console.log('获取销售合同列表结果this.data', this.data)
+          const pagination = { ...this.pagination }
+          pagination.total = res.data.total
           this.pagination = pagination
         })
         .catch((error) => {
@@ -436,17 +442,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.getList({
-        results: pagination.pageSize,
-        current: pagination.current,
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters,
-      })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.getList()
     },
 
     // 客户信息弹框
@@ -588,16 +586,16 @@ export default {
     handleSaveOk() {
       this.init()
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'reback'){
-        revocationContract({id:record.id}).then(res =>{
+      if (type === 'reback') {
+        revocationContract({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.init()
         })
         return
       }
-    }
+    },
   },
 }
 </script>

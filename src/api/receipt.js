@@ -322,6 +322,18 @@ export function refundRevocation (parameter) {
   })
 }
 
+/**退款单 删除 */
+export function refundDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/saleRefund/refund/delRefund',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
 //----------------------退款单-END------------------
 
 //----------------------赠送单----------------------
@@ -382,6 +394,16 @@ export function presentRevocation (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**赠送单 删除 */
+export function presentDel (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salePresent/present/delPresent',
     method: 'get',
     params: parameter
   })

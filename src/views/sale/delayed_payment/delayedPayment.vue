@@ -74,6 +74,7 @@
           :columns="columns"
           :data="loadData"
           :alert="false"
+          :pagination="pagination"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -103,19 +104,19 @@
             <a @click="handleSee(record)">查看</a>
             <template v-if="+audit === 0">
               <template v-if="record.approvalStatus == 1">
-                <a-divider type="vertical"/>
-                <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a-divider type="vertical" />
+                <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                   <a type="primary" href="javascript:;">撤回</a>
                 </a-popconfirm>
               </template>
               <template v-if="record.approvalStatus == 2">
-                <a-divider type="vertical"/>
+                <a-divider type="vertical" />
                 <a target="_blank" :href="record.wordUrl">欠款单</a>
-                <a-divider type="vertical"/>
+                <a-divider type="vertical" />
                 <a target="_blank" @click="UploadFile(record)">上传</a>
               </template>
               <template v-if="+record.approvalStatus === 3 || +record.approvalStatus === 9">
-                <a-divider type="vertical"/>
+                <a-divider type="vertical" />
                 <a @click="Resubmit(record)">重新提交</a>
               </template>
             </template>
@@ -136,7 +137,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getDelayedList, changeState ,revocationDelayedPayment} from '@/api/delayedPayment'
+import { getDelayedList, changeState, revocationDelayedPayment } from '@/api/delayedPayment'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getLoginUser } from '@api/systemSetting'
@@ -157,6 +158,9 @@ export default {
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
       queryParam: {
         dayWeekMonth: 1,
+      },
+      pagination: {
+        showTotal: (total) => '共' + total + '条数据',
       },
       recordResult: {},
       queryRecord: {},
@@ -391,17 +395,16 @@ export default {
       // 跳转到申请延迟付款单界面
       this.$router.push({ name: 'addSoftDelayedPayment', params: { id: record.id ,contractType:"2"} })
     }*/
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'reback'){
-        revocationDelayedPayment({id:record.id}).then(res =>{
+      if (type === 'reback') {
+        revocationDelayedPayment({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.search()
         })
         return
       }
-    }
-    
+    },
   },
 }
 </script>

@@ -92,7 +92,11 @@
               <a @click="handleAudit(record)">审核</a>
             </template>
             <template
-              v-if="$auth('receipt:edit') && (+record.receiptStatus === 3 || +record.receiptStatus === 9) && userInfo.id === record.createdId"
+              v-if="
+                $auth('receipt:edit') &&
+                (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
+                userInfo.id === record.createdId
+              "
             >
               <a-divider type="vertical" />
               <a @click="handleEdit(record)">重新提交</a>
@@ -103,11 +107,9 @@
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template
-              v-if="!audit && record.receiptStatus === 1"
-            >
+            <template v-if="!audit && record.receiptStatus === 1">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
@@ -163,7 +165,7 @@
 
 <script>
 import { STable } from '@/components'
-import { deleteReceipt, getContractOne, getServiceList,revocationReceipt } from '@/api/receipt'
+import { deleteReceipt, getContractOne, getServiceList, revocationReceipt } from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
@@ -343,8 +345,12 @@ export default {
       dayWeekMonth: 1,
 
       dataSource: [],
+      pagination1: { current: 1 },
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       isExpanded: false, //是否展开列表子数据
@@ -364,7 +370,7 @@ export default {
   methods: {
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getServiceList(_searchParam)
@@ -386,10 +392,8 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
     handleAdd(e) {
@@ -579,16 +583,16 @@ export default {
         this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
       }
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'reback'){
-        revocationReceipt({id:record.id}).then(res =>{
+      if (type === 'reback') {
+        revocationReceipt({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
         return
       }
-    }
+    },
   },
 }
 </script>
