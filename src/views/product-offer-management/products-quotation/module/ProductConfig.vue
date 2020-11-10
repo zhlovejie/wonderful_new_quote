@@ -102,8 +102,8 @@
                   </td>
                   <td>
                     <a-checkbox
-                      :disabled="item.target.isRequire"
-                      :checked="item.target.checked || item.target.isRequire"
+                      :disabled="+item.target.isRequire === 4"
+                      :checked="item.target.checked"
                       @change="controlResultOptChoiceCheckChange(index,$event)"
                     />
                   </td>
@@ -168,8 +168,8 @@
                 </template>
                 <td>
                   <a-checkbox
-                    :disabled="item.target.isRequire"
-                    :checked="item.target.checked || item.target.isRequire"
+                    :disabled="+item.target.isRequire === 4"
+                    :checked="item.target.checked"
                     @change="optChoiceCheckChange(index,$event)"
                   />
                 </td>
@@ -280,14 +280,17 @@ export default {
 
 
     optChoiceDataSourceChange(index,val){
-      debugger
+      //debugger
       let _optChoice = [...this.optChoice]
       let target = _optChoice[index].dataSource.find(item => item.id === val)
       if(target){
         if(target.price === null){
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
-        target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        //target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        //target.checked = _optChoice[index].target.checked ||  [4,6].includes(+_optChoice[index].target.isRequire)
+        target.checked = _optChoice[index].target.checked || [4,6].includes(+target.isRequire)
+
         _optChoice[index].target = target
         this.optChoice = [..._optChoice]
       }
@@ -319,7 +322,7 @@ export default {
       }
     },
     controlResultOptChoiceDataSourceChange(index,val){
-      debugger
+      //debugger
       let controlResult = {...this.controlResult}
       let _optChoice = controlResult.optChoice
       let target = _optChoice[index].dataSource.find(item => item.id === val)
@@ -328,7 +331,8 @@ export default {
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
         }
         //target.checked = target.isRequire
-        target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        //target.checked = _optChoice[index].target.checked || _optChoice[index].target.isRequire
+        target.checked = _optChoice[index].target.checked || [4,6].includes(+target.isRequire)
         _optChoice[index].target = {...target}
         this.controlResult = controlResult
       }
@@ -398,7 +402,7 @@ export default {
       })
       that.optChoice = sysConfigList.optChoice.map((item,index) =>{
         item.target = Object.assign({},item.dataSource[0])
-        item.target.checked = item.target.isRequire
+        item.target.checked = [4,6].includes(+item.target.isRequire)
 
         if(item.target.isProduct && item.target.checked){
           that.$emit('extendProductChange',Object.assign({},item.target))
@@ -490,9 +494,10 @@ export default {
             cprice:item.cprice,
             retailPrice:item.retailPrice,
           }
-          if ([4, 5].includes(item.type)) {
-            _item.isRequire = item.type === 4 ? true : false
-          }
+          // if ([4, 5].includes(item.type)) {
+          //   _item.isRequire = item.type === 4 ? true : false
+          // }
+          _item.isRequire = item.type
           return _item
         })
       }
@@ -502,7 +507,7 @@ export default {
       let optSelectData = data
         .filter(item => item.mainBody === 1 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
-      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5,6].includes(item.type))
 
       let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
@@ -540,9 +545,10 @@ export default {
             isProduct:item.isProduct === 1 ? true : false,
             introduction:item.introduction || ''
           }
-          if ([4, 5].includes(item.type)) {
-            _item.isRequire = item.type === 4 ? true : false
-          }
+          // if ([4, 5].includes(item.type)) {
+          //   _item.isRequire = item.type === 4 ? true : false
+          // }
+          _item.isRequire = item.type
           return _item
         })
       }
@@ -556,7 +562,7 @@ export default {
         .filter(item => item.mainBody === 2 && item.type === 3)
         .sort((a, b) => a.orderNo - b.orderNo)
 
-      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5,6].includes(item.type))
 
       let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []

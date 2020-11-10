@@ -24,7 +24,12 @@
       </transition-group>
     </vuedraggable>
     <a-form-item v-if="showRequire" style="margin-bottom:0;" class="opt-list-is-require">
-      <a-checkbox v-model="isRequire">是否必选项</a-checkbox>
+      <!-- <a-checkbox v-model="isRequire">是否必选项</a-checkbox> -->
+      <a-radio-group v-model="isRequire">
+        <a-radio :value="5">默认不选中</a-radio>
+        <a-radio :value="6">默认选中</a-radio>
+        <a-radio :value="4">必选项(不可更改)</a-radio>
+      </a-radio-group>
     </a-form-item>
   </div>
 </template>
@@ -57,7 +62,7 @@ export default {
   data() {
     return {
       optStandDragList: [],
-      isRequire: false
+      isRequire: 5
     }
   },
   mounted() {
@@ -67,7 +72,7 @@ export default {
     init() {
       this.optStandDragList = (this.dataSource || []).map(item => Object.assign({}, item))
       if (this.optStandDragList.length > 0) {
-        this.isRequire = this.optStandDragList[0].isRequire || false
+        this.isRequire = this.optStandDragList[0].isRequire || 5
       }
       this.reSortAction()
     },
