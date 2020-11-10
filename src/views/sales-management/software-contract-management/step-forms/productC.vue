@@ -12,7 +12,7 @@
         <span>分类管理软件</span>
       </template>
       <template slot="productName" slot-scope="text, record">
-        <a-select @change="productNameChange(record, $event)" :value="record.productSysdicId">
+        <a-select @change="productNameChange(record, $event)" disabled :value="record.productSysdicId">
           <a-select-option value="-1">选择产品</a-select-option>
           <a-select-option v-for="item in softProductData" :value="item.id" :key="item.id">{{
             item.text
@@ -20,7 +20,7 @@
         </a-select>
       </template>
       <template slot="productType" slot-scope="text, record">
-        <a-select @change="productTypeChange(record, $event)" :value="String(record.productType)">
+        <a-select @change="productTypeChange(record, $event)" disabled :value="String(record.productType)">
           <a-select-option value="-1">选择产品类别</a-select-option>
           <a-select-option value="0">标准版</a-select-option>
           <a-select-option value="1">定制版</a-select-option>
@@ -28,7 +28,12 @@
       </template>
       <template slot="productVersion" slot-scope="text, record">
         <template v-if="parseInt(record.productType) === 0">
-          <a-select @change="productVersionChange(record, $event)" key="selectProductVersion" :value="record.productId">
+          <a-select
+            @change="productVersionChange(record, $event)"
+            disabled
+            key="selectProductVersion"
+            :value="record.productId"
+          >
             <a-select-option value="-1">选择版本</a-select-option>
             <a-select-option v-for="item in record.productVersionList" :value="item.id" :key="item.id">{{
               item.version
@@ -39,6 +44,7 @@
           <a-input
             type="text"
             style="width: 80px"
+            disabled
             :value="record.productVersion"
             key="inputProductVersion"
             @change="productVersionChange(record, $event)"
@@ -48,20 +54,21 @@
       <template slot="hasTax">是</template>
       <template slot="count">1</template>
       <template slot="unitPrice" slot-scope="text, record">
-        <a-input-number :precision="2" :min="0" :value="record.unitPrice" @change="multiplyMoney(record, $event)" />
+        <a-input-number
+          disabled
+          :precision="2"
+          :min="0"
+          :value="record.unitPrice"
+          @change="multiplyMoney(record, $event)"
+        />
       </template>
       <template slot="tax">8%</template>
       <template slot="taxAmount" slot-scope="text, record">
         <span>{{ record.taxAmount | moneyFormatNumber }}</span>
       </template>
-      <template slot="operation" slot-scope="text, record">
-        <a-popconfirm title="是否要删除此行？" @confirm="remove(record)">
-          <a>删除</a>
-        </a-popconfirm>
-      </template>
     </a-table>
 
-    <a-button style="width: 100%" type="dashed" icon="plus" @click="newMember">新增行</a-button>
+    <!-- <a-button style="width: 100%;" type="dashed" icon="plus" @click="newMember">新增行</a-button> -->
 
     <a-row justify="start" align="middle">
       <a-col class="col-mount" :span="24">
@@ -155,12 +162,12 @@ let columns = [
   //   scopedSlots: { customRender: 'taxAmount' },
   //   width:'200px'
   // },
-  {
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'operation' },
-    width: '100px',
-  },
+  //   {
+  //     title: '操作',
+  //     key: 'action',
+  //     scopedSlots: { customRender: 'operation' },
+  //     width: '100px',
+  //   },
 ]
 
 export default {

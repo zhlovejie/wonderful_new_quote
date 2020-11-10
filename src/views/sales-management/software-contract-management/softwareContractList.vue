@@ -100,7 +100,7 @@
                 条件搜索：合同编号、客户名称、合同状态（下拉列表）
              -->
             <template>
-              <a type="primary" v-if="$auth('softwareContract:one')" @click="viewAction('edit', record)">查看</a>
+              <a type="primary" v-if="$auth('softwareContract:one')" @click="SeeAction(record)">查看</a>
 
               <template v-if="parseInt(status) === 0">
                 <a-divider type="vertical" />
@@ -457,6 +457,13 @@ export default {
       this.$router.push({
         name: 'previewSoftwareContract',
         params: { id: record.id, action: action, from: 'softwareContractList' },
+      })
+    },
+    //查看
+    SeeAction(record) {
+      this.$router.push({
+        name: 'softwareContractModel',
+        params: { id: record.id, idx: record, action: 'see', from: 'softwareContractList' },
       })
     },
     editAction(record) {
