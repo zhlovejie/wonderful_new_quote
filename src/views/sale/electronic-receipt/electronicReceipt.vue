@@ -13,7 +13,7 @@
             <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           </a-form-item>
         </template>
-        <div class="action-wrapper" style="float:right;">
+        <div class="action-wrapper" style="float: right">
           <a-form-item>
             <template v-if="$auth('electronicReceipt:add')">
               <a-dropdown>
@@ -39,12 +39,13 @@
           :columns="columns"
           :data="loadData"
           :alert="false"
+          :pagination="pagination"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="type" slot-scope="text, record, index">
-            <span>{{ parseInt(text,10) === 1 ? '单位' : '个人' }}收据</span>
+            <span>{{ parseInt(text, 10) === 1 ? '单位' : '个人' }}收据</span>
           </div>
           <div slot="payment" slot-scope="text, record">
             <div v-if="text == 1">银行卡</div>
@@ -55,7 +56,7 @@
           <div slot="money" slot-scope="text, record, index">
             <span>{{ text | moneyFormatNumber }}</span>
           </div>
-          
+
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('electronicReceipt:one')">
               <a @click="handleSee(record)">查看</a>
@@ -66,12 +67,7 @@
             </template>
             <template v-if="$auth('electronicReceipt:del') && userInfo.id === record.createdId">
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="确认删除这条数据？"
-                @confirm="handleDelete(record.id)"
-                okText="是"
-                cancelText="否"
-              >
+              <a-popconfirm title="确认删除这条数据？" @confirm="handleDelete(record.id)" okText="是" cancelText="否">
                 <a href="#">删除</a>
               </a-popconfirm>
             </template>
@@ -94,59 +90,59 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '收据类型',
     key: 'type',
     dataIndex: 'type',
-    scopedSlots: { customRender: 'type' }
+    scopedSlots: { customRender: 'type' },
   },
   {
     align: 'center',
     title: '收据编号',
     key: 'receiptCode',
-    dataIndex: 'receiptCode'
+    dataIndex: 'receiptCode',
   },
-  
+
   {
     align: 'center',
     title: '交款单位',
     dataIndex: 'customerName',
-    key: 'customerName'
+    key: 'customerName',
   },
   {
     align: 'center',
     title: '收款日期',
     dataIndex: 'entryTime',
-    key: 'entryTime'
+    key: 'entryTime',
   },
   {
     align: 'center',
     title: '人民币',
     dataIndex: 'money',
     key: 'money',
-    scopedSlots: { customRender: 'money' }
+    scopedSlots: { customRender: 'money' },
   },
   {
     align: 'center',
     title: '申请人',
     key: 'createdName',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
     title: '申请时间',
     key: 'createdTime',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 export default {
   name: 'ElectronicReceipt',
@@ -154,7 +150,7 @@ export default {
     // 组件
     STable,
     Modal,
-    system
+    system,
   },
   data() {
     return {
@@ -163,20 +159,23 @@ export default {
       selectedRowKeys: [],
       selectedRows: [],
       // 表头
+      pagination: {
+        showTotal: (total) => '共' + total + '条数据',
+      },
       columns: columns,
       userInfo: this.$store.getters.userInfo,
       // 初始化加载 必须为 Promise 对象
-      loadData: parameter => {
+      loadData: (parameter) => {
         console.log('页面开始加载数据。。。', parameter, this.queryParam)
         return getReceiptList(Object.assign(parameter, this.queryParam))
-          .then(res => {
+          .then((res) => {
             return res
           })
-          .catch(error => {
+          .catch((error) => {
             this.loading = false
             console.error(error)
           })
-      }
+      },
     }
   },
   watch: {
@@ -185,7 +184,7 @@ export default {
       if (from.fullPath === '/sale/addReceipt') {
         this.$refs.table.refresh(true)
       }
-    }
+    },
   },
   methods: {
     // 新增
@@ -195,7 +194,7 @@ export default {
     // 申请单据
     handleAdd(type) {
       //type 1 单位收据  2 个人收据
-      this.$router.push({ name: 'addReceipt' ,params:{actionType:type}})
+      this.$router.push({ name: 'addReceipt', params: { actionType: type } })
     },
     handleSee(record) {
       this.$router.push({ name: 'receiptModule', params: { record: record } })
@@ -213,7 +212,7 @@ export default {
     //   document.body.removeChild(link)
     // },
     handleDelete(id) {
-      deleteReceipt({ id: id }).then(res => {
+      deleteReceipt({ id: id }).then((res) => {
         if (res.code === 200) {
           this.handleSaveOk()
         } else {
@@ -237,10 +236,10 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    handleMenuClick(e){
-      this.handleAdd(parseInt(e.key,10))
-    }
-  }
+    handleMenuClick(e) {
+      this.handleAdd(parseInt(e.key, 10))
+    },
+  },
 }
 </script>
 

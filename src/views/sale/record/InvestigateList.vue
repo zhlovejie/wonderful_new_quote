@@ -65,7 +65,7 @@
             </template>
           </a-tabs>
         </div>
-        <s-table rowKey="id" ref="table" size="default" :columns="columns" :data="loadData" :alert="false">
+        <s-table rowKey="id" ref="table" size="default" :columns="columns" :data="loadData" :alert="false"  :pagination="pagination">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -179,6 +179,9 @@ export default {
       projectName: '',
       vueBoolean: this.$store.getters.vueBoolean,
       isLook: 0,
+         pagination: {
+        showTotal: total=> '共' + total +'条数据'
+      },
       saleCustomers: [],
       contractStatus: [
         {

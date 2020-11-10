@@ -3,14 +3,15 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item label="客户名称">
-          <a-input v-model="customerName"/>
+          <a-input v-model="customerName" />
         </a-form-item>
         <a-form-item label="单据状态" v-show="showFlag">
-          <a-select  v-model="approveStatus" style="width: 150px" >
+          <a-select v-model="approveStatus" style="width: 150px">
             <a-select-option :value="0">请选择审批状态</a-select-option>
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>  </a-select>
+            <a-select-option :value="3">不通过</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item>
           <template v-if="$auth('advances:list')">
@@ -28,16 +29,12 @@
       <a-col>
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
-            <a-tab-pane tab="全部" key="0" forceRender>
-            </a-tab-pane>
+            <a-tab-pane tab="全部" key="0" forceRender> </a-tab-pane>
 
             <template v-if="$auth('advances:approval')">
-              <a-tab-pane tab="待审批" key="4">
-              </a-tab-pane>
-              <a-tab-pane tab="已审批" key="5">
-              </a-tab-pane>
+              <a-tab-pane tab="待审批" key="4"> </a-tab-pane>
+              <a-tab-pane tab="已审批" key="5"> </a-tab-pane>
             </template>
-
           </a-tabs>
         </div>
         <s-table
@@ -47,6 +44,7 @@
           :columns="columns"
           :data="loadData"
           :alert="false"
+          :pagination="pagination"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -61,10 +59,10 @@
             <a @click="tenderingClick(record)">{{ text }}</a>
           </span>
           <div slot="moneyType" slot-scope="text, record">
-            <span v-if="text==1">公户</span>
-            <span v-if="text==2">银行卡</span>
-            <span v-if="text==3">微信</span>
-            <span v-if="text==4">支付宝</span>
+            <span v-if="text == 1">公户</span>
+            <span v-if="text == 2">银行卡</span>
+            <span v-if="text == 3">微信</span>
+            <span v-if="text == 4">支付宝</span>
           </div>
           <div slot="advancesStatus" slot-scope="text, record">
             <a @click="handleClick(record)" v-if="+text === 1">待审批</a>
@@ -77,20 +75,28 @@
               <a @click="handleVue(record)">查看</a>
             </template>
             <template v-if="$auth('advances:edit') && audit">
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
               <a @click="handleAudit(record)">审核</a>
             </template>
-            <template v-if="$auth('advances:del') && !audit && userInfo.id === record.createdId && +record.advancesStatus === 2">
-              <a-divider type="vertical"/>
+            <template
+              v-if="$auth('advances:del') && !audit && userInfo.id === record.createdId && +record.advancesStatus === 2"
+            >
+              <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="$auth('advances:edit') && (+record.advancesStatus === 3 || +record.advancesStatus === 9) && userInfo.id === record.createdId">
-              <a-divider type="vertical"/>
+            <template
+              v-if="
+                $auth('advances:edit') &&
+                (+record.advancesStatus === 3 || +record.advancesStatus === 9) &&
+                userInfo.id === record.createdId
+              "
+            >
+              <a-divider type="vertical" />
               <a @click="handleEdit(record)">重新提交</a>
             </template>
             <template v-if="!audit && +record.advancesStatus === 1">
-              <a-divider type="vertical"/>
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
@@ -98,7 +104,7 @@
         </s-table>
       </a-col>
     </a-row>
-    <advances-add ref="add" @ok="handleSaveOk" @close="handleSaveClose" ></advances-add>
+    <advances-add ref="add" @ok="handleSaveOk" @close="handleSaveClose"></advances-add>
     <advances-vue ref="advancesVue" @ok="handleSaveOk" @close="handleSaveClose"></advances-vue>
     <advances-audit ref="advanceAudit" @ok="handleAuditOk" @close="handleSaveClose"></advances-audit>
     <Tendering ref="tendering"></Tendering>
@@ -108,7 +114,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getServiceList, deleteById ,revocationAdvances} from '@/api/advances'
+import { getServiceList, deleteById, revocationAdvances } from '@/api/advances'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import AdvancesAdd from './AdvancesAdd'
@@ -123,12 +129,15 @@ export default {
     AdvancesAdd,
     Tendering,
     InvestigateNode,
-    STable
+    STable,
   },
-  data () {
+  data() {
     return {
       form: this.$form.createForm(this),
       // 查询参数
+      pagination: {
+        showTotal: (total) => '共' + total + '条数据',
+      },
       userInfo: this.$store.getters.userInfo,
       queryParam: {},
       recordResult: {},
@@ -140,24 +149,24 @@ export default {
       saleCustomers: [],
       audit: false,
       showFlag: true,
-      approveStatus:0,
+      approveStatus: 0,
       contractStatus: [
         {
-          'id': 0,
-          'name': '请选择状态'
+          id: 0,
+          name: '请选择状态',
         },
         {
-          'id': 1,
-          'name': '待审批'
+          id: 1,
+          name: '待审批',
         },
         {
-          'id': 2,
-          'name': '通过'
+          id: 2,
+          name: '通过',
         },
         {
-          'id': 3,
-          'name': '不通过'
-        }
+          id: 3,
+          name: '不通过',
+        },
       ],
       // 表头
       columns: [
@@ -166,92 +175,95 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           title: '收款编号',
           dataIndex: 'advancesCode',
           // key: 'title',
-          scopedSlots: { customRender: 'advancesCode' }
+          scopedSlots: { customRender: 'advancesCode' },
         },
         {
           title: '客户名称',
           dataIndex: 'customerName',
-          scopedSlots: { customRender: 'customerName' }
-        }, {
+          scopedSlots: { customRender: 'customerName' },
+        },
+        {
           title: '收款日期',
-          dataIndex: 'receiptTime'
-        }, {
+          dataIndex: 'receiptTime',
+        },
+        {
           title: '结算方式',
-          dataIndex: 'bankName'
-        }, {
+          dataIndex: 'bankName',
+        },
+        {
           title: '本次实收金额',
-          dataIndex: 'paidMoney'
-        }, {
+          dataIndex: 'paidMoney',
+        },
+        {
           title: '单据状态',
           dataIndex: 'advancesStatus',
-          scopedSlots: { customRender: 'advancesStatus' }
-        }, {
+          scopedSlots: { customRender: 'advancesStatus' },
+        },
+        {
           title: '申请人',
-          dataIndex: 'createdName'
-        }, {
+          dataIndex: 'createdName',
+        },
+        {
           title: '申请时间',
-          dataIndex: 'createdTime'
+          dataIndex: 'createdTime',
         },
         {
           title: '操作',
           dataIndex: 'id',
           width: '200px',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
+      loadData: (parameter) => {
         console.log('开始加载数据', JSON.stringify(this.queryParam))
-        return getServiceList(Object.assign(parameter, this.queryParam))
-          .then(res => {
-            return res
-          })
+        return getServiceList(Object.assign(parameter, this.queryParam)).then((res) => {
+          return res
+        })
       },
-      mounted () {
-
-      },
+      mounted() {},
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
     }
   },
   methods: {
-    search () {
+    search() {
       this.queryParam = {
-        'customerName': this.customerName,
-        'statue': this.contractState
+        customerName: this.customerName,
+        statue: this.contractState,
       }
-      if(this.showFlag){
+      if (this.showFlag) {
         this.queryParam['approveStatus'] = this.approveStatus
       }
       this.$refs.table.refresh(true)
     },
-    handleAdd () {
+    handleAdd() {
       this.$refs.add.add()
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       console.log('onSelectChange 点击了')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    handleClick (record) {
+    handleClick(record) {
       console.log('JSON.stringify(record) :' + JSON.stringify(record))
       this.$refs.node.query(record)
       // this.$refs.table.refresh(true)
     },
-    handleSaveOk () {
+    handleSaveOk() {
       console.log('handleSaveOk')
       this.$refs.table.refresh(true)
     },
-    handleSaveClose () {
+    handleSaveClose() {
       this.$refs.table.refresh(true)
     },
-    del (row) {
+    del(row) {
       const _this = this
       console.log(JSON.stringify(row))
       this.$confirm({
@@ -260,9 +272,9 @@ export default {
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           // 在这里调用删除接口
-          deleteById({ 'id': row.id }).then(res => {
+          deleteById({ id: row.id }).then((res) => {
             if (res.code === 200) {
               _this.$refs.table.refresh(true)
             } else {
@@ -272,23 +284,22 @@ export default {
 
           console.log('OK')
         },
-        onCancel () {
+        onCancel() {
           console.log('Cancel')
-        }
+        },
       })
     },
-    tenderingClick (record) {
+    tenderingClick(record) {
       console.log('record' + JSON.stringify(record))
-      const data = { 'id': record.saleCustomerId }
+      const data = { id: record.saleCustomerId }
       this.$refs.tendering.look(data)
     },
-    paramClick (key) {
-      if(key ==0){
+    paramClick(key) {
+      if (key == 0) {
         this.showFlag = true
-      }else{
+      } else {
         this.showFlag = false
       }
-
 
       if (parseInt(key) === 4) {
         this.audit = true
@@ -296,15 +307,15 @@ export default {
         this.audit = false
       }
       this.contractState = key
-      this.queryParam = { 'statue': key }
+      this.queryParam = { statue: key }
       this.$refs.table.refresh(true)
       console.log(key)
     },
-    handleVue (e) {
+    handleVue(e) {
       console.log(JSON.stringify(e))
       this.$refs.advancesVue.detail(e.id)
     },
-    handleAudit (e) {
+    handleAudit(e) {
       console.log('handleAudit')
       if (this.userInfo.id === 1 || this.userInfo.id === 52) {
         this.$message.info('你没有审批权限，不可以审批')
@@ -312,55 +323,53 @@ export default {
       }
       this.$refs.advanceAudit.detail(e.id)
     },
-    handleAuditOk () {
+    handleAuditOk() {
       console.log('handleAuditOk')
       this.$refs.table.refresh(true)
     },
-    handleAuditClose () {
+    handleAuditClose() {
       console.log('handleAuditClose')
       this.$refs.table.refresh(true)
     },
-    handleEdit(e){
+    handleEdit(e) {
       //this.$refs.advanceAudit.detail(e.id,'edit')
 
-      this.$refs.add.add(e.id,'edit')
+      this.$refs.add.add(e.id, 'edit')
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'reback'){
-        revocationAdvances({id:record.id}).then(res =>{
+      if (type === 'reback') {
+        revocationAdvances({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.search()
         })
         return
       }
-    }
-    
-  }
+    },
+  },
 }
-
 </script>
 
 <style scoped>
-  .top-ation .a-input {
-    width: 160px;
-    margin: 0 8px 8px 0;
-  }
+.top-ation .a-input {
+  width: 160px;
+  margin: 0 8px 8px 0;
+}
 
-  .a-select {
-    margin-right: 8px;
-  }
+.a-select {
+  margin-right: 8px;
+}
 
-  .a-button {
-    margin-right: 8px;
-  }
+.a-button {
+  margin-right: 8px;
+}
 
-  .fl-r {
-    float: right;
-  }
+.fl-r {
+  float: right;
+}
 
-  .develop-wrap {
-    background-color: #fff;
-    padding: 12px;
-  }
+.develop-wrap {
+  background-color: #fff;
+  padding: 12px;
+}
 </style>
