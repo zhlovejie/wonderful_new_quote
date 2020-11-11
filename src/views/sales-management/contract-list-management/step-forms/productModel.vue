@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="选择产品"
-    :width="800"
+    :width="860"
     :confirmLoading="confirmLoading"
     :footer="null"
     v-model="visible"
@@ -10,10 +10,10 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item label="产品代码">
-          <a-input class="modal-input" v-model="productModel" />
+          <a-input style="width: 200px; margin-right: 10px" class="modal-input" v-model="productModel" />
         </a-form-item>
         <a-form-item label="产品名称">
-          <a-input class="modal-input" v-model="productName" />
+          <a-input style="width: 200px; margin-right: 10px" class="modal-input" v-model="productName" />
         </a-form-item>
         <a-form-item label="客户名称" v-if="this.queryParam.productType === 1">
           <a-input class="modal-input" v-model="customerName" />
@@ -73,12 +73,12 @@ export default {
         {
           title: '产品代码',
           dataIndex: 'productModel',
-          width: 150,
+          width: 180,
           scopedSlots: { customRender: 'productModel' },
         },
         {
           title: '产品名称',
-          width: 100,
+          width: 180,
           dataIndex: 'productName',
         },
         {
