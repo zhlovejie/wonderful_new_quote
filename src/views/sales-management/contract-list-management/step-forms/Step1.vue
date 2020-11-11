@@ -224,7 +224,7 @@
 <script>
 import {
   getcusSelectsList,
-  getListSaleContractUser,
+  getListSalesman,
   saveEssentialInformation,
   deleteQueryOne,
 } from '@/api/contractListManagement'
@@ -415,7 +415,7 @@ export default {
       params = {
         name: '', // 销售经理经理和区域经理名字智能搜索
       }
-      return getListSaleContractUser(params)
+      return getListSalesman(params)
         .then((res) => {
           console.log('销售经理经理和区域经理', res)
           this.saleUser = res.data

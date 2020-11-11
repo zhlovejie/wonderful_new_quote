@@ -187,6 +187,8 @@ export default {
           p.productPic = p.contractProductPo.productPic
           p.productModel = p.contractProductPo.productModel
           p.productName = p.contractProductPo.productName
+          p.productLowCPriceAllAmount = p.productLowCPriceAllAmount
+          p.productLowCPriceUnitAmount = p.productLowCPriceUnitAmount
           p.tax = p.taxRate
           p.id = p.id
           p.productId = p.productId
@@ -201,6 +203,7 @@ export default {
 
         this.productCommonParams = {
           dataSource: product,
+          saleContractLowCPriceAllAmount: result.saleContractLowCPriceAllAmount,
           totalAmount: result.totalAmount,
           chineseTotalAmount: result.chineseTotalAmount,
           isTax: result.isTax === 1,

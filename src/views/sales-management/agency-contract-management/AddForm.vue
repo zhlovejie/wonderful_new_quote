@@ -8,7 +8,6 @@
     :maskClosable="false"
     :footer="null"
   >
-    
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
         <a-form-item hidden>
@@ -39,7 +38,9 @@
                   ]"
                   style="width: 100%"
                 />
-                <span v-else :style="{color: moment().format('YYYY-MM-DD') !== detail.signedDate ? 'red' : '' }">{{ detail.signedDate }}</span>
+                <span v-else :style="{ color: moment().format('YYYY-MM-DD') !== detail.signedDate ? 'red' : '' }">{{
+                  detail.signedDate
+                }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -69,8 +70,8 @@
             <td>
               <CustomerSelect
                 v-if="!isDisabled"
-                ref="customerSelect" 
-                :needOptions="needOptions" 
+                ref="customerSelect"
+                :needOptions="needOptions"
                 :options="customerSelectOptions"
                 @selected="handleCustomerSelected"
               />
@@ -86,12 +87,7 @@
                 <span v-else>{{ detail.customerName }}</span>
               </a-form-item>
               <a-form-item hidden>
-                <a-input
-                  v-decorator="[
-                    'customerName',
-                    { initialValue: detail.customerName },
-                  ]"
-                />
+                <a-input v-decorator="['customerName', { initialValue: detail.customerName }]" />
               </a-form-item>
             </td>
           </tr>
@@ -117,8 +113,8 @@
             <td>
               <a-form-item>
                 <a-select
-                  v-if="!isDisabled" 
-                  mode="multiple" 
+                  v-if="!isDisabled"
+                  mode="multiple"
                   placeholder="产品"
                   :allowClear="true"
                   v-decorator="[
@@ -145,8 +141,8 @@
                     'validityDate',
                     {
                       initialValue: [
-                        detail.validityDateStart ? moment(detail.validityDateStart) : undefined, 
-                        detail.validityDateEnd ? moment(detail.validityDateEnd) : undefined
+                        detail.validityDateStart ? moment(detail.validityDateStart) : undefined,
+                        detail.validityDateEnd ? moment(detail.validityDateEnd) : undefined,
                       ],
                       rules: [{ required: true, message: '请选择协议有效期' }],
                     },
@@ -480,11 +476,19 @@
           </tr>
         </table>
       </a-form>
-      <div style="margin:20px 0">
+      <div style="margin: 20px 0">
         <template v-if="isApproval">
           <div style="text-align: center">
             <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
-            <a-button key="submit" style="margin-left:10px;" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
+            <a-button
+              key="submit"
+              style="margin-left: 10px"
+              type="primary"
+              icon="check"
+              :loading="spinning"
+              @click="passAction"
+              >通过</a-button
+            >
             <a-button key="submit4" type="primary" @click="() => handleSubmit(1)">预览</a-button>
           </div>
         </template>
@@ -492,8 +496,22 @@
           <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
           <div style="text-align: center">
             <a-button v-if="isDisabled" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
-            <a-button v-if="!isDisabled" style="margin-left:10px;" key="submit2" type="primary" @click="() => handleSubmit(2)">保存</a-button>
-            <a-button v-if="!isDisabled" style="margin-left:10px;" key="submit3" type="primary" @click="() => handleSubmit(3)">提交审批</a-button>
+            <a-button
+              v-if="!isDisabled"
+              style="margin-left: 10px"
+              key="submit2"
+              type="primary"
+              @click="() => handleSubmit(2)"
+              >保存</a-button
+            >
+            <a-button
+              v-if="!isDisabled"
+              style="margin-left: 10px"
+              key="submit3"
+              type="primary"
+              @click="() => handleSubmit(3)"
+              >提交审批</a-button
+            >
           </div>
         </template>
       </div>
@@ -519,7 +537,7 @@ import {
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getAreaByParent } from '@/api/common'
-import { getAllSalesman } from '@/api/customer/salesman'
+import { getListSalesman } from '@/api/contractListManagement'
 import { getListByText } from '@/api/workBox'
 import Approval from './Approval'
 import moment from 'moment'
@@ -593,7 +611,7 @@ export default {
         that.productCategoryList = res.data.records
       })
       queue.push(task1)
-      let task2 = getAllSalesman().then((res) => {
+      let task2 = getListSalesman().then((res) => {
         that.saleUsers = res.data
       })
       queue.push(task2)
@@ -613,9 +631,9 @@ export default {
       return Promise.all(queue)
     },
     handleCustomerSelected(item) {
-      this.form.setFieldsValue({ 
-        customerId: item && item.id ? item.id : undefined ,
-        customerName:item.name
+      this.form.setFieldsValue({
+        customerId: item && item.id ? item.id : undefined,
+        customerName: item.name,
       })
     },
     depositChange(e) {
@@ -692,7 +710,7 @@ export default {
         }
         if (res.data.products) {
           let _arr = res.data.products.split(';')
-          res.data.productsVal = _arr.length >= 1 ? _arr[0].split(',').map(v => +v) : []
+          res.data.productsVal = _arr.length >= 1 ? _arr[0].split(',').map((v) => +v) : []
           res.data.productsTxt = _arr.length === 2 ? _arr[1] : undefined
         }
         if (res.data.salesmanId) {
@@ -740,16 +758,18 @@ export default {
 
           delete values.validityDate
 
-          if(Array.isArray(values.products)){
+          if (Array.isArray(values.products)) {
             let ids = values.products.join(',')
-            let strs = values.products.map(v => {
-              let target = that.productCategoryList.find((item) => +item.id === +v)
-              return target.text
-            }).join(',')
+            let strs = values.products
+              .map((v) => {
+                let target = that.productCategoryList.find((item) => +item.id === +v)
+                return target.text
+              })
+              .join(',')
 
             values.products = `${ids};${strs}`
           }
-          
+
           //productCategoryList
           console.log('Received values of form: ', values)
           //return

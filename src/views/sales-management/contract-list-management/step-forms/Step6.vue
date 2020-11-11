@@ -2,7 +2,7 @@
   <a-spin :spinning="spinning">
     <div class="content-wrap">
       <div class="top-right clearfix">
-        <template v-if="!this.$parent.routeParams.action === 'see'">
+        <template v-if="!isView">
           <a-button v-if="contractAttribute === 0" class="fl-r" type="primary" @click="lastSubmit(1)" icon="backward"
             >预览</a-button
           >
@@ -230,6 +230,10 @@ export default {
   },
   computed: {
     signFormTxt: function () {},
+        isView() {
+      //新增
+      return this.$parent.routeParams.action === 'see'
+    },
   },
   watch: {
     $route(to, from) {

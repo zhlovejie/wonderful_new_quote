@@ -1,8 +1,10 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 
 //复制合同
-export function copySoftContract (params) {
+export function copySoftContract(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/copyContract/' + params,
@@ -11,7 +13,7 @@ export function copySoftContract (params) {
 }
 
 // 提交审批（启动软件合同审批流程）
-export function startProcess (params) {
+export function startProcess(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/startProcess/' + params,
@@ -19,7 +21,7 @@ export function startProcess (params) {
   })
 }
 
-export function editContract (params) {
+export function editContract(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/editContract',
@@ -29,7 +31,7 @@ export function editContract (params) {
 }
 
 // 获取销售合同列表
-export function getSalesList (parameter) {
+export function getSalesList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/query',
@@ -39,7 +41,7 @@ export function getSalesList (parameter) {
 }
 
 // 获取销售合同列表
-export function getSoftwareContractList (parameter) {
+export function getSoftwareContractList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/query',
@@ -50,7 +52,7 @@ export function getSoftwareContractList (parameter) {
 
 
 // 获取客户下拉列表
-export function getcusSelectsList (parameter) {
+export function getcusSelectsList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'customer/queryList',
@@ -59,7 +61,7 @@ export function getcusSelectsList (parameter) {
   })
 }
 // 获取客户下拉列表
-export function getcusSelectsListPage (parameter) {
+export function getcusSelectsListPage(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'customer/queryPage',
@@ -68,7 +70,7 @@ export function getcusSelectsListPage (parameter) {
   })
 }
 // 获取流程节点信息
-export function getsaveAdditionalClause (parameter) {
+export function getsaveAdditionalClause(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: `/sale-contract/saveAdditionalClause/${parameter.contractId}`,
@@ -78,7 +80,7 @@ export function getsaveAdditionalClause (parameter) {
 
 
 // 启动合同流程
-export function startSaleContractProcess (parameter) {
+export function startSaleContractProcess(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/startContractProcess',
@@ -88,7 +90,7 @@ export function startSaleContractProcess (parameter) {
 }
 
 // 删除销售合同
-export function deleteContract (parameter) {
+export function deleteContract(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/removeContract',
@@ -98,7 +100,7 @@ export function deleteContract (parameter) {
 }
 
 // 撤销销售合同
-export function revocationContract (parameter) {
+export function revocationContract(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/revocation',
@@ -108,7 +110,7 @@ export function revocationContract (parameter) {
 }
 
 // 删除软件合同
-export function deleteSoftwareContract (parameter) {
+export function deleteSoftwareContract(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/removeContract',
@@ -119,7 +121,7 @@ export function deleteSoftwareContract (parameter) {
 
 
 // 获取流程节点信息
-export function getApprovedNodeList (parameter) {
+export function getApprovedNodeList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/process/getApprovedNodeList',
@@ -129,7 +131,7 @@ export function getApprovedNodeList (parameter) {
 }
 
 // 获取所有销售经理经理和区域经理
-export function getListSaleContractUser (parameter) {
+export function getListSaleContractUser(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salesman/getAllSalesman',
@@ -137,8 +139,16 @@ export function getListSaleContractUser (parameter) {
     params: parameter
   })
 }
+export function getListSalesman(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salesman/getCurrUserSalesman',
+    method: 'get',
+    params: parameter
+  })
+}
 // 插入基本信息
-export function saveEssentialInformation (data) {
+export function saveEssentialInformation(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveEssentialInformation',
@@ -148,7 +158,7 @@ export function saveEssentialInformation (data) {
 }
 
 // 软件合同插入基本信息
-export function softwareContractSaveEssentialInformation (data) {
+export function softwareContractSaveEssentialInformation(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/saveEssentialInformation',
@@ -158,7 +168,7 @@ export function softwareContractSaveEssentialInformation (data) {
 }
 
 // 返回关联字典表 智能/非智能/软件/其他
-export function getTarget (parameter) {
+export function getTarget(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/getTarget',
@@ -167,7 +177,7 @@ export function getTarget (parameter) {
   })
 }
 // 获取单个信息
-export function getQueryOne (parameter) {
+export function getQueryOne(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: 'sale-contract/queryOne',
@@ -177,7 +187,7 @@ export function getQueryOne (parameter) {
 }
 
 // 获取单个信息
-export function getSoftwareContractQueryOne (parameter) {
+export function getSoftwareContractQueryOne(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/queryOne',
@@ -188,7 +198,7 @@ export function getSoftwareContractQueryOne (parameter) {
 
 
 // 常规非常规产品 根据不同的产品获取产品代码和产品数据
-export function getProductType (parameter) {
+export function getProductType(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/getProductType',
@@ -197,7 +207,7 @@ export function getProductType (parameter) {
   })
 }
 // 转大写
-export function turnTheCapital (parameter) {
+export function turnTheCapital(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/electronicReceipt/rmb',
@@ -206,7 +216,7 @@ export function turnTheCapital (parameter) {
   })
 }
 // 插入产品信息
-export function saveProduct (data) {
+export function saveProduct(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveProduct',
@@ -216,7 +226,7 @@ export function saveProduct (data) {
 }
 
 // 软件插入产品信息
-export function saveSoftwareContractProduct (data) {
+export function saveSoftwareContractProduct(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/saveProduct',
@@ -227,7 +237,7 @@ export function saveSoftwareContractProduct (data) {
 
 
 // 插入结算方式表
-export function saveSettlementMethod (data) {
+export function saveSettlementMethod(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveSettlementMethod',
@@ -237,7 +247,7 @@ export function saveSettlementMethod (data) {
 }
 
 // 插入软件合同产品详情
-export function saveProductPoints (data) {
+export function saveProductPoints(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/updateProduct',
@@ -248,7 +258,7 @@ export function saveProductPoints (data) {
 
 
 // 软件合同支付、验收信息、补充协议更新
-export function updateSoftwareContract (data) {
+export function updateSoftwareContract(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/updateSoftwareContract',
@@ -259,7 +269,7 @@ export function updateSoftwareContract (data) {
 
 
 // 插入 运输方式／交货地址
-export function saveDeliveryAddress (data) {
+export function saveDeliveryAddress(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveDeliveryAddress',
@@ -269,7 +279,7 @@ export function saveDeliveryAddress (data) {
 }
 
 // 插入 乙方信息
-export function saveBInformation (data) {
+export function saveBInformation(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveBInformation',
@@ -279,7 +289,7 @@ export function saveBInformation (data) {
 }
 
 // 插入 软件合同乙方信息
-export function saveSoftwareContractBInformation (data) {
+export function saveSoftwareContractBInformation(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/saveBInformation',
@@ -289,7 +299,7 @@ export function saveSoftwareContractBInformation (data) {
 }
 
 // 6插入其他信息
-export function saveOtherInfo (data) {
+export function saveOtherInfo(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveOtherInfo',
@@ -298,7 +308,7 @@ export function saveOtherInfo (data) {
   })
 }
 // 7修改附加条款
-export function saveAdditionalClause (data) {
+export function saveAdditionalClause(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/saveAdditionalClause',
@@ -307,7 +317,7 @@ export function saveAdditionalClause (data) {
   })
 }
 // 预览合同需要的接口
-export function mobileTerminal (parameter) {
+export function mobileTerminal(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: `/sale-contract/getLookDetail/${parameter.id}`,
@@ -316,7 +326,7 @@ export function mobileTerminal (parameter) {
 }
 
 // 生成导出合同所需要的PDF
-export function buildCreateWork (parameter) {
+export function buildCreateWork(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: `/sale-contract/createWork/${parameter.id}`,
@@ -325,7 +335,7 @@ export function buildCreateWork (parameter) {
 }
 
 // 生成导出合同所需要的PDF
-export function buildSoftwareContractCreateWork (params) {
+export function buildSoftwareContractCreateWork(params) {
   return axios({
     baseURL: system.baseURL,
     url: `/software-contract/exportPdf`,
@@ -336,7 +346,7 @@ export function buildSoftwareContractCreateWork (params) {
 
 
 // 合同审核通过还是不通过
-export function contractApproval (data) {
+export function contractApproval(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/approval',
@@ -346,7 +356,7 @@ export function contractApproval (data) {
 }
 
 // 软件合同审核通过还是不通过
-export function softwareContractApproval (data) {
+export function softwareContractApproval(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/approval',
@@ -356,7 +366,7 @@ export function softwareContractApproval (data) {
 }
 
 //删除合同
-export function deleteQueryOne (parameter) {
+export function deleteQueryOne(parameter) {
   console.log(parameter)
   console.log(`/sale-contract/delete/${parameter.id}/${parameter.contractModifyFlag}`)
   let id = parameter.id || 0
@@ -369,7 +379,7 @@ export function deleteQueryOne (parameter) {
 }
 
 //删除合同
-export function deleteSoftwareContractQueryOne (parameter) {
+export function deleteSoftwareContractQueryOne(parameter) {
   let id = parameter.id || 0
   let contractModifyFlag = parameter.contractModifyFlag || 0
   return axios({
@@ -381,7 +391,7 @@ export function deleteSoftwareContractQueryOne (parameter) {
 
 
 // 合同短信接口
-export function contractSms (contractId,contractNum) {
+export function contractSms(contractId, contractNum) {
   return axios({
     baseURL: system.baseURL,
     url: `/contractSms/list?contractId=${contractId}&contractNum=${contractNum}`,
@@ -390,7 +400,7 @@ export function contractSms (contractId,contractNum) {
 }
 
 // 获取拆分合同的 变动部分和非变动部分
-export function getSplitProductTemp(params){
+export function getSplitProductTemp(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract-product-temp/getProductTemp',
@@ -400,7 +410,7 @@ export function getSplitProductTemp(params){
 }
 
 // 获取拆分合同的 合同预览产品接口
-export function getSplitApprovingProduct(params){
+export function getSplitApprovingProduct(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract-product-temp/getApprovingProduct',
@@ -410,7 +420,7 @@ export function getSplitApprovingProduct(params){
 }
 
 // 插入拆分合同的产品信息
-export function saveSplitProductTemp (data) {
+export function saveSplitProductTemp(data) {
   return axios({
     baseURL: system.baseURL,
     url: 'sale-contract-product-temp/saveProductTemp',
@@ -420,7 +430,7 @@ export function saveSplitProductTemp (data) {
 }
 
 // 删除拆分合同的 变动部分和非变动部分
-export function delSplitProductTemp(params){
+export function delSplitProductTemp(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract-product-temp/deleteProductTemp',
@@ -431,7 +441,7 @@ export function delSplitProductTemp(params){
 
 
 // 删除软件合同产品信息
-export function delSoftwareContractProduct(params){
+export function delSoftwareContractProduct(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/deleteProduct',
@@ -442,7 +452,7 @@ export function delSoftwareContractProduct(params){
 
 
 //获取审批节点
-export function getApprovalNode(){
+export function getApprovalNode() {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/getProduceNode',
@@ -454,7 +464,7 @@ export function getApprovalNode(){
  * 检测当前用户是否销售经理
  * @param {*} params
  */
-export function checkCurrentNode(params){
+export function checkCurrentNode(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/checkCurrentNode',
@@ -469,7 +479,7 @@ export function checkCurrentNode(params){
  * 拆分订单审批接口
  * @param {*} params
  */
-export function approvalSplitProduct(params){
+export function approvalSplitProduct(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/approvalSplitProduct',
@@ -479,7 +489,7 @@ export function approvalSplitProduct(params){
 }
 
 //验证产品信息能否可删除
-export function checkDeletedProduct(params){
+export function checkDeletedProduct(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract-product/checkDeletedProduct',
@@ -489,7 +499,7 @@ export function checkDeletedProduct(params){
 }
 
 
-export function getSoftwareProductVersions(params){
+export function getSoftwareProductVersions(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/softwareProduct/listData',
@@ -498,7 +508,7 @@ export function getSoftwareProductVersions(params){
   })
 }
 //复制合同
-export function copyContract(params){
+export function copyContract(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/copySaleContract',
@@ -508,7 +518,7 @@ export function copyContract(params){
 }
 
 //撤回软件合同
-export function revocationSoftwareContract(params){
+export function revocationSoftwareContract(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/revocation',
@@ -516,4 +526,3 @@ export function revocationSoftwareContract(params){
     params: params
   })
 }
-

@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { getListSaleContractUser, softwareContractSaveEssentialInformation } from '@/api/contractListManagement'
+import { getListSalesman, softwareContractSaveEssentialInformation } from '@/api/contractListManagement'
 
 import moment from 'moment'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
@@ -293,7 +293,7 @@ export default {
       params = {
         name: '', // 销售经理经理和区域经理名字智能搜索
       }
-      return getListSaleContractUser(params)
+      return getListSalesman(params)
         .then((res) => {
           this.saleUser = res.data
           console.log(res.data)

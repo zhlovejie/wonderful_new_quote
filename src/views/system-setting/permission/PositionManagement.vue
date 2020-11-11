@@ -20,15 +20,13 @@
             placeholder="请选择部门"
           >
             <a-select-option :value="0">请选择部门</a-select-option>
-            <a-select-option
-              v-for="item in selectdata"
-              :key="item.id"
-              :value="item.id"
-            >{{ item.departmentName }}</a-select-option>
+            <a-select-option v-for="item in selectdata" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
           </a-select>
           <a-button type="primary" icon="search" @click="search">查询</a-button>
           <template v-if="$auth('station:add')">
-            <a-button type="primary" style="float:right" icon="plus" @click="showModal('add')">新增岗位</a-button>
+            <a-button type="primary" style="float: right" icon="plus" @click="showModal('add')">新增岗位</a-button>
           </template>
         </div>
         <a-layout-content>
@@ -40,25 +38,22 @@
             :loading="loading"
             @change="handleTableChange"
           >
-            <div slot="order" slot-scope="text,record,index">
-              <span>{{ index+1 }}</span>
+            <div slot="order" slot-scope="text, record, index">
+              <span>{{ index + 1 }}</span>
             </div>
-            <div slot="roleName" slot-scope="text,record">
-              <a-button
-                v-if="text === null || text === '' "
-                type="primary"
-                icon="api"
-                @click="bindRole(record)"
-              >绑定角色</a-button>
+            <div slot="roleName" slot-scope="text, record">
+              <a-button v-if="text === null || text === ''" type="primary" icon="api" @click="bindRole(record)"
+                >绑定角色</a-button
+              >
               <span v-else>{{ text }}</span>
             </div>
-            <div slot="states" slot-scope="text,record">
+            <div slot="states" slot-scope="text, record">
               <template v-if="$auth('station:edit')">
                 <a-switch
                   checkedChildren="启用"
-                  :checked="(text === 0) ? true : false"
+                  :checked="text === 0 ? true : false"
                   unCheckedChildren="禁用"
-                  @click="changeStatue(text,record,&quot;&quot;)"
+                  @click="changeStatue(text, record, '')"
                 />
               </template>
               <template v-if="!$auth('station:edit')">
@@ -88,7 +83,9 @@
     >
       <a-form :form="currentRecord">
         <a-form-item label="部门名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-          <span>{{ (currentRecord && currentRecord.department && currentRecord.department.departmentName) || '-' }}</span>
+          <span>{{
+            (currentRecord && currentRecord.department && currentRecord.department.departmentName) || '-'
+          }}</span>
         </a-form-item>
         <a-form-item label="上级岗位" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
           <a-select
@@ -98,11 +95,9 @@
             @change="handParementStationChange"
             placeholder="请选择上级岗位"
           >
-            <a-select-option
-              v-for="item in parentStationList"
-              :key="item.id"
-              :value="item.id"
-            >{{ item.stationName }}</a-select-option>
+            <a-select-option v-for="item in parentStationList" :key="item.id" :value="item.id">{{
+              item.stationName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="岗位名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
@@ -123,20 +118,18 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item
-          label="岗位类型"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-        >
+        <a-form-item label="岗位类型" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
           <a-select placeholder="选择岗位类型" v-model="currentRecord.type">
             <a-select-option :value="0">其他</a-select-option>
             <a-select-option :value="1">销售助理</a-select-option>
+            <a-select-option :value="2">销售经理</a-select-option>
+            <a-select-option :value="3">销售总经理</a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form layout="inline">
           <a-row>
-            <a-col :span="4" style="text-align: right;height: 39px;line-height: 39px;">
+            <a-col :span="4" style="text-align: right; height: 39px; line-height: 39px">
               <span>绑定角色：</span>
             </a-col>
             <a-col :span="10">
@@ -145,13 +138,11 @@
                   v-model="roleDepartmentId"
                   @change="handleProvinceChange"
                   placeholder="请选择部门"
-                  style="width: 120px;"
+                  style="width: 120px"
                 >
-                  <a-select-option
-                    v-for="item in departmentList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.departmentName }}</a-select-option>
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -160,14 +151,12 @@
                 <a-select
                   v-model="currentRecord.roleId"
                   placeholder="请选择角色"
-                  style="width: 120px;"
+                  style="width: 120px"
                   @select="selectRole"
                 >
-                  <a-select-option
-                    v-for="item in roleList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{ item.roleName }}</a-select-option>
+                  <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{
+                    item.roleName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -198,7 +187,7 @@ import {
   getSelectLevelList,
   getParentStationList,
   queryRoleListById,
-  queryOne
+  queryOne,
 } from '../../../api/systemSetting'
 const columns = [
   {
@@ -206,62 +195,62 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '部门',
     dataIndex: 'department.departmentName',
-    key: 'department.departmentName'
+    key: 'department.departmentName',
   },
   {
     align: 'center',
     title: '岗位',
     dataIndex: 'stationName',
-    key: 'stationName'
+    key: 'stationName',
   },
   {
     align: 'center',
     title: '等级',
     dataIndex: 'level',
-    key: 'level'
+    key: 'level',
   },
   {
     align: 'center',
     title: '角色',
     key: 'roleName',
     // scopedSlots: { customRender: 'roleName' },
-    dataIndex: 'roleName'
+    dataIndex: 'roleName',
   },
   {
     align: 'center',
     title: '状态',
     dataIndex: 'status',
     key: 'states',
-    scopedSlots: { customRender: 'states' }
+    scopedSlots: { customRender: 'states' },
   },
   {
     align: 'center',
     title: '操作人',
     key: 'modifierName',
-    dataIndex: 'modifierName'
+    dataIndex: 'modifierName',
   },
   {
     align: 'center',
     title: '操作时间',
     key: 'modifyTime',
-    dataIndex: 'modifyTime'
+    dataIndex: 'modifyTime',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 export default {
   name: 'PositionManagement',
-  data () {
+  data() {
     return {
       data: [],
       columns: columns,
@@ -298,19 +287,19 @@ export default {
       type: 0,
     }
   },
-  mounted () {
+  mounted() {
     this.init()
   },
   methods: {
-    init () {
+    init() {
       // 获取岗位列表数据
       this.getList()
       // 获取左侧树结构数据
-      gettreeList().then(res => {
+      gettreeList().then((res) => {
         this.treeData = res
       })
       // 获取下拉选择部门数据
-      getSelectdepartmentList().then(res => {
+      getSelectdepartmentList().then((res) => {
         this.departmentList = res.data
         console.log('获取下拉选择部门数据', res)
         // this.selectDepartmentList = res.data
@@ -319,10 +308,10 @@ export default {
     },
 
     // 获取岗位列表
-    getList (params = {}) {
+    getList(params = {}) {
       params = {
         // departmentId: this.department.departmentId || 1,   //不传入部门id获取到的是所有的岗位信息
-        current: params.current || 1
+        current: params.current || 1,
         // size: 8
       }
       // type为1的时候是搜索触发的getList type为0的时候为点击树触发的getList
@@ -339,7 +328,7 @@ export default {
       }
       this.loading = true
       getpositionManagementList(params)
-        .then(res => {
+        .then((res) => {
           console.log('获取岗位列表结果', res)
           const pagination = { ...this.pagination }
           pagination.total = res.data.total || 0
@@ -348,12 +337,12 @@ export default {
           this.pagination = pagination
           this.role = res.data.records.roleName
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       console.log(pagination)
       const pager = { ...this.pagination }
       pager.current = pagination.current
@@ -363,21 +352,21 @@ export default {
         current: pagination.current,
         sortField: sorter.field,
         sortOrder: sorter.order,
-        ...filters
+        ...filters,
       })
     },
     // 选择部门下拉框
-    handleDepartmentChange (value) {
+    handleDepartmentChange(value) {
       this.selectedDepartment = value
       console.log('//选择部门下拉框', value)
     },
     // 选择等级下拉
-    handleLevelChange (value) {
+    handleLevelChange(value) {
       console.log('选择等级下拉框', `selected ${value}`)
       this.selectedLevel = value
     },
     // 选择父岗位下拉
-    handParementStationChange (value) {
+    handParementStationChange(value) {
       console.log('选择父岗位下拉框', `selected ${value}`)
       this.selectedStationParentId = value
     },
@@ -389,14 +378,14 @@ export default {
      * @param node
      * 参数的解构赋值
      */
-    onSelect (selectedKeys, { selected, node }) {
+    onSelect(selectedKeys, { selected, node }) {
       if (selected === false) {
         this.selectedTreeData = null
       } else {
         const { title } = node
         this.selectedTreeData = {
           key: selectedKeys[0],
-          title
+          title,
         }
       }
       this.selectedKeys = selectedKeys
@@ -404,14 +393,14 @@ export default {
       this.type = 0
       this.getList()
     },
-    onExpand () {
+    onExpand() {
       console.log('Trigger Expand')
     },
 
     // 显示新增，修改弹出层
-    showModal (action, record) {
+    showModal(action, record) {
       // 获取等级下拉接口
-      getSelectLevelList().then(res => {
+      getSelectLevelList().then((res) => {
         // this.options = res
         this.levelList = res.data
       })
@@ -420,7 +409,7 @@ export default {
         departmentId = record.departmentId
         if (record.roleId != null) {
           this.roleId = record.roleId
-          queryOne({ id: record.roleId }).then(res => {
+          queryOne({ id: record.roleId }).then((res) => {
             this.roleDepartmentId = res.data.departmentId
             this.handleProvinceChange(this.roleDepartmentId)
           })
@@ -437,7 +426,7 @@ export default {
         }
       }
       // 获取父岗位下拉接口
-      getParentStationList({ id: departmentId }).then(res => {
+      getParentStationList({ id: departmentId }).then((res) => {
         console.log('获取父岗位数据', res)
         this.parentStationList = res.data
       })
@@ -460,20 +449,20 @@ export default {
           status: this.status,
           department: {
             departmentName: departmentName,
-            id: departmentId
+            id: departmentId,
           },
-          setNum:0
+          setNum: 0,
         }
       }
       this.visible = true
     },
 
     // 修改单选启用禁用按钮
-    radioChange (e) {
+    radioChange(e) {
       console.log('单选改变 checked', e.target.value)
     },
     // 修改启用禁用按钮
-    changeStatue (text, record) {
+    changeStatue(text, record) {
       let status = 0
       if (text == 0) {
         status = 1
@@ -484,21 +473,21 @@ export default {
       const { id, stationName, remarks } = record
       const params = { id, status }
       positionModify(params)
-        .then(data => {
+        .then((data) => {
           console.log('修改岗位了', data)
         })
-        .catch(error => {})
+        .catch((error) => {})
     },
 
     // 弹出层点击修改或者新增页面的确定按钮事件
-    handleSubmit () {
+    handleSubmit() {
       if (this.currentRecord.stationName != null && this.currentRecord.stationName != '') {
         const params = {
           stationName: this.currentRecord.stationName.trim(),
-          departmentId: this.currentRecord.department.id
+          departmentId: this.currentRecord.department.id,
         }
         var _this = this
-        stationList(params).then(res => {
+        stationList(params).then((res) => {
           if (this.action === 'edit') {
             if (res.data.length > 0 && _this.currentRecord.id != res.data[0].id) {
               this.$message.error('名称重复')
@@ -519,9 +508,9 @@ export default {
     },
 
     // 修改岗位
-    doEdit () {
+    doEdit() {
       // 取数据
-      const { id, status, Authorization, stationName, remarks, roleId ,setNum,type} = this.currentRecord
+      const { id, status, Authorization, stationName, remarks, roleId, setNum, type } = this.currentRecord
       // 组装接口需要的数据
       const params = {
         id: id,
@@ -533,28 +522,39 @@ export default {
         level: this.selectedLevel,
         roleId: this.roleId,
         setNum,
-        type
+        type,
       }
       console.log('修改的参数=======', params)
       this.loading = true
       positionModify(params)
-        .then(data => {
+        .then((data) => {
           console.log('点击了提交按钮，并且已经调取修改岗位接口成功了', data)
           this.$message.info(data.msg)
           this.visible = false
           this.handleCancel()
           this.init()
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
         .finally(() => {
           this.loading = false
         })
     },
-    doAdd () {
+    doAdd() {
       // 取数据
-      const { id, status, Authorization, stationName, remarks, parentId, departmentId, roleId ,setNum,type} = this.currentRecord
+      const {
+        id,
+        status,
+        Authorization,
+        stationName,
+        remarks,
+        parentId,
+        departmentId,
+        roleId,
+        setNum,
+        type,
+      } = this.currentRecord
       // 组装接口需要的数据
       const params = {
         stationName,
@@ -566,12 +566,12 @@ export default {
         remarks,
         roleId,
         setNum,
-        type
+        type,
       }
       console.log('新增岗位参数：', params)
       this.loading = true
       positionAdd(params)
-        .then(res => {
+        .then((res) => {
           if (res.code == 200) {
             this.visible = false
             this.handleCancel()
@@ -581,7 +581,7 @@ export default {
             this.$message.error(res.msg)
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
         .finally(() => {
@@ -589,32 +589,32 @@ export default {
         })
     },
     // 取消
-    handleCancel () {
+    handleCancel() {
       this.currentRecord = {} // 清空表
     },
     // 查询部门对应的岗位列表
-    search () {
+    search() {
       this.type = 1
       this.getList()
     },
 
     // 获取部门角色联动
-    handleProvinceChange (value) {
+    handleProvinceChange(value) {
       // 获取部门下的角色
       queryRoleListById({ departmentId: value, status: 0 })
-        .then(rs => {
+        .then((rs) => {
           this.roleList = rs.data
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
     // 绑定角色 角色选中
-    selectRole (value) {
+    selectRole(value) {
       console.log('绑定角色 角色选中', value)
       this.roleId = value
-    }
-  }
+    },
+  },
 }
 </script>
 

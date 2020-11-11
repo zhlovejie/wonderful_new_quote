@@ -73,6 +73,13 @@
         <template slot="oneMoney" slot-scope="text, record">
           <span>{{ record.oneMoney | moneyFormatNumber }}</span>
         </template>
+
+        <template slot="productLowCPriceUnitAmount" slot-scope="text, record">
+          <span style="color: red">{{ record.productLowCPriceUnitAmount }}</span>
+        </template>
+        <template slot="productLowCPriceAllAmount" slot-scope="text, record">
+          <span style="color: red">{{ record.productLowCPriceAllAmount }}</span>
+        </template>
         <template slot="tax" slot-scope="text, record">
           <span>{{ record.tax }}%</span>
         </template>
@@ -109,6 +116,10 @@
         >
       </a-col>
     </a-row>
+    <template v-if="this.saleContractLowCPriceAllAmount > 0">
+      <span> 合同低于C价总差额: </span>
+      <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
+    </template>
 
     <product-model ref="productModel" @custom-change="productChange"></product-model>
     <targetid-model ref="targetidModel" @custom-change="targetidChange"></targetid-model>
@@ -142,6 +153,7 @@ export default {
       validateData: {}, //验证行信息
       totalAmount: 0,
       chineseTotalAmount: '零',
+      saleContractLowCPriceAllAmount: 0,
       isTax: false,
       freightType: 1,
       freightCharge: 0,
@@ -358,6 +370,25 @@ export default {
       } else {
         targetColumns = hasFreight ? (hasFreightDivOne ? case3 : case4) : case1
       }
+      let productL = this.saleContractLowCPriceAllAmount > 0 ? true : false
+      if (productL) {
+        targetColumns.push(
+          {
+            align: 'center',
+            title: '低于C价差额',
+            width: '200px',
+            dataIndex: 'productLowCPriceUnitAmount',
+            scopedSlots: { customRender: 'productLowCPriceUnitAmount' },
+          },
+          {
+            align: 'center',
+            width: '200px',
+            title: '低于C价总差额',
+            dataIndex: 'productLowCPriceAllAmount',
+            scopedSlots: { customRender: 'productLowCPriceAllAmount' },
+          }
+        )
+      }
       // targetColumns.push({
       //   title: '交货日期',
       //   dataIndex: 'dateTime'
@@ -388,6 +419,7 @@ export default {
       let that = this
       this.totalAmount = this.params.totalAmount
       this.chineseTotalAmount = this.params.chineseTotalAmount
+      this.saleContractLowCPriceAllAmount = this.params.saleContractLowCPriceAllAmount
       this.isTax = this.params.isTax
       this.freightType = this.params.freightType
       this.freightCharge = this.params.freightCharge
@@ -444,58 +476,58 @@ export default {
       return hasError
     },
     // 添加行
-    newMember() {
-      productKeyID++
-      this.data.push({
-        key: productKeyID,
-        targetId: null, //标的编号
-        targetName: null, //标的名称
-        quantityRequired: null,
-        productId: null,
-        productName: '', //产品名称
-        requirementDescription: null,
-        company: '0',
-        count: '',
-        unitPrice: '', // 单价
-        oneMoney: 0, // 一行产品的金额
-        tax: 0, // 税率%
-        taxAmount: 0, // 含税金额（元）
-        deliveryDate: moment(), // 签订日期, 默认今天
-        editable: true,
-        isNew: true,
-        productPic: null,
-        productModel: null,
-        productType: '0',
-        freightUnitPrice: '',
-      })
-      this.freshValidateData()
-    },
+    // newMember() {
+    //   productKeyID++
+    //   this.data.push({
+    //     key: productKeyID,
+    //     targetId: null, //标的编号
+    //     targetName: null, //标的名称
+    //     quantityRequired: null,
+    //     productId: null,
+    //     productName: '', //产品名称
+    //     requirementDescription: null,
+    //     company: '0',
+    //     count: '',
+    //     unitPrice: '', // 单价
+    //     oneMoney: 0, // 一行产品的金额
+    //     tax: 0, // 税率%
+    //     taxAmount: 0, // 含税金额（元）
+    //     deliveryDate: moment(), // 签订日期, 默认今天
+    //     editable: true,
+    //     isNew: true,
+    //     productPic: null,
+    //     productModel: null,
+    //     productType: '0',
+    //     freightUnitPrice: '',
+    //   })
+    //   this.freshValidateData()
+    // },
     // 删除行
-    async remove(record) {
-      debugger
-      if (this.params.__fromAction === 'add') {
-        const data = [...this.data]
-        this.data = data.filter((item) => item.key !== record.key)
-      }
-      if (this.params.__fromAction === 'edit') {
-        let params = { contractId: record.contractId, productId: record.id }
-        if (record.id != undefined) {
-          let checkResult = await checkDeletedProduct(params).then((res) => res)
-          if (checkResult.code === 500) {
-            this.$message.error(checkResult.msg)
-            return
-          } else if (checkResult.code === 200) {
-            const data = [...this.data]
-            this.data = data.filter((item) => item.key !== record.key)
-          } else {
-            console.error(`删除 非变动部分 产品 出现未知情况 :`, res)
-          }
-        } else {
-          const data = [...this.data]
-          this.data = data.filter((item) => item.key !== record.key)
-        }
-      }
-    },
+    // async remove(record) {
+    //   debugger
+    //   if (this.params.__fromAction === 'add') {
+    //     const data = [...this.data]
+    //     this.data = data.filter((item) => item.key !== record.key)
+    //   }
+    //   if (this.params.__fromAction === 'edit') {
+    //     let params = { contractId: record.contractId, productId: record.id }
+    //     if (record.id != undefined) {
+    //       let checkResult = await checkDeletedProduct(params).then((res) => res)
+    //       if (checkResult.code === 500) {
+    //         this.$message.error(checkResult.msg)
+    //         return
+    //       } else if (checkResult.code === 200) {
+    //         const data = [...this.data]
+    //         this.data = data.filter((item) => item.key !== record.key)
+    //       } else {
+    //         console.error(`删除 非变动部分 产品 出现未知情况 :`, res)
+    //       }
+    //     } else {
+    //       const data = [...this.data]
+    //       this.data = data.filter((item) => item.key !== record.key)
+    //     }
+    //   }
+    // },
     // 标的id的改变 弹出层
     // targetIdModel(record) {
     //   this.$refs.targetidModel.query(record)
