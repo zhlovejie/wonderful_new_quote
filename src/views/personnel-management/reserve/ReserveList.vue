@@ -24,7 +24,14 @@
       <a-input placeholder="手机号查询" v-model="phoneNumber" allowClear style="width: 130px" />
 
       <label>员工状态</label>
-      <a-select placeholder="员工状态" v-model="userStatus" :allowClear="true" style="width: 140px">
+      <a-select
+        :token-separators="[',']"
+        @change="handleChange"
+        mode="multiple"
+        placeholder="员工状态"
+        :allowClear="true"
+        style="width: 140px"
+      >
         <a-select-option :value="0">浏览</a-select-option>
         <a-select-option :value="1">试用期</a-select-option>
         <a-select-option :value="2">试用期不通过</a-select-option>
@@ -257,7 +264,7 @@ export default {
         stationId: this.stationId,
         name: this.userName,
         phone: this.phoneNumber,
-        status: this.userStatus,
+        statusArrStr: this.userStatus,
         isInterviewed: this.isInterviewed,
       }
     },
@@ -282,6 +289,10 @@ export default {
         that.depSelectDataSource = res.data
       })
       this.searchAction()
+    },
+    handleChange(value) {
+      this.userStatus = `${value}`
+      // console.log(`selected ${value}`)
     },
     searchAction(opt = {}) {
       let that = this
