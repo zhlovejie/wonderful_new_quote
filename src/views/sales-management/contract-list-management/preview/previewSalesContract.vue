@@ -183,7 +183,7 @@
             <div class="content-p">十、结算方式及时间：</div>
 
             <div v-if="convention === true">
-              <div class="content-p p-text-index">常规产品结算方式及时间</div>
+              <!-- <div class="content-p p-text-index">常规产品结算方式及时间</div> -->
               <div v-for="(item, index) in conventionList" :key="index" class="content-p p-text-index">
                 {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
                 >。付款周期：
@@ -192,7 +192,7 @@
               </div>
             </div>
             <div v-if="unconvention === true">
-              <div class="content-p p-text-index">非常规产品结算方式及时间</div>
+              <!-- <div class="content-p p-text-index">非常规产品结算方式及时间</div> -->
               <div v-for="(item, index) in unconventionList" :key="index" class="content-p p-text-index">
                 {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
                 >。付款周期：
@@ -662,13 +662,11 @@ export default {
           {
             align: 'center',
             title: '低于C价差额',
-            width: '200px',
             dataIndex: 'productLowCPriceUnitAmount',
             scopedSlots: { customRender: 'productLowCPriceUnitAmount' },
           },
           {
             align: 'center',
-            width: '200px',
             title: '低于C价总差额',
             dataIndex: 'productLowCPriceAllAmount',
             scopedSlots: { customRender: 'productLowCPriceAllAmount' },

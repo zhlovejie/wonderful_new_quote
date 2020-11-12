@@ -134,6 +134,23 @@
                     </a-col>
                     <a-col :span="8">
                       <a-form-item>
+                        <a-input-number
+                          placeholder="填入数字"
+                          :disabled="this.$parent.routeParams.action === 'see'"
+                          v-decorator="[
+                            'convention.4.number',
+                            { initialValue: 30, rules: [{ required: false, message: '填写进度款' }] },
+                          ]"
+                          :min="0"
+                          :max="100"
+                          :precision="0"
+                          style="width: 80px"
+                          @change="conventionChange(4, $event)"
+                        />
+                        <span>%</span>
+                        <span class="checkbox-innerspan">折算金额: {{ c4 }}</span>
+                      </a-form-item>
+                      <!-- <a-form-item>
                         <a-select
                           class="select-prop"
                           :disabled="this.$parent.routeParams.action === 'see'"
@@ -153,7 +170,7 @@
                           <a-select-option :value="60">60%</a-select-option>
                         </a-select>
                         <span class="checkbox-innerspan">折算金额: {{ c4 }}</span>
-                      </a-form-item>
+                      </a-form-item> -->
                     </a-col>
                     <a-col :span="7">
                       <a-form-item>
@@ -1013,19 +1030,20 @@ export default {
     autoFill() {
       // let isNormal = this.productTypes.includes(0) //常规
       // let isUnNormal = this.productTypes.includes(1) //非常规
+      // debugger
       this.autoFillAction(true)
       // isUnNormal && this.autoFillAction(false)
     },
     autoFillAction(isNormal = true) {
       //自动补全 100%
+      // debugger
       let that = this
-      const { convention, unConvention } = this.form.getFieldsValue()
+      const { convention } = this.form.getFieldsValue()
       let target = convention
-      let targetKey = convention
+      let targetKey = 'convention'
       let localKey = isNormal ? 'c' : 'unC'
       let { conventionalMoney } = this.queryOneData
       let money = conventionalMoney
-
       target = target.map((item, index) => {
         if (item && index >= 1) {
           item.__dateKey__ = `${localKey}${index}` //内部数据用
@@ -1033,6 +1051,7 @@ export default {
         }
         return item
       })
+      // debugger
 
       //是否选择了 质保金和预付款
       let rateSelected = target.filter((item, index) => item.selected && (index === 1 || index === 4))
