@@ -69,8 +69,9 @@
                   key="2"
                   v-if="
                     $auth('distributionContract:change') &&
-                    (((record.operatorStatus === 1 || record.operatorStatus === 2) && record.approvalStatus === 3) ||
-                      record.approvalStatus === 9)
+                    record.operatorStatus !== 0 &&
+                    record.approvalStatus !== 0 &&
+                    record.createdId === user.id
                   "
                 >
                   <a type="primary" @click="editSaleContract(record)">修改</a></a-menu-item
@@ -106,7 +107,13 @@
                 >
                   <a type="primary" @click="uploadPhoto(record)">附件</a></a-menu-item
                 >
-                <a-menu-item key="7" v-if="$auth('distributionContract:change') && record.approvalStatus === -1">
+                <a-menu-item
+                  key="7"
+                  v-if="
+                    $auth('distributionContract:change') &&
+                    (record.approvalStatus === -1 || record.approvalStatus === 9)
+                  "
+                >
                   <a type="primary" @click="submitApprove(record)">提交审批</a>
                 </a-menu-item>
                 <a-menu-item key="8" v-if="userInfo.id === 1">

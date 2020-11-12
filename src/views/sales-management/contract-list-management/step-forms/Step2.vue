@@ -187,8 +187,8 @@ export default {
           p.productPic = p.contractProductPo.productPic
           p.productModel = p.contractProductPo.productModel
           p.productName = p.contractProductPo.productName
-          p.productLowCPriceAllAmount = p.productLowCPriceAllAmount
-          p.productLowCPriceUnitAmount = p.productLowCPriceUnitAmount
+          p.productLowCPriceAllAmount = p.productLowCPriceAllAmount === 0 ? null : p.productLowCPriceAllAmount
+          p.productLowCPriceUnitAmount = p.productLowCPriceUnitAmount === 0 ? null : p.productLowCPriceUnitAmount
           p.tax = p.taxRate
           p.id = p.id
           p.productId = p.productId

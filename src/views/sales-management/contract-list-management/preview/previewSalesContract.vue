@@ -2,35 +2,31 @@
   <a-spin :spinning="spinning">
     <div>
       <div class="top-ation clearfix margin-b">
+        <a-button class="fl-r" type="primary" v-if="isPassBtn" @click="okPass()" :loading="loading" icon="check"
+          >通过</a-button
+        >
         <a-button
           class="fl-r"
           type="primary"
           v-if="isPassBtn"
-          @click="okPass()"
-          :loading="loading"
-          icon="check"
-        >通过</a-button>
-        <a-button
-          class="fl-r"
-          type="primary"
-          v-if="isPassBtn"
-          @click="isPass({isAdopt:1})"
+          @click="isPass({ isAdopt: 1 })"
           :loading="loading"
           icon="close"
-        >不通过</a-button>
+          >不通过</a-button
+        >
         <a-button class="fl-r" type="primary" @click="goBackConstractList" icon="backward">返回</a-button>
         <!--      <a-button class="fl-r" type="primary" v-print="'#pdfDom'">导出成PDF</a-button>-->
         <!-- <a-button class="fl-r" type="primary" @click="getPDF()">导出成PDF</a-button> -->
         <a :href="wordUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
       </div>
       <div class="approval-checkbox-wrapper" v-if="isSalesManager && approvalNodeData.length > 0">
-        <span style="margin-right:8px;">审批节点：</span>
+        <span style="margin-right: 8px">审批节点：</span>
         <a-checkbox-group :options="approvalNodeData" @change="onChange" />
       </div>
       <div class="contract-wrap" id="pdfDom">
         <div class="contract-header">
           <div class="log-wrap">
-            <img src="@/assets/icon_contract.jpg" style="width:48px;height:56px;" alt="合同图标" />
+            <img src="@/assets/icon_contract.jpg" style="width: 48px; height: 56px" alt="合同图标" />
           </div>
           <div class="top-right-page">
             <div class="top-right-item">{{ enterpriseName }}</div>
@@ -38,8 +34,8 @@
           </div>
         </div>
         <div class="contract-main">
-          <h2 style="text-align: center;">{{ contractTitle }}</h2>
-          <div class="main-top" style="padding:10pt 0;">
+          <h2 style="text-align: center">{{ contractTitle }}</h2>
+          <div class="main-top" style="padding: 10pt 0">
             <div class="contract-title-part">
               <div>
                 <span>供方(甲方)：</span>
@@ -57,11 +53,7 @@
               </div>
               <div class="title-num-item">
                 <span>签订时间 :</span>
-                <span
-                  v-if="nowDate != createTime"
-                  style="color:red"
-                  class="print-color-style"
-                >{{ createTime }}</span>
+                <span v-if="nowDate != createTime" style="color: red" class="print-color-style">{{ createTime }}</span>
                 <span v-else>{{ createTime }}</span>
               </div>
             </div>
@@ -77,32 +69,46 @@
               bordered
             >
               <template slot="productImage" slot-scope="text">
-                <img style="height: 50px;" :src="text" />
+                <img style="height: 50px" :src="text" />
               </template>
               <template slot="price" slot-scope="text, record">
                 <span v-if="record.showRedFlag == 0">{{ text | moneyFormatNumber }}</span>
-                <span v-else style="color:red" class="print-color-style">{{ text | moneyFormatNumber }}</span>
+                <span v-else style="color: red" class="print-color-style">{{ text | moneyFormatNumber }}</span>
               </template>
 
               <template slot="unitAmount" slot-scope="text">
-                <span>{{text | moneyFormatNumber}}</span>
+                <span>{{ text | moneyFormatNumber }}</span>
               </template>
               <template slot="freightUnitAmount" slot-scope="text">
-                <span>{{text | moneyFormatNumber}}</span>
+                <span>{{ text | moneyFormatNumber }}</span>
               </template>
               <template slot="freightUnitPrice" slot-scope="text">
-                <span>{{text | moneyFormatNumber}}</span>
+                <span>{{ text | moneyFormatNumber }}</span>
+              </template>
+              <template slot="productLowCPriceUnitAmount" slot-scope="text, record">
+                <span style="color: red">{{ record.productLowCPriceUnitAmount }}</span>
+              </template>
+              <template slot="productLowCPriceAllAmount" slot-scope="text, record">
+                <span style="color: red">{{ record.productLowCPriceAllAmount }}</span>
               </template>
 
               <template slot="footer">
-                <div
-                  v-if="queryOne_freightType === 0"
-                >运费：&nbsp;{{ (Math.ceil(queryOne_freightCharge * 1.13)) | moneyFormatNumber}}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{queryOne_freightCharge | moneyFormatNumber}}&nbsp;&nbsp;运费税率：&nbsp;13%&nbsp; )</div>
+                <div v-if="queryOne_freightType === 0">
+                  运费：&nbsp;{{
+                    Math.ceil(queryOne_freightCharge * 1.13) | moneyFormatNumber
+                  }}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{
+                    queryOne_freightCharge | moneyFormatNumber
+                  }}&nbsp;&nbsp;运费税率：&nbsp;13%&nbsp; )
+                </div>
                 <div>
                   合计：（人民币）
                   <span class="span-paddings">{{ chineseTotalAmount }}</span>
-                  <span class="span-paddings">￥{{ totalAmount | NumberFormat(2)}}</span>
-                  。此价格{{unIsTax ? '含税' : '不含税'}}、{{freightType}}。
+                  <span class="span-paddings">￥{{ totalAmount | NumberFormat(2) }}</span>
+                  。此价格{{ unIsTax ? '含税' : '不含税' }}、{{ freightType }}。
+                  <template v-if="this.saleContractLowCPriceAllAmount > 0">
+                    <span> 合同低于C价总差额: </span>
+                    <span>{{ saleContractLowCPriceAllAmount }}</span>
+                  </template>
                 </div>
               </template>
             </a-table>
@@ -114,25 +120,26 @@
             <div class="content-p">
               <template v-if="bucketType === 1">
                 四、质保期限及要求：主框架
-                <span class="span-paddings">{{ qualityFrame }}</span>年、电器件
-                <span class="span-paddings">{{ qualityElectronics }}</span>年、表面涂层
-                <span class="span-paddings">{{ qualityLayer }}</span>年
+                <span class="span-paddings">{{ qualityFrame }}</span
+                >年、电器件 <span class="span-paddings">{{ qualityElectronics }}</span
+                >年、表面涂层 <span class="span-paddings">{{ qualityLayer }}</span
+                >年
               </template>
               <template v-else>
-                四、质保期限及要求：<span class="span-paddings">{{ qualityLimit }}</span>年
+                四、质保期限及要求：<span class="span-paddings">{{ qualityLimit }}</span
+                >年
               </template>
             </div>
-            <div
-              class="content-p"
-            >五、标的物所有权自乙方付清全额货款之日起转移，若乙方未履行全部支付义务，标的物所有权为甲方所有。产品损毁、灭失风险在未交付前由甲方承担，交付后由乙方承担。</div>
+            <div class="content-p">
+              五、标的物所有权自乙方付清全额货款之日起转移，若乙方未履行全部支付义务，标的物所有权为甲方所有。产品损毁、灭失风险在未交付前由甲方承担，交付后由乙方承担。
+            </div>
             <div class="content-p">
               六、交货时间：
-              <span class="span-paddings">{{ deliveryDate }}</span>甲方按期通知乙方提货，乙方需在五个工作日内结清货款并提货。自提货通知发起一个月后，如乙方不能及时提货，每日应按照合同金额的3‰付甲方仓储费，提货前补齐全部款项。
+              <span class="span-paddings">{{ deliveryDate }}</span
+              >甲方按期通知乙方提货，乙方需在五个工作日内结清货款并提货。自提货通知发起一个月后，如乙方不能及时提货，每日应按照合同金额的3‰付甲方仓储费，提货前补齐全部款项。
             </div>
             <div class="content-p">七、交货地点及联系人：</div>
-            <div class="content-p p-text-index" >
-              详细地址（省市区县乡镇街道）：{{detailDeliveryAddress}}
-            </div>
+            <div class="content-p p-text-index">详细地址（省市区县乡镇街道）：{{ detailDeliveryAddress }}</div>
             <!-- <div class="content-p p-text-index" v-for="(val,index) in contactList" :key="index">
               第 {{index + 1 | numberCircle}} 组联系人 -
               <span v-html="val"></span>
@@ -153,64 +160,57 @@
 
             <!--        <div class="content-p p-text-index"> 运费类型：<span class="span-paddings"><span v-if="freightType===0">含运费</span><span v-else>不含运费</span></span></div>-->
             <div class="content-p p-text-index">运费类型：{{ freightType }}</div>
-            <div
-              class="content-p p-text-index"
-            >运输方式：{{transportType === '自提' ? '自提。 乙方自提货物，甲方负责将货物装入乙方委派车辆。' : '代办运输'}}</div>
+            <div class="content-p p-text-index">
+              运输方式：{{
+                transportType === '自提' ? '自提。 乙方自提货物，甲方负责将货物装入乙方委派车辆。' : '代办运输'
+              }}
+            </div>
 
-            <div v-if="transportType==='代办运输'" class="content-p p-text-index">
+            <div v-if="transportType === '代办运输'" class="content-p p-text-index">
               <div>代办托运说明</div>
             </div>
-            <div
-              v-if="transportType==='代办运输'"
-              class="content-p p-text-index"
-            >甲方为乙方代办托运时，运输费用由乙方承担，甲方负责运输货物的装卸相关事宜。甲方货物从仓库配送出库后，在运输途中发生的一切安全、短少、变更路线等问题，由甲方帮助乙方协调承运方，协商解决。凡因人力不可抗拒因素，如自然灾害、合理损耗等非甲方造成的损失或货物延迟，甲方概不负责。</div>
-            <div
-              v-if="transportType==='代办运输'"
-              class="content-p p-text-index"
-            >乙方收到货物应先进行验货，确认无误后再签名签收。如因乙方在不验货的情况下直接签收货物，所产生的一切责任及经济纠纷全部由乙方负责，甲方不承担任何责任。</div>
+            <div v-if="transportType === '代办运输'" class="content-p p-text-index">
+              甲方为乙方代办托运时，运输费用由乙方承担，甲方负责运输货物的装卸相关事宜。甲方货物从仓库配送出库后，在运输途中发生的一切安全、短少、变更路线等问题，由甲方帮助乙方协调承运方，协商解决。凡因人力不可抗拒因素，如自然灾害、合理损耗等非甲方造成的损失或货物延迟，甲方概不负责。
+            </div>
+            <div v-if="transportType === '代办运输'" class="content-p p-text-index">
+              乙方收到货物应先进行验货，确认无误后再签名签收。如因乙方在不验货的情况下直接签收货物，所产生的一切责任及经济纠纷全部由乙方负责，甲方不承担任何责任。
+            </div>
             <div class="content-p p-text-index">备注信息：{{ otherInfo }}</div>
 
-            <div class="content-p">九．甲方仅负责指导安装设备，设备的具体安装操作工作需乙方派专人进行.在设备和系统的维护及维修过程中，乙方需派专人对接。</div>
+            <div class="content-p">
+              九．甲方仅负责指导安装设备，设备的具体安装操作工作需乙方派专人进行.在设备和系统的维护及维修过程中，乙方需派专人对接。
+            </div>
             <div class="content-p">十、结算方式及时间：</div>
 
-            <div v-if="convention===true">
+            <div v-if="convention === true">
               <div class="content-p p-text-index">常规产品结算方式及时间</div>
-              <div
-                v-for="(item,index) in conventionList"
-                :key="index"
-                class="content-p p-text-index"
-              >
-                {{ item.moneyName }}应付金额：
-                <span class="span-paddings">{{ item.money | moneyFormatNumber}}</span>。付款周期：
+              <div v-for="(item, index) in conventionList" :key="index" class="content-p p-text-index">
+                {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
+                >。付款周期：
                 <span class="span-paddings">{{ item.date }}</span>
-                <span class="span-paddings">备注:{{ item.remarks || '无'}}</span>
+                <span class="span-paddings">备注:{{ item.remarks || '无' }}</span>
               </div>
             </div>
-            <div v-if="unconvention===true">
+            <div v-if="unconvention === true">
               <div class="content-p p-text-index">非常规产品结算方式及时间</div>
-              <div
-                v-for="(item,index) in unconventionList"
-                :key="index"
-                class="content-p p-text-index"
-              >
-                {{ item.moneyName }}应付金额：
-                <span class="span-paddings">{{ item.money | moneyFormatNumber}}</span>。付款周期：
+              <div v-for="(item, index) in unconventionList" :key="index" class="content-p p-text-index">
+                {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
+                >。付款周期：
                 <span class="span-paddings">{{ item.date }}</span>
-                <span class="span-paddings">备注:{{ item.remarks || '无'}}</span>
+                <span class="span-paddings">备注:{{ item.remarks || '无' }}</span>
               </div>
             </div>
             <div v-if="isFull">
               <div class="content-p p-text-index">全款结算方式及时间</div>
-              <div v-for="(item,index) in fullList" :key="index" class="content-p p-text-index">
-                {{ item.moneyName }}应付金额：
-                <span class="span-paddings">{{ item.money | moneyFormatNumber}}</span>。付款周期：
+              <div v-for="(item, index) in fullList" :key="index" class="content-p p-text-index">
+                {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
+                >。付款周期：
                 <span class="span-paddings">{{ item.date }}</span>
-
               </div>
             </div>
             <div v-if="increaseTotalPayment > 0" class="content-p p-text-index">
               增加总货款金额：
-              <span class="span-paddings">{{increaseTotalPayment | moneyFormatNumber}}</span>
+              <span class="span-paddings">{{ increaseTotalPayment | moneyFormatNumber }}</span>
             </div>
             <div>注：交货时间按预付款到账时间顺延。（按照签订协议时间和交货时间的周期顺延）</div>
 
@@ -221,14 +221,14 @@
             <div class="content-p p-text-index" v-if="contractDispute===2">（二）、向<span style="margin: 0 12px;text-decoration: underline">乙</span>方所在地人民法院提起诉讼<</div>-->
             <div class="content-p">
               十二、合同争议的解决方式：本合同在履行过程中发生的争执，由双方当事人协商解决，也可由当地工商行政管理部门调解；协商或调解不成，按下列第
-              <span
-                class="span-underline"
-              >{{ contractDispute }}</span>种方式解决。
+              <span class="span-underline">{{ contractDispute }}</span
+              >种方式解决。
             </div>
             <div class="content-p p-text-index">（一）、提交仲裁委员会仲裁；</div>
             <div class="content-p p-text-index" v-if="contractDisputeName !== null">
               （二）、向
-              <span style="margin: 0 12px;text-decoration: underline">{{ contractDisputeName }}</span> 方所在地人民法院提起诉讼
+              <span style="margin: 0 12px; text-decoration: underline">{{ contractDisputeName }}</span>
+              方所在地人民法院提起诉讼
             </div>
 
             <div class="content-p">十三、</div>
@@ -239,8 +239,9 @@
             </div>
             <div v-if="signForm === 1" class="content-p p-text-index">
               1、此协议通过书面签订形式签订，合同自双方签字盖章后生效，合同的附件享有同等法律效力。本合同一式
-              <span class="span-paddings">{{ contractTotalNumber }}</span>份，甲乙双方各
-              <span class="span-paddings">{{ contractABNumber }}</span>份，由于保管不当而引起的纠纷由当事人负全部责任。
+              <span class="span-paddings">{{ contractTotalNumber }}</span
+              >份，甲乙双方各 <span class="span-paddings">{{ contractABNumber }}</span
+              >份，由于保管不当而引起的纠纷由当事人负全部责任。
             </div>
             <div v-if="signForm === 2" class="content-p p-text-index">
               1、此协议通过微信形式签订（甲方微信账号：
@@ -248,55 +249,53 @@
               乙方微信账号： {{ partBemail }} ），合同自双方签字盖章并回复确认后方可生效，合同的附件享有同等法律效力。
             </div>
 
-            <div
-              class="content-p"
-            >十四、其他约定事项：以上产品为甲方拥有自主知识产权的专利产品，乙方不得购买、销售假冒或仿冒合同产品，不得以任何形式伪造、仿造甲方产品。如有上述行为应视为违约，应承担法律责任。甲方有权单方面终止与乙方的一切商业合作关系，并要求乙方按合同金额的100%赔偿违约金，甲方有权从货物预付款或保证金中扣除违约金，不足部分由乙方补足，甲方保留依法追究乙方侵权责任的权利。</div>
+            <div class="content-p">
+              十四、其他约定事项：以上产品为甲方拥有自主知识产权的专利产品，乙方不得购买、销售假冒或仿冒合同产品，不得以任何形式伪造、仿造甲方产品。如有上述行为应视为违约，应承担法律责任。甲方有权单方面终止与乙方的一切商业合作关系，并要求乙方按合同金额的100%赔偿违约金，甲方有权从货物预付款或保证金中扣除违约金，不足部分由乙方补足，甲方保留依法追究乙方侵权责任的权利。
+            </div>
 
             <div class="content-p">十五、双方约定通过微信号、邮箱相互传递资料，作为合同的一部分，履行法律效力。</div>
             <template v-if="bucketType === 1">
-            <div class="content-p">十六、培训指导</div>
-            <div
-              class="content-p p-text-index"
-            >1、自签订合同之日起，甲方为乙方提供垃圾分类运营、软件使用、设备使用的培训指导。乙方需提前三个工作日提出，基于甲乙双方协商一致的培训时间和培训内容予以实施，此过程中产生的差旅费由乙方承担。</div>
-            <div class="content-p p-text-index">2、如乙方参与培训人员离职，可按15.1再次申请培训指导。</div>
-            <div class="content-p p-text-index">3、培训人员应当具备高中或相当于高中以上文化程度。</div>
+              <div class="content-p">十六、培训指导</div>
+              <div class="content-p p-text-index">
+                1、自签订合同之日起，甲方为乙方提供垃圾分类运营、软件使用、设备使用的培训指导。乙方需提前三个工作日提出，基于甲乙双方协商一致的培训时间和培训内容予以实施，此过程中产生的差旅费由乙方承担。
+              </div>
+              <div class="content-p p-text-index">2、如乙方参与培训人员离职，可按15.1再次申请培训指导。</div>
+              <div class="content-p p-text-index">3、培训人员应当具备高中或相当于高中以上文化程度。</div>
 
-            <div class="content-p">十七、安装施工要求</div>
-            <div
-              class="content-p p-text-index"
-            >1、安装位置：乙方安装位置不能选择在风口，以防遇到暴风导致设备刮倒或损害等带来安全隐患；安装位置不能选择雨水较多地区，尽量避免选择地势明显较低的位置防止产生积水；设备的摆放应避免操作屏（或广告屏）阳光直射，以免影响使用体验和设备寿命。</div>
-            <div
-              class="content-p p-text-index"
-            >2、引电要求：能够24小时供电，整个引电电路无破损、漏电。务必保证火线、零线、地线，三线同时具备 (220V)。</div>
-            <div class="content-p p-text-index">3、网络要求：设备安装地应in保证信号源，优先4G或者2G 网络，保证网络能有效连接。</div>
-            <div class="content-p p-text-index">
-              4、注意事项：
-              <p>4.1强电操作必须由乙方安排专业电工师傅操作，切勿私自操作，否则后果自负。</p>
-              <p>4.2在设备安装时，乙方必须按照甲方所提供的《产品说明书》上的要求，安装设备自带地线，打膨胀螺栓。</p>
-              <p>4.3设备到货未安装使用前，乙方务必用雨布遮盖设备。</p>
-              <p>4.4如乙方未按上述安装施工要求进行操作，出现任何问题，甲方概不负责。</p>
-            </div>
+              <div class="content-p">十七、安装施工要求</div>
+              <div class="content-p p-text-index">
+                1、安装位置：乙方安装位置不能选择在风口，以防遇到暴风导致设备刮倒或损害等带来安全隐患；安装位置不能选择雨水较多地区，尽量避免选择地势明显较低的位置防止产生积水；设备的摆放应避免操作屏（或广告屏）阳光直射，以免影响使用体验和设备寿命。
+              </div>
+              <div class="content-p p-text-index">
+                2、引电要求：能够24小时供电，整个引电电路无破损、漏电。务必保证火线、零线、地线，三线同时具备 (220V)。
+              </div>
+              <div class="content-p p-text-index">
+                3、网络要求：设备安装地应in保证信号源，优先4G或者2G 网络，保证网络能有效连接。
+              </div>
+              <div class="content-p p-text-index">
+                4、注意事项：
+                <p>4.1强电操作必须由乙方安排专业电工师傅操作，切勿私自操作，否则后果自负。</p>
+                <p>4.2在设备安装时，乙方必须按照甲方所提供的《产品说明书》上的要求，安装设备自带地线，打膨胀螺栓。</p>
+                <p>4.3设备到货未安装使用前，乙方务必用雨布遮盖设备。</p>
+                <p>4.4如乙方未按上述安装施工要求进行操作，出现任何问题，甲方概不负责。</p>
+              </div>
             </template>
             <div class="card-wrap clearfix">
               <div class="card">
                 <p class="card-tit">供方（甲方）</p>
-                <p style="position: relative;">
+                <p style="position: relative">
                   供方单位（盖章）：
                   <span class="span-paddings">{{ supplier }}</span>
                   <img
                     v-if="approvalStatus === 2 && isNeedFreshChaper === 0"
-                    style="position: absolute;width: 140px;left: 35%;top: -50%;"
+                    style="position: absolute; width: 140px; left: 35%; top: -50%"
                     :src="commonSeal"
                     alt="公章"
                   />
                 </p>
                 <p>
                   供方代表签字：
-                  <img
-                    style="height: 50px;width: auto;vertical-align: middle;"
-                    :src="saleUserSeal"
-                    alt="销售人员章"
-                  />
+                  <img style="height: 50px; width: auto; vertical-align: middle" :src="saleUserSeal" alt="销售人员章" />
                 </p>
                 <p>地址：江苏省徐州市铜山区张集工业园</p>
                 <p>电话/传真：0516-66699966（传真）</p>
@@ -386,7 +385,7 @@ import {
   getSplitApprovingProduct,
   getApprovalNode,
   checkCurrentNode,
-  approvalSplitProduct
+  approvalSplitProduct,
 } from '@/api/contractListManagement.js'
 import util from '@/components/_util/util'
 // import vuePrint from 'vue-print-nb'
@@ -394,7 +393,7 @@ import util from '@/components/_util/util'
 const renderContent = (value, row, index) => {
   const obj = {
     children: value,
-    attrs: {}
+    attrs: {},
   }
   if (index === 4) {
     obj.attrs.colSpan = 0
@@ -408,6 +407,7 @@ export default {
   data() {
     return {
       data: [],
+      saleContractLowCPriceAllAmount: 0,
       enterpriseName: '江苏万德福公共设施科技有限公司',
       enterpriseNameEnglish: 'JiangSu Wonderful Infrastructure Manufacturing co.,Ltd',
       contractNum: '', // 合同编号
@@ -499,148 +499,148 @@ export default {
       isNeedFreshChaper: 0, //默认不是鲜章
       queryOne_freightType: 1,
       queryOne_freightCharge: 0,
-      bucketType:1, // 1智能桶合同 2 常规桶合同
-      qualityLimit:1, //常规桶 质保期
-      detailDeliveryAddress:'', //新地址
+      bucketType: 1, // 1智能桶合同 2 常规桶合同
+      qualityLimit: 1, //常规桶 质保期
+      detailDeliveryAddress: '', //新地址
 
-      getLookDetail_isTax:true,
-      getLookDetail_freightType:0,
-      getLookDetail_freightDivType:2
+      getLookDetail_isTax: true,
+      getLookDetail_freightType: 0,
+      getLookDetail_freightDivType: 2,
     }
   },
   computed: {
     contactList() {
       return this.makeContact({ addressStr: this.deliveryAddress, nameStr: this.deliveryName, mobilStr: this.mobile })
     },
-    columns(){
+    columns() {
       let baseColumns = [
         {
           title: '标的名称',
-          dataIndex: 'targetName'
+          dataIndex: 'targetName',
         },
         {
           title: '产品类别',
-          dataIndex: 'productType'
+          dataIndex: 'productType',
         },
         {
           title: '商标',
-          dataIndex: 'trademark'
+          dataIndex: 'trademark',
         },
         {
           title: '产品型号',
-          dataIndex: 'productName'
+          dataIndex: 'productName',
         },
         {
           title: '图片',
           dataIndex: 'productImage',
-          scopedSlots: { customRender: 'productImage' }
+          scopedSlots: { customRender: 'productImage' },
         },
         {
           title: '单位',
-          dataIndex: 'company'
+          dataIndex: 'company',
         },
         {
           title: '数量',
-          dataIndex: 'count'
-        }
+          dataIndex: 'count',
+        },
       ]
       /**不含税，不含运费 */
       let case1 = baseColumns.concat([
         {
           title: '单价(元)',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' }
+          scopedSlots: { customRender: 'price' },
         },
         {
           title: '金额(元)',
           dataIndex: 'unitAmount',
-          scopedSlots: { customRender: 'unitAmount' }
-        }
+          scopedSlots: { customRender: 'unitAmount' },
+        },
       ])
       /**含税，不含运费 */
       let case2 = baseColumns.concat([
         {
           title: '含税单价(元)',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' }
+          scopedSlots: { customRender: 'price' },
         },
         {
           title: '含税金额(元)',
           dataIndex: 'unitAmount',
-          scopedSlots: { customRender: 'unitAmount' }
-        }
+          scopedSlots: { customRender: 'unitAmount' },
+        },
       ])
       /**不含税，含运费，单价 */
       let case3 = baseColumns.concat([
         {
           title: '单价(元)',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' }
+          scopedSlots: { customRender: 'price' },
         },
         {
           title: '含运费单价(元)',
           dataIndex: 'freightUnitPrice',
-          scopedSlots: { customRender: 'freightUnitPrice' }
+          scopedSlots: { customRender: 'freightUnitPrice' },
         },
         {
           title: '含运费金额(元)',
           dataIndex: 'freightUnitAmount',
-          scopedSlots: { customRender: 'freightUnitAmount' }
-        }
+          scopedSlots: { customRender: 'freightUnitAmount' },
+        },
       ])
       /**不含税，含运费，金额 */
       let case4 = baseColumns.concat([
         {
           title: '单价(元)',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' }
+          scopedSlots: { customRender: 'price' },
         },
         {
           title: '金额(元)',
           dataIndex: 'unitAmount',
-          scopedSlots: { customRender: 'unitAmount' }
+          scopedSlots: { customRender: 'unitAmount' },
         },
         {
           title: '含运费金额(元)',
           dataIndex: 'freightUnitAmount',
-          scopedSlots: { customRender: 'freightUnitAmount' }
-        }
+          scopedSlots: { customRender: 'freightUnitAmount' },
+        },
       ])
       /**含税，含运费，单价 */
       let case5 = baseColumns.concat([
         {
           title: '含税单价(元)',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' }
+          scopedSlots: { customRender: 'price' },
         },
         {
           title: '含税含运费单价(元)',
           dataIndex: 'freightUnitPrice',
-          scopedSlots: { customRender: 'freightUnitPrice' }
+          scopedSlots: { customRender: 'freightUnitPrice' },
         },
         {
           title: '含税含运费金额(元)',
           dataIndex: 'freightUnitAmount',
-          scopedSlots: { customRender: 'freightUnitAmount' }
-        }
+          scopedSlots: { customRender: 'freightUnitAmount' },
+        },
       ])
       /**含税，含运费，金额 */
       let case6 = baseColumns.concat([
         {
           title: '含税单价(元)',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' }
+          scopedSlots: { customRender: 'price' },
         },
         {
           title: '含税金额(元)',
           dataIndex: 'unitAmount',
-          scopedSlots: { customRender: 'unitAmount' }
+          scopedSlots: { customRender: 'unitAmount' },
         },
         {
           title: '含税含运费金额(元)',
           dataIndex: 'freightUnitAmount',
-          scopedSlots: { customRender: 'freightUnitAmount' }
-        }
+          scopedSlots: { customRender: 'freightUnitAmount' },
+        },
       ])
       let targetColumns = []
       //this.freightDivType  1单价 2金额
@@ -651,14 +651,33 @@ export default {
       //是否含税
       let hasTax = this.getLookDetail_isTax
 
-      if(hasTax){
+      if (hasTax) {
         targetColumns = hasFreight ? (hasFreightDivOne ? case5 : case6) : case2
-      }else{
+      } else {
         targetColumns = hasFreight ? (hasFreightDivOne ? case3 : case4) : case1
+      }
+      let productL = this.saleContractLowCPriceAllAmount > 0 ? true : false
+      if (productL) {
+        targetColumns.push(
+          {
+            align: 'center',
+            title: '低于C价差额',
+            width: '200px',
+            dataIndex: 'productLowCPriceUnitAmount',
+            scopedSlots: { customRender: 'productLowCPriceUnitAmount' },
+          },
+          {
+            align: 'center',
+            width: '200px',
+            title: '低于C价总差额',
+            dataIndex: 'productLowCPriceAllAmount',
+            scopedSlots: { customRender: 'productLowCPriceAllAmount' },
+          }
+        )
       }
       //targetColumns.push({title: '交货日期',dataIndex: 'dateTime'})
       return targetColumns
-    }
+    },
   },
   watch: {
     $route(to, from) {
@@ -666,7 +685,7 @@ export default {
       if (to.name === 'previewSalesContract') {
         this.init()
       }
-    }
+    },
   },
   mounted() {
     this.init()
@@ -697,13 +716,13 @@ export default {
         this.isPassBtn = false
       }
       const params = {
-        id: queryOneData.id
+        id: queryOneData.id,
       }
       this.getInfor()
       this.getSeal()
 
       await checkCurrentNode({ contractId: id })
-        .then(res => {
+        .then((res) => {
           try {
             that.isSalesManager = parseInt(res.data.checkFlag) === 1 ? true : false
           } catch (err) {
@@ -711,15 +730,15 @@ export default {
             that.isSalesManager = false
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log('checkCurrentNode API error', err)
           that.isSalesManager = false
         })
 
       if (that.isSalesManager) {
         //销售经理需要选择审批节点
-        await getApprovalNode().then(res => {
-          that.approvalNodeData = res.data.map(item => {
+        await getApprovalNode().then((res) => {
+          that.approvalNodeData = res.data.map((item) => {
             return { label: item.name, value: item.id }
           })
         })
@@ -731,9 +750,9 @@ export default {
       let queryOneData = this.$router.currentRoute.params.queryOneData
       // 获取合同预览信息
       mobileTerminal({
-        id: this.$router.currentRoute.params.queryOneData.id
+        id: this.$router.currentRoute.params.queryOneData.id,
       })
-        .then(res => {
+        .then((res) => {
           console.log('预览合同需要的接口mobileTerminal', res)
           this.contractNum = res.data.合同编号
           this.demandUnit = res.data.乙方
@@ -774,6 +793,7 @@ export default {
           this.unIsTax = res.data.unIsTax
           this.isNeedFreshChaper = res.data.isNeedFreshChaper
           this.otherInfo = res.data.otherInfo
+          this.saleContractLowCPriceAllAmount = res.data.saleContractLowCPriceAllAmount
 
           this.bucketType = res.data.bucketType || 1
           this.qualityLimit = res.data.qualityLimit || 1
@@ -789,15 +809,15 @@ export default {
 
           if (parseInt(queryOneData.approvalStatus) === 4) {
             getSplitApprovingProduct({ contractId: queryOneData.id })
-              .then(res => {
+              .then((res) => {
                 let _key = 0
-                that.data = res.data.map(item => {
+                that.data = res.data.map((item) => {
                   item.key = ++_key
                   return item
                 })
                 that.productLoading = false
               })
-              .catch(err => {
+              .catch((err) => {
                 that.productLoading = false
                 that.$message.error('获取合同产品数据失败')
                 return
@@ -807,7 +827,7 @@ export default {
             that.productLoading = false
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
           this.$message.error('网络异常，尝试重新操作')
@@ -819,9 +839,9 @@ export default {
     // 获取单个信息(合同章/个人章)
     getSeal() {
       getQueryOne({
-        id: this.$router.currentRoute.params.queryOneData.id
+        id: this.$router.currentRoute.params.queryOneData.id,
       })
-        .then(res => {
+        .then((res) => {
           this.approvalStatus = res.data.approvalStatus
           this.commonSeal = res.data.commonSeal
           this.saleUserSeal = res.data.saleUserSeal
@@ -840,7 +860,7 @@ export default {
           //   }
           // }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
@@ -863,7 +883,7 @@ export default {
       const params = {
         contractId: queryOneData.id,
         isAdopt: 0,
-        opinion: ''
+        opinion: '',
       }
       //审批通过新增 拆分审批 以及 销售经理审批的情况
       if (parseInt(queryOneData.approvalStatus) === 4) {
@@ -876,11 +896,11 @@ export default {
         }
         that.spinning = true
         approvalSplitProduct(params)
-          .then(res => {
+          .then((res) => {
             that.$router.go(-1) // 返回上一页
             // this.$router.push({name:'distributionContractList'})
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
           })
           .finally(() => {
@@ -891,12 +911,12 @@ export default {
         that.spinning = true
         //原流程
         contractApproval(params)
-          .then(res => {
+          .then((res) => {
             that.spinning = false
             that.$router.go(-1) // 返回上一页
             // this.$router.push({name:'distributionContractList'})
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
           })
           .finally(() => {
@@ -918,23 +938,23 @@ export default {
     handleSubmit() {
       let that = this
       that.visible = false
-      setTimeout(function() {
+      setTimeout(function () {
         that.spinning = true
         let queryOneData = that.$router.currentRoute.params.queryOneData
         const params = {
           contractId: queryOneData.id,
           opinion: that.opinion,
-          isAdopt: that.isAdopt
+          isAdopt: that.isAdopt,
         }
         //拆分审批不通过流程
         if (parseInt(queryOneData.approvalStatus) === 4) {
           approvalSplitProduct(params)
-            .then(res => {
+            .then((res) => {
               that.visible = false
               that.$router.go(-1) // 返回上一页
               // this.$router.push({name:'distributionContractList'})
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
             .finally(() => {
@@ -944,13 +964,13 @@ export default {
         } else {
           //原流程
           contractApproval(params)
-            .then(res => {
+            .then((res) => {
               console.log('通过或者不通过点击确定调取接口的结果', res)
               that.visible = false
               that.$router.go(-1) // 返回上一页
               // this.$router.push({name:'distributionContractList'})
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
             .finally(() => {
@@ -999,21 +1019,21 @@ export default {
         contacts.push({
           name: nameArr[index] ? nameArr[index] : '',
           telphone: mobileArr[index] ? mobileArr[index] : '',
-          address: addressArr[index] ? addressArr[index] : ''
+          address: addressArr[index] ? addressArr[index] : '',
         })
       })
       //过滤
-      let filterContact = contacts.filter(c => c.name !== '' && c.telphone !== '' && c.address !== '')
+      let filterContact = contacts.filter((c) => c.name !== '' && c.telphone !== '' && c.address !== '')
       //格式化
-      let result = filterContact.map(c => {
+      let result = filterContact.map((c) => {
         let nameHTML = `<span style="margin:0 5px;">姓名：${c.name}</span>`
         let telphoneHTML = `<span style="margin:0 5px;">电话：${c.telphone}</span>`
         let addressHTML = `<span style="margin:0 5px;">详细地址：${c.address}</span>`
         return `${nameHTML} ${telphoneHTML} ${addressHTML}`
       })
       return result
-    }
-  }
+    },
+  },
 }
 </script>
 

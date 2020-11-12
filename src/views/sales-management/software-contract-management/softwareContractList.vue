@@ -119,10 +119,22 @@
                     <a-menu-item key="3" v-if="$auth('softwareContract:one')">
                       <a type="primary" @click="showSms(record)">短信记录</a>
                     </a-menu-item>
-                    <a-menu-item key="4" v-if="$auth('softwareContract:edit') && record.approvalStatus !== 0">
+                    <a-menu-item
+                      key="4"
+                      v-if="
+                        $auth('softwareContract:edit') &&
+                        record.approvalStatus !== 0 &&
+                        record.createdId === userInfo.id
+                      "
+                    >
                       <a type="primary" @click="editAction(record)">修改</a>
                     </a-menu-item>
-                    <a-menu-item key="5" v-if="$auth('softwareContract:edit') && record.approvalStatus === -1">
+                    <a-menu-item
+                      key="5"
+                      v-if="
+                        $auth('softwareContract:edit') && (record.approvalStatus === -1 || record.approvalStatus === 9)
+                      "
+                    >
                       <a type="primary" @click="startProcess(record.id)">提交审批</a>
                     </a-menu-item>
                     <a-menu-item key="6" v-if="$auth('softwareContract:del')">
