@@ -132,12 +132,6 @@ const columns = [
   },
   {
     align: 'center',
-    title: '预定最近交货日期',
-    dataIndex: 'latelyDeliveryDate',
-    key: 'latelyDeliveryDate'
-  },
-  {
-    align: 'center',
     title: '创建人',
     key: 'createdName',
     dataIndex: 'createdName'
