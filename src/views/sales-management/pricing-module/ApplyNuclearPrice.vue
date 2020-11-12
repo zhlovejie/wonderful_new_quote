@@ -1,141 +1,128 @@
 <template>
   <div>
     <a-spin :spinning="spinning">
-    <div class="top-right clearfix">
-      <!--      <a-button class="fl-r" type="primary" @click="submitPricing" icon="check">提交</a-button>-->
-      <a-button class="fl-r" type="primary" @click="validate" :loading="loading" icon="check">提交</a-button>
-      <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
-    </div>
-    <a-card class="card" :bordered="false">
-      <basic-pricing-information
-        ref="BasicPricingInformation"
-        :showSubmit="false"
-        :data="basicInfo"
-        @custom-change="customChange"
-      />
-    </a-card>
+      <div class="top-right clearfix">
+        <!--      <a-button class="fl-r" type="primary" @click="submitPricing" icon="check">提交</a-button>-->
+        <a-button class="fl-r" type="primary" @click="validate" :loading="loading" icon="check">提交</a-button>
+        <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
+      </div>
+      <a-card class="card" :bordered="false">
+        <basic-pricing-information
+          ref="BasicPricingInformation"
+          :showSubmit="false"
+          :data="basicInfo"
+          @custom-change="customChange"
+        />
+      </a-card>
 
-
-    <!-- table -->
-    <a-card class="card" title="产品信息" :bordered="false">
-      <a-table
-        :columns="columns"
-        :dataSource="data"
-        :pagination="false"
-        :loading="memberLoading"
-        rowKey="id"
-      >
-        <template slot="productType" slot-scope="text, record">
-          <a-input
-            :value="text"
-            read-only="read-only"
-            @click="openModel(record)"
-            v-decorator="[ 'productType',{rules: [{ required: true, message: '选择产品代码'}]} ]"
-          />
-        </template>
-        <template slot="quantityRequired" slot-scope="text, record">
-          <a-input-number :precision=0 :min=0
-            ref="quantityRequired"
-            v-decorator="['quantityRequired', {rules: [{ required: true, message: '输入数量' }]}]"
-            @change="quantityRequiredChange(record,$event)"
-          />
-        </template>
-        <template slot="specifiCation" slot-scope="text">
-          <div v-html="formatSpecifiCation(text)"></div>
-        </template>
-        <template slot="requirementDescription" slot-scope="text, record">
-          <a-textarea autosize
-            ref="requirementDescription"
-            v-decorator="['requirementDescription', {rules: [{ required: true, message: '输入需求描述' }]}]"
-            @change="requirementDescriptionChange(record,$event)"
-          />
-        </template>
-        <template slot="productArea" slot-scope="text">
-          <span>{{ text }}</span>
-        </template>
-        <template slot="referencePicture" slot-scope="text">
-          <img style="height: 50px;lenght:40px" :src="text" />
-        </template>
-        <template slot="revisedPart" slot-scope="text, record">
-          <a-select
-            mode="multiple"
-            style="width:150px"
-            @change="partChange(record,$event)"
-            placeholder="请选择修改点"
-            v-decorator="[ 'revisedPart', {rules: [{ required: true, message: '请选择修改点'}]}]"
-          >
-            <a-select-option v-for="rPart in revisedParts" :key="rPart.text">{{ rPart.text }}</a-select-option>
-          </a-select>
-        </template>
-        <template slot="operation" slot-scope="text, record">
-          <template v-if="record.editable">
-            <span v-if="record.isNew">
-              <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
-                <a>删除</a>
-              </a-popconfirm>
-            </span>
-            <span v-else>
-              <a @click="saveRow(record)">保存</a>
-              <a-divider type="vertical" />
-              <a @click="cancel(record.key)">取消</a>
-            </span>
+      <!-- table -->
+      <a-card class="card" title="产品信息" :bordered="false">
+        <a-table :columns="columns" :dataSource="data" :pagination="false" :loading="memberLoading" rowKey="id">
+          <template slot="productType" slot-scope="text, record">
+            <a-input
+              :value="text"
+              read-only="read-only"
+              @click="openModel(record)"
+              v-decorator="['productType', { rules: [{ required: true, message: '选择产品代码' }] }]"
+            />
           </template>
-        </template>
-      </a-table>
-      <a-button
-        style="width: 100%; margin-top: 16px; margin-bottom: 8px"
-        type="dashed"
-        icon="plus"
-        @click="newMember"
-      >添加行</a-button>
-    </a-card>
+          <template slot="quantityRequired" slot-scope="text, record">
+            <a-input-number
+              :precision="0"
+              :min="0"
+              ref="quantityRequired"
+              v-decorator="['quantityRequired', { rules: [{ required: true, message: '输入数量' }] }]"
+              @change="quantityRequiredChange(record, $event)"
+            />
+          </template>
+          <template slot="specifiCation" slot-scope="text">
+            <div v-html="formatSpecifiCation(text)"></div>
+          </template>
+          <template slot="requirementDescription" slot-scope="text, record">
+            <a-textarea
+              autosize
+              ref="requirementDescription"
+              v-decorator="['requirementDescription', { rules: [{ required: true, message: '输入需求描述' }] }]"
+              @change="requirementDescriptionChange(record, $event)"
+            />
+          </template>
+          <template slot="productArea" slot-scope="text">
+            <span>{{ text }}</span>
+          </template>
+          <template slot="referencePicture" slot-scope="text">
+            <img style="height: 50px; lenght: 40px" :src="text" />
+          </template>
+          <template slot="revisedPart" slot-scope="text, record">
+            <a-select
+              mode="multiple"
+              style="width: 150px"
+              @change="partChange(record, $event)"
+              placeholder="请选择修改点"
+              v-decorator="['revisedPart', { rules: [{ required: true, message: '请选择修改点' }] }]"
+            >
+              <a-select-option v-for="rPart in revisedParts" :key="rPart.text">{{ rPart.text }}</a-select-option>
+            </a-select>
+          </template>
+          <template slot="operation" slot-scope="text, record">
+            <template v-if="record.editable">
+              <span v-if="record.isNew">
+                <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </span>
+              <span v-else>
+                <a @click="saveRow(record)">保存</a>
+                <a-divider type="vertical" />
+                <a @click="cancel(record.key)">取消</a>
+              </span>
+            </template>
+          </template>
+        </a-table>
+        <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember"
+          >添加行</a-button
+        >
+      </a-card>
 
-    <a-card class="card" :bordered="false">
-      <a-form :form="form" class="form">
-        <a-row class="form-row" :gutter="16">
-          <a-col :lg="{span: 12}" :md="{span: 12}" :sm="24">
-            <a-form-item label="申请人" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
-              <a-input placeholder="申请人" :value="userInfo.trueName || ''" disabled />
-            </a-form-item>
-          </a-col>
-          <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="申请时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
-              <a-input v-model="createTime" disabled />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row class="form-row" :gutter="16">
-          <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="核价说明" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
-              <a-textarea 
-                disabled 
-                placeholder="核价说明,多行输入"
-                :rows="4"
-                v-decorator="['explainText']"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="核价人" :label-col="{ span: 3}" :wrapper-col="{ span:9 }">
-              <a-select
-                placeholder="请选择核价人"
-                v-decorator="[ 'valencyUserId', {rules: [{ required: true, message: '请选择核价人'}]}]"
-              >
-                <a-select-option v-for="item in userList" :key="item.id">{{ item.trueName }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <product-model ref="productModel" @custom-change="productChange" :productType="productType"></product-model>
-      </a-form>
-    </a-card>
+      <a-card class="card" :bordered="false">
+        <a-form :form="form" class="form">
+          <a-row class="form-row" :gutter="16">
+            <a-col :lg="{ span: 12 }" :md="{ span: 12 }" :sm="24">
+              <a-form-item label="申请人" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+                <a-input placeholder="申请人" :value="userInfo.trueName || ''" disabled />
+              </a-form-item>
+            </a-col>
+            <a-col :lg="12" :md="12" :sm="24">
+              <a-form-item label="申请时间" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+                <a-input v-model="createTime" disabled />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row class="form-row" :gutter="16">
+            <a-col :lg="12" :md="12" :sm="24">
+              <a-form-item label="核价说明" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+                <a-textarea disabled placeholder="核价说明,多行输入" :rows="4" v-decorator="['explainText']" />
+              </a-form-item>
+            </a-col>
+            <a-col :lg="12" :md="12" :sm="24">
+              <a-form-item label="核价人" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+                <a-select
+                  placeholder="请选择核价人"
+                  v-decorator="['valencyUserId', { rules: [{ required: true, message: '请选择核价人' }] }]"
+                >
+                  <a-select-option v-for="item in userList" :key="item.id">{{ item.trueName }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <product-model ref="productModel" @custom-change="productChange" :productType="productType"></product-model>
+        </a-form>
+      </a-card>
     </a-spin>
-
   </div>
 </template>
 
 <script>
-import { getSelectsList, priceOrderAdd ,saleValencySaveAndUpdate ,getlookApplyNuclear} from '@/api/pricingModule'
+import { getSelectsList, priceOrderAdd, saleValencySaveAndUpdate, getlookApplyNuclear } from '@/api/pricingModule'
 import BasicPricingInformation from './BasicPricingInformation'
 import ProductModel from '../contract-list-management/step-forms/productModel.vue'
 import { getDictionary } from '@/api/common'
@@ -143,7 +130,7 @@ export default {
   name: 'ApplyNuclearPrice',
   components: {
     BasicPricingInformation,
-    ProductModel
+    ProductModel,
   },
   props: {},
   data() {
@@ -157,14 +144,14 @@ export default {
           title: '所依据产品代码',
           dataIndex: 'productType',
           key: 'productType',
-          scopedSlots: { customRender: 'productType' }
+          scopedSlots: { customRender: 'productType' },
         },
         {
           align: 'center',
           title: '需求数量',
           dataIndex: 'quantityRequired',
           key: 'quantityRequired',
-          scopedSlots: { customRender: 'quantityRequired' }
+          scopedSlots: { customRender: 'quantityRequired' },
         },
         {
           align: 'center',
@@ -172,42 +159,42 @@ export default {
           dataIndex: 'specifiCation',
           key: 'specifiCation',
           // width: '20%',
-          scopedSlots: { customRender: 'specifiCation' }
+          scopedSlots: { customRender: 'specifiCation' },
         },
         {
           align: 'center',
           title: '需求描述',
           dataIndex: 'requirementDescription',
           key: 'requirementDescription',
-          scopedSlots: { customRender: 'requirementDescription' }
+          scopedSlots: { customRender: 'requirementDescription' },
         },
         {
           align: 'center',
           title: '产品区域',
           dataIndex: 'productArea',
           key: 'productArea',
-          scopedSlots: { customRender: 'productArea' }
+          scopedSlots: { customRender: 'productArea' },
         },
         {
           align: 'center',
           title: '参考图片',
           dataIndex: 'referencePicture',
           key: 'referencePicture',
-          scopedSlots: { customRender: 'referencePicture' }
+          scopedSlots: { customRender: 'referencePicture' },
         },
         {
           align: 'center',
           title: '修改点',
           dataIndex: 'revisedPart',
           key: 'revisedPart',
-          scopedSlots: { customRender: 'revisedPart' }
+          scopedSlots: { customRender: 'revisedPart' },
         },
         {
           title: '操作',
           key: 'action',
           width: '160px',
-          scopedSlots: { customRender: 'operation' }
-        }
+          scopedSlots: { customRender: 'operation' },
+        },
       ],
       data: [],
       errors: [],
@@ -223,7 +210,7 @@ export default {
       quantityRequired: 0, //需求数量
       specs: '', //需求规格
       revisedParts: [], //所有的核价修改点
-      spinning:false
+      spinning: false,
     }
   },
   mounted() {
@@ -233,7 +220,7 @@ export default {
     async init() {
       let that = this
       await that.getValencyCode()
-      await getDictionary({ text: '核价修改点' }).then(res => that.revisedParts = res.data)
+      await getDictionary({ text: '核价修改点' }).then((res) => (that.revisedParts = res.data))
       // 获取页面的一些信息
       //that.getOrderInfo()
     },
@@ -260,17 +247,17 @@ export default {
         revisedPart: '',
         editable: true,
         isNew: true,
-        basisModel: 0
+        basisModel: 0,
       })
     },
     // 删除行
     remove(key) {
-      const newData = this.data.filter(item => item.key !== key)
+      const newData = this.data.filter((item) => item.key !== key)
       this.data = newData
     },
     handleChange(value, key, column) {
       const newData = [...this.data]
-      const target = newData.filter(item => key === item.key)[0]
+      const target = newData.filter((item) => key === item.key)[0]
       if (target) {
         target[column] = value
         this.data = newData
@@ -280,7 +267,7 @@ export default {
     openModel(record) {
       this.openKey = record.key
       console.log('openKey :' + this.openKey)
-      this.$refs.productModel.query({ productType: this.productType,seriesFlag: '1' })
+      this.$refs.productModel.query({ productType: this.productType, seriesFlag: '1' })
     },
     productChange(data) {
       console.log('JSON 页面传值事件:' + JSON.stringify(data))
@@ -289,9 +276,9 @@ export default {
         productPic: 'productPic',
         specifiCation: 'productStandard',
         productArea: 'productArea',
-        basisModel: 'id'
+        basisModel: 'id',
       }
-      let selectItem = Object.assign({},data.selectItem)
+      let selectItem = Object.assign({}, data.selectItem)
       for (const key of this.data) {
         if (key.key == this.openKey) {
           key.basisModel = selectItem.id
@@ -308,7 +295,7 @@ export default {
     },
     // 需求数量变化
     quantityRequiredChange(record, e) {
-      const _index = this.data.findIndex(item => item.key === record.key)
+      const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['quantityRequired'] = e
       }
@@ -316,14 +303,14 @@ export default {
     // 需求描述变化
     requirementDescriptionChange(record, e) {
       const v = e.currentTarget.value
-      const _index = this.data.findIndex(item => item.key === record.key)
+      const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['requirementDescription'] = v.trim()
       }
     },
     // 修改点变化
     partChange(record, e) {
-      const _index = this.data.findIndex(item => item.key === record.key)
+      const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['revisedPart'] = e.join(',')
       }
@@ -336,7 +323,7 @@ export default {
 
       BasicPricingInformation.validForm()
 
-      setTimeout(function(){
+      setTimeout(function () {
         const { status, ...data } = that.newBasicInfo
         if (status === 'error') {
           console.error('error')
@@ -344,31 +331,30 @@ export default {
         }
         console.log('获取子组件的数据:', data)
 
-        if(that.data.length <= 0){
+        if (that.data.length <= 0) {
           that.$message.error('请添加产品后，再提交信息')
           return
         }
         //增加产品信息验证
-        for(let i = 0,len = that.data.length;i<len;i++){
+        for (let i = 0, len = that.data.length; i < len; i++) {
           let item = that.data[i]
-          if(item.productType === ''){
+          if (item.productType === '') {
             that.$message.error('请选择依据产品代码')
             return
           }
-          if(item.quantityRequired <= 0){
+          if (item.quantityRequired <= 0) {
             that.$message.error('需求数量必须大于零')
             return
           }
-          if(item.requirementDescription.length === 0){
+          if (item.requirementDescription.length === 0) {
             that.$message.error('请输入需求描述')
             return
           }
-          if(item.revisedPart.length === 0){
+          if (item.revisedPart.length === 0) {
             that.$message.error('请选择修改点')
             return
           }
         }
-
 
         that.form.validateFields((err, values) => {
           console.log('点击提交，看看获取父页面那些信息', values)
@@ -378,49 +364,48 @@ export default {
             return false
           }
         })
-      },100)
-
-
+      }, 100)
     },
 
     // 点击提交：核价订单添加
     priceOrderSubmit() {
-      const { code, consumerId, demandTime ,consumerName} = this.newBasicInfo
+      const { code, consumerId, demandTime, consumerName, customerId, customerName } = this.newBasicInfo
 
       //拼接商品集合
-      const valencyProducts = this.data.map(item => {
+      const valencyProducts = this.data.map((item) => {
         return {
           basisModel: item.basisModel, //依据产品代码（产品信息表id
           demandNumber: item.quantityRequired, //需求数量
           specs: item.specifiCation, //specs
           demandRemarks: item.requirementDescription, //需求描述
           referencePic: item.referencePicture, //参考图片地址
-          revisedPart: item.revisedPart //其他
+          revisedPart: item.revisedPart, //其他
         }
       })
       const params = {
         valencyCode: code,
-        consumerId: consumerId,
-        consumerName:consumerName,
+        salerId: this.newBasicInfo.salerId,
+        consumerId: customerId,
+        consumerName: customerName,
         demandTime: demandTime, //需求日期，日期格式：yyyy-MM-dd
 
         valencyUserId: this.form.getFieldValue('valencyUserId'),
         demandRemarks: this.form.getFieldValue('demandRemarks'),
 
         valencyProducts: valencyProducts, // 上面拼接的商品集合
-        explainText: this.form.getFieldValue('explainText')
+        explainText: this.form.getFieldValue('explainText'),
       }
       console.log('点击提交：核价订单添加params:', params)
       //this.loading = true
       this.spinning = true
       saleValencySaveAndUpdate(params)
-        .then(res => {
+        .then((res) => {
           this.spinning = false
           console.log('提交申请请求接口的结果', res)
           this.$router.push({ name: 'pricing' })
           this.$destroy('ApplyNuclearPrice')
         })
-        .catch(error => {
+        .catch((error) => {
           this.spinning = false
           console.error(error)
         })
@@ -430,14 +415,14 @@ export default {
       if (!errors || errors.length === 0) {
         return null
       }
-      this.errors = Object.keys(errors).map(key => {
+      this.errors = Object.keys(errors).map((key) => {
         if (!errors[key]) {
           return null
         }
 
         return {
           key: key,
-          message: errors[key][0]
+          message: errors[key][0],
           // fieldLabel: fieldLabels[key]
         }
       })
@@ -452,12 +437,12 @@ export default {
     // 获取核价流水号、客户信息下拉、核价用户下拉列表
     getValencyCode() {
       return getSelectsList()
-        .then(res => {
+        .then((res) => {
           console.log('获取核价流水号、客户信息下拉、核价用户下拉列表', res)
           this.basicInfo = res.data || {}
           this.userList = res.data.userList
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
@@ -470,25 +455,26 @@ export default {
       this.newBasicInfo = data
       console.log('子组件向父组件通过自定义事件传递数据:', data)
     },
-    formatSpecifiCation(str){ //格式化规格显示
-      if(str === null || str === undefined || str === ''){
+    formatSpecifiCation(str) {
+      //格式化规格显示
+      if (str === null || str === undefined || str === '') {
         return `<span>${str}</span>`
       }
       let items = str.split('\n')
-      let itemsStr = items.map(s =>`<li>${s}</li>`).join('')
+      let itemsStr = items.map((s) => `<li>${s}</li>`).join('')
       return `<ol style="text-align: left;">${itemsStr}</ol>`
     },
     // 订单详情查询:获取页面需要的的信息
     getOrderInfo() {
       let that = this
       const params = this.$route.params
-      if(!('id' in params)){
+      if (!('id' in params)) {
         return
       }
       console.log('/订单详情查询:获取页面需要的的信息id', this.$route.params.id)
       // 调取订单详情查询 接口
       getlookApplyNuclear(params)
-        .then(res => {
+        .then((res) => {
           console.log('//调取订单详情查询 接口', res)
           let fillabcPriceObj = {}
           this.data = res.data.valencyProducts.map((item, index) => {
@@ -540,20 +526,19 @@ export default {
                 dataIndex: 'newBasisModel',
                 key: 'newBasisModel',
                 width: '200px',
-                scopedSlots: { customRender: 'newBasisModel' }
-              }
+                scopedSlots: { customRender: 'newBasisModel' },
+              },
             ]
           } else {
-
           }
           that.form.setFieldsValue(res.data)
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
-  }
+  },
 }
 </script>
 

@@ -91,24 +91,23 @@
               <template slot="productLowCPriceAllAmount" slot-scope="text, record">
                 <span style="color: red">{{ record.productLowCPriceAllAmount }}</span>
               </template>
-
-              <template slot="footer" slot-scope="currentPageData">
+              <template slot="footer" slot-scope="text">
                 <div v-if="queryOne_freightType === 0">
                   运费：&nbsp;{{
                     Math.ceil(queryOne_freightCharge * 1.13) | moneyFormatNumber
                   }}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{
                     queryOne_freightCharge | moneyFormatNumber
                   }}&nbsp;&nbsp;运费税率：&nbsp;13%&nbsp; )
-                  <template v-if="this.saleContractLowCPriceAllAmount > 0">
-                    <span> 合同低于C价总差额: </span>
-                    <span>{{ saleContractLowCPriceAllAmount }}</span>
-                  </template>
                 </div>
                 <div>
                   合计：（人民币）
                   <span class="span-paddings">{{ chineseTotalAmount }}</span>
                   <span class="span-paddings">￥{{ totalAmount | NumberFormat(2) }}</span>
                   。此价格{{ unIsTax ? '含税' : '不含税' }}、{{ freightType }}。
+                  <template v-if="saleContractLowCPriceAllAmount > 0">
+                    <span> 合同低于C价总差额: </span>
+                    <span>{{ saleContractLowCPriceAllAmount }}</span>
+                  </template>
                 </div>
               </template>
             </a-table>

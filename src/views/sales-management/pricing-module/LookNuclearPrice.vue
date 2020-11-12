@@ -7,43 +7,39 @@
       <a-form :form="form" class="form">
         <a-row class="form-row" :gutter="16">
           <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="核价编号" :label-col="{ span: 3}" :wrapper-col="{ span:9 }">
+            <a-form-item label="核价编号" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
               <a-input v-model="valencyCode" disabled />
             </a-form-item>
           </a-col>
           <a-col :lg="12" :md="12" :sm="24">
             <a-form-item label="单据状态" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
-              <a-input v-if="valencyStatus===0" v-model="statusName" disabled placeholder="待接收" />
-              <a-input v-else-if="valencyStatus===1" v-model="statusName" disabled />
-              <a-input v-else-if="valencyStatus===2" v-model="statusName" disabled />
-              <a-input v-else-if="valencyStatus===3" v-model="statusName" disabled />
-              <a-input v-else-if="valencyStatus===4" v-model="statusName" disabled />
+              <a-input v-if="valencyStatus === 0" v-model="statusName" disabled placeholder="待接收" />
+              <a-input v-else-if="valencyStatus === 1" v-model="statusName" disabled />
+              <a-input v-else-if="valencyStatus === 2" v-model="statusName" disabled />
+              <a-input v-else-if="valencyStatus === 3" v-model="statusName" disabled />
+              <a-input v-else-if="valencyStatus === 4" v-model="statusName" disabled />
               <a-input v-else v-model="valencyStatus" disabled />
             </a-form-item>
           </a-col>
         </a-row>
+
         <a-row class="form-row" :gutter="16">
-          <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="客户名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
-
-              <a-input v-model="consumerId" hidden/>
-              <a-input v-model="consumerName" disabled placeholder="客户名称"/>
-
-              <!-- <a-select
-                v-model="consumerId"
-                class="select-part"
-                placeholder="客户名称"
-                disabled
-              >
-                <a-select-option
-                  v-for="item in saleCustomers"
-                  :key="item.id"
-                  :value="item.id"
-                >{{ item.name }}</a-select-option>
-              </a-select> -->
+          <a-col :lg="{ span: 12 }" :md="{ span: 12 }" :sm="24">
+            <a-form-item label="销售人员" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+              <a-input v-model="salerId" hidden />
+              <a-input v-model="salerUserName" disabled placeholder="销售人员" />
             </a-form-item>
           </a-col>
-          <a-col :lg="{span: 12}" :md="{span: 12}" :sm="24">
+          <a-col :lg="12" :md="12" :sm="24">
+            <a-form-item label="客户名称" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+              <a-input v-model="consumerId" hidden />
+              <a-input v-model="consumerName" disabled placeholder="客户名称" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="16">
+          <a-col :lg="{ span: 12 }" :md="{ span: 12 }" :sm="24">
             <a-form-item label="需求日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
               <span>{{ demandTime }}</span>
             </a-form-item>
@@ -66,25 +62,23 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="referencePic" slot-scope="text">
-          <img style="height: 50px;lenght:40px" :src="text" />
+          <img style="height: 50px; lenght: 40px" :src="text" />
         </div>
         <div slot="effectPic" slot-scope="text">
-          <img style="height: 50px;lenght:40px" :src="text" />
+          <img style="height: 50px; lenght: 40px" :src="text" />
         </div>
 
         <div slot="costPrice" slot-scope="text, record">
-          <span v-if="text==-1">***</span>
-          <span v-else>{{text}}</span>
+          <span v-if="text == -1">***</span>
+          <span v-else>{{ text }}</span>
         </div>
-
-
       </a-table>
     </a-card>
 
     <a-card class="card" :bordered="false">
       <a-form :form="form" class="form">
         <a-row class="form-row" :gutter="16">
-          <a-col :lg="{span: 12}" :md="{span: 12}" :sm="24">
+          <a-col :lg="{ span: 12 }" :md="{ span: 12 }" :sm="24">
             <a-form-item label="申请人" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
               <a-input placeholder="申请人" :value="applyUserName || ''" disabled />
             </a-form-item>
@@ -102,18 +96,11 @@
             </a-form-item>
           </a-col>
           <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="核价人" :label-col="{ span: 3}" :wrapper-col="{ span:9 }">
-              <a-select
-                v-model="valencyUserId"
-                class="select-part"
-                placeholder="请选择核价人"
-                disabled
-              >
-                <a-select-option
-                  v-for="item in userList"
-                  :key="item.id"
-                  :value="item.id"
-                >{{ item.trueName }}</a-select-option>
+            <a-form-item label="核价人" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+              <a-select v-model="valencyUserId" class="select-part" placeholder="请选择核价人" disabled>
+                <a-select-option v-for="item in userList" :key="item.id" :value="item.id">{{
+                  item.trueName
+                }}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -131,42 +118,42 @@ const columns = [
     key: 'order',
     width: '70px',
 
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '所依据产品代码',
     dataIndex: 'productModel',
     key: 'productModel',
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
     title: '需求数量',
     dataIndex: 'demandNumber',
     key: 'demandNumber',
-    width: '100px'
+    width: '100px',
   },
   {
     align: 'center',
     title: '规格',
     dataIndex: 'specs',
     key: 'specs',
-    width: '100px'
+    width: '100px',
   },
   {
     align: 'center',
     title: '需求描述',
     dataIndex: 'demandRemarks',
     key: 'demandRemarks',
-    width: '250px'
+    width: '250px',
   },
   {
     align: 'center',
     title: '产品区域',
     dataIndex: 'oldAreaText',
     key: 'oldAreaText',
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
@@ -174,21 +161,21 @@ const columns = [
     dataIndex: 'referencePic',
     key: 'referencePic',
     scopedSlots: { customRender: 'referencePic' },
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
     title: '修改点',
     dataIndex: 'revisedPart',
     key: 'revisedPart',
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
     title: '新产品区域',
     dataIndex: 'areaText',
     key: 'areaText',
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
@@ -196,25 +183,25 @@ const columns = [
     dataIndex: 'costPrice',
     key: 'costPrice',
     scopedSlots: { customRender: 'costPrice' },
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
     title: 'A价',
     dataIndex: 'aprice',
-    key: 'aprice'
+    key: 'aprice',
   },
   {
     align: 'center',
     title: 'B价',
     dataIndex: 'bprice',
-    key: 'bprice'
+    key: 'bprice',
   },
   {
     align: 'center',
     title: 'C价',
     dataIndex: 'cprice',
-    key: 'cprice'
+    key: 'cprice',
   },
   {
     align: 'center',
@@ -222,35 +209,35 @@ const columns = [
     dataIndex: 'effectPic',
     key: 'effectPic',
     scopedSlots: { customRender: 'effectPic' },
-    width: '150px'
+    width: '150px',
   },
   {
     align: 'center',
     title: '规格型号',
     dataIndex: 'valencySpecs',
     key: 'valencySpecs',
-    width: '250px'
+    width: '250px',
   },
   {
     align: 'center',
     title: '产品代码',
     dataIndex: 'newBasisModel',
     key: 'newBasisModel',
-    width: '200px'
+    width: '200px',
   },
   {
     align: 'center',
     title: '产品名称',
     dataIndex: 'productName',
     key: 'productName',
-    width: '200px'
-  }
+    width: '200px',
+  },
 ]
 export default {
   name: 'LookNuclearPrice',
   components: {},
   props: {},
-  data () {
+  data() {
     return {
       columns: columns,
       loading: false,
@@ -268,53 +255,56 @@ export default {
       demandTime: '', // 需求日期
       valencyCode: '', // 核价编号
       valencyUserId: 0, // 核价人id
-      consumerId:-1,
-      consumerName:'',
+      consumerId: -1,
+      consumerName: '',
+      salerId: -1,
+      salerUserName: '',
     }
   },
   watch: {
-    $route (to, from) {
+    $route(to, from) {
       if (from.fullPath === '/sales-management/pricing-module/pricing') {
         this.init()
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.init()
   },
   methods: {
-    init () {
+    init() {
       this.getValencyCode()
     },
     // 返回
-    goBackPricing () {
+    goBackPricing() {
       // 点击返回，返回核价单列表页
       this.$router.push({ name: 'pricing' })
     },
-    handleSubmit (e) {
+    handleSubmit(e) {
       e.preventDefault()
     },
 
     // 获取核价流水号、客户信息下拉、核价用户下拉列表
-    getValencyCode () {
-      getSelectsList().then(res => {
-        console.log('获取核价流水号、客户信息下拉、核价用户下拉列表', res)
-        this.basicInfo = res.data || {}
-        this.userList = res.data.userList
-        this.saleCustomers = res.data.saleCustomers
-        this.getlookInfo()
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    getValencyCode() {
+      getSelectsList()
+        .then((res) => {
+          console.log('获取核价流水号、客户信息下拉、核价用户下拉列表', res)
+          this.basicInfo = res.data || {}
+          this.userList = res.data.userList
+          this.saleCustomers = res.data.saleCustomers
+          this.getlookInfo()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     // 获取查看页面的数据
-    getlookInfo () {
+    getlookInfo() {
       const params = this.$route.params
       console.log('从查看页面跳转过来带来的参数', params)
       // 调取订单详情查询 接口
       getlookApplyNuclear(params)
-        .then(res => {
+        .then((res) => {
           console.log('//调取订单详情查询 接口', res)
           this.data = res.data.valencyProducts
           this.valencyCode = res.data.valencyCode
@@ -325,6 +315,8 @@ export default {
           this.valencyUserId = res.data.valencyUserId
           this.consumerId = res.data.consumerId
           this.consumerName = res.data.consumerName
+          this.salerId = res.data.salerId
+          this.salerUserName = res.data.salerUserName
           if (res.data.valencyStatus === 0) {
             this.statusName = '待接收'
           } else if (res.data.valencyStatus === 1) {
@@ -339,12 +331,12 @@ export default {
             this.statusName = '审批通过'
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

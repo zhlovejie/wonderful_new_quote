@@ -26,10 +26,17 @@
               <a-form-item label="单据状态">
                 <a-input v-decorator="['valencyStatusTxt']" placeholder="单据状态" disabled />
               </a-form-item>
-              
             </a-col>
           </a-row>
           <a-row :gutter="16">
+            <a-col :span="12">
+              <a-form-item label="销售人员" hidden>
+                <a-input v-decorator="['salerId']" placeholder="人员编号" disabled />
+              </a-form-item>
+              <a-form-item label="销售人员">
+                <a-input v-decorator="['salerUserName']" placeholder="销售人员" disabled />
+              </a-form-item>
+            </a-col>
             <a-col :span="12">
               <a-form-item label="客户编号" hidden>
                 <a-input v-decorator="['consumerId']" placeholder="客户编号" disabled />
@@ -38,10 +45,15 @@
                 <a-input v-decorator="['consumerName']" placeholder="客户名称" disabled />
               </a-form-item>
             </a-col>
+          </a-row>
+          <a-row :gutter="16">
             <a-col :span="12">
               <a-form-item label="需求日期">
                 <a-date-picker
-                  v-decorator="['demandTime', { rules: [{ required: true, message: '需求日期'}], initialValue: moment()}]"
+                  v-decorator="[
+                    'demandTime',
+                    { rules: [{ required: true, message: '需求日期' }], initialValue: moment() },
+                  ]"
                 />
               </a-form-item>
             </a-col>
@@ -51,42 +63,29 @@
         <a-card class="card" title="产品信息" :bordered="false">
           <a-table :columns="columns" :dataSource="data" :pagination="false">
             <template slot="productModel" slot-scope="text, record">
-              <a-input
-                :value="text"
-                read-only="read-only"
-                @click="openModel(record)"
-              />
+              <a-input :value="text" read-only="read-only" @click="openModel(record)" />
             </template>
             <template slot="demandNumber" slot-scope="text, record">
-              <a-input-number
-                :precision="0"
-                :min="0" 
-                :value="text"
-                @change="quantityRequiredChange(record,$event)"
-              />
+              <a-input-number :precision="0" :min="0" :value="text" @change="quantityRequiredChange(record, $event)" />
             </template>
             <template slot="specs" slot-scope="text">
               <div v-html="formatSpecifiCation(text)"></div>
             </template>
             <template slot="demandRemarks" slot-scope="text, record">
-              <a-textarea
-                autosize 
-                :value="text" 
-                @change="requirementDescriptionChange(record,$event)"
-              />
+              <a-textarea autosize :value="text" @change="requirementDescriptionChange(record, $event)" />
             </template>
             <template slot="productArea" slot-scope="text">
               <span>{{ text }}</span>
             </template>
             <template slot="referencePic" slot-scope="text">
-              <img style="height: 50px;lenght:40px" :src="text" />
+              <img style="height: 50px; lenght: 40px" :src="text" />
             </template>
             <template slot="revisedPart" slot-scope="text, record">
               <a-select
                 mode="multiple"
-                style="width:150px"
-                @change="partChange(record,$event)"
-                placeholder="请选择修改点" 
+                style="width: 150px"
+                @change="partChange(record, $event)"
+                placeholder="请选择修改点"
                 :defaultValue="text ? text.split(',') : undefined"
               >
                 <a-select-option v-for="rPart in revisedParts" :key="rPart.text">{{ rPart.text }}</a-select-option>
@@ -112,7 +111,8 @@
             type="dashed"
             icon="plus"
             @click="newMember"
-          >添加行</a-button>
+            >添加行</a-button
+          >
         </a-card>
 
         <a-card class="card" :bordered="false">
@@ -129,7 +129,10 @@
               <a-form-item label="申请时间">
                 <a-date-picker
                   disabled
-                  v-decorator="['createTime', { rules: [{ required: true, message: '需求日期'}], initialValue: moment()}]"
+                  v-decorator="[
+                    'createTime',
+                    { rules: [{ required: true, message: '需求日期' }], initialValue: moment() },
+                  ]"
                 />
               </a-form-item>
             </a-col>
@@ -137,19 +140,14 @@
           <a-row :gutter="16">
             <a-col :span="12">
               <a-form-item label="核价说明">
-                <a-textarea
-                  disabled
-                  placeholder="核价说明,多行输入"
-                  :rows="4"
-                  v-decorator="['explainText']"
-                />
+                <a-textarea disabled placeholder="核价说明,多行输入" :rows="4" v-decorator="['explainText']" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item label="核价人">
                 <a-select
                   placeholder="请选择核价人"
-                  v-decorator="[ 'valencyUserId', {rules: [{ required: true, message: '请选择核价人'}]}]"
+                  v-decorator="['valencyUserId', { rules: [{ required: true, message: '请选择核价人' }] }]"
                 >
                   <a-select-option v-for="item in userList" :key="item.id">{{ item.trueName }}</a-select-option>
                 </a-select>
@@ -175,61 +173,61 @@ let columns = [
     title: '所依据产品代码',
     dataIndex: 'productModel',
     key: 'productModel',
-    scopedSlots: { customRender: 'productModel' }
+    scopedSlots: { customRender: 'productModel' },
   },
   {
     align: 'center',
     title: '需求数量',
     dataIndex: 'demandNumber',
     key: 'demandNumber',
-    scopedSlots: { customRender: 'demandNumber' }
+    scopedSlots: { customRender: 'demandNumber' },
   },
   {
     align: 'center',
     title: '规格',
     dataIndex: 'specs',
     key: 'specs',
-    scopedSlots: { customRender: 'specs' }
+    scopedSlots: { customRender: 'specs' },
   },
   {
     align: 'center',
     title: '需求描述',
     dataIndex: 'demandRemarks',
     key: 'demandRemarks',
-    scopedSlots: { customRender: 'demandRemarks' }
+    scopedSlots: { customRender: 'demandRemarks' },
   },
   {
     align: 'center',
     title: '产品区域',
     dataIndex: 'productArea',
     key: 'productArea',
-    scopedSlots: { customRender: 'productArea' }
+    scopedSlots: { customRender: 'productArea' },
   },
   {
     align: 'center',
     title: '参考图片',
     dataIndex: 'referencePic',
     key: 'referencePic',
-    scopedSlots: { customRender: 'referencePic' }
+    scopedSlots: { customRender: 'referencePic' },
   },
   {
     align: 'center',
     title: '修改点',
     dataIndex: 'revisedPart',
     key: 'revisedPart',
-    scopedSlots: { customRender: 'revisedPart' }
+    scopedSlots: { customRender: 'revisedPart' },
   },
   {
     title: '操作',
     key: 'action',
     width: '160px',
-    scopedSlots: { customRender: 'operation' }
-  }
+    scopedSlots: { customRender: 'operation' },
+  },
 ]
 export default {
   name: 'ReApplyNuclearPrice',
   components: {
-    ProductModel
+    ProductModel,
   },
   data() {
     return {
@@ -241,7 +239,7 @@ export default {
       spinning: false,
       id: null,
       userList: [],
-      revisedParts: [] //核价修改点列表
+      revisedParts: [], //核价修改点列表
     }
   },
   mounted() {
@@ -252,18 +250,18 @@ export default {
     async init() {
       let that = this
       that.id = that.$route.params.id
-      let task1 = getSelectsList().then(res => {
+      let task1 = getSelectsList().then((res) => {
         let {
           code, //核价流水号
           userList, //核价用户下拉列表
-          valencyStatus //初始核价单状态
+          valencyStatus, //初始核价单状态
         } = res.data
         that.userList = userList
       })
       //核价修改点
-      let task2 = getDictionary({ text: '核价修改点' }).then(res => (that.revisedParts = res.data))
+      let task2 = getDictionary({ text: '核价修改点' }).then((res) => (that.revisedParts = res.data))
       //获取核价单信息
-      let task3 = getlookApplyNuclear({ id: that.id }).then(res => res.data)
+      let task3 = getlookApplyNuclear({ id: that.id }).then((res) => res.data)
 
       let result = await Promise.all([task1, task2, task3])
       //填充数据
@@ -283,26 +281,28 @@ export default {
         consumerId: data.consumerId,
         consumerName: data.consumerName,
         applyUserId: data.applyUserId,
+        salerId: data.salerId,
+        salerUserName: data.salerUserName,
         applyUserName: data.applyUserName,
         createTime: that.moment(data.createTime),
         valencyUserId: data.valencyUserId,
-        explainText: data.explainText || ''
+        explainText: data.explainText || '',
       })
 
       //填充产品列表
       that.data = []
-      data.valencyProducts.map((item,index) =>{
+      data.valencyProducts.map((item, index) => {
         that.data.push({
           key: String(index + 1),
-          productId:item.id, //产品编号
-          productModel:item.productModel,//产品代码
+          productId: item.id, //产品编号
+          productModel: item.productModel, //产品代码
           basisModel: item.basisModel, //产品代码
-          demandNumber: item.demandNumber,//数量
-          specs: item.specs,//规格
-          demandRemarks: item.demandRemarks,//需求描述
-          productArea: item.oldAreaText,//产品区域
-          referencePic: item.referencePic,//产品图片
-          revisedPart: item.revisedPart,//修改点
+          demandNumber: item.demandNumber, //数量
+          specs: item.specs, //规格
+          demandRemarks: item.demandRemarks, //需求描述
+          productArea: item.oldAreaText, //产品区域
+          referencePic: item.referencePic, //产品图片
+          revisedPart: item.revisedPart, //修改点
           editable: true,
           isNew: true,
         })
@@ -318,7 +318,7 @@ export default {
       let that = this
       // 调取订单详情查询 接口
       getlookApplyNuclear({ id: that.id })
-        .then(res => {
+        .then((res) => {
           console.log('//调取订单详情查询 接口', res)
           // let fillabcPriceObj = {}
           // this.data = res.data.valencyProducts.map((item, index) => {
@@ -378,65 +378,63 @@ export default {
           // }
           //that.form.setFieldsValue(res.data)
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
     goSubmit() {
       let that = this
-      if(that.data.length <= 0){
+      if (that.data.length <= 0) {
         that.$message.error('请添加产品后，再提交信息')
         return
       }
       //debugger
       //增加产品信息验证
-      for(let i = 0,len = that.data.length;i<len;i++){
+      for (let i = 0, len = that.data.length; i < len; i++) {
         let item = that.data[i]
-        if(item.productModel === ''){
+        if (item.productModel === '') {
           that.$message.error('请选择依据产品代码')
           return
         }
-        if(item.demandNumber <= 0){
+        if (item.demandNumber <= 0) {
           that.$message.error('需求数量必须大于零')
           return
         }
-        if(item.demandRemarks.length === 0){
+        if (item.demandRemarks.length === 0) {
           that.$message.error('请输入需求描述')
           return
         }
-        if(item.revisedPart.length === 0){
+        if (item.revisedPart.length === 0) {
           that.$message.error('请选择修改点')
           return
         }
       }
 
-
       that.form.validateFields((err, values) => {
         console.log('点击提交，看看获取父页面那些信息', values)
         if (!err) {
           values.createTime && delete values.createTime
-          // values.createTime = values.createTime instanceof  that.moment 
-          //   ? values.createTime.format('YYYY-MM-DD') 
+          // values.createTime = values.createTime instanceof  that.moment
+          //   ? values.createTime.format('YYYY-MM-DD')
           //   : values.createTime
-          values.demandTime = values.demandTime instanceof  that.moment 
-            ? values.demandTime.format('YYYY-MM-DD') 
-            : values.demandTime
-          
-          values.valencyProducts = that.data.map(item => Object.assign({},item))
+          values.demandTime =
+            values.demandTime instanceof that.moment ? values.demandTime.format('YYYY-MM-DD') : values.demandTime
+
+          values.valencyProducts = that.data.map((item) => Object.assign({}, item))
 
           that.spinning = true
           saleValencySaveAndUpdate(values)
-          .then(res => {
-            that.spinning = false
-            console.log('提交申请请求接口的结果', res)
-            that.$router.push({ name: 'pricing' })
-            that.$destroy('ApplyNuclearPrice')
-          })
-          .catch(error => {
-            that.spinning = false
-            console.error(error)
-          })
+            .then((res) => {
+              that.spinning = false
+              console.log('提交申请请求接口的结果', res)
+              that.$router.push({ name: 'pricing' })
+              that.$destroy('ApplyNuclearPrice')
+            })
+            .catch((error) => {
+              that.spinning = false
+              console.error(error)
+            })
         } else {
           return false
         }
@@ -449,35 +447,35 @@ export default {
         2: '驳回',
         3: '合价通过',
         4: '待审批',
-        5: '审批通过'
+        5: '审批通过',
       }
       return map[status] || '未知'
     },
-        // 添加行
+    // 添加行
     newMember() {
       const length = this.data.length
       this.data.push({
         key: length === 0 ? '1' : (parseInt(this.data[length - 1].key) + 1).toString(),
         basisModel: '', //产品代码
-        productModel:'',
-        demandNumber: 0,//数量
-        specs: '',//规格
-        demandRemarks: '',//需求描述
-        productArea: '',//产品区域
-        referencePic: '',//产品图片
-        revisedPart: '',//修改点
+        productModel: '',
+        demandNumber: 0, //数量
+        specs: '', //规格
+        demandRemarks: '', //需求描述
+        productArea: '', //产品区域
+        referencePic: '', //产品图片
+        revisedPart: '', //修改点
         editable: true,
         isNew: true,
       })
     },
     // 删除行
     remove(key) {
-      const newData = this.data.filter(item => item.key !== key)
+      const newData = this.data.filter((item) => item.key !== key)
       this.data = newData
     },
     handleChange(value, key, column) {
       const newData = [...this.data]
-      const target = newData.filter(item => key === item.key)[0]
+      const target = newData.filter((item) => key === item.key)[0]
       if (target) {
         target[column] = value
         this.data = newData
@@ -487,14 +485,14 @@ export default {
     openModel(record) {
       this.openKey = record.key
       console.log('openKey :' + this.openKey)
-      this.$refs.productModel.query({ productType: 0,seriesFlag: '1' })
+      this.$refs.productModel.query({ productType: 0, seriesFlag: '1' })
     },
     productChange(data) {
       console.log('JSON 页面传值事件:' + JSON.stringify(data))
-      let selectItem = Object.assign({},data.selectItem)
-      let target = this.data.find(item => item.key === this.openKey)
-      if(target){
-        target.productId = selectItem.id 
+      let selectItem = Object.assign({}, data.selectItem)
+      let target = this.data.find((item) => item.key === this.openKey)
+      if (target) {
+        target.productId = selectItem.id
         target.basisModel = selectItem.basisModel
         target.productModel = selectItem.productModel
         target.specs = selectItem.productStandard //规格
@@ -504,7 +502,7 @@ export default {
     },
     // 需求数量变化
     quantityRequiredChange(record, e) {
-      const _index = this.data.findIndex(item => item.key === record.key)
+      const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['demandNumber'] = e
       }
@@ -512,27 +510,28 @@ export default {
     // 需求描述变化
     requirementDescriptionChange(record, e) {
       const v = e.currentTarget.value
-      const _index = this.data.findIndex(item => item.key === record.key)
+      const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['demandRemarks'] = v.trim()
       }
     },
     // 修改点变化
     partChange(record, e) {
-      const _index = this.data.findIndex(item => item.key === record.key)
+      const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['revisedPart'] = e.join(',')
       }
     },
-    formatSpecifiCation(str){ //格式化规格显示
-      if(str === null || str === undefined || str === ''){
+    formatSpecifiCation(str) {
+      //格式化规格显示
+      if (str === null || str === undefined || str === '') {
         return `<span>${str}</span>`
       }
       let items = str.split('\n')
-      let itemsStr = items.map(s =>`<li>${s}</li>`).join('')
+      let itemsStr = items.map((s) => `<li>${s}</li>`).join('')
       return `<ol style="text-align: left;">${itemsStr}</ol>`
     },
-  }
+  },
 }
 </script>
 

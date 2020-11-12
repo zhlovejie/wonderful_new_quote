@@ -105,7 +105,7 @@
                   <span class="span-paddings">{{ chineseTotalAmount }}</span>
                   <span class="span-paddings">￥{{ totalAmount | NumberFormat(2) }}</span>
                   。此价格{{ unIsTax ? '含税' : '不含税' }}、{{ freightType }}。
-                  <template v-if="this.saleContractLowCPriceAllAmount > 0">
+                  <template v-if="saleContractLowCPriceAllAmount > 0">
                     <span> 合同低于C价总差额: </span>
                     <span>{{ saleContractLowCPriceAllAmount }}</span>
                   </template>
