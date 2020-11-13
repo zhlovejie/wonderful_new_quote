@@ -126,3 +126,32 @@ export function getAllArea (params) {
     params: params
   })
 }
+
+/**获取推送消息 */
+export function getPushMsg (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/pushMsg/msgList',
+    method: 'get',
+    params: params
+  })
+}
+
+/**获取通讯录 */
+export function getAddressBookListWithUserName (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/addressBook/getAddressBookListByUserName',
+    method: 'get',
+    params: params
+  })
+}
+
+export function getAddressBookListWithDeprtment (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/comManage/addressBook/getMyDeprtmentAddressBookList',
+    method: 'get',
+    params: params
+  })
+}
