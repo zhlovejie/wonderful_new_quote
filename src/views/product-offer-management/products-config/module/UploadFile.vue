@@ -95,7 +95,7 @@ export default {
           uid: Math.random()
             .toString(16)
             .slice(-10),
-          name: f.url,
+          name: f.name || f.url,
           status: 'done',
           url: f.url
         }
