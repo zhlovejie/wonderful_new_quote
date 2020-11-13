@@ -150,27 +150,6 @@
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ c4 }}</span>
                       </a-form-item>
-                      <!-- <a-form-item>
-                        <a-select
-                          class="select-prop"
-                          :disabled="this.$parent.routeParams.action === 'see'"
-                          v-decorator="[
-                            'convention.4.number',
-                            { initialValue: 30, rules: [{ required: true, message: '选择比例' }] },
-                          ]"
-                          @change="conventionChange(4, $event)"
-                        >
-                          <a-select-option :value="25">25%</a-select-option>
-                          <a-select-option :value="30">30%</a-select-option>
-                          <a-select-option :value="35">35%</a-select-option>
-                          <a-select-option :value="40">40%</a-select-option>
-                          <a-select-option :value="45">45%</a-select-option>
-                          <a-select-option :value="50">50%</a-select-option>
-                          <a-select-option :value="55">55%</a-select-option>
-                          <a-select-option :value="60">60%</a-select-option>
-                        </a-select>
-                        <span class="checkbox-innerspan">折算金额: {{ c4 }}</span>
-                      </a-form-item> -->
                     </a-col>
                     <a-col :span="7">
                       <a-form-item>
@@ -589,11 +568,6 @@ export default {
       c3: 0,
       c4: 0,
       c5: 0,
-      unC1: 0,
-      unC2: 0,
-      unC3: 0,
-      unC4: 0,
-      unC5: 0,
       id: 0, // 主键id 唯一
       percentages: 0,
       percentagesStatus: false,
@@ -979,8 +953,7 @@ export default {
         // debugger
         const { convention } = that.form.getFieldsValue()
         console.log(convention)
-        // console.log(unConvention)
-        // console.log(that.queryOneData.conventionalMoney, that.queryOneData.unConventionalMoney)
+
         convention &&
           convention.map((item, index, arr) => {
             console.log(`c${index}`)
@@ -991,17 +964,6 @@ export default {
               that[`c${index}`] = res
             }
           })
-
-        // unConvention &&
-        //   unConvention.map((item, index, arr) => {
-        //     console.log(`unC${index}`)
-
-        //     if (item) {
-        //       const res = that._calculateAmount(item.number, that.queryOneData.unConventionalMoney)
-        //       console.log(res)
-        //       that[`unC${index}`] = res
-        //     }
-        //   })
       })
     },
     checkboxChange(event) {
@@ -1036,14 +998,12 @@ export default {
     },
     autoFillAction(isNormal = true) {
       //自动补全 100%
-      // debugger
       let that = this
       const { convention } = this.form.getFieldsValue()
       let target = convention
       let targetKey = 'convention'
-      let localKey = isNormal ? 'c' : 'unC'
-      let { conventionalMoney } = this.queryOneData
-      let money = conventionalMoney
+      let localKey = 'c'
+      let money = that.queryOneData.totalAmount
       target = target.map((item, index) => {
         if (item && index >= 1) {
           item.__dateKey__ = `${localKey}${index}` //内部数据用
@@ -1073,7 +1033,6 @@ export default {
         let _result = _oneSelected
           ? currentSelectIsNotRate
           : currentSelectIsNotRate.filter((item) => item.number === undefined || item.number === 0)
-
         if (_result.length <= 0) return
         let _avg = parseInt(_rate_tmp / _result.length)
         let obj = {}
@@ -1083,9 +1042,11 @@ export default {
             _rate_tmp = _rate_tmp - _avg
           }
           let _ss = _last ? _rate_tmp : _avg
+
           obj[item.__formKey__] = _ss
           this[item.__dateKey__] = this._calculateAmount(_ss, money)
         })
+
         Object.keys(obj).length > 0 && this.form.setFieldsValue(obj)
       }
     },
