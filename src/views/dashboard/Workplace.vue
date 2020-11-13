@@ -27,7 +27,7 @@
       <a-row :gutter="24">
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
           <div style="margin-bottom: 24px;">
-            <img src="@/assets/main_page_banner.png" style="width:100%;height:auto;overflow:hidden;" alt="" />
+            <Swiper />
           </div>
           <a-card
             class="project-list"
@@ -118,7 +118,7 @@ import PushMsgList from './module/PushMsgList' //消息
 import FastPathView from './module/FastPathView' //快速通道
 import NoticeView from './module/NoticeView' //公告详情
 import CommonFiles from './module/CommonFiles' //常用文件下载
-
+import Swiper from './module/Swiper' //幻灯片
 
 import moment from 'moment'
 export default {
@@ -133,7 +133,8 @@ export default {
     PushMsgList,
     FastPathView,
     NoticeView,
-    CommonFiles
+    CommonFiles,
+    Swiper
   },
   data () {
     return {
