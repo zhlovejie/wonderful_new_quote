@@ -94,7 +94,7 @@
           <span v-if="text==2">个</span>
         </div>
         <template slot="deliveryDate" slot-scope="text, record">
-          <a-date-picker :disabled="show" format="YYYY-MM-DD" :value="record.deliveryDate ? moment(record.deliveryDate) : moment()" @change="onChangeDate(record,$event)"/>
+          <a-date-picker :disabled="show" format="YYYY-MM-DD" :value="record.deliveryDate ? moment(record.deliveryDate) : ''" @change="onChangeDate(record,$event)"/>
         </template>
         <div slot="productStatus" slot-scope="text,record">
           <a-select :disabled="show" style="width: 100px" v-model="record.productStatus">
