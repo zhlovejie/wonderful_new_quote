@@ -106,8 +106,8 @@
                   <span class="span-paddings">￥{{ totalAmount | NumberFormat(2) }}</span>
                   。此价格{{ unIsTax ? '含税' : '不含税' }}、{{ freightType }}。
                   <template v-if="saleContractLowCPriceAllAmount > 0">
-                    <span> 合同低于C价总差额: </span>
-                    <span>{{ saleContractLowCPriceAllAmount }}</span>
+                    <span style="color: red"> 合同低于C价总差额: </span>
+                    <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
                   </template>
                 </div>
               </template>
