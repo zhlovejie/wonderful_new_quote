@@ -281,12 +281,12 @@ export default {
       id: 0,
       columns: [
         {
-          title: '产品名称',
-          dataIndex: 'productName',
-        },
-        {
           title: '标的名称',
           dataIndex: 'targetName',
+        },
+        {
+          title: '产品名称',
+          dataIndex: 'productName',
         },
 
         {

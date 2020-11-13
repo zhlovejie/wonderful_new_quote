@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="选择合同" :width="600" v-model="visible" :maskClosable="false" @cancel="handleCancel" :footer="null">
+  <a-modal title="选择合同" :width="800" v-model="visible" :maskClosable="false" @cancel="handleCancel" :footer="null">
     <div class="search-wrapper">
       <a-input
         placeholder="合同编号"
