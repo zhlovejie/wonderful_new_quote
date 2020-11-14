@@ -151,7 +151,7 @@
       <p>地址：{{ customerAddress }}</p>
     </a-modal>
 
-    <a-modal title="审批预览" v-model="priewVisible" :footer="null" :maskClosable="false">
+    <a-modal :width="700" title="审批预览" v-model="priewVisible" :footer="null" :maskClosable="false">
       <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="false" :loading="loading">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>

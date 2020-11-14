@@ -732,7 +732,9 @@ export default {
             this.statusName = '合价通过'
           } else if (res.data.valencyStatus === 4) {
             this.statusName = '待审批'
-          } else {
+          } else if (res.data.valencyStatus === 9) {
+            this.statusName = '已撤回'
+          }else {
             this.statusName = '审批通过'
           }
 

@@ -448,6 +448,7 @@ export default {
         3: '合价通过',
         4: '待审批',
         5: '审批通过',
+        9: '已撤回',
       }
       return map[status] || '未知'
     },
