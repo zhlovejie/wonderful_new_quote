@@ -13,6 +13,9 @@
             <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
               >本月</a-button
             >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
         <a-form-item>
@@ -89,12 +92,12 @@
             <template
               v-if="
                 $auth('invoice:edit') &&
-                (+record.invoiceStatus === 3 || +record.invoiceStatus === 9) &&
+                (record.invoiceStatus === 3 || record.invoiceStatus === 9) &&
                 userInfo.id === record.createdId
               "
             >
               <a-divider type="vertical" />
-              <a @click="updateInvoice(record)">重新提交</a>
+              <a @click="updateInvoice(record)">修改</a>
             </template>
 
             <template
@@ -321,7 +324,8 @@ export default {
     $route(to, from) {
       console.log('from.fullPath', from.fullPath)
       if (to.name === 'invoice') {
-        this.searchAction()
+        this.dayWeekMonth = 1
+        this.searchAction({ dayWeekMonth: 1 })
       }
     },
   },
@@ -483,10 +487,21 @@ export default {
       return m[type] || '未知'
     },
     simpleSearch(type) {
-      this.isExpanded = false
-      this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-      this.queryParam.dayWeekMonth = this.dayWeekMonth
-      this.searchAction()
+      if (type === 4) {
+        this.queryParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      } else {
+        this.isExpanded = false
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      }
+      // this.isExpanded = false
+      // this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+      // this.queryParam.dayWeekMonth = this.dayWeekMonth
+      // this.searchAction()
     },
     openSearchModel() {
       this.$refs.searchForm.query()

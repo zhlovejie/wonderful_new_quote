@@ -39,7 +39,7 @@
         </template>
         <template v-if="$auth('pricing:edit') && (+record.valencyStatus === 2 || +record.valencyStatus === 9)">
           <a-divider type="vertical" />
-          <a class="btn-action" type="primary" @click="showreSubmit(record)">再提交</a>
+          <a class="btn-action" type="primary" @click="showreSubmit(record)">修改</a>
         </template>
         <template v-if="+record.valencyStatus === 0">
           <a-divider type="vertical" />

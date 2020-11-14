@@ -42,7 +42,6 @@ export function NoticeApproval(parameter) {
 }
 /** 公告管理删除接口 */
 export function NoticeDelete(parameter) {
-  debugger
   return axios({
     baseURL: system.baseURL,
     url: '/goticeManage/gotice-manage/delGoticeManage',

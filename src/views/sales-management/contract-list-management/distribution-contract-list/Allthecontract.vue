@@ -41,15 +41,15 @@
             <!-- :disabled="record.isDisabled === 1" -->
             <!-- :defaultChecked="text === 0 ? true : false" -->
             <a-switch
-              :defaultChecked="record.isDisabled === 1 ? true : false"
+              :defaultChecked="record.isDisabled === 0 ? true : false"
               checkedChildren="启用"
               unCheckedChildren="禁用"
               @change="changeDisabled($event, record)"
             />
           </template>
           <template v-else>
-            <span v-if="record.isDisabled === 1">启用</span>
-            <span v-if="record.isDisabled === 0">禁用</span>
+            <span v-if="record.isDisabled === 0">启用</span>
+            <span v-if="record.isDisabled === 1">禁用</span>
           </template>
         </span>
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -339,7 +339,7 @@ export default {
   },
   methods: {
     changeDisabled(text, record) {
-      let arr = text === true ? 1 : 0
+      let arr = text === true ? 0 : 1
       record.isDisabled = arr
       editContract(record)
         .then((res) => {

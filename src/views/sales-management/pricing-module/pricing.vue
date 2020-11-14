@@ -144,7 +144,9 @@ export default {
       basisModel: 0, //所依据产品代码
       basisModelName: '',
       applyUserName: '', //申请人
-      searchParams: {}, //高级筛选条件对象
+      searchParams: {
+        dayWeekMonth: 1,
+      }, //高级筛选条件对象
       dayWeekMonth: 1, //今天、本周、本月
       isExpanded: false, //是否展开列表子数据
     }
@@ -156,11 +158,8 @@ export default {
       //console.log(from)
       if (to.name === 'pricing') {
         console.log('刷新核价列表this.$refs', this.$refs)
-        //this.$refs['allTheContract'].getList()
-        //this.$refs['ApprovalPending'].getList()
-        // this.$refs['ApprovedContract'].getList()
-        // this.$destroy('LookNuclearPrice')
-        this.searchAction()
+        this.dayWeekMonth = 1
+        this.searchAction({ dayWeekMonth: this.dayWeekMonth })
       }
     },
   },
@@ -174,7 +173,7 @@ export default {
         console.log('target', target)
         if (target) {
           target.isExpanded = this.isExpanded
-          target.getList({ statue: this.tabKey, ...this.searchParams, dayWeekMonth: this.dayWeekMonth, ...opt })
+          target.getList({ statue: this.tabKey, ...this.searchParams, ...opt })
         }
       })
     },
@@ -198,11 +197,15 @@ export default {
     },
     simpleSearch(type) {
       if (type === 4) {
+        this.searchParams.dayWeekMonth = undefined
         this.dayWeekMonth = undefined
+        this.searchParams = { ...this.searchParams, dayWeekMonth: this.dayWeekMonth }
         this.searchAction()
       } else {
         this.isExpanded = false
         this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.searchParams = { ...this.searchParams, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
         this.searchAction()
       }
       // this.isExpanded = false

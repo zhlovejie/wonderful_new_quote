@@ -1,4 +1,6 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 
 /**
@@ -6,7 +8,7 @@ import system from '@/config/defaultSettings'
  * @param parameter
  * @returns {*}
  */
-export function getServiceList (parameter) {
+export function getServiceList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/advances/pageList',
@@ -16,7 +18,7 @@ export function getServiceList (parameter) {
 }
 
 /**预收款单 撤回 */
-export function revocationAdvances (parameter) {
+export function revocationAdvances(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/advances/revocation',
@@ -30,7 +32,7 @@ export function revocationAdvances (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function goAdd (parameter) {
+export function goAdd(parameter) {
   console.log('advances goAdd' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -44,7 +46,7 @@ export function goAdd (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function advancesSave (parameter) {
+export function advancesSave(parameter) {
   console.log('advances advancesSave' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -59,7 +61,7 @@ export function advancesSave (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function advancesDetail (parameter) {
+export function advancesDetail(parameter) {
   console.log('advances advancesSave' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -73,7 +75,7 @@ export function advancesDetail (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function advancesAudit (parameter) {
+export function advancesAudit(parameter) {
   console.log('advances advancesAudit' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -88,7 +90,7 @@ export function advancesAudit (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function deleteById (parameter) {
+export function deleteById(parameter) {
   console.log('advances advancesAudit' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -102,8 +104,7 @@ export function deleteById (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function advancesUpdate (parameter) {
-  debugger
+export function advancesUpdate(parameter) {
   console.log('advances advancesUpdate' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
