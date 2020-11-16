@@ -93,6 +93,7 @@
           </template>
 
           <template v-if="activeKey === 1">
+            <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
         </div>
