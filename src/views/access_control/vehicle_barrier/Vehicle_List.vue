@@ -6,23 +6,44 @@
         style="width: 200px; margin-right: 10px"
         placeholder="车牌号"
         allowClear
-        v-model="queryParam.productCode"
+        v-model="queryParam.licensePlateNum"
+      />
+
+      <a-input
+        v-if="this.activeKey === 1"
+        class="main-items"
+        style="width: 200px; margin-right: 10px"
+        placeholder="车辆名称"
+        allowClear
+        v-model="queryParam.carName"
       />
       <a-input
+        v-if="this.activeKey === 1"
+        class="main-items"
+        style="width: 200px; margin-right: 10px"
+        placeholder="保管人"
+        allowClear
+        v-model="queryParam.careUserName"
+      />
+
+      <a-input
+        v-if="this.activeKey === 0"
         class="main-items"
         style="width: 200px; margin-right: 10px"
         placeholder="姓名"
         allowClear
-        v-model="queryParam.productCode1"
+        v-model="queryParam.name"
       />
       <a-input
+        v-if="this.activeKey === 0"
         class="main-items"
         style="width: 200px; margin-right: 10px"
         placeholder="手机号"
         allowClear
-        v-model="queryParam.productCode2"
+        v-model="queryParam.phone"
       />
       <a-select
+        v-if="this.activeKey === 0"
         placeholder="当前状态"
         v-model="queryParam.status"
         :allowClear="true"
@@ -53,7 +74,7 @@
         <a-tab-pane tab="公车" key="1" />
       </a-tabs>
       <a-table
-        v-if="$auth('year:lists')"
+        v-if="$auth('year:lists') && this.activeKey === 0"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -64,40 +85,34 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="status" slot-scope="text, record">
-          <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
+          <template v-if="text === 2">厂外</template>
+          <template v-else-if="text === 1">厂区</template>
+          <template v-else>{{ text }}</template>
+        </div>
+      </a-table>
+
+      <a-table
+        v-if="$auth('year:lists') && this.activeKey === 1"
+        :columns="colu"
+        :dataSource="dataSource1"
+        :pagination="pagination"
+        :loading="loading"
+        @change="handleTableChange"
+      >
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
+        <div slot="status" slot-scope="text, record">
+          <template v-if="text === 2">厂外</template>
+          <template v-else>厂区</template>
         </div>
       </a-table>
     </div>
-    <!-- <a-modal v-model="visible" title="新增年终奖金" @ok="handleOk">
-      <tr>
-        <td>选择添加部门</td>
-        <td>
-          <a-select style="width: 280px; margin-left: 20px" placeholder="选择部门" :allowClear="true" v-model="depId">
-            <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
-              item.departmentName
-            }}</a-select-option>
-          </a-select>
-        </td>
-      </tr>
-    </a-modal> -->
-    <!-- <AddForm ref="addForm" @finish="searchAction()" />
-    <ApproveInfo ref="approveInfoCard" />
-    <Appadd ref="appadd" /> -->
   </div>
 </template>
 <script>
-import { departmentList } from '@/api/systemSetting'
-import {
-  year_List,
-  year_bonus_annua,
-  year_send_rule,
-  year_send_annual,
-  year_annual_addAnddel,
-} from '@/api/bonus_management'
-// import AddForm from './module/Formadd'
-// import Appadd from './module/Appadd'
+import { accessPage, accessPageCarList } from '@/api/accessControl'
 
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
 const columns = [
   {
@@ -110,8 +125,8 @@ const columns = [
   {
     align: 'center',
     title: '车牌号',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    dataIndex: 'licensePlateNum',
+    key: 'licensePlateNum',
   },
   {
     align: 'center',
@@ -123,49 +138,87 @@ const columns = [
   {
     align: 'center',
     title: '备用车牌号',
-    key: 'createdName',
-    dataIndex: 'createdName',
+    key: 'spareLicensePlateNum',
+    dataIndex: 'spareLicensePlateNum',
   },
   {
     align: 'center',
-    title: '当前状态',
-    key: 'status1',
-    dataIndex: 'status1',
+    title: '备用车当前状态',
+    key: 'spareCarStatus',
+    dataIndex: 'spareCarStatus',
     scopedSlots: { customRender: 'status' },
   },
   {
     align: 'center',
     title: '部门',
-    dataIndex: 'createdTime',
-    key: 'createdTime',
+    dataIndex: 'departmentName',
+    key: 'departmentName',
   },
   {
     align: 'center',
     title: '职位',
-    dataIndex: 'createdTime1',
-    key: 'createdTime1',
+    dataIndex: 'stationName',
+    key: 'stationName',
   },
   {
     align: 'center',
     title: '姓名',
-    dataIndex: 'createdTime12',
-    key: 'createdTime12',
+    dataIndex: 'name',
+    key: 'name',
   },
   {
     align: 'center',
     title: '手机号',
-    dataIndex: 'action',
-    key: 'action',
+    dataIndex: 'phone',
+    key: 'phone',
+  },
+]
+
+const colu = [
+  {
+    align: 'center',
+    title: '序号',
+    key: 'order',
+    width: '70px',
+    scopedSlots: { customRender: 'order' },
+  },
+  {
+    align: 'center',
+    title: '车牌号',
+    dataIndex: 'carCode',
+    key: 'carCode',
+  },
+  {
+    align: 'center',
+    title: '车牌号',
+    dataIndex: 'carName',
+    key: 'carName',
+  },
+
+  {
+    align: 'center',
+    title: '当前状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
+  },
+  {
+    align: 'center',
+    title: '保管人部门',
+    dataIndex: 'careDepartmentName',
+    key: 'careDepartmentName',
+  },
+  {
+    align: 'center',
+    title: '保管人',
+    dataIndex: 'careUserName',
+    key: 'careUserName',
   },
 ]
 
 export default {
   name: 'NoticeList',
-  components: {
-    // Appadd,
-    // AddForm: AddForm,
-    // ApproveInfo: ApproveInfo,
-  },
+  components: {},
   data() {
     return {
       visible: false,
@@ -186,7 +239,9 @@ export default {
       approval_status: undefined,
       depSelectDataSource: [],
       columns: columns,
+      colu: colu,
       dataSource: [],
+      dataSource1: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
       loading: false,
       whole: true,
@@ -196,7 +251,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'salary_year_bonus') {
+        if (to.name === 'access_control_vehicleList') {
           this.init()
         }
       },
@@ -208,96 +263,47 @@ export default {
     init() {
       let that = this
       that.searchAction()
-      //   departmentList().then((res) => (this.depList = res.data))
-      year_send_rule().then((res) => (this.rule_List = res.data))
     },
 
-    //发放规则
-    Distribution() {
-      year_send_rule().then((res) => {
-        if (res.data.length > 0) {
-          this.$refs.appadd.query('edit-salary', res.data[0])
-        } else {
-          this.$refs.appadd.query('add', null)
-        }
-      })
-    },
-
-    showModal() {
-      this.visible = true
-      year_send_rule().then((res) => (this.rule_List = res.data))
-    },
-    handleOk(e) {
-      if (this.depId && this.rule_List.length > 0) {
-        year_bonus_annua({ deptId: this.depId }).then((res) => {
-          if (res.code === 200) {
-            this.visible = false
-            this.doAction('add', { depId: this.depId, departmentName: res.data.departmentName })
-          } else {
-            this.$message.error('部门已添加')
-          }
-        })
-      } else if (!this.rule_List.length > 0) {
-        this.$message.error('请先填写发放规则')
-      } else {
-        this.$message.error('请选择部门')
-      }
-    },
-
-    // 删除
-    confirmDelete(record) {
-      let that = this
-      year_annual_addAnddel(`id=${record.id}`).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          _this.$message.error(res.msg)
-        }
-      })
-    },
-    getStateText(state) {
-      let stateMap = {
-        1: '待审批',
-        2: '审核通过',
-        3: '审核未通过',
-        4: '已撤回',
-        5: '已完结',
-      }
-      return stateMap[state] || `未知状态:${state}`
-    },
-    //审批流组件
-    approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId)
-    },
-
-    // 撤回
-    confirmWithdraw(record) {
-      let that = this
-      year_send_annual({ id: record.id }).then((res) => {
-        this.searchAction()
-        that.$message.info(res.msg)
-      })
-    },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {}, {
-        searchStatus: that.activeKey,
-      })
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
       that.loading = true
-      year_List(_searchParam)
-        .then((res) => {
-          that.loading = false
-          that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
-            return item
+      if (this.activeKey === 0) {
+        accessPage(_searchParam)
+          .then((res) => {
+            that.loading = false
+            that.dataSource = res.data.records.map((item, index) => {
+              item.key = index + 1
+              return item
+            })
+            //设置数据总条数
+            const pagination = { ...that.pagination }
+            pagination.total = res.data.total
+            that.pagination = pagination
           })
-          //设置数据总条数
-          const pagination = { ...that.pagination }
-          pagination.total = res.data.total
-          that.pagination = pagination
-        })
-        .catch((err) => (that.loading = false))
+          .catch((err) => (that.loading = false))
+      } else {
+        let searchParam = {
+          carCode: this.queryParam.licensePlateNum,
+          carName: this.queryParam.carName,
+          careUserName: this.queryParam.careUserName,
+        }
+        let earchParam = Object.assign({}, { ...searchParam }, { ...this.pagination1 }, opt || {})
+        accessPageCarList(earchParam)
+          .then((res) => {
+            that.loading = false
+            that.dataSource1 = res.data.records.map((item, index) => {
+              item.key = index + 1
+              return item
+            })
+            //设置数据总条数
+            const pagination = { ...that.pagination }
+            pagination.total = res.data.total
+            that.pagination = pagination
+          })
+          .catch((err) => (that.loading = false))
+      }
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -316,7 +322,7 @@ export default {
         this.approval_status = undefined
       }
       //this.$message.info('全部，待审批，审批尚未实现')
-      this.searchAction({ current: 1, searchStatus: this.activeKey })
+      this.searchAction({ current: 1 })
     },
   },
 }
