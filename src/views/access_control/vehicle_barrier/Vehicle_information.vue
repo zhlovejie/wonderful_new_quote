@@ -282,7 +282,7 @@ export default {
       this.pagination1.size = pagination.pageSize
       this.pagination1.current = pagination.current
 
-      this.searchActionsee()
+      this.searchAction()
     },
 
     // 清空、重置
