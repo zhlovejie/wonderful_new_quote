@@ -359,7 +359,7 @@ export function getPositionApplyListByPage(parameter) {
   })
 }
 
-//调岗调薪申请撤回
+//调岗申请撤回
 
 export function getPositionApplyListByCancel(parameter) {
   return axios({
@@ -369,6 +369,28 @@ export function getPositionApplyListByCancel(parameter) {
     data: parameter
   })
 }
+//调薪申请撤回
+
+export function getPositionyCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salaryApply/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//调岗调薪申请撤回
+
+export function getPositionAndSalaryCancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/positionAndSalaryApply/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+
 
 
 //调岗申请详情查询 applyId

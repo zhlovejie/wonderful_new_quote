@@ -118,7 +118,12 @@ import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
 } from '@/api/systemSetting'
-import { getPositionApplyListByPage, getPositionApplyListByCancel } from '@/api/personnelManagement'
+import {
+  getPositionApplyListByPage,
+  getPositionApplyListByCancel,
+  getPositionyCancel,
+  getPositionAndSalaryCancel,
+} from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
@@ -229,10 +234,22 @@ export default {
     //撤回
     confirmWithdraw(record) {
       let that = this
-      getPositionApplyListByCancel(`id=${record.id}`).then((res) => {
-        this.searchAction()
-        that.$message.info(res.msg)
-      })
+      if (record.operationStatus === 0) {
+        getPositionApplyListByCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      } else if (record.operationStatus === 1) {
+        getPositionyCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      } else {
+        getPositionAndSalaryCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      }
     },
     searchAction(opt) {
       let that = this
