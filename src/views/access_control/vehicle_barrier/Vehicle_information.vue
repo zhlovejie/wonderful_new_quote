@@ -49,22 +49,19 @@
       <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button style="margin-left: 10px" type="primary" @click="downloadAction">下载</a-button>
     </div>
-    <a-row>
-      <a-col :span="12">
-        <a-col :span="8">
-          <span style="size: 20px; margin-bottom: 10px">车位 : </span>
-          {{ NumbeofCars }}</a-col
-        >
-        <a-col :span="8">
-          <span style="size: 20px">入场 : </span>
-          {{ admission }}</a-col
-        >
-        <a-col :span="8">
-          <span style="size: 20px">剩余车位 :</span>
-          {{ modalTitle }}
-        </a-col>
-      </a-col>
-    </a-row>
+
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+      <span style="margin-right: 60px">
+        <span style="font-size: 20px; font-width: 700">车位 : {{ NumbeofCars }}</span></span
+      >
+      <span style="margin-right: 60px">
+        <span style="font-size: 20px; font-width: 700">入场 : {{ admission }}</span></span
+      >
+      <span style="margin-right: 60px">
+        <span style="font-size: 20px; font-width: 700">剩余车位 : {{ modalTitle }}</span>
+      </span>
+    </div>
+
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
@@ -86,8 +83,8 @@
 </template>
 
 <script>
-import { accessControlList, accessExportExcel } from '@/api/accessControl'
-import { getDictionaryList } from '@/api/workBox'
+import { accessControlList, accessExportExcel, getDictionaryList } from '@/api/accessControl'
+// import { getDictionaryList } from '@/api/workBox'
 
 export default {
   name: 'RoleManagement',
@@ -175,7 +172,7 @@ export default {
         if (to.name === 'access_control_Vehicle_information') {
           this.queryParam.statusTime = 1
           this.init()
-          getDictionaryList({ parentId: 627 }).then((res) => {
+          getDictionaryList({ code: 'parking_lot' }).then((res) => {
             this.NumbeofCars = res.data[0].remarks
             this.admission = res.data[1].remarks
           })

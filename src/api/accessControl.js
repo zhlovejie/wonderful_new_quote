@@ -7,9 +7,8 @@ const api = {
   accessVehicleCarList: '/vehicle/oa-access-vehicle-control/pageCarList', //车辆列表班车
   accessControlList: '/vehicle/oa-access-vehicle-control-record/page', //车辆信息类表
   accessExcel: '/vehicle/oa-access-vehicle-control-record/foreign/exportExcel', //车辆信息下载
+  getDictionaryList: '/dictionary/getListByCode', //总车辆 
 }
-
-
 //车辆列表员工车
 export function accessPage(parameter) {
   return axios({
@@ -47,6 +46,17 @@ export function accessExportExcel(parameter) {
     url: api.accessExcel,
     method: 'get',
     responseType: 'blob',
+    params: parameter
+  })
+}
+
+// 数据字典
+
+export function getDictionaryList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getDictionaryList,
+    method: 'get',
     params: parameter
   })
 }
