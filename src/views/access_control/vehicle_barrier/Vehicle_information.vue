@@ -46,7 +46,7 @@
         :placeholder="['开始日期', '结束日期']"
         @change="rangePickerChange"
       />
-      <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button style="margin-left: 10px" type="primary" @click="downloadAction">下载</a-button>
     </div>
     <a-row>
@@ -104,13 +104,13 @@ export default {
       userInfo: this.$store.getters.userInfo, // 当前登录人
       hiddenBoolean: false,
       stationId: undefined,
-      queryParam: {},
+      queryParam: { current: 1 },
       searchParam: {
         isToday: 1,
       },
       recordResult: {},
       queryRecord: {},
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据

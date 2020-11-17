@@ -57,7 +57,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
       <template v-if="$auth('year:add')">
@@ -95,7 +95,7 @@
         v-if="$auth('year:lists') && this.activeKey === 1"
         :columns="colu"
         :dataSource="dataSource1"
-        :pagination="pagination"
+        :pagination="pagination3"
         :loading="loading"
         @change="handleTableChange1"
       >
@@ -223,17 +223,20 @@ export default {
     return {
       visible: false,
       //   depList: [],
-      queryParam: {},
-      pagination1: { current: 1 },
-      pagination2: { current: 1 },
+      queryParam: { current: 1 },
+      pagination1: {},
+      pagination2: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => (
-          this.activeKey === 0 ? (this.pagination1.size = pageSize) : (this.pagination2.size = pageSize),
-          this.searchAction()
-        ),
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+      },
+      pagination3: {
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination2.size = pageSize), this.searchAction()),
       },
       status: '',
       depId: '',
@@ -302,9 +305,9 @@ export default {
               return item
             })
             //设置数据总条数
-            const pagination = { ...that.pagination }
+            const pagination = { ...that.pagination3 }
             pagination.total = res.data.total
-            that.pagination = pagination
+            that.pagination3 = pagination
           })
           .catch((err) => (that.loading = false))
       }
