@@ -97,7 +97,7 @@
         :dataSource="dataSource1"
         :pagination="pagination"
         :loading="loading"
-        @change="handleTableChange"
+        @change="handleTableChange1"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -225,11 +225,15 @@ export default {
       //   depList: [],
       queryParam: {},
       pagination1: { current: 1 },
+      pagination2: { current: 1 },
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        onShowSizeChange: (current, pageSize) => (
+          this.activeKey === 0 ? (this.pagination1.size = pageSize) : (this.pagination2.size = pageSize),
+          this.searchAction()
+        ),
       },
       status: '',
       depId: '',
@@ -289,7 +293,7 @@ export default {
           carName: this.queryParam.carName,
           careUserName: this.queryParam.careUserName,
         }
-        let earchParam = Object.assign({}, { ...searchParam }, { ...this.pagination1 }, opt || {})
+        let earchParam = Object.assign({}, { ...searchParam }, { ...this.pagination2 }, opt || {})
         accessPageCarList(earchParam)
           .then((res) => {
             that.loading = false
@@ -309,6 +313,12 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       this.pagination1.size = pagination.pageSize
       this.pagination1.current = pagination.current
+      this.searchAction()
+    },
+    // 分页
+    handleTableChange1(pagination, filters, sorter) {
+      this.pagination2.size = pagination.pageSize
+      this.pagination2.current = pagination.current
       this.searchAction()
     },
 
