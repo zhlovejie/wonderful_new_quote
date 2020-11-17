@@ -16,7 +16,7 @@
         @keydown.native.stop="handleKeyDown"
         style="width: 200px; margin-right: 10px"
       />
-      <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
       <template>
         <template v-if="fold">
           <a-button style="float: right; margin-right: 10px" type="primary" @click="gohandle()">&lt;返回</a-button>
@@ -125,12 +125,11 @@ export default {
         onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       pagination1: {
-        current: 1,
         folderId: -1,
         fromSource: 2,
       },
 
-      queryParam: {},
+      queryParam: { current: 1 },
       hiddenBoolean: false,
 
       selectedRowKeys: [],

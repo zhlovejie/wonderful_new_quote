@@ -21,7 +21,7 @@
         <a-select-option :value="3">不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
       </a-select>
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -203,7 +203,7 @@ export default {
       depSelectDataSource: [],
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -216,6 +216,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         departmentId: this.dep_id,
         userName: this.person_name,
         state: this.approval_status,

@@ -15,7 +15,12 @@
       </a-select>
       <a-range-picker v-model="sDate" />
 
-      <a-button v-if="$auth('income:one')" class="a-button" type="primary" icon="search" @click="searchAction"
+      <a-button
+        v-if="$auth('income:one')"
+        class="a-button"
+        type="primary"
+        icon="search"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
       <a-button
@@ -171,7 +176,7 @@ export default {
       moneyTypes: [],
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -190,6 +195,7 @@ export default {
         endTime = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') + ' 23:59:59' : undefined
       }
       return {
+        current: 1,
         customerName: this.customerName,
         claimUserName: this.claimUserName,
         accountId: this.accountId,

@@ -30,7 +30,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
       <template v-if="$auth('bill:add')">
@@ -202,7 +202,7 @@ export default {
       depList: [],
       queryParam: {},
       url: system.baseURL + '/oaSalaryInfo/oa-salary-fine-apply/download?id=',
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据

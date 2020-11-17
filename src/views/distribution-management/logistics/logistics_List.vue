@@ -1,21 +1,17 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
+    <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <a-input
         placeholder="物流单号"
         v-model="queryParam.logisticsOrderNo"
         allowClear
-        style="width: 200px;margin-right:10px;"
+        style="width: 200px; margin-right: 10px"
       />
-      <a-range-picker
-        @change="dateChange"
-        style="width:400px ;margin-right:10px;"
-        v-model="queryParam.rangeDate"
-      />
+      <a-range-picker @change="dateChange" style="width: 400px; margin-right: 10px" v-model="queryParam.rangeDate" />
 
-      <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
       <template v-if="$auth('logistics:add')">
-        <a-button style="float:right;" type="primary" icon="plus" @click="applyFor('add',null)">新增</a-button>
+        <a-button style="float: right" type="primary" icon="plus" @click="applyFor('add', null)">新增</a-button>
       </template>
     </div>
     <a-layout>
@@ -31,15 +27,15 @@
           <span>{{ index + 1 }}</span>
         </div>
         <span slot="addressName" slot-scope="text, record">
-          <span>{{text= text.split(",").join("")}}{{record.detailedAddressName}}</span>
+          <span>{{ (text = text.split(',').join('')) }}{{ record.detailedAddressName }}</span>
         </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="applyFor('see',record)">查看</a>
+          <a @click="applyFor('see', record)">查看</a>
           <a-divider type="vertical" />
-          <a class="ant-dropdown-link" :href="urls+record.id" target="_blank">下载</a>
-          <template v-if="$auth('logistics:add')&&+record.createdId  === +userInfo.id">
+          <a class="ant-dropdown-link" :href="urls + record.id" target="_blank">下载</a>
+          <template v-if="$auth('logistics:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
-            <a @click="applyFor('edit-salary',record)">修改</a>
+            <a @click="applyFor('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
           </template>

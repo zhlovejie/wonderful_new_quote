@@ -29,7 +29,7 @@
         <a-select-option :value="1">已完结</a-select-option>
       </a-select>
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a
         href="https://www.delanshi.cn/images/cloud/20200409/辞职报告df1cb1eb-1a80-41a7-9db1-2cbe105ae9be.docx"
         class="a-button ant-btn ant-btn-primary"
@@ -240,7 +240,7 @@ export default {
       activeKey: 0,
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -253,6 +253,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         userDepartmentId: this.depId,
         userStationId: this.stationId,
         type: this.operation_type,

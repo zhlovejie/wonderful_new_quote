@@ -21,7 +21,7 @@
         style="width: 200px; margin-right: 10px"
       />
 
-      <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
       <template v-if="$auth('Distribution:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
       </template>

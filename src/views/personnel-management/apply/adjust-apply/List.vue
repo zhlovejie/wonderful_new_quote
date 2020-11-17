@@ -35,7 +35,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
       <a-dropdown style="float: right" v-if="$auth('adjustApply:add')">
@@ -196,7 +196,7 @@ export default {
       depSelectDataSource: [],
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -209,6 +209,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         operationStatus: this.operation_status,
         applyUserName: this.person_name,
         status: this.approval_status,

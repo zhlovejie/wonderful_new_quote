@@ -21,7 +21,7 @@
         <a-select-option :value="3">已撤回</a-select-option>
       </a-select>
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button
         class="a-button"
         style="float: right"
@@ -202,6 +202,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         userName: this.user_name,
         isEnd: this.operation_status,
         status: this.approval_status,

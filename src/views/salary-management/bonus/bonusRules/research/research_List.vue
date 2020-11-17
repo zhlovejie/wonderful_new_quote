@@ -25,7 +25,7 @@
         <a-select-option :value="0">常规产品</a-select-option>
         <a-select-option :value="1">非常规产品</a-select-option>
       </a-select>
-      <a-button style="margin-left: 10px" type="primary" @click="searchAction">查询</a-button>
+      <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
       <template v-if="$auth('electricity:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
       </template>
@@ -86,10 +86,10 @@ export default {
       userInfo: this.$store.getters.userInfo, // 当前登录人
       hiddenBoolean: false,
       stationId: undefined,
-      queryParam: {},
+      queryParam: { current: 1 },
       recordResult: {},
       queryRecord: {},
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
