@@ -91,7 +91,7 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('del', record)">删除</a>
             </template>
-            <template v-if="$auth('accident:Withdraw') && record.status === 0 && record.createdId === userInfo.id">
+            <template v-if="record.status === 0 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>

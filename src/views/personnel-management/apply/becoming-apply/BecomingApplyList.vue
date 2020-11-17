@@ -58,7 +58,7 @@
             <template>
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.state === 1 && $auth('becomingApply:Withdraw')">
+            <template v-if="record.state === 1 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -185,6 +185,7 @@ export default {
   },
   data() {
     return {
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       activeKey: 0,
       dep_id: undefined,
       person_name: undefined,

@@ -59,9 +59,7 @@
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
 
-            <template
-              v-if="$auth('probationSurvey:Withdraw') && record.state === 1 && record.createdId === userInfo.id"
-            >
+            <template v-if="record.state === 1 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>

@@ -91,7 +91,7 @@
           </template>
 
           <template v-if="activeKey === 0">
-            <template v-if="record.status === 0 && $auth('recruitApply:Withdraw') && record.createdId === userInfo.id">
+            <template v-if="record.status === 0 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>
