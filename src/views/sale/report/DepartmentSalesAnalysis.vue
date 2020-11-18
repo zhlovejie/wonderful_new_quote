@@ -85,7 +85,7 @@ const title = {
   offset: 70,
 }
 export default {
-  name: 'DepartmentPerformanceReport',
+  name: 'DepartmentSalesAnalysis',
   data() {
     return {
       pageTitle: '部门业绩分析',
@@ -123,7 +123,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'DepartmentPerformanceReport') {
+        if (to.name === 'DepartmentSalesAnalysis') {
           this.init()
         }
       },
@@ -183,7 +183,7 @@ export default {
         Object.keys(_res[0]).forEach((v) => {
           if (v !== 'key') {
             _columns.push({
-              title: v === 'date' ? '日期' : v,
+              title: v === 'date' ? '月份' : v === 'sumMoney' ? '总计销售额(万元)' : v,
               dataIndex: v,
               scopedSlots: { customRender: v },
             })
