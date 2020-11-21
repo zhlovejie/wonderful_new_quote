@@ -804,6 +804,68 @@ export default {
             title: '部门业绩分析',
             permission: ['permission']
           }
+        },
+        {
+          path: '/sale/salesReport/DepartmentSalemanTop',
+          name: 'DepartmentSalemanTop',
+          component: () => import('@/views/sale/report/DepartmentSalemanTop'),
+          meta: {
+            title: '销售额排行榜',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/AdvancePaymentChart',
+          name: 'AdvancePaymentChart',
+          component: () => import('@/views/sale/report/AdvancePaymentChart'),
+          meta: {
+            title: '客户预收款表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/AdvancesChart',
+          name: 'AdvancesChart',
+          component: () => import('@/views/sale/report/AdvancesChart'),
+          meta: {
+            title: '预收账款分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/GrossMarginChart',
+          name: 'GrossMarginChart',
+          component: () => import('@/views/sale/report/GrossMarginChart'),
+          meta: {
+            title: '毛利率分析表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/GrossMarginSummaryChart',
+          name: 'GrossMarginSummaryChart',
+          component: () => import('@/views/sale/report/GrossMarginSummaryChart'),
+          meta: {
+            title: '毛利率分析汇总',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/ProfitMarginSummaryChart',
+          name: 'ProfitMarginSummaryChart',
+          component: () => import('@/views/sale/report/ProfitMarginSummaryChart'),
+          meta: {
+            title: '利润率分析汇总',
+            permission: ['permission']
+          }
+        },{
+          path: '/sale/salesReport/ProfitMarginSummaryChart',
+          name: 'ProfitMarginSummaryChart',
+          component: () => import('@/views/sale/report/ProfitMarginSummaryChart'),
+          meta: {
+            title: '客户预收款表',
+            permission: ['permission']
+          }
         }
       ]
     },
