@@ -56,14 +56,14 @@
 </template>
 
 <script>
-import { Statistical, exportExcelDatas } from '@/api/saleReport'
+import { Statistical, downStatistical } from '@/api/saleReport'
 import moment from 'moment'
 const DataSet = require('@antv/data-set')
 export default {
   name: 'PersonnelPerformanceReport',
   data() {
     return {
-      pageTitle: '人员业绩分析',
+      pageTitle: '销售类别统计',
       columns: [],
       sDate: [undefined, undefined],
       dataSource: [],
@@ -226,7 +226,7 @@ export default {
     },
     downloadAction() {
       let that = this
-      exportExcelDatas(2, this.searchParam)
+      downStatistical(this.searchParam)
         .then((res) => {
           console.log(res)
           if (res instanceof Blob) {

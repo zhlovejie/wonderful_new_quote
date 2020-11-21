@@ -81,15 +81,19 @@ export default {
   },
   data() {
     return {
-      pageTitle: '人员业绩分析',
+      pageTitle: '客户销售额分析表',
       columns: columns,
       sDate: [undefined, undefined],
       dataSource: [],
       sales: [],
       trainName: undefined,
       saleUserId: undefined,
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       chartHeight: 600,
@@ -134,6 +138,7 @@ export default {
         isThisYear = 1
       }
       return {
+        current: 1,
         startDate,
         endDate,
         isThisYear,
@@ -154,7 +159,7 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...that.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...that.pagination1 }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       SalesAnalysis(_searchParam)
@@ -173,19 +178,13 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
-    // simpleSearch(type) {
-    //   this.stageTimeType = this.stageTimeType === type ? undefined : type
-    //   this.searchAction()
-    // },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction()
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }

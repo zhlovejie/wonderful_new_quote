@@ -865,6 +865,26 @@ export default {
       ]
     },
     {
+      path: '/sale/Activity/ActivityList',
+      name: 'ActivityL',
+      component: () => import('@/views/sale/Activity/ActivityList'),
+      meta: {
+        title: '活跃度指数设置',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/sale/Activity/arrearsList',
+      name: 'arrears',
+      component: () => import('@/views/sale/Activity/arrearsList'),
+      meta: {
+        title: '欠款超期预警设置',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
       path: '/system-setting/work-box/ProductList',
       name: 'productList',
       component: () => import('@/views/system-setting/work-box/ProductList'),

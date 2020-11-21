@@ -14,7 +14,16 @@
             <a-input v-model="trainName" placeholder="客户名称" style="width: 200px" :allowClear="true" />
           </a-form-item>
           <a-form-item>
-            <a-range-picker style="margin-bottom: 20px" v-model="sDate" :allowClear="true" />
+            <a-date-picker
+              style="width: 280px; margin-right: 10px"
+              mode="year"
+              placeholder="年份"
+              format="YYYY"
+              v-model="yearPick"
+              :open="yearPickShow"
+              @panelChange="handlePanelChange"
+              @openChange="handleOpenChange"
+            />
           </a-form-item>
           <a-form-item>
             <a-button class="a-button" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
@@ -71,7 +80,7 @@
       <a-col :span="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">活跃度指数表</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale">
+          <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale1">
             <v-tooltip />
             <v-axis />
             <v-bar position="date*活跃度指数" />
@@ -82,10 +91,18 @@
       <a-col :span="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">销售额排行</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale">
+          <!-- <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale">
             <v-tooltip />
             <v-axis />
-            <v-bar position="date*活跃度指数" />
+            <v-line position="year*销售额(万元)" />
+            <v-point position="year*销售额(万元)" shape="circle" />
+          </v-chart> -->
+          <v-chart :force-fit="true" :height="chartHeight" :data="chartData" :scale="scale">
+            <v-tooltip />
+            <v-axis />
+            <v-legend />
+            <v-line position="year*temperature" color="city" />
+            <v-point position="year*temperature" color="city" :size="4" :v-style="style" :shape="'circle'" />
           </v-chart>
         </div>
       </a-col>
@@ -96,6 +113,7 @@
 <script>
 import { listExponent, downCustomerExponent } from '@/api/saleReport'
 import { getAllContractSalesman } from '@api/order'
+const DataSet = require('@antv/data-set')
 import moment from 'moment'
 const columns = [
   {
@@ -143,23 +161,37 @@ export default {
   name: 'PersonnelPerformanceReport',
   data() {
     return {
-      pageTitle: '人员业绩分析',
+      pageTitle: '客户活跃分析表',
       columns: columns,
       sDate: [undefined, undefined],
       dataSource: [],
       sales: [],
+      yearPick: null, //年选择器的值
+      yearPickShow: false, //年选择器的显示隐藏
       trainName: undefined,
       saleUserId: undefined,
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       chartHeight: 600,
       padding: [20, 20, 50, 140],
+      style: { stroke: '#fff', lineWidth: 1 },
       scale1: [
         {
           dataKey: '活跃度指数',
           tickInterval: 20,
+        },
+      ],
+      scale: [
+        {
+          dataKey: 'year',
+          min: 0,
+          max: 1,
         },
       ],
     }
@@ -186,22 +218,31 @@ export default {
         }
       })
     },
+    chartData() {
+      let sourceData = this.dataSource.map((item) => {
+        return {
+          year: item.customerName,
+          '销售额(万元)': item.saleQuota,
+          '平均销售额(万元)': item.avgSaleQuota,
+        }
+      })
+      const dv = new DataSet.View().source(sourceData)
+      dv.transform({
+        type: 'fold',
+        fields: ['销售额(万元)', '平均销售额(万元)'],
+        key: 'city',
+        value: 'temperature',
+      })
+      return dv.rows
+    },
     searchParam() {
-      let startDate = undefined,
-        endDate = undefined
-      let isThisYear = 1
+      let year = undefined
 
-      if (Array.isArray(this.sDate) && this.sDate.length === 2) {
-        isThisYear = undefined
-        startDate = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        endDate = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
-      } else {
-        isThisYear = 1
+      if (this.yearPick) {
+        year = moment(this.yearPick).format('YYYY')
       }
       return {
-        startDate,
-        endDate,
-        isThisYear,
+        year,
         saleUserId: this.saleUserId,
         customerName: this.trainName,
       }
@@ -210,13 +251,19 @@ export default {
   methods: {
     moment: moment,
     init() {
-      this.searchParam.isThisYear = 1
       this.searchAction({ current: 1 })
     },
-
+    // 得到年份选择器的值
+    handlePanelChange(value) {
+      this.yearPick = value
+      this.yearPickShow = false
+    },
+    handleOpenChange(status) {
+      this.yearPickShow = status
+    },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...that.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...that.pagination1 }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       listExponent(_searchParam)
@@ -235,15 +282,13 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction()
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }

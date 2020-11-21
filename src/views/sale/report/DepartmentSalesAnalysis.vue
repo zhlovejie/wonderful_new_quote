@@ -104,8 +104,12 @@ export default {
       columns: [],
       sDate: [undefined, undefined],
       dataSource: [],
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       chartHeight: 600,
@@ -244,11 +248,13 @@ export default {
     searchParam() {
       let startTime = undefined,
         endTime = undefined
+
       //if(Array.isArray(this.sDate) && this.sDate.length === 2){
       startTime = this.startTime instanceof moment ? this.startTime.format('YYYY-MM') : undefined
       endTime = this.endTime instanceof moment ? this.endTime.format('YYYY-MM') : undefined
       //}
       return {
+        current: 1,
         startTime,
         endTime,
       }
@@ -261,7 +267,7 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination1 }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       pageListDepartmentPerformanceReport(_searchParam)
@@ -280,19 +286,13 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction()
-    },
-    simpleSearch(type) {
-      this.stageTimeType = this.stageTimeType === type ? undefined : type
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction()
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }

@@ -29,7 +29,14 @@
             />
           </a-form-item>
           <a-form-item>
-            <a-button class="a-button" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
+            <a-button
+              class="a-button"
+              style="margin-bottom: 20px"
+              type="primary"
+              icon="search"
+              @click="actionHandler('search')"
+              >查询</a-button
+            >
           </a-form-item>
           <a-form-item>
             <a-button class="a-button" type="primary" icon="download" @click="actionHandler('download')">下载</a-button>
