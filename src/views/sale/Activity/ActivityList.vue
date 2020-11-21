@@ -311,12 +311,13 @@ export default {
     return {
       visible: false,
       queryParam: {},
-      pagination1: { current: 1 },
       pagination: {
+        current: 1,
+        _prePageSize: 10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       status: '',
       depId: '',
@@ -382,7 +383,11 @@ export default {
         let date = moment(that.queryParam.month).format('YYYY-MM')
         that.queryParam.month = date
       }
-      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10,
+      }
+      let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, opt || {}, {
         type: that.activeKey,
       })
       that.loading = true
@@ -395,15 +400,22 @@ export default {
           })
           //设置数据总条数
           const pagination = { ...that.pagination }
-          pagination.total = res.data.total
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
+      const pager = pagination
+      pager.current = pagination.current
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
 

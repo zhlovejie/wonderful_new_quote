@@ -170,12 +170,13 @@ export default {
       yearPickShow: false, //年选择器的显示隐藏
       trainName: undefined,
       saleUserId: undefined,
-      pagination1: {},
       pagination: {
+        current: 1,
+        _prePageSize: 10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       chartHeight: 600,
@@ -263,8 +264,11 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...that.pagination1 }, opt || {})
-      console.log('执行搜索...', _searchParam)
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10,
+      }
+      let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt || {})
       that.loading = true
       listExponent(_searchParam)
         .then((res) => {
@@ -273,17 +277,23 @@ export default {
             item.key = index + 1
             return item
           })
-          //设置数据总条数
           const pagination = { ...that.pagination }
-          pagination.total = res.data.total
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
+      const pager = pagination
+      pager.current = pagination.current
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
     actionHandler(type) {
