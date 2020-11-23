@@ -37,7 +37,6 @@
           :loading="loading"
           @change="handleTableChange" 
           :scroll="{ y: 500 }"
-          size="middle" 
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -61,6 +60,7 @@ import { pageListReportRateMoneyCustomer, exportExcelDatas } from '@/api/saleRep
 import {getListSaleContractUser} from '@/api/contractListManagement'
 import moment from 'moment'
 import ContractViewForm from './AdvancePaymentChartModel/ContractView'
+import { string } from 'jszip/lib/support'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 const columns = [
@@ -108,11 +108,11 @@ export default {
       dataSource: [],
       pagination: {
         current: 1,
-        size: '10',
+        _prePageSize: 10,
+        pageSize:10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -158,7 +158,7 @@ export default {
       let that = this
       let paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.size || 10,
+        size: that.pagination.pageSize || 10,
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       that.loading = true
@@ -187,26 +187,22 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction()
-    },
-    onShowSizeChangeHandler(current, pageSize) {
-      let pagination = { ...this.pagination }
-      pagination.current = current
-      pagination.size = String(pageSize)
-      this.pagination = pagination
+      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = {...this.pagination,...pager}
       this.searchAction()
     },
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction()
+      this.searchAction({current:1})
     },
     actionHandler(type,record) {
       if (type === 'search') {
-        this.searchAction()
+        this.searchAction({current:1})
         return
       } else if (type === 'download') {
         this.downloadAction()
