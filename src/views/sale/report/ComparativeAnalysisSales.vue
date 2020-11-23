@@ -229,8 +229,10 @@ export default {
             }
           })
         })
-        result[0].name = this.dataSource[1].year + '销售额'
-        result[1].name = this.dataSource[0].year + '销售额'
+        if (this.dataSource.length > 1) {
+          result[0].name = this.dataSource[1].year + '销售额'
+          result[1].name = this.dataSource[0].year + '销售额'
+        }
 
         return result
       }
@@ -305,13 +307,15 @@ export default {
 
     actionHandler(type) {
       if (type === 'search') {
-        if (this.yearPick != null && this.yearPick1 != null) {
-          this.searchParam.startYear = moment(this.yearPick).format('YYYY')
-          this.searchParam.endYear = moment(this.yearPick1).format('YYYY')
+        let year = moment(this.yearPick).format('YYYY')
+        let year1 = moment(this.yearPick1).format('YYYY')
+        if (this.yearPick != null && this.yearPick1 != null && year !== year1) {
+          this.searchParam.startYear = year
+          this.searchParam.endYear = year1
         } else {
-          delete this.searchParam.year
-          delete this.searchParam.year
-          return this.$message.error('请选择开始年份或结束年份')
+          delete this.searchParam.startYear
+          delete this.searchParam.endYear
+          return this.$message.error('请选择开始年份或结束年份 ,开始年份和结束年份不能相同')
         }
         this.searchAction()
       } else if (type === 'download') {
