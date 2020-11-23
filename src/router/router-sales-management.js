@@ -1,6 +1,14 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
 export default {
   path: '/sales-management',
@@ -770,6 +778,55 @@ export default {
         permission: ['permission']
       },
       children: [{
+          path: '/sale/salesReport/ComparativeAnalysisSales',
+          name: 'ComparativeAnalysisSales',
+          component: () => import('@/views/sale/report/ComparativeAnalysisSales'),
+          meta: {
+            title: '销售额对比分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/SalesCategoryAnalysis',
+          name: 'SalesCategoryAnalysis',
+          component: () => import('@/views/sale/report/SalesCategoryAnalysis'),
+          meta: {
+            title: '销售类别分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/DepartmentSalesAnalysis',
+          name: 'DepartmentSalesAnalysis',
+          component: () => import('@/views/sale/report/DepartmentSalesAnalysis'),
+          meta: {
+            title: '部门销售额分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/CustomerSalesAnalysis',
+          name: 'CustomerSalesAnalysis',
+          component: () => import('@/views/sale/report/CustomerSalesAnalysis'),
+          meta: {
+            title: '客户销售额分析表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/CustomerActivityAnalysis',
+          name: 'CustomerActivityAnalysis',
+          component: () => import('@/views/sale/report/CustomerActivityAnalysis'),
+          meta: {
+            title: '客户活跃分析表',
+            permission: ['permission']
+          }
+        },
+
+
+
+
+        {
           path: '/sale/salesReport/SaleOrderReport',
           name: 'SaleOrderReport',
           component: () => import('@/views/sale/report/SaleOrderReport'),
@@ -868,6 +925,26 @@ export default {
           }
         }
       ]
+    },
+    {
+      path: '/sale/Activity/ActivityList',
+      name: 'ActivityL',
+      component: () => import('@/views/sale/Activity/ActivityList'),
+      meta: {
+        title: '活跃度指数设置',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/sale/Activity/arrearsList',
+      name: 'arrears',
+      component: () => import('@/views/sale/Activity/arrearsList'),
+      meta: {
+        title: '欠款超期预警设置',
+        keepAlive: false,
+        permission: ['permission']
+      }
     },
     {
       path: '/system-setting/work-box/ProductList',

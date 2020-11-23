@@ -1,5 +1,239 @@
 import { axios } from '@/utils/request'
 import system from '@/config/defaultSettings'
+const api = {
+  listSaleQuotaAnalysis: '/saleReport/listSaleQuotaAnalysis', // 销售额 对比分析
+  listSaleQuotaAnalysisDetail: '/saleReport/listSaleQuotaAnalysisDetail', // 销售额 对比分析
+  listSaleQuotaDownDetail: '/saleReport/downSaleQuotaAnalysisDetail', // 销售额 对比分析下载
+  downDepartment: '/saleReport/downDepartmentPerformanceReport', // 部门业绩分析下载
+  Statistical: '/saleReport/listSaleCategoryStatistical', // 销售类别统计
+  downStatistical: '/saleReport/downSaleCategoryStatistical', // 销售类别统计
+
+
+  SalesAnalysis: '/saleReport/listCustomerSalesAnalysis', // 客户销售额分析表
+  listCustomerCategory: '/saleReport/listCustomerCategoryStatistical', //   客户销售额分析类别统计
+  listCustomerProduct: '/saleReport/listCustomerProductStatistical', //   客户销售额分析产品统计
+  downCustomerSalesAnalysis: '/saleReport/downCustomerSalesAnalysis', //   客户销售额分析下载
+  downCustomerExponent: '/saleReport/downCustomerActivityExponent', //   客户活跃度分析下载
+  listExponent: '/saleReport/listCustomerActivityExponent', //   客户活跃度分析下载
+  getActivityFormula: '/reportActivity/activity-formula/getActivityFormula', //   获取计算公式
+  saveAndUpdateFormula: '/reportActivity/activity-formula/saveAndUpdateFormula', //   计算公式新增修改
+  reportActivityList: '/reportActivity/activity-exponent/listActivityExponent', //   活跃度指数设置列表
+  saveAndUpdateIndexAdd: '/reportActivity/activity-exponent/saveAndUpdateIndex', //   活跃度指数设置新增修改
+  saveAndUpdateIndexDelete: '/reportActivity/activity-exponent/delIndex', //   活跃度指数设置新增修改
+  getOverdueWarningList: '/reportActivity/overdue-warning/getOverdueWarning', //   欠款超期预警设置
+  UpdateOverdueWarning: '/reportActivity/overdue-warning/saveAndUpdateOverdueWarning', //   欠款超期预警设置新增修改
+
+
+
+
+}
+
+//   欠款超期预警设置新增修改
+export function UpdateOverdueWarning(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.UpdateOverdueWarning,
+    method: 'post',
+    data: parameter
+  })
+}
+//   欠款超期预警设置
+export function getOverdueWarningList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getOverdueWarningList,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//  销售额 对比分析
+export function listSaleQuotaAnalysis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listSaleQuotaAnalysis,
+    method: 'get',
+    params: parameter
+  })
+}
+//  销售额 对比分析详情
+export function listSaleQuotaAnalysisDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listSaleQuotaAnalysisDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+//销售额对比下载
+export function listSaleQuotaDownDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listSaleQuotaDownDetail,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+//部门分析下载
+export function downDepartment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.downDepartment,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+//销售类别统计
+export function Statistical(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.Statistical,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//客户销售额分析表
+export function SalesAnalysis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.SalesAnalysis,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//客户销售额分析类别统计
+export function listCustomerCategory(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listCustomerCategory,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 客户销售额分析产品统计
+export function listCustomerProduct(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listCustomerProduct,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//客户分析下载
+export function downCustomerSalesAnalysis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.downCustomerSalesAnalysis,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+//客户活跃度分析下载
+export function downCustomerExponent(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.downCustomerExponent,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+//销售类别下载
+export function downStatistical(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.downStatistical,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+// 获取计算公式
+export function getActivityFormula(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getActivityFormula,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 获取计算公式
+export function saveAndUpdateFormula(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.saveAndUpdateFormula,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+// 获取活跃度指数
+export function reportActivityList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.reportActivityList,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+//活跃度指数设置新增修改
+export function saveAndUpdateIndexAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.saveAndUpdateIndexAdd,
+    method: 'post',
+    data: parameter
+  })
+}
+//活跃度指数设置删除
+export function saveAndUpdateIndexDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.saveAndUpdateIndexDelete,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+
+
+
+
+
+// 客户活跃度分析列表
+export function listExponent(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listExponent,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
+
+
 
 /**部门业绩分析统计报表分页列表 */
 export function pageListDepartmentPerformanceReport (parameter) {

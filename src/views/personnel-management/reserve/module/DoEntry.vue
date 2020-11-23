@@ -971,6 +971,8 @@ export default {
       let that = this
       that.visible = true
       that.type = type
+      that.certificateList = []
+      that.specialList = []
       that.todauuplate = []
       that.record = Object.assign({}, record)
       that.form.resetFields()

@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
     <a-row>
-      <a-col :span="10">
+      <a-col :span="24">
         <a-form layout="inline">
           <a-form-item>
             <a-month-picker placeholder="开始日期" v-model="startTime" @openChange="handleStartOpenChange" />
@@ -11,6 +11,7 @@
           </a-form-item>
           <a-form-item>
             <a-month-picker
+              style="margin-bottom: 20px"
               placeholder="结束日期"
               v-model="endTime"
               :open="endOpen"
@@ -40,7 +41,18 @@
           </div>
         </a-table>
       </a-col>
-      <a-col :span="14">
+      <a-col :span="24">
+        <div class="chart-wrapper">
+          <h3 class="chart-title">销售总计分析</h3>
+          <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale1">
+            <v-tooltip />
+            <v-axis />
+            <v-line position="date*总计销售额(万元)" />
+            <v-point position="date*总计销售额(万元)" shape="circle" />
+          </v-chart>
+        </div>
+      </a-col>
+      <a-col :span="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">部门业绩分析</h3>
           <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
@@ -57,7 +69,7 @@
 </template>
 
 <script>
-import { pageListDepartmentPerformanceReport, exportExcelDatas } from '@/api/saleReport'
+import { pageListDepartmentPerformanceReport, downDepartment } from '@/api/saleReport'
 import moment from 'moment'
 const DataSet = require('@antv/data-set')
 
@@ -85,7 +97,7 @@ const title = {
   offset: 70,
 }
 export default {
-  name: 'DepartmentPerformanceReport',
+  name: 'DepartmentSalesAnalysis',
   data() {
     return {
       pageTitle: '部门业绩分析',
@@ -94,6 +106,11 @@ export default {
       dataSource: [],
       pagination: {
         current: 1,
+        _prePageSize: 10,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading: false,
       chartHeight: 600,
@@ -102,6 +119,17 @@ export default {
       labelFormat,
       tickLine,
       title,
+      scale1: [
+        {
+          dataKey: '总计销售额(万元)',
+          min: 0,
+        },
+        {
+          dataKey: 'date',
+          min: 0,
+          max: 1,
+        },
+      ],
       scale: [
         {
           dataKey: '销售金额',
@@ -123,7 +151,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'DepartmentPerformanceReport') {
+        if (to.name === 'DepartmentSalesAnalysis') {
           this.init()
         }
       },
@@ -131,6 +159,14 @@ export default {
     },
   },
   computed: {
+    chartData1() {
+      return this.dataSource.map((item) => {
+        return {
+          date: item.date,
+          '总计销售额(万元)': item.sumMoney,
+        }
+      })
+    },
     chartData() {
       //参考 https://viserjs.github.io/demo.html#/viser/bar/grouped-column
       let fields = [...new Set(this.dataSource.map((item) => item.date))]
@@ -141,7 +177,9 @@ export default {
         if (records.length === 0) {
           return []
         }
-        let keys = Object.keys(records[0]).filter((v) => v !== 'date' && v !== 'key')
+        let keys = Object.keys(records[0]).filter(
+          (v) => v !== 'date' && v !== 'key' && v !== 'sumMoney' && v.indexOf('占比%') === -1
+        )
         let result = []
         records.map((item) => {
           keys.map((k) => {
@@ -168,7 +206,6 @@ export default {
       return dv.rows
     },
     tableData() {
-      //let _res = this.formatTableData(this.dataSource)
       let _res = this.dataSource
       if (_res.length > 0) {
         let _columns = [
@@ -176,19 +213,33 @@ export default {
             title: '序号',
             key: 'order',
             width: '70px',
+            align: 'center',
             scopedSlots: { customRender: 'order' },
+          },
+          {
+            title: '月份',
+            align: 'center',
+            dataIndex: 'date',
+          },
+          {
+            align: 'center',
+            title: '总计销售额(万元)',
+            dataIndex: 'sumMoney',
           },
         ]
 
-        Object.keys(_res[0]).forEach((v) => {
-          if (v !== 'key') {
-            _columns.push({
-              title: v === 'date' ? '日期' : v,
-              dataIndex: v,
-              scopedSlots: { customRender: v },
-            })
-          }
-        })
+        Object.keys(_res[0])
+          .sort()
+          .forEach((v) => {
+            if (v !== 'date' && v !== 'key' && v !== 'sumMoney') {
+              _columns.push({
+                title: v,
+                dataIndex: v,
+                align: 'center',
+                scopedSlots: { customRender: v },
+              })
+            }
+          })
         this.columns = _columns
       } else {
         this.columns = []
@@ -198,11 +249,13 @@ export default {
     searchParam() {
       let startTime = undefined,
         endTime = undefined
+
       //if(Array.isArray(this.sDate) && this.sDate.length === 2){
       startTime = this.startTime instanceof moment ? this.startTime.format('YYYY-MM') : undefined
       endTime = this.endTime instanceof moment ? this.endTime.format('YYYY-MM') : undefined
       //}
       return {
+        current: 1,
         startTime,
         endTime,
       }
@@ -215,7 +268,11 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10,
+      }
+      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
       pageListDepartmentPerformanceReport(_searchParam)
@@ -225,35 +282,35 @@ export default {
             item.key = index + 1
             return item
           })
-          //设置数据总条数
           const pagination = { ...that.pagination }
-          pagination.total = res.data.total
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction()
-    },
-    simpleSearch(type) {
-      this.stageTimeType = this.stageTimeType === type ? undefined : type
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction()
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }
     },
     downloadAction() {
       let that = this
-      exportExcelDatas(3, this.searchParam)
+      downDepartment(this.searchParam)
         .then((res) => {
           console.log(res)
           if (res instanceof Blob) {
