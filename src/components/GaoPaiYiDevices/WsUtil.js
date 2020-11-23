@@ -1335,7 +1335,7 @@ function sendMsgShowImageSettingWindow() {
   ws.send(aDataArray.buffer);
 }
 
-function sendMsgShowImageSettingWindowB() {
+export function sendMsgShowImageSettingWindowB() {
   var aDataArray = new Uint8Array(3);
   aDataArray[0] = 0xef;
   aDataArray[1] = 0x45;
