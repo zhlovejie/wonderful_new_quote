@@ -14,7 +14,15 @@
             <a-input v-model="trainName" placeholder="客户名称" style="width: 200px" :allowClear="true" />
           </a-form-item>
           <a-form-item>
-            <a-range-picker style="margin-bottom: 20px" v-model="sDate" :allowClear="true" />
+            <a-range-picker
+              style="margin-bottom: 20px"
+              format="YYYY-MM"
+              :mode="mode2"
+              v-model="sDate"
+              :allowClear="true"
+              @panelChange="handlePanelChange2"
+              @change="handleChange"
+            />
           </a-form-item>
           <a-form-item>
             <a-button class="a-button" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
@@ -84,6 +92,7 @@ export default {
       pageTitle: '客户销售额分析表',
       columns: columns,
       sDate: [undefined, undefined],
+      mode2: ['month', 'month'],
       dataSource: [],
       sales: [],
       trainName: undefined,
@@ -126,6 +135,7 @@ export default {
     chartData() {
       return this.dataSource.map((item) => Object.assign({}, item))
     },
+
     searchParam() {
       let startDate = undefined,
         endDate = undefined
@@ -133,8 +143,8 @@ export default {
 
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
         isThisYear = undefined
-        startDate = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        endDate = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
+        startDate = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM') : undefined
+        endDate = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM') : undefined
       } else {
         isThisYear = 1
       }
@@ -153,6 +163,13 @@ export default {
     init() {
       this.searchParam.isThisYear = 1
       this.searchAction({ current: 1 })
+    },
+    handleChange(value) {
+      this.sDate = value
+    },
+    handlePanelChange2(value, mode) {
+      this.sDate = value
+      this.mode2 = [mode[0] === 'date' ? 'month' : mode[0], mode[1] === 'date' ? 'month' : mode[1]]
     },
     //打开详情
     approvaldetails(record) {
