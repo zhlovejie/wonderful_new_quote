@@ -10,7 +10,9 @@
       </a-row>-->
       <a-form :form="form" @submit="handleSubmit" class="form wdf-form">
         <table class="custom-table custom-table-border">
-          <caption>延迟付款单</caption>
+          <caption>
+            延迟付款单
+          </caption>
           <tbody>
             <tr>
               <td>延迟付款单据编号</td>
@@ -19,8 +21,8 @@
                   <a-input
                     type="text"
                     read-only="read-only"
-                    style="border: none;width: 60%;"
-                    v-decorator="['delayedPaymentNum',{}]"
+                    style="border: none; width: 60%"
+                    v-decorator="['delayedPaymentNum', {}]"
                   />
                 </a-form-item>
               </td>
@@ -30,8 +32,8 @@
                   <a-input
                     type="text"
                     read-only="read-only"
-                    style="border: none;width: 60%;"
-                    v-decorator="['contractNum',{}]"
+                    style="border: none; width: 60%"
+                    v-decorator="['contractNum', {}]"
                   />
                 </a-form-item>
               </td>
@@ -43,18 +45,43 @@
                   <a-input
                     type="text"
                     read-only="read-only"
-                    style="border: none;width: 60%;"
-                    v-decorator="['customerName',{}]"
+                    style="border: none; width: 60%"
+                    v-decorator="['customerName', {}]"
                   />
                 </a-form-item>
               </td>
               <td>承诺付款时间</td>
               <td>
                 <a-form-item>
-                  <a-date-picker
-                    @change="setPromiseTime"
-                    v-decorator="['promiseTime', {rules: [{required: true, message: '请选择承诺付款时间！'}]}]"
+                  <a-select
+                    placeholder="请选择欠款状态"
+                    style="border: none; width: 60%"
+                    @change="onselect"
+                    v-decorator="['settleType', { rules: [{ required: true, message: '请选择承诺付款类型' }] }]"
+                  >
+                    <a-select-option v-for="val in routineSettlement" :key="val.id" :value="val.moneyType">
+                      <template v-if="val.moneyType === 0"> 全款 </template>
+                      <template v-if="val.moneyType === 1"> 质保金 </template>
+                      <template v-if="val.moneyType === 2"> 进度款 </template>
+                      <template v-if="val.moneyType === 3"> 验收款 </template>
+                      <template v-if="val.moneyType === 4"> 预付款 </template>
+                      <template v-if="val.moneyType === 5"> 提货款 </template>
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item>
+                  <a-input
+                    disabled
+                    type="text"
+                    read-only="read-only"
+                    style="border: none; width: 60%"
+                    v-decorator="['promiseTime', {}]"
                   />
+                  <!-- <a-date-picker
+                    @change="setPromiseTime"
+                    disabled
+                    v-decorator="['promiseTime', { rules: [{ required: true, message: '请选择承诺付款时间！' }] }]"
+                  /> -->
                 </a-form-item>
               </td>
             </tr>
@@ -67,7 +94,7 @@
                     :disabledDate="disabledDate"
                     :disabledTime="disabledDateTime"
                     @change="setDelayedTime"
-                    v-decorator="['delayedTime', {rules: [{required: true, message: '请选择延迟付款时间！'}]}]"
+                    v-decorator="['delayedTime', { rules: [{ required: true, message: '请选择延迟付款时间！' }] }]"
                   />
                   延迟天数：{{ delayedDay }}
                 </a-form-item>
@@ -78,8 +105,8 @@
                   <a-input
                     type="text"
                     read-only="read-only"
-                    style="border: none;width: 60%;"
-                    v-decorator="['totalAmount',{}]"
+                    style="border: none; width: 60%"
+                    v-decorator="['totalAmount', {}]"
                   />
                 </a-form-item>
               </td>
@@ -88,12 +115,7 @@
               <td>已付金额</td>
               <td>
                 <a-form-item>
-                  <a-input
-                    type="text"
-                    disabled
-                    style="border: none;width: 60%;"
-                    v-decorator="['paidAmount',{}]"
-                  />
+                  <a-input type="text" disabled style="border: none; width: 60%" v-decorator="['paidAmount', {}]" />
                 </a-form-item>
               </td>
               <td>延迟付款金额</td>
@@ -102,8 +124,8 @@
                   <a-input-number
                     :min="0"
                     :max="maxDelayedAmount"
-                    style="border: none;width: 60%;"
-                    v-decorator="['delayedAmount',{rules: [{ required: true, message: '请输入延迟付款金额' }]}]"
+                    style="border: none; width: 60%"
+                    v-decorator="['delayedAmount', { rules: [{ required: true, message: '请输入延迟付款金额' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -114,8 +136,12 @@
                 <a-form-item>
                   <a-select
                     placeholder="请选择币别"
-                    style="border: none;width: 60%;"
-                    v-decorator="['currency',{initialValue:1}, {rules: [{ required: true, message: '请选择币别' }]}]"
+                    style="border: none; width: 60%"
+                    v-decorator="[
+                      'currency',
+                      { initialValue: 1 },
+                      { rules: [{ required: true, message: '请选择币别' }] },
+                    ]"
                     disabled
                   >
                     <a-select-option :value="1">人民币</a-select-option>
@@ -127,8 +153,12 @@
                 <a-form-item>
                   <a-select
                     placeholder="请选择欠款状态"
-                    style="border: none;width: 60%;"
-                    v-decorator="['arrearsStatus',{initialValue:1} ,{rules: [{ required: true, message: '请选择欠款状态' }]}]"
+                    style="border: none; width: 60%"
+                    v-decorator="[
+                      'arrearsStatus',
+                      { initialValue: 1 },
+                      { rules: [{ required: true, message: '请选择欠款状态' }] },
+                    ]"
                   >
                     <a-select-option :value="1">未结</a-select-option>
                     <a-select-option :value="2">已结</a-select-option>
@@ -143,8 +173,8 @@
                 <a-form-item>
                   <a-textarea
                     type="text"
-                    style="border: none;width: 80%;"
-                    v-decorator="['reason',{rules: [{ required: true, message: '请输入延迟付款原因' }]}]"
+                    style="border: none; width: 80%"
+                    v-decorator="['reason', { rules: [{ required: true, message: '请输入延迟付款原因' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -153,8 +183,11 @@
                 <a-form-item>
                   <a-select
                     placeholder="请选择模版"
-                    style="border: none;width: 60%;"
-                    v-decorator="['templateType', {initialValue:1,rules: [{ required: true, message: '请选择模版' }]}]"
+                    style="border: none; width: 60%"
+                    v-decorator="[
+                      'templateType',
+                      { initialValue: 1, rules: [{ required: true, message: '请选择模版' }] },
+                    ]"
                   >
                     <a-select-option :value="1">欠款单</a-select-option>
                     <a-select-option :value="2">欠款单-简版</a-select-option>
@@ -176,17 +209,17 @@
           :loading="memberLoading"
           bordered
         >
-          <div slot="order" slot-scope="text,record,index">
-            <span>{{ index+1 }}</span>
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
           </div>
           <div slot="productType" slot-scope="text">
-            <span v-if="text==0">常规产品</span>
-            <span v-if="text==1">非常规产品</span>
+            <span v-if="text == 0">常规产品</span>
+            <span v-if="text == 1">非常规产品</span>
           </div>
           <div slot="company" slot-scope="text">
-            <span v-if="text==0">套</span>
-            <span v-if="text==1">台</span>
-            <span v-if="text==2">个</span>
+            <span v-if="text == 0">套</span>
+            <span v-if="text == 1">台</span>
+            <span v-if="text == 2">个</span>
           </div>
         </a-table>
         <a-row>
@@ -200,18 +233,18 @@
           :loading="memberLoading"
           bordered
         >
-          <div slot="order" slot-scope="text,record,index">
-            <span>{{ index+1 }}</span>
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
           </div>
 
           <div slot="productType" slot-scope="text">
-            <span v-if="text==0">常规产品</span>
-            <span v-if="text==1">非常规产品</span>
+            <span v-if="text == 0">常规产品</span>
+            <span v-if="text == 1">非常规产品</span>
           </div>
           <div slot="company" slot-scope="text">
-            <span v-if="text==0">套</span>
-            <span v-if="text==1">台</span>
-            <span v-if="text==2">个</span>
+            <span v-if="text == 0">套</span>
+            <span v-if="text == 1">台</span>
+            <span v-if="text == 2">个</span>
           </div>
         </a-table>
         <a-row>
@@ -225,18 +258,18 @@
           :loading="memberLoading"
           bordered
         >
-          <div slot="order" slot-scope="text,record,index">
-            <span>{{ index+1 }}</span>
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
           </div>
 
           <div slot="productType" slot-scope="text">
-            <span v-if="text==0">常规产品</span>
-            <span v-if="text==1">非常规产品</span>
+            <span v-if="text == 0">常规产品</span>
+            <span v-if="text == 1">非常规产品</span>
           </div>
           <div slot="company" slot-scope="text">
-            <span v-if="text==0">套</span>
-            <span v-if="text==1">台</span>
-            <span v-if="text==2">个</span>
+            <span v-if="text == 0">套</span>
+            <span v-if="text == 1">台</span>
+            <span v-if="text == 2">个</span>
           </div>
         </a-table>
         <a-form-item>
@@ -247,8 +280,8 @@
                 type="text"
                 read-only="read-only"
                 placeholder="无需输入"
-                style="border: none;width: 60%;"
-                v-decorator="['createName',{}]"
+                style="border: none; width: 60%"
+                v-decorator="['createName', {}]"
               />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">创建日期</a-col>
@@ -257,8 +290,8 @@
                 type="text"
                 read-only="read-only"
                 placeholder="无需输入"
-                style="border: none;width: 60%;"
-                v-decorator="['createTime',{}]"
+                style="border: none; width: 60%"
+                v-decorator="['createTime', {}]"
               />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">审批人</a-col>
@@ -267,8 +300,8 @@
                 type="text"
                 read-only="read-only"
                 placeholder="无需输入"
-                style="border: none;width: 60%;"
-                v-decorator="['',{}]"
+                style="border: none; width: 60%"
+                v-decorator="['', {}]"
               />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">审批日期</a-col>
@@ -277,8 +310,8 @@
                 type="text"
                 read-only="read-only"
                 placeholder="无需输入"
-                style="border: none;width: 60%;"
-                v-decorator="['',{}]"
+                style="border: none; width: 60%"
+                v-decorator="['', {}]"
               />
             </a-col>
           </a-row>
@@ -299,7 +332,7 @@ export default {
   components: {
     AFormItem,
     ATextarea,
-    moment
+    moment,
   },
   props: {},
   data() {
@@ -317,6 +350,7 @@ export default {
       delayedDay: 0, // 延迟时长（天）
       promiseTimes: 0,
       delayedTimes: 0,
+      routineSettlement: [],
       contractType: '',
       columns: [
         {
@@ -324,34 +358,34 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           title: '标的名称',
-          dataIndex: 'targetName'
+          dataIndex: 'targetName',
         },
         {
           title: '产品类别',
           dataIndex: 'productType',
-          scopedSlots: { customRender: 'productType' }
+          scopedSlots: { customRender: 'productType' },
         },
         {
           title: '产品代码',
           dataIndex: 'productStandard',
-          scopedSlots: { customRender: 'productStandard' }
+          scopedSlots: { customRender: 'productStandard' },
         },
         {
           title: '单位',
           dataIndex: 'company',
-          scopedSlots: { customRender: 'company' }
+          scopedSlots: { customRender: 'company' },
         },
         {
           title: '数量',
           dataIndex: 'count',
-          scopedSlots: { customRender: 'count' }
-        }
+          scopedSlots: { customRender: 'count' },
+        },
       ],
-      maxDelayedAmount: 0 //延迟付款金额 可输入最大值
+      maxDelayedAmount: 0, //延迟付款金额 可输入最大值
     }
   },
   watch: {},
@@ -361,11 +395,15 @@ export default {
   },
   methods: {
     moment,
-    setPromiseTime(date, dateString) {
-      this.promiseTimes = date
-      if (this.delayedTimes !== 0) {
-        this.delayedDay = this.delayedTimes.diff(date, 'days')
-      }
+    // setPromiseTime(date, dateString) {
+    //   this.promiseTimes = date
+    //   if (this.delayedTimes !== 0) {
+    //     this.delayedDay = this.delayedTimes.diff(date, 'days')
+    //   }
+    // },
+    onselect(value) {
+      let arr = this.routineSettlement.find((item) => item.moneyType === value)
+      this.form.setFieldsValue({ promiseTime: arr.paymentDate })
     },
     setDelayedTime(date, dateString) {
       this.delayedTimes = date
@@ -394,7 +432,7 @@ export default {
           productType: product.productType,
           productStandard: product.contractProductPo.productModel,
           company: product.company,
-          count: product.count
+          count: product.count,
         })
       }
       this.dataSource = listProduct
@@ -404,7 +442,7 @@ export default {
       // 添加已发产品
       const parameter = { contractId: this.record.id }
       getDeliverProductList(parameter)
-        .then(res => {
+        .then((res) => {
           const listProductDelivered = []
           for (const productKey in res.data) {
             const product = res.data[productKey]
@@ -414,7 +452,7 @@ export default {
               productType: product.products.productType,
               productStandard: product.products.contractProductPo.productModel,
               company: product.products.company,
-              count: product.invoiceCount
+              count: product.invoiceCount,
             })
           }
           this.dataSourceDelivered = listProductDelivered
@@ -461,12 +499,12 @@ export default {
           // 已发产品信息
           this.$set(values, 'delayedProductVo', parameter)
           saveDelayedPayment(values)
-            .then(res => {
+            .then((res) => {
               if (res.code === 200) {
                 this.goBackContract()
               }
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error)
             })
         }
@@ -475,26 +513,27 @@ export default {
     // 获取延迟发货单编号
     delayedNum() {
       getDelayedNum()
-        .then(res => {
+        .then((res) => {
           console.log('获取发货单编号的结果', res)
           this.form.setFieldsValue({ delayedPaymentNum: res.data })
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
     getContract() {
       const parameter = { id: this.$route.params.id }
       getContractById(parameter)
-        .then(res => {
+        .then((res) => {
           this.record = res.data
-
+          this.routineSettlement = res.data.routineSettlement
           let { totalAmount, returnedMoney } = this.record
           this.maxDelayedAmount = parseFloat(totalAmount) - parseFloat(returnedMoney)
+
           // 把获取到的合同信息放入表中
           this.info()
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
@@ -510,8 +549,8 @@ export default {
       return current < moment().subtract(1, 'days') || current > moment().add(30, 'd')
     },
 
-    disabledDateTime() {}
-  }
+    disabledDateTime() {},
+  },
 }
 </script>
 

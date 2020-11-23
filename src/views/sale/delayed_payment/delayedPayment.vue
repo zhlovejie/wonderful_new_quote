@@ -329,7 +329,6 @@ export default {
       this.$refs.table.refresh(true)
     },
     handleSee(e) {
-      debugger
       if (e.contractType === 1) {
         this.$router.push({ name: 'lookDelayedPayment', params: { record: e } })
       }
