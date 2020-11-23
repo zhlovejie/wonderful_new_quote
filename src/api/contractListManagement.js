@@ -355,6 +355,15 @@ export function contractApproval(data) {
   })
 }
 
+export function checkRemoveSettle(data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/checkRemoveSettle',
+    method: 'post',
+    data: data
+  })
+}
+
 // 软件合同审核通过还是不通过
 export function softwareContractApproval(data) {
   return axios({
@@ -364,6 +373,7 @@ export function softwareContractApproval(data) {
     data: data
   })
 }
+
 
 //删除合同
 export function deleteQueryOne(parameter) {
@@ -377,6 +387,9 @@ export function deleteQueryOne(parameter) {
     method: 'DELETE'
   })
 }
+
+
+
 
 //删除合同
 export function deleteSoftwareContractQueryOne(parameter) {
