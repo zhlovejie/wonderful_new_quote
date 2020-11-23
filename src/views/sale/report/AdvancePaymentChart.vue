@@ -36,7 +36,6 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange" 
-          :scroll="{ y: 500 }"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -44,6 +43,7 @@
           <div slot="amount" slot-scope="text">
             <span>{{ text | moneyFormatNumber }}</span>
           </div>
+          
           <div slot="action" slot-scope="text, record">
             <a href="javascript:void(0);" @click="actionHandler('view',record)">查看</a>
           </div>
@@ -60,7 +60,6 @@ import { pageListReportRateMoneyCustomer, exportExcelDatas } from '@/api/saleRep
 import {getListSaleContractUser} from '@/api/contractListManagement'
 import moment from 'moment'
 import ContractViewForm from './AdvancePaymentChartModel/ContractView'
-import { string } from 'jszip/lib/support'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 const columns = [
@@ -74,23 +73,27 @@ const columns = [
   {
     title: '日期',
     dataIndex: 'staticsDate',
+    width:150
   },
   {
     title: '客户名称',
-    dataIndex: 'customerName',
+    dataIndex: 'customerName'
   },
   {
     title: '销售经理',
     dataIndex: 'salerUserName',
+    width:150
   },
   {
     title: '金额(元)',
     dataIndex: 'amount',
     scopedSlots: { customRender: 'amount' },
+    width:150
   },
   {
     title: '详情',
     scopedSlots: { customRender: 'action' },
+    width:150
   },
 ]
 

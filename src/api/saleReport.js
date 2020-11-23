@@ -108,7 +108,8 @@ export function grossMarginSummaryChartList (parameter) {
 export function pageListReportPrepareMoneyDate (parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/reportPerpareMoney/pageListReportPrepareMoneyDate',
+    url: '/reportPerpareMoney/listReportPrepareMoneyDate',
+    //url: '/reportPerpareMoney/pageListReportPrepareMoneyDate',
     method: 'get',
     params: parameter
   })

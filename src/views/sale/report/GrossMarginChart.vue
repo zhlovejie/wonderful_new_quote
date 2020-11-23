@@ -2,7 +2,7 @@
   <!-- 毛利率分析表 -->
   <a-card :bordered="false" class="_sales_top_wrapper">
     <a-row>
-      <a-col :xl="10" :lg="24" :md="24" :sm="24" :xs="24">
+      <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <a-form layout="inline">
           <a-form-item>
             <a-button-group>
@@ -39,7 +39,7 @@
           </div>
         </a-table>
       </a-col>
-      <a-col :xl="14" :lg="24" :md="24" :sm="24" :xs="24">
+      <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">毛利率分析</h3>
           <template v-if="chartData && chartData.length > 0">
@@ -88,11 +88,11 @@ export default {
       dataSource: [],
       pagination: {
         current: 1,
-        size: '10',
+        _prePageSize: 10,
+        pageSize:10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
       rangeType: 2,
@@ -102,13 +102,10 @@ export default {
       scale: [
         {
           dataKey: 'value',
-          nice: true,
           alias: '毛利率',
         },
         {
           dataKey: 'date',
-          range: [0, 1],
-          tickCount: 10,
           type: 'timeCat',
         },
       ],
@@ -161,7 +158,7 @@ export default {
       let that = this
       let paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.size || 10,
+        size: that.pagination.pageSize || 10,
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       that.loading = true
@@ -196,26 +193,23 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
+      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = {...this.pagination,...pager}
       this.searchAction()
     },
-    onShowSizeChangeHandler(current, pageSize) {
-      let pagination = { ...this.pagination }
-      pagination.current = current
-      pagination.size = String(pageSize)
-      this.pagination = pagination
-      this.searchAction()
-    },
+    
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction()
+      this.searchAction({current:1})
     },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction()
+        this.searchAction({current:1})
       } else if (type === 'download') {
         this.downloadAction()
       }

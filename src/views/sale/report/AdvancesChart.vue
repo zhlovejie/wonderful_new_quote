@@ -27,25 +27,8 @@
         </a-form>
       </a-col>
       
-      <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="pagination"
-          :loading="loading"
-          @change="handleTableChange" 
-          :scroll="{ y: 500 }"
-          size="middle" 
-        >
-          <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
-          </div>
-          <div slot="amount" slot-scope="text">
-            <span>{{ text | moneyFormatNumber }}</span>
-          </div>
-        </a-table>
-      </a-col>
-      <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
+      
+      <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">预收账款分析</h3>
           <template v-if="chartData && chartData.length > 0">
@@ -60,6 +43,23 @@
             <a-empty :image="emptyImage" />
           </template>
         </div>
+      </a-col>
+      <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="false"
+          :loading="loading"
+          :scroll="{ y: 500 }" 
+          size="middle"
+        >
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
+          </div>
+          <div slot="amount" slot-scope="text">
+            <span>{{ text | moneyFormatNumber }}</span>
+          </div>
+        </a-table>
       </a-col>
     </a-row>
   </a-card>
@@ -126,11 +126,11 @@ export default {
       dataSource: [],
       pagination: {
         current: 1,
-        size: '10',
+        _prePageSize: 10,
+        pageSize:10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -145,7 +145,6 @@ export default {
       scale:[{
         dataKey: 'amount',
         alias: '金额(元)',
-        tickCount: 5,
       },
       {
         dataKey: 'staticsDate',
@@ -197,7 +196,7 @@ export default {
       let that = this
       let paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.size || 10,
+        size: that.pagination.pageSize || 10,
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       that.loading = true
@@ -206,7 +205,7 @@ export default {
           that.loading = false
           let data = res.data
           try {
-            that.dataSource = data.records.map((item, index) => {
+            that.dataSource = data.map((item, index) => {
               item.key = uuid()
               item.staticsDate = item.staticsDate ? item.staticsDate.slice(0, 10) : '-'
               return item
@@ -216,32 +215,29 @@ export default {
             that.dataSource = []
           }
           //设置数据总条数
-          const pagination = { ...that.pagination }
-          pagination.total = data.total || 0
-          pagination.current = data.current || 1
-          that.pagination = pagination
+          // const pagination = { ...that.pagination }
+          // pagination.total = data.total || 0
+          // pagination.current = data.current || 1
+          // that.pagination = pagination
 
         })
         .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
+      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = {...this.pagination,...pager}
       this.searchAction()
     },
-    onShowSizeChangeHandler(current, pageSize) {
-      let pagination = { ...this.pagination }
-      pagination.current = current
-      pagination.size = String(pageSize)
-      this.pagination = pagination
-      this.searchAction()
-    },
+    
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction()
+      this.searchAction({current:1})
     },
     actionHandler(type) {
       if (type === 'search') {
@@ -250,7 +246,7 @@ export default {
           this.$message.warn('请选择开始日期和结束日期')
           return
         }
-        this.searchAction()
+        this.searchAction({current:1})
       } else if (type === 'download') {
         this.downloadAction()
       }
@@ -344,7 +340,9 @@ export default {
 
 <style scoped>
 .chart-wrapper {
-  padding: 0 0 0 0;
+  background-color: rgba(250, 250, 250, .5);
+  margin-top: 20px;
+  padding: 20px 0 0 0;
 }
 .chart-wrapper .chart-title {
   text-align: center;
