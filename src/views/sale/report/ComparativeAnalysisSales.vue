@@ -270,8 +270,15 @@ export default {
     },
     // 得到年份选择器的值
     handlePanelChange1(value) {
-      this.yearPick1 = value
-      this.yearPickShow1 = false
+      if (!this.yearPick) {
+        return this.$message.error('请先选择开始年份')
+      }
+      if (this.yearPick < value) {
+        this.yearPick1 = value
+        this.yearPickShow1 = false
+      } else {
+        this.$message.error('当前年份要大于开始年份')
+      }
     },
     handleOpenChange1(status) {
       this.yearPickShow1 = status
