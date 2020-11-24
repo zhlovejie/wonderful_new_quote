@@ -39,7 +39,7 @@
         </template>
         <template v-if="$auth('pricing:edit') && (+record.valencyStatus === 2 || +record.valencyStatus === 9)">
           <a-divider type="vertical" />
-          <a class="btn-action" type="primary" @click="showreSubmit(record)">再提交</a>
+          <a class="btn-action" type="primary" @click="showreSubmit(record)">修改</a>
         </template>
         <template v-if="+record.valencyStatus === 0">
           <a-divider type="vertical" />
@@ -151,7 +151,7 @@
       <p>地址：{{ customerAddress }}</p>
     </a-modal>
 
-    <a-modal title="审批预览" v-model="priewVisible" :footer="null" :maskClosable="false">
+    <a-modal :width="700" title="审批预览" v-model="priewVisible" :footer="null" :maskClosable="false">
       <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="false" :loading="loading">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>

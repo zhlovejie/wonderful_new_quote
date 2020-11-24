@@ -23,7 +23,7 @@
         <a-select-option :value="2">不通过</a-select-option>
       </a-select>
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button
         class="a-button"
         style="float: right"
@@ -239,7 +239,7 @@ export default {
       columns: columns,
       innerColumns: innerColumns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -252,6 +252,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         presentNum: this.presentNum,
         saleUserId: this.saleUserId,
         status: this.status,

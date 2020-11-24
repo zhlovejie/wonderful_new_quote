@@ -239,7 +239,7 @@ export default {
       dataSource: [],
       depSelectDataSource: [],
       postSelectDataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -260,6 +260,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         departmentId: this.depId,
         stationId: this.stationId,
         name: this.userName,

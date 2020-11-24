@@ -26,7 +26,7 @@
         <a-select-option :value="0">常规产品</a-select-option>
         <a-select-option :value="1">非常规产品</a-select-option>
       </a-select>
-      <a-button type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
     <a-table
       :columns="columns"
@@ -83,12 +83,12 @@ export default {
   data() {
     return {
       columns,
-      queryParam: {},
+      queryParam: { current: 1 },
       saleCustomers: [],
       consumerNam: null,
       consumerId: null,
       loading: false,
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据

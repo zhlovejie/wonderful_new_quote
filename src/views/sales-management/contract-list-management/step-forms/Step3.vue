@@ -485,7 +485,7 @@
 </template>
 
 <script>
-import { getQueryOne, saveSettlementMethod, deleteQueryOne } from '@/api/contractListManagement'
+import { getQueryOne, saveSettlementMethod, deleteQueryOne, checkRemoveSettle } from '@/api/contractListManagement'
 import moment from 'moment'
 
 export default {
@@ -967,8 +967,27 @@ export default {
       })
     },
     checkboxChange(event) {
-      const { id, checked, defaultChecked } = event.target
-      this.$nextTick(() => this.autoFill())
+      if (this.$parent.routeParams.action === 'edit' && event.target.checked === false) {
+        let idx = event.target.id.split('.')
+          let arr = Number(idx[1])  
+        let data = new FormData()
+        data.append('contractId', this.id)
+        data.append('moneyType', arr)
+        checkRemoveSettle(data).then((res) => {
+          if (res.code === 200) {
+            const { id, checked, defaultChecked } = event.target
+            this.$nextTick(() => this.autoFill())
+          } else {
+            let obj = {}
+            obj[`convention.${idx[1]}.selected`] = true
+            this.form.setFieldsValue({ ...obj })
+          }
+        })
+      } else {
+        const { id, checked, defaultChecked } = event.target
+        this.$nextTick(() => this.autoFill())
+      }
+      console.log(event.target)
     },
     checkPercentages() {
       let percentagesStatus = false

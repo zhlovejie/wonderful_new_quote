@@ -18,7 +18,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
 
@@ -115,8 +115,8 @@ export default {
   data() {
     return {
       visible: false,
-      queryParam: {},
-      pagination1: { current: 1 },
+      queryParam: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据

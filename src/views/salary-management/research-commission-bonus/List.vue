@@ -29,7 +29,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
       <template v-if="$auth('research:add')">

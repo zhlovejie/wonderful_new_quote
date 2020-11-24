@@ -32,7 +32,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
 
@@ -93,6 +93,7 @@
           </template>
 
           <template v-if="activeKey === 1">
+            <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
         </div>
@@ -179,7 +180,7 @@ export default {
       approval_status: undefined,
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -204,6 +205,7 @@ export default {
         startTime: startTime,
         endTime: endTime,
         status: this.status,
+        current: 1,
       }
     },
   },

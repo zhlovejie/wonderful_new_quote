@@ -21,7 +21,7 @@
         <a-select-option :value="3">已撤回</a-select-option>
       </a-select>
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button
         class="a-button"
         style="float: right"
@@ -77,9 +77,7 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
             </template>
-            <template
-              v-if="$auth('severanceAgreement:Withdraw') && record.status === 0 && record.createdId === userInfo.id"
-            >
+            <template v-if="record.status === 0 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -202,6 +200,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         userName: this.user_name,
         isEnd: this.operation_status,
         status: this.approval_status,

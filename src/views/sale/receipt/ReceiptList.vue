@@ -99,7 +99,7 @@
               "
             >
               <a-divider type="vertical" />
-              <a @click="handleEdit(record)">重新提交</a>
+              <a @click="handleEdit(record)">修改</a>
             </template>
             <template
               v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && record.receiptStatus === 2"
@@ -361,6 +361,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'receiptList') {
+          this.queryParam.dayWeekMonth = 1
           this.searchAction()
         }
       },

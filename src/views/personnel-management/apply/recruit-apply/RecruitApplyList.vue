@@ -37,7 +37,7 @@
         <a-select-option :value="2">不通过</a-select-option>
         <a-select-option :value="3">已撤回</a-select-option>
       </a-select>
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button
         class="a-button"
         v-if="$auth('recruitApply:add')"
@@ -91,7 +91,7 @@
           </template>
 
           <template v-if="activeKey === 0">
-            <template v-if="record.status === 0 && $auth('recruitApply:Withdraw') && record.createdId === userInfo.id">
+            <template v-if="record.status === 0 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -223,7 +223,7 @@ export default {
       postSelectDataSource: [],
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -240,6 +240,7 @@ export default {
         stationId: this.stationId,
         emergentLevel: this.emergency,
         status: this.approval_status,
+        current: 1,
       }
     },
   },

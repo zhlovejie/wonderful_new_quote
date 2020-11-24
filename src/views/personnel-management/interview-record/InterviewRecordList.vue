@@ -27,7 +27,7 @@
         placeholder="选择岗位" 
       /> -->
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -200,7 +200,7 @@ export default {
       postSelectDataSource: [],
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -213,6 +213,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         name: this.person_name,
         phone: this.person_phone,
         stationId: this.stationId,

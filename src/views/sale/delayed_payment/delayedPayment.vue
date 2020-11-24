@@ -117,7 +117,7 @@
               </template>
               <template v-if="+record.approvalStatus === 3 || +record.approvalStatus === 9">
                 <a-divider type="vertical" />
-                <a @click="Resubmit(record)">重新提交</a>
+                <a @click="Resubmit(record)">修改</a>
               </template>
             </template>
             <template v-if="+audit === 1">
@@ -261,6 +261,7 @@ export default {
   watch: {
     $route(to, from) {
       if (to.name === 'delayedPayment') {
+        this.dayWeekMonth = 1
         this.$refs.table.refresh(true)
       }
     },
@@ -328,7 +329,6 @@ export default {
       this.$refs.table.refresh(true)
     },
     handleSee(e) {
-      debugger
       if (e.contractType === 1) {
         this.$router.push({ name: 'lookDelayedPayment', params: { record: e } })
       }

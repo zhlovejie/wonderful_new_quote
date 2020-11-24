@@ -137,6 +137,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'PersonnelPerformanceReport') {
+          this.stageTimeType = 1
           this.init()
         }
       },

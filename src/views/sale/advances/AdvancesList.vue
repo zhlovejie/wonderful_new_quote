@@ -92,7 +92,7 @@
               "
             >
               <a-divider type="vertical" />
-              <a @click="handleEdit(record)">重新提交</a>
+              <a @click="handleEdit(record)">修改</a>
             </template>
             <template v-if="!audit && +record.advancesStatus === 1">
               <a-divider type="vertical" />

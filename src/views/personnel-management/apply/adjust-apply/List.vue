@@ -35,7 +35,7 @@
         type="primary"
         style="position: relative; top: -1px"
         icon="search"
-        @click="searchAction"
+        @click="searchAction({ current: 1 })"
         >查询</a-button
       >
       <a-dropdown style="float: right" v-if="$auth('adjustApply:add')">
@@ -87,9 +87,7 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
             </template>
-            <template
-              v-if="$auth('adjustApply:Withdraw') && record.status === 0 && Number(record.createdId) === userInfo.id"
-            >
+            <template v-if="record.status === 0 && Number(record.createdId) === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => confirmWithdraw(record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -118,7 +116,12 @@ import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
 } from '@/api/systemSetting'
-import { getPositionApplyListByPage, getPositionApplyListByCancel } from '@/api/personnelManagement'
+import {
+  getPositionApplyListByPage,
+  getPositionApplyListByCancel,
+  getPositionyCancel,
+  getPositionAndSalaryCancel,
+} from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
@@ -191,7 +194,7 @@ export default {
       depSelectDataSource: [],
       columns: columns,
       dataSource: [],
-      pagination1: { current: 1 },
+      pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -204,6 +207,7 @@ export default {
   computed: {
     searchParam() {
       return {
+        current: 1,
         operationStatus: this.operation_status,
         applyUserName: this.person_name,
         status: this.approval_status,
@@ -229,10 +233,22 @@ export default {
     //撤回
     confirmWithdraw(record) {
       let that = this
-      getPositionApplyListByCancel(`id=${record.id}`).then((res) => {
-        this.searchAction()
-        that.$message.info(res.msg)
-      })
+      if (record.operationStatus === 0) {
+        getPositionApplyListByCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      } else if (record.operationStatus === 1) {
+        getPositionyCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      } else {
+        getPositionAndSalaryCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      }
     },
     searchAction(opt) {
       let that = this

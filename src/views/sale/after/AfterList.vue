@@ -108,7 +108,7 @@
               "
             >
               <a-divider type="vertical" />
-              <a @click="handleEdotVue(record)">重新提交</a>
+              <a @click="handleEdotVue(record)">修改</a>
             </template>
 
             <template v-if="+record.state === 1">
