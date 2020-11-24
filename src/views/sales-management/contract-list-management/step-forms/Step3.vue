@@ -969,7 +969,7 @@ export default {
     checkboxChange(event) {
       if (this.$parent.routeParams.action === 'edit' && event.target.checked === false) {
         let idx = event.target.id.split('.')
-          let arr = Number(idx[1])  
+        let arr = Number(idx[1])
         let data = new FormData()
         data.append('contractId', this.id)
         data.append('moneyType', arr)
@@ -978,6 +978,7 @@ export default {
             const { id, checked, defaultChecked } = event.target
             this.$nextTick(() => this.autoFill())
           } else {
+            this.$message.error(res.msg)
             let obj = {}
             obj[`convention.${idx[1]}.selected`] = true
             this.form.setFieldsValue({ ...obj })

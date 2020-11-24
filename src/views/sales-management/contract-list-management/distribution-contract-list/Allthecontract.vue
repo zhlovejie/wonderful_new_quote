@@ -40,8 +40,9 @@
             <!-- :checked="record.isDisabled === 0" -->
             <!-- :disabled="record.isDisabled === 1" -->
             <!-- :defaultChecked="text === 0 ? true : false" -->
+            <!-- :defaultChecked="record.isDisabled === 0 ? true : false" -->
             <a-switch
-              :defaultChecked="record.isDisabled === 0 ? true : false"
+              :checked="record.isDisabled === 0 ? true : false"
               checkedChildren="启用"
               unCheckedChildren="禁用"
               @change="changeDisabled($event, record)"
@@ -340,15 +341,15 @@ export default {
   methods: {
     changeDisabled(text, record) {
       let arr = text === true ? 0 : 1
-      record.isDisabled = arr
-      editContract(record)
+      // record.isDisabled = arr
+      editContract({ id: record.id, isDisabled: arr })
         .then((res) => {
           if (res.code === 200) {
             this.$message.success('修改成功')
             this.getList()
           } else {
             this.$message.error(res.msg)
-            this.$set(record, 'isDisabled', isDisabled === 0 ? 1 : 0)
+            // this.$set(record, 'isDisabled', (isDisabled = arr))
           }
         })
         .catch(function (err) {
