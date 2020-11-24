@@ -516,12 +516,6 @@ export default {
       cprogressDate: moment(), // 常规--进度款-付款日期
       cpaymentForGoodsDate: moment(), // 常规--提货款-付款日期
       cAcceptDate: moment(), // 常规--验收款-付款日期
-      // 非常规
-      // fqualityDate: moment(), // 非常规-质保金-付款日期
-      // fadvanceDate: moment(), // 非常规--预付款-付款日期
-      // fprogressDate: moment(), // 非常规--进度款-付款日期
-      // fpaymentForGoodsDate: moment(), // 非常规--提货款-付款日期
-      // fAcceptDate: moment(), // 非常规--验收款-付款日期
 
       // 常规--折算金额
       cQualityAmount: (queryOneData.totalAmount * 3) / 100, // 常规--质保金折算金额
@@ -530,25 +524,12 @@ export default {
       cpaymentForGoodsAmount: 0, // 常规--提货款折算金额
       cAcceptAmount: 0, // 常规--验收款
 
-      // 非常规--折算金额
-      // fqualityAmount: (queryOneData.unConventionalMoney * 3) / 100, // 常规--质保金折算金额
-      // fadvanceAmount: (queryOneData.unConventionalMoney * 30) / 100, // 常规--预付款折算金额
-      // fprogressAmount: 0, // 常规--进度款折算金额
-      // fpaymentForGoodsAmount: 0, // 常规--提货款折算金额
-      // fAcceptAmount: 0, // 常规--验收款
-
       // 常规---款项百分比
       cqualitypercentage: 3, // 常规--质保金百分比
       cadvancePercentage: 30, // 常规--预付款百分比
       cprogressPayment: 0, // 常规--进度款百分比
       cpaymentForGoods: 0, // 常规--提货款百分比
       cAcceptPayment: 0, // 常规--验收款百分比
-      // 非常规---款项百分比
-      // fqualitypercentage: 3, // 非常规--质保金百分比
-      // fadvancePercentage: 30, // 非常规--预付款百分比
-      // fprogressPayment: 0, // 非常规--进度款百分比
-      // fpaymentForGoods: 0, // 非常规--提货款百分比
-      // fAcceptPayment: 0, // 非常规--验收款百分比
 
       fullAmount: this.queryonedata.fullAmount, // 是否全款
       product: {}, // 产品类型常规非常规数组
@@ -649,19 +630,18 @@ export default {
               qualityLayer: res.data.qualityLayer ? res.data.qualityLayer : 3,
               allPaymentDate: res.data.settlement ? moment(res.data.settlement.paymentDate) : moment(), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
               routineSettlement: res.data.routineSettlement || [],
-              unconventionalSettlement: res.data.unconventionalSettlement || [],
               increaseTotalPayment: res.data.increaseTotalPayment, // 增加总货款金额
               qualityLimit: res.data.qualityLimit || 1,
             })
 
             let routineSettlement = res.data.routineSettlement || []
-            let unconventionalSettlement = res.data.unconventionalSettlement || []
+            // let unconventionalSettlement = res.data.unconventionalSettlement || []
             if (routineSettlement.length > 0) {
               that.fillConventionalData(routineSettlement)
             }
-            if (unconventionalSettlement.length > 0) {
-              that.fillConventionalData(unconventionalSettlement)
-            }
+            // if (unconventionalSettlement.length > 0) {
+            //   that.fillConventionalData(unconventionalSettlement)
+            // }
 
             that.contractId = this.queryonedata.id
             that.id = this.queryonedata.id
@@ -713,11 +693,10 @@ export default {
       let obj = {}
       let _percentage = 0
       items.map((item) => {
-        // let suffix = item.productType === 0 ? 'convention' : 'unConvention'
         _percentage += parseFloat(item.percentage)
         obj[`convention.${item.moneyType}.number`] = item.percentage
         obj[`convention.${item.moneyType}.selected`] = parseFloat(item.percentage) > 0 ? true : false
-        obj[`convention.${item.moneyType}.data`] = moment(item.paymentDate)
+        obj[`convention.${item.moneyType}.date`] = moment(item.paymentDate)
         obj[`convention.${item.moneyType}.remarks`] = item.remarks
       })
       this.form.setFieldsValue({ ...obj })
@@ -1000,13 +979,6 @@ export default {
         return accumulator + (item.selected ? item.number : 0)
       }, 0)
       percentagesStatus = calcConventionRoate === 100
-      // }
-      // if (isUnNormal) {
-      //   let calcUnConventionRoate = unConvention.reduce(function (accumulator, item) {
-      //     return accumulator + (item.selected ? item.number : 0)
-      //   }, 0)
-      //   percentagesStatus = calcUnConventionRoate === 100
-      // }
       return percentagesStatus
     },
     autoFill() {
