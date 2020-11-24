@@ -395,14 +395,9 @@ export default {
   },
   methods: {
     moment,
-    // setPromiseTime(date, dateString) {
-    //   this.promiseTimes = date
-    //   if (this.delayedTimes !== 0) {
-    //     this.delayedDay = this.delayedTimes.diff(date, 'days')
-    //   }
-    // },
     onselect(value) {
       let arr = this.routineSettlement.find((item) => item.moneyType === value)
+      this.promiseTimes = moment(arr.paymentDate)
       this.form.setFieldsValue({ promiseTime: arr.paymentDate })
     },
     setDelayedTime(date, dateString) {
