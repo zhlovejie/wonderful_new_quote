@@ -1,63 +1,62 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :width="1000"
-    :visible="visible"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    :maskClosable="false"
-  >
-    <a-row>
-      <a-col :span="24">
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="pagination"
-          :loading="loading"
-          @change="handleTableChange"
-        >
-          <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
+  <div class="content-wrap">
+    <div class="top-right clearfix">
+      <a-button class="fl-r" type="primary" @click="goBack" icon="backward">返回</a-button>
+    </div>
+    <div>
+      <a-row>
+        <a-col :span="24">
+          <a-table
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="pagination"
+            :loading="loading"
+            @change="handleTableChange"
+          >
+            <div slot="order" slot-scope="text, record, index">
+              <span>{{ index + 1 }}</span>
+            </div>
+          </a-table>
+        </a-col>
+        <a-col :span="24">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">{{ record.customerName }}销售额分析表</h3>
+            <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale1">
+              <v-tooltip />
+              <v-axis />
+              <v-line position="date*销售额(万元)" />
+              <v-point position="date*销售额(万元)" shape="circle" />
+            </v-chart>
           </div>
-        </a-table>
-      </a-col>
-      <a-col :span="24">
-        <div class="chart-wrapper">
-          <h3 class="chart-title">{{ record.customerName }}销售额分析表</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale1">
-            <v-tooltip />
-            <v-axis />
-            <v-line position="date*销售额(万元)" />
-            <v-point position="date*销售额(万元)" shape="circle" />
-          </v-chart>
-        </div>
-      </a-col>
-      <a-col :span="12">
-        <div class="chart-wrapper">
-          <h3 class="chart-title">销售类别排行</h3>
-          <v-chart :forceFit="true" :height="chartHeight1" :data="chartData" :scale="scale">
-            <v-tooltip :showTitle="false" dataKey="item*percent" />
-            <v-axis />
-            <v-legend dataKey="item" />
-            <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
-            <v-coord type="theta" />
-          </v-chart>
-        </div>
-      </a-col>
-      <a-col :span="12">
-        <div class="chart-wrapper">
-          <h3 class="chart-title">产品占比</h3>
-          <v-chart :forceFit="true" :height="chartHeight1" :data="chartData2" :scale="scale">
-            <v-tooltip :showTitle="false" dataKey="item*percent" />
-            <v-axis />
-            <v-legend dataKey="item" />
-            <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
-            <v-coord type="theta" />
-          </v-chart>
-        </div>
-      </a-col>
-    </a-row>
-  </a-modal>
+        </a-col>
+        <a-col :span="12">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">销售类别排行</h3>
+            <v-chart :forceFit="true" :height="chartHeight1" :data="chartData" :scale="scale">
+              <v-tooltip :showTitle="false" dataKey="item*percent" />
+              <v-axis />
+              <v-legend dataKey="item" />
+              <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
+              <v-coord type="theta" />
+            </v-chart>
+          </div>
+        </a-col>
+        <a-col :span="12">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">产品占比</h3>
+            <v-chart :forceFit="true" :height="chartHeight1" :data="chartData2" :scale="scale">
+              <v-tooltip :showTitle="false" dataKey="item*percent" />
+              <v-axis />
+              <v-legend dataKey="item" />
+              <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
+              <v-coord type="theta" />
+            </v-chart>
+          </div>
+        </a-col>
+      </a-row>
+    </div>
+  </div>
+  <!-- </a-modal> -->
 </template>
 
 <script>
@@ -76,12 +75,12 @@ const columns = [
     align: 'center',
   },
   {
-    title: '订单数',
+    title: '订单数(个)',
     dataIndex: 'orders',
     align: 'center',
   },
   {
-    title: '销售额',
+    title: '销售额(万元)',
     dataIndex: 'saleQuota',
     align: 'center',
   },
@@ -189,21 +188,31 @@ export default {
       return dv.rows
     },
   },
-  methods: {
-    query(record, searchParam) {
-      this.record = record
-      this.searchParam = searchParam
-      this.visible = true
+  created() {
+    if (this.$route.params.record.customerId !== undefined) {
+      this.record = this.$route.params.record
+      this.searchParam = this.$route.params.searchParam
       this.searchAction()
-      let _searchParam = Object.assign({}, { customerId: this.record.customerId, type: 1 }, { ...searchParam })
+      let _searchParam = Object.assign({}, { customerId: this.record.customerId, type: 1 }, { ...this.searchParam })
       listCustomerCategory(_searchParam).then((res) => {
         this.dataSource1 = res.data
       })
       listCustomerProduct(_searchParam).then((res) => {
         this.dataSource2 = res.data
       })
+    } else {
+      this.goBack()
+    }
+  },
+  methods: {
+    // query(record, searchParam) {
+    //   // this.record = record
+    //   // this.searchParam = searchParam
+    //   // this.visible = true
+    // },
+    goBack() {
+      this.$router.push({ name: 'CustomerSalesAnalysis' })
     },
-
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign(

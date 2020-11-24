@@ -3,12 +3,22 @@
     <a-row>
       <a-col :span="24">
         <a-form layout="inline">
-          <a-form-item>
-            <a-select style="width: 200px" :allowClear="true" v-model="saleUserId" placeholder="请选择销售人员">
-              <a-select-option v-for="sale in sales" :key="sale.index" :value="sale.userId">{{
-                sale.salesmanName
+          <a-form-item v-if="allSalesman.length > 0">
+            <a-select
+              style="width: 200px; margin-bottom: 20px"
+              v-model.trim="saleUserId"
+              placeholder="请选择所属销售"
+              default-value=""
+            >
+              <a-select-option v-for="salesMan in allSalesman" :key="salesMan.index" :value="salesMan.userId">{{
+                salesMan.salesmanName
               }}</a-select-option>
             </a-select>
+            <!-- <a-select style="width: 200px" :allowClear="true" v-model="saleUserId" placeholder="请选择销售人员">
+              <a-select-option v-for="sale in sales" :key="sale.index" :value="sale.use rId">{{
+                sale.salesmanName
+              }}</a-select-option> -->
+            <!-- </a-select> -->
           </a-form-item>
           <a-form-item>
             <a-input v-model="trainName" placeholder="客户名称" style="width: 200px" :allowClear="true" />
@@ -39,6 +49,8 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
+          size="small"
+          bordered
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -78,7 +90,7 @@
         </a-table>
       </a-col>
       <a-col :span="24">
-        <div class="chart-wrapper">
+        <div class="chart-wrapper" style="height: 600px">
           <h3 class="chart-title">活跃度指数表</h3>
           <v-chart :forceFit="true" :height="chartHeight" :data="chartData1" :scale="scale1">
             <v-tooltip />
@@ -89,7 +101,7 @@
       </a-col>
 
       <a-col :span="24">
-        <div class="chart-wrapper">
+        <div class="chart-wrapper" style="height: 600px">
           <h3 class="chart-title">销售额排行</h3>
           <!-- <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale">
             <v-tooltip />
@@ -112,7 +124,8 @@
 
 <script>
 import { listExponent, downCustomerExponent } from '@/api/saleReport'
-import { getAllContractSalesman } from '@api/order'
+import { salesJurisdiction } from '@/api/customer'
+// import { getAllContractSalesman } from '@api/order'
 const DataSet = require('@antv/data-set')
 import moment from 'moment'
 const columns = [
@@ -133,7 +146,7 @@ const columns = [
     align: 'center',
   },
   {
-    title: '订单数',
+    title: '订单数(个)',
     dataIndex: 'orders',
     align: 'center',
     scopedSlots: { customRender: 'orders' },
@@ -170,6 +183,8 @@ export default {
       yearPickShow: false, //年选择器的显示隐藏
       trainName: undefined,
       saleUserId: undefined,
+      salesJurisdiction: {}, // 当前用户销售权限
+      allSalesman: [], // 所有销售人员
       pagination: {
         current: 1,
         _prePageSize: 10,
@@ -179,13 +194,12 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading: false,
-      chartHeight: 600,
+      chartHeight: 500,
       padding: [20, 20, 50, 140],
       style: { stroke: '#fff', lineWidth: 1 },
       scale1: [
         {
           dataKey: '活跃度指数',
-          tickInterval: 20,
         },
       ],
       scale: [
@@ -202,9 +216,22 @@ export default {
       handler: function (to, from) {
         if (to.name === 'CustomerActivityAnalysis') {
           this.init()
-          getAllContractSalesman().then((res) => {
-            this.sales = res.data
-          })
+          salesJurisdiction()
+            .then((res) => {
+              // 当前用户的销售权限
+              let salesJurisdiction = res.data
+              this.salesJurisdiction = salesJurisdiction
+              if (salesJurisdiction.top) {
+                // 最高权限才可以查看所有销售人员的客户
+                this.allSalesman = salesJurisdiction.allSalesman
+              }
+              if (salesJurisdiction.leader) {
+                this.allSalesman = salesJurisdiction.subSalesman
+              }
+            })
+            .catch(function (err) {
+              console.log(err)
+            })
         }
       },
       immediate: true,

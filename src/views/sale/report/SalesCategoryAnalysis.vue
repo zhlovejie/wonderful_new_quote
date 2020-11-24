@@ -14,6 +14,9 @@
               <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 3 }" @click="simpleSearch(3)"
                 >本月</a-button
               >
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType1 === 4 }" @click="simpleSearch(4)"
+                >全部</a-button
+              >
             </a-button-group>
           </a-form-item>
           <a-form-item>
@@ -27,7 +30,14 @@
           </a-form-item>
         </a-form>
 
-        <a-table :columns="columns" :dataSource="tableData" :pagination="false" :loading="loading">
+        <a-table
+          :columns="columns"
+          :dataSource="tableData"
+          :pagination="false"
+          :loading="loading"
+          size="small"
+          bordered
+        >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -36,12 +46,9 @@
           </div>
         </a-table>
       </a-col>
-      <!-- <p>
-        {{ chartData }}
-      </p> -->
       <a-col :span="8" v-for="key in Object.keys(chartData)" :key="key">
-        <div class="chart-wrapper">
-          <h3 class="chart-title">{{ key === 'numP' ? '总计占比(%)' : key }}</h3>
+        <div class="chart-wrapper" style="height: 500px">
+          <h3 class="chart-title">{{ key === 'numP' ? '总计占比' : key }}</h3>
           <v-chart :forceFit="true" :height="chartHeight" :data="chartData[key]" :scale="scale">
             <v-tooltip :showTitle="false" dataKey="item*percent" />
             <v-axis />
@@ -92,6 +99,7 @@ export default {
       ],
 
       stageTimeType: 1,
+      stageTimeType1: undefined,
     }
   },
   watch: {
@@ -133,7 +141,7 @@ export default {
           .forEach((v) => {
             if (v !== 'numP' && v !== 'key' && v !== 'text') {
               _columns.push({
-                title: v,
+                title: v + '占比(%)',
                 dataIndex: v,
                 align: 'center',
                 scopedSlots: { customRender: v },
@@ -152,7 +160,9 @@ export default {
         return {}
       }
       let baseKey = 'text'
-      let otherKeys = Object.keys(dataSource[0]).filter((k) => ![baseKey, 'key'].includes(k))
+      let otherKeys = Object.keys(dataSource[0])
+        .filter((k) => ![baseKey, 'key'].includes(k))
+        .sort()
       let map = {}
       otherKeys.map((k) => {
         map[k] = []
@@ -214,8 +224,15 @@ export default {
     },
 
     simpleSearch(type) {
-      this.stageTimeType = this.stageTimeType === type ? undefined : type
-      this.searchAction()
+      if (type == 4) {
+        this.stageTimeType1 = 4
+        this.stageTimeType = undefined
+        this.searchAction()
+      } else {
+        this.stageTimeType1 = undefined
+        this.stageTimeType = this.stageTimeType === type ? undefined : type
+        this.searchAction()
+      }
     },
     actionHandler(type) {
       if (type === 'search') {

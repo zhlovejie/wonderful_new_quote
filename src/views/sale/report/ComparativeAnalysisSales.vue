@@ -43,7 +43,14 @@
           </a-form-item>
         </a-form>
 
-        <a-table :columns="columns" :dataSource="dataSource" :pagination="false" :loading="loading">
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="false"
+          :loading="loading"
+          size="small"
+          bordered
+        >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -52,7 +59,14 @@
       <a-col :span="24">
         <div class="chart-wrapper1">
           <h3 class="chart-title1">销售额详情</h3>
-          <a-table :columns="baseColumns" :dataSource="dataSource1" :pagination="false" :loading="loading">
+          <a-table
+            :columns="baseColumns"
+            :dataSource="dataSource1"
+            :pagination="false"
+            :loading="loading"
+            size="small"
+            bordered
+          >
             <div slot="order" slot-scope="text, record, index">
               <span>{{ index + 1 }}</span>
             </div>
@@ -61,7 +75,7 @@
       </a-col>
       <a-col :span="24">
         <div class="chart-wrapper">
-          <h3 class="chart-title">发货量分析</h3>
+          <h3 class="chart-title">销售额对比</h3>
           <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
             <v-tooltip />
 
@@ -83,18 +97,21 @@ const columns = [
   {
     title: '序号',
     key: 'order',
-    width: '70px',
+    align: 'center',
+    width: '20%',
     scopedSlots: { customRender: 'order' },
   },
   {
     title: '年份',
+    align: 'center',
+    width: '40%',
     dataIndex: 'year',
-    width: '120px',
   },
   {
+    align: 'center',
+    width: '40%',
     title: '总计销售额(万元)',
     dataIndex: 'sumSaleQuota',
-    width: '70px',
   },
 ]
 const label = {
@@ -134,17 +151,18 @@ export default {
         {
           title: '序号',
           key: 'order',
-          width: '70px',
+          align: 'center',
           scopedSlots: { customRender: 'order' },
         },
         {
           title: '月份',
+          align: 'center',
           dataIndex: 'month',
-          width: '120px',
         },
-        {
-          key: 'keys',
-        },
+        // {
+
+        //   key: 'keys',
+        // },
       ],
       dataSource1: [],
 
@@ -196,15 +214,15 @@ export default {
       })
 
       let __columns = [...this.columns1]
-      let idx = __columns.findIndex((item) => item.key === 'keys')
-      if (idx >= 0) {
-        __columns.splice(idx, 0, ..._columns)
-      }
+      // let idx = __columns.findIndex((item) => item.key === 'keys')
+      // if (idx >= 0) {
+      __columns.splice(__columns.length, 0, ..._columns)
+      // }
       return __columns
     },
     chartData() {
       //参考 https://viserjs.github.io/demo.html#/viser/bar/grouped-column
-      let fields = [...new Set(this.dataSource1.map((item) => item.month))]
+      let fields = [...new Set(this.dataSource1.map((item) => item.month + '月份'))]
       let _formatChartData = (records) => {
         if (!Array.isArray(records)) {
           return []
@@ -220,18 +238,18 @@ export default {
           keys.map((k) => {
             let target = result.find((item) => item.name === k)
             if (target) {
-              target[`${item.month}`] = +item[k]
+              target[`${item.month}月份`] = +item[k]
             } else {
               let obj = {}
               obj.name = k
-              obj[`${item.month}`] = +item[k]
+              obj[`${item.month}月份`] = +item[k]
               result.push(obj)
             }
           })
         })
         if (this.dataSource.length > 1) {
-          result[0].name = this.dataSource[1].year + '销售额'
-          result[1].name = this.dataSource[0].year + '销售额'
+          result[0].name = this.dataSource[1].year + '销售额(万元)'
+          result[1].name = this.dataSource[0].year + '销售额(万元)'
         }
 
         return result

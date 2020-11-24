@@ -3,12 +3,17 @@
     <a-row>
       <a-col :span="24">
         <a-form layout="inline">
-          <a-form-item>
-            <a-select style="width: 200px" :allowClear="true" v-model="saleUserId" placeholder="请选择销售人员">
-              <a-select-option v-for="sale in sales" :key="sale.index" :value="sale.userId">{{
-                sale.salesmanName
+          <a-form-item v-if="allSalesman.length > 0">
+            <a-select style="width: 200px" v-model.trim="saleUserId" placeholder="请选择所属销售" default-value="">
+              <a-select-option v-for="salesMan in allSalesman" :key="salesMan.index" :value="salesMan.userId">{{
+                salesMan.salesmanName
               }}</a-select-option>
             </a-select>
+            <!-- <a-select style="width: 200px" :allowClear="true" v-model="saleUserId" placeholder="请选择销售人员">
+              <a-select-option v-for="sale in sales" :key="sale.index" :value="sale.use rId">{{
+                sale.salesmanName
+              }}</a-select-option> -->
+            <!-- </a-select> -->
           </a-form-item>
           <a-form-item>
             <a-input v-model="trainName" placeholder="客户名称" style="width: 200px" :allowClear="true" />
@@ -48,21 +53,22 @@
         </a-table>
       </a-col>
 
-      <Module ref="module" />
+      <!-- <Module ref="module" /> -->
     </a-row>
   </a-card>
 </template>
 
 <script>
 import { SalesAnalysis, downCustomerSalesAnalysis } from '@/api/saleReport'
-import { getAllContractSalesman } from '@api/order'
-import Module from './module/CustomerSalesAnalysisFrom'
+import { salesJurisdiction } from '@/api/customer'
+// import { getAllContractSalesman } from '@api/order'
+// import Module from './module/CustomerSalesAnalysisFrom'
 import moment from 'moment'
 const columns = [
   {
     title: '序号',
     key: 'order',
-    width: '70px',
+    align: 'center',
     scopedSlots: { customRender: 'order' },
   },
   {
@@ -72,12 +78,12 @@ const columns = [
     align: 'center',
   },
   {
-    title: '订单数',
+    title: '订单数(个)',
     dataIndex: 'orders',
     align: 'center',
   },
   {
-    title: '销售额',
+    title: '销售额(万元)',
     dataIndex: 'saleQuota',
     align: 'center',
   },
@@ -85,11 +91,12 @@ const columns = [
 export default {
   name: 'PersonnelPerformanceReport',
   components: {
-    Module,
+    // Module,
   },
   data() {
     return {
       pageTitle: '客户销售额分析表',
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       columns: columns,
       sDate: [undefined, undefined],
       mode2: ['month', 'month'],
@@ -97,6 +104,8 @@ export default {
       sales: [],
       trainName: undefined,
       saleUserId: undefined,
+      salesJurisdiction: {}, // 当前用户销售权限
+      allSalesman: [], // 所有销售人员
       pagination: {
         current: 1,
         _prePageSize: 10,
@@ -123,9 +132,26 @@ export default {
       handler: function (to, from) {
         if (to.name === 'CustomerSalesAnalysis') {
           this.init()
-          getAllContractSalesman().then((res) => {
-            this.sales = res.data
-          })
+          salesJurisdiction()
+            .then((res) => {
+              // 当前用户的销售权限
+              let salesJurisdiction = res.data
+              this.salesJurisdiction = salesJurisdiction
+              if (salesJurisdiction.top) {
+                // 最高权限才可以查看所有销售人员的客户
+                this.allSalesman = salesJurisdiction.allSalesman
+              }
+              if (salesJurisdiction.leader) {
+                this.allSalesman = salesJurisdiction.subSalesman
+              }
+            })
+            .catch(function (err) {
+              console.log(err)
+            })
+
+          // getAllContractSalesman().then((res) => {
+          //   this.sales = res.data
+          // })
         }
       },
       immediate: true,
@@ -173,7 +199,12 @@ export default {
     },
     //打开详情
     approvaldetails(record) {
-      this.$refs.module.query(record, this.searchParam)
+      this.$router.push({
+        name: 'CustomerSalesAnalysisFrom',
+        params: { record, searchParam: this.searchParam },
+      })
+      // CustomerSalesAnalysisFrom
+      // this.$refs.module.query(record, this.searchParam)
     },
     searchAction(opt) {
       let that = this

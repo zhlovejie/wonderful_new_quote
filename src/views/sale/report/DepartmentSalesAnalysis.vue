@@ -32,6 +32,8 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
+          size="small"
+          bordered
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -183,12 +185,12 @@ export default {
         let result = []
         records.map((item) => {
           keys.map((k) => {
-            let target = result.find((item) => item.name === k)
+            let target = result.find((item) => item.name === k + '(万元)')
             if (target) {
               target[`${item.date}`] = +item[k]
             } else {
               let obj = {}
-              obj.name = k
+              obj.name = k + '(万元)'
               obj[`${item.date}`] = +item[k]
               result.push(obj)
             }

@@ -814,6 +814,15 @@ export default {
           }
         },
         {
+          path: '/sale/report/module/',
+          name: 'CustomerSalesAnalysisFrom',
+          component: () => import('@/views/sale/report/module/CustomerSalesAnalysisFrom'),
+          meta: {
+            title: '销售额分析汇总',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/sale/salesReport/CustomerActivityAnalysis',
           name: 'CustomerActivityAnalysis',
           component: () => import('@/views/sale/report/CustomerActivityAnalysis'),
@@ -915,7 +924,7 @@ export default {
             title: '利润率分析汇总',
             permission: ['permission']
           }
-        },{
+        }, {
           path: '/sale/salesReport/ProfitMarginSummaryChart',
           name: 'ProfitMarginSummaryChart',
           component: () => import('@/views/sale/report/ProfitMarginSummaryChart'),

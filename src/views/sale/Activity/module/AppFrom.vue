@@ -19,23 +19,39 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>销售额（万元）</td>
+            <td>
+              <template v-if="this.recordtype.type === 1"> 销售额（万元） </template>
+              <template v-if="this.recordtype.type === 1"> 销售订单 </template>
+              <template v-else> 平均销售额 </template>
+            </td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
                   :precision="2"
                   :disabled="isSee"
                   style="width: 190px"
-                  placeholder="开始销售额"
-                  v-decorator="['startQuota', { rules: [{ required: true, message: '请输入销售额起始值' }] }]"
+                  :placeholder="
+                    this.recordtype.type === 1
+                      ? '开始销售额'
+                      : this.recordtype.type === 2
+                      ? '开始销售订单'
+                      : '开始平均销售额度'
+                  "
+                  v-decorator="['startQuota', { rules: [{ required: true, message: '请输入起始值' }] }]"
                 />
                 <span> 至 </span>
                 <a-input-number
                   :precision="2"
                   :disabled="isSee"
                   style="width: 190px"
-                  placeholder="结束销售额"
-                  v-decorator="['endQuota', { rules: [{ required: true, message: '请输入销售额结束值' }] }]"
+                  :placeholder="
+                    this.recordtype.type === 1
+                      ? '结束销售额'
+                      : this.recordtype.type === 2
+                      ? '结束销售订单'
+                      : '结束平均销售额度'
+                  "
+                  v-decorator="['endQuota', { rules: [{ required: true, message: '请输入结束值' }] }]"
                 />
               </a-form-item>
             </td>

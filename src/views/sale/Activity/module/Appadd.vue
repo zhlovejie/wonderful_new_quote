@@ -19,7 +19,7 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>销售额指数占比(%)：</td>
+            <td>销售额指数占比(%)</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
