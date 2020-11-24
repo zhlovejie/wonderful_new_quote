@@ -6,7 +6,6 @@
         <a-form layout="inline">
           <a-form-item>
             <a-button-group>
-              
               <a-button type="primary" :class="{ currentDayWeekMonth: rangeType === 1 }" @click="simpleSearch(1)"
                 >日</a-button
               >
@@ -22,7 +21,6 @@
               <a-button type="primary" :class="{ currentDayWeekMonth: rangeType === 0 }" @click="simpleSearch(0)"
                 >全部</a-button
               >
-              
             </a-button-group>
           </a-form-item>
           <a-form-item>
@@ -35,21 +33,21 @@
             <a-button class="a-button" type="primary" icon="download" @click="actionHandler('download')">下载</a-button>
           </a-form-item>
         </a-form>
-        <h3>平均利润率：{{avgRate}}%</h3>
+        <h3>平均利润率：{{ avgRate }}%</h3>
         <a-table
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
           :loading="loading"
-          @change="handleTableChange" 
-          size="middle" 
+          @change="handleTableChange"
+          size="middle"
+          bordered
         >
           <div slot="rateProfit" slot-scope="text">
             <span>{{ text || 0 }}%</span>
           </div>
         </a-table>
       </a-col>
-      
     </a-row>
   </a-card>
 </template>
@@ -64,22 +62,27 @@ let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(1
 const columns = [
   {
     title: '日期',
+    align: 'center',
     dataIndex: 'staticsDate',
   },
   {
     title: '合同编号',
+    align: 'center',
     dataIndex: 'contractNum',
   },
   {
     title: '客户名称',
+    align: 'center',
     dataIndex: 'customerName',
   },
   {
     title: '销售人员',
+    align: 'center',
     dataIndex: 'salerName',
   },
   {
     title: '利润率(%)',
+    align: 'center',
     dataIndex: 'rateProfit',
     scopedSlots: { customRender: 'rateProfit' },
   },
@@ -96,7 +99,7 @@ export default {
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -106,7 +109,7 @@ export default {
       rangeType: 2,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       emptyImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      avgRate:0
+      avgRate: 0,
     }
   },
   watch: {
@@ -132,12 +135,12 @@ export default {
         endDate: endTime,
         searchType: startTime && endTime ? undefined : this.rangeType,
       }
-    }
+    },
   },
   methods: {
     moment: moment,
     init() {
-      this.searchAction({current:1})
+      this.searchAction({ current: 1 })
     },
     searchAction(opt) {
       let that = this
@@ -172,7 +175,6 @@ export default {
           pagination.total = data.total || 0
           pagination.current = data.current || 1
           that.pagination = pagination
-
         })
         .catch((err) => (that.loading = false))
     },
@@ -180,21 +182,22 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    
+
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction({current:1})
+      this.searchAction({ current: 1 })
     },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction({current:1})
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }
@@ -271,10 +274,10 @@ export default {
   font-weight: bold;
 }
 
-._sales_top_wrapper >>> .ant-table-header{
+._sales_top_wrapper >>> .ant-table-header {
   overflow-y: auto !important;
 }
-._sales_top_wrapper >>> .ant-table-body{
+._sales_top_wrapper >>> .ant-table-body {
   overflow-y: auto !important;
 }
 </style>

@@ -43,6 +43,7 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
+          bordered
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>

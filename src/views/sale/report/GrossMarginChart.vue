@@ -24,15 +24,16 @@
             <a-button class="a-button" type="primary" icon="download" @click="actionHandler('download')">下载</a-button>
           </a-form-item>
         </a-form>
-        <h3>平均毛利率：{{avgRate}}%</h3>
+        <h3>平均毛利率：{{ avgRate }}%</h3>
         <a-table
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
           :loading="loading"
-          @change="handleTableChange" 
+          @change="handleTableChange"
           :scroll="{ y: 500 }"
-          size="middle" 
+          size="small"
+          bordered
         >
           <div slot="avgRate" slot-scope="text">
             <span>{{ text || 0 }}%</span>
@@ -69,10 +70,12 @@ let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(1
 const columns = [
   {
     title: '日期',
+    align: 'center',
     dataIndex: 'staticsDate',
   },
   {
     title: '毛利率(%)',
+    align: 'center',
     dataIndex: 'avgRate',
     scopedSlots: { customRender: 'avgRate' },
   },
@@ -89,7 +92,7 @@ export default {
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -97,11 +100,12 @@ export default {
       loading: false,
       rangeType: 2,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      avgRate:0,
+      avgRate: 0,
 
       scale: [
         {
           dataKey: 'value',
+
           alias: '毛利率',
         },
         {
@@ -151,7 +155,6 @@ export default {
   methods: {
     moment: moment,
     init() {
-      
       this.searchAction()
     },
     searchAction(opt) {
@@ -187,7 +190,6 @@ export default {
           pagination.total = data.total || 0
           pagination.current = data.current || 1
           that.pagination = pagination
-
         })
         .catch((err) => (that.loading = false))
     },
@@ -195,21 +197,22 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    
+
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction({current:1})
+      this.searchAction({ current: 1 })
     },
     actionHandler(type) {
       if (type === 'search') {
-        this.searchAction({current:1})
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }
@@ -274,7 +277,7 @@ export default {
   padding: 50px 0 0 0;
 }
 .chart-wrapper .chart-title {
-  text-align: center;
+  text-align: left;
   font-size: 22px;
 }
 .currentDayWeekMonth {
@@ -286,10 +289,10 @@ export default {
   font-weight: bold;
 }
 
-._sales_top_wrapper >>> .ant-table-header{
+._sales_top_wrapper >>> .ant-table-header {
   overflow-y: auto !important;
 }
-._sales_top_wrapper >>> .ant-table-body{
+._sales_top_wrapper >>> .ant-table-body {
   overflow-y: auto !important;
 }
 </style>

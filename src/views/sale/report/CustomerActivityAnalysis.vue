@@ -390,7 +390,7 @@ export default {
   padding: 50px 0 0 0;
 }
 .chart-wrapper .chart-title {
-  text-align: center;
+  text-align: left;
   font-size: 22px;
 }
 .currentDayWeekMonth {

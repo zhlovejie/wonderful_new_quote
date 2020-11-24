@@ -5,17 +5,14 @@
       <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <a-form layout="inline">
           <a-form-item>
-            <a-select 
-              placeholder="选择销售经理"
-              v-model="saleUserId"
-              :allowClear="true" 
-              style="width:200px;"
-            >
-              <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId" >{{ item.salesmanName }}</a-select-option>
+            <a-select placeholder="选择销售经理" v-model="saleUserId" :allowClear="true" style="width: 200px">
+              <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+                item.salesmanName
+              }}</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item>
-            <a-input placeholder="客户名称" v-model="customerName" allowClear style="width:200px;" />
+            <a-input placeholder="客户名称" v-model="customerName" allowClear style="width: 200px" />
           </a-form-item>
           <a-form-item>
             <a-range-picker v-model="sDate" :allowClear="true" />
@@ -28,14 +25,15 @@
           </a-form-item>
         </a-form>
       </a-col>
-      
+
       <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <a-table
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
           :loading="loading"
-          @change="handleTableChange" 
+          @change="handleTableChange"
+          bordered
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -43,11 +41,10 @@
           <div slot="amount" slot-scope="text">
             <span>{{ text | moneyFormatNumber }}</span>
           </div>
-          
+
           <div slot="action" slot-scope="text, record">
-            <a href="javascript:void(0);" @click="actionHandler('view',record)">查看</a>
+            <a href="javascript:void(0);" @click="actionHandler('view', record)">查看</a>
           </div>
-          
         </a-table>
       </a-col>
     </a-row>
@@ -57,7 +54,7 @@
 
 <script>
 import { pageListReportRateMoneyCustomer, exportExcelDatas } from '@/api/saleReport'
-import {getListSaleContractUser} from '@/api/contractListManagement'
+import { getListSaleContractUser } from '@/api/contractListManagement'
 import moment from 'moment'
 import ContractViewForm from './AdvancePaymentChartModel/ContractView'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
@@ -68,51 +65,53 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    align: 'center',
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '日期',
+    align: 'center',
     dataIndex: 'staticsDate',
-    width:150
   },
   {
     title: '客户名称',
-    dataIndex: 'customerName'
+    align: 'center',
+    dataIndex: 'customerName',
   },
   {
     title: '销售经理',
+    align: 'center',
     dataIndex: 'salerUserName',
-    width:150
   },
   {
     title: '金额(元)',
+    align: 'center',
     dataIndex: 'amount',
     scopedSlots: { customRender: 'amount' },
-    width:150
   },
   {
     title: '详情',
+    align: 'center',
     scopedSlots: { customRender: 'action' },
-    width:150
   },
 ]
 
 export default {
   name: 'AdvancePaymentChart',
-  components:{ContractViewForm},
+  components: { ContractViewForm },
   data() {
     return {
       pageTitle: '客户预收款单',
       columns: columns,
-      sDate: [moment(),moment()],
-      saleUser:[],
-      saleUserId:undefined,
-      customerName:undefined,
+      sDate: [moment(), moment()],
+      saleUser: [],
+      saleUserId: undefined,
+      customerName: undefined,
       dataSource: [],
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -142,17 +141,17 @@ export default {
       return {
         searchBeginDate: startTime,
         searchEndDate: endTime,
-        customerName:this.customerName,
-        salerUserId:this.saleUserId
+        customerName: this.customerName,
+        salerUserId: this.saleUserId,
       }
-    }
+    },
   },
   methods: {
     moment: moment,
     init() {
       let that = this
       let queue = []
-      let task1 = getListSaleContractUser().then(res => (that.saleUser = res.data))
+      let task1 = getListSaleContractUser().then((res) => (that.saleUser = res.data))
       queue.push(task1)
       that.searchAction()
       return Promise.all(queue)
@@ -184,7 +183,6 @@ export default {
           pagination.total = data.total || 0
           pagination.current = data.current || 1
           that.pagination = pagination
-
         })
         .catch((err) => (that.loading = false))
     },
@@ -192,26 +190,27 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction({current:1})
+      this.searchAction({ current: 1 })
     },
-    actionHandler(type,record) {
+    actionHandler(type, record) {
       if (type === 'search') {
-        this.searchAction({current:1})
+        this.searchAction({ current: 1 })
         return
       } else if (type === 'download') {
         this.downloadAction()
         return
-      } else if(type === 'view'){
-        this.$refs.contractViewForm.query(type,record)
+      } else if (type === 'view') {
+        this.$refs.contractViewForm.query(type, record)
         return
       }
     },
@@ -265,7 +264,7 @@ export default {
         .catch((err) => {
           that.$message.info(`请求出错：${err.message}`)
         })
-    }
+    },
   },
 }
 </script>
@@ -287,10 +286,10 @@ export default {
   font-weight: bold;
 }
 
-._sales_top_wrapper >>> .ant-table-header{
+._sales_top_wrapper >>> .ant-table-header {
   overflow-y: auto !important;
 }
-._sales_top_wrapper >>> .ant-table-body{
+._sales_top_wrapper >>> .ant-table-body {
   overflow-y: auto !important;
 }
 </style>

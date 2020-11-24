@@ -1,11 +1,7 @@
 <template>
   <a-card :bordered="false" class="_sales_top_wrapper">
     <a-row>
-      <a-col :xl="10"
-          :lg="24"
-          :md="24"
-          :sm="24"
-          :xs="24">
+      <a-col :xl="10" :lg="24" :md="24" :sm="24" :xs="24">
         <a-form layout="inline">
           <a-form-item>
             <a-button-group>
@@ -43,6 +39,7 @@
           :pagination="false"
           :loading="loading"
           :customRow="customRowFunction"
+          bordered
         >
           <div slot="money" slot-scope="text, record">
             <span>{{ record.money | moneyFormatNumber }}</span>
@@ -52,11 +49,7 @@
           </div>
         </a-table>
       </a-col>
-      <a-col :xl="14"
-          :lg="24"
-          :md="24"
-          :sm="24"
-          :xs="24">
+      <a-col :xl="14" :lg="24" :md="24" :sm="24" :xs="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">人员销售额排行榜</h3>
           <template v-if="chartData && chartData.length > 0">
@@ -304,10 +297,10 @@ export default {
     customRowFunction(record, index) {
       let that = this
       return {
-        class:[
+        class: [
           record.isDepartment ? 'department-item' : '', //部门标记
-          record.forChart ? '' : 'department-sum-item'  //合计标记
-        ]
+          record.forChart ? '' : 'department-sum-item', //合计标记
+        ],
       }
     },
     // 分页
@@ -396,7 +389,7 @@ export default {
   opacity: 0.7;
 }
 
-._sales_top_wrapper >>> .department-sum-item{
+._sales_top_wrapper >>> .department-sum-item {
   color: red;
   font-weight: bold;
 }

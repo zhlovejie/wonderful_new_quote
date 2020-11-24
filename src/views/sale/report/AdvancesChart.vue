@@ -5,17 +5,17 @@
       <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <a-form layout="inline">
           <a-form-item>
-            <a-range-picker 
-              v-model="sDate" 
-              :allowClear="true" 
-              :disabledDate="disabledDate" 
+            <a-range-picker
+              v-model="sDate"
+              :allowClear="true"
+              :disabledDate="disabledDate"
               @change="pickerChange"
-              @calendarChange="pickerChange" 
+              @calendarChange="pickerChange"
               @openChange="pickerOpenChange"
             >
-            <template slot="renderExtraFooter">
-              <span style="color:red;">只能选择一月内的数据</span>
-            </template>
+              <template slot="renderExtraFooter">
+                <span style="color: red">只能选择一月内的数据</span>
+              </template>
             </a-range-picker>
           </a-form-item>
           <a-form-item>
@@ -26,13 +26,12 @@
           </a-form-item>
         </a-form>
       </a-col>
-      
-      
+
       <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">预收账款分析</h3>
           <template v-if="chartData && chartData.length > 0">
-            <v-chart  :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
+            <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
               <v-tooltip />
               <v-legend />
               <v-interval position="staticsDate*amount" />
@@ -50,8 +49,9 @@
           :dataSource="dataSource"
           :pagination="false"
           :loading="loading"
-          :scroll="{ y: 500 }" 
+          :scroll="{ y: 500 }"
           size="middle"
+          bordered
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -77,42 +77,44 @@ const columns = [
     align: 'center',
     title: '序号',
     key: 'order',
-    width: '70px',
-    scopedSlots: { customRender: 'order' }
+    align: 'center',
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '日期',
     dataIndex: 'staticsDate',
+    align: 'center',
   },
   {
     title: '金额(元)',
     dataIndex: 'amount',
+    align: 'center',
     scopedSlots: { customRender: 'amount' },
   },
 ]
 
 const label = {
   textStyle: {
-    fill: '#aaaaaa'
-  }
+    fill: '#aaaaaa',
+  },
 }
 
 const labelFormat = {
   textStyle: {
-    fill: '#aaaaaa'
+    fill: '#aaaaaa',
   },
   formatter: function formatter(text) {
-    return text.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
-  }
+    return text.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')
+  },
 }
 
 const tickLine = {
   alignWithLabel: false,
-  length: 0
+  length: 0,
 }
 
 const title = {
-  offset: 70
+  offset: 70,
 }
 
 export default {
@@ -122,12 +124,12 @@ export default {
       pageTitle: '预收账款分析',
       columns: columns,
       sDate: [moment().startOf('months'), moment()],
-      disabledDateRange:[],
+      disabledDateRange: [],
       dataSource: [],
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -135,21 +137,22 @@ export default {
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
 
-      
-      chartHeight:500,
-      padding:[20, 20, 50, 140],
+      chartHeight: 500,
+      padding: [20, 20, 50, 140],
       label,
       labelFormat,
       tickLine,
       title,
-      scale:[{
-        dataKey: 'amount',
-        alias: '金额(元)',
-      },
-      {
-        dataKey: 'staticsDate',
-        type: 'timeCat',
-      }],
+      scale: [
+        {
+          dataKey: 'amount',
+          alias: '金额(元)',
+        },
+        {
+          dataKey: 'staticsDate',
+          type: 'timeCat',
+        },
+      ],
       emptyImage: Empty.PRESENTED_IMAGE_SIMPLE,
     }
   },
@@ -177,11 +180,11 @@ export default {
         //searchType: startTime && endTime ? undefined : this.rangeType,
       }
     },
-    chartData(){
-      return this.dataSource.map(item =>{
+    chartData() {
+      return this.dataSource.map((item) => {
         return {
-          staticsDate:item.staticsDate,
-          amount:+item.amount || 0
+          staticsDate: item.staticsDate,
+          amount: +item.amount || 0,
         }
       })
     },
@@ -189,7 +192,6 @@ export default {
   methods: {
     moment: moment,
     init() {
-      
       this.searchAction()
     },
     searchAction(opt) {
@@ -219,7 +221,6 @@ export default {
           // pagination.total = data.total || 0
           // pagination.current = data.current || 1
           // that.pagination = pagination
-
         })
         .catch((err) => (that.loading = false))
     },
@@ -227,26 +228,27 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    
+
     simpleSearch(type) {
       this.rangeType = this.rangeType === type ? undefined : type
-      this.searchAction({current:1})
+      this.searchAction({ current: 1 })
     },
     actionHandler(type) {
       if (type === 'search') {
-        let {searchBeginDate,searchEndDate} = this.searchParam
-        if(!searchBeginDate || !searchEndDate ){
+        let { searchBeginDate, searchEndDate } = this.searchParam
+        if (!searchBeginDate || !searchEndDate) {
           this.$message.warn('请选择开始日期和结束日期')
           return
         }
-        this.searchAction({current:1})
+        this.searchAction({ current: 1 })
       } else if (type === 'download') {
         this.downloadAction()
       }
@@ -302,50 +304,51 @@ export default {
           that.$message.info(`请求出错：${err.message}`)
         })
     },
-    disabledDate(current){
+    disabledDate(current) {
       //console.log(arguments)
       //return []
-      //return 
+      //return
       console.log('disabledDate called...')
       let disabledDateRange = this.disabledDateRange
-      if(disabledDateRange.length === 0){
+      if (disabledDateRange.length === 0) {
         return current > moment().endOf('day')
-      }else{
+      } else {
         return current < disabledDateRange[0] || current >= disabledDateRange[1]
       }
     },
-    pickerChange(arr){ //计算开始日期后一个月内可选日期范围
+    pickerChange(arr) {
+      //计算开始日期后一个月内可选日期范围
       console.log('pickerChange called...')
-      if(arr.length === 0){
+      if (arr.length === 0) {
         this.disabledDateRange = []
         return
       }
       let startDate = arr[0].clone()
       let end = arr[0].clone()
-      end = end.add(1,'months')
+      end = end.add(1, 'months')
       let current = moment()
-      if(end > current){
-        let diff = Math.abs(end.diff(current,'days'))
-        end = end.add(-end.diff(current,'days'),'days')
+      if (end > current) {
+        let diff = Math.abs(end.diff(current, 'days'))
+        end = end.add(-end.diff(current, 'days'), 'days')
       }
-      console.log(startDate.format("YYYY-MM-DD"),'~',end.format("YYYY-MM-DD"))
-      this.disabledDateRange = [startDate.clone(),end.clone()]
+      console.log(startDate.format('YYYY-MM-DD'), '~', end.format('YYYY-MM-DD'))
+      this.disabledDateRange = [startDate.clone(), end.clone()]
     },
-    pickerOpenChange(){
+    pickerOpenChange() {
       this.disabledDateRange = []
-    }
+    },
   },
 }
 </script>
 
 <style scoped>
 .chart-wrapper {
-  background-color: rgba(250, 250, 250, .5);
+  background-color: rgba(250, 250, 250, 0.5);
   margin-top: 20px;
   padding: 20px 0 0 0;
 }
 .chart-wrapper .chart-title {
-  text-align: center;
+  text-align: left;
   font-size: 22px;
 }
 .currentDayWeekMonth {
@@ -357,10 +360,10 @@ export default {
   font-weight: bold;
 }
 
-._sales_top_wrapper >>> .ant-table-header{
+._sales_top_wrapper >>> .ant-table-header {
   overflow-y: auto !important;
 }
-._sales_top_wrapper >>> .ant-table-body{
+._sales_top_wrapper >>> .ant-table-body {
   overflow-y: auto !important;
 }
 </style>
