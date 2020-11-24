@@ -81,11 +81,16 @@
               v-if="
                 $auth('adjustApply:edit') &&
                 (record.status === 2 || record.status === 3) &&
-                record.showModifyButtonFlag === 1
+                record.showModifyButtonFlag === 1 &&
+                Number(record.createdId) === userInfo.id
               "
             >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => confirmDelete(record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
             </template>
             <template v-if="record.status === 0 && Number(record.createdId) === userInfo.id">
               <a-divider type="vertical" />
@@ -121,6 +126,9 @@ import {
   getPositionApplyListByCancel,
   getPositionyCancel,
   getPositionAndSalaryCancel,
+  getPositionAndSalaryDelete,
+  getPositionyDelete,
+  getPositionApplyListDelete,
 } from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -231,6 +239,7 @@ export default {
       this.searchAction()
     },
     //撤回
+
     confirmWithdraw(record) {
       let that = this
       if (record.operationStatus === 0) {
@@ -245,6 +254,26 @@ export default {
         })
       } else {
         getPositionAndSalaryCancel(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      }
+    },
+    //删除
+    confirmDelete(record) {
+      let that = this
+      if (record.operationStatus === 0) {
+        getPositionApplyListDelete(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      } else if (record.operationStatus === 1) {
+        getPositionyDelete(`id=${record.id}`).then((res) => {
+          this.searchAction()
+          that.$message.info(res.msg)
+        })
+      } else {
+        getPositionAndSalaryDelete(`id=${record.id}`).then((res) => {
           this.searchAction()
           that.$message.info(res.msg)
         })
