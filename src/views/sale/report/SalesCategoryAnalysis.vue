@@ -49,13 +49,15 @@
       <a-col :span="8" v-for="key in Object.keys(chartData)" :key="key">
         <div class="chart-wrapper" style="height: 500px">
           <h3 class="chart-title">{{ key === 'numP' ? '总计占比' : key }}</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData[key]" :scale="scale">
-            <v-tooltip :showTitle="false" dataKey="item*percent" />
-            <v-axis />
-            <v-legend dataKey="item" />
-            <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
-            <v-coord type="theta" />
-          </v-chart>
+          <template v-if="chartData">
+            <v-chart :forceFit="true" :height="chartHeight" :data="chartData[key]" :scale="scale">
+              <v-tooltip :showTitle="false" dataKey="item*percent" />
+              <v-axis />
+              <v-legend dataKey="item" />
+              <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
+              <v-coord type="theta" />
+            </v-chart>
+          </template>
         </div>
       </a-col>
     </a-row>

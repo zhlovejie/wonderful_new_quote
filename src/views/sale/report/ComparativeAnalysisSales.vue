@@ -76,13 +76,15 @@
       <a-col :span="24">
         <div class="chart-wrapper">
           <h3 class="chart-title">销售额对比</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
-            <v-tooltip />
+          <template v-if="chartData && chartData.length > 0">
+            <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
+              <v-tooltip />
 
-            <v-legend />
-            <v-interval position="月份*销售金额" color="name" :adjust="adjust" :opcaity="1" />
-            <v-axis :label="labelFormat" :title="title" dataKey="销售金额" />
-          </v-chart>
+              <v-legend />
+              <v-interval position="月份*销售金额" color="name" :adjust="adjust" :opcaity="1" />
+              <v-axis :label="labelFormat" :title="title" dataKey="销售金额" />
+            </v-chart>
+          </template>
         </div>
       </a-col>
     </a-row>
