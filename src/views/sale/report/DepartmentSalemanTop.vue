@@ -231,7 +231,7 @@ export default {
   methods: {
     moment: moment,
     init() {
-      this.rangeType = 2
+      this.rangeType = 1
       this.searchAction()
     },
     searchAction(opt) {
