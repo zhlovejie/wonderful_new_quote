@@ -246,6 +246,16 @@ export function pageCancel(parameter) {
     data: parameter
   })
 }
+
+//招聘申请撤回
+export function pageCancelDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personAdvert/delete',
+    method: 'post',
+    data: parameter
+  })
+}
 export function updateIsEnd(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -359,6 +369,18 @@ export function getPositionApplyListByPage(parameter) {
   })
 }
 
+
+//调岗申请删除
+
+export function getPositionApplyListDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/positionApply/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
 //调岗申请撤回
 
 export function getPositionApplyListByCancel(parameter) {
@@ -375,6 +397,27 @@ export function getPositionyCancel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salaryApply/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+//调薪申请删除
+
+export function getPositionyDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salaryApply/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//调岗调薪申请删除
+
+export function getPositionAndSalaryDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/positionAndSalaryApply/delete',
     method: 'post',
     data: parameter
   })

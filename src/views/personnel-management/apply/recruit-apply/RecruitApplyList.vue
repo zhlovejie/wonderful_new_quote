@@ -104,6 +104,13 @@
               @click="doAction('edit', record)"
               >修改</a
             >
+
+            <a-divider type="vertical" v-if="record.status === 3 && record.showModifyButtonFlag === 1" />
+            <template v-if="record.status === 3 && $auth('recruitApply:edit') && record.showModifyButtonFlag === 1">
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => confirmDelete(record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
           </template>
           <template v-if="activeKey === 1">
             <a-divider type="vertical" />
@@ -121,7 +128,7 @@ import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
 } from '@/api/systemSetting'
-import { pageList, updateIsEnd, pageCancel } from '@/api/personnelManagement'
+import { pageList, updateIsEnd, pageCancel, pageCancelDelete } from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 
@@ -259,6 +266,14 @@ export default {
     confirmWithdraw(record) {
       let that = this
       pageCancel(`id=${record.id}`).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
+      })
+    },
+    //删除
+    confirmDelete(record) {
+      let that = this
+      pageCancelDelete(`id=${record.id}`).then((res) => {
         this.searchAction()
         that.$message.info(res.msg)
       })

@@ -51,6 +51,7 @@
                 placeholder="请选择欠款状态"
                 style="border: none; width: 50%"
                 @change="onselect"
+                disabled
                 v-decorator="['settleType', { rules: [{ required: true, message: '请选择承诺付款类型' }] }]"
               >
                 <a-select-option v-for="val in routineSettlement" :key="val.id" :value="val.moneyType">
@@ -376,6 +377,7 @@ export default {
   methods: {
     onselect(value) {
       let arr = this.routineSettlement.find((item) => item.moneyType === value)
+      this.promiseTimes = moment(arr.paymentDate)
       this.form.setFieldsValue({ promiseTime: arr.paymentDate })
     },
     info() {
