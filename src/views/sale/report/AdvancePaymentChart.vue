@@ -4,12 +4,12 @@
     <a-row>
       <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
         <a-form layout="inline">
-          <a-form-item>
+          <a-form-item v-if="$auth('reportRateMoneyCustomer:select')">
             <a-select 
               placeholder="选择销售经理"
               v-model="saleUserId"
               :allowClear="true" 
-              style="width:200px;"
+              style="width:200px;" 
             >
               <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId" >{{ item.salesmanName }}</a-select-option>
             </a-select>
@@ -57,9 +57,10 @@
 
 <script>
 import { pageListReportRateMoneyCustomer, exportExcelDatas } from '@/api/saleReport'
-import {getListSaleContractUser} from '@/api/contractListManagement'
+import { salesJurisdiction } from '@/api/customer'
 import moment from 'moment'
-import ContractViewForm from './AdvancePaymentChartModel/ContractView'
+import ContractViewForm from './AdvancePaymentChartModel/ContractView' 
+
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 const columns = [
@@ -119,6 +120,23 @@ export default {
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
+
+      customerSelectOptions:{
+        showInputLabel:false,
+        wrapperStyle:{
+          width:'100%'
+        },
+        formLayout:'horizontal',
+        formItemLayout:{
+          labelCol: { span: '' },
+          wrapperCol: { span: '' },
+        },
+        inputRequired:true,
+        inputAllowClear:false
+      },
+      needOptions:{
+        userId:undefined
+      }
     }
   },
   watch: {
@@ -151,8 +169,14 @@ export default {
     moment: moment,
     init() {
       let that = this
+
+      //重置搜索条件
+      that.sDate = [moment(),moment()]
+      that.saleUserId = undefined
+      that.customerName = undefined
+
       let queue = []
-      let task1 = getListSaleContractUser().then(res => (that.saleUser = res.data))
+      let task1 = salesJurisdiction().then(res => (that.saleUser = res.data.allSalesman || res.data.subSalesman || []))
       queue.push(task1)
       that.searchAction()
       return Promise.all(queue)
