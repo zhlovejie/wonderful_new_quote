@@ -331,9 +331,9 @@ export default {
     },
 
     actionHandler(type) {
+      let year = moment(this.yearPick).format('YYYY')
+      let year1 = moment(this.yearPick1).format('YYYY')
       if (type === 'search') {
-        let year = moment(this.yearPick).format('YYYY')
-        let year1 = moment(this.yearPick1).format('YYYY')
         if (this.yearPick != null && this.yearPick1 != null && year !== year1) {
           this.searchParam.startYear = year
           this.searchParam.endYear = year1
@@ -344,12 +344,26 @@ export default {
         }
         this.searchAction()
       } else if (type === 'download') {
-        this.downloadAction()
+        if (this.yearPick != null && this.yearPick1 != null) {
+          this.downloadAction({ startYear: year, endYear: year1 })
+        } else {
+          let nowDate = new Date()
+          let date = {
+            year: nowDate.getFullYear(),
+          }
+          let date1 = {
+            year: nowDate.getFullYear() - 1,
+          }
+          this.searchParam.endYear = date.year
+          this.searchParam.startYear = date1.year
+          this.downloadAction()
+        }
       }
     },
-    downloadAction() {
+    downloadAction(opt) {
       let that = this
-      listSaleQuotaDownDetail(this.searchParam)
+      let _searchParam = Object.assign({}, { ...that.searchParam }, opt || {})
+      listSaleQuotaDownDetail(_searchParam)
         .then((res) => {
           console.log(res)
           if (res instanceof Blob) {
