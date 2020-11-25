@@ -5,13 +5,14 @@
         <a-form-item label="项目名称">
           <a-input v-model="projectName" />
         </a-form-item>
-        <a-form-item>
-          <CustomerSelect
+        <a-form-item label="客户名称">
+          <!-- <CustomerSelect
             ref="customerSelect"
             :options="customerSelectOptions"
             @selected="handleCustomerSelected"
             @inputClear="handleCustomerClear"
-          />
+          /> -->
+          <a-input :allowClear="true"  class="a-select" style="width:180px;" placeholder="客户名称模糊查询" v-model="customerName" />
         </a-form-item>
         <!-- <a-form-item label="投标单位名称">
           <a-select
@@ -177,6 +178,7 @@ export default {
       approvalStatus: 0,
       saleCustomer: 0,
       projectName: '',
+      customerName:'',
       vueBoolean: this.$store.getters.vueBoolean,
       isLook: 0,
          pagination: {
@@ -306,7 +308,8 @@ export default {
       this.queryParam = {
         projectName: this.projectName,
         contractStatus: this.contractState,
-        saleCustomerId: this.saleCustomer,
+        //saleCustomerId: this.saleCustomer,
+        saleCustomerName:this.customerName,
         approvalStatus: this.approvalStatus,
       }
       this.$refs.table.refresh(true)

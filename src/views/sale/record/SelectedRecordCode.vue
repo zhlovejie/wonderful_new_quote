@@ -88,7 +88,7 @@ export default {
     return {
       visible:false,
       modalTitle:'选择备案编号',
-      activeKey:3, //全部通过状态的授权
+      activeKey:0, //全部通过状态的授权
       status:1,
       projectName:undefined,
       projectAddress:undefined,

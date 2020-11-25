@@ -15,12 +15,15 @@
             </a-form-item>
           </a-col>
           <a-col :span="7">
-            <CustomerSelect
+            <!-- <CustomerSelect
               ref="customerSelect"
               :options="customerSelectOptions"
               @selected="handleCustomerSelected"
               @inputClear="handleCustomerClear"
-            />
+            /> -->
+            <a-form-item label="客户名称">
+            <a-input :allowClear="true"  class="a-select" style="width:100%;" placeholder="客户名称模糊查询" v-model="queryParam.customerName" />
+            </a-form-item>
           </a-col>
           <a-col :span="3">
             <template v-if="$auth('order:list')">
