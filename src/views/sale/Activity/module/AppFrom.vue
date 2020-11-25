@@ -21,8 +21,8 @@
           <tr>
             <td>
               <template v-if="this.recordtype.type === 1"> 销售额（万元） </template>
-              <template v-if="this.recordtype.type === 1"> 销售订单 </template>
-              <template v-else> 平均销售额 </template>
+              <template v-if="this.recordtype.type === 2"> 销售订单 </template>
+              <template v-if="this.recordtype.type === 3"> 平均销售额 </template>
             </td>
             <td colspan="2">
               <a-form-item>
