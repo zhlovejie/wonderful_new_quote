@@ -230,18 +230,16 @@ export default {
           },
         ]
 
-        Object.keys(_res[0])
-          .sort()
-          .forEach((v) => {
-            if (v !== 'date' && v !== 'key' && v !== 'sumMoney') {
-              _columns.push({
-                title: v,
-                dataIndex: v,
-                align: 'center',
-                scopedSlots: { customRender: v },
-              })
-            }
-          })
+        Object.keys(_res[0]).forEach((v) => {
+          if (v !== 'date' && v !== 'key' && v !== 'sumMoney') {
+            _columns.push({
+              title: v,
+              dataIndex: v,
+              align: 'center',
+              scopedSlots: { customRender: v },
+            })
+          }
+        })
         this.columns = _columns
       } else {
         this.columns = []

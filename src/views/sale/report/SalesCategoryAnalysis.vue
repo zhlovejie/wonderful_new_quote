@@ -136,18 +136,16 @@ export default {
           },
         ]
 
-        Object.keys(_res[0])
-          .sort()
-          .forEach((v) => {
-            if (v !== 'numP' && v !== 'key' && v !== 'text') {
-              _columns.push({
-                title: v + '占比(%)',
-                dataIndex: v,
-                align: 'center',
-                scopedSlots: { customRender: v },
-              })
-            }
-          })
+        Object.keys(_res[0]).forEach((v) => {
+          if (v !== 'numP' && v !== 'key' && v !== 'text') {
+            _columns.push({
+              title: v + '占比(%)',
+              dataIndex: v,
+              align: 'center',
+              scopedSlots: { customRender: v },
+            })
+          }
+        })
         this.columns = _columns
       } else {
         this.columns = []
@@ -160,9 +158,8 @@ export default {
         return {}
       }
       let baseKey = 'text'
-      let otherKeys = Object.keys(dataSource[0])
-        .filter((k) => ![baseKey, 'key'].includes(k))
-        .sort()
+      let otherKeys = Object.keys(dataSource[0]).filter((k) => ![baseKey, 'key'].includes(k))
+
       let map = {}
       otherKeys.map((k) => {
         map[k] = []
