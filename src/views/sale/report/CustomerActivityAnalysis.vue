@@ -9,6 +9,7 @@
               v-model.trim="saleUserId"
               placeholder="请选择所属销售"
               default-value=""
+              :allowClear="true"
             >
               <a-select-option v-for="salesMan in allSalesman" :key="salesMan.index" :value="salesMan.userId">{{
                 salesMan.salesmanName

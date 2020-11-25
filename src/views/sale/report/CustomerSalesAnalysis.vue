@@ -4,7 +4,13 @@
       <a-col :span="24">
         <a-form layout="inline">
           <a-form-item v-if="allSalesman.length > 0">
-            <a-select style="width: 200px" v-model.trim="saleUserId" placeholder="请选择所属销售" default-value="">
+            <a-select
+              style="width: 200px"
+              :allowClear="true"
+              v-model.trim="saleUserId"
+              placeholder="请选择所属销售"
+              default-value=""
+            >
               <a-select-option v-for="salesMan in allSalesman" :key="salesMan.index" :value="salesMan.userId">{{
                 salesMan.salesmanName
               }}</a-select-option>
