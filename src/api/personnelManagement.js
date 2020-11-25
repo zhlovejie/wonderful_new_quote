@@ -246,6 +246,16 @@ export function pageCancel(parameter) {
     data: parameter
   })
 }
+
+//招聘申请撤回
+export function pageCancelDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personAdvert/delete',
+    method: 'post',
+    data: parameter
+  })
+}
 export function updateIsEnd(parameter) {
   return axios({
     baseURL: system.baseURL,
