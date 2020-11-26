@@ -196,6 +196,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'ComparativeAnalysisSales') {
+          this.dataSource1 = []
           this.init()
         }
       },

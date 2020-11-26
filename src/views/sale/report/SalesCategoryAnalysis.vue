@@ -46,7 +46,7 @@
           </div>
         </a-table>
       </a-col>
-      <a-col :span="8" v-for="key in Object.keys(chartData)" :key="key">
+      <a-col :span="6" v-for="key in Object.keys(chartData)" :key="key">
         <div class="chart-wrapper" style="height: 500px">
           <h3 class="chart-title">{{ key === 'numP' ? '总计占比' : key }}</h3>
           <template v-if="chartData">
@@ -78,7 +78,7 @@ export default {
       dataSource: [],
       CakeShape: [],
       loading: false,
-      chartHeight: 400,
+      chartHeight: 300,
       pieStyle: {
         stroke: '#fff',
         lineWidth: 1,
@@ -108,6 +108,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'SalesCategoryAnalysis') {
+          this.dataSource = []
           this.init()
         }
       },

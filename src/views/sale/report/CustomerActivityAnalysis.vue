@@ -216,6 +216,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'CustomerActivityAnalysis') {
+          this.dataSource = []
           this.init()
           salesJurisdiction()
             .then((res) => {
