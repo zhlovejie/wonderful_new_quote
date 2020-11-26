@@ -81,7 +81,7 @@ const columns = [
   },
   {
     title: '产品数量(台)',
-    dataIndex: 'count',
+    dataIndex: 'productCount',
     align: 'center',
   },
   {
