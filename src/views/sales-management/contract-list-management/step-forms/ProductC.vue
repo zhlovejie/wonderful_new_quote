@@ -120,7 +120,14 @@
       <span> 合同低于C价总差额: </span>
       <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
     </template>
-
+    <template v-if="lowPriceDesc !== ''" style="margin-top：20px">
+      <a-row type="flex" justify="center">
+        <a-col class="closep" :span="4"> 特价说明 </a-col>
+        <a-col class="col-mount" :span="20">
+          <a-textarea disabled type="text" v-model="lowPriceDesc" />
+        </a-col>
+      </a-row>
+    </template>
     <product-model ref="productModel" @custom-change="productChange"></product-model>
     <targetid-model ref="targetidModel" @custom-change="targetidChange"></targetid-model>
   </div>
@@ -158,6 +165,7 @@ export default {
       freightType: 1,
       freightCharge: 0,
       freightDivType: 2,
+      lowPriceDesc: '',
     }
   },
   computed: {
@@ -415,7 +423,6 @@ export default {
   },
   methods: {
     init() {
-      //debugger
       let that = this
       this.totalAmount = this.params.totalAmount
       this.chineseTotalAmount = this.params.chineseTotalAmount
@@ -424,6 +431,7 @@ export default {
       this.freightType = this.params.freightType
       this.freightCharge = this.params.freightCharge
       this.freightDivType = this.params.freightDivType || 2
+      this.lowPriceDesc = this.params.lowPriceDesc
       if (this.params.dataSource <= 0) {
         return
       }
@@ -686,5 +694,10 @@ export default {
 <style scoped>
 .product-info-wrapper .ant-form-item {
   margin-bottom: 0;
+}
+.closep {
+  text-align: right;
+  line-height: 4;
+  padding-right: 30px;
 }
 </style>

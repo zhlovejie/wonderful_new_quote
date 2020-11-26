@@ -689,6 +689,7 @@ export default {
         errors: hasError,
         values: [...this.data],
         low: this.lowPriceDesc,
+        ispriceC: this.ispriceC,
       }
     },
   },

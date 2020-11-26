@@ -212,6 +212,7 @@ export default {
           freightType: result.freightType,
           freightCharge: result.freightMoneyWithRate,
           freightDivType: result.freightDivType || 2,
+          lowPriceDesc: result.lowPriceDesc,
         }
         //正常流程END
 
@@ -342,7 +343,7 @@ export default {
           that.$message.success('保存成功')
         }
       } else {
-        let { errors, values, low } = this.$refs.productCommon.validate()
+        let { errors, values, low, ispriceC } = this.$refs.productCommon.validate()
         if (errors) {
           return
         }
@@ -351,7 +352,7 @@ export default {
           this.$message.error('请完善产品信息')
           return
         }
-        if (low) {
+        if (low && ispriceC !== false) {
           copyCPriceDesc({ id: this.queryonedata.id, lowPriceDesc: low }).then((res) => {})
         }
 
