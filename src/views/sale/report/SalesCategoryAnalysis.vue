@@ -108,7 +108,6 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'SalesCategoryAnalysis') {
-          this.dataSource = []
           this.init()
         }
       },
@@ -207,11 +206,20 @@ export default {
     moment: moment,
     init() {
       this.searchAction()
+      this.componentDidUpdate()
+    },
+    componentDidUpdate() {
+      setTimeout(() => {
+        const e = document.createEvent('Event')
+        e.initEvent('resize', true, true)
+        window.dispatchEvent(e)
+      }, 10)
     },
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.searchParam }, opt || {})
       that.loading = true
+      that.dataSource = []
       Statistical(_searchParam)
         .then((res) => {
           that.loading = false

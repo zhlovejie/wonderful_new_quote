@@ -216,7 +216,6 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'CustomerActivityAnalysis') {
-          this.dataSource = []
           this.init()
           salesJurisdiction()
             .then((res) => {
@@ -280,8 +279,16 @@ export default {
   },
   methods: {
     moment: moment,
+    componentDidUpdate() {
+      setTimeout(() => {
+        const e = document.createEvent('Event')
+        e.initEvent('resize', true, true)
+        window.dispatchEvent(e)
+      }, 10)
+    },
     init() {
       this.searchAction({ current: 1 })
+      this.componentDidUpdate()
     },
     // 得到年份选择器的值
     handlePanelChange(value) {
@@ -299,6 +306,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt || {})
       that.loading = true
+      that.dataSource = []
       listExponent(_searchParam)
         .then((res) => {
           that.loading = false
