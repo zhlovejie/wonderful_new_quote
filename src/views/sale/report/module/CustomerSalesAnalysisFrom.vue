@@ -188,8 +188,24 @@ export default {
       return dv.rows
     },
   },
-  created() {
-    if (this.$route.params.record.customerId !== undefined) {
+  watch: {
+    $route: {
+      handler: function (to, from) {
+        if (to.name === 'CustomerSalesAnalysisFrom') {
+          if (this.$route.params.record.customerId !== undefined) {
+            this.init()
+          } else {
+            this.goBack()
+          }
+        }
+      },
+      immediate: true,
+    },
+  },
+
+  methods: {
+    init() {
+      let that = this
       this.record = this.$route.params.record
       this.searchParam = this.$route.params.searchParam
       this.searchAction()
@@ -200,16 +216,7 @@ export default {
       listCustomerProduct(_searchParam).then((res) => {
         this.dataSource2 = res.data
       })
-    } else {
-      this.goBack()
-    }
-  },
-  methods: {
-    // query(record, searchParam) {
-    //   // this.record = record
-    //   // this.searchParam = searchParam
-    //   // this.visible = true
-    // },
+    },
     goBack() {
       this.$router.push({ name: 'CustomerSalesAnalysis' })
     },
@@ -218,8 +225,8 @@ export default {
       let _searchParam = Object.assign(
         {},
         { customerId: this.record.customerId, type: 1 },
-        { ...that.searchParam },
-        { ...that.pagination },
+        // { ...that.searchParam },
+        // { ...that.pagination },
         opt || {}
       )
       that.loading = true
