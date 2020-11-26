@@ -90,6 +90,11 @@ const columns = [
     align: 'center',
   },
   {
+    title: '产品数量(台)',
+    dataIndex: 'count',
+    align: 'center',
+  },
+  {
     title: '销售额(万元)',
     dataIndex: 'saleQuota',
     align: 'center',
