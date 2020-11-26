@@ -239,12 +239,14 @@ export default {
     moment: moment,
     init() {
       this.rangeType = 1
+      this.dataSource = []
       this.searchAction()
     },
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
       //console.log('执行搜索...', _searchParam)
+      that.dataSource = []
       that.loading = true
       salesTop(_searchParam)
         .then((res) => {
