@@ -101,7 +101,7 @@ const columns = [
     dataIndex: 'name',
   },
   {
-    title: '销售额(万元)',
+    title: '销售额(元)',
     dataIndex: 'money',
     scopedSlots: { customRender: 'money' },
   },
