@@ -12,6 +12,9 @@
               <a-button type="primary" :class="{ currentDayWeekMonth: rangeType === 3 }" @click="simpleSearch(3)"
                 >本月</a-button
               >
+              <a-button type="primary" :class="{ currentDayWeekMonth: rangeType === 0 }" @click="simpleSearch(0)"
+                >全部</a-button
+              >
             </a-button-group>
           </a-form-item>
           <a-form-item>
