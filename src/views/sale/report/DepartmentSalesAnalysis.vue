@@ -154,7 +154,6 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'DepartmentSalesAnalysis') {
-          this.dataSource = []
           this.init()
         }
       },
@@ -264,8 +263,17 @@ export default {
   },
   methods: {
     moment: moment,
+      componentDidUpdate() {
+        setTimeout(() => {
+            const e = document.createEvent('Event')
+            e.initEvent('resize', true, true)
+            window.dispatchEvent(e)
+        }, 10);
+    },
     init() {
       this.searchAction()
+      this.componentDidUpdate()
+      
     },
     searchAction(opt) {
       let that = this
@@ -276,6 +284,7 @@ export default {
       let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
+      that.dataSource = []
       pageListDepartmentPerformanceReport(_searchParam)
         .then((res) => {
           that.loading = false

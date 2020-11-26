@@ -198,8 +198,6 @@ export default {
       handler: function (to, from) {
         if (to.name === 'CustomerSalesAnalysisFrom') {
           if (this.$route.params.record.customerId !== undefined) {
-            this.dataSource = []
-            this.dataSource1 = []
             this.init()
           } else {
             this.goBack()
@@ -211,6 +209,13 @@ export default {
   },
 
   methods: {
+    componentDidUpdate() {
+      setTimeout(() => {
+        const e = document.createEvent('Event')
+        e.initEvent('resize', true, true)
+        window.dispatchEvent(e)
+      }, 10)
+    },
     init() {
       let that = this
       this.record = this.$route.params.record
@@ -223,6 +228,8 @@ export default {
       listCustomerProduct(_searchParam).then((res) => {
         this.dataSource2 = res.data
       })
+
+      this.componentDidUpdate()
     },
     goBack() {
       this.$router.push({ name: 'CustomerSalesAnalysis' })
@@ -237,6 +244,8 @@ export default {
         opt || {}
       )
       that.loading = true
+      that.dataSource = []
+      that.dataSource1 = []
       SalesAnalysis(_searchParam)
         .then((res) => {
           that.loading = false

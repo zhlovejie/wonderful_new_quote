@@ -196,7 +196,6 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'ComparativeAnalysisSales') {
-          this.dataSource1 = []
           this.init()
         }
       },
@@ -269,6 +268,13 @@ export default {
   },
   methods: {
     moment,
+    componentDidUpdate() {
+      setTimeout(() => {
+        const e = document.createEvent('Event')
+        e.initEvent('resize', true, true)
+        window.dispatchEvent(e)
+      }, 10)
+    },
     init() {
       let nowDate = new Date()
       let date = {
@@ -280,6 +286,7 @@ export default {
       this.searchParam.endYear = date.year
       this.searchParam.startYear = date1.year
       this.searchAction()
+      this.componentDidUpdate()
     },
     // 得到年份选择器的值
     handlePanelChange(value) {
@@ -309,6 +316,7 @@ export default {
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
+      that.dataSource1 = []
       listSaleQuotaAnalysis(_searchParam)
         .then((res) => {
           that.loading = false
