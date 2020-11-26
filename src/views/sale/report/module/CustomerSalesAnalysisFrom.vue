@@ -198,6 +198,8 @@ export default {
       handler: function (to, from) {
         if (to.name === 'CustomerSalesAnalysisFrom') {
           if (this.$route.params.record.customerId !== undefined) {
+            this.dataSource = []
+            this.dataSource1 = []
             this.init()
           } else {
             this.goBack()
