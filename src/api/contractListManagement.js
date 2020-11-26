@@ -3,6 +3,18 @@ import {
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
 
+
+
+
+//特价说明
+export function copyCPriceDesc(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'sale-contract/updateSaleContractCPriceDesc',
+    method: 'post',
+    data: params
+  })
+}
 //复制合同
 export function copySoftContract(params) {
   return axios({

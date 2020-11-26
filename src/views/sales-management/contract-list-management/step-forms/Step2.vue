@@ -83,6 +83,7 @@ import {
   getSplitProductTemp,
   saveSplitProductTemp,
   turnTheCapital,
+  copyCPriceDesc,
 } from '@/api/contractListManagement'
 
 import moment from 'moment'
@@ -341,7 +342,7 @@ export default {
           that.$message.success('保存成功')
         }
       } else {
-        let { errors, values } = this.$refs.productCommon.validate()
+        let { errors, values, low } = this.$refs.productCommon.validate()
         if (errors) {
           return
         }
@@ -349,6 +350,9 @@ export default {
         if (values.length <= 0) {
           this.$message.error('请完善产品信息')
           return
+        }
+        if (low) {
+          copyCPriceDesc({ id: this.queryonedata.id, lowPriceDesc: low }).then((res) => {})
         }
 
         let products = this.formatProduct(values)
