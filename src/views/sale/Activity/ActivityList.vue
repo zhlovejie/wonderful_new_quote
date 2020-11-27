@@ -15,22 +15,22 @@
         @click="searchAction"
         >查询</a-button
       >
-      <template v-if="$auth('commissionBonus:add')">
+      <template v-if="$auth('ActivityList:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="showModal('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
+      </template>
+      <template v-if="$auth('ActivityList:bution')">
         <a-dropdown style="float: right; margin-right: 20px">
           <a-button type="primary" @click="Distribution()"> 计算公式 </a-button>
         </a-dropdown>
       </template>
-
-      <div style="float: right"></div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" @change="tabChange">
         <a-tab-pane tab="销售额指数" key="1">
           <a-table
-            v-if="$auth('commissionBonus:lists')"
+            v-if="$auth('ActivityList:lists')"
             :columns="columns"
             :dataSource="dataSource"
             :pagination="pagination"
@@ -45,14 +45,14 @@
               <span>{{ text }}-{{ record.endQuota }}</span>
             </div>
             <span slot="action" slot-scope="text, record">
-              <template>
+              <template v-if="$auth('ActivityList:see')">
                 <a @click="showModal('see', record)">查看</a>
               </template>
-              <template>
+              <template v-if="$auth('ActivityList:salary')">
                 <a-divider type="vertical" />
                 <a @click="showModal('edit-salary', record)">修改</a>
               </template>
-              <template>
+              <template v-if="$auth('ActivityList:Delete')">
                 <a-divider type="vertical" />
                 <a @click="confirmDelete(record)">删除</a>
               </template>
@@ -61,7 +61,7 @@
         </a-tab-pane>
         <a-tab-pane tab="销售订单指数" key="2">
           <a-table
-            v-if="$auth('commissionBonus:lists')"
+            v-if="$auth('ActivityList:lists')"
             :columns="columns1"
             :dataSource="dataSource"
             :pagination="pagination"
@@ -75,14 +75,14 @@
               <span>{{ text }}-{{ record.endQuota }}</span>
             </div>
             <span slot="action" slot-scope="text, record">
-              <template>
+              <template v-if="$auth('ActivityList:see')">
                 <a @click="showModal('see', record)">查看</a>
               </template>
-              <template>
+              <template v-if="$auth('ActivityList:salary')">
                 <a-divider type="vertical" />
                 <a @click="showModal('edit-salary', record)">修改</a>
               </template>
-              <template>
+              <template v-if="$auth('ActivityList:Delete')">
                 <a-divider type="vertical" />
                 <a @click="confirmDelete(record)">删除</a>
               </template>
@@ -91,7 +91,7 @@
         </a-tab-pane>
         <a-tab-pane tab="销售平均额指数" key="3">
           <a-table
-            v-if="$auth('commissionBonus:lists')"
+            v-if="$auth('ActivityList:lists')"
             :columns="columns2"
             :dataSource="dataSource"
             :pagination="pagination"
@@ -105,14 +105,14 @@
               <span>{{ text }}-{{ record.endQuota }}</span>
             </div>
             <span slot="action" slot-scope="text, record">
-              <template>
+              <template v-if="$auth('ActivityList:see')">
                 <a @click="showModal('see', record)">查看</a>
               </template>
-              <template>
+              <template v-if="$auth('ActivityList:salary')">
                 <a-divider type="vertical" />
                 <a @click="showModal('edit-salary', record)">修改</a>
               </template>
-              <template>
+              <template v-if="$auth('ActivityList:Delete')">
                 <a-divider type="vertical" />
                 <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
                   <a type="primary">删除</a>
