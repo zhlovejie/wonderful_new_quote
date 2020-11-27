@@ -202,6 +202,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       that.loading = true
+      that.dataSource = []
       pageListReportPrepareMoneyDate(_searchParam)
         .then((res) => {
           that.loading = false
