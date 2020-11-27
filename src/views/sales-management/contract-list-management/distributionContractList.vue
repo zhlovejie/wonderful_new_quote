@@ -1,20 +1,21 @@
 <template>
   <div class="develop-wrap">
     <div class="top-ation">
-      <a-input class="a-input" placeholder="合同编号" v-model="contractNum"/>
+      <a-input :allowClear="true" class="a-input" style="width:180px;" placeholder="合同编号" v-model="contractNum"/>
 
-      <CustomerSelect
+      <!-- <CustomerSelect
         ref="customerSelect"
         :options="customerSelectOptions"
         @selected="handleCustomerSelected"
         @inputClear="handleCustomerClear"
-      />
+      /> -->
+      <a-input :allowClear="true"  class="a-select" style="width:180px;" placeholder="客户名称模糊查询" v-model="customerName" />
 
       <a-select
         class="a-select"
         placeholder="合同状态"
-        v-model="contractStatus"
-        style="width: 100px"
+        v-model="contractStatus" 
+        style="width: 160px"
         @change="handleContactChange">
         <a-select-option :value="-1">请选择合同状态</a-select-option>
         <a-select-option :value="0">未启动</a-select-option>
@@ -24,8 +25,8 @@
       <a-select
         class="a-select"
         placeholder="审批状态"
-        v-model="approveStatus"
-        style="width: 100px"
+        v-model="approveStatus" 
+        style="width: 160px"
         v-show="show"
         >
         <a-select-option :value="0">请选择审批状态</a-select-option>
@@ -44,15 +45,15 @@
     <div>
       <a-tabs defaultActiveKey="1" @change="callback">
         <a-tab-pane tab="全部" key="1">
-          <all-the-contract ref="AllTheContract" :contractNum="contractNum" :approveStatus="approveStatus" :customerId="customerId" :contractStatus="contractStatus"></all-the-contract>
+          <all-the-contract ref="AllTheContract" :contractNum="contractNum" :customerName="customerName" :approveStatus="approveStatus" :customerId="customerId" :contractStatus="contractStatus"></all-the-contract>
         </a-tab-pane>
 
         <template v-if="$auth('distributionContract:approval')">
           <a-tab-pane tab="待审批" key="2">
-            <approval-pending ref="pending" :contractNum="contractNum" :customerId="customerId" :contractStatus="contractStatus"></approval-pending>
+            <approval-pending ref="pending" :contractNum="contractNum" :customerName="customerName" :customerId="customerId" :contractStatus="contractStatus"></approval-pending>
           </a-tab-pane>
           <a-tab-pane tab="已审批" key="3">
-            <approved-contract ref="approvedcontract" :contractNum="contractNum" :customerId="customerId" :contractStatus="contractStatus"></approved-contract>
+            <approved-contract ref="approvedcontract" :contractNum="contractNum" :customerName="customerName" :customerId="customerId" :contractStatus="contractStatus"></approved-contract>
           </a-tab-pane>
         </template>
       </a-tabs>

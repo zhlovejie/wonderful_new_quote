@@ -65,9 +65,8 @@
                   placeholder="客户名称"
                   :allowClear="true"
                   @change="handlerChange('customerName',$event)"
-                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称'}]}]"
-                  read-only 
-                  :disabled="selectContract || isDisabled"
+                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称'}]}]" 
+                  disabled
                   @click="selectCustomer"
                 />
               </a-form-item>
@@ -83,7 +82,7 @@
                   showSearch
                   :allowClear="true"
                   :filterOption="filterSalersOption" 
-                  :disabled="isDisabled" 
+                  disabled 
                   placeholder="请选择销售人员"
                   v-decorator="['saleUserId',{rules: [{required: true,message: '请选择销售人员'}]}]"
                 >
@@ -335,7 +334,8 @@ export default {
       that.form.setFieldsValue({
         contractNum: data.contractNum,
         customerName: data.customerName,
-        customerId:data.customerId
+        customerId:data.customerId,
+        saleUserId:data.saleUserId
       })
     },
     filterSalersOption(input, option) {

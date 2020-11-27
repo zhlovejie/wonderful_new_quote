@@ -135,7 +135,7 @@
       </a-table>
     </a-spin>
     <a-modal title="客户信息" v-model="visible" :footer="null" :maskClosable="false">
-      <p>客户名称：{{ customerName }}</p>
+      <p>客户名称：{{ infoCustomerName }}</p>
       <p>联系人：{{ linkManName }}</p>
       <p>联系方式：{{ linkManPhone }}</p>
       <p>微信号：{{ linkManWeChat }}</p>
@@ -285,24 +285,7 @@ export default {
     UploadPhoto,
     PhotoView,
   },
-  props: {
-    contractNum: {
-      // 属性传值：合同编号
-      type: String,
-      required: true,
-    },
-    customerId: {
-      // type:Number,
-      required: true,
-    },
-    contractStatus: {
-      // type:Number,
-      required: true,
-    },
-    approveStatus: {
-      required: true,
-    },
-  },
+  props: ['contractNum','customerId','customerName','contractStatus','approveStatus'],
   data() {
     return {
       userInfo: this.$store.getters.userInfo,
@@ -320,7 +303,7 @@ export default {
       loading: false,
       visible: false,
       priewVisible: false, // 审批状态弹出层
-      customerName: '', // 客户名称
+      infoCustomerName: '', // 客户名称
       linkManName: '', // 联系人名称
       linkManPhone: '', // 联系人手机号
       customerAddress: '', // 联系地址
@@ -432,6 +415,7 @@ export default {
         contractNum: this.contractNum || '', // 不传入合同编号模糊获取到的是所有的信息
         customerId: this.customerId || '', // 不传入客户id获取到的是所有的信息
         approveStatus: this.approveStatus,
+        customerName:this.customerName || '',
       }
       let _searchParam = Object.assign({}, { ...params }, { ...this.pagination1 } || {})
       this.loading = true
@@ -468,7 +452,7 @@ export default {
       getCustomerInfo(params)
         .then((res) => {
           console.log('//获取客户信息', res)
-          ;(this.customerName = res.data.customerName),
+          ;(this.infoCustomerName = res.data.customerName),
             (this.linkManName = res.data.linkManName),
             (this.linkManPhone = res.data.linkManPhone),
             (this.customerAddress = res.data.customerAddress),
