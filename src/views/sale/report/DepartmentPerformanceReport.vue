@@ -209,6 +209,7 @@ export default {
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
+      that.dataSource = []
       pageListDepartmentPerformanceReport(_searchParam)
         .then(res => {
           that.loading = false
@@ -221,7 +222,10 @@ export default {
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch(err => {
+          that.loading = false
+          that.dataSource = []
+        })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

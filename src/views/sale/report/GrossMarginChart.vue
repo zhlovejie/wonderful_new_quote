@@ -165,6 +165,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       that.loading = true
+      that.dataSource = []
       grossMarginSummaryChartList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -192,7 +193,10 @@ export default {
           that.pagination = pagination
 
         })
-        .catch((err) => (that.loading = false))
+        .catch((err) => {
+          that.loading = false
+          that.dataSource = []
+        })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
