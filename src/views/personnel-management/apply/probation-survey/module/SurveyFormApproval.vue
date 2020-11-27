@@ -337,10 +337,24 @@
             </td>
           </tr>
           <tr>
+            <td>试用期状态</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-radio-group :disabled="isView" v-decorator="['probationState', { rules: [{ required: true, message: '请选择试用期状态' }] }]">
+                  <a-radio :value="1"> 通过</a-radio>
+                  <a-radio :value="2"> 不通过 </a-radio>
+                </a-radio-group>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
             <td>试用期工资</td>
             <td colspan="3">
               <a-form-item>
-                <a-input    :disabled="isView" v-decorator="['wage', { rules: [{ required: true, message: '请输入试用期工资' }] }]" />
+                <a-input
+                  :disabled="isView"
+                  v-decorator="['wage', { rules: [{ required: true, message: '请输入试用期工资' }] }]"
+                />
               </a-form-item>
             </td>
           </tr>

@@ -18,8 +18,9 @@
         <a-select-option :value="0">待提交</a-select-option>
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">通过</a-select-option>
-        <a-select-option :value="3">不通过</a-select-option>
+        <a-select-option :value="3">驳回</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
+        <a-select-option :value="4">不通过</a-select-option>
       </a-select>
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
@@ -277,8 +278,9 @@ export default {
         0: '待提交',
         1: '待审批',
         2: '通过',
-        3: '不通过',
+        3: '驳回',
         4: '已撤回',
+        5: '不通过',
       }
       return stateMap[state] || `未知状态:${state}`
     },

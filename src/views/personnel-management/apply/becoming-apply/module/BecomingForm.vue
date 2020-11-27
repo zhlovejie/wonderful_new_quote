@@ -10,8 +10,9 @@
   >
     <template slot="footer">
       <template v-if="isApproval">
-        <a-button class="a-button" type="primary" icon="close" @click="noPassAction">不通过</a-button>
-        <a-button class="a-button" type="primary" icon="check" @click="passAction">通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="passAction(2, '不通过')">不通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction">驳回</a-button>
+        <a-button class="a-button" type="primary" icon="check" @click="passAction(0, '通过')">通过</a-button>
       </template>
       <template v-else>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -613,10 +614,10 @@ export default {
         })
         .catch((err) => (that.spinning = false))
     },
-    passAction() {
+    passAction(type, isType) {
       this.submitAction({
-        isAdopt: 0,
-        opinion: '通过',
+        isAdopt: type,
+        opinion: isType,
       })
     },
     noPassAction() {
