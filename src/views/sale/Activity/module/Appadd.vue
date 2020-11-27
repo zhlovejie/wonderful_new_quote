@@ -61,7 +61,7 @@
   </a-modal>
 </template>
 <script>
-import { year_delete_addAndUpdate } from '@/api/bonus_management'
+import { saveAndUpdateFormula } from '@/api/saleReport'
 import moment from 'moment'
 export default {
   name: 'BecomingForm',
@@ -133,7 +133,7 @@ export default {
               if (that.type !== 'add') {
                 values.id = this.record.id
               }
-              year_delete_addAndUpdate(values)
+              saveAndUpdateFormula(values)
                 .then((res) => {
                   that.spinning = false
                   that.form.resetFields() // 清空表

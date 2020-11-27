@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
       <div style="height: 40px; width: 100%">
-        <template v-if="this.dataSource.length == 0">
+        <template v-if="this.dataSource[0] === null">
           <a-button style="float: right" type="primary" icon="plus" @click="handle('add', null)">新增</a-button>
         </template>
       </div>
@@ -10,7 +10,7 @@
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
-        <a-table :columns="columns" :data-source="this.dataSource">
+        <a-table :columns="columns" :data-source="this.dataSource" :pagination="false">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -65,7 +65,6 @@ export default {
       queryParam: {},
       recordResult: {},
       queryRecord: {},
-      pagination1: { current: 1 },
       // 表头
       columns: [
         {
@@ -126,11 +125,7 @@ export default {
     searchAction() {
       let that = this
       that.loading = true
-      let _searchParam = Object.assign(
-        { socialSecurityId: that.recordId },
-        { ...this.queryParam },
-        { ...this.pagination1 }
-      )
+      let _searchParam = Object.assign({ socialSecurityId: that.recordId }, { ...this.queryParam })
       getOverdueWarningList(_searchParam)
         .then((res) => {
           that.loading = false
