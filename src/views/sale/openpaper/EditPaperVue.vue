@@ -79,14 +79,14 @@
               <a-input
                 class="wdf-xyk"
 
-                v-decorator="[ 'openingBank']"/>
+                v-decorator="[ 'bankNoAccount']"/>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">纳税人识别号</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-input
                 class="wdf-xyk"
 
-                v-decorator="[ 'dutyParagraph' ]"/>
+                v-decorator="[ 'taxPayerNo' ]"/>
             </a-col>
           </a-row>
         </a-form-item>
@@ -97,14 +97,14 @@
               <a-input
                 class="wdf-xyk"
 
-                v-decorator="[ 'address']"/>
+                v-decorator="[ 'customerAddress']"/>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">联系电话</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-input
                 class="wdf-xyk"
 
-                v-decorator="[ 'mobile']"/>
+                v-decorator="[ 'customerTel']"/>
             </a-col>
           </a-row>
         </a-form-item>
@@ -404,10 +404,10 @@ export default {
           'customerName': res.data.saleContractDetail.customerName,
           'contractId': res.data.saleContractDetail.id,
           'totalAmount': res.data.saleContractDetail.totalAmount,
-          'dutyParagraph': res.data.taxPayerNo,
-          'openingBank': res.data.bankNoAccount,
-          'mobile': res.data.customerTel,
-          'address': res.data.customerAddress,
+          'taxPayerNo': res.data.taxPayerNo,
+          'bankNoAccount': res.data.bankNoAccount,
+          'customerTel': res.data.customerTel,
+          'customerAddress': res.data.customerAddress,
           'refundMoney': res.data.saleContractDetail.returnedMoney,
           //'paperMoney': res.data.paperMoney + (that.freightType === 0 ? Number(that.freightCharge) * 1.13 : 0),
           'paperMoney': res.data.paperMoney,

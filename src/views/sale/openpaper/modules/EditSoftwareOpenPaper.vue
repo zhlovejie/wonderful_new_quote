@@ -1,231 +1,198 @@
 <template>
   <div>
     <a-spin :spinning="spinning">
-    <div class="top-right clearfix">
-      <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
-      <a-button  class="fl-r" type="primary" @click="editPaper" icon="check-circle">重新提交</a-button>
-    </div>
-    <a-card class="card" :bordered="false">
+      <div class="top-right clearfix">
+        <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
+        <a-button class="fl-r" type="primary" @click="editPaper" icon="check-circle">重新提交</a-button>
+      </div>
+      <a-card class="card" :bordered="false">
+        <a-form :form="form" class="form">
+          <a-form-item>
+            <a-input v-decorator="['saleContract']" />
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">开票编号</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input
+                  class="wdf-xyk"
+                  read-only="read-only"
+                  placeholder="请输入开票编号"
+                  v-decorator="['paperCode']"
+                />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">合同编号</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input
+                  class="wdf-xyk"
+                  read-only="read-only"
+                  placeholder="请选择合同编号"
+                  v-decorator="['contractNum']"
+                />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">客户名称</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['customerName']" />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">开票单位名称</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <!-- <span>江苏万德福公共设施科技有限公司</span> -->
+                <a-form-item>
+                  <a-input class="wdf-xyk" v-decorator="['openUnit']" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">发票类型</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-radio-group class="wdf-xyk" v-decorator="['paperType', {}]">
+                  <a-radio :value="2">增票</a-radio>
+                  <a-radio :value="1">普票</a-radio>
+                </a-radio-group>
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">开票性质</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-radio-group class="wdf-xyk" v-decorator="['paperQuality', {}]">
+                  <a-radio :value="1">常规开票</a-radio>
+                  <a-radio :value="2">特殊开票</a-radio>
+                </a-radio-group>
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">开户行及账号</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['bankNoAccount']" />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">纳税人识别号</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['taxPayerNo']" />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">客户地址</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['customerAddress']" />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">联系电话</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['customerTel']" />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-table
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="false"
+            :rowKey="(record) => record.productId"
+            :loading="memberLoading"
+            bordered
+          >
+            <div slot="company" slot-scope="text">
+              <span v-if="text == 0">套</span>
+              <span v-if="text == 1">台</span>
+              <span v-if="text == 2">个</span>
+            </div>
 
-      <a-form :form="form" class="form">
-        <a-form-item>
-          <a-input v-decorator="[ 'saleContract' ]"/>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">开票编号</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                read-only="read-only"
-                placeholder="请输入开票编号"
-                v-decorator="[ 'paperCode']"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">合同编号</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                read-only="read-only"
-                placeholder="请选择合同编号"
-                v-decorator="[ 'contractNum' ]"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">客户名称</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'customerName']"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">开票单位名称</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <!-- <span>江苏万德福公共设施科技有限公司</span> -->
-              <a-form-item>
-                <a-input class="wdf-xyk" v-decorator="[ 'openUnit']"/>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">发票类型</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-radio-group
-                class="wdf-xyk"
-                v-decorator="['paperType', {}]">
-                <a-radio :value="2">增票</a-radio>
-                <a-radio :value="1">普票</a-radio>
-              </a-radio-group>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">开票性质</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-radio-group
-                class="wdf-xyk"
-                v-decorator="['paperQuality', {}]">
-                <a-radio :value="1">常规开票</a-radio>
-                <a-radio :value="2">特殊开票</a-radio>
-              </a-radio-group>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">开户行及账号</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'openingBank']"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">纳税人识别号</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'dutyParagraph' ]"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">客户地址</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'address']"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">联系电话</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'mobile']"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="false"
-          :rowKey="record => record.productId"
-          :loading="memberLoading"
-          bordered
-        >
-          <div slot="company" slot-scope="text">
-            <span v-if="text==0">套</span>
-            <span v-if="text==1">台</span>
-            <span v-if="text==2">个</span>
-          </div>
+            <div slot="count" slot-scope="text, record">
+              <input @change="quantityChange(record, $event)" v-model="record.count" />
+            </div>
 
-          <div slot="count" slot-scope="text,record">
-            <input @change="quantityChange(record,$event)"  v-model="record.count"/>
-          </div>
-
-          <div slot="unitPrice" slot-scope="text,record">
-            <input @change="unitPriceChange(record,$event)" v-model="record.unitPrice"/>
-          </div>
-        </a-table>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">实际发货日期</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
+            <div slot="unitPrice" slot-scope="text, record">
+              <input @change="unitPriceChange(record, $event)" v-model="record.unitPrice" />
+            </div>
+          </a-table>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">实际发货日期</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
                 <a-date-picker
                   class="wdf-xyk"
-                  v-decorator="[
-                    'deliveryTime',
-                    {rules: [{ required: true, message: '请选择实际发货日期'}]}
-                  ]"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">开票金额(元)</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'paperMoney' ]"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">回款情况</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-radio-group
-                class="wdf-xyk"
-                v-decorator="['paperDetail', {}]">
-                <a-radio :value="1">部分付款</a-radio>
-                <a-radio :value="2">已付全款</a-radio>
-                <a-radio :value="3">未付款</a-radio>
-              </a-radio-group>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">总金额(元)</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'totalAmount']"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">已回款金额(元)</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'refundMoney']"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">欠款金额(元)</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <!--fix 0543 欠款金额不能大于总金额 -->
-                <a-input-number 
-                  :min="0" 
-                  :max="maxArrearsMoney" 
-                  @change="arrearsMoneyChange" 
+                  v-decorator="['deliveryTime', { rules: [{ required: true, message: '请选择实际发货日期' }] }]"
+                />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">开票金额(元)</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['paperMoney']" />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">回款情况</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-radio-group class="wdf-xyk" v-decorator="['paperDetail', {}]">
+                  <a-radio :value="1">部分付款</a-radio>
+                  <a-radio :value="2">已付全款</a-radio>
+                  <a-radio :value="3">未付款</a-radio>
+                </a-radio-group>
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">总金额(元)</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['totalAmount']" />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">已回款金额(元)</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['refundMoney']" />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">欠款金额(元)</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <!--fix 0543 欠款金额不能大于总金额 -->
+                <a-input-number
+                  :min="0"
+                  :max="maxArrearsMoney"
+                  @change="arrearsMoneyChange"
                   class="wdf-xyk"
                   placeholder="请输入欠款金额"
-                  v-decorator="[ 'arrearsMoney', {rules: [{ required: true, message: '请输入欠款金额'}]} ]"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item>
-          <a-row>
-            <a-col class="col-border" :span="3" justify="center" align="middle">创建人</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                placeholder="创建人"
-                v-decorator="[ 'createdName']"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">创建日期</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                placeholder="创建日期"
-                v-decorator="[ 'createdTime' ]"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-        <a-form-item v-if="approveVueBoolean">
-          <a-row class="wdf-row">
-            <a-col class="col-border" :span="3" justify="center" align="middle">审批人</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'approveName' ]"/>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">审批日期</a-col>
-            <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input
-                class="wdf-xyk"
-                v-decorator="[ 'approveTime' ]"/>
-            </a-col>
-          </a-row>
-        </a-form-item>
-      </a-form>
-    </a-card>
+                  v-decorator="['arrearsMoney', { rules: [{ required: true, message: '请输入欠款金额' }] }]"
+                />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item>
+            <a-row>
+              <a-col class="col-border" :span="3" justify="center" align="middle">创建人</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" placeholder="创建人" v-decorator="['createdName']" />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">创建日期</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" placeholder="创建日期" v-decorator="['createdTime']" />
+              </a-col>
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="approveVueBoolean">
+            <a-row class="wdf-row">
+              <a-col class="col-border" :span="3" justify="center" align="middle">审批人</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['approveName']" />
+              </a-col>
+              <a-col class="col-border" :span="3" justify="center" align="middle">审批日期</a-col>
+              <a-col class="col-border" :span="9" justify="center" align="middle">
+                <a-input class="wdf-xyk" v-decorator="['approveTime']" />
+              </a-col>
+            </a-row>
+          </a-form-item>
+        </a-form>
+      </a-card>
     </a-spin>
   </div>
 </template>
 
 <script>
-
 import { openPaperDetail, updatePaper } from '@/api/openpaper'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
 import ARow from 'ant-design-vue/es/grid/Row'
@@ -236,9 +203,9 @@ export default {
   name: 'EditSoftwareOpenPaper',
   components: {
     ARow,
-    AFormItem
+    AFormItem,
   },
-  data () {
+  data() {
     return {
       form: this.$form.createForm(this),
       memberLoading: false,
@@ -252,74 +219,74 @@ export default {
       columns: [
         {
           title: '产品名称',
-          dataIndex: 'productName'
+          dataIndex: 'productName',
         },
         {
           title: '单位',
           dataIndex: 'company',
-          scopedSlots: { customRender: 'company' }
-        }, 
+          scopedSlots: { customRender: 'company' },
+        },
         {
           title: '数量',
           dataIndex: 'count',
-          scopedSlots: { customRender: 'count' }
-        }, 
+          scopedSlots: { customRender: 'count' },
+        },
         {
           title: '含税单价',
           dataIndex: 'unitPrice',
-          scopedSlots: { customRender: 'unitPrice' }
-        }, 
+          scopedSlots: { customRender: 'unitPrice' },
+        },
         {
           title: '含税金额(元)',
-          dataIndex: 'receivable'
-        }
+          dataIndex: 'receivable',
+        },
       ],
       dataSource: [],
-      saleContract:null, //合同ID
-      maxArrearsMoney:0, //最大可输入欠款金额
-      spinning:false
+      saleContract: null, //合同ID
+      maxArrearsMoney: 0, //最大可输入欠款金额
+      spinning: false,
     }
   },
   watch: {
-    $route (to, from) {
-      if(to.name === 'editSoftwareOpenPaper'){
+    $route(to, from) {
+      if (to.name === 'editSoftwareOpenPaper') {
         this.init()
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.init()
   },
   methods: {
-    init () {
+    init() {
       let that = this
-      const params = { 'id': this.$route.params.id }
+      const params = { id: this.$route.params.id }
       this.id = this.$route.params.id
-      openPaperDetail(params).then(res => {
-        if(res.code == 200){
+      openPaperDetail(params).then((res) => {
+        if (res.code == 200) {
           that.saleContract = res.data.softwareContract.id
           const record = {
-            'paperCode': res.data.paperCode,
-            'contractNum': res.data.softwareContract.contractNum,
-            'customerName': res.data.softwareContract.customerName,
-            'contractId': res.data.softwareContract.id,
-            'totalAmount': res.data.softwareContract.totalAmount,
-            'dutyParagraph': res.data.taxPayerNo,
-            'openingBank': res.data.bankNoAccount,
-            'mobile': res.data.customerTel,
-            'address': res.data.customerAddress,
-            'refundMoney': res.data.softwareContract.returnedMoney,
-            'paperMoney': res.data.paperMoney,
-            'arrearsMoney': res.data.arrearsMoney,
-            'deliveryTime': moment(res.data.deliveryTime),
-            'paperDetail': res.data.paperDetail,
-            'paperQuality': res.data.paperQuality,
-            'paperType': res.data.paperType,
-            'approveName': res.data.approveName,
-            'createdTime': res.data.createdTime,
-            'createdName': res.data.createdName,
-            'approveTime': res.data.approveTime,
-            openUnit:res.data.openUnit || ''
+            paperCode: res.data.paperCode,
+            contractNum: res.data.softwareContract.contractNum,
+            customerName: res.data.softwareContract.customerName,
+            contractId: res.data.softwareContract.id,
+            totalAmount: res.data.softwareContract.totalAmount,
+            taxPayerNo: res.data.taxPayerNo,
+            bankNoAccount: res.data.bankNoAccount,
+            customerTel: res.data.customerTel,
+            customerAddress: res.data.customerAddress,
+            refundMoney: res.data.softwareContract.returnedMoney,
+            paperMoney: res.data.paperMoney,
+            arrearsMoney: res.data.arrearsMoney,
+            deliveryTime: moment(res.data.deliveryTime),
+            paperDetail: res.data.paperDetail,
+            paperQuality: res.data.paperQuality,
+            paperType: res.data.paperType,
+            approveName: res.data.approveName,
+            createdTime: res.data.createdTime,
+            createdName: res.data.createdName,
+            approveTime: res.data.approveTime,
+            openUnit: res.data.openUnit || '',
           }
           if (res.data.approveName != undefined && res.data.approveTime != undefined) {
             this.approveVueBoolean = true
@@ -333,12 +300,12 @@ export default {
           for (const productKey in res.data.softwareContract.products) {
             const product = res.data.softwareContract.products[productKey]
             listProduct.push({
-              'id': product.id,
-              'productName':product.productName,
-              'receivable': (product.count * product.unitPrice).toFixed(2),
-              'company': 0,
-              'count': product.count,
-              'unitPrice': product.unitPrice
+              id: product.id,
+              productName: product.productName,
+              receivable: (product.count * product.unitPrice).toFixed(2),
+              company: 0,
+              count: product.count,
+              unitPrice: product.unitPrice,
             })
           }
           this.dataSource = listProduct
@@ -348,7 +315,7 @@ export default {
       })
     },
     // 返回
-    goBackPricing () {
+    goBackPricing() {
       // 点击返回，返回列表页
       this.$router.push({ name: 'openPaperList' })
       this.$destroy('editSoftwareOpenPaper')
@@ -356,41 +323,41 @@ export default {
     // 开票单产品数量变化
     quantityChange(record, e) {
       const v = e.currentTarget.value
-      const _index = this.dataSource.findIndex(item => item.key === record.key)
+      const _index = this.dataSource.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.dataSource[_index]['count'] = v.trim().length === 0 ? 0 : parseInt(v.trim())
-        record.receivable = e.currentTarget.value * record.unitPrice;
+        record.receivable = e.currentTarget.value * record.unitPrice
       }
-      this.calMoney();
+      this.calMoney()
     },
     // 开票单产品价格变化
     unitPriceChange(record, e) {
       const v = e.currentTarget.value
-      const _index = this.dataSource.findIndex(item => item.key === record.key)
+      const _index = this.dataSource.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.dataSource[_index]['unitPrice'] = v.trim().length === 0 ? 0 : v.trim()
-        record.receivable = e.currentTarget.value * record.count;
+        record.receivable = e.currentTarget.value * record.count
       }
-      this.calMoney();
+      this.calMoney()
     },
-    calMoney(){
-        /**
-         * 计算开票金额
-         * @type {number}
-         */
-        let paperMoneyAll = 0
-        for (const productKey in this.dataSource) {
-          const product = this.dataSource[productKey]
-          paperMoneyAll = paperMoneyAll +  product.count * product.unitPrice
-        }
-        const recordForm = {
-          'paperMoney': paperMoneyAll,
-        }
-        this.$nextTick(() => {
-          this.form.setFieldsValue({ ...recordForm })
-        })
+    calMoney() {
+      /**
+       * 计算开票金额
+       * @type {number}
+       */
+      let paperMoneyAll = 0
+      for (const productKey in this.dataSource) {
+        const product = this.dataSource[productKey]
+        paperMoneyAll = paperMoneyAll + product.count * product.unitPrice
+      }
+      const recordForm = {
+        paperMoney: paperMoneyAll,
+      }
+      this.$nextTick(() => {
+        this.form.setFieldsValue({ ...recordForm })
+      })
     },
-    editPaper(){
+    editPaper() {
       let that = this
       this.form.validateFields((err, values) => {
         // 验证表单没错误
@@ -401,75 +368,76 @@ export default {
           that.$set(values, 'contractType', 2) // 1销售合同，2软件合同
           values.saleContract = that.saleContract
           that.spinning = true
-          updatePaper(values).then((res) => {
-            that.spinning = false
-            if (res.code == 200) {
-              that.goBackPricing()
-            }else{
-              that.$message.error(res.msg)
-            }
-          }).catch(err => that.spinning = false)
+          updatePaper(values)
+            .then((res) => {
+              that.spinning = false
+              if (res.code == 200) {
+                that.goBackPricing()
+              } else {
+                that.$message.error(res.msg)
+              }
+            })
+            .catch((err) => (that.spinning = false))
         }
       })
     },
-    arrearsMoneyChange(e){
+    arrearsMoneyChange(e) {
       let maxArrearsMoney = this.maxArrearsMoney || 0
       let number = parseFloat(e)
-      if(number > maxArrearsMoney){
+      if (number > maxArrearsMoney) {
         this.$message.warn(`欠款金额不能大于 总金额 减去 已付金额，可输入的最大欠款金额为：${maxArrearsMoney}`)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="less" scoped>
-  .top-right {
-    margin-bottom: 12px;
-    margin-right: 6px;
-  }
+.top-right {
+  margin-bottom: 12px;
+  margin-right: 6px;
+}
 
-  .clearfix:after {
-    display: block;
-    content: '';
-    width: 100%;
-    height: 0;
-    clear: both;
-  }
+.clearfix:after {
+  display: block;
+  content: '';
+  width: 100%;
+  height: 0;
+  clear: both;
+}
 
-  .clearfix {
-    zoom: 1;
-  }
+.clearfix {
+  zoom: 1;
+}
 
-  .fl-r {
-    float: right;
-    margin-left: 8px;
-  }
+.fl-r {
+  float: right;
+  margin-left: 8px;
+}
 
-  .wdf-row {
-    border: 1px solid #ddd;
-  }
+.wdf-row {
+  border: 1px solid #ddd;
+}
 
-  .col-border {
-    border: 1px solid #ddd;
-    padding: 10px 0;
-    border-bottom: none;
-  }
+.col-border {
+  border: 1px solid #ddd;
+  padding: 10px 0;
+  border-bottom: none;
+}
 
-  .col-border ~ .col-border {
-    border-left: none;
-  }
+.col-border ~ .col-border {
+  border-left: none;
+}
 
-  .wdf-form {
-    margin-top: 12px;
-    padding: 12px;
-  }
+.wdf-form {
+  margin-top: 12px;
+  padding: 12px;
+}
 
-  .ant-row.ant-form-item {
-    margin-bottom: 0;
-  }
+.ant-row.ant-form-item {
+  margin-bottom: 0;
+}
 
-  .wdf-xyk {
-    width: 50%;
-  }
-
+.wdf-xyk {
+  width: 50%;
+}
 </style>
