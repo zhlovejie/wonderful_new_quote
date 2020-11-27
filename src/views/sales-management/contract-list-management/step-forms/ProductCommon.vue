@@ -408,9 +408,18 @@ export default {
   watch: {
     params: function () {
       this.init()
+      this.isprice()
     },
   },
   methods: {
+    isprice() {
+      if (this.isTax === false) {
+        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
+      }
+      if (this.isTax === true) {
+        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice)
+      }
+    },
     init() {
       // debugger
       let that = this
@@ -420,6 +429,7 @@ export default {
       this.freightType = this.params.freightType
       this.freightCharge = this.params.freightCharge
       this.freightDivType = this.params.freightDivType || 2
+      this.lowPriceDesc = this.params.lowPriceDesc
       if (this.params.dataSource <= 0) {
         return
       }
@@ -619,13 +629,13 @@ export default {
       if (target) {
         //let val = e.target.value.trim()
 
-        if (this.isTax === false) {
-          let arr = e + parseFloat(e * (target.tax / 100))
-          this.ispriceC = target.priceC < arr ? false : true
-        }
-        if (this.isTax === true) {
-          this.ispriceC = target.priceC < e ? false : true
-        }
+        // if (this.isTax === false) {
+        //   let arr = e + parseFloat(e * (target.tax / 100))
+        //   this.ispriceC = target.priceC < arr ? false : true
+        // }
+        // if (this.isTax === true) {
+        //   this.ispriceC = target.priceC < e ? false : true
+        // }
 
         target[key] = e
         let calcObj = this.calcNumber(target)
@@ -636,6 +646,7 @@ export default {
         this.totalMmountChange()
       }
       this.freshValidateData()
+      this.isprice()
     },
     calcNumber(item) {
       //debugger

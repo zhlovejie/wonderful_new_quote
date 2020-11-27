@@ -120,7 +120,7 @@
       <span> 合同低于C价总差额: </span>
       <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
     </template>
-    <template v-if="lowPriceDesc !== ''" style="margin-top：20px">
+    <template v-if="ispriceC" style="margin-top：20px">
       <a-row type="flex" justify="center">
         <a-col class="closep" :span="4"> 特价说明 </a-col>
         <a-col class="col-mount" :span="20">
@@ -166,6 +166,7 @@ export default {
       freightCharge: 0,
       freightDivType: 2,
       lowPriceDesc: '',
+      ispriceC: true,
     }
   },
   computed: {
@@ -419,9 +420,18 @@ export default {
   watch: {
     params: function () {
       this.init()
+      this.isprice()
     },
   },
   methods: {
+    isprice() {
+      if (this.isTax === false) {
+        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
+      }
+      if (this.isTax === true) {
+        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice)
+      }
+    },
     init() {
       let that = this
       this.totalAmount = this.params.totalAmount

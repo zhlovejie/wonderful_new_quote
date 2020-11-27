@@ -260,6 +260,7 @@ export default {
           freightType: result.freightType,
           freightCharge: result.freightMoneyWithRate,
           freightDivType: result.freightDivType || 2,
+          lowPriceDesc: result.lowPriceDesc,
         }
 
         let productChange = resultProductTempChange.map((p) => {

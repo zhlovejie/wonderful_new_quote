@@ -20,12 +20,12 @@
         />
         <!-- </a-form-item> -->
       </template>
-      <template slot="productType" slot-scope="text,record">
+      <template slot="productType" slot-scope="text, record">
         <a-select
           :disabled="isNormal"
           :value="record.productType"
           placeholder="选择产品类别"
-          @change="typeSelectChange(record,$event)"
+          @change="typeSelectChange(record, $event)"
         >
           <a-select-option value="0">常规产品</a-select-option>
           <a-select-option value="1">非常规产品</a-select-option>
@@ -55,7 +55,7 @@
           :disabled="isNormal"
           :value="record.company"
           placeholder="选择单位"
-          @change="companySelectChange(record,$event)"
+          @change="companySelectChange(record, $event)"
         >
           <a-select-option value="0">套</a-select-option>
           <a-select-option value="1">台</a-select-option>
@@ -69,7 +69,7 @@
       </template>
       <template slot="count" slot-scope="text, record">
         <!-- <a-form-item :validate-status="validateData[record.key]['count'].validateStatus"> -->
-        <a-input type="number" :min="0" :value="record.count" @change="countChange(record,$event)" />
+        <a-input type="number" :min="0" :value="record.count" @change="countChange(record, $event)" />
         <!-- </a-form-item> -->
       </template>
       <template slot="unitPrice" slot-scope="text, record">
@@ -79,27 +79,33 @@
           :precision="2"
           :min="0"
           :value="record.unitPrice"
-          @change="multiplyMoney(record,'unitPrice',$event)"
+          @change="multiplyMoney(record, 'unitPrice', $event)"
         />
         <!-- </a-form-item> -->
       </template>
       <!--新增2列  单价和金额 -->
       <template slot="freightUnitPrice" slot-scope="text, record">
-        <a-input-number :disabled="isNormal" :precision=2 :min=0 :value="record.freightUnitPrice" @change="multiplyMoney(record,'freightUnitPrice',$event)" />
+        <a-input-number
+          :disabled="isNormal"
+          :precision="2"
+          :min="0"
+          :value="record.freightUnitPrice"
+          @change="multiplyMoney(record, 'freightUnitPrice', $event)"
+        />
         <!-- <span>{{record.freightUnitPrice | moneyFormatNumber}}</span> -->
       </template>
-      <template slot="totalFreightUnitPrice" slot-scope="text ,record">
-        <span>{{ record.totalFreightUnitPrice | moneyFormatNumber}}</span>
+      <template slot="totalFreightUnitPrice" slot-scope="text, record">
+        <span>{{ record.totalFreightUnitPrice | moneyFormatNumber }}</span>
       </template>
       <!--新增2列  单价和金额 END-->
-      <template slot="oneMoney" slot-scope="text ,record">
-        <span>{{ record.oneMoney | moneyFormatNumber}}</span>
+      <template slot="oneMoney" slot-scope="text, record">
+        <span>{{ record.oneMoney | moneyFormatNumber }}</span>
       </template>
       <template slot="tax" slot-scope="text, record">
         <span>{{ record.tax }}%</span>
       </template>
-      <template slot="taxAmount" slot-scope="text ,record">
-        <span>{{ record.taxAmount | moneyFormatNumber}}</span>
+      <template slot="taxAmount" slot-scope="text, record">
+        <span>{{ record.taxAmount | moneyFormatNumber }}</span>
       </template>
       <template slot="deliveryDate" slot-scope="text, record">
         <!-- <a-form-item :validate-status="validateData[record.key]['deliveryDate'].validateStatus" > -->
@@ -107,17 +113,17 @@
           :disabled="isNormal"
           format="YYYY-MM-DD"
           :value="record.deliveryDate"
-          @change="onChangeDate(record,$event)"
+          @change="onChangeDate(record, $event)"
         />
         <!-- </a-form-item> -->
       </template>
 
       <template slot="productStatus" slot-scope="text, record">
         <a-select
-          :value="record.productStatus === null ? undefined :String(record.productStatus)"
+          :value="record.productStatus === null ? undefined : String(record.productStatus)"
           placeholder="选择产品状态"
-          @change="productStatusSelectChange(record,$event)" 
-          style="width:120px;"
+          @change="productStatusSelectChange(record, $event)"
+          style="width: 120px"
         >
           <a-select-option value="0">待生产</a-select-option>
           <a-select-option value="1">现货</a-select-option>
@@ -130,13 +136,13 @@
           placeholder="备注"
           autosize
           :value="record.remarks"
-          @change="remarksSelectChange(record,$event)" 
-          style="width:180px;"
+          @change="remarksSelectChange(record, $event)"
+          style="width: 180px"
         />
       </template>
 
       <template slot="operation" slot-scope="text, record">
-        <span v-if="record.editable && record.isNew ">
+        <span v-if="record.editable && record.isNew">
           <a-popconfirm title="是否要删除此行？" @confirm="remove(record)">
             <a>删除</a>
           </a-popconfirm>
@@ -144,7 +150,7 @@
       </template>
     </a-table>
     <!-- </a-form> -->
-    <a-button v-if="!isNormal" style="width: 100%;" type="dashed" icon="plus" @click="newMember">新增行</a-button>
+    <a-button v-if="!isNormal" style="width: 100%" type="dashed" icon="plus" @click="newMember">新增行</a-button>
 
     <a-row justify="start" align="middle">
       <a-col class="col-mount" :span="24">
@@ -157,6 +163,15 @@
         <!-- <span class="span-mount">此价格{{isTax ? '含税' :'不含税'}}、{{freightType === 0 ? '含运费' : '不含运费'}}。</span> -->
       </a-col>
     </a-row>
+
+    <template v-if="lowPriceDesc !== ''" style="margin-top：20px">
+      <a-row type="flex" justify="center">
+        <a-col class="closep" :span="4"> 特价说明 </a-col>
+        <a-col class="col-mount" :span="20">
+          <a-textarea disabled type="text" v-model="lowPriceDesc" />
+        </a-col>
+      </a-row>
+    </template>
 
     <product-model ref="productModel" @custom-change="productChange"></product-model>
     <targetid-model ref="targetidModel" @custom-change="targetidChange"></targetid-model>
@@ -174,22 +189,22 @@ export default {
   name: 'ProductSplitCommon',
   components: {
     ProductModel, //选择产品
-    TargetidModel //选择标的
+    TargetidModel, //选择标的
   },
   props: {
     params: {
       type: Object,
-      default: function() {
+      default: function () {
         return {
           dataSource: [],
           totalAmount: 0,
           chineseTotalAmount: '零',
           isTax: 1,
           __fromAction: 'split',
-          __name: 'SplitNormal'
+          __name: 'SplitNormal',
         }
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -202,23 +217,23 @@ export default {
       isTax: false,
       freightType: 1,
       freightCharge: 0,
-      freightDivType:2
+      freightDivType: 2,
+      lowPriceDesc: '',
     }
   },
   computed: {
-    isNormal: function() {
+    isNormal: function () {
       return this.params.__name === 'SplitNormal'
     },
-    columns:function(){
-      
+    columns: function () {
       let baseColumns = [
         {
           align: 'center',
           title: '标的名称',
           dataIndex: 'targetName',
           key: 'targetName',
-          width:'200px',
-          scopedSlots: { customRender: 'targetName' }
+          width: '200px',
+          scopedSlots: { customRender: 'targetName' },
         },
         {
           align: 'center',
@@ -226,23 +241,23 @@ export default {
           dataIndex: 'productType',
           key: 'productType',
           scopedSlots: { customRender: 'productType' },
-          width:'200px'
+          width: '200px',
         },
         {
           align: 'center',
           title: '产品代码',
           dataIndex: 'productModel',
           key: 'productModel',
-          width:'200px',
-          scopedSlots: { customRender: 'productModel' }
+          width: '200px',
+          scopedSlots: { customRender: 'productModel' },
         },
         {
           align: 'center',
           title: '产品名称',
           dataIndex: 'productName',
           key: 'productName',
-          width:'200px',
-          scopedSlots: { customRender: 'productName' }
+          width: '200px',
+          scopedSlots: { customRender: 'productName' },
         },
         {
           align: 'center',
@@ -250,7 +265,7 @@ export default {
           dataIndex: 'company',
           key: 'company',
           scopedSlots: { customRender: 'company' },
-          width:'120px'
+          width: '120px',
         },
         {
           align: 'center',
@@ -258,7 +273,7 @@ export default {
           dataIndex: 'count',
           key: 'count',
           scopedSlots: { customRender: 'count' },
-          width:'120px'
+          width: '120px',
         },
       ]
       /**不含税，不含运费 */
@@ -269,15 +284,15 @@ export default {
           dataIndex: 'unitPrice',
           key: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' },
-          width:'150px'
+          width: '150px',
         },
         {
           align: 'center',
           title: '金额(元)',
           dataIndex: 'oneMoney',
           key: 'oneMoney',
-          width:'200px',
-          scopedSlots: { customRender: 'oneMoney' }
+          width: '200px',
+          scopedSlots: { customRender: 'oneMoney' },
         },
       ])
       /**含税，不含运费 */
@@ -288,15 +303,15 @@ export default {
           dataIndex: 'unitPrice',
           key: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' },
-          width:'150px'
+          width: '150px',
         },
         {
           align: 'center',
           title: '含税金额(元)',
           dataIndex: 'oneMoney',
           key: 'oneMoney',
-          width:'200px',
-          scopedSlots: { customRender: 'oneMoney' }
+          width: '200px',
+          scopedSlots: { customRender: 'oneMoney' },
         },
       ])
       /**不含税，含运费，单价 */
@@ -307,24 +322,24 @@ export default {
           dataIndex: 'unitPrice',
           key: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' },
-          width:'150px'
+          width: '150px',
         },
         {
           align: 'center',
           title: '含运费单价(元)',
           dataIndex: 'freightUnitPrice',
           key: 'freightUnitPrice',
-          scopedSlots: {customRender: 'freightUnitPrice'},
-          width:'200px'
+          scopedSlots: { customRender: 'freightUnitPrice' },
+          width: '200px',
         },
         {
           align: 'center',
           title: '含运费金额(元)',
           dataIndex: 'totalFreightUnitPrice',
           key: 'totalFreightUnitPrice',
-          scopedSlots: {customRender: 'totalFreightUnitPrice'},
-          width:'200px'
-        }
+          scopedSlots: { customRender: 'totalFreightUnitPrice' },
+          width: '200px',
+        },
       ])
       /**不含税，含运费，金额 */
       let case4 = baseColumns.concat([
@@ -334,15 +349,15 @@ export default {
           dataIndex: 'unitPrice',
           key: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' },
-          width:'150px'
+          width: '150px',
         },
         {
           align: 'center',
           title: '金额(元)',
           dataIndex: 'oneMoney',
           key: 'oneMoney',
-          width:'200px',
-          scopedSlots: { customRender: 'oneMoney' }
+          width: '200px',
+          scopedSlots: { customRender: 'oneMoney' },
         },
         // {
         //   align: 'center',
@@ -360,24 +375,24 @@ export default {
           dataIndex: 'unitPrice',
           key: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' },
-          width:'150px'
+          width: '150px',
         },
         {
           align: 'center',
           title: '含税含运费单价(元)',
           dataIndex: 'freightUnitPrice',
           key: 'freightUnitPrice',
-          scopedSlots: {customRender: 'freightUnitPrice'},
-          width:'200px'
+          scopedSlots: { customRender: 'freightUnitPrice' },
+          width: '200px',
         },
         {
           align: 'center',
           title: '含税含运费金额(元)',
           dataIndex: 'totalFreightUnitPrice',
           key: 'totalFreightUnitPrice',
-          scopedSlots: {customRender: 'totalFreightUnitPrice'},
-          width:'200px'
-        }
+          scopedSlots: { customRender: 'totalFreightUnitPrice' },
+          width: '200px',
+        },
       ])
       /**含税，含运费，金额 */
       let case6 = baseColumns.concat([
@@ -387,7 +402,7 @@ export default {
           dataIndex: 'unitPrice',
           key: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' },
-          width:'150px'
+          width: '150px',
         },
         {
           align: 'center',
@@ -395,7 +410,7 @@ export default {
           dataIndex: 'oneMoney',
           key: 'oneMoney',
           scopedSlots: { customRender: 'oneMoney' },
-          width:'200px'
+          width: '200px',
         },
         // {
         //   align: 'center',
@@ -432,7 +447,7 @@ export default {
             dataIndex: 'productStatus',
             key: 'productStatus',
             scopedSlots: { customRender: 'productStatus' },
-            width: '100px'
+            width: '100px',
           },
           {
             align: 'center',
@@ -440,27 +455,27 @@ export default {
             dataIndex: 'remarks',
             key: 'remarks',
             scopedSlots: { customRender: 'remarks' },
-            width: '200px'
+            width: '200px',
           },
           {
             title: '操作',
             key: 'action',
             width: '100px',
-            scopedSlots: { customRender: 'operation' }
-          }
+            scopedSlots: { customRender: 'operation' },
+          },
         ]
       )
 
       return targetColumns
-    }
+    },
   },
   mounted() {
     this.init()
   },
   watch: {
-    params: function() {
+    params: function () {
       this.init()
-    }
+    },
   },
   methods: {
     async init() {
@@ -470,8 +485,9 @@ export default {
       this.freightType = this.params.freightType
       this.freightCharge = this.params.freightCharge
       this.freightDivType = this.params.freightDivType || 2
+      this.lowPriceDesc = this.params.lowPriceDesc
       if (this.params.dataSource.length <= 0) return
-      let __source = this.params.dataSource.map(item => {
+      let __source = this.params.dataSource.map((item) => {
         let o = Object.assign({}, item)
         o.key = ++productKeyID
         o.productType = String(item.productType)
@@ -501,7 +517,7 @@ export default {
 
       this.$emit('totalAmountChange', {
         name: this.params.__name,
-        totalAmount: parseFloat(this.totalAmount)
+        totalAmount: parseFloat(this.totalAmount),
       })
       //this.freshValidateData()
     },
@@ -562,7 +578,7 @@ export default {
         productType: '0',
         productStatus: '0',
         remarks: '',
-        freightUnitPrice:0
+        freightUnitPrice: 0,
       })
       this.freshValidateData()
     },
@@ -573,19 +589,19 @@ export default {
       if (this.isNormal) {
         //非变动部分要验证能否删除
         let params = { contractId: record.contractId, productId: record.id }
-        let checkResult = await checkDeletedProduct(params).then(res => res)
+        let checkResult = await checkDeletedProduct(params).then((res) => res)
         if (checkResult.code === 500) {
           this.$message.error(checkResult.msg)
           return
         } else if (checkResult.code === 200) {
           const dataSource = [...this.dataSource]
-          this.dataSource = dataSource.filter(item => item.key !== record.key)
+          this.dataSource = dataSource.filter((item) => item.key !== record.key)
         } else {
           console.error(`删除 非变动部分 产品 出现未知情况 :`, res)
         }
       } else {
         const dataSource = [...this.dataSource]
-        this.dataSource = dataSource.filter(item => item.key !== record.key)
+        this.dataSource = dataSource.filter((item) => item.key !== record.key)
       }
     },
     // 标的id的改变 弹出层
@@ -596,7 +612,7 @@ export default {
       console.log('JSON 页面传值事件 标的id的改变 弹出层:', data)
       const dataSource = [...this.dataSource]
       let { recordParam, selectItem } = data
-      const target = dataSource.find(item => item.key === recordParam.key)
+      const target = dataSource.find((item) => item.key === recordParam.key)
       if (target) {
         target.targetId = selectItem.id
         target.targetName = selectItem.text
@@ -608,7 +624,7 @@ export default {
     //选择产品类别获取产品代码和产品图片
     typeSelectChange(record, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         target['productType'] = e
         target.productPic = null
@@ -621,7 +637,7 @@ export default {
     // 单位的改变
     companySelectChange(record, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         target['company'] = e
         this.dataSource = dataSource
@@ -630,7 +646,7 @@ export default {
     // 交货日期的改变
     onChangeDate(record, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         target['deliveryDate'] = e
         this.dataSource = dataSource
@@ -645,7 +661,7 @@ export default {
       console.log('JSON 页面传值事件 标的id的改变 弹出层:', data)
       let { selectItem, recordParam } = data
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === recordParam.key)
+      const target = dataSource.find((item) => item.key === recordParam.key)
       if (target) {
         target['productPic'] = selectItem.productPic
         target['productModel'] = selectItem.productModel
@@ -658,7 +674,7 @@ export default {
     // 数量变化
     countChange(record, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         let val = e.target.value.trim()
         target['count'] = val.length === 0 ? 0 : val
@@ -672,9 +688,9 @@ export default {
       this.freshValidateData()
     },
     // 输入单价后，求相乘的一行的金额
-    multiplyMoney(record,key, e) {
+    multiplyMoney(record, key, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         //let val = e.target.value.trim()
         target[key] = e
@@ -697,10 +713,10 @@ export default {
       let totalFreightUnitPrice = count * freightUnitPrice
       //let taxAmount = tax > 0 ? parseFloat(oneMoney) + parseFloat(oneMoney / 100 * tax) : oneMoney
       return {
-        oneMoney:oneMoney,
-        taxAmount:oneMoney,
-        freightUnitPrice:freightUnitPrice,
-        totalFreightUnitPrice:totalFreightUnitPrice
+        oneMoney: oneMoney,
+        taxAmount: oneMoney,
+        freightUnitPrice: freightUnitPrice,
+        totalFreightUnitPrice: totalFreightUnitPrice,
       }
     },
     // 合计总金额
@@ -719,25 +735,25 @@ export default {
         that.chineseTotalAmount = '零'
       } else {
         turnTheCapital({ money: totalAmount })
-          .then(res => {
+          .then((res) => {
             console.log('转大写，请求后端接口结果', res)
             that.chineseTotalAmount = res.data
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
           })
       }
       this.$emit('totalAmountChange', {
         name: this.params.__name,
-        totalAmount: parseFloat(totalAmount)
+        totalAmount: parseFloat(totalAmount),
       })
     },
     totalMmount(totalAmount) {
       return turnTheCapital({ money: totalAmount })
-        .then(res => {
+        .then((res) => {
           return res.data
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
@@ -745,12 +761,12 @@ export default {
       let hasError = this.freshValidateData()
       return {
         errors: hasError,
-        values: [...this.dataSource]
+        values: [...this.dataSource],
       }
     },
     productStatusSelectChange(record, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         target['productStatus'] = e
         this.dataSource = dataSource
@@ -758,13 +774,13 @@ export default {
     },
     remarksSelectChange(record, e) {
       const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === record.key)
+      const target = dataSource.find((item) => item.key === record.key)
       if (target) {
         target['remarks'] = e.target.value.trim()
         this.dataSource = dataSource
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
