@@ -122,8 +122,8 @@
     </template>
     <template v-if="ispriceC" style="margin-top：20px">
       <a-row type="flex" justify="center">
-        <a-col class="closep" :span="4"> 特价说明 </a-col>
-        <a-col class="col-mount" :span="20">
+        <a-col class="closep" :span="2"> 特价说明 </a-col>
+        <a-col class="col-mount" :span="10">
           <a-textarea disabled type="text" v-model="lowPriceDesc" />
         </a-col>
       </a-row>

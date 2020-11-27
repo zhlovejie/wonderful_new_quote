@@ -131,8 +131,8 @@
 
     <template v-if="ispriceC" style="margin-top：20px">
       <a-row type="flex" justify="center">
-        <a-col class="closep" :span="4"> 特价说明 </a-col>
-        <a-col class="col-mount" :span="20">
+        <a-col class="closep" :span="2"> 特价说明 </a-col>
+        <a-col class="col-mount" :span="10">
           <a-textarea type="text" v-model="lowPriceDesc" />
         </a-col>
       </a-row>
@@ -408,7 +408,12 @@ export default {
   watch: {
     params: function () {
       this.init()
-      this.isprice()
+      if (this.params.__fromAction === 'edit') {
+        this.isprice()
+      }
+      if (this.params.__fromAction === 'add') {
+        this.ispriceC = false
+      }
     },
   },
   methods: {
@@ -511,7 +516,6 @@ export default {
     },
     // 删除行
     async remove(record) {
-      debugger
       if (this.params.__fromAction === 'add') {
         const data = [...this.data]
         this.data = data.filter((item) => item.key !== record.key)
