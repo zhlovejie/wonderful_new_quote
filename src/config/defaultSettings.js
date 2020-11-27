@@ -27,11 +27,11 @@ export default {
   //baseURL: 'http://192.168.99.130:8995', // 玉堂
   //baseURL:'http://192.168.99.188:8999/oa',//王利
 
-  //baseURL:'http://192.168.13.158:8995/oa',//张恒
+  baseURL: 'http://192.168.13.253:8993/oa', //张恒
   //baseURL: 'http://192.168.13.133:8995', // 玉堂
   // baseURL: 'http://192.168.13.27:8999/oa', // 王利
   // baseURL: 'http://192.168.13.197:8999/oa', // 吴远公告
-  baseURL: 'http://106.14.194.64/cloud_new',
+  // baseURL: 'http://192.168.13.2:8999/oa',
   //baseURL: 'http://192.168.13.250/cloud',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   primaryColor: '#1890FF', // primary color of ant design
