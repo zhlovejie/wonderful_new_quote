@@ -409,7 +409,7 @@ export default {
     params: function () {
       this.init()
       if (this.params.__fromAction === 'edit') {
-        this.ispriceCode()
+        this.isprice()
       }
       if (this.params.__fromAction === 'add') {
         this.ispriceC = false
@@ -417,22 +417,12 @@ export default {
     },
   },
   methods: {
-    ispriceCode() {
+    isprice() {
       if (this.isTax === false) {
-        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
+        this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
       }
       if (this.isTax === true) {
-        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice)
-      }
-    },
-
-    isprice(target, e) {
-      if (this.isTax === false) {
-        let arr = e + parseFloat(e * (target.tax / 100))
-        this.ispriceC = target.priceC < arr ? false : true
-      }
-      if (this.isTax === true) {
-        this.ispriceC = target.priceC < e ? false : true
+        this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice)
       }
     },
     init() {
@@ -641,23 +631,13 @@ export default {
       const dataSource = [...this.data]
       const target = dataSource.find((item) => item.key === record.key)
       if (target) {
-        //let val = e.target.value.trim()
-
-        // if (this.isTax === false) {
-        //   let arr = e + parseFloat(e * (target.tax / 100))
-        //   this.ispriceC = target.priceC < arr ? false : true
-        // }
-        // if (this.isTax === true) {
-        //   this.ispriceC = target.priceC < e ? false : true
-        // }
-
         target[key] = e
         let calcObj = this.calcNumber(target)
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
         this.data = dataSource
-        this.isprice(target, e)
+        this.isprice()
         this.totalMmountChange()
       }
       this.freshValidateData()
