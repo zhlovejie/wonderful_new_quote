@@ -33,6 +33,10 @@
           <span slot="action" slot-scope="text, record">
             <template>
               <a @click="handle('edit-salary', record)">修改</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="deleteRoleInfo(record)">
+                <a type="primary">删除</a>
+              </a-popconfirm>
             </template>
           </span>
         </a-table>
@@ -43,7 +47,7 @@
 </template>
 
 <script>
-import { queryCode } from '@/api/workBox'
+import { queryCode, DictionaryDelete } from '@/api/workBox'
 import AddForm from './module/Formadd'
 
 export default {
@@ -131,6 +135,17 @@ export default {
       this.$refs.addForm.query(type, record)
     },
     // 删除
+    deleteRoleInfo(record) {
+      let that = this
+      DictionaryDelete({ id: record.id }).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
   },
 }
 </script>
