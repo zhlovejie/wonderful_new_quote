@@ -123,6 +123,9 @@ export default {
       }
       return e && e.fileList
     },
+    info() {
+      this.tempName = ''
+    },
   },
 }
 </script>
