@@ -409,7 +409,7 @@ export default {
     params: function () {
       this.init()
       if (this.params.__fromAction === 'edit') {
-        this.isprice()
+        this.ispriceCode()
       }
       if (this.params.__fromAction === 'add') {
         this.ispriceC = false
@@ -417,12 +417,22 @@ export default {
     },
   },
   methods: {
-    isprice() {
+    ispriceCode() {
       if (this.isTax === false) {
         this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
       }
       if (this.isTax === true) {
         this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice)
+      }
+    },
+
+    isprice(target, e) {
+      if (this.isTax === false) {
+        let arr = e + parseFloat(e * (target.tax / 100))
+        this.ispriceC = target.priceC < arr ? false : true
+      }
+      if (this.isTax === true) {
+        this.ispriceC = target.priceC < e ? false : true
       }
     },
     init() {
@@ -647,10 +657,10 @@ export default {
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
         this.data = dataSource
+        this.isprice(target, e)
         this.totalMmountChange()
       }
       this.freshValidateData()
-      this.isprice()
     },
     calcNumber(item) {
       //debugger
