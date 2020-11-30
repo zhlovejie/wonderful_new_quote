@@ -8,9 +8,10 @@
     :maskClosable="false"
     :confirmLoading="spinning"
   >
+    <!-- @click="passAction(2, '不通过')" -->
     <template slot="footer">
       <template v-if="isApproval">
-        <a-button class="a-button" type="primary" icon="close" @click="passAction(2, '不通过')">不通过</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction1">不通过</a-button>
         <a-button class="a-button" type="primary" icon="close" @click="noPassAction">驳回</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction(0, '通过')">通过</a-button>
       </template>
@@ -384,6 +385,7 @@
         </table>
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
+      <Approvalt ref="approval1" @opinionChange1="opinionChange1" />
     </a-spin>
   </a-modal>
 </template>
@@ -398,10 +400,12 @@ import {
   personnelFullMemberApply_updateUserBackCardSalary, //财务人员修改工资分配金额
 } from '@/api/personnelManagement'
 import Approval from './Approval'
+import Approvalt from './Approva1'
 export default {
   name: 'BecomingForm',
   components: {
     Approval: Approval,
+    Approvalt,
   },
   data() {
     return {
@@ -624,6 +628,18 @@ export default {
       let that = this
       //that.opinion = ''
       that.$refs.approval.query()
+    },
+    noPassAction1() {
+      let that = this
+      //that.opinion = ''
+      that.$refs.approval1.query()
+    },
+    opinionChange1(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 2,
+        opinion: opinion,
+      })
     },
     opinionChange(opinion) {
       //审批意见
