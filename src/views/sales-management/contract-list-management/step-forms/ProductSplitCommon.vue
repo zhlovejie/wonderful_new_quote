@@ -482,10 +482,10 @@ export default {
   methods: {
     isprice() {
       if (this.isTax === false) {
-        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
+        this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
       }
       if (this.isTax === true) {
-        this.ispriceC = this.data.every((i) => i.priceC > i.unitPrice)
+        this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice)
       }
     },
     async init() {

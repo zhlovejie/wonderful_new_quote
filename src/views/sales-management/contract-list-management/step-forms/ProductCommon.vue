@@ -174,7 +174,7 @@ export default {
       freightType: 1,
       freightCharge: 0,
       freightDivType: 2,
-      ispriceC: true,
+      ispriceC: false,
       lowPriceDesc: '',
     }
   },
@@ -404,16 +404,22 @@ export default {
   },
   mounted() {
     this.init()
+    // if (this.params.__fromAction === 'edit') {
+    this.isprice()
+    // }
+    // if (this.params.__fromAction === 'add') {
+    //   this.ispriceC = false
+    // }
   },
   watch: {
     params: function () {
       this.init()
-      if (this.params.__fromAction === 'edit') {
-        this.isprice()
-      }
-      if (this.params.__fromAction === 'add') {
-        this.ispriceC = false
-      }
+      // if (this.params.__fromAction === 'edit') {
+      this.isprice()
+      // }
+      // if (this.params.__fromAction === 'add') {
+      //   this.ispriceC = this.params.lowPriceDesc !== null ? true : false
+      // }
     },
   },
   methods: {
@@ -687,7 +693,7 @@ export default {
     },
     validate() {
       let hasError = this.freshValidateData()
-      if (this.ispriceC === true && this.lowPriceDesc === '') {
+      if (this.ispriceC === true && this.lowPriceDesc === null) {
         return this.$message.error('特价说明不能为空')
       }
       return {
