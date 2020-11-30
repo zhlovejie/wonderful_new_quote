@@ -355,6 +355,8 @@ export default {
         }
         if (low && ispriceC !== false) {
           copyCPriceDesc({ id: this.queryonedata.id, lowPriceDesc: low }).then((res) => {})
+        } else {
+          copyCPriceDesc({ id: this.queryonedata.id }).then((res) => {})
         }
 
         let products = this.formatProduct(values)
