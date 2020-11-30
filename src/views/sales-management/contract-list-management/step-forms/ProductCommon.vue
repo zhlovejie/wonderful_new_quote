@@ -425,16 +425,6 @@ export default {
         this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice)
       }
     },
-
-    // isprice(target, e) {
-    //   if (this.isTax === false) {
-    //     let arr = e + parseFloat(e * (target.tax / 100))
-    //     this.ispriceC = target.priceC < arr ? false : true
-    //   }
-    //   if (this.isTax === true) {
-    //     this.ispriceC = target.priceC < e ? false : true
-    //   }
-    // },
     init() {
       // debugger
       let that = this
