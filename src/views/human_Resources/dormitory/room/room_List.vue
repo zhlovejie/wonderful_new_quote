@@ -139,9 +139,9 @@ export default {
       listRoom().then((res) => {
         this.postSelectDataSource = res.data
       })
-      this.searchAction()
       let date = new Date()
-      this.queryParam.surfaceDate = nowDate.getFullYear() + '-' + date.getMonth()
+      this.queryParam.surfaceDate = date.getFullYear() + '-' + date.getMonth()
+      this.searchAction()
     },
     onChange(date, dateString) {
       this.queryParam.surfaceDate = dateString
