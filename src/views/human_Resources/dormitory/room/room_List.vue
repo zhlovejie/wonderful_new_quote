@@ -140,6 +140,8 @@ export default {
         this.postSelectDataSource = res.data
       })
       this.searchAction()
+      let date = new Date()
+      this.queryParam.surfaceDate = nowDate.getFullYear() + '-' + date.getMonth()
     },
     onChange(date, dateString) {
       this.queryParam.surfaceDate = dateString
