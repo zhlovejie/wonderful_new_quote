@@ -142,7 +142,8 @@ export default {
       return Promise.all([])
     },
     disabledDate(current) {
-      return current && current < this.moment().endOf("day");
+      //return current && current < this.moment().endOf("day");
+      return false
     },
     async handleOk() {
       //debugger
