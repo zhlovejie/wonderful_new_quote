@@ -75,7 +75,7 @@ export default {
         },
         {
           align: 'center',
-          title: '预警值',
+          title: '阀值(度/天)',
           key: 'text',
           dataIndex: 'text',
         },

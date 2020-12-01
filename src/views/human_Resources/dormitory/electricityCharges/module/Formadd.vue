@@ -19,13 +19,13 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="height: 51px">预警值</td>
+            <td style="height: 51px">阀值(度/天)</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
                   style="width: 400px"
-                  placeholder="输入预警值"
-                  v-decorator="['text', { rules: [{ required: true, message: '输入预警值!' }] }]"
+                  placeholder="输入阀值"
+                  v-decorator="['text', { rules: [{ required: true, message: '输入阀值!' }] }]"
                 />
               </a-form-item>
             </td>
