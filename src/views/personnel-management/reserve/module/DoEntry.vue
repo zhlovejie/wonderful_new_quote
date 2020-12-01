@@ -1310,15 +1310,15 @@ export default {
       this.fileUrlType = []
       this.fileList = []
       this.fileListSeal = []
-      that.todayList = []
-      that.todauuplate = []
+      this.todayList = []
+      this.todauuplate = []
       this.certificateList = []
       this.specialList = []
       this.previewImage = ''
       this.previewCancelSeal = ''
-      this.$refs.mdeol.info()
       this.photoUrls = ''
       this.$nextTick(() => (this.visible = false))
+      this.$refs.mdeol.info()
     },
     birthplaceCascaderChange(arrSelected) {
       console.log('birthplaceCascaderChange called...')
