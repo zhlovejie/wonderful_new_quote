@@ -129,11 +129,11 @@
       </a-col>
     </a-row>
 
-    <template v-if="ispriceC" style="margin-top：20px">
-      <a-row type="flex" justify="center">
-        <a-col class="closep" :span="2"> 特价说明 </a-col>
-        <a-col class="col-mount" :span="10">
-          <a-textarea type="text" v-model="lowPriceDesc" />
+    <template v-if="ispriceC">
+      <a-row type="flex" justify="center" style="margin-top: 20px">
+        <a-col class="closep" :span="1"> 特价说明 </a-col>
+        <a-col class="col-mount" :span="23">
+          <a-textarea type="text" :rows="1" v-model="lowPriceDesc" />
         </a-col>
       </a-row>
     </template>
@@ -305,6 +305,7 @@ export default {
           scopedSlots: { customRender: 'unitPrice' },
           width: '150px',
         },
+
         {
           align: 'center',
           title: '金额(元)',
@@ -393,33 +394,39 @@ export default {
       //   dataIndex: 'dateTime'
       // })
 
-      targetColumns.push({
-        title: '操作',
-        key: 'action',
-        width: '100px',
-        scopedSlots: { customRender: 'operation' },
-      })
+      targetColumns.push(
+        {
+          align: 'center',
+          title: '低于C价差额',
+          width: '200px',
+          dataIndex: 'productLowCPriceUnitAmount',
+          scopedSlots: { customRender: 'productLowCPriceUnitAmount' },
+        },
+        {
+          align: 'center',
+          width: '200px',
+          title: '低于C价总差额',
+          dataIndex: 'productLowCPriceAllAmount',
+          scopedSlots: { customRender: 'productLowCPriceAllAmount' },
+        },
+        {
+          title: '操作',
+          key: 'action',
+          width: '100px',
+          scopedSlots: { customRender: 'operation' },
+        }
+      )
       return targetColumns
     },
   },
   mounted() {
     this.init()
-    // if (this.params.__fromAction === 'edit') {
     this.isprice()
-    // }
-    // if (this.params.__fromAction === 'add') {
-    //   this.ispriceC = false
-    // }
   },
   watch: {
     params: function () {
       this.init()
-      // if (this.params.__fromAction === 'edit') {
       this.isprice()
-      // }
-      // if (this.params.__fromAction === 'add') {
-      //   this.ispriceC = this.params.lowPriceDesc !== null ? true : false
-      // }
     },
   },
   methods: {
@@ -626,6 +633,9 @@ export default {
         let calcObj = this.calcNumber(target)
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
+        target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
+        target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
+
         this.data = dataSource
         this.totalMmountChange()
       }
@@ -642,6 +652,8 @@ export default {
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
+        target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
+        target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
         this.data = dataSource
         this.isprice()
         this.totalMmountChange()
@@ -652,17 +664,27 @@ export default {
       //debugger
       let count = parseInt(item.count, 10)
       let unitPrice = parseFloat(item.unitPrice || 0)
+      let priceC = parseFloat(item.priceC || 0)
       let tax = this.isTax ? parseFloat(item.tax || 0) : 0
       let oneMoney = count * unitPrice
 
       let freightUnitPrice = parseFloat(item.freightUnitPrice || 0)
       let totalFreightUnitPrice = count * freightUnitPrice
-      //let taxAmount = tax > 0 ? parseFloat(oneMoney) + parseFloat(oneMoney / 100 * tax) : oneMoney
+      let productLowCPriceUnitAmount =
+        this.isTax === false && priceC > unitPrice
+          ? priceC - parseFloat(unitPrice) + parseFloat((unitPrice / 100) * tax)
+          : priceC > unitPrice
+          ? priceC - unitPrice
+          : ''
+      let productLowCPriceAllAmount =
+        parseFloat(count * productLowCPriceUnitAmount) > 0 ? parseFloat(count * productLowCPriceUnitAmount) : ''
       return {
         oneMoney: oneMoney,
         taxAmount: oneMoney,
         freightUnitPrice: freightUnitPrice,
         totalFreightUnitPrice: totalFreightUnitPrice,
+        productLowCPriceAllAmount: productLowCPriceAllAmount,
+        productLowCPriceUnitAmount: productLowCPriceUnitAmount,
       }
     },
     // 合计总金额
@@ -711,8 +733,7 @@ export default {
   margin-bottom: 0;
 }
 .closep {
-  text-align: right;
-  line-height: 4;
-  padding-right: 30px;
+  text-align: left;
+  line-height: 2;
 }
 </style>

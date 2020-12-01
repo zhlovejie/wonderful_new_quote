@@ -340,10 +340,27 @@
             <td>试用期状态</td>
             <td colspan="3">
               <a-form-item>
-                <a-radio-group :disabled="isView" v-decorator="['probationState', { rules: [{ required: true, message: '请选择试用期状态' }] }]">
+                <a-radio-group
+                  @change="onChange"
+                  :disabled="isView"
+                  v-decorator="['probationState', { rules: [{ required: true, message: '请选择试用期状态' }] }]"
+                >
                   <a-radio :value="1"> 通过</a-radio>
                   <a-radio :value="2"> 不通过 </a-radio>
                 </a-radio-group>
+              </a-form-item>
+            </td>
+          </tr>
+
+          <tr v-if="textl == 2">
+            <td>不通过原因</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-textarea
+                  placeholder="不通过原因"
+                  :rows="3"
+                  v-decorator="['noPassReason', { rules: [{ required: true, message: '请输入不通过原因' }] }]"
+                />
               </a-form-item>
             </td>
           </tr>
@@ -385,6 +402,7 @@ export default {
   data() {
     return {
       visible: false,
+      textl: undefined,
       form: this.$form.createForm(this, { name: 'SurveyFormApproval' }),
       type: 'view',
       birthplaceOptions: [], //籍贯 级联 省市
@@ -443,6 +461,10 @@ export default {
     },
   },
   methods: {
+    onChange(checked) {
+      console.log(checked)
+      this.textl = checked.target.value
+    },
     opinionChange(opinion) {
       //审批意见
       this.submitAction({

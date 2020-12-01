@@ -120,11 +120,11 @@
       <span> 合同低于C价总差额: </span>
       <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
     </template>
-    <template v-if="ispriceC" style="margin-top：20px">
-      <a-row type="flex" justify="center">
-        <a-col class="closep" :span="2"> 特价说明 </a-col>
-        <a-col class="col-mount" :span="10">
-          <a-textarea disabled type="text" v-model="lowPriceDesc" />
+    <template v-if="ispriceC">
+      <a-row type="flex" justify="center" style="margin-top: 20px">
+        <a-col class="closep" :span="1"> 特价说明 </a-col>
+        <a-col class="col-mount" :span="23">
+          <a-textarea disabled type="text" :rows="1" v-model="lowPriceDesc" />
         </a-col>
       </a-row>
     </template>
@@ -706,8 +706,7 @@ export default {
   margin-bottom: 0;
 }
 .closep {
-  text-align: right;
-  line-height: 4;
-  padding-right: 30px;
+  text-align: left;
+  line-height: 2;
 }
 </style>
