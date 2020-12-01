@@ -128,6 +128,10 @@
         >
       </a-col>
     </a-row>
+    <template v-if="this.saleContractLowCPriceAllAmount > 0">
+      <span> 合同低于C价总差额: </span>
+      <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
+    </template>
 
     <template v-if="ispriceC">
       <a-row type="flex" justify="center" style="margin-top: 20px">
@@ -173,6 +177,7 @@ export default {
       isTax: false,
       freightType: 1,
       freightCharge: 0,
+      saleContractLowCPriceAllAmount: 0,
       freightDivType: 2,
       ispriceC: false,
       lowPriceDesc: '',
@@ -442,6 +447,7 @@ export default {
       // debugger
       let that = this
       this.totalAmount = this.params.totalAmount
+      this.saleContractLowCPriceAllAmount = this.params.saleContractLowCPriceAllAmount
       this.chineseTotalAmount = this.params.chineseTotalAmount
       this.isTax = this.params.isTax
       this.freightType = this.params.freightType
@@ -638,6 +644,7 @@ export default {
 
         this.data = dataSource
         this.totalMmountChange()
+        this.difference()
       }
       this.freshValidateData()
     },
@@ -657,6 +664,7 @@ export default {
         this.data = dataSource
         this.isprice()
         this.totalMmountChange()
+        this.difference()
       }
       this.freshValidateData()
     },
@@ -687,6 +695,16 @@ export default {
         productLowCPriceUnitAmount: productLowCPriceUnitAmount,
       }
     },
+    //合计总差价
+    difference() {
+      let that = this
+      // let hasTax = this.isTax
+      let saleContractLowCPriceAllAmount = this.data.reduce((calc, item) => {
+        return calc + item.productLowCPriceAllAmount
+      }, 0)
+      this.saleContractLowCPriceAllAmount = saleContractLowCPriceAllAmount
+    },
+
     // 合计总金额
     totalMmountChange() {
       //debugger
