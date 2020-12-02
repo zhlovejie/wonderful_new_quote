@@ -639,7 +639,6 @@ export default {
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
         target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
-
         this.data = dataSource
         this.totalMmountChange()
         this.difference()
@@ -656,8 +655,8 @@ export default {
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
-        target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
-        target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
+        target['productLowCPriceUnitAmount'] = Number(calcObj.productLowCPriceUnitAmount).toFixed(2)
+        target['productLowCPriceAllAmount'] = Number(calcObj.productLowCPriceAllAmount).toFixed(2)
         this.data = dataSource
         this.isprice()
         this.totalMmountChange()
@@ -673,14 +672,19 @@ export default {
 
       let freightUnitPrice = parseFloat(item.freightUnitPrice || 0)
       let totalFreightUnitPrice = count * freightUnitPrice
-      let productLowCPriceUnitAmount =
-        this.isTax === false && priceC > unitPrice
-          ? priceC - (parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100)))
-          : priceC > unitPrice
-          ? priceC - unitPrice
-          : ''
-      let productLowCPriceAllAmount =
-        parseFloat(count * productLowCPriceUnitAmount) > 0 ? parseFloat(count * productLowCPriceUnitAmount) : ''
+      let productLowCPriceUnitAmount = null
+      let productLowCPriceAllAmount = null
+      if (unitPrice > 0) {
+        productLowCPriceUnitAmount =
+          this.isTax === false && priceC > unitPrice
+            ? priceC - (parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100)))
+            : priceC > unitPrice
+            ? priceC - unitPrice
+            : ''
+        productLowCPriceAllAmount =
+          parseFloat(count * productLowCPriceUnitAmount) > 0 ? parseFloat(count * productLowCPriceUnitAmount) : ''
+      }
+
       return {
         oneMoney: oneMoney,
         taxAmount: oneMoney,
@@ -695,7 +699,7 @@ export default {
       let that = this
       // let hasTax = this.isTax
       let saleContractLowCPriceAllAmount = this.data.reduce((calc, item) => {
-        return calc + item.productLowCPriceAllAmount
+        return Number(calc) + Number(item.productLowCPriceAllAmount)
       }, 0)
       this.saleContractLowCPriceAllAmount = saleContractLowCPriceAllAmount
     },
