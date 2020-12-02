@@ -28,9 +28,9 @@
               >查询</a-button
             >
 
-            <a-button class="a-button" type="primary" icon="download" style="margin-left: 10px" @click="downloadAction"
+            <!-- <a-button class="a-button" type="primary" icon="download" style="margin-left: 10px" @click="downloadAction"
               >下载</a-button
-            >
+            > -->
           </a-form-item>
         </a-form>
       </div>
@@ -273,61 +273,61 @@ export default {
     formatHTML(str) {
       return str ? str.split(RegExp('\n', 'g')).join('<br/>') : ''
     },
-    downloadAction() {
-      let that = this
-      let searchParam = Object.assign({}, this.searchParam)
-      if (searchParam.statiticsMonthDate instanceof moment) {
-        searchParam.statiticsMonthDate = searchParam.statiticsMonthDate.format('YYYY-MM')
-      }
-      that.spinning = true
-      attenceMonthStatiticsExportExcel(searchParam)
-        .then((res) => {
-          that.spinning = false
-          console.log(res)
-          if (res instanceof Blob) {
-            const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            const isJson = res.type === 'application/json'
-            if (isFile) {
-              //返回文件 则下载
-              const objectUrl = URL.createObjectURL(res)
-              const a = document.createElement('a')
-              document.body.appendChild(a)
-              a.style = 'display: none'
-              a.href = objectUrl
-              a.download = `考勤月历${searchParam.statiticsMonthDate}.xls`
-              a.click()
-              document.body.removeChild(a)
-              that.$message.info('下载成功')
-              return
-            } else if (isJson) {
-              //返回json处理
-              var reader = new FileReader()
-              reader.onload = function (e) {
-                let _res = null
-                try {
-                  _res = JSON.parse(e.target.result)
-                } catch (err) {
-                  _res = null
-                }
-                if (_res !== null) {
-                  if (_res.code !== 0) {
-                    that.$message.info(_res.message)
-                  } else {
-                    that.$message.info('下载成功')
-                  }
-                } else {
-                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
-                  return
-                }
-              }
-              reader.readAsText(res)
-            } else {
-              that.$message.info('不支持的类型:' + res)
-            }
-          }
-        })
-        .catch((err) => (that.spinning = true))
-    },
+    // downloadAction() {
+    //   let that = this
+    //   let searchParam = Object.assign({}, this.searchParam)
+    //   if (searchParam.statiticsMonthDate instanceof moment) {
+    //     searchParam.statiticsMonthDate = searchParam.statiticsMonthDate.format('YYYY-MM')
+    //   }
+    //   that.spinning = true
+    //   attenceMonthStatiticsExportExcel(searchParam)
+    //     .then((res) => {
+    //       that.spinning = false
+    //       console.log(res)
+    //       if (res instanceof Blob) {
+    //         const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    //         const isJson = res.type === 'application/json'
+    //         if (isFile) {
+    //           //返回文件 则下载
+    //           const objectUrl = URL.createObjectURL(res)
+    //           const a = document.createElement('a')
+    //           document.body.appendChild(a)
+    //           a.style = 'display: none'
+    //           a.href = objectUrl
+    //           a.download = `考勤月历${searchParam.statiticsMonthDate}.xls`
+    //           a.click()
+    //           document.body.removeChild(a)
+    //           that.$message.info('下载成功')
+    //           return
+    //         } else if (isJson) {
+    //           //返回json处理
+    //           var reader = new FileReader()
+    //           reader.onload = function (e) {
+    //             let _res = null
+    //             try {
+    //               _res = JSON.parse(e.target.result)
+    //             } catch (err) {
+    //               _res = null
+    //             }
+    //             if (_res !== null) {
+    //               if (_res.code !== 0) {
+    //                 that.$message.info(_res.message)
+    //               } else {
+    //                 that.$message.info('下载成功')
+    //               }
+    //             } else {
+    //               that.$message.info('json解析出错 e.target.result：' + e.target.result)
+    //               return
+    //             }
+    //           }
+    //           reader.readAsText(res)
+    //         } else {
+    //           that.$message.info('不支持的类型:' + res)
+    //         }
+    //       }
+    //     })
+    //     .catch((err) => (that.spinning = true))
+    // },
     hasException(dataIndex, dayStatiticsList) {
       let _dayStatiticsList = dayStatiticsList || []
       let target = _dayStatiticsList.find((item) => moment(item.statiticsDate).format('YYYYMMDD') === dataIndex)
