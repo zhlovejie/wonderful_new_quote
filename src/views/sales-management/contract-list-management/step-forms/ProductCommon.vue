@@ -128,7 +128,7 @@
         >
       </a-col>
     </a-row>
-    <template v-if="this.saleContractLowCPriceAllAmount > 0 && this.data.length > 0">
+    <template v-if="saleContractLowCPriceAllAmount > 0 && this.data.length > 0">
       <span> 合同低于C价总差额: </span>
       <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
     </template>
@@ -426,23 +426,47 @@ export default {
   },
   mounted() {
     this.init()
-    this.isprice()
   },
   watch: {
     params: function () {
       this.init()
-      this.isprice()
     },
-  },
-  methods: {
-    isprice() {
+    data: function () {
       if (this.isTax === false) {
         this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
       }
       if (this.isTax === true) {
         this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice)
       }
+      //合计总差价
+      let saleContractLowCPriceAllAmount = this.data.reduce((calc, item) => {
+        return (Number(calc) + Number(item.productLowCPriceAllAmount)).toFixed(2)
+      }, 0)
+      this.saleContractLowCPriceAllAmount = Number(saleContractLowCPriceAllAmount)
+
+      let hasTax = this.isTax
+      let totalAmount = this.data.reduce((calc, item) => {
+        return calc + (hasTax ? item.taxAmount : item.oneMoney)
+      }, 0)
+      let _freightCharge = this.freightCharge
+      totalAmount = totalAmount + _freightCharge
+      totalAmount = Number(totalAmount).toFixed(2)
+      this.totalAmount = totalAmount
+      if (totalAmount <= 0) {
+        this.chineseTotalAmount = '零'
+      } else {
+        turnTheCapital({ money: totalAmount })
+          .then((res) => {
+            console.log('转大写，请求后端接口结果', res)
+            this.chineseTotalAmount = res.data
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
     },
+  },
+  methods: {
     init() {
       let that = this
       this.totalAmount = this.params.totalAmount
@@ -529,6 +553,8 @@ export default {
         productModel: null,
         productType: '0',
         freightUnitPrice: '',
+        productLowCPriceAllAmount: 0, //总差价
+        productLowCPriceUnitAmount: 0, //差价
       })
       this.freshValidateData()
     },
@@ -640,8 +666,7 @@ export default {
         target['taxAmount'] = calcObj.taxAmount
         target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
         this.data = dataSource
-        this.totalMmountChange()
-        this.difference()
+        // this.totalMmountChange()
       }
       this.freshValidateData()
     },
@@ -658,9 +683,7 @@ export default {
         target['productLowCPriceUnitAmount'] = Number(calcObj.productLowCPriceUnitAmount).toFixed(2)
         target['productLowCPriceAllAmount'] = Number(calcObj.productLowCPriceAllAmount).toFixed(2)
         this.data = dataSource
-        this.isprice()
-        this.totalMmountChange()
-        this.difference()
+        // this.totalMmountChange()
       }
       this.freshValidateData()
     },
@@ -672,17 +695,17 @@ export default {
 
       let freightUnitPrice = parseFloat(item.freightUnitPrice || 0)
       let totalFreightUnitPrice = count * freightUnitPrice
-      let productLowCPriceUnitAmount = null
-      let productLowCPriceAllAmount = null
+      let productLowCPriceUnitAmount = 0
+      let productLowCPriceAllAmount = 0
       if (unitPrice > 0) {
         productLowCPriceUnitAmount =
           this.isTax === false && priceC > unitPrice
             ? priceC - (parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100)))
             : priceC > unitPrice
             ? priceC - unitPrice
-            : ''
+            : 0
         productLowCPriceAllAmount =
-          parseFloat(count * productLowCPriceUnitAmount) > 0 ? parseFloat(count * productLowCPriceUnitAmount) : ''
+          parseFloat(count * productLowCPriceUnitAmount) > 0 ? parseFloat(count * productLowCPriceUnitAmount) : 0
       }
 
       return {
@@ -694,41 +717,32 @@ export default {
         productLowCPriceUnitAmount: productLowCPriceUnitAmount,
       }
     },
-    //合计总差价
-    difference() {
-      let that = this
-      // let hasTax = this.isTax
-      let saleContractLowCPriceAllAmount = this.data.reduce((calc, item) => {
-        return (Number(calc) + Number(item.productLowCPriceAllAmount)).toFixed(2)
-      }, 0)
-      this.saleContractLowCPriceAllAmount = saleContractLowCPriceAllAmount
-    },
 
-    // 合计总金额
-    totalMmountChange() {
-      let that = this
-      let hasTax = this.isTax
-      let totalAmount = this.data.reduce((calc, item) => {
-        return calc + (hasTax ? item.taxAmount : item.oneMoney)
-      }, 0)
+    // // 合计总金额
+    // totalMmountChange() {
+    //   let that = this
+    //   let hasTax = this.isTax
+    //   let totalAmount = this.data.reduce((calc, item) => {
+    //     return calc + (hasTax ? item.taxAmount : item.oneMoney)
+    //   }, 0)
 
-      let _freightCharge = this.freightCharge
-      totalAmount = totalAmount + _freightCharge
-      totalAmount = Number(totalAmount).toFixed(2)
-      this.totalAmount = totalAmount
-      if (totalAmount <= 0) {
-        that.chineseTotalAmount = '零'
-      } else {
-        turnTheCapital({ money: totalAmount })
-          .then((res) => {
-            console.log('转大写，请求后端接口结果', res)
-            that.chineseTotalAmount = res.data
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-      }
-    },
+    //   let _freightCharge = this.freightCharge
+    //   totalAmount = totalAmount + _freightCharge
+    //   totalAmount = Number(totalAmount).toFixed(2)
+    //   this.totalAmount = totalAmount
+    //   if (totalAmount <= 0) {
+    //     that.chineseTotalAmount = '零'
+    //   } else {
+    //     turnTheCapital({ money: totalAmount })
+    //       .then((res) => {
+    //         console.log('转大写，请求后端接口结果', res)
+    //         that.chineseTotalAmount = res.data
+    //       })
+    //       .catch((error) => {
+    //         console.error(error)
+    //       })
+    //   }
+    // },
     validate() {
       let hasError = this.freshValidateData()
       if (this.ispriceC === true && this.lowPriceDesc === null) {
