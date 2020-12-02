@@ -680,7 +680,10 @@ export default {
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
-        target['productLowCPriceUnitAmount'] = Number(calcObj.productLowCPriceUnitAmount).toFixed(2)
+        target['productLowCPriceUnitAmount'] =
+          Number(calcObj.productLowCPriceUnitAmount).toFixed(2) > 0
+            ? Number(calcObj.productLowCPriceUnitAmount).toFixed(2)
+            : 0
         target['productLowCPriceAllAmount'] = Number(calcObj.productLowCPriceAllAmount).toFixed(2)
         this.data = dataSource
         // this.totalMmountChange()
