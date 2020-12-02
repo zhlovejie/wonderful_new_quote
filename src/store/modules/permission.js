@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { asyncRouterMap, constantRouterMap, notFoundRouter } from '@/config/router.config'
 import {
   routerListByUser
@@ -116,6 +117,7 @@ const permission = {
     GenerateRoutes ({ commit }, data) {
       return new Promise(resolve => {
         routerListByUser().then(res => {
+          Vue.ls.set('USER_ROUTERS',res.data || [])
           const accessedRouters = generator(res.code === 200 ? res.data : [])
           //console.log('generator', accessedRouters)
           accessedRouters.push(notFoundRouter)

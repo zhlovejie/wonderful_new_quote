@@ -2,7 +2,11 @@
   <div class="dir-wrapper">
     <div class="dir-header">
       <h3><a-icon type="folder" /><span style="margin-left:10px;">{{dir.dirName}}</span></h3>
-      <div class="dir-option-wrapper" v-if="$auth('files-management-list:addFile') || $auth('files-management-list:delDir')">
+      
+      <div class="dir-option-wrapper" v-if="isView">
+        <a-button type="link" @click="doAction('back',null)"><a-icon type="rollback" />返回</a-button>
+      </div>
+      <div class="dir-option-wrapper" v-if="!isView && ($auth('files-management-list:addFile') || $auth('files-management-list:delDir'))">
         <a-dropdown>
           <a-menu slot="overlay" @click="handleMenuClick">
             <a-menu-item key="add" v-if="$auth('files-management-list:addFile')">
@@ -45,25 +49,40 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
-          size="small"
+          :size="tableSize"
         >
+          
+          <div slot="fileName" slot-scope="text, record" >
+            <a-tooltip v-if="String(text).length > 24">
+              <template slot="title">{{text}}</template>
+              {{ String(text).slice(0,24) }}...
+            </a-tooltip>
+            <span v-else>{{text}}</span>
+          </div>
           <div slot="action" slot-scope="text, record">
-            <template v-if="$auth('files-management-list:viewFile')">
+            <template v-if="isView">
               <a type="primary" @click="doAction('view',record)">查看</a>
-            </template>
-            <template v-if="$auth('files-management-list:downloadFile')">
               <a-divider type="vertical" />
-              <a target="_blank" :href="record.filePath">下载</a>
+              <a target="_blank" v-download="record.filePath">下载</a>
             </template>
-            <template v-if="$auth('files-management-list:editFile')">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit',record)">修改</a>
-            </template>
-            <template v-if="$auth('files-management-list:delFile')">
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
-                <a href="javascript:void(0);">删除</a>
-              </a-popconfirm>
+            <template v-else>
+              <template v-if="$auth('files-management-list:viewFile')">
+                <a type="primary" @click="doAction('view',record)">查看</a>
+              </template>
+              <template v-if="$auth('files-management-list:downloadFile')">
+                <a-divider type="vertical" />
+                <a target="_blank" :href="record.filePath">下载</a>
+              </template>
+              <template v-if="$auth('files-management-list:editFile')">
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('edit',record)">修改</a>
+              </template>
+              <template v-if="$auth('files-management-list:delFile')">
+                <a-divider type="vertical" />
+                <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+                  <a href="javascript:void(0);">删除</a>
+                </a-popconfirm>
+              </template>
             </template>
           </div>
         </a-table>
@@ -80,13 +99,13 @@ import XdocView from './XdocView'
 const columns = [
   {
     title: '文件名',
-    dataIndex: 'fileName'
+    dataIndex: 'fileName',
+    scopedSlots: { customRender: 'fileName' },
   },
   {
     align: 'center',
     title: '操作',
-    scopedSlots: { customRender: 'action' },
-    width:180
+    scopedSlots: { customRender: 'action' }
   }
 ]
 export default {
@@ -99,10 +118,12 @@ export default {
     dir: {
       type: Object,
       default() {
-        return {
-          fileList: []
-        }
+        return null
       }
+    },
+    isView:{
+      type:Boolean,
+      default:() => false
     }
   },
   data() {
@@ -124,10 +145,13 @@ export default {
         userId: this.dir.userId || undefined,
         fileName: this.fileName
       }
+    },
+    tableSize(){
+      return this.isView ? 'middle' : 'small'
     }
   },
   mounted() {
-    this.searchAction()
+    this.dir && this.searchAction()
   },
   methods: {
     searchAction(opt) {
@@ -206,6 +230,10 @@ export default {
         that.$refs.xdocView.query(record.filePath)
         return
       }
+      if(type === 'back'){
+        that.$emit('back')
+        return
+      }
     },
     handleMenuClick(event){
       this.doAction(event.key)
@@ -242,4 +270,7 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+
+
 </style>

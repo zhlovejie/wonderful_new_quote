@@ -704,7 +704,7 @@ export default {
           component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
           meta: {
             title: '代理合同',
-            keepAlive: true,
+            keepAlive: false,
             permission: ['permission']
           }
         },

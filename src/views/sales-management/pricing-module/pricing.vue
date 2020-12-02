@@ -147,7 +147,7 @@ export default {
       searchParams: {
         dayWeekMonth: 1,
       }, //高级筛选条件对象
-      dayWeekMonth: 4, //今天、本周、本月、全部
+      dayWeekMonth: 1, //今天、本周、本月、全部
       isExpanded: false, //是否展开列表子数据
     }
   },
@@ -158,13 +158,13 @@ export default {
       //console.log(from)
       if (to.name === 'pricing') {
         console.log('刷新核价列表this.$refs', this.$refs)
-        this.dayWeekMonth = 4
+        this.dayWeekMonth = 1
         this.searchAction({ dayWeekMonth: this.dayWeekMonth })
       }
     },
   },
   mounted: function () {
-    this.dayWeekMonth = 4
+    this.dayWeekMonth = 1
     this.searchAction()
   },
   methods: {
@@ -207,7 +207,7 @@ export default {
         this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
         this.searchParams = { ...this.searchParams, dayWeekMonth: this.dayWeekMonth }
         this.searchAction()
-        this.searchAction()
+        //this.searchAction()
       }
       // this.isExpanded = false
       // this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
