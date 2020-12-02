@@ -73,10 +73,9 @@
         </div>
 
         <div slot="costPrice" slot-scope="text, record">
-          <span v-if="text==-1">***</span>
+          <span v-if="+text === -1">***</span>
           <span v-else>{{text}}</span>
         </div>
-
 
       </a-table>
     </a-card>
