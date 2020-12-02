@@ -444,7 +444,6 @@ export default {
       }
     },
     init() {
-      // debugger
       let that = this
       this.totalAmount = this.params.totalAmount
       this.saleContractLowCPriceAllAmount = this.params.saleContractLowCPriceAllAmount
@@ -639,7 +638,6 @@ export default {
         let calcObj = this.calcNumber(target)
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
-        target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
         target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
 
         this.data = dataSource
@@ -650,7 +648,6 @@ export default {
     },
     // 输入单价后，求相乘的一行的金额
     multiplyMoney(record, key, e) {
-      // debugger
       const dataSource = [...this.data]
       const target = dataSource.find((item) => item.key === record.key)
       if (target) {
@@ -662,7 +659,6 @@ export default {
         target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
         target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
         this.data = dataSource
-        debugger
         this.isprice()
         this.totalMmountChange()
         this.difference()
@@ -670,7 +666,6 @@ export default {
       this.freshValidateData()
     },
     calcNumber(item) {
-      //debugger
       let count = parseInt(item.count, 10)
       let unitPrice = parseFloat(item.unitPrice || 0)
       let priceC = parseFloat(item.priceC || 0)
@@ -678,10 +673,9 @@ export default {
 
       let freightUnitPrice = parseFloat(item.freightUnitPrice || 0)
       let totalFreightUnitPrice = count * freightUnitPrice
-      debugger
       let productLowCPriceUnitAmount =
         this.isTax === false && priceC > unitPrice
-          ? priceC - parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100))
+          ? priceC - (parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100)))
           : priceC > unitPrice
           ? priceC - unitPrice
           : ''
@@ -708,7 +702,6 @@ export default {
 
     // 合计总金额
     totalMmountChange() {
-      //debugger
       let that = this
       let hasTax = this.isTax
       let totalAmount = this.data.reduce((calc, item) => {
