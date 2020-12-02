@@ -128,12 +128,12 @@
         >
       </a-col>
     </a-row>
-    <template v-if="this.saleContractLowCPriceAllAmount > 0">
+    <template v-if="this.saleContractLowCPriceAllAmount > 0 && this.data.length > 0">
       <span> 合同低于C价总差额: </span>
       <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
     </template>
 
-    <template v-if="ispriceC">
+    <template v-if="ispriceC && this.data.length > 0">
       <a-row type="flex" justify="center" style="margin-top: 20px">
         <a-col class="closep" :span="1"> 特价说明 </a-col>
         <a-col class="col-mount" :span="23">
@@ -699,7 +699,7 @@ export default {
       let that = this
       // let hasTax = this.isTax
       let saleContractLowCPriceAllAmount = this.data.reduce((calc, item) => {
-        return Number(calc) + Number(item.productLowCPriceAllAmount)
+        return (Number(calc) + Number(item.productLowCPriceAllAmount)).toFixed(2)
       }, 0)
       this.saleContractLowCPriceAllAmount = saleContractLowCPriceAllAmount
     },
