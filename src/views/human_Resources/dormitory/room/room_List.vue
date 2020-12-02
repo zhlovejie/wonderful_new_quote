@@ -212,7 +212,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download = `电费信息${that.queryParam.surfaceDate}.xls`
+              a.download = `电费信息.xls`
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
