@@ -16,6 +16,17 @@ export function getDevisionManagementList(parameter) {
     params: parameter
   })
 }
+
+
+export function downexportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/room/room-electricity-fees/roomElectricityFees/exportExcel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 //批量设置权限
 export function getSaveRoleMenu(parameter) {
   return axios({
