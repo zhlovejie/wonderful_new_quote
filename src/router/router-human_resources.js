@@ -179,6 +179,17 @@ export default { //人力资源
             permission: ['permission']
           },
         },
+        {
+          path: '/human_Resources/dormitory/electricityCharges',
+          name: 'human_Resources_electricityCharges',
+          component: () => import('@/views/human_Resources/dormitory/electricityCharges/electricityCharges_List'),
+          meta: {
+            title: '电费预警设置',
+            icon: 'profile',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
       ]
     },
     {

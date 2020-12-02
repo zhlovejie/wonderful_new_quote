@@ -973,6 +973,7 @@ export default {
       that.type = type
       that.certificateList = []
       that.specialList = []
+      that.todayList = []
       that.todauuplate = []
       that.record = Object.assign({}, record)
       that.form.resetFields()
@@ -1309,6 +1310,7 @@ export default {
       this.fileUrlType = []
       this.fileList = []
       this.fileListSeal = []
+      this.todayList = []
       this.todauuplate = []
       this.certificateList = []
       this.specialList = []
@@ -1316,6 +1318,7 @@ export default {
       this.previewCancelSeal = ''
       this.photoUrls = ''
       this.$nextTick(() => (this.visible = false))
+      this.$refs.mdeol.info()
     },
     birthplaceCascaderChange(arrSelected) {
       console.log('birthplaceCascaderChange called...')

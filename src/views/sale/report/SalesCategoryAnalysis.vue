@@ -1,21 +1,26 @@
 <template>
   <a-card :bordered="false">
     <a-row>
-      <a-col :span="10">
+      <a-col :span="24">
         <a-form layout="inline">
           <a-form-item>
-            <a-month-picker placeholder="开始日期" v-model="startTime" @openChange="handleStartOpenChange" />
+            <a-button-group>
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 1 }" @click="simpleSearch(1)"
+                >今天</a-button
+              >
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 2 }" @click="simpleSearch(2)"
+                >本周</a-button
+              >
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 3 }" @click="simpleSearch(3)"
+                >本月</a-button
+              >
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType1 === 4 }" @click="simpleSearch(4)"
+                >全部</a-button
+              >
+            </a-button-group>
           </a-form-item>
           <a-form-item>
-            <span>~</span>
-          </a-form-item>
-          <a-form-item>
-            <a-month-picker
-              placeholder="结束日期"
-              v-model="endTime"
-              :open="endOpen"
-              @openChange="handleEndOpenChange"
-            />
+            <a-range-picker style="margin-bottom: 20px" v-model="sDate" :allowClear="true" />
           </a-form-item>
           <a-form-item>
             <a-button class="a-button" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
@@ -28,9 +33,10 @@
         <a-table
           :columns="columns"
           :dataSource="tableData"
-          :pagination="pagination"
+          :pagination="false"
           :loading="loading"
-          @change="handleTableChange"
+          size="small"
+          bordered
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -40,16 +46,18 @@
           </div>
         </a-table>
       </a-col>
-      <a-col :span="14">
-        <div class="chart-wrapper">
-          <h3 class="chart-title">部门业绩分析</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
-            <v-tooltip />
-
-            <v-legend />
-            <v-interval position="月份*销售金额" color="name" :adjust="adjust" :opcaity="1" />
-            <v-axis :label="labelFormat" :title="title" dataKey="销售金额" />
-          </v-chart>
+      <a-col :span="12" v-for="key in Object.keys(chartData)" :key="key">
+        <div class="chart-wrapper" style="height: 500px">
+          <h3 class="chart-title">{{ key === 'numP' ? '总计占比' : key }}</h3>
+          <template v-if="chartData">
+            <v-chart :forceFit="true" :height="chartHeight" :data="chartData[key]" :scale="scale">
+              <v-tooltip :showTitle="false" dataKey="item*percent" />
+              <v-axis />
+              <v-legend dataKey="item" />
+              <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
+              <v-coord type="theta" />
+            </v-chart>
+          </template>
         </div>
       </a-col>
     </a-row>
@@ -57,73 +65,49 @@
 </template>
 
 <script>
-import { pageListDepartmentPerformanceReport, exportExcelDatas } from '@/api/saleReport'
+import { Statistical, downStatistical } from '@/api/saleReport'
 import moment from 'moment'
 const DataSet = require('@antv/data-set')
-
-const label = {
-  textStyle: {
-    fill: '#aaaaaa',
-  },
-}
-
-const labelFormat = {
-  textStyle: {
-    fill: '#aaaaaa',
-  },
-  formatter: function formatter(text) {
-    return text.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')
-  },
-}
-
-const tickLine = {
-  alignWithLabel: false,
-  length: 0,
-}
-
-const title = {
-  offset: 70,
-}
 export default {
-  name: 'DepartmentPerformanceReport',
+  name: 'PersonnelPerformanceReport',
   data() {
     return {
-      pageTitle: '部门业绩分析',
+      pageTitle: '销售类别统计',
       columns: [],
       sDate: [undefined, undefined],
       dataSource: [],
-      pagination: {
-        current: 1,
-      },
+      CakeShape: [],
       loading: false,
-      chartHeight: 600,
-      padding: [20, 20, 100, 140],
-      label,
-      labelFormat,
-      tickLine,
-      title,
+      chartHeight: 400,
+      pieStyle: {
+        stroke: '#fff',
+        lineWidth: 1,
+      },
+      //   padding: [20, 20, 50, 140],
       scale: [
         {
-          dataKey: '销售金额',
-          alias: '销售额(RMB)',
+          dataKey: 'percent',
+          min: 0,
+          formatter: '.0%',
         },
       ],
-      monthFormat: 'YYYY/MM',
-      adjust: [
+      labelConfig: [
+        'percent',
         {
-          type: 'dodge',
-          marginRatio: 1 / 32,
+          formatter: (val, item) => {
+            return item.point.item + ': ' + val
+          },
         },
       ],
-      startTime: undefined,
-      endTime: undefined,
-      endOpen: false,
+
+      stageTimeType: 1,
+      stageTimeType1: undefined,
     }
   },
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'DepartmentPerformanceReport') {
+        if (to.name === 'SalesCategoryAnalysis') {
           this.init()
         }
       },
@@ -131,44 +115,7 @@ export default {
     },
   },
   computed: {
-    chartData() {
-      //参考 https://viserjs.github.io/demo.html#/viser/bar/grouped-column
-      let fields = [...new Set(this.dataSource.map((item) => item.date))]
-      let _formatChartData = (records) => {
-        if (!Array.isArray(records)) {
-          return []
-        }
-        if (records.length === 0) {
-          return []
-        }
-        let keys = Object.keys(records[0]).filter((v) => v !== 'date' && v !== 'key')
-        let result = []
-        records.map((item) => {
-          keys.map((k) => {
-            let target = result.find((item) => item.name === k)
-            if (target) {
-              target[`${item.date}`] = +item[k]
-            } else {
-              let obj = {}
-              obj.name = k
-              obj[`${item.date}`] = +item[k]
-              result.push(obj)
-            }
-          })
-        })
-        return result
-      }
-      const dv = new DataSet.View().source(_formatChartData(this.dataSource))
-      dv.transform({
-        type: 'fold',
-        fields: fields,
-        key: '月份',
-        value: '销售金额',
-      })
-      return dv.rows
-    },
     tableData() {
-      //let _res = this.formatTableData(this.dataSource)
       let _res = this.dataSource
       if (_res.length > 0) {
         let _columns = [
@@ -176,15 +123,27 @@ export default {
             title: '序号',
             key: 'order',
             width: '70px',
+            align: 'center',
             scopedSlots: { customRender: 'order' },
+          },
+          {
+            title: '名称',
+            align: 'center',
+            dataIndex: 'text',
+          },
+          {
+            title: '总计占比(%)',
+            align: 'center',
+            dataIndex: 'numP',
           },
         ]
 
         Object.keys(_res[0]).forEach((v) => {
-          if (v !== 'key') {
+          if (v !== 'numP' && v !== 'key' && v !== 'text') {
             _columns.push({
-              title: v === 'date' ? '日期' : v,
+              title: v + '占比(%)',
               dataIndex: v,
+              align: 'center',
               scopedSlots: { customRender: v },
             })
           }
@@ -195,16 +154,51 @@ export default {
       }
       return _res
     },
+    chartData() {
+      let dataSource = [...this.dataSource]
+      if (dataSource.length === 0) {
+        return {}
+      }
+      let baseKey = 'text'
+      let otherKeys = Object.keys(dataSource[0]).filter((k) => ![baseKey, 'key'].includes(k))
+
+      let map = {}
+      otherKeys.map((k) => {
+        map[k] = []
+      })
+      dataSource.map((item) => {
+        otherKeys.map((k) => {
+          map[k].push({
+            item: item[baseKey],
+            count: item[k],
+          })
+        })
+      })
+
+      Object.keys(map).map((k) => {
+        const dv = new DataSet.View().source(map[k])
+        dv.transform({
+          type: 'percent',
+          field: 'count',
+          dimension: 'item',
+          as: 'percent',
+        })
+        map[k] = dv.rows
+      })
+
+      return map
+    },
     searchParam() {
       let startTime = undefined,
         endTime = undefined
-      //if(Array.isArray(this.sDate) && this.sDate.length === 2){
-      startTime = this.startTime instanceof moment ? this.startTime.format('YYYY-MM') : undefined
-      endTime = this.endTime instanceof moment ? this.endTime.format('YYYY-MM') : undefined
-      //}
+      if (Array.isArray(this.sDate) && this.sDate.length === 2) {
+        startTime = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        endTime = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
+      }
       return {
         startTime,
         endTime,
+        stageTimeType: this.stageTimeType,
       }
     },
   },
@@ -212,37 +206,41 @@ export default {
     moment: moment,
     init() {
       this.searchAction()
+      this.componentDidUpdate()
+    },
+    componentDidUpdate() {
+      setTimeout(() => {
+        const e = document.createEvent('Event')
+        e.initEvent('resize', true, true)
+        window.dispatchEvent(e)
+      }, 10)
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
-      console.log('执行搜索...', _searchParam)
+      let _searchParam = Object.assign({}, { ...that.searchParam }, opt || {})
       that.loading = true
-      pageListDepartmentPerformanceReport(_searchParam)
+      that.dataSource = []
+      Statistical(_searchParam)
         .then((res) => {
           that.loading = false
-          that.dataSource = res.data.records.map((item, index) => {
+          that.dataSource = res.data.map((item, index) => {
             item.key = index + 1
             return item
           })
-          //设置数据总条数
-          const pagination = { ...that.pagination }
-          pagination.total = res.data.total
-          that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
     },
-    // 分页
-    handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction()
-    },
+
     simpleSearch(type) {
-      this.stageTimeType = this.stageTimeType === type ? undefined : type
-      this.searchAction()
+      if (type == 4) {
+        this.stageTimeType1 = 4
+        this.stageTimeType = undefined
+        this.searchAction()
+      } else {
+        this.stageTimeType1 = undefined
+        this.stageTimeType = this.stageTimeType === type ? undefined : type
+        this.searchAction()
+      }
     },
     actionHandler(type) {
       if (type === 'search') {
@@ -253,7 +251,7 @@ export default {
     },
     downloadAction() {
       let that = this
-      exportExcelDatas(3, this.searchParam)
+      downStatistical(this.searchParam)
         .then((res) => {
           console.log(res)
           if (res instanceof Blob) {
@@ -302,14 +300,6 @@ export default {
           that.$message.info(`请求出错：${err.message}`)
         })
     },
-    handleStartOpenChange(open) {
-      if (!open) {
-        this.endOpen = true
-      }
-    },
-    handleEndOpenChange(open) {
-      this.endOpen = open
-    },
   },
 }
 </script>
@@ -321,5 +311,8 @@ export default {
 .chart-wrapper .chart-title {
   text-align: center;
   font-size: 22px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>

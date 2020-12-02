@@ -13,7 +13,10 @@
               <span>主框架:</span>
               <a-select
                 class="year-select"
-                v-decorator="['qualityFrame',{initialValue:3,rules: [{ required: true, message: '选择质保期限'}]}]"
+                v-decorator="[
+                  'qualityFrame',
+                  { initialValue: 3, rules: [{ required: true, message: '选择质保期限' }] },
+                ]"
                 @change="qualityFrameChange"
               >
                 <a-select-option :value="3">3年</a-select-option>
@@ -23,7 +26,10 @@
               <span>电器件:</span>
               <a-select
                 class="year-select"
-                v-decorator="['qualityElectronics',{initialValue:1,rules: [{ required: true, message: '选择质保期限'}]}]"
+                v-decorator="[
+                  'qualityElectronics',
+                  { initialValue: 1, rules: [{ required: true, message: '选择质保期限' }] },
+                ]"
                 @change="qualityElectronicsChange"
               >
                 <a-select-option :value="1">1年</a-select-option>
@@ -32,7 +38,10 @@
               <span>表面涂层:</span>
               <a-select
                 class="year-select"
-                v-decorator="['qualityLayer',{initialValue:3,rules: [{ required: true, message: '选择质保期限'}]}]"
+                v-decorator="[
+                  'qualityLayer',
+                  { initialValue: 3, rules: [{ required: true, message: '选择质保期限' }] },
+                ]"
                 @change="qualityLayerChange"
               >
                 <a-select-option :value="3">3年</a-select-option>
@@ -50,7 +59,10 @@
             <a-col class="col-border" :span="20">
               <a-select
                 class="year-select"
-                v-decorator="['qualityLimit',{initialValue:1,rules: [{ required: true, message: '选择质保期限'}]}]"
+                v-decorator="[
+                  'qualityLimit',
+                  { initialValue: 1, rules: [{ required: true, message: '选择质保期限' }] },
+                ]"
                 @change="qualityLimitChange"
               >
                 <a-select-option :value="1">1年</a-select-option>
@@ -70,8 +82,11 @@
               <a-input
                 type="number"
                 :value="100"
-                v-decorator="['fullPaymentPercentage',{initialValue:100,rules: [{ required: false, message: '百分比'}]}]"
-                style="width: 62px;"
+                v-decorator="[
+                  'fullPaymentPercentage',
+                  { initialValue: 100, rules: [{ required: false, message: '百分比' }] },
+                ]"
+                style="width: 62px"
                 disabled
               />
               <span class="year-select">%</span>
@@ -81,8 +96,11 @@
               <a-form-item style="display: inline-block">
                 <a-date-picker
                   class="year-select"
-                  v-decorator="['allPaymentDate', {rules: [{required: true, message: '请选择签订日期！'}],initialValue:paymentDate}]"
-                  style="width: 120px;"
+                  v-decorator="[
+                    'allPaymentDate',
+                    { rules: [{ required: true, message: '请选择签订日期！' }], initialValue: paymentDate },
+                  ]"
+                  style="width: 120px"
                 />
               </a-form-item>
             </a-col>
@@ -92,7 +110,7 @@
         <div v-else>
           <a-row class="wdf-row" v-show="productTypes.includes(0)">
             <a-col :span="4">常规产品结算方式及时间</a-col>
-            <a-col class style="border-left: 1px solid #ddd;" :span="20">
+            <a-col class style="border-left: 1px solid #ddd" :span="20">
               <a-row type="flex" align="middle">
                 <!-- 预付款 -->
                 <a-col :span="20">
@@ -101,7 +119,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['convention.4.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['convention.4.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">预付款</span>
                         </a-checkbox>
@@ -111,8 +129,11 @@
                       <a-form-item>
                         <a-select
                           class="select-prop"
-                          v-decorator="['convention.4.number', {initialValue:30,rules: [{ required: true, message: '选择比例' }]}]"
-                          @change="conventionChange(4,$event)"
+                          v-decorator="[
+                            'convention.4.number',
+                            { initialValue: 30, rules: [{ required: true, message: '选择比例' }] },
+                          ]"
+                          @change="conventionChange(4, $event)"
                         >
                           <a-select-option :value="25">25%</a-select-option>
                           <a-select-option :value="30">30%</a-select-option>
@@ -131,7 +152,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['convention.4.date',{initialValue:cadvanceDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'convention.4.date',
+                            { initialValue: cadvanceDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -142,7 +166,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['convention.4.order',{initialValue:1}]" value="1" />
+                        <a-input type="hidden" v-decorator="['convention.4.order', { initialValue: 1 }]" value="1" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -155,7 +179,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['convention.2.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['convention.2.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">进度款</span>
                         </a-checkbox>
@@ -165,12 +189,15 @@
                       <a-form-item>
                         <a-input-number
                           placeholder="填入数字"
-                          v-decorator="['convention.2.number',{initialValue: 0,rules: [{required: false, message: '填写进度款'}]}]"
+                          v-decorator="[
+                            'convention.2.number',
+                            { initialValue: 0, rules: [{ required: false, message: '填写进度款' }] },
+                          ]"
                           :min="0"
                           :max="100"
                           :precision="0"
                           style="width: 80px"
-                          @change="conventionChange(2,$event)"
+                          @change="conventionChange(2, $event)"
                         />
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ c2 }}</span>
@@ -181,7 +208,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['convention.2.date',{initialValue:cprogressDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'convention.2.date',
+                            { initialValue: cprogressDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -192,7 +222,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['convention.2.order',{initialValue:2}]"/>
+                        <a-input type="hidden" v-decorator="['convention.2.order', { initialValue: 2 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -207,7 +237,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['convention.5.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['convention.5.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">提货款</span>
                         </a-checkbox>
@@ -217,12 +247,15 @@
                       <a-form-item>
                         <a-input-number
                           placeholder="填入数字"
-                          v-decorator="['convention.5.number',{initialValue: 0,rules: [{required: true, message: '填写提货款'}]}]"
+                          v-decorator="[
+                            'convention.5.number',
+                            { initialValue: 0, rules: [{ required: true, message: '填写提货款' }] },
+                          ]"
                           :min="0"
                           :max="100"
                           :precision="0"
                           style="width: 80px"
-                          @change="conventionChange(5,$event)"
+                          @change="conventionChange(5, $event)"
                         />
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ c5 }}</span>
@@ -233,7 +266,13 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['convention.5.date',{initialValue:cpaymentForGoodsDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'convention.5.date',
+                            {
+                              initialValue: cpaymentForGoodsDate,
+                              rules: [{ required: true, message: '选择付款日期！' }],
+                            },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -244,7 +283,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['convention.5.order',{initialValue:3}]"/>
+                        <a-input type="hidden" v-decorator="['convention.5.order', { initialValue: 3 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -257,7 +296,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['convention.3.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['convention.3.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">验收款</span>
                         </a-checkbox>
@@ -267,12 +306,15 @@
                       <a-form-item>
                         <a-input-number
                           placeholder="填入数字"
-                          v-decorator="['convention.3.number',{initialValue: 0,rules: [{required: true, message: '填写验收款'}]}]"
+                          v-decorator="[
+                            'convention.3.number',
+                            { initialValue: 0, rules: [{ required: true, message: '填写验收款' }] },
+                          ]"
                           :min="0"
                           :max="100"
                           :precision="0"
                           style="width: 80px"
-                          @change="conventionChange(3,$event)"
+                          @change="conventionChange(3, $event)"
                         />
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ c3 }}</span>
@@ -283,7 +325,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['convention.3.date', {initialValue:cAcceptDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'convention.3.date',
+                            { initialValue: cAcceptDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -294,7 +339,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['convention.3.order',{initialValue:4}]" />
+                        <a-input type="hidden" v-decorator="['convention.3.order', { initialValue: 4 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -310,7 +355,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['convention.1.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['convention.1.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">质保金</span>
                         </a-checkbox>
@@ -320,8 +365,11 @@
                       <a-form-item class="item-select">
                         <a-select
                           class="select-prop"
-                          v-decorator="['convention.1.number', {initialValue:3,rules: [{ required: true, message: '选择比例' }]}]"
-                          @change="conventionChange(1,$event)"
+                          v-decorator="[
+                            'convention.1.number',
+                            { initialValue: 3, rules: [{ required: true, message: '选择比例' }] },
+                          ]"
+                          @change="conventionChange(1, $event)"
                         >
                           <a-select-option :value="1">1%</a-select-option>
                           <a-select-option :value="2">2%</a-select-option>
@@ -347,7 +395,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['convention.1.date',{initialValue:cQualityDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'convention.1.date',
+                            { initialValue: cQualityDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -356,20 +407,19 @@
                         <a-input placeholder="备注信息" v-decorator="['convention.1.remarks']" />
                       </a-form-item>
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['convention.1.order',{initialValue:5}]" />
+                        <a-input type="hidden" v-decorator="['convention.1.order', { initialValue: 5 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
                 </a-col>
                 <!-- 质保金 END-->
               </a-row>
-
             </a-col>
           </a-row>
 
           <a-row class="wdf-row" v-show="productTypes.includes(1)">
             <a-col :span="4">非常规产品结算方式及时间</a-col>
-            <a-col class style="border-left: 1px solid #ddd;" :span="20">
+            <a-col class style="border-left: 1px solid #ddd" :span="20">
               <a-row type="flex" align="middle">
                 <!-- 预付款 -->
                 <a-col :span="20">
@@ -378,7 +428,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['unConvention.4.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['unConvention.4.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">预付款</span>
                         </a-checkbox>
@@ -388,8 +438,11 @@
                       <a-form-item>
                         <a-select
                           class="select-prop"
-                          v-decorator="['unConvention.4.number',{initialValue:30,rules: [{ required: true, message: '选择比例' }]}]"
-                          @change="unConventionChange(4,$event)"
+                          v-decorator="[
+                            'unConvention.4.number',
+                            { initialValue: 30, rules: [{ required: true, message: '选择比例' }] },
+                          ]"
+                          @change="unConventionChange(4, $event)"
                         >
                           <a-select-option :value="25">25%</a-select-option>
                           <a-select-option :value="30">30%</a-select-option>
@@ -408,7 +461,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['unConvention.4.date', {initialValue:cadvanceDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'unConvention.4.date',
+                            { initialValue: cadvanceDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -419,7 +475,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['unConvention.4.order',{initialValue:1}]" />
+                        <a-input type="hidden" v-decorator="['unConvention.4.order', { initialValue: 1 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -432,7 +488,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['unConvention.2.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['unConvention.2.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">进度款</span>
                         </a-checkbox>
@@ -442,12 +498,15 @@
                       <a-form-item>
                         <a-input-number
                           placeholder="填入数字"
-                          v-decorator="['unConvention.2.number', {initialValue: 0,rules: [{required: false, message: '填写进度款'}]}]"
+                          v-decorator="[
+                            'unConvention.2.number',
+                            { initialValue: 0, rules: [{ required: false, message: '填写进度款' }] },
+                          ]"
                           :min="0"
                           :max="100"
                           :precision="0"
                           style="width: 80px"
-                          @change="unConventionChange(2,$event)"
+                          @change="unConventionChange(2, $event)"
                         />
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ unC2 }}</span>
@@ -458,7 +517,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['unConvention.2.date', {initialValue:cprogressDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'unConvention.2.date',
+                            { initialValue: cprogressDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -469,7 +531,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['unConvention.2.order',{initialValue:2}]" />
+                        <a-input type="hidden" v-decorator="['unConvention.2.order', { initialValue: 2 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -484,7 +546,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['unConvention.5.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['unConvention.5.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">提货款</span>
                         </a-checkbox>
@@ -494,12 +556,15 @@
                       <a-form-item>
                         <a-input-number
                           placeholder="填入数字"
-                          v-decorator="['unConvention.5.number', {initialValue: 0,rules: [{required: true, message: '填写提货款'}]}]"
+                          v-decorator="[
+                            'unConvention.5.number',
+                            { initialValue: 0, rules: [{ required: true, message: '填写提货款' }] },
+                          ]"
                           :min="0"
                           :max="100"
                           :precision="0"
                           style="width: 80px"
-                          @change="unConventionChange(5,$event)"
+                          @change="unConventionChange(5, $event)"
                         />
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ unC5 }}</span>
@@ -510,7 +575,13 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['unConvention.5.date',{initialValue:cpaymentForGoodsDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'unConvention.5.date',
+                            {
+                              initialValue: cpaymentForGoodsDate,
+                              rules: [{ required: true, message: '选择付款日期！' }],
+                            },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -521,7 +592,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['unConvention.5.order',{initialValue:3}]" />
+                        <a-input type="hidden" v-decorator="['unConvention.5.order', { initialValue: 3 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -534,7 +605,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['unConvention.3.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['unConvention.3.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">验收款</span>
                         </a-checkbox>
@@ -544,12 +615,15 @@
                       <a-form-item>
                         <a-input-number
                           placeholder="填入数字"
-                          v-decorator="['unConvention.3.number',{initialValue: 0,rules: [{required: true, message: '填写验收款'}]}]"
+                          v-decorator="[
+                            'unConvention.3.number',
+                            { initialValue: 0, rules: [{ required: true, message: '填写验收款' }] },
+                          ]"
                           :min="0"
                           :max="100"
                           :precision="0"
                           style="width: 80px"
-                          @change="unConventionChange(3,$event)"
+                          @change="unConventionChange(3, $event)"
                         />
                         <span>%</span>
                         <span class="checkbox-innerspan">折算金额: {{ unC3 }}</span>
@@ -560,7 +634,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['unConvention.3.date', {initialValue:cAcceptDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'unConvention.3.date',
+                            { initialValue: cAcceptDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -571,13 +648,12 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['unConvention.3.order',{initialValue:4}]" />
+                        <a-input type="hidden" v-decorator="['unConvention.3.order', { initialValue: 4 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
                 </a-col>
                 <!-- 验收款 END-->
-
               </a-row>
               <a-row class="row-in-col" type="flex" align="middle">
                 <!-- 质保金 -->
@@ -587,7 +663,7 @@
                       <a-form-item>
                         <a-checkbox
                           @change="checkboxChange"
-                          v-decorator="['unConvention.1.selected', {initialValue:false, valuePropName: 'checked'}]"
+                          v-decorator="['unConvention.1.selected', { initialValue: false, valuePropName: 'checked' }]"
                         >
                           <span class="checkbox-innerspan mar-l0">质保金</span>
                         </a-checkbox>
@@ -597,8 +673,11 @@
                       <a-form-item class="item-select">
                         <a-select
                           class="select-prop"
-                          v-decorator="['unConvention.1.number',{initialValue:3,rules: [{ required: true, message: '选择比例' }]}]"
-                          @change="unConventionChange(1,$event)"
+                          v-decorator="[
+                            'unConvention.1.number',
+                            { initialValue: 3, rules: [{ required: true, message: '选择比例' }] },
+                          ]"
+                          @change="unConventionChange(1, $event)"
                         >
                           <a-select-option :value="1">1%</a-select-option>
                           <a-select-option :value="2">2%</a-select-option>
@@ -624,7 +703,10 @@
                         <span class="checkbox-innerspan">付款日期</span>
                         <a-date-picker
                           class="date"
-                          v-decorator="['unConvention.1.date', {initialValue:cQualityDate,rules: [{required: true, message: '选择付款日期！'}]}]"
+                          v-decorator="[
+                            'unConvention.1.date',
+                            { initialValue: cQualityDate, rules: [{ required: true, message: '选择付款日期！' }] },
+                          ]"
                         />
                       </a-form-item>
                     </a-col>
@@ -635,7 +717,7 @@
                     </a-col>
                     <a-col :span="4">
                       <a-form-item>
-                        <a-input type="hidden" v-decorator="['unConvention.1.order',{initialValue:5}]"/>
+                        <a-input type="hidden" v-decorator="['unConvention.1.order', { initialValue: 5 }]" />
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -646,7 +728,7 @@
           </a-row>
         </div>
         <a-form-item class="btns-grop">
-          <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
+          <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
           <a-button type="primary" @click="nextStep">下一步</a-button>
         </a-form-item>
       </a-form>
@@ -663,8 +745,8 @@ export default {
   components: {},
   props: {
     queryonedata: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   beforeCreate() {
     this.form = this.$form.createForm(this)
@@ -729,8 +811,8 @@ export default {
       qualityFramePre: 0, // 主框架质保增加百分比
       qualityElectronicsPre: 0, // 电子质保增加百分比
       qualityLayerPre: 0, // 图层质保增加百分比
-      qualityLimit:0,//常规桶质保期限
-      qualityLimitPre:0, //常规桶质保期限增加百分比
+      qualityLimit: 0, //常规桶质保期限
+      qualityLimitPre: 0, //常规桶质保期限增加百分比
       conventionValue: [], // 常规产品复选框数组value值
       unConventionValue: [], // 非常规产品复选框数组value值
       c1: (queryOneData.conventionalMoney * 3) / 100, // 常规--质保金折算金额,
@@ -747,7 +829,7 @@ export default {
       percentages: 0,
       percentagesStatus: false,
       paymentDate: moment(),
-      bucketType:1 //1 智能桶合同  2 常规桶合同
+      bucketType: 1, //1 智能桶合同  2 常规桶合同
     }
   },
   watch: {
@@ -756,9 +838,9 @@ export default {
         this.currentTab = 0
       }
     },
-    queryOneData: function(newVal, oldVal) {
+    queryOneData: function (newVal, oldVal) {
       this.fillMoney()
-    }
+    },
   },
   beforeMount() {
     // debugger
@@ -770,7 +852,7 @@ export default {
     this.fullAmount = this.queryonedata.fullAmount
   },
   computed: {
-    isSmartBucket:function(){
+    isSmartBucket: function () {
       return this.bucketType === 1 ? true : false
     },
     calcIncreaseTotalPayment: {
@@ -780,25 +862,21 @@ export default {
               this.queryOneData.totalAmount *
               (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100)
             ).toFixed(2)
-          : (
-              this.queryOneData.totalAmount * (this.qualityLimitPre / 100)
-            ).toFixed(2)
+          : (this.queryOneData.totalAmount * (this.qualityLimitPre / 100)).toFixed(2)
         return _result
       },
-      set(newValue) {}
+      set(newValue) {},
     },
-    calcAllPayment: function() {
+    calcAllPayment: function () {
       //debugger
       let _result = this.isSmartBucket
         ? (
             this.queryOneData.totalAmount *
             (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100 + 1)
           ).toFixed(2)
-        : (
-            this.queryOneData.totalAmount * (this.qualityLimitPre / 100 + 1)
-          ).toFixed(2)
+        : (this.queryOneData.totalAmount * (this.qualityLimitPre / 100 + 1)).toFixed(2)
       return _result
-    }
+    },
   },
   methods: {
     init() {
@@ -813,7 +891,7 @@ export default {
 
       if (that.id > 0) {
         getQueryOne(params)
-          .then(res => {
+          .then((res) => {
             that.queryOneData = res.data
             that.form.setFieldsValue({
               contractId: res.data.id,
@@ -830,7 +908,7 @@ export default {
               routineSettlement: res.data.routineSettlement || [],
               unconventionalSettlement: res.data.unconventionalSettlement || [],
               increaseTotalPayment: res.data.increaseTotalPayment, // 增加总货款金额
-              qualityLimit:res.data.qualityLimit || 1
+              qualityLimit: res.data.qualityLimit || 1,
             })
 
             let routineSettlement = res.data.routineSettlement || []
@@ -859,11 +937,11 @@ export default {
             that.qualityLimitChange(res.data.qualityLimit)
 
             // [{id: 0, productType: 1}]     // [], [0,0], [1,1], [0,1,0]
-            that.productTypes = that.product.map(item => {
+            that.productTypes = that.product.map((item) => {
               return item.productType
             })
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
           })
       }
@@ -883,7 +961,7 @@ export default {
           allPaymentDate: this.queryonedata.settlement ? moment(this.queryonedata.settlement.paymentDate) : moment(), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
           routineSettlement: this.queryonedata.routineSettlement || [],
           unconventionalSettlement: this.queryonedata.unconventionalSettlement || [],
-          increaseTotalPayment: this.queryonedata.increaseTotalPayment // 增加总货款金额
+          increaseTotalPayment: this.queryonedata.increaseTotalPayment, // 增加总货款金额
         })
       } catch (err) {}
     },
@@ -891,12 +969,12 @@ export default {
     fillConventionalData(items) {
       let obj = {}
       let _percentage = 0
-      items.map(item => {
+      items.map((item) => {
         let suffix = item.productType === 0 ? 'convention' : 'unConvention'
         _percentage += parseFloat(item.percentage)
         obj[`${suffix}.${item.moneyType}.number`] = item.percentage
         obj[`${suffix}.${item.moneyType}.selected`] = parseFloat(item.percentage) > 0 ? true : false
-        obj[`${suffix}.${item.moneyType}.data`] = moment(item.paymentDate)
+        obj[`${suffix}.${item.moneyType}.date`] = moment(item.paymentDate)
         obj[`${suffix}.${item.moneyType}.remarks`] = item.remarks
       })
       this.form.setFieldsValue({ ...obj })
@@ -960,8 +1038,8 @@ export default {
       // this.increaseTotalPayment = this.queryOneData.totalAmount * (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100)
       // this.allPayment = this.queryOneData.totalAmount * (1 + this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100 + 1)
     },
-    qualityLimitChange(e){
-      let _v = parseInt(e,10)
+    qualityLimitChange(e) {
+      let _v = parseInt(e, 10)
       this.qualityLimit = _v
       if (_v === 1) {
         this.qualityLimitPre = 0
@@ -969,7 +1047,7 @@ export default {
         this.qualityLimitPre = 10
       } else if (_v === 3) {
         this.qualityLimitPre = 20
-      } else{
+      } else {
         this.qualityLimitPre = 0
       }
     },
@@ -977,7 +1055,7 @@ export default {
     nextStep(status) {
       const that = this
       const {
-        form: { validateFields }
+        form: { validateFields },
       } = this
       console.log('{ form: { validateFields } } = this', this)
       // 先校验，通过表单校验后，才进入下一步
@@ -992,14 +1070,14 @@ export default {
               qualityFrame: values.qualityFrame,
               qualityElectronics: values.qualityElectronics,
               qualityLayer: values.qualityLayer,
-              qualityLimit:values.qualityLimit || 1,
+              qualityLimit: values.qualityLimit || 1,
               allPaymentDate: that.allPaymentDate, // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
               routineSettlement: [],
-              unconventionalSettlement: []
+              unconventionalSettlement: [],
             }
             // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
             saveSettlementMethod(params)
-              .then(res => {
+              .then((res) => {
                 console.log('校验成功，保存填写的信息，请求后端接口结果', res)
                 that.id = res.data.id
                 that.loading = false
@@ -1010,7 +1088,7 @@ export default {
                   that.$message.success('保存成功')
                 }
               })
-              .catch(error => {
+              .catch((error) => {
                 console.error(error)
               })
           } else {
@@ -1038,18 +1116,18 @@ export default {
               qualityLimit: values.qualityLimit || 1,
               //  paymentDate: that.paymentDate,    //提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
               routineSettlement: this._getParam('convention') || [],
-              unconventionalSettlement: this._getParam('unConvention') || []
+              unconventionalSettlement: this._getParam('unConvention') || [],
             }
             // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
             saveSettlementMethod(params)
-              .then(res => {
+              .then((res) => {
                 console.log('校验成功，保存填写的信息，请求后端接口结果', res)
                 that.id = res.data.id
                 that.loading = false
                 that.form.setFieldsValue({})
                 that.$emit('nextStep', { ...res.data })
               })
-              .catch(error => {
+              .catch((error) => {
                 console.error(error)
               })
 
@@ -1073,21 +1151,21 @@ export default {
     _getParam(name) {
       const result = []
       const convention = this.form.getFieldValue(name)
-      console.log("convention----",Object.entries(convention));
+      console.log('convention----', Object.entries(convention))
       const temp = {
         contractId: this.queryOneData.id || 0,
-        productType: name === 'convention' ? 0 : 1
+        productType: name === 'convention' ? 0 : 1,
       }
       for (const [key, value] of Object.entries(convention)) {
-        const { selected, number, date ,remarks,order} = value
+        const { selected, number, date, remarks, order } = value
         if (selected) {
           result.push({
             ...temp,
             moneyType: key,
             percentage: Number(number),
             paymentDate: date.format('YYYY-MM-DD'),
-            remarks:remarks || '',
-            order:order
+            remarks: remarks || '',
+            order: order,
           })
           // this.percentages = this.percentages + percentage
         }
@@ -1161,13 +1239,13 @@ export default {
       let isUnNormal = this.productTypes.includes(1) //非常规
       const { convention, unConvention } = this.form.getFieldsValue()
       if (isNormal) {
-        let calcConventionRoate = convention.reduce(function(accumulator, item) {
+        let calcConventionRoate = convention.reduce(function (accumulator, item) {
           return accumulator + (item.selected ? item.number : 0)
         }, 0)
         percentagesStatus = calcConventionRoate === 100
       }
       if (isUnNormal) {
-        let calcUnConventionRoate = unConvention.reduce(function(accumulator, item) {
+        let calcUnConventionRoate = unConvention.reduce(function (accumulator, item) {
           return accumulator + (item.selected ? item.number : 0)
         }, 0)
         percentagesStatus = calcUnConventionRoate === 100
@@ -1218,7 +1296,7 @@ export default {
 
         let _result = _oneSelected
           ? currentSelectIsNotRate
-          : currentSelectIsNotRate.filter(item => item.number === undefined || item.number === 0)
+          : currentSelectIsNotRate.filter((item) => item.number === undefined || item.number === 0)
 
         if (_result.length <= 0) return
         let _avg = parseInt(_rate_tmp / _result.length)
@@ -1234,8 +1312,8 @@ export default {
         })
         Object.keys(obj).length > 0 && this.form.setFieldsValue(obj)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
