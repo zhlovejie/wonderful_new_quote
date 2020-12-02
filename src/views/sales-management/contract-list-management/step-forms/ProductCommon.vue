@@ -662,6 +662,7 @@ export default {
         target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
         target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
         this.data = dataSource
+        debugger
         this.isprice()
         this.totalMmountChange()
         this.difference()
@@ -673,14 +674,14 @@ export default {
       let count = parseInt(item.count, 10)
       let unitPrice = parseFloat(item.unitPrice || 0)
       let priceC = parseFloat(item.priceC || 0)
-      let tax = this.isTax ? parseFloat(item.tax || 0) : 0
       let oneMoney = count * unitPrice
 
       let freightUnitPrice = parseFloat(item.freightUnitPrice || 0)
       let totalFreightUnitPrice = count * freightUnitPrice
+      debugger
       let productLowCPriceUnitAmount =
         this.isTax === false && priceC > unitPrice
-          ? priceC - parseFloat(unitPrice) + parseFloat((unitPrice / 100) * tax)
+          ? priceC - parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100))
           : priceC > unitPrice
           ? priceC - unitPrice
           : ''
