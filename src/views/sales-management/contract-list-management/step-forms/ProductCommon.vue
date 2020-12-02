@@ -638,7 +638,6 @@ export default {
         let calcObj = this.calcNumber(target)
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
-        target['productLowCPriceUnitAmount'] = calcObj.productLowCPriceUnitAmount
         target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
 
         this.data = dataSource
