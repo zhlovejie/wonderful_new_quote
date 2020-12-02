@@ -203,7 +203,9 @@ export default {
     init(params) {
       let that = this
       let queue = []
-      let task1 = departmentList().then((res) => (that.depList = res.data))
+      let task1 = departmentList({ id: this.$store.getters.userInfo.departmentId }).then(
+        (res) => (that.depList = res.data)
+      )
       queue.push(task1)
       // that.searchAction(params)
 
