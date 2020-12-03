@@ -646,6 +646,7 @@ export default {
         target['priceC'] = selectItem.priceC
         target['productPic'] = selectItem.productPic
         target['productModel'] = selectItem.productModel
+        target['productTypeDicId'] = selectItem.productTypeDicId
         target['productId'] = selectItem.id
         target['productName'] = selectItem.productName
         this.data = dataSource
@@ -681,10 +682,15 @@ export default {
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
         target['productLowCPriceUnitAmount'] =
-          Number(calcObj.productLowCPriceUnitAmount).toFixed(2) > 0
+          Number(calcObj.productLowCPriceUnitAmount) > 0 && target.productTypeDicId !== 356
+            ? parseInt(Number(calcObj.productLowCPriceUnitAmount))
+            : Number(calcObj.productLowCPriceUnitAmount) > 0 && target.productTypeDicId === 356
             ? Number(calcObj.productLowCPriceUnitAmount).toFixed(2)
             : 0
-        target['productLowCPriceAllAmount'] = Number(calcObj.productLowCPriceAllAmount).toFixed(2)
+        target['productLowCPriceAllAmount'] =
+          target.productTypeDicId !== 356
+            ? parseInt(Number(calcObj.productLowCPriceAllAmount))
+            : Number(calcObj.productLowCPriceAllAmount).toFixed(2)
         this.data = dataSource
         // this.totalMmountChange()
       }
