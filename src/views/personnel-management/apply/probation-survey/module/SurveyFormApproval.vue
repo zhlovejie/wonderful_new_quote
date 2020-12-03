@@ -485,6 +485,7 @@ export default {
     },
     fillData() {
       approvalLookProbationSurvey({ id: this.record.id }).then((res) => {
+        this.textl = res.data. probationState
         this.form.resetFields()
         let obj = Object.assign({}, res.data)
         obj.entryDate = this.moment(obj.entryDate)
