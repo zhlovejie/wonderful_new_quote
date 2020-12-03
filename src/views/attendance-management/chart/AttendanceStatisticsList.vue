@@ -325,14 +325,16 @@ export default {
     },
     // 下载
     downAction() {
-      const downListParams = Object.assign({}, { ...this.downParam })
+      let that = this
+      const downListParams = Object.assign({}, { ...that.downParam })
       console.log(downListParams)
-      this.loading = true
-      downStatisticsList(this.downParam)
+      that.loading = true
+      downStatisticsList(downListParams)
         .then((res) => {
+          console.log(res)
           this.loading = false
           if (res instanceof Blob) {
-            const isFile = res.type === 'application/vnd.ms-excel'
+            const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             //const isFile = res.type === 'application/msword'
             const isJson = res.type === 'application/json'
             if (isFile) {
