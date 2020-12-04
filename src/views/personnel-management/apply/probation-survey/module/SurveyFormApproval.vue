@@ -485,7 +485,6 @@ export default {
     },
     fillData() {
       approvalLookProbationSurvey({ id: this.record.id }).then((res) => {
-        this.textl = res.data. probationState
         this.form.resetFields()
         let obj = Object.assign({}, res.data)
         obj.entryDate = this.moment(obj.entryDate)
@@ -497,9 +496,13 @@ export default {
             }
           }
         }
+        this.textl = res.data.probationState
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.form.setFieldsValue(fillObj)
+          }, 100)
+        })
         this.wage = obj.wage
-        this.$nextTick(() => this.form.setFieldsValue(fillObj))
-
         this.s1 = obj.userSkill
         this.s2 = obj.userCoordinate
         this.s3 = obj.userImprove
