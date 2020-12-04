@@ -1,6 +1,14 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
 export default {
   path: '/sales-management',
@@ -770,6 +778,64 @@ export default {
         permission: ['permission']
       },
       children: [{
+          path: '/sale/salesReport/ComparativeAnalysisSales',
+          name: 'ComparativeAnalysisSales',
+          component: () => import('@/views/sale/report/ComparativeAnalysisSales'),
+          meta: {
+            title: '销售额对比分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/SalesCategoryAnalysis',
+          name: 'SalesCategoryAnalysis',
+          component: () => import('@/views/sale/report/SalesCategoryAnalysis'),
+          meta: {
+            title: '销售类别分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/DepartmentSalesAnalysis',
+          name: 'DepartmentSalesAnalysis',
+          component: () => import('@/views/sale/report/DepartmentSalesAnalysis'),
+          meta: {
+            title: '部门销售额分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/CustomerSalesAnalysis',
+          name: 'CustomerSalesAnalysis',
+          component: () => import('@/views/sale/report/CustomerSalesAnalysis'),
+          meta: {
+            title: '客户销售额分析表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/report/module/',
+          name: 'CustomerSalesAnalysisFrom',
+          component: () => import('@/views/sale/report/module/CustomerSalesAnalysisFrom'),
+          meta: {
+            title: '销售额分析汇总',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/CustomerActivityAnalysis',
+          name: 'CustomerActivityAnalysis',
+          component: () => import('@/views/sale/report/CustomerActivityAnalysis'),
+          meta: {
+            title: '客户活跃分析表',
+            permission: ['permission']
+          }
+        },
+
+
+
+
+        {
           path: '/sale/salesReport/SaleOrderReport',
           name: 'SaleOrderReport',
           component: () => import('@/views/sale/report/SaleOrderReport'),
@@ -804,8 +870,90 @@ export default {
             title: '部门业绩分析',
             permission: ['permission']
           }
+        },
+        {
+          path: '/sale/salesReport/DepartmentSalemanTop',
+          name: 'DepartmentSalemanTop',
+          component: () => import('@/views/sale/report/DepartmentSalemanTop'),
+          meta: {
+            title: '销售额排行榜',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/AdvancePaymentChart',
+          name: 'AdvancePaymentChart',
+          component: () => import('@/views/sale/report/AdvancePaymentChart'),
+          meta: {
+            title: '客户预收款表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/AdvancesChart',
+          name: 'AdvancesChart',
+          component: () => import('@/views/sale/report/AdvancesChart'),
+          meta: {
+            title: '预收账款分析',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/GrossMarginChart',
+          name: 'GrossMarginChart',
+          component: () => import('@/views/sale/report/GrossMarginChart'),
+          meta: {
+            title: '毛利率分析表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/GrossMarginSummaryChart',
+          name: 'GrossMarginSummaryChart',
+          component: () => import('@/views/sale/report/GrossMarginSummaryChart'),
+          meta: {
+            title: '毛利率分析汇总',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/salesReport/ProfitMarginSummaryChart',
+          name: 'ProfitMarginSummaryChart',
+          component: () => import('@/views/sale/report/ProfitMarginSummaryChart'),
+          meta: {
+            title: '利润率分析汇总',
+            permission: ['permission']
+          }
+        }, {
+          path: '/sale/salesReport/ProfitMarginSummaryChart',
+          name: 'ProfitMarginSummaryChart',
+          component: () => import('@/views/sale/report/ProfitMarginSummaryChart'),
+          meta: {
+            title: '客户预收款表',
+            permission: ['permission']
+          }
         }
       ]
+    },
+    {
+      path: '/sale/Activity/ActivityList',
+      name: 'ActivityL',
+      component: () => import('@/views/sale/Activity/ActivityList'),
+      meta: {
+        title: '活跃度指数设置',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/sale/Activity/arrearsList',
+      name: 'arrears',
+      component: () => import('@/views/sale/Activity/arrearsList'),
+      meta: {
+        title: '欠款超期预警设置',
+        keepAlive: false,
+        permission: ['permission']
+      }
     },
     {
       path: '/system-setting/work-box/ProductList',

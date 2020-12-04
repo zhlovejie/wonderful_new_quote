@@ -38,7 +38,7 @@
                   <a-col :span="24">
                     <span>设备名称：{{ camidMainName }}</span>
                     <span style="margin-left: 15px">分辨率：</span>
-                    <a-select @change="deviceResolutionOneChange" style="width: 200px" :value="deviceResolutionValue">
+                    <a-select @change="deviceResolutionOneChange" style="width: 150px" :value="deviceResolutionValue">
                       <a-select-option v-for="item in deviceResolutionList" :key="item.key" :value="item.key">{{
                         item.text
                       }}</a-select-option>
@@ -47,6 +47,7 @@
                     <a-button style="margin-left: 15px" @click="settingAction">高级设置</a-button>
                     <a-button style="margin-left: 15px" @click="startVideo">打开</a-button>
                     <a-button style="margin-left: 15px" @click="closeVideo">关闭</a-button>
+                    <a-button style="margin-left: 15px" @click="ShowImageSettingWindow('main')">参数设置</a-button>
                   </a-col>
                 </a-row>
                 <a-row :gutter="16" class="camera-action-row" v-show="+activeKey === 1">
@@ -121,7 +122,7 @@
                     <span style="margin-left: 15px">分辨率：</span>
                     <a-select
                       @change="deviceResolutionSecondChange"
-                      style="width: 200px"
+                      style="width: 150px"
                       :value="deviceResolutionSecondValue"
                     >
                       <a-select-option v-for="item in deviceResolutionSecondList" :key="item.key" :value="item.key">{{
@@ -130,6 +131,7 @@
                     </a-select>
                     <a-button style="margin-left: 15px" @click="startVideo2">打开</a-button>
                     <a-button style="margin-left: 15px" @click="closeVideo2">关闭</a-button>
+                    <a-button style="margin-left: 15px" @click="ShowImageSettingWindow('sub')">参数设置</a-button>
                   </a-col>
                 </a-row>
                 <a-row :gutter="16" class="camera-action-row" v-show="+activeKey === 3">
@@ -211,6 +213,8 @@ import {
   /*上传*/
   UpdataFile,
   /*上传 END*/
+  ShowSettingWindow,
+  sendMsgShowImageSettingWindowB,
 } from './WsUtil'
 import moment from 'moment'
 import Setting from './Setting'
@@ -507,7 +511,7 @@ export default {
     },
     InfoCallback(op) {
       let that = this
-      console.log(arguments)
+      //console.log(arguments)
       if (this.statusCodeInfo.signMap[op]) {
         //console.log(this.statusCodeInfo.signMap[op])
         let logMsg = {
@@ -948,6 +952,14 @@ export default {
       //   that.spinning = false
       // })
     },
+    ShowImageSettingWindow(type){
+      if(type === 'main'){
+        ShowSettingWindow();
+      }
+      if(type === 'sub'){
+        sendMsgShowImageSettingWindowB()
+      }
+    }
   },
 }
 </script>

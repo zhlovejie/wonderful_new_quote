@@ -12,9 +12,10 @@
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
       </div>
-      <template slot="customerName" slot-scope="text, record">
-        <span v-if="record.userSign === 2">***</span>
-        <a @click="consumerInfo(record)" v-else>{{ text }}</a>
+
+      <template slot="customerName" slot-scope="text,record">
+        <span v-if="+record.userSign === 2">***</span>
+        <a  @click="consumerInfo(record)" v-else>{{ text }}</a>
       </template>
       <a slot="valencyCode" slot-scope="text, record" @click="lookApplyNuclear(record)">{{ text }}</a>
       <a slot="valencyStatus" slot-scope="text, record" @click="approvalPreview(record)">
@@ -52,9 +53,10 @@
         size="small"
       >
         <div slot="costPrice" slot-scope="text, record1">
-          <span v-if="record.userSign === 1">***</span>
-          <span v-else>{{ record1.costPrice | moneyFormatNumber }}</span>
+          <span v-if="+record.userSign === 2">{{ record1.costPrice | moneyFormatNumber }}</span>
+          <span v-else>***</span>
         </div>
+
         <div slot="aprice" slot-scope="text, record">
           <span>{{ record.aprice | moneyFormatNumber }}</span>
         </div>

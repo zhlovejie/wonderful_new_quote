@@ -194,10 +194,11 @@ export default {
       depList: [],
       pagination: {
         current: 1,
-        size: '10',
+        _prePageSize: 10,
+        pageSize:10,
         showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
       searchParam: {},
@@ -244,7 +245,7 @@ export default {
       let that = this
       let paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.size || 10,
+        size: that.pagination.pageSize || 10,
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
@@ -275,19 +276,16 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
-    },
-    onShowSizeChangeHandler(current, pageSize) {
-      let pagination = { ...this.pagination }
-      pagination.current = current
-      pagination.size = String(pageSize)
-      this.pagination = pagination
+      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = {...this.pagination,...pager}
       this.searchAction()
     },
+    
     doAction(actionType, record) {
       let that = this
       if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
