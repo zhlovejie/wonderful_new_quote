@@ -275,6 +275,15 @@ export default {
           }
         },
         {
+          path: '/system-setting/work-box/ProductInspectionReport',
+          name: 'ProductInspectionReport',
+          component: () => import('@/views/system-setting/work-box/ProductInspectionReport'),
+          meta: {
+            title: '产品检验报告',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/system-setting/work-box/GuidanceManual',
           name: 'GuidanceManual',
           component: () => import('@/views/system-setting/work-box/GuidanceManual'),

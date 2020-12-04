@@ -81,8 +81,8 @@
         size="small"
       >
         <div slot="costPrice" slot-scope="text, record1">
-          <span v-if="record.userSign === 1">***</span>
-          <span v-else>{{ record1.costPrice | moneyFormatNumber }}</span>
+          <span v-if="+record.userSign === 2">{{ record1.costPrice | moneyFormatNumber }}</span>
+          <span v-else>***</span>
         </div>
         <div slot="aprice" slot-scope="text, record">
           <span>{{ record.aprice | moneyFormatNumber }}</span>

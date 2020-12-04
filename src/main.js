@@ -18,9 +18,9 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 import VideoPlayer from 'vue-video-player'
 
-import viser from 'viser-vue'
+//import viser from 'viser-vue'
 Vue.use(Antd)
-Vue.use(viser)
+//Vue.use(viser)
 
 //提示信息垂直居中
 Vue.prototype.$message.config({

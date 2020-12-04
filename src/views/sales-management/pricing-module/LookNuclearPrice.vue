@@ -68,9 +68,9 @@
           <img style="height: 50px; lenght: 40px" :src="text" />
         </div>
 
-        <div slot="costPrice" slot-scope="text, record">
-          <span v-if="text == -1">***</span>
-          <span v-else>{{ text }}</span>
+        <div slot="costPrice" slot-scope="text">
+          <span v-if="+text === -1">***</span>
+          <span v-else>{{text}}</span>
         </div>
       </a-table>
     </a-card>

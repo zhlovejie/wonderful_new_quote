@@ -127,7 +127,7 @@ const columns = [
     align: 'center',
     title: '对应销售',
     dataIndex: 'saleUserName',
-    key: 'saleUserId',
+    key: 'saleUserId'
   },
   {
     align: 'center',

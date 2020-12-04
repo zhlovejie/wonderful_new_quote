@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-      <a-month-picker placeholder="日期" @change="onChange" style="width: 200px; margin-right: 10px" />
+      <a-month-picker placeholder="日期" v-model="queryParam.surfaceDate" style="width: 200px; margin-right: 10px" />
       <a-select placeholder="房间号" v-model="queryParam.roomCode" :allowClear="true" style="width: 200px">
         <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.roomCode">{{
           item.roomCode
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { getDevisionList, getStationList } from '../../../../api/systemSetting'
+import { getDevisionList, getStationList, downexportExcel } from '../../../../api/systemSetting'
 import { room_List, listRoom } from '@/api/humanResources'
 import systemConfig from '@/config/defaultSettings'
 import AddForm from './module/FormAdd'
@@ -56,12 +56,14 @@ export default {
       openKeys: ['id'],
       parentId: 0,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      system: systemConfig.baseURL + '/room/room-electricity-fees/roomElectricityFees/exportExcel',
+      // system: systemConfig.baseURL + '/room/room-electricity-fees/roomElectricityFees/exportExcel',
       hiddenBoolean: false,
       stationId: undefined,
       roomCode: '',
       faceDate: {},
-      queryParam: {},
+      queryParam: {
+        surfaceDate: moment().add(-1, 'months'),
+      },
       postSelectDataSource: [], //
       recordResult: {},
       queryRecord: {},
@@ -134,23 +136,30 @@ export default {
     },
   },
   methods: {
+    moment,
     init() {
       let that = this
       listRoom().then((res) => {
         this.postSelectDataSource = res.data
       })
+      //let date = new Date()
+      //let surfaceDate = date.getFullYear() + '-' + date.getMonth()
+      //this.queryParam.surfaceDate  moment(surfaceDate)
       this.searchAction()
-    },
-    onChange(date, dateString) {
-      this.queryParam.surfaceDate = dateString
     },
     // 获取列表
     searchAction() {
       let that = this
       that.loading = true
+
+      let surfaceDate = undefined
+      if (that.queryParam.surfaceDate) {
+        surfaceDate = that.queryParam.surfaceDate.format('YYYY-MM')
+      }
+
       let _searchParam = Object.assign(
         { socialSecurityId: that.recordId },
-        { ...this.queryParam },
+        { ...this.queryParam, surfaceDate },
         { ...this.pagination }
       )
       room_List(_searchParam)
@@ -184,19 +193,60 @@ export default {
     },
     //下载
     download() {
-      if (this.queryParam) {
-        window.location.href =
-          this.system + `?surfaceDate=${this.queryParam.surfaceDate}` + `&roomCode=${this.queryParam.roomCode}`
+      let that = this
+      let surfaceDate = undefined
+      if (that.queryParam.surfaceDate) {
+        surfaceDate = that.queryParam.surfaceDate.format('YYYY-MM')
       }
-      if (this.queryParam.surfaceDate) {
-        window.location.href = this.system + `?surfaceDate=${this.queryParam.surfaceDate}`
-      }
-      if (this.queryParam.roomCode) {
-        window.location.href = this.system + `?roomCode=${this.queryParam.roomCode}`
-      }
-      if (this.queryParam.surfaceDate === undefined && this.queryParam.roomCode === undefined) {
-        window.location.href = this.system
-      }
+      let _searchParam = Object.assign({ ...this.queryParam, surfaceDate })
+      downexportExcel(_searchParam)
+        .then((res) => {
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `电费信息.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => {
+          that.$message.info(`请求出错：${err.message}`)
+        })
     },
 
     // 清空、重置
