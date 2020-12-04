@@ -155,3 +155,13 @@ export function getAddressBookListWithDeprtment (params) {
     params: params
   })
 }
+
+export function userUpdatePassWord (params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/user/resetPassword',
+    method: 'POST',
+    data: params
+  })
+}
+
