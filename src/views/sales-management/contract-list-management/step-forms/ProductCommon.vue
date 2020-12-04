@@ -675,6 +675,12 @@ export default {
     multiplyMoney(record, key, e) {
       const dataSource = [...this.data]
       const target = dataSource.find((item) => item.key === record.key)
+      if (target.targetId === null) {
+        return this.$message.error('请先选择标的名称')
+      }
+      if (target.productModel === null) {
+        return this.$message.error('请先选择产品代码')
+      }
       if (target) {
         target[key] = e
         let calcObj = this.calcNumber(target)
