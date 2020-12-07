@@ -231,7 +231,7 @@ export default {
         startTime,
         endTime,
         rangeType: this.rangeType,
-        depId: this.userInfo.departmentId,
+        //depId: this.userInfo.departmentId,
       }
     },
   },
