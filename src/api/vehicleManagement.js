@@ -229,6 +229,22 @@ export function carOilingAddOrUpdate (parameter) {
     data: parameter
   })
 }
+
+/**加油记录下载*/
+export function exportCarOilingHistoryExcel(key,params) {
+  let map = {
+    1:'/car/car-oiling-history/exportCarOilingHistoryExcel',
+  }
+  return axios({
+    baseURL: system.baseURL,
+    url: map[key],
+    method: 'get',
+    responseType:'blob',
+    params: params
+  })
+}
+
+
 //---------------------车辆监管/加油记录---END--------------------
 
 

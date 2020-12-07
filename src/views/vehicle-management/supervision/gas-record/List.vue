@@ -23,6 +23,7 @@
       />
 
       <a-button class="a-button" type="primary" icon="search" @click="() => searchAction({current:1})">查询</a-button>
+      <a-button class="a-button" type="primary" icon="download" @click="doAction('download',null)">下载</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -75,7 +76,8 @@
 </template>
 <script>
 import {
-  carOilingList
+  carOilingList,
+  exportCarOilingHistoryExcel
 } from '@/api/vehicleManagement'
 //import AddForm from './AddForm'
 import moment from 'moment'
@@ -155,7 +157,8 @@ export default {
       searchParam: {},
       visible: false,
       bindEnterFn: null,
-      authInfo:{}
+      authInfo:{},
+      pageTitle:'加油记录'
     }
   },
   computed: {},
@@ -235,8 +238,64 @@ export default {
       if(type === 'auth'){
         this.authInfo = {...record}
         this.visible = true
+        return
       }
-    }
+      if(type === 'download'){
+        this.downloadAction()
+        return
+      }
+    },
+    downloadAction(){
+      let that = this
+      exportCarOilingHistoryExcel(1,this.searchParam)
+      .then(res => {
+        //console.log(res)
+        if (res instanceof Blob) {
+          const isFile = res.type === 'application/vnd.ms-excel'
+          const isJson = res.type === 'application/json'
+          if (isFile) {
+            //返回文件 则下载
+            const objectUrl = URL.createObjectURL(res)
+            const a = document.createElement('a')
+            document.body.appendChild(a)
+            a.style = 'display: none'
+            a.href = objectUrl
+            a.download = `${that.pageTitle}.xls`
+            a.click()
+            document.body.removeChild(a)
+            that.$message.info('下载成功')
+            return
+          } else if (isJson) {
+            //返回json处理
+            var reader = new FileReader()
+            reader.onload = function (e) {
+              let _res = null
+              try {
+                _res = JSON.parse(e.target.result)
+              } catch (err) {
+                _res = null
+              }
+              if (_res !== null) {
+                if (_res.code !== 0) {
+                  that.$message.info(_res.message)
+                } else {
+                  that.$message.info('下载成功')
+                }
+              } else {
+                that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                return
+              }
+            }
+            reader.readAsText(res)
+          } else {
+            that.$message.info('不支持的类型:' + res)
+          }
+        }
+      })
+      .catch(err => {
+        that.$message.info(`请求出错：${err.message}`)
+      })
+    },
   },
 }
 </script>
