@@ -12,7 +12,7 @@
             <template slot="content">
               <p>所属级别：{{nodeData.level}}</p>
             </template>
-            <span :style="{color:getLevelColor(nodeData.level)}" @click="selectNode(nodeData)">{{ nodeData.name }}</span>
+            <span class="node-item-txt" :style="{color:getLevelColor(nodeData.level)}" @click="selectNode(nodeData)">{{ nodeData.name }}</span>
           </a-popover>
         </template>
       </org-chart>
@@ -149,6 +149,18 @@ export default {
   }
   .orgchart-container-list >>> .node{
     line-height: 1.25;
+    min-height: 150px;
+    overflow: hidden;
+  }
+
+  .orgchart-container-list >>> .node .node-item-txt{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 180px;
+    min-height: 150px;
+    max-height: 220px;
+    overflow: hidden;
   }
 
   .dep-user-count-wrapper{
