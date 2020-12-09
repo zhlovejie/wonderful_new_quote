@@ -87,7 +87,9 @@
               v-if="$auth('severanceAgreement:del') && record.status !== 0 && record.showModifyButtonFlag === 1"
             >
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('del', record)">删除</a>
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
             </template>
           </template>
 
@@ -113,6 +115,7 @@ import {
   personnelLeaveOfficeAgreementPageList,
   personnelLeaveOfficeAgreementChangeIsEnd,
   personnelLeaveOfficeAgreementCancel,
+  deleteLeaveOfficeAgreement
 } from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -262,12 +265,26 @@ export default {
       this.searchAction()
     },
     doAction(type, record) {
+      let that = this
       //debugger
       //this.$refs.addForm.query(type, record)
       if (type === 'view') {
-        this.$refs.viewForm.query(type, record)
-      } else {
-        this.$refs.addForm.query(type, record)
+        that.$refs.viewForm.query(type, record)
+        return
+      }
+      if(type === 'del'){
+        deleteLeaveOfficeAgreement(`id=${record.id}`)
+          .then((res) => {
+            that.$message.info(res.msg)
+            that.searchAction()
+          })
+          .catch((err) => {
+            that.$message.info(`错误：${err.message}`)
+          })
+        return
+      }else{
+        that.$refs.addForm.query(type, record)
+        return 
       }
       //this.$message.info('功能尚未实现...')
     },

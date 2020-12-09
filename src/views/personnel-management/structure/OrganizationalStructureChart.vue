@@ -11,7 +11,7 @@
             <template slot="content">
               <p>所属级别：{{nodeData.level}}</p>
             </template>
-            <span @click="selectNode(nodeData)">{{ nodeData.name }}</span>
+            <span :style="{color:getLevelColor(nodeData.level)}" @click="selectNode(nodeData)">{{ nodeData.name }}</span>
           </a-popover>
         </template>
       </org-chart>
@@ -60,6 +60,32 @@ export default {
       _api().then(res =>{
         that.datasource = res.data
       })
+    },
+    getLevelColor(level){
+      //debugger
+      let defaultColor = '#444'
+      let m = {
+        'A':'#4ecb73',
+        'B':'#36cbcb',
+        'C':'#3aa1ff',
+        'D':'#cf181d',
+        'E':'#fef1ad',
+        'F':'#d2b8d5',
+        'G':'#79a9da',
+        'H':'#f2a644',
+      }
+
+      let m1 = {
+        '1':'#4ecb73',
+        '2':'#36cbcb',
+        '3':'#3aa1ff',
+        '4':'#cf181d',
+        '5':'#fef1ad',
+        '6':'#d2b8d5',
+        '7':'#79a9da',
+        '8':'#f2a644',
+      }
+      return m1[level] || m[level] || defaultColor
     }
   }
 }

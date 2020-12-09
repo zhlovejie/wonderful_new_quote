@@ -728,6 +728,16 @@ export function approveLeaveOfficeAgreement(parameter) {
     data: parameter
   })
 }
+
+//离职协议删除
+export function deleteLeaveOfficeAgreement(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/personnelLeaveOfficeAgreement/delete',
+    method: 'post',
+    data: parameter
+  })
+}
 //----------------------离职协议END
 
 //----------------------离职申请
