@@ -55,7 +55,7 @@
             <a @click="tenderingClick(record)">{{ text }}</a>
           </span>
           <div slot="aftersaleType" slot-scope="text">
-            <span v-if="text == 1">首次调试</span>
+            <span v-if="text == 1">现场调试</span>
             <span v-if="text == 2">远程调试</span>
           </div>
           <div slot="state" slot-scope="text, record">
@@ -93,10 +93,7 @@
             </template>
             <template
               v-if="
-                $auth('after:one') &&
-                +record.state === 2 &&
-                +record.aftersaleType === 1 &&
-                record.acceptanceUrl != undefined
+                $auth('after:one') && +record.state === 2 && +record.aftersaleType === 1 && record.acceptanceUrl != null
               "
             >
               <a-divider type="vertical" />

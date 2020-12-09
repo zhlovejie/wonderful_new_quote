@@ -1,21 +1,9 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :width="800"
-    :visible="visible"
-    @cancel="handleCancel"
-    :maskClosable="false"
-  >
+  <a-modal :title="modalTitle" :width="800" :visible="visible" @cancel="handleCancel" :maskClosable="false">
     <template slot="footer">
       <template v-if="isApproval">
         <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
-        <a-button
-          key="submit"
-          type="primary"
-          icon="check"
-          :loading="spinning"
-          @click="passAction"
-        >通过</a-button>
+        <a-button key="submit" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
       </template>
       <template v-else>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -25,66 +13,54 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper">
         <a-form-item hidden>
-          <a-input v-decorator="['id',{initialValue:detail.id}]" />
-          <a-input v-decorator="['instanceId',{initialValue:detail.instanceId}]" />
+          <a-input v-decorator="['id', { initialValue: detail.id }]" />
+          <a-input v-decorator="['instanceId', { initialValue: detail.instanceId }]" />
         </a-form-item>
         <table class="custom-table custom-table-border">
           <tr>
             <td>姓名</td>
             <td colspan="3">
-              <a-form-item v-if="isDisabled">
-              <span >{{detail.departmentName}}&nbsp;&nbsp;{{detail.userName}}</span>
-              </a-form-item>
-              <template v-else>
-                <DepUserSelect
-                  @change="depUserChange"
-                  :depId="detail.departmentId"
-                  :userId="detail.userId"
-                />
-                <a-form-item hidden>
-                  <a-input
-                    v-decorator="['departmentId',{initialValue:detail.departmentId}]"
-                  />
-                </a-form-item>
-                <a-form-item hidden>
-                  <a-input
-                    v-decorator="['userId',{initialValue:detail.userId,rules: [{required: true,message: '选择人员'}]}]"
-                  />
-                </a-form-item>
+              <template v-if="this.actionType === 'add'">
+                {{ userInfo.trueName }} —— {{ userInfo.departmentName }}
               </template>
+              <template v-else> {{ detail.userName }} —— {{ detail.departmentName }} </template>
             </td>
           </tr>
 
           <tr>
-            <td style="width:120px;">手机号</td>
-            <td style="width:300px;">
+            <td style="width: 120px">手机号</td>
+            <td style="width: 300px">
               <a-form-item>
                 <a-input
                   v-if="!isDisabled"
                   placeholder="手机号"
-                  v-decorator="['mobile',{initialValue:detail.mobile,rules: [{required: true,message: '请输入手机号'}]}]"
+                  v-decorator="[
+                    'mobile',
+                    { initialValue: detail.mobile, rules: [{ required: true, message: '请输入手机号' }] },
+                  ]"
                   :allowClear="true"
-                  style="width:100%;"
+                  style="width: 100%"
                 />
-                <span v-else>{{detail.mobile}}</span>
+                <span v-else>{{ detail.mobile }}</span>
               </a-form-item>
             </td>
-            <td style="width:120px;">持证类别</td>
-            <td style="width:300px;">
+            <td style="width: 120px">持证类别</td>
+            <td style="width: 300px">
               <a-form-item>
-                <span v-if="isDisabled">{{detail.licenseTypeDicText}}</span>
+                <span v-if="isDisabled">{{ detail.licenseTypeDicText }}</span>
                 <a-select
                   v-else
                   placeholder="持证类别"
-                  v-decorator="['licenseTypeDicId',{initialValue:detail.licenseTypeDicId,rules: [{required: true,message: '选择持证类别'}]}]"
+                  v-decorator="[
+                    'licenseTypeDicId',
+                    { initialValue: detail.licenseTypeDicId, rules: [{ required: true, message: '选择持证类别' }] },
+                  ]"
                   :allowClear="true"
-                  style="width:100%;"
+                  style="width: 100%"
                 >
-                  <a-select-option
-                    v-for="item in cardCategoryList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option v-for="item in cardCategoryList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -94,34 +70,38 @@
             <td>驾龄(年)</td>
             <td>
               <a-form-item>
-                <span v-if="isDisabled">{{detail.driverAge}}</span>
+                <span v-if="isDisabled">{{ detail.driverAge }}</span>
                 <a-input-number
                   v-else
                   placeholder="驾龄"
-                  style="width:100%;"
+                  style="width: 100%"
                   :min="0"
                   :max="99"
                   :step="1"
-                  v-decorator="['driverAge',{initialValue:detail.driverAge ,rules: [{required: true,message: '输入驾龄'}]}]"
+                  v-decorator="[
+                    'driverAge',
+                    { initialValue: detail.driverAge, rules: [{ required: true, message: '输入驾龄' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
-            <td style="width:120px;">驾驶资格</td>
-            <td style="width:300px;">
+            <td style="width: 120px">驾驶资格</td>
+            <td style="width: 300px">
               <a-form-item>
-                <span v-if="isDisabled">{{detail.qualificationDicText}}</span>
+                <span v-if="isDisabled">{{ detail.qualificationDicText }}</span>
                 <a-select
                   v-else
                   placeholder="驾驶资格"
-                  v-decorator="['qualificationDicId',{initialValue:detail.qualificationDicId,rules: [{required: true,message: '选择驾驶资格'}]}]"
+                  v-decorator="[
+                    'qualificationDicId',
+                    { initialValue: detail.qualificationDicId, rules: [{ required: true, message: '选择驾驶资格' }] },
+                  ]"
                   :allowClear="true"
-                  style="width:100%;"
+                  style="width: 100%"
                 >
-                  <a-select-option
-                    v-for="item in driveQualificationsList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option v-for="item in driveQualificationsList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -129,15 +109,18 @@
 
           <tr>
             <td>原因</td>
-            <td colspan="3" style="text-align:left;">
+            <td colspan="3" style="text-align: left">
               <a-form-item>
                 <div v-if="isDisabled" v-html="formatHTML(detail.remark)" />
                 <a-textarea
                   v-else
                   placeholder
                   :rows="2"
-                  v-decorator="['remark', {initialValue:detail.remark,rules: [{ required: true, message: '请输入原因' }] }]" 
-                  style="width:100%;"
+                  v-decorator="[
+                    'remark',
+                    { initialValue: detail.remark, rules: [{ required: true, message: '请输入原因' }] },
+                  ]"
+                  style="width: 100%"
                 />
               </a-form-item>
             </td>
@@ -159,7 +142,7 @@ export default {
   name: 'AddForm',
   components: {
     Approval,
-    DepUserSelect
+    DepUserSelect,
   },
   data() {
     return {
@@ -171,6 +154,7 @@ export default {
       detail: {},
       cardCategoryList: [],
       driveQualificationsList: [],
+      userInfo: this.$store.getters.userInfo,
     }
   },
   computed: {
@@ -215,6 +199,10 @@ export default {
 
       that.form.validateFields((err, values) => {
         if (!err) {
+          if (this.actionType === 'add') {
+            values.departmentId = this.userInfo.departmentId
+            values.userId = this.userInfo.id
+          }
           let _values = {
             ...values,
             ...that.detail,
@@ -283,15 +271,15 @@ export default {
         opinion: opinion,
       })
     },
-    depUserChange(depId, userId,dep,user) {
+    depUserChange(depId, userId, dep, user) {
       this.form.setFieldsValue({
         departmentId: depId,
         userId: userId,
         //mobile: user ? (user.mobile || '') : ''
       })
-      if(user && user.mobile){
+      if (user && user.mobile) {
         this.form.setFieldsValue({
-          mobile:user.mobile
+          mobile: user.mobile,
         })
       }
     },
