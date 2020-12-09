@@ -5,6 +5,75 @@ import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
 
+//---------------------外出申请-----------------------
+/** 外出申请列表  */
+
+
+export function going_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 外出申请新增  */
+export function going_add(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/add',
+    method: 'post',
+    data: parameter
+  })
+}
+/** 外出申请详情  */
+export function going_detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 外出审批 */
+export function going_approve(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/approve',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**  删除外出申请 */
+
+export function going_delete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**  撤销外出申请 */
+export function going_cancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/cancel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+
+
+
+
 
 
 //---------------------班次设置-----------------------

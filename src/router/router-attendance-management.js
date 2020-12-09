@@ -134,6 +134,17 @@ export default { //考勤管理
       },
     },
     {
+      path: '/attendance-management/going-apply',
+      name: 'attendance-going-apply',
+      component: () => import('@/views/attendance-management/going-apply/going_List'),
+      meta: {
+        title: '外出申请',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
       path: '/attendance-management/attendance-abnormal-events',
       name: 'attendance-abnormal-events',
       component: () => import('@/views/attendance-management/attendance-abnormal-events/List'),

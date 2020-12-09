@@ -2,44 +2,29 @@
   <a-spin :spinning="spinning">
     <div>
       <div class="top-right clearfix">
-        <a-button
-          v-if="type==2"
-          class="fl-r"
-          type="primary"
-          @click="addClick"
-          :loading="loading"
-          icon="check"
-        >通过</a-button>
-        <a-button
-          v-if="type==2"
-          class="fl-r"
-          type="primary"
-          @click="receiptClick"
-          :loading="loading"
-          icon="close"
-        >不通过</a-button>
-        <a-button
-          v-if="isEdit"
-          class="fl-r"
-          type="primary"
-          @click="editClick"
-          :loading="loading"
-          icon="check"
-        >重新提交</a-button>
+        <a-button v-if="type == 2" class="fl-r" type="primary" @click="addClick" :loading="loading" icon="check"
+          >通过</a-button
+        >
+        <a-button v-if="type == 2" class="fl-r" type="primary" @click="receiptClick" :loading="loading" icon="close"
+          >不通过</a-button
+        >
+        <a-button v-if="isEdit" class="fl-r" type="primary" @click="editClick" :loading="loading" icon="check"
+          >重新提交</a-button
+        >
         <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
         <a-button class="btn btn-primary" icon="download" @click="getPdf('pdfDom')">导出PDF</a-button>
       </div>
 
       <a-card class="card sales-task-wrapper" :bordered="false" id="pdfDom">
-        <h2 :style="{textAlign:'center'}">产品调试任务单</h2>
+        <h2 :style="{ textAlign: 'center' }">产品调试任务单</h2>
         <a-form :form="form" class="form">
           <a-form-item hidden>
-            <a-input v-decorator="[ 'customerId' ]" />
-            <a-input v-decorator="[ 'invoiceId' ]" />
-            <a-input v-decorator="[ 'id' ]" />
-            <a-input v-decorator="[ 'contractId' ]" />
-            <a-input v-decorator="[ 'presentId' ]" />
-            <a-input v-decorator="[ 'afterType' ]" />
+            <a-input v-decorator="['customerId']" />
+            <a-input v-decorator="['invoiceId']" />
+            <a-input v-decorator="['id']" />
+            <a-input v-decorator="['contractId']" />
+            <a-input v-decorator="['presentId']" />
+            <a-input v-decorator="['afterType']" />
           </a-form-item>
           <div class="ant-table">
             <table class="table">
@@ -47,12 +32,7 @@
                 <td>任务单编号</td>
                 <td>
                   <a-form-item>
-                    <a-input
-                      class="wdf-xyk"
-                      read-only
-                      placeholder="请输入收款编号"
-                      v-decorator="[ 'aftersaleCode']"
-                    />
+                    <a-input class="wdf-xyk" read-only placeholder="请输入收款编号" v-decorator="['aftersaleCode']" />
                   </a-form-item>
                 </td>
                 <td>合同/赠送单(编号)</td>
@@ -64,7 +44,7 @@
                       :disabled="true"
                       @click="openModel"
                       placeholder="请选择合同编号/赠送单编号"
-                      v-decorator="[ 'contractNum' ]"
+                      v-decorator="['contractNum']"
                     />
                   </a-form-item>
                 </td>
@@ -74,13 +54,13 @@
                 <td>客户名称</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'customerName']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['customerName']" />
                   </a-form-item>
                 </td>
                 <td>公司地址</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'customerAddress']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['customerAddress']" />
                   </a-form-item>
                 </td>
               </tr>
@@ -89,13 +69,13 @@
                 <td>销售联系人</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'trueName']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['trueName']" />
                   </a-form-item>
                 </td>
                 <td>联系电话</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'saleUserMobile']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['saleUserMobile']" />
                   </a-form-item>
                 </td>
               </tr>
@@ -103,7 +83,7 @@
                 <td>选择发货单</td>
                 <td colspan="3" class="txt-left">
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'invoiceCode']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['invoiceCode']" />
                   </a-form-item>
                 </td>
               </tr>
@@ -111,7 +91,7 @@
                 <td>需求说明</td>
                 <td colspan="3" class="txt-left">
                   <a-form-item>
-                    <a-textarea placeholder="请输入调试单需求" :rows="2" v-decorator="[ 'demandRemark']" />
+                    <a-textarea placeholder="请输入调试单需求" :rows="2" v-decorator="['demandRemark']" />
                   </a-form-item>
                 </td>
               </tr>
@@ -169,31 +149,19 @@
           </div>
 
           <div class="invoice-code-list-wrapper">
-            <div
-              class="invoice-code-item ant-table"
-              v-for="(item,index) in invoicsDataSource"
-              :key="index"
-            >
-              <h5>发货单 - {{item.invoiceNum}}</h5>
+            <div class="invoice-code-item ant-table" v-for="(item, index) in invoicsDataSource" :key="index">
+              <h5>发货单 - {{ item.invoiceNum }}</h5>
               <table class="table">
                 <tr>
                   <td>项目地址</td>
                   <td colspan="3" class="txt-left">
-                    <a-input
-                      class="wdf-xyk"
-                      read-only="read-only"
-                      :value="item.address.replace(/;/g,' ')"
-                    />
+                    <a-input class="wdf-xyk" read-only="read-only" :value="item.address.replace(/;/g, ' ')" />
                   </td>
                 </tr>
                 <tr>
                   <td>发货时间</td>
                   <td class="txt-left">
-                    <a-input
-                      class="wdf-xyk"
-                      read-only="read-only"
-                      :value="item.deliveryTime.slice(0,10)"
-                    />
+                    <a-input class="wdf-xyk" read-only="read-only" :value="item.deliveryTime.slice(0, 10)" />
                   </td>
                   <td>联系人</td>
                   <td class="txt-left">
@@ -203,11 +171,7 @@
                 <tr>
                   <td>联系电话</td>
                   <td class="txt-left">
-                    <a-input
-                      class="wdf-xyk"
-                      read-only="read-only"
-                      :value="item.contactInformation"
-                    />
+                    <a-input class="wdf-xyk" read-only="read-only" :value="item.contactInformation" />
                   </td>
                   <td>发货备注</td>
                   <td class="txt-left">
@@ -217,11 +181,11 @@
               </table>
               <a-table :columns="columns" :dataSource="item.products" :pagination="false" bordered>
                 <div slot="productType" slot-scope="text">
-                  <span v-if="text==0">常规产品</span>
-                  <span v-if="text==1">非常规产品</span>
+                  <span v-if="text == 0">常规产品</span>
+                  <span v-if="text == 1">非常规产品</span>
                 </div>
                 <div slot="invoiceCount" slot-scope="text, record">
-                  <span>{{text}}{{companyFormat(record.company)}}</span>
+                  <span>{{ text }}{{ companyFormat(record.company) }}</span>
                 </div>
               </a-table>
             </div>
@@ -248,11 +212,7 @@
                 <td>
                   <a-form-item>
                     <template v-if="isEdit">
-                      <a-radio-group
-                        class="wdf-xyk"
-                        key="aftersaleType_1"
-                        v-decorator="['aftersaleType', {}]"
-                      >
+                      <a-radio-group class="wdf-xyk" key="aftersaleType_1" v-decorator="['aftersaleType', {}]">
                         <a-radio :value="1">现场调试</a-radio>
                         <a-radio :value="2">远程调试</a-radio>
                       </a-radio-group>
@@ -277,12 +237,7 @@
                       <a-date-picker class="wdf-xyk" key="sceneTime_1" v-decorator="['sceneTime']" />
                     </template>
                     <template v-else>
-                      <a-input
-                        class="wdf-xyk"
-                        key="sceneTime_2"
-                        read-only
-                        v-decorator="[ 'sceneTime']"
-                      />
+                      <a-input class="wdf-xyk" key="sceneTime_2" read-only v-decorator="['sceneTime']" />
                     </template>
                   </a-form-item>
                 </td>
@@ -290,49 +245,35 @@
 
               <tr v-if="isContractOrder">
                 <td>是否使用我方平台</td>
-                <td colspan="3">{{usingPlatform === 0 ? '是' : '否'}}</td>
+                <td colspan="3">{{ usingPlatform === 0 ? '是' : '否' }}</td>
               </tr>
 
               <tr v-if="usingPlatform === 0 && isContractOrder">
                 <td>平台账号</td>
                 <td>
-                  <a-form-item>
-                    <template v-if="isEdit">
-                      <a-input
-                        class="wdf-xyk"
-                        key="platformAccount_1"
-                        v-decorator="[ 'platformAccount']"
-                      />
-                    </template>
-                    <template v-else>
-                      <a-input
-                        class="wdf-xyk"
-                        key="platformAccount_2"
-                        read-only
-                        v-decorator="[ 'platformAccount']"
-                      />
-                    </template>
-                  </a-form-item>
+                  <template v-if="isEdit">
+                    <a-form-item>
+                      <a-input class="wdf-xyk" key="platformAccount_1" v-decorator="['platformAccount']" />
+                    </a-form-item>
+                  </template>
+                  <template v-else>
+                    <a-form-item>
+                      <a-input class="wdf-xyk" key="platformAccount_2" read-only v-decorator="['platformAccount']" />
+                    </a-form-item>
+                  </template>
                 </td>
                 <td>密码</td>
                 <td>
-                  <a-form-item>
-                    <template v-if="isEdit">
-                      <a-input
-                        class="wdf-xyk"
-                        key="platformPassword_1"
-                        v-decorator="[ 'platformPassword']"
-                      />
-                    </template>
-                    <template v-else>
-                      <a-input
-                        class="wdf-xyk"
-                        key="platformPassword_2"
-                        read-only
-                        v-decorator="[ 'platformPassword']"
-                      />
-                    </template>
-                  </a-form-item>
+                  <template v-if="isEdit">
+                    <a-form-item>
+                      <a-input class="wdf-xyk" key="platformPassword_1" v-decorator="['platformPassword']" />
+                    </a-form-item>
+                  </template>
+                  <template v-else>
+                    <a-form-item>
+                      <a-input class="wdf-xyk" key="platformPassword_2" read-only v-decorator="['platformPassword']" />
+                    </a-form-item>
+                  </template>
                 </td>
               </tr>
 
@@ -340,13 +281,13 @@
                 <td>创建人</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'createdName']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['createdName']" />
                   </a-form-item>
                 </td>
                 <td>创建时间</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'createdTime']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['createdTime']" />
                   </a-form-item>
                 </td>
               </tr>
@@ -355,13 +296,13 @@
                 <td>审批人</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'approveName']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['approveName']" />
                   </a-form-item>
                 </td>
                 <td>审批时间</td>
                 <td>
                   <a-form-item>
-                    <a-input class="wdf-xyk" read-only v-decorator="[ 'approveTime']" />
+                    <a-input class="wdf-xyk" read-only v-decorator="['approveTime']" />
                   </a-form-item>
                 </td>
               </tr>
@@ -372,14 +313,12 @@
                   <a-form-item>
                     <a-select
                       class="wdf-xyk"
-                      v-decorator="[ 'dispatchUserId', {rules: [{ required: true, message: '请选择派遣人员'}]} ]"
+                      v-decorator="['dispatchUserId', { rules: [{ required: true, message: '请选择派遣人员' }] }]"
                       defaultValue="0"
                     >
-                      <a-select-option
-                        :key="val.id"
-                        v-for="val in dispatchUsers"
-                        :value="val.id"
-                      >{{ val.trueName }}</a-select-option>
+                      <a-select-option :key="val.id" v-for="val in dispatchUsers" :value="val.id">{{
+                        val.trueName
+                      }}</a-select-option>
                     </a-select>
                   </a-form-item>
                 </td>
@@ -403,37 +342,37 @@
           </a-row>-->
 
           <div class="ant-table hide debugging-task-sheet-wrapper">
-            <table class="table ant-form-item" style="width:100%;">
+            <table class="table ant-form-item" style="width: 100%">
               <tbody>
                 <tr>
                   <td width="15%">调试人</td>
-                  <td style="height:50px;"></td>
+                  <td style="height: 50px"></td>
                   <td width="15%">调试结果(OK/NG)</td>
-                  <td style="height:50px;"></td>
+                  <td style="height: 50px"></td>
                 </tr>
                 <tr>
                   <td width="15%">调试确认人签字</td>
-                  <td style="height:50px;"></td>
+                  <td style="height: 50px"></td>
                   <td width="15%">验收人联系电话</td>
-                  <td style="height:50px;"></td>
+                  <td style="height: 50px"></td>
                 </tr>
                 <tr>
                   <td width="15%">验收日期</td>
-                  <td style="height:50px;"></td>
+                  <td style="height: 50px"></td>
                   <td width="15%">验收结果(OK/NG)</td>
-                  <td style="height:50px;"></td>
+                  <td style="height: 50px"></td>
                 </tr>
                 <tr>
                   <td width="15%">客户意见反馈</td>
                   <td colspan="3">
-                    <div style="width:100%;height:150px;position: relative;">
-                      <span style="position: absolute;right: 80px;bottom: 5px;">签字:</span>
+                    <div style="width: 100%; height: 150px; position: relative">
+                      <span style="position: absolute; right: 80px; bottom: 5px">签字:</span>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td width="15%">客户满意度</td>
-                  <td colspan="3" style="height:50px;">
+                  <td colspan="3" style="height: 50px">
                     <a-radio-group class="a-radio-group">
                       <a-radio :value="1">非常满意</a-radio>
                       <a-radio :value="2">一般</a-radio>
@@ -464,7 +403,7 @@
                   <a-input
                     placeholder="驳回原因"
                     v-model="rejected"
-                    v-decorator="[ 'rejected', {rules: [{ message: '请输入驳回原因', whitespace: true}]} ]"
+                    v-decorator="['rejected', { rules: [{ message: '请输入驳回原因', whitespace: true }] }]"
                   />
                   <a-alert v-if="hidden" type="error" message="请输入驳回原因" banner />
                 </a-form-item>
@@ -485,7 +424,7 @@ import {
   afterUpdate,
   invoiceDetailById,
   listInvoiceByContractId,
-  listInvoiceByPresentId
+  listInvoiceByPresentId,
 } from '@/api/after'
 import { getContractOne } from '@/api/receipt'
 import { presentOrderDetail } from '@/api/receipt'
@@ -502,7 +441,7 @@ export default {
   name: 'AfterVueOfAudit',
   components: {
     //ReceiptSaleContract,
-    ChoiceOrderFactory
+    ChoiceOrderFactory,
   },
   data() {
     return {
@@ -531,25 +470,25 @@ export default {
         {
           title: '产品类别',
           dataIndex: 'productType',
-          scopedSlots: { customRender: 'productType' }
+          scopedSlots: { customRender: 'productType' },
         },
         {
           title: '产品代码',
-          dataIndex: 'productModel'
+          dataIndex: 'productModel',
         },
         {
           title: '产品名称',
-          dataIndex: 'productName'
+          dataIndex: 'productName',
         },
         {
           title: '规格型号',
-          dataIndex: 'productStandard'
+          dataIndex: 'productStandard',
         },
         {
           title: '发货数量',
           dataIndex: 'invoiceCount',
-          scopedSlots: { customRender: 'invoiceCount' }
-        }
+          scopedSlots: { customRender: 'invoiceCount' },
+        },
       ],
       dataSource: [],
       queryParam: [],
@@ -557,8 +496,8 @@ export default {
       sourceAddress: '', //缓存原项目地址 为 xxx;xxx;xxx 格式化为 xxxxxxxxx 来显示用
       invoicsDataSource: [], //多个发货单
       spinning: false,
-      afterType:0, //区分合同订单(0)和赠送订单(1)
-      isContractOrder:true
+      afterType: 0, //区分合同订单(0)和赠送订单(1)
+      isContractOrder: true,
     }
   },
   watch: {
@@ -566,7 +505,7 @@ export default {
       if (to.name === 'AfterVueOfAudit') {
         this.init()
       }
-    }
+    },
   },
   mounted() {
     this.init()
@@ -576,7 +515,7 @@ export default {
       //是否驳回重新提交
       let params = this.$route.params
       return params.action && params.action === 'edit'
-    }
+    },
   },
   methods: {
     init() {
@@ -585,9 +524,9 @@ export default {
       this.afterType = this.$route.params.afterType
       this.isContractOrder = this.afterType === 0
       // 所有售后人员
-      listUserByAfterSale().then(res => (this.dispatchUsers = res.data))
+      listUserByAfterSale().then((res) => (this.dispatchUsers = res.data))
 
-      detailById(paramter).then(res => {
+      detailById(paramter).then((res) => {
         if (this.type === 1 && res.data.dispatchUserId != undefined) {
           this.dispatchBoolean = true
         }
@@ -607,7 +546,6 @@ export default {
         //this.approveBoolean = true
         //this.dispatchBoolean = true
         //this.usingPlatform = 0
-
         const data = {
           aftersaleCode: res.data.aftersaleCode,
           demandRemark: res.data.demandRemark,
@@ -615,22 +553,22 @@ export default {
           aftersaleType: res.data.aftersaleType,
           createdName: res.data.createdName,
           createdTime: res.data.createdTime,
+          platformAccount: res.data.platformAccount,
+          platformPassword: res.data.platformPassword,
           id: paramter.id,
           approveName: res.data.approveName,
           approveTime: res.data.approveTime,
           dispatchUserId: res.data.dispatchUserId,
-          platformAccount: res.data.platformAccount,
-          platformPassword: res.data.platformPassword
         }
         this.$nextTick(() => {
           this.form.setFieldsValue({ ...data })
         })
 
-        invoiceDetailById({ id: res.data.invoiceId }).then(res2 => {
+        invoiceDetailById({ id: res.data.invoiceId }).then((res2) => {
           this.invoicsDataSource = res2.data
 
           this.form.setFieldsValue({
-            invoiceCode: this.invoicsDataSource.map(item => item.invoiceNum).join(',')
+            invoiceCode: this.invoicsDataSource.map((item) => item.invoiceNum).join(','),
           })
           // debugger
           // this.$set(data, 'invoiceCode', res2.data.invoiceNum)
@@ -639,13 +577,12 @@ export default {
           // })
         })
 
-        if(this.afterType === 0){
+        if (this.afterType === 0) {
           this.fillContract({ contractId: res.data.contractId })
-        }else{
-          this.fillPresentOrder({id:res.data.presentId})
+        } else {
+          this.fillPresentOrder({ id: res.data.presentId })
         }
-        
-        
+
         //return
         //this.onOptionClick({ 'id': res.data.invoiceId })
       })
@@ -675,12 +612,14 @@ export default {
       this.invoiceList = []
       this.invoiceSelectedItems = []
       this.invoicsDataSource = []
-      listInvoiceByContractId(paramter).then(res => {
-        this.invoiceList = res.data
-      }).catch(err =>{
-        console.log(err)
-      })
-      getContractOne(paramter).then(res => {
+      listInvoiceByContractId(paramter)
+        .then((res) => {
+          this.invoiceList = res.data
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      getContractOne(paramter).then((res) => {
         this.usingPlatform = res.data.usingPlatform
         const record = {
           contractNum: res.data.contractNum,
@@ -692,10 +631,10 @@ export default {
           totalAmount: res.data.totalAmount,
           refundMoney: res.data.returnedMoney,
           saleContract: res.data.contractId,
-          platformAccount: res.data.platformAccount,
-          platformPassword: res.data.platformPassword,
+          // platformAccount: res.data.platformAccount,
+          // platformPassword: res.data.platformPassword,
           paperDetail: 1,
-          customerAddress: res.data.saleCustomer.address
+          customerAddress: res.data.saleCustomer.address,
         }
         this.$nextTick(() => {
           this.form.setFieldsValue({ ...record })
@@ -706,10 +645,10 @@ export default {
     //填充赠送订单
     fillPresentOrder(data) {
       let that = this
-      listInvoiceByPresentId({ id: data.id }).then(res => {
+      listInvoiceByPresentId({ id: data.id }).then((res) => {
         that.invoiceList = res.data
       })
-      presentOrderDetail({ presentId: data.id }).then(res => {
+      presentOrderDetail({ presentId: data.id }).then((res) => {
         console.log(res)
         let _data = res.data
         that.form.setFieldsValue({ contractNum: _data.presentNum })
@@ -755,7 +694,7 @@ export default {
           }
 
           afterAudit(values)
-            .then(res => {
+            .then((res) => {
               if (that.isRejected == 1) {
                 that.confirmLoadingTwo = true
               } else {
@@ -767,7 +706,7 @@ export default {
                 this.$message.error(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               if (that.isRejected == 1) {
                 that.confirmLoadingTwo = true
               } else {
@@ -787,7 +726,7 @@ export default {
 
           that.spinning = true
           afterUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 this.goBackPricing()
@@ -795,7 +734,7 @@ export default {
                 that.$message.info(res.msg || '未知错误')
               }
             })
-            .catch(err => (that.spinning = false))
+            .catch((err) => (that.spinning = false))
         }
       })
     },
@@ -827,7 +766,7 @@ export default {
       // 特殊处理打印 input 是有宽度的，内容过多打印不全 用span处理
       let eles = document.querySelectorAll('input,textarea')
       eles &&
-        eles.forEach(ele => {
+        eles.forEach((ele) => {
           if (ele.nodeType !== 1) return
           if (ele.nodeName.toUpperCase() === 'INPUT') {
             if (ele.type === 'radio' || ele.type === 'checkbox') {
@@ -894,8 +833,8 @@ export default {
       // }
       // )
     },
-    companyFormat: companyFormat
-  }
+    companyFormat: companyFormat,
+  },
 }
 </script>
 <style>
