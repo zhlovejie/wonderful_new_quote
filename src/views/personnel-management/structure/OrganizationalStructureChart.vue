@@ -4,10 +4,11 @@
       <a-tab-pane tab="部门架构图" key="0"/>
       <a-tab-pane tab="岗位架构图" key="1"/>
     </a-tabs>
+    <a-spin :spinning="spinning">
     <div class="orgchart-container-list">
-      <org-chart v-for="(item,index) in datasource" :key="index" :datasource="item" @node-click="selectNode">
+      <org-chart v-for="(item,index) in datasource" :key="index" :datasource="item">
         <template slot-scope="{ nodeData }">
-          <a-popover :title="nodeData.name" trigger="hover">
+          <a-popover :title="formatNodeData(nodeData)" trigger="hover">
             <template slot="content">
               <p>所属级别：{{nodeData.level}}</p>
             </template>
@@ -16,6 +17,11 @@
         </template>
       </org-chart>
     </div>
+    <div class="dep-user-count-wrapper" v-if="+activeKey === 0">
+      <h3>各部门人数</h3>
+      <div v-html="formatDepUserCount" />
+    </div>
+    </a-spin>
   </div>
 </template>
 
@@ -23,7 +29,8 @@
 import OrgChart from '@/components/Organization/OrganizationChartContainer'
 import {
   getDepStructure,
-  getStationStructure
+  getStationStructure,
+  getDepStructureWithUserCount
 } from '@/api/personnelManagement'
 export default {
   name:"organization",
@@ -33,7 +40,9 @@ export default {
   data(){
     return {
       activeKey:0,
-      datasource:[]
+      datasource:[],
+      depUserCountList:[],
+      spinning:false
     }
   },
   watch:{
@@ -46,20 +55,58 @@ export default {
       immediate:true
     }
   },
+  computed:{
+    formatDepUserCount(){
+      let wrapHtml = ''
+      let arr = []
+      this.depUserCountList.map((dep,idx) =>{
+        //debugger
+        if(idx !== 0 && idx % 6 === 0){
+          arr.push(`<ul>${wrapHtml}</ul>`)
+          wrapHtml = ''
+        }
+        wrapHtml += `<li>${dep.departmentName}（${dep.userCount}人）</li>`
+      })
+      if(wrapHtml.length > 0){
+        arr.push(`<ul>${wrapHtml}</ul>`)
+        wrapHtml = ''
+      }
+
+      return arr.join('')
+    }
+  },
   methods:{
     selectNode (nodeData) {
       console.log(nodeData)
     },
     tabChange(key){
       this.activeKey = parseInt(key)
+      this.datasource = []
+      this.depUserCountList = []
       this.fillData()
     },
     fillData(){
       let that = this
       let _api = that.activeKey === 0 ? getDepStructure : getStationStructure
+
+      that.spinning = true
       _api().then(res =>{
+        that.spinning = false
         that.datasource = res.data
+      }).catch(err =>{
+        that.spinning = false
+        that.$message.error(err.message)
       })
+
+      if(that.activeKey === 0){
+        getDepStructureWithUserCount().then(res =>{
+          console.log(res)
+          that.depUserCountList = res.data
+        })
+      }
+    },
+    formatNodeData(nodeData){
+      return +this.activeKey === 0 ? nodeData.name : `${nodeData.name}（${nodeData.userCount}人）`
     },
     getLevelColor(level){
       //debugger
@@ -102,6 +149,33 @@ export default {
   }
   .orgchart-container-list >>> .node{
     line-height: 1.25;
+  }
+
+  .dep-user-count-wrapper{
+    background-color: #fff;
+    overflow: hidden;
+    padding: 20px;
+  }
+
+  .dep-user-count-wrapper >>> ul{
+    min-width:200px;
+    float: left;
+    border-left: 1px dashed #ccc;
+    margin: 20px 0;
+  }
+  .dep-user-count-wrapper >>> div{
+    display: inline-block;
+    overflow: hidden;
+    border: 1px solid #ccc;
+  }
+  .dep-user-count-wrapper >>> ul:first-child{
+    border: none;
+  }
+  .dep-user-count-wrapper >>> ul li{
+    list-style-type: none;
+    line-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
 </style>

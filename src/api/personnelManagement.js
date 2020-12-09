@@ -590,6 +590,18 @@ export function getStationStructure(parameter) {
     params: parameter
   })
 }
+
+/**部门列表和人数 */
+export function getDepStructureWithUserCount(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/orgStructure/getDepStructureWithUserCount',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 //----------------------组织架构END
 
 //----------------------事故调查报告
