@@ -88,29 +88,36 @@
           </tr>
 
           <tr v-if="detail.carDicNum !== null">
-            <td style="width: 120px">使用公车</td>
-            <td>
-              <a-form-item>
-                <a-select
-                  v-if="!isDisabled"
-                  placeholder="选择公车"
-                  v-decorator="[
-                    'carDicNum',
-                    {
-                      initialValue: detail.carDicNum ? +detail.carDicNum : undefined,
-                      rules: [{ required: true, message: '选择公车' }],
-                    },
-                  ]"
-                  :allowClear="true"
-                  style="width: 334px"
-                >
-                  <a-select-option v-for="item in carList" :key="item.id" :value="item.carCode">{{
-                    item.carCode
-                  }}</a-select-option>
-                </a-select>
-                <span v-else>{{ detail.carDicNum }}</span>
-              </a-form-item>
-            </td>
+            <template v-if="actionType === 'add' && bus === 1">
+              <td style="width: 120px">使用公车</td>
+              <td>
+                <a-form-item>
+                  <a-select
+                    v-if="!isDisabled"
+                    placeholder="选择公车"
+                    v-decorator="[
+                      'carDicNum',
+                      {
+                        initialValue: detail.carDicNum ? +detail.carDicNum : undefined,
+                        rules: [{ required: true, message: '选择公车' }],
+                      },
+                    ]"
+                    :allowClear="true"
+                    style="width: 334px"
+                  >
+                    <a-select-option v-for="item in carList" :key="item.id" :value="item.carCode">{{
+                      item.carCode
+                    }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </td>
+            </template>
+            <template v-else-if="detail.carDicNum !== null && actionType !== 'add'">
+              <td style="width: 120px">使用公车</td>
+              <td>
+                <span>{{ detail.carDicNum }}</span>
+              </td>
+            </template>
           </tr>
           <tr>
             <td style="width: 120px">外出事由</td>
