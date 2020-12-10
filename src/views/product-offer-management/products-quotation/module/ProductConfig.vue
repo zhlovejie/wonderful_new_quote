@@ -655,8 +655,8 @@ export default {
 
       unStandPrice = Object.assign({},priceResult)
 
-      if(optStand.length > 0){
-        debugger
+      if(optStand.length >= 0){
+        //debugger
         if(type === '4d0'){//4.0 计算标配价格不动
           console.log(`【标配】 ${optInfo.name} 成本价：${optInfo.price} A价：${optInfo.aprice} B价：${optInfo.bprice} C价：${optInfo.cprice} 销售价：${optInfo.retailPrice}`)
           priceResult.price += (parseFloat(optInfo.price) || 0)
