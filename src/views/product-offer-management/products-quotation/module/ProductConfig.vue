@@ -739,6 +739,8 @@ export default {
       let that = this
       that.reset()
       priceAdjustProductConfigDetail({ id: id ,isPrice:true}).then(res => {
+
+        that.$emit('loaded')
         that.loading = false
 
         if(res.code !== 200){
@@ -766,6 +768,7 @@ export default {
           }
         })
       }).catch(err =>{
+        that.$emit('loaded')
         that.reset()
         that.$message.info(`请求失败：${err.message}`)
       })
