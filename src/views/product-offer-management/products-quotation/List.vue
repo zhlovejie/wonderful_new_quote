@@ -1,5 +1,6 @@
 <template>
   <div class="customer-list-wrapper">
+    <a-spin :spinning="spinning" :tip="spinTips" :delay="100">
     <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" type="card" @change="tabChange">
       <a-tab-pane tab="2.0产品报价" key="1" />
       <a-tab-pane tab="4.0产品报价" key="2" />
@@ -22,13 +23,15 @@
 
       <ProductConfig
         ref="productConfigMain"
-        @extendProductChange="extendProductChange"
+        @extendProductChange="extendProductChange" 
+        @loaded="() => spinning = false"
         prefix="产品系列-" 
         :modelType="{is2d0:is2d0,is4d0:is4d0}"
       />
 
       <ProductConfig 
         ref="productConfigSub" 
+        @loaded="() => spinning = false" 
         prefix="产品-" 
         :modelType="{is2d0:is2d0,is4d0:is4d0}"
       />
@@ -38,6 +41,9 @@
         <a-button type="primary" icon="reload" @click="doAction('reset')" style="margin:0 10px;">重置</a-button>
       </div>
     </div>
+    </a-spin>
+
+
 
     <SelectProduct ref="selectProduct" @selected="selectedHandler" :productType="+this.activeKey === 1 ? 1 : 0" />
 
@@ -127,7 +133,9 @@ export default {
       spinningView:false,
       hackReset:true,
 
-      isPriceViewCost:false //是否点击的 成本价预览
+      isPriceViewCost:false, //是否点击的 成本价预览
+      spinning:false,
+      spinTips:'数据加载中...'
     }
   },
   computed: {
@@ -212,6 +220,7 @@ export default {
       //debugger
       if (record && record.isProduct) {
         if(record.checked){
+          this.spinning = true
           this.$refs.productConfigSub.query(record.id)
         }else{
           this.$refs.productConfigSub.reset()
@@ -224,6 +233,7 @@ export default {
       this.optInfo = {
         name: record.name
       }
+      this.spinning = true
       this.$refs.productConfigMain.query(record.id)
     },
     doAction(type) {
