@@ -3,6 +3,11 @@
   <div class="customer-list-wrapper">
     <div class="search-wrapper">
       <a-input :placeholder="placeholder" v-model="itemName" allowClear style="width: 220px;"/>
+      <a-select placeholder="是否核价" v-model="isNuclearPrice" style="width: 150px" :allowClear="true">
+        <a-select-option :value="1">未核价</a-select-option>
+        <a-select-option :value="2">已核价</a-select-option>
+      </a-select>
+      
       <a-button type="primary" icon="search" @click="searchAction">查询</a-button>
     </div>
     <div class="main-wrapper">
@@ -69,11 +74,17 @@ export default {
     return {
       activeKey:1,
       itemName:undefined,
+      isNuclearPrice:undefined,
       depSelectDataSource:[],
       postSelectDataSource:[],
       dataSource:[],
       pagination:{
-        current:1
+        current:1,
+        _prePageSize: 10,
+        pageSize:10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading:false,
       placeholder:'系列产品名称模糊查询'
@@ -82,7 +93,8 @@ export default {
   computed:{
     searchParam(){
       return {
-        name:this.itemName
+        name:this.itemName,
+        isNuclearPrice:this.isNuclearPrice
       }
     },
     columns(){
@@ -162,7 +174,11 @@ export default {
     },
     searchAction(opt){
       let that = this
-      let _searchParam = Object.assign({},{...this.searchParam},{...this.pagination},opt || {},{type:that.activeKey})
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10,
+       }
+      let _searchParam = Object.assign({},{...this.searchParam},paginationParam,opt || {},{type:that.activeKey})
       console.log('执行搜索...',_searchParam)
       that.loading = true
       priceAdjustPricingRecordList(_searchParam).then(res => {
@@ -171,19 +187,32 @@ export default {
           item.key = index + 1
           return item
         })
-        //设置数据总条数
-        const pagination = { ...that.pagination }
-        pagination.total = res.data.total
-        that.pagination = pagination
-
+        try{
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total
+          that.pagination = pagination
+          //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
+          //刷新也不显示数据
+          let {current,pages} = res.data
+          if(+pages > 0 && +current > +pages){
+            that.pagination = {...pagination,current:pages}
+            that.searchAction()
+          }
+        }catch(err){
+          console.log(err)
+        }
       }).catch(err => that.loading = false)
     },
     // 分页
     handleTableChange (pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
+      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = {...this.pagination,...pager}
       this.searchAction()
     },
     doAction(type,record){
