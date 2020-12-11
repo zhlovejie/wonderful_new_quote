@@ -168,8 +168,13 @@ export default {
       disabled: false,
       columns: columns,
       dataSource: [],
-      pagination: {
-        current: 1,
+      pagination:{
+        current:1,
+        _prePageSize: 10,
+        pageSize:10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading: false,
       searchParam: {},
@@ -234,7 +239,12 @@ export default {
     searchAction(opt = {}) {
       this.disabled = false
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10,
+      }
+      let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getStatisticsList(_searchParam)
@@ -250,6 +260,18 @@ export default {
           pagination.total = res.data.total || 0
           pagination.current = res.data.current || 1
           that.pagination = pagination
+
+          try{
+            //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
+            //刷新也不显示数据
+            let {current,pages} = res.data
+            if(+pages > 0 && +current > +pages){
+              that.pagination = {...pagination,current:pages}
+              that.searchAction()
+            }
+          }catch(err){
+            console.log(err)
+          }
         })
         .catch((err) => (that.loading = false))
       this.downParam.userName = _searchParam.userName
@@ -258,13 +280,17 @@ export default {
       this.getList(_searchParam)
     },
     // 分页
-    handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
+    handleTableChange (pagination, filters, sorter) {
+      const pager = pagination
       pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+        pager.current = 1 //重置为第一页
+        pager._prePageSize = +pager.pageSize //同步两者的值
+      }
+      this.pagination = {...this.pagination,...pager}
+      this.searchAction()
     },
+
     onChange(date, dateString) {
       if (typeof dateString === 'string') {
         this.searchParam.statiticsMonthDate = dateString

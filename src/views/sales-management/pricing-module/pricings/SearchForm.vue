@@ -16,6 +16,13 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
+          <a-form-item label="销售经理">
+            <a-select placeholder="销售经理" v-decorator="['saleUserId']">
+              <a-select-option v-for="salesman in salesJurisdiction.subSalesman" :key="salesman.id" :value="salesman.userId">{{ salesman.salesmanName }}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
           <a-form-item label="提交人">
             <a-input v-decorator="['createName']" placeholder="提交人" :allowClear="true"/>
           </a-form-item>
@@ -38,11 +45,12 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="24">
+        <a-col :span="12">
           <a-form-item label="提交时间">
             <a-range-picker v-decorator="['sDate']" style="width:100%;" :allowClear="true"/>
           </a-form-item>
         </a-col>
+        
       </a-row>
       <a-row :gutter="0">
         <a-col :span="24">核价信息</a-col>
@@ -97,6 +105,7 @@
   </a-modal>
 </template>
 <script>
+import { salesJurisdiction} from '@/api/customer'
 export default {
   name: 'searchForm',
   components:{
@@ -105,12 +114,17 @@ export default {
     return {
       modalTitle: '高级筛选',
       visible: false,
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      salesJurisdiction:[]
     }
   },
   methods: {
     query() {
-      this.visible = true
+      let that = this
+      that.visible = true
+      that.$nextTick(() =>{
+        salesJurisdiction().then(res => that.salesJurisdiction = res.data)
+      })
     },
     handleCancel() {
       this.visible = false
@@ -150,6 +164,7 @@ export default {
 .search-form-wrapper >>> .ant-form-item-label{
   display: inline-block;
   width: 120px;
+  padding-left: 20px;
 }
 
 </style>
