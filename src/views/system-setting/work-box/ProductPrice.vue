@@ -2,59 +2,66 @@
   <a-card :bordered="false">
     <!--搜索模块-->
     <div class="search-wrapper">
-      <a-input v-model.trim="queryParam.productName" style="width:200px;" placeholder="根据名称模糊查询"/>
-      <a-input v-model.trim="queryParam.productModel" style="width:200px;margin-left:10px;" placeholder="根据产品代码查询" />
+      <a-input v-model.trim="queryParam.productName" style="width: 200px" placeholder="根据名称模糊查询" />
+      <a-input
+        v-model.trim="queryParam.productModel"
+        style="width: 200px; margin-left: 10px"
+        placeholder="根据产品代码查询"
+      />
       <template v-if="$auth('productPrice:list')">
-        <a-button type="primary" style="margin-left:10px;" @click="$refs.table.refresh(true)">查询</a-button>
-        <a-button style="margin-left:10px;" @click="() => queryParam = {}">重置</a-button>
+        <a-button type="primary" style="margin-left: 10px" @click="$refs.table.refresh(true)">查询</a-button>
+        <a-button style="margin-left: 10px" @click="() => (queryParam = {})">重置</a-button>
       </template>
     </div>
 
-    <s-table
-      ref="table"
-      size="default"
-      rowKey="id"
-      :columns="columns"
-      :data="loadData"
-    >
-      <span slot="serial" slot-scope="text,record,index">
+    <s-table ref="table" size="default" rowKey="id" :columns="columns" :data="loadData">
+      <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
 
       <span slot="costPrice" slot-scope="text">
-        <span v-if="$auth('productPrice:add') || $auth('productPrice:eidt')">{{text}}</span>
+        <span v-if="$auth('productPrice:add') || $auth('productPrice:eidt')">{{ text }}</span>
         <span v-else>***</span>
       </span>
 
       <span slot="productPic" slot-scope="text">
-        <img style="height: 70px;lenght:70px" :src="text"/>
+        <img style="height: 70px; lenght: 70px" :src="text" />
       </span>
       <span slot="status" slot-scope="text, record">
         <template v-if="$auth('productPrice:eidt')">
           <a-switch
             checkedChildren="启用"
-            :defaultChecked="(text === 0) ? true : false"
+            :defaultChecked="text === 0 ? true : false"
             unCheckedChildren="禁用"
-            @change="changestatus(text,record)"/>
+            @change="changestatus(text, record)"
+          />
         </template>
         <template v-if="!$auth('productPrice:eidt')">
           <span v-if="text === 0">启用</span>
           <span v-if="text === 1">禁用</span>
         </template>
       </span>
-      <span slot="action" slot-scope="text,record">
+      <span slot="action" slot-scope="text, record">
         <template>
           <template v-if="$auth('productPrice:eidt')">
-            <a @click="handleEdit(record)" v-if="record.costPrice!=null||record.priceA!=null||record.priceB!=null||record.priceC!=null">修改</a>
+            <a
+              @click="handleEdit(record)"
+              v-if="record.costPrice != null || record.priceA != null || record.priceB != null || record.priceC != null"
+              >修改</a
+            >
           </template>
           <template v-if="$auth('productPrice:add')">
-            <a @click="handleEdit(record)" v-if="record.costPrice==null&&record.priceA==null&&record.priceB==null&&record.priceC==null">新增</a>
+            <a
+              @click="handleEdit(record)"
+              v-if="record.costPrice == null && record.priceA == null && record.priceB == null && record.priceC == null"
+              >新增</a
+            >
           </template>
         </template>
       </span>
     </s-table>
-    <price-edit ref="priceEdit" @ok="handleOk"/>
-    <preview ref="previewModal" @ok="handleOk"/>
+    <price-edit ref="priceEdit" @ok="handleOk" />
+    <preview ref="previewModal" @ok="handleOk" />
   </a-card>
 </template>
 
@@ -67,12 +74,13 @@ import { getDictionary } from '@/api/common'
 
 export default {
   name: 'ProductPrice',
-  components: { // 组件
+  components: {
+    // 组件
     STable,
     priceEdit,
-    Preview
+    Preview,
   },
-  data () {
+  data() {
     return {
       // 查询参数
       queryParam: {},
@@ -80,96 +88,113 @@ export default {
       columns: [
         {
           title: '序号',
-          scopedSlots: { customRender: 'serial' }
+          scopedSlots: { customRender: 'serial' },
         },
         {
           title: '名称',
-          dataIndex: 'productName'
+          width: '150px',
+          dataIndex: 'productName',
         },
         {
           title: '产品代码',
-          dataIndex: 'productModel'
-        }, {
-          title:'区域',
-          dataIndex: 'areaName'
+          dataIndex: 'productModel',
+        },
+        {
+          title: '规格型号',
+          width: '150px',
+          dataIndex: 'productStandard',
+        },
+
+        {
+          title: '区域',
+          dataIndex: 'areaName',
         },
         {
           title: '成本价',
           dataIndex: 'costPrice',
-          scopedSlots: { customRender: 'costPrice' }
-        }, {
+          scopedSlots: { customRender: 'costPrice' },
+        },
+        {
           title: 'A价',
-          dataIndex: 'priceA'
-        }, {
+          dataIndex: 'priceA',
+        },
+        {
           title: 'B价',
-          dataIndex: 'priceB'
-        }, {
+          dataIndex: 'priceB',
+        },
+        {
           title: 'C价',
-          dataIndex: 'priceC'
+          dataIndex: 'priceC',
         },
         {
           title: '状态',
           width: '100px',
           dataIndex: 'status',
-          scopedSlots: { customRender: 'status' }
+          scopedSlots: { customRender: 'status' },
         },
         {
           title: '操作人',
-          dataIndex: 'modifier'
+          dataIndex: 'modifier',
         },
         {
           title: '操作时间',
-          dataIndex: 'modifyTime'
+          dataIndex: 'modifyTime',
           // sorter: true
         },
         {
           title: '操作',
           dataIndex: 'action',
           width: '150px',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       productTypes: [],
       pagination: {},
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
+      loadData: (parameter) => {
         return getProductList(Object.assign(parameter, this.queryParam))
-          .then(res => {
+          .then((res) => {
             return res
-          }).catch(function (err) {
+          })
+          .catch(function (err) {
             console.log(err)
           })
-      }
+      },
     }
   },
-  created () { // 初始化钩子,获取所有产品类型
-    getDictionary({ text: '产品类型' }).then(res => {
+  created() {
+    // 初始化钩子,获取所有产品类型
+    getDictionary({ text: '产品类型' }).then((res) => {
       this.productTypes = res.data
     })
   },
   methods: {
-    handleEdit (record) { // 修改
+    handleEdit(record) {
+      // 修改
       this.$refs.priceEdit.edit(record)
     },
-    handleOk () {
+    handleOk() {
       this.$refs.table.refresh()
     },
-    changestatus (text, record) { // 改变状态
+    changestatus(text, record) {
+      // 改变状态
       let status = 0
       if (text === 0) {
         status = 1
       }
       this.$set(record, 'status', status)
-      editProduct(record).then(res => {
-        if (res.code === 200) {
-          this.$refs.table.refresh()
-        } else {
-          console.log(res.msg)
-        }
-      }).catch(function (err) {
-        console.log(err)
-      })
-    }
-  }
+      editProduct(record)
+        .then((res) => {
+          if (res.code === 200) {
+            this.$refs.table.refresh()
+          } else {
+            console.log(res.msg)
+          }
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
+    },
+  },
 }
 </script>
