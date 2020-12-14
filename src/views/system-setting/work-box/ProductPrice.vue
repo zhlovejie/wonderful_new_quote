@@ -83,7 +83,7 @@ export default {
   data() {
     return {
       // 查询参数
-      queryParam: {},
+      queryParam: { isPrice: 0 },
       // 表头
       columns: [
         {
