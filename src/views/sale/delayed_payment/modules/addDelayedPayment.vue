@@ -399,13 +399,13 @@ export default {
       let arr = this.routineSettlement.find((item) => item.moneyType === value)
       this.promiseTimes = moment(arr.paymentDate)
       this.form.setFieldsValue({ promiseTime: arr.paymentDate })
-       if (this.delayedTimes !== '') {
-        this.delayedDay = date.diff(this.delayedTimes, 'days')
+      if (this.delayedTimes !== 0) {
+        this.delayedDay = this.promiseTimes.diff(this.delayedTimes, 'days')
       }
     },
     setDelayedTime(date, dateString) {
       this.delayedTimes = date
-      if (this.promiseTimes !== '') {
+      if (this.promiseTimes !== 0) {
         this.delayedDay = date.diff(this.promiseTimes, 'days')
       }
     },
