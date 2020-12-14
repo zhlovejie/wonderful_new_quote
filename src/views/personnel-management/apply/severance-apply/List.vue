@@ -125,6 +125,7 @@
     <AccidentReportForm ref="accidentReportForm" />
     <UploadForm ref="uploadForm" @finish="searchAction()" />
     <XdocView ref="xdocView" />
+    <ImgView ref="imgView" />
   </div>
 </template>
 <script>
@@ -142,6 +143,8 @@ import AccidentReportForm from '@/views/personnel-management/apply/accident-repo
 import UploadForm from './module/UploadFile'
 
 import XdocView from './module/XdocView'
+
+import ImgView from '@/components/CustomerList/ImgView'
 
 const columns = [
   {
@@ -228,6 +231,7 @@ export default {
     AccidentReportForm: AccidentReportForm,
     UploadForm: UploadForm,
     XdocView: XdocView,
+    ImgView,
   },
   data() {
     return {
@@ -342,7 +346,12 @@ export default {
       this.$refs.accidentReportForm.query('view', { id: id })
     },
     xdocView(docUrl) {
-      this.$refs.xdocView.query(docUrl)
+      let docUrls = docUrl.substring(docUrl.lastIndexOf('.') + 1)
+      if (docUrls === 'pdf') {
+        this.$refs.xdocView.query(docUrl)
+      } else {
+        this.$refs.imgView.show(docUrl)
+      }
     },
   },
 }

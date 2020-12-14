@@ -1,28 +1,29 @@
 <template>
-  <a-modal 
+  <a-modal
+    title="查看图片"
     :width="800"
-    :visible="previewVisible" 
-    :footer="null" 
-    @cancel="() => previewVisible = false"
+    :visible="previewVisible"
+    :footer="null"
+    @cancel="() => (previewVisible = false)"
   >
-    <img alt="图片" style="width: auto;max-width:750px" :src="imgUrl" />
+    <img alt="图片" style="width: auto; max-width: 750px" :src="imgUrl" />
   </a-modal>
 </template>
 
 <script>
 export default {
-  name:'imgView',
-  data(){
+  name: 'imgView',
+  data() {
     return {
-      previewVisible:false,
-      imgUrl:''
+      previewVisible: false,
+      imgUrl: '',
     }
   },
-  methods:{
-    show(url){
+  methods: {
+    show(url) {
       this.previewVisible = true
       this.imgUrl = url
-    }
-  }
+    },
+  },
 }
 </script>
