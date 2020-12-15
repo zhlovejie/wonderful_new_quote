@@ -317,6 +317,9 @@ export default {
     // 点击下一步
     async nextStep(status) {
       const that = this
+      if (that.$parent.routeParams.action === 'see') {
+        return that.$emit('nextStep', { ...that.queryonedata })
+      }
 
       if (that.$parent.routeParams.action === 'split') {
         let { errors, values } = that.$refs.productCommonSplitNormal.validate()

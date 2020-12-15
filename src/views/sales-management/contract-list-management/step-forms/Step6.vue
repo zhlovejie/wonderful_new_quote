@@ -230,7 +230,7 @@ export default {
   },
   computed: {
     signFormTxt: function () {},
-        isView() {
+    isView() {
       //新增
       return this.$parent.routeParams.action === 'see'
     },
@@ -341,6 +341,9 @@ export default {
     // 点击下一步
     nextStep(status) {
       const that = this
+      if (that.$parent.routeParams.action === 'see') {
+        return that.$emit('nextStep', { ...that.queryonedata })
+      }
       const {
         form: { validateFields },
       } = this

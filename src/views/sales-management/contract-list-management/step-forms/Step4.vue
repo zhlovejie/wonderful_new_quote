@@ -247,6 +247,9 @@ export default {
     // 点击下一步
     nextStep(status) {
       const that = this
+      if (that.$parent.routeParams.action === 'see') {
+        return that.$emit('nextStep', { ...that.queryonedata })
+      }
       const {
         form: { validateFields },
       } = this
