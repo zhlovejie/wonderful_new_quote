@@ -267,7 +267,7 @@ export default {
     openModel(record) {
       this.openKey = record.key
       console.log('openKey :' + this.openKey)
-      this.$refs.productModel.query({ productType: this.productType, seriesFlag: '1' })
+      this.$refs.productModel.query({ productType: this.productType })
     },
     productChange(data) {
       console.log('JSON 页面传值事件:' + JSON.stringify(data))
