@@ -155,6 +155,10 @@ export default {
           values.orderBeginDate = values.sDate[0].format('YYYY-MM-DD')
           values.orderEndDate = values.sDate[1].format('YYYY-MM-DD')
           delete values.sDate
+        }else{
+          values.orderBeginDate = undefined
+          values.orderEndDate = undefined
+          delete values.sDate
         }
         console.log(values)
         this.$emit('change', values)

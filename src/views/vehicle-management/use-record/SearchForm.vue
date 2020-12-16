@@ -117,20 +117,36 @@ export default {
           values.beginTime = values.sDate[0].format('YYYY-MM-DD')
           values.endTime = values.sDate[1].format('YYYY-MM-DD')
           delete values.sDate
+        }else{
+          values.beginTime = undefined
+          values.endTime = undefined
+          delete values.sDate
         }
         if(Array.isArray(values.sUseDate) && values.sUseDate.length === 2){
           values.beginUseTime = values.sUseDate[0].format('YYYY-MM-DD')
           values.endUseTime = values.sUseDate[1].format('YYYY-MM-DD')
+          delete values.sUseDate
+        }else{
+          values.beginUseTime = undefined
+          values.endUseTime = undefined
           delete values.sUseDate
         }
         if(Array.isArray(values.sOutDate) && values.sOutDate.length === 2){
           values.beginOutTime = values.sOutDate[0].format('YYYY-MM-DD')
           values.endOutTime = values.sOutDate[1].format('YYYY-MM-DD')
           delete values.sOutDate
+        }else{
+          values.beginOutTime = undefined
+          values.endOutTime = undefined
+          delete values.sOutDate
         }
         if(Array.isArray(values.sBackDate) && values.sBackDate.length === 2){
           values.beginBackTime = values.sBackDate[0].format('YYYY-MM-DD')
           values.endBackTime = values.sBackDate[1].format('YYYY-MM-DD')
+          delete values.sBackDate
+        }else{
+          values.beginBackTime = undefined
+          values.endBackTime = undefined
           delete values.sBackDate
         }
         console.log(values)

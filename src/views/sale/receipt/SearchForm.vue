@@ -95,10 +95,18 @@ export default {
           values.startTime = values.sDate[0].format('YYYY-MM-DD')
           values.endTime = values.sDate[1].format('YYYY-MM-DD')
           delete values.sDate
+        }else{
+          values.startTime = undefined
+          values.endTime = undefined
+          delete values.sDate
         }
         if(Array.isArray(values.dDate) && values.dDate.length === 2){
           values.receiptStartTime = values.dDate[0].format('YYYY-MM-DD')
           values.receiptEndTime = values.dDate[1].format('YYYY-MM-DD')
+          delete values.dDate
+        }else{
+          values.receiptStartTime = undefined
+          values.receiptEndTime = undefined
           delete values.dDate
         }
         console.log(values)
