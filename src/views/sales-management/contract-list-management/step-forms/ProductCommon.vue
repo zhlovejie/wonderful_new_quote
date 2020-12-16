@@ -760,7 +760,7 @@ export default {
     // },
     validate() {
       let hasError = this.freshValidateData()
-      if (this.ispriceC === true && this.lowPriceDesc === null) {
+      if (this.ispriceC === true && (this.lowPriceDesc === null || this.lowPriceDesc.trim().length === 0)) {
         return this.$message.error('特价说明不能为空')
       }
       return {

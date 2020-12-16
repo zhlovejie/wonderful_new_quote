@@ -2,12 +2,25 @@
   <a-card :bordered="false">
     <!--搜索模块-->
     <div class="search-wrapper">
-      <a-input v-model.trim="queryParam.productName" style="width: 200px" placeholder="根据名称模糊查询" />
+      <a-input v-model.trim="queryParam.productName" :allowClear="true" style="width: 200px" placeholder="根据名称模糊查询" />
       <a-input
         v-model.trim="queryParam.productModel"
         style="width: 200px; margin-left: 10px"
-        placeholder="根据产品代码查询"
+        placeholder="根据产品代码查询" 
+        :allowClear="true"
       />
+
+      <a-select
+        style="width: 200px; margin-left: 10px" 
+        v-model.trim="queryParam.productType"
+        placeholder="产品类型" 
+        :allowClear="true"
+      >
+        <a-select-option v-for="ptype in productTypes" :key="ptype.index" :value="ptype.id">{{
+          ptype.text
+        }}</a-select-option>
+      </a-select>
+
       <template v-if="$auth('productPrice:list')">
         <a-button type="primary" style="margin-left: 10px" @click="$refs.table.refresh(true)">查询</a-button>
         <a-button style="margin-left: 10px" @click="() => (queryParam = {})">重置</a-button>
@@ -23,7 +36,9 @@
         <span v-if="$auth('productPrice:add') || $auth('productPrice:eidt')">{{ text }}</span>
         <span v-else>***</span>
       </span>
-
+      <span slot="productTypeText" slot-scope="text">
+        {{getProductTypeText(text)}}
+      </span>
       <span slot="productPic" slot-scope="text">
         <img style="height: 70px; lenght: 70px" :src="text" />
       </span>
@@ -105,9 +120,14 @@ export default {
           dataIndex: 'productStandard',
         },
 
+        // {
+        //   title: '区域',
+        //   dataIndex: 'areaName',
+        // },
         {
-          title: '区域',
-          dataIndex: 'areaName',
+          title: '产品类型',
+          dataIndex: 'productType',
+          scopedSlots: { customRender: 'productTypeText' }
         },
         {
           title: '成本价',
@@ -195,6 +215,10 @@ export default {
           console.log(err)
         })
     },
+    getProductTypeText(id){
+      let target = this.productTypes.find(item => +item.id === +id)
+      return target ? target.text : ''
+    }
   },
 }
 </script>
