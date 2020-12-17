@@ -6,6 +6,30 @@ import system from '@/config/defaultSettings'
 //import {CancelToken} from 'axios'
 
 
+//---------------------调休年假管理-----------------------
+// 列表
+
+export function annualLeaveList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/restHoursRecord/rest-hours-record/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+// 变更记录
+export function annualLeave(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/restHoursChange/rest-hours-change/changeRecord',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
 //---------------------试用期调查表-----------------------
 // 获取试用期调查表列表
 export function getProbationSurveyList(parameter) {

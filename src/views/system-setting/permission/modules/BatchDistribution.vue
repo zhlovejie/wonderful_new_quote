@@ -36,6 +36,7 @@
                   <a-select
                     style="width: 100%; margin-bottom: 10px; margin-left: 10px"
                     @change="handleProvinceChange"
+                    :allowClear="true"
                     placeholder="请选择部门"
                     v-model="departmentId"
                   >
@@ -54,6 +55,8 @@
                     placeholder="请选择角色"
                     :allowClear="true"
                     :maxTagCount="1"
+                    @deselect="desedel"
+                    @change="handleProvince"
                     v-model="roleArr"
                   >
                     <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{
@@ -90,6 +93,7 @@ import {
   getDevisionList,
   queryRoleListById,
   getSaveRoleMenu,
+  querygetAllRole,
 } from '@/api/systemSetting'
 const columns = [
   {
@@ -128,7 +132,7 @@ export default {
       visible: false,
       columns: columns,
       queryParam: {},
-      //dataSource: [],
+      dataSource: [],
       expandedKeys: [],
       autoExpandParent: true,
       checkedKeys: [],
@@ -148,42 +152,30 @@ export default {
       roleArr: [],
     }
   },
-  computed: {
-    dataSource: {
-      get: function () {
-        let that = this
-        let roleArr = that.roleArr
-        return that.roleList
-          .filter((role) => roleArr.includes(role.id))
-          .map((role) => {
-            return {
-              roleName: role.roleName,
-              id: role.id,
-              departmentId: that.departmentId,
-              departmentName: that.getDepartmentName(that.departmentId),
-            }
+  watch: {
+    departmentId: function (val) {
+      if (val === undefined) {
+        querygetAllRole()
+          .then((rs) => {
+            this.roleList = rs.data
           })
-      },
-      set: function () {
-        let that = this
-        let roleArr = that.roleArr
-        return that.roleList
-          .filter((role) => roleArr.includes(role.id))
-          .map((role) => {
-            return {
-              roleName: role.roleName,
-              id: role.id,
-              departmentId: that.departmentId,
-              departmentName: that.getDepartmentName(that.departmentId),
-            }
+          .catch((error) => {
+            console.error(error)
           })
-      },
+      }
     },
   },
   created() {
     routeTreeList().then((res) => {
       this.treeData = res.data
     })
+    querygetAllRole()
+      .then((rs) => {
+        this.roleList = rs.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
     getDevisionList().then((res) => {
       this.departmentList = res.data
     })
@@ -208,7 +200,7 @@ export default {
     handleProvinceChange(value) {
       if (value != undefined) {
         // 获取部门下的角色
-        this.depart = value
+        // this.depart = value
         queryRoleListById({ departmentId: value, status: 0 })
           .then((rs) => {
             this.roleList = rs.data
@@ -220,6 +212,37 @@ export default {
         this.roleList = []
       }
     },
+    desedel(value) {
+      // 删除事件
+      // console.log(value)
+      this.roleArr = this.roleArr.filter((val) => val !== +value)
+      this.dataSource = this.dataSource.filter((val) => val.id !== +value)
+    },
+    handleProvince(value) {
+      let that = this
+      if (!Array.isArray(value)) return
+      value.map((_ppid) => {
+        if (!_ppid) return
+        let target = that.dataSource.find((p) => p.id === _ppid)
+        if (!target) {
+          let _p = that.roleList.find((_p) => _p.id === _ppid)
+          _p.roleName = _p.roleName
+          _p.departmentName = that.getDepartmentName(that.departmentId)
+          _p.departmentId = that.departmentId
+          that.dataSource.push({ ..._p })
+        }
+      })
+      // this. dataSource = that.roleList
+      //     .filter((role) => roleArr.includes(role.id))
+      //     .map((role) => {
+      //       return {
+      //         roleName: role.roleName,
+      //         id: role.id,
+      //         departmentId: that.departmentId,
+      //         departmentName: that.getDepartmentName(that.departmentId),
+      //       }
+      //     })
+    },
     setCheckedNodes(res, id) {
       let that = this
       this.visible = true
@@ -230,11 +253,37 @@ export default {
 
     // 选择全部角色
     whole() {
-      this.roleArr = this.roleList.map((role) => role.id)
+      if (this.departmentId) {
+        this.roleArr = this.roleArr.concat(this.roleList.map((role) => role.id))
+        this.dataSource = this.dataSource.concat(
+          this.roleList.map((role) => {
+            return {
+              roleName: role.roleName,
+              id: role.id,
+              departmentId: this.departmentId,
+              departmentName: this.getDepartmentName(this.departmentId),
+            }
+          })
+        )
+      } else {
+        this.dataSource = []
+        this.roleArr = this.roleArr.concat(this.roleList.map((role) => role.id))
+        this.dataSource = this.dataSource.concat(
+          this.roleList.map((role) => {
+            return {
+              roleName: role.roleName,
+              id: role.id,
+              departmentId: role.departmentId,
+              departmentName: role.departmentName,
+            }
+          })
+        )
+      }
     },
     confirmDelete(roleId) {
       // 确认删除事件
       this.roleArr = this.roleArr.filter((val) => val !== +roleId)
+      this.dataSource = this.dataSource.filter((val) => val.id !== +roleId)
     },
     handleOk() {
       if (this.checkedKeys.length == 0) {
