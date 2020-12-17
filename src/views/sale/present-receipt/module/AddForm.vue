@@ -47,10 +47,14 @@
                   :disabled="isDisabled" 
                   :allowClear="true"
                   @change="handlerChange('contract',$event)"
-                  placeholder="单击选择合同"
+                  :placeholder="isDisabled ? '无' : '单击选择合同'"
                   @click="openModel"
                   v-decorator="['contractNum',{rules: [{required: false,message: '请选择合同'}]}]"
-                />
+                >
+                <a-tooltip slot="suffix" title="清除" v-if="contractId">
+                  <a-icon type="close-circle" @click="clearContractNum" />
+                </a-tooltip>
+                </a-input>
               </a-form-item>
               <a-form-item hidden>
                 <a-input v-model="contractId" />
@@ -58,22 +62,7 @@
             </td>
           </tr>
           <tr>
-            <td>客户名称</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  placeholder="客户名称"
-                  :allowClear="true"
-                  @change="handlerChange('customerName',$event)"
-                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称'}]}]" 
-                  disabled
-                  @click="selectCustomer"
-                />
-              </a-form-item>
-              <a-form-item hidden>
-                <a-input v-decorator="['customerId']" />
-              </a-form-item>
-            </td>
+            
             <td>对应销售</td>
             <td>
               <a-form-item>
@@ -82,9 +71,10 @@
                   showSearch
                   :allowClear="true"
                   :filterOption="filterSalersOption" 
-                  disabled 
                   placeholder="请选择销售人员"
-                  v-decorator="['saleUserId',{rules: [{required: true,message: '请选择销售人员'}]}]"
+                  v-decorator="['saleUserId',{rules: [{required: true,message: '请选择销售人员'}]}]" 
+                  @change="saleUserChange" 
+                  :disabled="isDisabled || contractId"
                 >
                   <a-select-option
                     v-for="item in saleUser"
@@ -92,6 +82,24 @@
                     :key="item.userId"
                   >{{ item.salesmanName }}</a-select-option>
                 </a-select>
+              </a-form-item>
+            </td>
+            <td>客户名称</td>
+            <td>
+              <a-form-item>
+                <a-input 
+                  read-only 
+                  :disabled="isDisabled || contractId"
+                  placeholder="客户名称"
+                  :allowClear="true"
+                  @change="handlerChange('customerName',$event)"
+                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称'}]}]" 
+                  
+                  @click="selectCustomer"
+                />
+              </a-form-item>
+              <a-form-item hidden>
+                <a-input v-decorator="['customerId']" />
               </a-form-item>
             </td>
           </tr>
@@ -296,14 +304,12 @@ export default {
       })
     },
     selectCustomer() {
+      //debugger
       let saleUserId = this.form.getFieldValue('saleUserId')
-      if(saleUserId && !this.selectContract){
+      if(saleUserId){
         this.$refs.customerList.init({userId:saleUserId})
-      }else if(!saleUserId && !this.selectContract){
-        this.$message.info('请选择对应销售后，再选择客户')
-        return
       }else{
-
+        this.$message.info('请选择对应销售后，再选择客户')
       }
     },
     customerSelected(record) {
@@ -350,13 +356,29 @@ export default {
         that.form.setFieldsValue({
           contractNum: undefined,
           customerName: undefined,
-          customerId:undefined
+          customerId:undefined,
+          saleUserId:undefined
         })
       } else {
         let obj = {}
         obj[key] = undefined
         that.form.setFieldsValue(obj)
       }
+    },
+    saleUserChange(){
+      this.form.setFieldsValue({
+        customerName: undefined,
+        customerId:undefined
+      })
+    },
+    clearContractNum(){
+      this.contractId = undefined
+      this.form.setFieldsValue({
+        contractNum: undefined,
+        customerName: undefined,
+        customerId:undefined,
+        saleUserId:undefined
+      })
     }
   }
 }

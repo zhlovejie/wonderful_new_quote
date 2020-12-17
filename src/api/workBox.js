@@ -326,6 +326,16 @@ export function getProductList(parameter) {
     params: parameter
   })
 }
+/**销售管理 ->产品价格 下载*/
+export function downProductInformation(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/productInformation/downProductInformation',
+    method: 'get',
+    responseType:'blob',
+    params: params
+  })
+}
 
 // 检查产品名是否有重复
 export function checkName(parameter) {
