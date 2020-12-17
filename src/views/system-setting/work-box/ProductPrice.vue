@@ -6,7 +6,14 @@
       <a-input
         v-model.trim="queryParam.productModel"
         style="width: 200px; margin-left: 10px"
-        placeholder="根据产品代码查询" 
+        placeholder="产品代码模糊查询" 
+        :allowClear="true"
+      />
+
+      <a-input
+        v-model.trim="queryParam.productStandard"
+        style="width: 200px; margin-left: 10px"
+        placeholder="规格型号模糊查询" 
         :allowClear="true"
       />
 
@@ -170,7 +177,9 @@ export default {
         },
       ],
       productTypes: [],
-      pagination: {},
+      pagination: {
+        showTotal: (total) => '共' + total + '条数据',
+      },
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
         return getProductList(Object.assign(parameter, this.queryParam))
