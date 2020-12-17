@@ -1,6 +1,14 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
 export default { //人事管理
   path: '/personnel-management',
@@ -23,6 +31,17 @@ export default { //人事管理
         permission: ['permission']
       },
       children: []
+    },
+    {
+      path: '/personnel-management/annualLeave',
+      name: 'personnel-annualLeave',
+      component: () => import('@/views/personnel-management/annualLeave/annualLeaveList'),
+      meta: {
+        title: '调休/年假管理',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
     },
     {
       path: '/personnel-management/organizational-structure',

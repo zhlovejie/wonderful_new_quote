@@ -322,6 +322,15 @@ export function queryRoleListById(parameter) {
     params: parameter
   })
 }
+// 获取全部所有角色
+export function querygetAllRole(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/Role/getAllRole',
+    method: 'get',
+    params: parameter
+  })
+}
 
 /**
  * 根据角色id获取菜单权限
