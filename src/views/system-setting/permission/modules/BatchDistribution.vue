@@ -31,12 +31,13 @@
         <a-col :span="17">
           <a-row :gutter="24">
             <a-form :form="form" class="form wdf-form">
-              <a-col :span="12">
+              <a-col :span="10">
                 <a-form-item style="margin-bottom: 0">
                   <a-select
-                    style="width: 300px; margin-bottom: 10px; margin-left: 10px"
+                    style="width: 100%; margin-bottom: 10px; margin-left: 10px"
                     @change="handleProvinceChange"
                     placeholder="请选择部门"
+                    v-model="departmentId"
                   >
                     <a-select-option :value="undefined">请选择部门</a-select-option>
                     <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
@@ -45,16 +46,15 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+              <a-col :span="10">
                 <a-form-item class="form wdf-form">
                   <a-select
                     mode="multiple"
-                    style="width: 300px; margin-left: 10px"
+                    style="width: 100%; margin-left: 10px"
                     placeholder="请选择角色"
                     :allowClear="true"
                     :maxTagCount="1"
-                    @change="handleChange"
-                    v-decorator="['authTrainFolderBoList']"
+                    v-model="roleArr"
                   >
                     <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{
                       item.roleName
@@ -62,6 +62,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-button style="float: right; margin-top: 5px" type="primary" @click="whole"> 全部</a-button>
             </a-form>
           </a-row>
 
@@ -70,7 +71,7 @@
               <span>{{ index + 1 }}</span>
             </div>
             <div slot="action" slot-scope="text, record, index">
-              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(index)">
+              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record.id)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </div>
@@ -127,7 +128,7 @@ export default {
       visible: false,
       columns: columns,
       queryParam: {},
-      dataSource: [],
+      //dataSource: [],
       expandedKeys: [],
       autoExpandParent: true,
       checkedKeys: [],
@@ -141,19 +142,42 @@ export default {
       // 部门列表
       departmentList: [],
       // 角色列表
-      roleList: {},
-      _d: {
-        departmentId: '',
-        departmentName: '',
-      },
-      depart: '',
+      roleList: [],
+
+      departmentId: undefined,
+      roleArr: [],
     }
   },
-  watch: {
-    depart: function (val) {
-      let _d = this.departmentList.find((_d) => _d.id === val)
-      this._d.departmentId = val
-      this._d.departmentName = _d.departmentName
+  computed: {
+    dataSource: {
+      get: function () {
+        let that = this
+        let roleArr = that.roleArr
+        return that.roleList
+          .filter((role) => roleArr.includes(role.id))
+          .map((role) => {
+            return {
+              roleName: role.roleName,
+              id: role.id,
+              departmentId: that.departmentId,
+              departmentName: that.getDepartmentName(that.departmentId),
+            }
+          })
+      },
+      set: function () {
+        let that = this
+        let roleArr = that.roleArr
+        return that.roleList
+          .filter((role) => roleArr.includes(role.id))
+          .map((role) => {
+            return {
+              roleName: role.roleName,
+              id: role.id,
+              departmentId: that.departmentId,
+              departmentName: that.getDepartmentName(that.departmentId),
+            }
+          })
+      },
     },
   },
   created() {
@@ -204,30 +228,13 @@ export default {
       this.form.resetFields() // 清空表
     },
 
-    handleChange(value) {
-      let that = this
-      this.roleIdList = value
-      if (!Array.isArray(value)) return
-      value.map((_ppid) => {
-        if (!_ppid) return
-        let target = that.dataSource.find((p) => p.id === _ppid)
-        if (!target) {
-          let _p = that.roleList.find((_p) => _p.id === _ppid)
-          _p.roleName = _p.roleName
-          that.dataSource.push({ ..._p, ...that._d })
-        }
-      })
+    // 选择全部角色
+    whole() {
+      this.roleArr = this.roleList.map((role) => role.id)
     },
-    confirmDelete(index) {
+    confirmDelete(roleId) {
       // 确认删除事件
-      this.dataSource.splice(index, 1)
-      let arr = []
-      this.dataSource.map((item) => {
-        arr.push(item.id)
-      })
-      this.form.setFieldsValue({
-        authTrainFolderBoList: arr,
-      })
+      this.roleArr = this.roleArr.filter((val) => val !== +roleId)
     },
     handleOk() {
       if (this.checkedKeys.length == 0) {
@@ -237,7 +244,7 @@ export default {
         return this.$message.error('请选择角色')
       }
       let arr = {}
-      arr.roleIdList = this.roleIdList
+      arr.roleIdList = this.roleArr
       arr.menuIdList = this.checkedKeys
       arr.notAllMenuIdList = this.halfCheckedKeys
       this.loading = true
@@ -248,8 +255,9 @@ export default {
             this.visible = false
             this.checkedKeys = []
             this.queryParam = {}
-            this.form.resetFields() // 清空表
+            this.roleArr = []
             this.dataSource = []
+            this.departmentId = undefined
             this.loading = false
           } else {
             this.$message.error(res.msg)
@@ -264,8 +272,14 @@ export default {
     handleCancel() {
       this.visible = false
       this.checkedKeys = []
-      this.form.resetFields() // 清空表
+      // this.form.resetFields() // 清空表
+      this.roleArr = []
       this.dataSource = []
+      this.departmentId = undefined
+    },
+    getDepartmentName(id) {
+      let _val = this.departmentList.find((item) => +item.id === +id)
+      return _val.departmentName
     },
   },
 }
