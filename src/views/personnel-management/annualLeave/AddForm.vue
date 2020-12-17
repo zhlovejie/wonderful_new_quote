@@ -37,13 +37,13 @@ const columns = [
   {
     align: 'center',
     title: '变更时长(H)',
-    dataIndex: 'changeAfterHours',
+    dataIndex: 'changeHours',
   },
 
   {
     align: 'center',
     title: '剩余时长(H)',
-    dataIndex: 'changeHours',
+    dataIndex: 'changeAfterHours',
   },
   {
     align: 'center',
