@@ -2,25 +2,30 @@
   <a-card :bordered="false">
     <!--搜索模块-->
     <div class="search-wrapper">
-      <a-input v-model.trim="queryParam.productName" :allowClear="true" style="width: 200px" placeholder="根据名称模糊查询" />
+      <a-input
+        v-model.trim="queryParam.productName"
+        :allowClear="true"
+        style="width: 200px"
+        placeholder="根据名称模糊查询"
+      />
       <a-input
         v-model.trim="queryParam.productModel"
         style="width: 200px; margin-left: 10px"
-        placeholder="产品代码模糊查询" 
+        placeholder="产品代码模糊查询"
         :allowClear="true"
       />
 
       <a-input
         v-model.trim="queryParam.productStandard"
         style="width: 200px; margin-left: 10px"
-        placeholder="规格型号模糊查询" 
+        placeholder="规格型号模糊查询"
         :allowClear="true"
       />
 
       <a-select
-        style="width: 200px; margin-left: 10px" 
+        style="width: 200px; margin-left: 10px"
         v-model.trim="queryParam.productType"
-        placeholder="产品类型" 
+        placeholder="产品类型"
         :allowClear="true"
       >
         <a-select-option v-for="ptype in productTypes" :key="ptype.index" :value="ptype.id">{{
@@ -31,6 +36,8 @@
       <template v-if="$auth('productPrice:list')">
         <a-button type="primary" style="margin-left: 10px" @click="$refs.table.refresh(true)">查询</a-button>
         <a-button style="margin-left: 10px" @click="() => (queryParam = {})">重置</a-button>
+      </template>
+      <template v-if="$auth('productPrice:download')">
         <a-button style="margin-left: 10px" type="primary" icon="download" @click="downloadAction">下载</a-button>
       </template>
     </div>
@@ -45,7 +52,7 @@
         <span v-else>***</span>
       </span>
       <span slot="productTypeText" slot-scope="text">
-        {{getProductTypeText(text)}}
+        {{ getProductTypeText(text) }}
       </span>
       <span slot="productPic" slot-scope="text">
         <img style="height: 70px; lenght: 70px" :src="text" />
@@ -92,7 +99,7 @@
 import { STable } from '@/components'
 import priceEdit from './modules/priceEdit'
 import Preview from './modules/Preview'
-import { getProductList, delProduct, editProduct ,downProductInformation} from '@/api/workBox'
+import { getProductList, delProduct, editProduct, downProductInformation } from '@/api/workBox'
 import { getDictionary } from '@/api/common'
 
 export default {
@@ -135,7 +142,7 @@ export default {
         {
           title: '产品类型',
           dataIndex: 'productType',
-          scopedSlots: { customRender: 'productTypeText' }
+          scopedSlots: { customRender: 'productTypeText' },
         },
         {
           title: '成本价',
@@ -190,7 +197,7 @@ export default {
             console.log(err)
           })
       },
-      pageTitle:'产品价格'
+      pageTitle: '产品价格',
     }
   },
   created() {
@@ -226,61 +233,61 @@ export default {
           console.log(err)
         })
     },
-    getProductTypeText(id){
-      let target = this.productTypes.find(item => +item.id === +id)
+    getProductTypeText(id) {
+      let target = this.productTypes.find((item) => +item.id === +id)
       return target ? target.text : ''
     },
-    downloadAction(){
+    downloadAction() {
       let that = this
       downProductInformation(this.queryParam)
-      .then(res => {
-        //console.log(res)
-        if (res instanceof Blob) {
-          const isFile = res.type === 'application/vnd.ms-excel'
-          const isJson = res.type === 'application/json'
-          if (isFile) {
-            //返回文件 则下载
-            const objectUrl = URL.createObjectURL(res)
-            const a = document.createElement('a')
-            document.body.appendChild(a)
-            a.style = 'display: none'
-            a.href = objectUrl
-            a.download = `${that.pageTitle}.xls`
-            a.click()
-            document.body.removeChild(a)
-            that.$message.info('下载成功')
-            return
-          } else if (isJson) {
-            //返回json处理
-            var reader = new FileReader()
-            reader.onload = function (e) {
-              let _res = null
-              try {
-                _res = JSON.parse(e.target.result)
-              } catch (err) {
-                _res = null
-              }
-              if (_res !== null) {
-                if (_res.code !== 0) {
-                  that.$message.info(_res.message)
-                } else {
-                  that.$message.info('下载成功')
+        .then((res) => {
+          //console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `${that.pageTitle}.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
                 }
-              } else {
-                that.$message.info('json解析出错 e.target.result：' + e.target.result)
-                return
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
               }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
             }
-            reader.readAsText(res)
-          } else {
-            that.$message.info('不支持的类型:' + res)
           }
-        }
-      })
-      .catch(err => {
-        that.$message.info(`请求出错：${err.message}`)
-      })
-    }
+        })
+        .catch((err) => {
+          that.$message.info(`请求出错：${err.message}`)
+        })
+    },
   },
 }
 </script>
