@@ -20,6 +20,8 @@
                 ]"
                 @change="qualityFrameChange"
               >
+                <a-select-option :value="1">1年</a-select-option>
+                <a-select-option :value="2">2年</a-select-option>
                 <a-select-option :value="3">3年</a-select-option>
                 <a-select-option :value="4">4年</a-select-option>
                 <a-select-option :value="5">5年</a-select-option>
@@ -47,6 +49,8 @@
                 ]"
                 @change="qualityLayerChange"
               >
+                <a-select-option :value="1">1年</a-select-option>
+                <a-select-option :value="2">2年</a-select-option>
                 <a-select-option :value="3">3年</a-select-option>
                 <a-select-option :value="4">4年</a-select-option>
                 <a-select-option :value="5">5年</a-select-option>
@@ -706,7 +710,7 @@ export default {
     qualityFrameChange(e) {
       console.log('主框架下拉改变', e)
       this.qualityFrame = e ? e : 3
-      if (this.qualityFrame === 3) {
+      if (this.qualityFrame === 3 || this.qualityFrame === 1 || this.qualityFrame === 2) {
         this.qualityFramePre = 0
       } else if (this.qualityFrame === 4) {
         this.qualityFramePre = 3
@@ -749,7 +753,7 @@ export default {
     qualityLayerChange(e) {
       console.log('图层质保年限', e)
       this.qualityLayer = e ? e : 3
-      if (this.qualityLayer === 3) {
+      if (this.qualityLayer === 3 || this.qualityLayer === 2 || this.qualityLayer === 1) {
         this.qualityLayerPre = 0
       } else if (this.qualityLayer === 4) {
         this.qualityLayerPre = 3
