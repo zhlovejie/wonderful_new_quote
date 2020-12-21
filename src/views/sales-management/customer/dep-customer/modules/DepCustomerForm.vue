@@ -41,6 +41,31 @@
         </a-form-item>
       </a-col>
     </a-row>
+
+    <a-row class="form-row" :gutter="24" v-if="subType === 'add'">
+      <a-col :lg="12" :md="12" :sm="24">
+        <a-form-item label="录入渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select @change="sourceChange"  read-only="read-only" placeholder="请选录入渠道" v-decorator="['source',{rules: [{required: true, message: '请选录入渠道！'}]}]">
+            <a-select-option v-for="sc in sources.filter(sc => ['部门客户','自开发客户'].includes(sc.text)) " :key="sc.index" :value="sc.id">
+              {{ sc.text }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :lg="12" :md="12" :sm="24">
+        <a-form-item label="客户维护周期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input-number 
+            style="width:100%;"
+            :min="5"
+            :max="maxContactCycle"
+            :step="1"
+            v-decorator="['contactCycle', {initialValue:90,rules: [{ required: true, message: '客户维护周期' }]}]" 
+            @change="contactCycleChange"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
+
     <a-row class="form-row" :gutter="24">
       <a-col :lg="12" :md="12" :sm="24">
         <a-form-item label="客户类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -182,7 +207,8 @@ export default {
   name: 'DepCustomerForm',
   props: {
     customer: { required: true, type: Object },
-    salesJurisdiction: { required: true, type: Object }
+    salesJurisdiction: { required: true, type: Object },
+    subType:{required:true,type:String,default:() => 'add'}
   },
   data () {
     return {
@@ -218,10 +244,18 @@ export default {
       previewImage: '', //  预览图片的src值
       fileList: [], // 图片文件集合
       cId: 0, // 当前修改客户id，新增为0
-      uploadPath: getUploadPath() // 上传图片的url
+      uploadPath: getUploadPath(), // 上传图片的url
+      sources:[],
+      maxContactCycle:90
     }
   },
   mounted (record) { // 初始化
+    getDictionary({ text: '客户录入渠道' }).then(res => {
+      this.sources = res.data
+    }).catch(function (err) {
+      console.log(err)
+    })
+
     getDictionary({ text: '产品类型' }).then(res => {
       this.productTypes = res.data
     }).catch(function (err) {
@@ -460,6 +494,27 @@ export default {
     },
     handleCancel () {
       this.form.resetFields() // 清空表
+    },
+    sourceChange(val){
+      let target = this.sources.find(item => +item.id === +val)
+      if(target){
+        if(target.text === '自开发客户'){
+          this.form.setFieldsValue({contactCycle:365})
+          this.maxContactCycle = 365
+        }else{
+          this.form.setFieldsValue({contactCycle:90})
+          this.maxContactCycle = 90
+        }
+      }
+    },
+    contactCycleChange(val){
+      if(+val > this.maxContactCycle){
+        this.$message.info(`客户维护周期 最大为【${this.maxContactCycle}】天`)
+        return
+      }else if(+val <= 5){
+        this.$message.info(`客户维护周期 最小为【5】天`)
+        return
+      }
     }
   }
 }

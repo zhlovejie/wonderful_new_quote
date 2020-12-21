@@ -35,7 +35,7 @@ export default {
           name: 'DepCustomerList',
           component: () => import('@/views/sales-management/customer/dep-customer/DepCustomerList'),
           meta: {
-            title: '部门客户',
+            title: '我的客户',
             permission: ['permission']
           }
         },

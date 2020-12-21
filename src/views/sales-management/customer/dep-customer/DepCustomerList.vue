@@ -98,6 +98,13 @@
           <a-divider type="vertical" />
           <a @click="handleAppeal('add',record)">申诉</a>
         </template>
+
+        <template v-if="$auth('depCustomer:modifyRemainingTime')">
+          <a-divider type="vertical" />
+          <a @click="doAction('modifyRemainingTime',record)">剩余时间调整</a>
+        </template>
+
+
       </span>
     </s-table>
     <dep-step-form ref="depStepForm" :salesJurisdiction="salesJurisdiction" @ok="handleOk" />
@@ -105,12 +112,15 @@
     <preview ref="previewModal" @ok="handleOk" />
     <call-record ref="callRecord"/>
     <AppealAddForm ref="appealAddForm" @finish="handleOk" />
+
+    <ModifyRemainingTimeForm ref="modifyRemainingTimeForm" @modifyRemainingTime="modifyRemainingTimeHandler" />
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
 import DepStepForm from './modules/DepStepForm'
+import ModifyRemainingTimeForm from './modules/ModifyRemainingTime'
 import GiveUp from './modules/GiveUp'
 import Preview from './modules/Preview'
 import CallRecord from './modules/CallRecord'
@@ -125,7 +135,8 @@ export default {
     GiveUp,
     Preview,
     CallRecord,
-    AppealAddForm
+    AppealAddForm,
+    ModifyRemainingTimeForm
   },
   data () {
     return {
@@ -161,6 +172,10 @@ export default {
         {
           title: '销售负责人',
           dataIndex: 'userName'
+        },
+        {
+          title: '客户维护期限',
+          dataIndex: 'contactCycle'
         },
         {
           title: '联系倒计时',
@@ -230,7 +245,7 @@ export default {
     $route: {
       handler: function(to, from) {
         if (to.name === 'DepCustomerList') {
-          this.$refs.table.refresh()
+          this.$refs.table && this.$refs.table.refresh()
         }
       },
       immediate: true
@@ -248,7 +263,7 @@ export default {
       this.$refs.depStepForm.edit(cId)
     },
     handleOk () {
-      this.$refs.table.refresh()
+      this.$refs.table && this.$refs.table.refresh()
     },
     handlePreview (cId) { // 查看
       getCustomerVo({ customerId: cId }).then(res => {
@@ -264,6 +279,15 @@ export default {
     },
     handleAppeal(type,record){
       this.$refs.appealAddForm.query(type,record)
+    },
+    doAction(type,record){
+      if(type === 'modifyRemainingTime'){
+        this.$refs.modifyRemainingTimeForm.query(record)
+        return
+      }
+    },
+    modifyRemainingTimeHandler(){
+      this.$refs.table && this.$refs.table.refresh()
     }
   }
 }

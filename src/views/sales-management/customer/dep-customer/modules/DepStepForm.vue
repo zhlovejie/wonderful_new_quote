@@ -11,7 +11,7 @@
   >
     <a-card :bordered="false" >
       <div class="content">
-        <step1 ref="step1" :customer="customer" :salesJurisdiction="salesJurisdiction" v-if="currentTab === 0" @nextStep="nextStep"/>
+        <step1 ref="step1" :customer="customer" :subType="subType" :salesJurisdiction="salesJurisdiction" v-if="currentTab === 0" @nextStep="nextStep"/>
         <step2 ref="step2" v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep"/>
         <step3 ref="result" :subType="subType" v-if="currentTab === 2" @addAgain="addAgain" @toList="handleCancel"/>
       </div>

@@ -12,7 +12,7 @@
       rowKey="id"
       :columns="columns"
       :dataSource="salesmans"
-      :pagination="false"
+      :pagination="false" 
     >
       <span slot="canDistribute" slot-scope="text,record">
         <template v-if="$auth('salesman:edit')">
@@ -109,6 +109,14 @@ export default {
     return {
       // 表头
       columns: [
+        {
+          title: '部门',
+          dataIndex: 'departmentName'
+        },
+        {
+          title: '岗位',
+          dataIndex: 'stationName'
+        },
         {
           title: '销售人名',
           dataIndex: 'salesmanName'

@@ -14,6 +14,37 @@
         <a-form-item hidden>
           <a-input v-decorator="['id']"/>
         </a-form-item>
+
+        <a-form-item label="选择部门" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            placeholder="选择部门"
+            v-decorator="['depId',{rules: [{required: true,message: '请选择部门'}]}]"
+            @change="depChangeHandler"
+            :allowClear="true"
+          >
+            <a-select-option
+              v-for="item in depSelectDataSource"
+              :key="item.id"
+              :value="item.id"
+            >{{item.departmentName}}</a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item label="选择岗位" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            placeholder="选择岗位"
+            v-decorator="['stationId',{rules: [{required: true,message: '请选择岗位'}]}]"
+            :allowClear="true"
+          >
+            <a-select-option
+              v-for="item in postSelectDataSource"
+              :key="item.id"
+              :value="item.id"
+            >{{item.stationName}}</a-select-option>
+          </a-select>
+        </a-form-item>
+
+
         <a-form-item label="选择销售人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             showSearch
@@ -90,7 +121,10 @@
 <script>
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 import { getAllUser, addSalesman, getOneSalesman, editSalesman ,getSaleAssistant} from '@/api/customer/salesman'
-
+import {
+  departmentList, //所有部门
+  getStationList //获取所有岗位
+} from '@/api/systemSetting'
 export default {
   name: 'AddSalesman',
   components: { ATextarea },
@@ -116,7 +150,9 @@ export default {
       ceosc: true,
       cecsc: true,
       op: true,
-      salesAssistantList:[] //销售助理列表
+      salesAssistantList:[], //销售助理列表
+      depSelectDataSource: [],
+      postSelectDataSource: [],
     }
   },
   created () {
@@ -127,6 +163,7 @@ export default {
         this.$message.error(res.msg)
       }
     })
+    departmentList().then(res => (this.depSelectDataSource = res.data))
   },
   methods: {
     leaderChange(leaderID){
@@ -188,11 +225,12 @@ export default {
     userFilter (input, option) { // 下拉框搜索
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    showForm (record) {
+    async showForm (record) {
       this.visible = true
       if (record.id != null){
         this.subType = 'edit'
         this.formTitle = '修改权限分配'
+        await getStationList({ id: record.depId }).then(res => (this.postSelectDataSource = res.data))
         this.$nextTick(() => {
           this.form.setFieldsValue({
             id: record.id,
@@ -206,6 +244,8 @@ export default {
             overduePunish: record.overduePunish,
             maximum: record.maximum,
             recoverTime: record.recoverTime,
+            depId:record.depId,
+            stationId:record.stationId
             //assistantId:record.assistantId
           })
           this.leaderChange(record.leader).then(() =>{
@@ -261,6 +301,12 @@ export default {
         }
         this.confirmLoading = false
       })
+    },
+    depChangeHandler(dep_id) {
+      let that = this
+      that.postSelectDataSource = []
+      that.form.setFieldsValue({stationId:undefined})
+      return getStationList({ id: dep_id }).then(res => (that.postSelectDataSource = res.data))
     }
   }
 }

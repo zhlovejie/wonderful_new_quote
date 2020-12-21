@@ -22,7 +22,8 @@ const api = {
   addContactNum: '/customer/addContactNum',
   reAllocate: '/customer/reAllocate',
   callRecordList: '/callRecord/recordList',
-  extractCustomer: '/customer/extractCustomer'
+  extractCustomer: '/customer/extractCustomer',
+  modifyRemainingTime:'/customer/modifyRemainingTime'
 }
 
 // 提取客户
@@ -111,6 +112,16 @@ export function getCustomerVo (param) {
     url: api.getCustomerVo,
     method: 'get',
     params: param
+  })
+}
+
+/**修改和客户的剩余联系时长 */
+export function modifyRemainingTime (param) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.modifyRemainingTime,
+    method: 'POST',
+    data: param
   })
 }
 
