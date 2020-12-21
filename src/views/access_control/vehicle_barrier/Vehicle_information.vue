@@ -9,11 +9,7 @@
           >全部</a-button
         >
       </a-button-group>
-      <a-date-picker
-        v-if="queryParam.statusTime === 2"
-        style="width: 200px; margin-right: 10px"
-        v-model="queryParam.date"
-      />
+      <a-date-picker v-if="queryParam.statusTime === 2" style="width: 200px; margin-right: 10px" v-model="date1" />
       <a-input
         class="main-items"
         style="width: 200px; margin-right: 10px"
@@ -95,6 +91,7 @@ export default {
     return {
       sDate: [undefined, undefined],
       openKeys: ['id'],
+      date1: undefined,
       parentId: 0,
       NumbeofCars: 0,
       admission: 0,
@@ -256,8 +253,10 @@ export default {
     searchAction() {
       let that = this
       that.loading = true
-      if (that.queryParam.date) {
-        that.queryParam.date = that.queryParam.date.format('YYYY-MM-DD')
+      if (that.date1) {
+        that.queryParam.date = that.date1.format('YYYY-MM-DD')
+      } else {
+        that.queryParam.date = undefined
       }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 })
       accessControlList(_searchParam)

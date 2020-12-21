@@ -9,11 +9,7 @@
           >全部</a-button
         >
       </a-button-group>
-      <a-date-picker
-        v-if="queryParam.statusTime === 2"
-        style="width: 200px; margin-right: 10px"
-        v-model="queryParam.date"
-      />
+      <a-date-picker v-if="queryParam.statusTime === 2" style="width: 200px; margin-right: 10px" v-model="date1" />
       <a-input
         class="main-items"
         style="width: 200px; margin-right: 10px"
@@ -83,6 +79,7 @@ export default {
       sDate: [undefined, undefined],
       openKeys: ['id'],
       parentId: 0,
+      date1: undefined,
       //   NumbeofCars: 0,
       //   admission: 0,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -241,8 +238,10 @@ export default {
     searchAction() {
       let that = this
       that.loading = true
-      if (that.queryParam.date) {
-        that.queryParam.date = that.queryParam.date.format('YYYY-MM-DD')
+      if (that.date1) {
+        that.queryParam.date = that.date1.format('YYYY-MM-DD')
+      } else {
+        that.queryParam.date = undefined
       }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 })
       getPage(_searchParam)
