@@ -59,6 +59,7 @@ export function receiptSaleContract (parameter) {
 
 /**
  * 收款单 查询合同列表
+ * 包含 收款金额 大于 合同金额的判断
  * @param parameter
  * @returns {*}
  */
@@ -66,6 +67,22 @@ export function receiptSaleContractNoType (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/listBySaleReceiptType',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**
+ * 销售管理 单据管理 选择合同 专用接口
+ * 去除收款金额 大于 合同金额的判断
+ * @param parameter
+ * @returns {*}
+ */
+export function listSaleCOntractPageForOpenPaper (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    //url: '/sale-contract/listBySaleReceiptType',
+    url: '/sale-contract/listSaleCOntractPageForOpenPaper',
     method: 'get',
     params: parameter
   })

@@ -270,7 +270,7 @@
 <script>
 import { getContractOne, goAdd, openPaperSave } from '@/api/openpaper'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
-import ReceiptSaleContract from '../receipt/ReceiptSaleContract'
+import ReceiptSaleContract from './modules/ReceiptSaleContract'
 import ARow from 'ant-design-vue/es/grid/Row'
 
 let _ukey = 0
