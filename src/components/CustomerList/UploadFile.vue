@@ -94,7 +94,7 @@ export default {
       return isAceptFileTpe && isLt10M
     },
     getFiles() {
-      return this.fileList.map(f => Object.assign({}, f))
+      return this.fileList.filter(f =>f.status === 'done').map(f => Object.assign({}, f))
     },
     setFiles(files) {
       this.fileList = files.map(f => {

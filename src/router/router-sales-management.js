@@ -96,6 +96,26 @@ export default {
             keepAlive: false,
             permission: ['permission']
           }
+        },
+        {
+          path: '/sales-management/customer/customerPunishRule',
+          name: 'customerPunishRule',
+          component: () => import('@/views/sales-management/customer/customerPunishRule/List'),
+          meta: {
+            title: '逾期处罚规则',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/customer/customerPunishRecord',
+          name: 'customerPunishRecord',
+          component: () => import('@/views/sales-management/customer/customerPunishRecord/List'),
+          meta: {
+            title: '客户维护逾期记录',
+            keepAlive: false,
+            permission: ['permission']
+          }
         }
       ]
     },
