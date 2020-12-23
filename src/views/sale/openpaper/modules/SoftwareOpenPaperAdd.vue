@@ -219,6 +219,20 @@
             </a-col>
           </a-row>
 
+          <a-row type="flex" style="border-bottom: 1px solid #ddd">
+            <a-col class="col-border" :span="3" justify="center" align="middle">备注</a-col>
+            <a-col class="col-border" :span="21" justify="center" align="middle">
+              <a-form-item>
+                <a-textarea
+                  placeholder="备注"
+                  :rows="3"
+                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          
+
       </a-form>
       <all-software-contract ref="allSoftwareContract" @custom-change="contractChange"></all-software-contract>
     </a-card>

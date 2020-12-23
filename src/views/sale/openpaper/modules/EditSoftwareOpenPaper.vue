@@ -162,6 +162,20 @@
               </a-col>
             </a-row>
           </a-form-item>
+
+          <a-row type="flex" style="border-bottom: 1px solid #ddd">
+            <a-col class="col-border" :span="3" justify="center" align="middle">备注</a-col>
+            <a-col class="col-border" :span="21" justify="center" align="middle">
+              <a-form-item>
+                <a-textarea
+                  placeholder="备注"
+                  :rows="3"
+                  v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
           <a-form-item>
             <a-row>
               <a-col class="col-border" :span="3" justify="center" align="middle">创建人</a-col>
@@ -287,6 +301,7 @@ export default {
             createdName: res.data.createdName,
             approveTime: res.data.approveTime,
             openUnit: res.data.openUnit || '',
+            remark:res.data.remark || ''
           }
           if (res.data.approveName != undefined && res.data.approveTime != undefined) {
             this.approveVueBoolean = true
