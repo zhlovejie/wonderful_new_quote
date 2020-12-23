@@ -99,9 +99,9 @@
           <a @click="handleAppeal('add',record)">申诉</a>
         </template>
 
-        <template v-if="$auth('depCustomer:modifyRemainingTime')">
+        <template v-if="$auth('depCustomer:modifyRemainingTime') && record.concatMin > 0">
           <a-divider type="vertical" />
-          <a @click="doAction('modifyRemainingTime',record)">剩余时间调整</a>
+          <a @click="doAction('modifyRemainingTime',record)">剩余时间联系调整</a>
         </template>
 
 
@@ -174,7 +174,7 @@ export default {
           dataIndex: 'userName'
         },
         {
-          title: '客户维护期限',
+          title: '客户维护周期(天)',
           dataIndex: 'contactCycle'
         },
         {

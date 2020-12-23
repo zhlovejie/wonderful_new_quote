@@ -53,7 +53,7 @@
         </a-form-item>
       </a-col>
       <a-col :lg="12" :md="12" :sm="24">
-        <a-form-item label="客户维护周期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="客户维护周期(天)" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input-number 
             style="width:100%;"
             :min="5"

@@ -9,24 +9,25 @@
     :maskClosable="false"
     :confirmLoading="loading"
   >
-    <a-form-item label="剩余时间调整" >
+    <a-form-item label="剩余时间联系调整(天)" >
       <a-input-number 
         style="width:100%;"
-        :min="5"
-        :max="365" 
+        :min="1"
+        :max="maxContactCycle" 
         v-model="contactCycle"
       />
     </a-form-item>
+    <a-alert message="注：设置天数不可大于当前剩余时间联系调整天数。" banner />
   </a-modal>
 </template>
 
 <script>
 import { modifyRemainingTime} from '@/api/customer'
 export default {
-  name:'',
+  name:'ModifyRemainingTime',
   data(){
     return {
-      title:'剩余时间调整',
+      title:'剩余时间联系调整',
       visible:false,
       loading:false,
       record:{},
@@ -39,8 +40,9 @@ export default {
       this.visible = true
       //this.contactCycle = 0
       this.record = {...record}
-      this.contactCycle = this.record.contactCycle || 0
-      this.maxContactCycle = this.record.source === '自开发客户' ? 365 : 90
+      //取的分钟数，，转换为天数显示
+      this.contactCycle = Math.floor((this.record.concatMin || 0) / 60 / 24)
+      this.maxContactCycle = Math.floor((this.record.concatMin || 0) / 60 / 24)
     },
     handleOK(){
       let that = this
