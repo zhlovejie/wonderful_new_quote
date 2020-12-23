@@ -101,7 +101,7 @@
 
         <template v-if="$auth('depCustomer:modifyRemainingTime') && record.concatMin > 0">
           <a-divider type="vertical" />
-          <a @click="doAction('modifyRemainingTime',record)">剩余时间联系调整</a>
+          <a @click="doAction('modifyRemainingTime',record)">剩余联系时间调整</a>
         </template>
 
 
@@ -178,7 +178,7 @@ export default {
           dataIndex: 'contactCycle'
         },
         {
-          title: '联系倒计时',
+          title: '剩余联系时间',
           dataIndex: 'concatTime'
         },
         {

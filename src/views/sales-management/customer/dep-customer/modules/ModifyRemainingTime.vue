@@ -9,7 +9,7 @@
     :maskClosable="false"
     :confirmLoading="loading"
   >
-    <a-form-item label="剩余时间联系调整(天)" >
+    <a-form-item label="剩余联系时间(天)" >
       <a-input-number 
         style="width:100%;"
         :min="1"
@@ -17,7 +17,7 @@
         v-model="contactCycle"
       />
     </a-form-item>
-    <a-alert message="注：设置天数不可大于当前剩余时间联系调整天数。" banner />
+    <a-alert message="注：设置天数不可大于当前剩余联系时间天数。" banner />
   </a-modal>
 </template>
 
@@ -27,7 +27,7 @@ export default {
   name:'ModifyRemainingTime',
   data(){
     return {
-      title:'剩余时间联系调整',
+      title:'剩余联系时间调整',
       visible:false,
       loading:false,
       record:{},
