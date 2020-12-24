@@ -230,11 +230,12 @@ export default {
       //this.$refs.productConfigSub.reset()
     },
     selectedHandler(record) {
+      this.reset()
       this.optInfo = {
         name: record.name
       }
       this.spinning = true
-      this.$refs.productConfigMain.query(record.id)
+      this.$nextTick(() => this.$refs.productConfigMain.query(record.id))
     },
     doAction(type) {
       let that = this
