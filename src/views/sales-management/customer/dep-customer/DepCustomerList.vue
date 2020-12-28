@@ -214,7 +214,7 @@ export default {
       if (salesJurisdiction.top) { // 最高权限才可以查看所有销售人员的客户
         this.allSalesman = salesJurisdiction.allSalesman
       }
-      if (salesJurisdiction.leader) {
+      if (salesJurisdiction.leader || salesJurisdiction.assistant) {
         this.allSalesman = salesJurisdiction.subSalesman
       }
     }).catch(function (err) {

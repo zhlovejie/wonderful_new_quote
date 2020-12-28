@@ -20,6 +20,15 @@
         <a-form-item label="小区名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input style="width:70%" v-decorator="['unitName']" />
         </a-form-item>
+        <a-form-item label="备注信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-textarea
+            style="width:70%;"
+            placeholder="备注信息"
+            :rows="3"
+            v-decorator="['remark', { rules: [{ required: false, message: '请输入备注信息' }] }]"
+          />
+        </a-form-item>
+
         <a-form-item label="案例文件" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <div class="clearfix">
             <a-upload
