@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="选择产品"
-    :width="700"
+    :width="1000"
     :confirmLoading="confirmLoading"
     :footer="null"
     v-model="visible"
@@ -80,10 +80,12 @@ export default {
         {
           title: '产品代码',
           dataIndex: 'productModel',
+          width: '150px',
           scopedSlots: { customRender: 'productModel' }
         },
         {
           title: '产品名称',
+          width: '250px',
           dataIndex: 'productName'
         },
         {
