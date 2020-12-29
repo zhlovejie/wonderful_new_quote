@@ -104,11 +104,13 @@ export default {
   computed: {
     baseColumns() {
       let _columns = []
+
       this.dataSource.map((item, idx) => {
         item.bounsItemVoList.map((_item, idx1) => {
-          if (!_columns.find((c) => c.title === _item.bounsDicName)) {
+          let coefficient = _columns.some((c) => c.title === _item.bounsDicName)
+          if (!coefficient) {
             _columns.push({
-              title: `${_item.bounsDicName}系数`,
+              title: `${_item.bounsDicName}`,
               dataIndex: `bounsItemRetio_${_item.key}`,
               align: 'center',
             })
@@ -162,6 +164,7 @@ export default {
             let bounsItemVoList = [..._item.bounsItemVoList]
             bounsItemVoList.map((v) => {
               v.key = that.assetTypeList[v.bounsDicId]
+              v.bounsDicName = `${v.bounsDicName}系数`
               _item[`bounsItemRetio_${v.key}`] = v.bounsItemRetio
               return v
             })
