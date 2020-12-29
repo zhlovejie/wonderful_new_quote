@@ -412,7 +412,8 @@ export default {
           component: () => import('@/views/sales-management/pricing-module/pricing'),
           meta: {
             title: '核价单',
-            permission: ['permission']
+            permission: ['permission'],
+            keepAlive: true
           }
         },
         {

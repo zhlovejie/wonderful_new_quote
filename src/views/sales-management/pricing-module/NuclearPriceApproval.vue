@@ -54,7 +54,8 @@
             :dataSource="data"
             :scroll="{ x: 2500 }"
             :pagination="false"
-            :loading="memberLoading"
+            :loading="memberLoading" 
+            size="middle"
             bordered
             rowKey="id"
           >
@@ -91,7 +92,7 @@
               </a-form-item>
             </template>
             <template slot="referencePic" slot-scope="text, record">
-              <img style="height: 50px;lenght:40px" :src="text" />
+              <img style="height: auto;width:96px;border:none;" :src="text" />
             </template>
 
             <!--          上传参考图片部分 begin!-->
@@ -128,13 +129,15 @@
                 read-only="read-only"
                 @click="openModel(record)"
                 :src="record.effectPic"
-                style="width: 100px;height: 100px;"
+                style="width: 96px;min-height:96px;height:auto;border:none;"
               />
             </template>
 
             <template slot="valencySpecs" slot-scope="text, record">
               <a-form-item>
-                <a-textarea
+                <a-textarea 
+                  rows="5"
+                  style="width:100%;"
                   v-decorator="[`record.${record.__index}.valencySpecs`,{initialValue:record.valencySpecs}]"
                   @change="changeHandler(record ,'valencySpecs' ,$event)"
                 />
@@ -195,6 +198,17 @@
                 <a-input
                   v-decorator="[`record.${record.__index}.productName`,{initialValue:record.productName}]"
                   @change="changeHandler(record ,'productName' ,$event)"
+                />
+              </a-form-item>
+            </template>
+
+            <template slot="status" slot-scope="text, record">
+              <a-form-item>
+                <a-switch 
+                  v-decorator="[`record.${record.__index}.status`,{initialValue:+record.status === 0 ? true : false,valuePropName:'checked'}]"
+                  @change="changeHandler(record,'status', $event)" 
+                  checked-children="启用" 
+                  un-checked-children="禁用" 
                 />
               </a-form-item>
             </template>
@@ -273,112 +287,85 @@ export default {
       // table
       columns: [
         {
-          align: 'center',
           title: '所依据产品类型',
           dataIndex: 'productModel',
-          key: 'productModel',
-          width: 200
         },
         {
-          align: 'center',
           title: '需求数量',
           dataIndex: 'demandNumber',
-          key: 'demandNumber'
+          width:80
         },
         {
-          align: 'center',
           title: '规格',
-          width: '240px',
           dataIndex: 'specs',
-          key: 'specs'
         },
         {
-          align: 'center',
           title: '需求描述',
           dataIndex: 'demandRemarks',
-          key: 'demandRemarks'
+          width:300
         },
         {
-          align: 'center',
           title: '产品区域',
           dataIndex: 'oldAreaText',
-          key: 'oldAreaText'
         },
         {
-          align: 'center',
           title: '参考图片',
           dataIndex: 'referencePic',
-          key: 'referencePic',
-          scopedSlots: { customRender: 'referencePic' }
+          scopedSlots: { customRender: 'referencePic' },
+          width:120
         },
         {
-          align: 'center',
           title: '修改点',
-          dataIndex: 'revisedPart',
-          key: 'revisedPart'
+          dataIndex: 'revisedPart'
         },
         {
-          align: 'center',
-          width: '100px',
           title: '新产品区域',
           dataIndex: 'area',
-          key: 'area',
-          scopedSlots: { customRender: 'area' }
+          scopedSlots: { customRender: 'area' },
+          width:280
         },
         {
-          align: 'center',
           title: '成本价',
           dataIndex: 'costPrice',
-          key: 'costPrice',
-          width: 150,
           scopedSlots: { customRender: 'costPrice' }
         },
         {
-          align: 'center',
           title: 'A价',
           dataIndex: 'aPrice',
-          key: 'aPrice',
-          width: 150,
           scopedSlots: { customRender: 'aPrice' }
         },
         {
-          align: 'center',
           title: 'B价',
           dataIndex: 'bPrice',
-          key: 'bPrice',
-          width: 150,
           scopedSlots: { customRender: 'bPrice' }
         },
         {
-          align: 'center',
           title: 'C价',
           dataIndex: 'cPrice',
-          key: 'cPrice',
-          width: 150,
           scopedSlots: { customRender: 'cPrice' }
         },
         {
-          align: 'center',
           title: '效果图片',
           dataIndex: 'effectPic',
-          key: 'effectPic',
-          scopedSlots: { customRender: 'effectPic' }
+          scopedSlots: { customRender: 'effectPic' },
+          width:120
         },
         {
-          align: 'center',
           title: '核价规格',
-          width: '200px',
           dataIndex: 'valencySpecs',
-          key: 'valencySpecs',
-          scopedSlots: { customRender: 'valencySpecs' }
+          scopedSlots: { customRender: 'valencySpecs' },
+          width:300
+        },
+        {
+          title: '产品名称',
+          dataIndex: 'productName',
+          scopedSlots: { customRender: 'productName' }
         },
         {
           align: 'center',
-          title: '产品名称',
-          width: '200px',
-          dataIndex: 'productName',
-          key: 'productName',
-          scopedSlots: { customRender: 'productName' }
+          title: '状态',
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' },
         }
       ],
       data: [],
@@ -467,7 +454,7 @@ export default {
         })
       */
 
-      const v = e.target.value.trim()
+      const v = e.target ? e.target.value.trim() : (e === true ? 0 : 1)
       let dataSource = [...this.data]
       let target = dataSource.find(item => item.id === record.id)
       if (target) {
@@ -553,7 +540,8 @@ export default {
           aprice: item.aPrice || item.aprice || 0, //a价格
           cprice: item.cPrice || item.cprice || 0, //c价格
           area: item.area,
-          productName:item.productName || '' //产品名称
+          productName:item.productName || '', //产品名称
+          status:+item.status
         }
         if (that.isUpdateType) {
           _obj.newBasisModel = item.newBasisModel
@@ -702,10 +690,12 @@ export default {
             fillabcPriceObj[`record.${index}.aPrice`] = item.aprice
             fillabcPriceObj[`record.${index}.bPrice`] = item.bprice
             fillabcPriceObj[`record.${index}.cPrice`] = item.cprice
+
+            fillabcPriceObj[`record.${index}.status`] = +item.status === 0 ? true : false
             return item
           })
 
-          that.form.setFieldsValue(fillabcPriceObj)
+          
 
           console.log('调取接口返回值的valencyProducts塞给表格的data', this.data)
           this.instanceId = res.data.instanceId
@@ -763,7 +753,9 @@ export default {
             //   return item.dataIndex !== 'newBasisModel' && item.dataIndex !== 'productName'
             // })
           }
-          that.form.setFieldsValue(res.data)
+          //that.form.setFieldsValue(res.data)
+
+          //that.$nextTick(() => that.form.setFieldsValue(fillabcPriceObj))
         })
         .catch(error => {
           this.loading = false

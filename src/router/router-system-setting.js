@@ -178,6 +178,15 @@ export default {
             title: '安卓设备类型',
             permission: ['permission']
           }
+        },
+        {
+          path: '/attendance-management/attendance-device',
+          name: 'AndroidequipmentHardware',
+          component: () => import('@/views/attendance-management/attendance-device/List'),
+          meta: {
+            title: '安卓设备硬件信息',
+            permission: ['permission']
+          }
         }
       ]
     },
