@@ -51,17 +51,22 @@
             <div>{{ item._week }}</div>
           </div>
           <div v-for="item in extColumns" :key="item.dataIndex" :slot="item.dataIndex" slot-scope="text, record, index">
-            <a-popover title="操作" trigger="hover">
-              <div slot="content">
-                <!-- <template v-if="!['正常','休息'].includes(text)"> -->
-                <template v-if="hasException(item.dataIndex, record.dayStatiticsList)">
-                  <a @click="doAction('edit', record, item.dataIndex)">修改</a>
-                  <a-divider type="vertical" />
-                </template>
-                <a @click="doAction('view', record, item.dataIndex)">记录</a>
-              </div>
-              <div style="cursor: pointer" v-html="formatHTML(text)" />
-            </a-popover>
+            <template v-if="$auth('months:edit')">
+              <a-popover title="操作" trigger="hover">
+                <div slot="content">
+                  <!-- <template v-if="!['正常','休息'].includes(text)"> -->
+                  <template v-if="hasException(item.dataIndex, record.dayStatiticsList)">
+                    <a @click="doAction('edit', record, item.dataIndex)">修改</a>
+                    <a-divider type="vertical" />
+                  </template>
+                  <a @click="doAction('view', record, item.dataIndex)">记录</a>
+                </div>
+                <div style="cursor: pointer" v-html="formatHTML(text)" />
+              </a-popover>
+            </template>
+            <template v-else>
+              <div v-html="formatHTML(text)" />
+            </template>
           </div>
         </a-table>
       </div>

@@ -4,13 +4,16 @@
     <div class="project-case-list-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="案例名称">
-          <a-input v-model.trim="queryParam.caseName" placeholder="根据案例名模糊查询" style="width: 100%"/>
+          <a-input :allowClear="true" v-model.trim="queryParam.caseName" placeholder="根据案例名模糊查询" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="小区">
-          <a-input v-model.trim="queryParam.unitName" placeholder="根据小区名模糊查询" style="width: 100%"/>
+          <a-input :allowClear="true" v-model.trim="queryParam.unitName" placeholder="根据小区名模糊查询" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="录入人">
-          <a-input v-model.trim="queryParam.createdName" placeholder="根据录入人人名查询" style="width: 100%"/>
+          <a-input :allowClear="true" v-model.trim="queryParam.createdName" placeholder="根据录入人人名查询" style="width: 100%"/>
+        </a-form-item>
+        <a-form-item label="备注">
+          <a-input :allowClear="true" v-model.trim="queryParam.remark" placeholder="备注模糊查询" style="width: 100%"/>
         </a-form-item>
         <template v-if="$auth('case:list')">
           <a-form-item>

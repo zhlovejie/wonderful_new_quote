@@ -72,6 +72,12 @@
           <span v-if="+text === -1">***</span>
           <span v-else>{{text}}</span>
         </div>
+
+        <div slot="status" slot-scope="text">
+          <span>{{+text === 0 ? '启用' : '禁用'}}</span>
+        </div>
+
+        
       </a-table>
     </a-card>
 
@@ -232,6 +238,12 @@ const columns = [
     key: 'productName',
     width: '200px',
   },
+  {
+    align: 'center',
+    title: '状态',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
+  }
 ]
 export default {
   name: 'LookNuclearPrice',

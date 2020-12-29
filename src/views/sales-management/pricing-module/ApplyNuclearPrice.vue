@@ -63,6 +63,15 @@
               <a-select-option v-for="rPart in revisedParts" :key="rPart.text">{{ rPart.text }}</a-select-option>
             </a-select>
           </template>
+          <template slot="status" slot-scope="text, record">
+            <a-switch 
+              @change="statusChange(record, $event)" 
+              checked-children="启用" 
+              un-checked-children="禁用" 
+              default-checked 
+            />
+          </template>
+          
           <template slot="operation" slot-scope="text, record">
             <template v-if="record.editable">
               <span v-if="record.isNew">
@@ -190,6 +199,12 @@ export default {
           scopedSlots: { customRender: 'revisedPart' },
         },
         {
+          align: 'center',
+          title: '状态',
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' },
+        },
+        {
           title: '操作',
           key: 'action',
           width: '160px',
@@ -248,6 +263,7 @@ export default {
         editable: true,
         isNew: true,
         basisModel: 0,
+        status:0
       })
     },
     // 删除行
@@ -380,6 +396,7 @@ export default {
           demandRemarks: item.requirementDescription, //需求描述
           referencePic: item.referencePicture, //参考图片地址
           revisedPart: item.revisedPart, //其他
+          status:item.status //状态
         }
       })
       const params = {
@@ -538,6 +555,13 @@ export default {
           console.error(error)
         })
     },
+    statusChange(record,status){
+      //console.log(status)
+      const _index = this.data.findIndex((item) => item.key === record.key)
+      if (_index >= 0) {
+        this.data[_index]['status'] = status ? 0 : 1
+      }
+    }
   },
 }
 </script>

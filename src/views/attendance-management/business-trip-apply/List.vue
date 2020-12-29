@@ -4,20 +4,10 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input
-            placeholder="员工名模糊查询"
-            v-model="searchParam.userName"
-            allowClear
-            style="width:200px;"
-          />
+          <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width: 200px" />
         </a-form-item>
         <a-form-item>
-          <a-select
-            placeholder="选择审批状态"
-            v-model="searchParam.status"
-            :allowClear="true"
-            style="width:200px;"
-          >
+          <a-select placeholder="选择审批状态" v-model="searchParam.status" :allowClear="true" style="width: 200px">
             <a-select-option :value="0">待提交</a-select-option>
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
@@ -26,38 +16,21 @@
           </a-select>
         </a-form-item>
         <a-form-item hidden>
-          <a-select
-            placeholder="交通工具"
-            v-model="searchParam.vehicleId"
-            :allowClear="true"
-            style="width:200px;"
-          >
-            <a-select-option
-              v-for="item in vehicleList"
-              :key="item.id"
-              :value="item.id"
-            >{{item.text}}</a-select-option>
+          <a-select placeholder="交通工具" v-model="searchParam.vehicleId" :allowClear="true" style="width: 200px">
+            <a-select-option v-for="item in vehicleList" :key="item.id" :value="item.id">{{
+              item.text
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-range-picker
-            v-model="sDate"
-            @change="rangePickerChange"
-            style="width:220px;"
-            :allowClear="true"
-          />
+          <a-range-picker v-model="sDate" @change="rangePickerChange" style="width: 220px" :allowClear="true" />
         </a-form-item>
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            icon="search"
-            @click="searchAction({current:1})"
-          >查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;" v-if="$auth('attenceTravelApply:add')">
+        <div class="action-wrapper" style="float: right" v-if="$auth('attenceTravelApply:add')">
           <a-form-item>
-            <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+            <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
         </div>
       </a-form>
@@ -81,58 +54,54 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="editContent" slot-scope="text, record">
-          <a href="javascript:void(0);" @click="doAction('editView',record)">查看</a>
+          <a href="javascript:void(0);" @click="doAction('editView', record)">查看</a>
         </div>
         <div slot="status" slot-scope="text, record">
-          <a
-            href="javascript:void(0);"
-            @click="approvalPreview(record)"
-          >{{ {0:'待提交',1:'待审批',2:'通过',3:'不通过',4:'已作废'}[text] || '未知' }}</a>
+          <a href="javascript:void(0);" @click="approvalPreview(record)">{{
+            { 0: '待提交', 1: '待审批', 2: '通过', 3: '不通过', 4: '已作废' }[text] || '未知'
+          }}</a>
         </div>
         <div slot="financeStatus" slot-scope="text, record">
-          <a
-            href="javascript:void(0);"
-            @click="financeStatusPreview(record)"
-          >{{ {0:'未完结',1:'已完结'}[text] || '未知' }}</a>
+          <a href="javascript:void(0);" @click="financeStatusPreview(record)">{{
+            { 0: '未完结', 1: '已完结' }[text] || '未知'
+          }}</a>
         </div>
 
-        <div slot="travelType" slot-scope="text">{{ {1:'出差',2:'公事外出'}[text] || '未知' }}</div>
-        <div
-          slot="travelUsers"
-          slot-scope="text, record"
-        >{{ Array.isArray(record.users) ? record.users.map(item =>item.userName).join(',') : '-'}}</div>
+        <div slot="travelType" slot-scope="text">{{ { 1: '出差', 2: '公事外出' }[text] || '未知' }}</div>
+        <div slot="travelUsers" slot-scope="text, record">
+          {{ Array.isArray(record.users) ? record.users.map((item) => item.userName).join(',') : '-' }}
+        </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-
           <template v-if="+activeKey === 1">
-            <a type="primary" @click="doAction('approval',record)">审批</a>
+            <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
 
           <template v-if="+activeKey === 2">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
 
           <template v-if="+activeKey === 0">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
             <template v-if="+record.status === 0 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit',record)">修改</a>
+              <a type="primary" @click="doAction('edit', record)">修改</a>
               <a-divider type="vertical" />
-              <a-popconfirm title="确认提交该条数据吗?" @confirm="() => doAction('submit',record)">
+              <a-popconfirm title="确认提交该条数据吗?" @confirm="() => doAction('submit', record)">
                 <a type="primary" href="javascript:;">提交</a>
               </a-popconfirm>
             </template>
 
             <template v-if="+record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw',record)">
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
 
             <template v-if="+record.financeStatus === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
@@ -140,7 +109,7 @@
             <!--查看 修改:只添加行程 -->
             <template v-if="+record.status === 2 && !record.endTime">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('routeAdd',record)">添加行程</a>
+              <a type="primary" @click="doAction('routeAdd', record)">添加行程</a>
             </template>
 
             <!--查看 修改:只添加行程 -->
@@ -148,30 +117,28 @@
               <a-divider type="vertical" />
               <a type="primary" target="_blank" :href="record.travelUrl">下载</a>
             </template>
-
-
           </template>
         </div>
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
-    <AddForm ref="addForm" @finish="searchAction({current:1})" />
+    <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
     <AddRoute ref="addRoute" />
 
-    <FinanceForm ref="financeForm" @finish="searchAction({current:1})" />
+    <FinanceForm ref="financeForm" @finish="searchAction({ current: 1 })" />
   </div>
 </template>
 
 <script>
 import {
-  departmentList //所有部门
+  departmentList, //所有部门
 } from '@/api/systemSetting'
 import {
   attenceTravelApplyDel,
   attenceTravelApplyList,
   attenceTravelApplyWithdraw,
   attenceTravelUserCheckUserTravel,
-  attenceTravelApplySubmit
+  attenceTravelApplySubmit,
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 import FinanceForm from './FinanceForm'
@@ -187,13 +154,13 @@ export default {
     AddForm,
     ApproveInfo,
     FinanceForm,
-    AddRoute
+    AddRoute,
   },
   data() {
     return {
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
       searchParam: {},
@@ -202,89 +169,90 @@ export default {
       depList: [],
       vehicleList: [],
       bindEnterFn: null,
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
-  computed:{
-    isFinance(){
+  computed: {
+    isFinance() {
       return this.userInfo.departmentName && this.userInfo.departmentName.includes('财务')
     },
-    columns(){
+    columns() {
       let columns = [
         {
           align: 'center',
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           align: 'center',
           title: '出差人员',
-          scopedSlots: { customRender: 'travelUsers' }
+          scopedSlots: { customRender: 'travelUsers' },
         },
         {
           align: 'center',
           title: '出差类型',
           dataIndex: 'travelType',
-          scopedSlots: { customRender: 'travelType' }
+          scopedSlots: { customRender: 'travelType' },
         },
         {
           align: 'center',
           title: '开始时间',
-          dataIndex: 'startTime'
+          dataIndex: 'startTime',
         },
         {
           align: 'center',
           title: '结束时间',
-          dataIndex: 'endTime'
+          dataIndex: 'endTime',
         },
         {
           align: 'center',
           title: '出发城市',
-          dataIndex: 'beginAreaName'
+          dataIndex: 'beginAreaName',
         },
         {
           align: 'center',
           title: '审批状态',
           dataIndex: 'status',
-          scopedSlots: { customRender: 'status' }
+          scopedSlots: { customRender: 'status' },
         },
         {
           align: 'center',
           title: '操作',
           key: 'action',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ]
 
       let financeColumn = {
         align: 'center',
         title: '财务状态',
         dataIndex: 'financeStatus',
-        scopedSlots: { customRender: 'financeStatus' }
+        scopedSlots: { customRender: 'financeStatus' },
       }
 
-      if(this.isFinance){ //财务人员 显示财务状态列
-        columns.splice(columns.length - 1 ,0,financeColumn)
+      if (this.isFinance) {
+        //财务人员 显示财务状态列
+        columns.splice(columns.length - 1, 0, financeColumn)
       }
       return columns
-    }
+    },
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'attendance-business-trip-apply') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   mounted() {
     let that = this
     let ele = document.querySelector('#attendance-over-time-apply')
-    that.bindEnterFn = event => {
+    that.bindEnterFn = (event) => {
       if (event.type === 'keyup' && event.keyCode === 13) {
         //Enter
         that.searchAction()
@@ -300,9 +268,9 @@ export default {
       let that = this
       that.searchParam.searchStatus = that.activeKey
       let queue = []
-      let task1 = departmentList().then(res => (that.depList = res.data))
+      let task1 = departmentList().then((res) => (that.depList = res.data))
       queue.push(task1)
-      let task2 = getDictionaryList({ parentId: 509 }).then(res => (that.vehicleList = res.data))
+      let task2 = getDictionaryList({ parentId: 509 }).then((res) => (that.vehicleList = res.data))
       queue.push(task2)
       that.searchAction()
       return Promise.all(queue)
@@ -313,7 +281,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       attenceTravelApplyList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -326,7 +294,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -340,7 +308,7 @@ export default {
       let that = this
       if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
         if (actionType === 'add') {
-          attenceTravelUserCheckUserTravel({ userId: that.userInfo.id }).then(res => {
+          attenceTravelUserCheckUserTravel({ userId: that.userInfo.id }).then((res) => {
             if (res.data) {
               //that.$message.info('您还有未完结的出差申请，完结后方可继续申请流程')
               that.$message.info(res.msg)
@@ -360,7 +328,7 @@ export default {
                   <p>凭票实报实销，当天上限为100元</p>
                   <p>4.工作时间</p>
                   <p>出差出发时间为10:30前无需打卡，否则至公司正常打上班卡．</p>
-                  <p>出差返回时间为15:00前无需打卡，否则至公司正常打下班卡．</p>
+                  <p>出差返回时间为15:00后无需打卡，否则至公司正常打下班卡．</p>
                   <p>
                     注：请谨慎选择交通工具，超过标准不允报销；出差人员应在回公司７个工作日内办理报销事宜，否则影响下次提交申请．
                   </p>
@@ -370,7 +338,7 @@ export default {
               onOk: () => {
                 console.log('11')
                 that.$refs.addForm.query(actionType, record || {})
-              }
+              },
             })
           })
           return
@@ -378,33 +346,34 @@ export default {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
         attenceTravelApplyDel(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
         attenceTravelApplyWithdraw(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'submit') {
         attenceTravelApplySubmit(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
-      }else if(actionType === 'routeAdd'){ //添加行程
-        that.$refs.addRoute.query(actionType,record)
+      } else if (actionType === 'routeAdd') {
+        //添加行程
+        that.$refs.addRoute.query(actionType, record)
       }
     },
     tabChange(tagKey) {
@@ -438,13 +407,13 @@ export default {
     },
     areaCascadeChange() {
       console.log(arguments)
-    }
+    },
   },
   beforeDestroy() {
     let that = this
     let ele = document.querySelector('#attendance-over-time-apply')
     ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
-  }
+  },
 }
 </script>
 

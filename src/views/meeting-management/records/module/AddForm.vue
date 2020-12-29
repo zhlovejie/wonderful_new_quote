@@ -16,65 +16,61 @@
           <tr>
             <td class="wdf-column">编号</td>
             <td>
-              <a-form-item>{{record.meetingNum}}</a-form-item>
+              <a-form-item>{{ record.meetingNum }}</a-form-item>
             </td>
             <td class="wdf-column">会议类别</td>
-            <td style="width:35%;">
-              <a-form-item>{{record.typeDicName}}</a-form-item>
+            <td style="width: 35%">
+              <a-form-item>{{ record.typeDicName }}</a-form-item>
             </td>
           </tr>
           <tr>
             <td class="wdf-column">会议负责人</td>
             <td>
-              <div style="display:flex;" v-if="isStart">
+              <div style="display: flex" v-if="isStart">
                 <a-form-item>
                   <a-select
-                    style="width:165px;margin-right:10px;"
+                    style="width: 165px; margin-right: 10px"
                     placeholder="选择部门"
                     @change="depChangeHandler"
                     v-decorator="['departmentId', { rules: [{ required: true, message: '选择部门' }] }]"
                   >
-                    <a-select-option
-                      v-for="item in depList"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{item.departmentName}}</a-select-option>
+                    <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+                      item.departmentName
+                    }}</a-select-option>
                   </a-select>
                 </a-form-item>
                 <a-form-item>
                   <a-select
-                    style="width:165px;"
+                    style="width: 165px"
                     placeholder="选择人员"
                     v-decorator="['chargePersonId', { rules: [{ required: true, message: '选择人员' }] }]"
                     @change="chargePersonChange"
                   >
-                    <a-select-option
-                      v-for="item in personList"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{item.trueName}}</a-select-option>
+                    <a-select-option v-for="item in personList" :key="item.id" :value="item.id">{{
+                      item.trueName
+                    }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </div>
               <span v-if="isView">
-                <a-form-item>{{detail.departmentName}}-{{detail.chargePersonName}}</a-form-item>
+                <a-form-item>{{ detail.departmentName }}-{{ detail.chargePersonName }}</a-form-item>
               </span>
             </td>
             <td class="wdf-column">会议名称</td>
-            <td style="width:35%;">
-              <a-form-item>{{record.name}}</a-form-item>
+            <td style="width: 35%">
+              <a-form-item>{{ record.name }}</a-form-item>
             </td>
           </tr>
           <tr>
             <td class="wdf-column">会议时间</td>
             <td>
-              <div style="display:flex;" v-if="isStart">
+              <div style="display: flex" v-if="isStart">
                 <a-form-item>
                   <a-date-picker
                     placeholder="会议日期"
-                    style="width:120px;margin-right:10px;"
+                    style="width: 120px; margin-right: 10px"
                     format="YYYY-MM-DD"
-                    v-decorator="['meetingDate', {rules: [{required: true, message: '请选会议日期！'}]}]"
+                    v-decorator="['meetingDate', { rules: [{ required: true, message: '请选会议日期！' }] }]"
                     @change="meetingDateChange"
                   />
                 </a-form-item>
@@ -82,154 +78,138 @@
                   <a-time-picker
                     placeholder="开始时间"
                     @change="meetingDateChange"
-                    style="width:100px;margin-right:10px;"
+                    style="width: 100px; margin-right: 10px"
                     format="HH:mm"
-                    v-decorator="['beginTime', {rules: [{required: true, message: '请选择会议开始时间'}]}]"
+                    v-decorator="['beginTime', { rules: [{ required: true, message: '请选择会议开始时间' }] }]"
                   />
                 </a-form-item>
                 <a-form-item>
                   <a-time-picker
                     placeholder="结束时间"
                     @change="meetingDateChange"
-                    style="width:100px;"
+                    style="width: 100px"
                     format="HH:mm"
-                    v-decorator="['endTime', {rules: [{required: true, message: '请选择会议结束时间'}]}]"
+                    v-decorator="['endTime', { rules: [{ required: true, message: '请选择会议结束时间' }] }]"
                   />
                 </a-form-item>
               </div>
               <span v-if="isView">
-                <a-form-item>{{detail.meetingTimeStr}}</a-form-item>
+                <a-form-item>{{ detail.meetingTimeStr }}</a-form-item>
               </span>
             </td>
             <td class="wdf-column">会议时长</td>
-            <td style="width:35%;">
+            <td style="width: 35%">
               <a-form-item>
-                <span v-if="isStart">{{meetingLenths}}</span>
-                <span v-if="isView">{{detail.meetingTimeLengthStr}}</span>
+                <span v-if="isStart">{{ meetingLenths }}</span>
+                <span v-if="isView">{{ detail.meetingTimeLengthStr }}</span>
               </a-form-item>
             </td>
           </tr>
           <tr>
             <td class="wdf-column">会议地点</td>
             <td>
-              <div style="display:flex;" v-if="isStart">
+              <div style="display: flex" v-if="isStart">
                 <a-form-item>
                   <a-select
                     placeholder="选择会议地点"
                     :allowClear="true"
-                    style="width: 340px;"
-                    v-decorator="['addressDicId', {rules: [{required: true, message: '请选择会议地点'}]}]"
+                    style="width: 340px"
+                    v-decorator="['addressDicId', { rules: [{ required: true, message: '请选择会议地点' }] }]"
                   >
-                    <a-select-option
-                      v-for="item in meetingAddrList"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{item.text}}</a-select-option>
+                    <a-select-option v-for="item in meetingAddrList" :key="item.id" :value="item.id">{{
+                      item.text
+                    }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </div>
-              <a-form-item v-if="isView">{{detail.addressDicName}}</a-form-item>
+              <a-form-item v-if="isView">{{ detail.addressDicName }}</a-form-item>
             </td>
             <td class="wdf-column">是否有考核</td>
-            <td style="width:35%;">
+            <td style="width: 35%">
               <a-form-item v-if="isStart">
                 <a-radio-group
-                  v-decorator="['checkFlag',{rules: [{required: true, message: '请选择是否有考核'}]}]"
+                  v-decorator="['checkFlag', { rules: [{ required: true, message: '请选择是否有考核' }] }]"
                 >
                   <a-radio :value="1">有</a-radio>
                   <a-radio :value="0">无</a-radio>
                 </a-radio-group>
               </a-form-item>
-              <a-form-item v-if="isView">{{detail.checkFlag === 1 ? '有' : '无'}}</a-form-item>
+              <a-form-item v-if="isView">{{ detail.checkFlag === 1 ? '有' : '无' }}</a-form-item>
             </td>
           </tr>
           <tr>
             <td class="wdf-column">参与人员</td>
             <td colspan="3">
               <div v-if="isStart">
-                <div style="display:flex;">
+                <div style="display: flex">
                   <a-form-item>
                     <a-select
-                      style="width:150px;margin-right:10px;"
+                      style="width: 150px; margin-right: 10px"
                       placeholder="选择部门"
                       @change="depChangeHandler1"
                     >
-                      <a-select-option
-                        v-for="item in depList"
-                        :key="item.id"
-                        :value="item.id"
-                      >{{item.departmentName}}</a-select-option>
+                      <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+                        item.departmentName
+                      }}</a-select-option>
                     </a-select>
                   </a-form-item>
                   <a-form-item>
-                    <a-select
-                      style="width:150px;margin-right:10px;"
-                      placeholder="选择人员"
-                      @change="personChange"
-                    >
-                      <a-select-option
-                        v-for="item in personJoinList"
-                        :key="item.id"
-                        :value="item.id"
-                      >{{item.trueName}}</a-select-option>
+                    <a-select style="width: 150px; margin-right: 10px" placeholder="选择人员" @change="personChange">
+                      <a-select-option v-for="item in personJoinList" :key="item.id" :value="item.id">{{
+                        item.trueName
+                      }}</a-select-option>
                     </a-select>
                   </a-form-item>
                   <a-form-item>
-                    <a-button
-                      type="primary"
-                      style="margin-right:10px;"
-                      @click="joinPersonAction('add')"
-                    >添加</a-button>
+                    <a-button type="primary" style="margin-right: 10px" @click="joinPersonAction('add')">添加</a-button>
                   </a-form-item>
                   <a-form-item>
                     <a-button type="primary" @click="joinPersonAction('reset')">重选</a-button>
                   </a-form-item>
                 </div>
-                <div
-                  class="join-person-wrapper"
-                  style="border: 2px dashed #ddd;padding:10px 15px 15px 15px;"
-                >
-                  <div style="text-align:left;" v-if="oaMeetingJoinList.length > 0">
+                <div class="join-person-wrapper" style="border: 2px dashed #ddd; padding: 10px 15px 15px 15px">
+                  <div style="text-align: left" v-if="oaMeetingJoinList.length > 0">
                     <a-tag
                       v-for="item in oaMeetingJoinList"
                       :key="item._key"
-                      style="margin-top:7px;"
+                      style="margin-top: 7px"
                       :closable="!item.__root"
-                      :color="item.__root ? 'red' :''"
+                      :color="item.__root ? 'red' : ''"
                       @close="removeTag(item)"
-                    >{{item.trueName}}</a-tag>
+                      >{{ item.trueName }}</a-tag
+                    >
                   </div>
                   <div v-else>暂无参与人员</div>
                 </div>
               </div>
-              <a-form-item v-if="isView">{{detail.oaMeetingJoinUserStr}}</a-form-item>
+              <a-form-item v-if="isView">{{ detail.oaMeetingJoinUserStr }}</a-form-item>
             </td>
           </tr>
           <tr v-if="isView">
             <td class="wdf-column">会议启动时间</td>
             <td>
-              <a-form-item>{{detail.startTime || '尚未启动'}}</a-form-item>
+              <a-form-item>{{ detail.startTime || '尚未启动' }}</a-form-item>
             </td>
             <td class="wdf-column">会议完结时间</td>
             <td>
-              <a-form-item>{{detail.finishTime}}</a-form-item>
+              <a-form-item>{{ detail.finishTime }}</a-form-item>
             </td>
           </tr>
           <tr v-if="isView">
             <td class="wdf-column">签到记录</td>
-            <td colspan="3" style="padding:0;">
+            <td colspan="3" style="padding: 0">
               <table class="custom-table custom-table-border">
                 <tr>
                   <th>序号</th>
                   <th>姓名</th>
                   <th>签到时间</th>
                 </tr>
-                <tr v-for="(item , index) in detail.oaMeetingJoinList" :key="item.userId">
-                  <td>{{index + 1}}</td>
-                  <td>{{item.userName}}</td>
+                <tr v-for="(item, index) in detail.oaMeetingJoinList" :key="item.userId">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ item.userName }}</td>
                   <td>
-                    <span v-if="item.signStatus === 1">item.signTime</span>
-                    <span style="color:red;" v-else>{{item.signStatus === 2 ? '未签到' : '其他'}}</span>
+                    <span v-if="item.signStatus === 1">{{ item.signTime }}</span>
+                    <span style="color: red" v-else>{{ item.signStatus === 2 ? '未签到' : '其他' }}</span>
                   </td>
                 </tr>
               </table>
@@ -245,7 +225,7 @@
 import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
-  getUserByDep //获取人员
+  getUserByDep, //获取人员
 } from '@/api/systemSetting'
 //查询部门主管
 import { getPositionManager } from '@/api/personnelManagement'
@@ -253,9 +233,7 @@ import { getDictionaryList } from '@/api/workBox'
 import { meetingRecordDetail, meetingRecordSaveOrUpdate } from '@/api/meetingManagement'
 import moment from 'moment'
 function makeUUID() {
-  return Math.random()
-    .toString(32)
-    .slice(-10)
+  return Math.random().toString(32).slice(-10)
 }
 export default {
   name: 'AddForm',
@@ -274,7 +252,7 @@ export default {
       spinning: false,
       meetingLenths: '',
       record: {},
-      detail: {}
+      detail: {},
     }
   },
   computed: {
@@ -290,22 +268,22 @@ export default {
     isDisabled() {
       //此状态下表单元素被禁用
       return this.isView
-    }
+    },
   },
   methods: {
     moment: moment,
     init() {
       let that = this
       return Promise.all([
-        departmentList().then(res => (that.depList = res.data)), //部门
-        getDictionaryList({ parentId: 503 }).then(res => (that.meetingAddrList = res.data))
+        departmentList().then((res) => (that.depList = res.data)), //部门
+        getDictionaryList({ parentId: 503 }).then((res) => (that.meetingAddrList = res.data)),
       ])
     },
     depChangeHandler(depId) {
-      return getUserByDep({ departmentId: depId }).then(res => (this.personList = res.data))
+      return getUserByDep({ departmentId: depId }).then((res) => (this.personList = res.data))
     },
     depChangeHandler1(depId) {
-      return getUserByDep({ departmentId: depId }).then(res => (this.personJoinList = res.data))
+      return getUserByDep({ departmentId: depId }).then((res) => (this.personJoinList = res.data))
     },
     async handleOk() {
       let that = this
@@ -322,16 +300,16 @@ export default {
           values.beginTime = `${meetingDate} ${beginTime}:00`
           values.endTime = `${meetingDate} ${endTime}:00`
           delete values.meetingDate
-          values.oaMeetingJoinList = that.oaMeetingJoinList.map(item => {
+          values.oaMeetingJoinList = that.oaMeetingJoinList.map((item) => {
             return {
               userId: item.id,
-              userName: item.trueName
+              userName: item.trueName,
             }
           })
           console.log(values)
           that.spinning = true
           meetingRecordSaveOrUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               console.log(res)
               that.form.resetFields() // 清空表
@@ -339,7 +317,7 @@ export default {
               that.$message.info(res.msg)
               that.$emit('finish')
             })
-            .catch(err => (that.spinning = false))
+            .catch((err) => (that.spinning = false))
         }
       })
     },
@@ -366,7 +344,7 @@ export default {
           departmentId: +that.record.departmentId,
           chargePersonId: +that.record.chargePersonId,
           name: that.record.name,
-          checkFlag: that.record.checkFlag
+          checkFlag: that.record.checkFlag,
         }
         that.$nextTick(() => that.form.setFieldsValue(obj))
 
@@ -374,8 +352,8 @@ export default {
         return
       }
       let result = await meetingRecordDetail({ id: that.record.id })
-        .then(res => res.data)
-        .catch(err => null)
+        .then((res) => res.data)
+        .catch((err) => null)
       if (that.isView) {
         that.detail = Object.assign({}, result)
         return
@@ -390,19 +368,19 @@ export default {
           checkFlag: result.checkFlag,
           meetingDate: that.moment(result.beginTime),
           beginTime: that.moment(result.beginTime),
-          endTime: that.moment(result.endTime)
+          endTime: that.moment(result.endTime),
         }
         that.$nextTick(() => that.form.setFieldsValue(obj))
 
         let diff = that.moment(result.endTime).diff(that.moment(result.beginTime), 'minutes')
         that.meetingLenths = `${diff / 60}小时${diff % 60}分钟`
 
-        that.oaMeetingJoinList = result.oaMeetingJoinList.map(item => {
+        that.oaMeetingJoinList = result.oaMeetingJoinList.map((item) => {
           return {
             _key: makeUUID(),
             id: item.userId,
             trueName: item.userName,
-            ...item
+            ...item,
           }
         })
       }
@@ -413,7 +391,7 @@ export default {
       if (record) {
         that.form.setFieldsValue({
           chargePersonId: record.id,
-          chargePersonName: record.trueName
+          chargePersonName: record.trueName,
         })
       }
     },
@@ -425,10 +403,10 @@ export default {
       let that = this
     },
     removeTag(item) {
-      this.oaMeetingJoinList = this.oaMeetingJoinList.filter(p => p._key !== item._key)
+      this.oaMeetingJoinList = this.oaMeetingJoinList.filter((p) => p._key !== item._key)
     },
     personChange(val) {
-      let target = this.personJoinList.find(item => +item.id === +val)
+      let target = this.personJoinList.find((item) => +item.id === +val)
       if (target) {
         this.currentPerson = Object.assign({}, target)
       }
@@ -440,13 +418,13 @@ export default {
           that.$message.info('请选择会议参与人员')
           return
         }
-        if (that.oaMeetingJoinList.find(item => item.id === that.currentPerson.id)) {
+        if (that.oaMeetingJoinList.find((item) => item.id === that.currentPerson.id)) {
           that.$message.info(`会议参与人员已包括【${that.currentPerson.trueName}】,不能重复添加`)
           return
         }
         that.oaMeetingJoinList.push(Object.assign({}, that.currentPerson, { _key: makeUUID() }))
       } else if (type === 'reset') {
-        that.oaMeetingJoinList = that.oaMeetingJoinList.filter(item => item.__root)
+        that.oaMeetingJoinList = that.oaMeetingJoinList.filter((item) => item.__root)
       }
     },
     meetingDateChange() {
@@ -465,15 +443,15 @@ export default {
     },
     setRootPerson(pid) {
       const that = this
-      let _person = that.personList.find(p => +p.id === +pid)
+      let _person = that.personList.find((p) => +p.id === +pid)
       if (_person) {
         that.oaMeetingJoinList = [
           Object.assign({}, _person, { __root: true, _key: makeUUID() }),
-          ...that.oaMeetingJoinList.filter(p => !p.__root)
+          ...that.oaMeetingJoinList.filter((p) => !p.__root),
         ]
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
