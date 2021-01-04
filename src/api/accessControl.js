@@ -9,9 +9,58 @@ const api = {
   accessExcel: '/vehicle/oa-access-vehicle-control-record/foreign/exportExcel', //车辆信息下载
   getDictionaryList: '/dictionary/getListByCode', //总车辆 
   getPage: '/human/oa-access-human-decency/page', //人行闸机信息列表
-  getExportExcel: '/human/oa-access-human-decency/exportExcel', //人行闸机信息列表
+  getExportExcel: '/human/oa-access-human-decency/exportExcel', //人行闸机信息下载
+  personnelRecords: '/gate/oa-access-gate-user-info/page', //门闸信息
+  personnelexportExcel: '/gate/oa-access-gate-user-info/exportExcel', //门闸信息下载
+  GateEquipment: '/gate/oa-access-gate-equipment/page', //闸机设备列表
+  GateEquipmentUpdate: '/gate/oa-access-gate-equipment/update', //修改闸机设备列表
+
+
+
+
 
 }
+//闸机设备列表
+export function GateEquipmentUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.GateEquipmentUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+
+//闸机设备列表
+export function GateEquipment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.GateEquipment,
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**门闸信息下载 */
+export function personnelexportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.personnelexportExcel,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+//门闸信息
+export function personnelRecords(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.personnelRecords,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 //车辆列表员工车
 export function accessPage(parameter) {
   return axios({
