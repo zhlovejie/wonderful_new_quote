@@ -189,10 +189,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'attendance-statistics') {
-          let nowDate =
-            new Date().getFullYear() +
-            '-' +
-            (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+          let nowDate = moment().format('YYYY-MM')
           this.init({ current: 1, statiticsMonthDate: nowDate })
           this.searchParam.statiticsMonthDate = nowDate
         }
@@ -201,10 +198,7 @@ export default {
     },
   },
   mounted() {
-    let nowDate =
-      new Date().getFullYear() +
-      '-' +
-      (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+    let nowDate = moment().format('YYYY-MM')
     this.init({ current: 1, statiticsMonthDate: nowDate })
     this.searchParam.statiticsMonthDate = nowDate
   },
@@ -222,10 +216,7 @@ export default {
       queue.push(task1)
       // that.searchAction(params)
 
-      let nowDate =
-        new Date().getFullYear() +
-        '-' +
-        (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+      let nowDate = moment().format('YYYY-MM')
       this.downParam.userName = ''
       this.downParam.statiticsMonthDate = nowDate
       this.downParam.departmentId = ''
@@ -323,10 +314,7 @@ export default {
         // 上月
         this.disabled = true
         this.dayWeekMonth = 1
-        let lastMonth =
-          new Date().getFullYear() +
-          '-' +
-          (new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() : new Date().getMonth())
+        let lastMonth = moment().add(-1,'months').format('YYYY-MM')
         this.getList({ current: 1, statiticsMonthDate: lastMonth })
         // 存储上月参数
         this.downParam.userName = ''
@@ -346,10 +334,7 @@ export default {
         // 本月
         this.disabled = false
         this.dayWeekMonth = 2
-        let month =
-          new Date().getFullYear() +
-          '-' +
-          (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1)
+        let month = moment().format('YYYY-MM')
         this.downParam.userName = ''
         this.searchParam.statiticsMonthDate = month
         this.downParam.statiticsMonthDate = month
