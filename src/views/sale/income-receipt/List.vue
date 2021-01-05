@@ -9,10 +9,10 @@
           item.unitName
         }}</a-select-option>
       </a-select>
-      <a-select placeholder="处理状态" :allowClear="true" v-model="status" style="width: 120px">
+      <!-- <a-select placeholder="处理状态" :allowClear="true" v-model="status" style="width: 120px">
         <a-select-option :value="0">未认领</a-select-option>
         <a-select-option :value="1">已认领</a-select-option>
-      </a-select>
+      </a-select> -->
       <a-range-picker v-model="sDate" />
 
       <a-button
@@ -34,6 +34,10 @@
       >
     </div>
     <div class="main-wrapper">
+      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" @change="tabChange">
+        <a-tab-pane tab="未认领" key="0" />
+        <a-tab-pane tab="已认领" key="1" />
+      </a-tabs>
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -62,13 +66,12 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a
-            v-if="$auth('income:edit') && userInfo.id === record.createdUserId"
-            type="primary"
-            @click="doAction('edit', record)"
-            >修改</a
-          >
+            v-if="$auth('income:edit') && userInfo.id === record.createdUserId" 
+            type="primary" 
+            @click="doAction('edit', record)" 
+          >修改</a>
+          <a-divider type="vertical" v-if="$auth('income:edit') && userInfo.id === record.createdUserId && $auth('income:claim') && record.status === 0"  />
           <template v-if="$auth('income:claim') && record.status === 0">
-            <a-divider type="vertical" />
             <a type="primary" @click="doAction('get', record)">认领</a>
           </template>
         </div>
@@ -133,13 +136,13 @@ const columns = [
     key: 'remark',
     scopedSlots: { customRender: 'remark' },
   },
-  {
-    align: 'center',
-    title: '单据状态',
-    key: 'status',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-  },
+  // {
+  //   align: 'center',
+  //   title: '单据状态',
+  //   key: 'status',
+  //   dataIndex: 'status',
+  //   scopedSlots: { customRender: 'status' },
+  // },
   {
     align: 'center',
     title: '认领人',
@@ -176,14 +179,18 @@ export default {
       moneyTypes: [],
       columns: columns,
       dataSource: [],
-      pagination1: {},
+      //pagination1: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        onShowSizeChange: (current, pageSize) => {
+          this.pagination = {...this.pagination,pageSize}
+          this.searchAction()
+        },
       },
       loading: false,
+      activeKey:0
     }
   },
   computed: {
@@ -199,9 +206,10 @@ export default {
         customerName: this.customerName,
         claimUserName: this.claimUserName,
         accountId: this.accountId,
-        status: this.status,
+        //status: this.status,
         incomeBeginTime: startTime,
         incomeEndTime: endTime,
+        status:this.activeKey
       }
     },
   },
@@ -224,7 +232,10 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination1 }, opt || {}, {
+      let {pageSize,current} = that.pagination
+      let _searchParam = Object.assign({}, { ...that.searchParam }, { 
+        size:pageSize,current
+       }, opt || {}, {
         searchStatus: that.activeKey,
       })
       console.log('执行搜索...', _searchParam)
@@ -239,14 +250,18 @@ export default {
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
+          pagination.pageSize = +res.data.size
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
+       this.pagination = {
+         ...this.pagination,
+         pageSize:pagination.pageSize,
+         current:pagination.current
+       }
       this.searchAction()
     },
     doAction(type, record) {
@@ -276,6 +291,11 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
+    tabChange(key){
+      this.activeKey = +key
+      this.pagination = {...this.pagination,current:1}
+      this.searchAction()
+    }
   },
 }
 </script>
