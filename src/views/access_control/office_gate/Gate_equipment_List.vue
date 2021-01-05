@@ -67,11 +67,12 @@
         </a-form-item>
       </a-form>
     </a-modal>
+    <Jurisdiction ref="jurisdiction" />
   </div>
 </template>
 <script>
 import { GateEquipment, GateEquipmentUpdate } from '@/api/accessControl'
-
+import Jurisdiction from './Jurisdiction'
 import moment from 'moment'
 const columns = [
   {
@@ -109,7 +110,9 @@ const columns = [
 
 export default {
   name: 'NoticeList',
-  components: {},
+  components: {
+    Jurisdiction,
+  },
   data() {
     return {
       visible: false,
@@ -186,8 +189,9 @@ export default {
         this.visible = true
         this.recordId = record
       }
-      //this.$refs.addForm.query(type, record)
-      //this.$message.info('功能尚未实现...')
+      if (type === 'jurisdiction') {
+        this.$refs.jurisdiction.setCheckedNodes(record)
+      }
     },
     hideModal() {
       this.form.validateFields((err, values) => {

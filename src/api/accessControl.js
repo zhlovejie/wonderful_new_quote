@@ -14,13 +14,36 @@ const api = {
   personnelexportExcel: '/gate/oa-access-gate-user-info/exportExcel', //门闸信息下载
   GateEquipment: '/gate/oa-access-gate-equipment/page', //闸机设备列表
   GateEquipmentUpdate: '/gate/oa-access-gate-equipment/update', //修改闸机设备列表
+  GatelistEquipmentId: '/gate/oa-access-gate-equipment-jurisdiction/listEquipmentId', //权限详情
+  GatelistAdd: '/gate/oa-access-gate-equipment-jurisdiction/addUser', //权限新增
+
+
 
 
 
 
 
 }
-//闸机设备列表
+//权限新增
+export function GatelistAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.GatelistAdd,
+    method: 'post',
+    data: parameter
+  })
+}
+
+//权限详情
+export function GatelistEquipmentId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.GatelistEquipmentId,
+    method: 'get',
+    params: parameter
+  })
+}
+//修改闸机设备列表
 export function GateEquipmentUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
