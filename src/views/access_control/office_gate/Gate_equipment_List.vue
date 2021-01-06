@@ -45,13 +45,16 @@
           ><template v-if="$auth('GateequipmentList:jurisdiction')">
             <a-divider type="vertical" /> <a @click="doAction('jurisdiction', record)">权限</a></template
           >
+          <template v-if="$auth('GateequipmentList:jurisdiction')">
+            <a-divider type="vertical" /> <a @click="doAction('jurisdictionDetail', record)">权限详情</a></template
+          >
         </div>
       </a-table>
     </div>
 
     <a-modal v-model="visible" title="修改" ok-text="确认" cancel-text="取消" @ok="hideModal">
-      <a-form :form="form" class="becoming-form-wrapper">
-        <a-form-item style="margin-left: 120px">
+      <a-form :form="form" class="becoming-form-wrapper" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="门闸设备名称" style="margin-left: 50px">
           <a-input
             style="width: 230px"
             placeholder="门闸设备名称"
@@ -61,7 +64,7 @@
             ]"
           />
         </a-form-item>
-        <a-form-item style="margin-left: 120px">
+        <a-form-item label="设备位置" style="margin-left: 50px">
           <a-input
             style="width: 230px"
             placeholder="设备位置"
@@ -74,11 +77,13 @@
       </a-form>
     </a-modal>
     <Jurisdiction ref="jurisdiction" />
+    <DetailsAuthority ref="detailsAuthority" />
   </div>
 </template>
 <script>
 import { GateEquipment, GateEquipmentUpdate } from '@/api/accessControl'
 import Jurisdiction from './Jurisdiction'
+import DetailsAuthority from './DetailsAuthority'
 import moment from 'moment'
 const columns = [
   {
@@ -118,6 +123,7 @@ export default {
   name: 'NoticeList',
   components: {
     Jurisdiction,
+    DetailsAuthority,
   },
   data() {
     return {
@@ -197,6 +203,9 @@ export default {
       }
       if (type === 'jurisdiction') {
         this.$refs.jurisdiction.setCheckedNodes(record)
+      }
+      if (type === 'jurisdictionDetail') {
+        this.$refs.detailsAuthority.setCheckedNodes(record)
       }
     },
     hideModal() {

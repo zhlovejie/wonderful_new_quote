@@ -108,10 +108,25 @@
         </div>
       </a-table>
     </div>
+    <a-modal v-model="visible" title="车辆管理" @ok="handleOk">
+      <a-form :form="form" class="becoming-form-wrapper" :label-col="{ span: 6 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="车位数" style="margin-left: 50px">
+          <a-input
+            style="width: 230px"
+            placeholder="车位数"
+            v-decorator="[
+              'remarks',
+              { initialValue: recordId.remarks, rules: [{ required: true, message: '车位数不能为空' }] },
+            ]"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 <script>
 import { accessPage, accessPageCarList } from '@/api/accessControl'
+import { getDictionaryList, DictionaryModify } from '@/api/workBox'
 
 import moment from 'moment'
 const columns = [
@@ -223,9 +238,11 @@ export default {
     return {
       visible: false,
       //   depList: [],
+      form: this.$form.createForm(this, { name: 'do_becoming' }),
       queryParam: { current: 1 },
       pagination1: {},
       pagination2: {},
+      recordId: {},
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -270,6 +287,9 @@ export default {
     init() {
       let that = this
       that.searchAction()
+      getDictionaryList({ parentId: 627 }).then((rs) => {
+        this.recordId = rs.data[0]
+      })
     },
 
     searchAction(opt) {
@@ -311,6 +331,27 @@ export default {
           })
           .catch((err) => (that.loading = false))
       }
+    },
+    showModal() {
+      this.visible = true
+    },
+    handleOk() {
+      // 提交
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          values.code = this.recordId.code
+          values.id = this.recordId.id
+          values.text = this.recordId.text
+          DictionaryModify(values)
+            .then((res) => {
+              if (res.code === 200) {
+                this.$message.info(res.msg)
+                this.visible = false
+              }
+            })
+            .catch((err) => (this.visible = true))
+        }
+      })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

@@ -35,6 +35,16 @@ export function GatelistAdd(parameter) {
 }
 
 //权限详情
+export function GatelistEquipmentDe(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.GatelistEquipmentId,
+    method: 'post',
+    data: parameter
+  })
+}
+
+//权限
 export function GatelistEquipmentId(parameter) {
   return axios({
     baseURL: system.baseURL,

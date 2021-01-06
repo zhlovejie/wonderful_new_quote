@@ -11,46 +11,43 @@
   >
     <a-spin :spinning="loading" tip="处理中...">
       <a-row>
-        <a-row :gutter="24">
-          <a-form :form="form" class="form wdf-form">
-            <a-col :span="10">
-              <a-form-item style="margin-bottom: 0">
-                <a-select
-                  style="width: 100%; margin-bottom: 10px; margin-left: 10px"
-                  @change="handleProvinceChange"
-                  :allowClear="true"
-                  placeholder="请选择部门"
-                  v-model="departmentId"
-                >
-                  <a-select-option :value="undefined">请选择部门</a-select-option>
-                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
-                    item.departmentName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="10">
-              <a-form-item class="form wdf-form">
-                <!-- @deselect="desedel" -->
-                <!-- mode="multiple" -->
-                <!-- :maxTagCount="1" -->
-                <!-- v-model="roleArr" -->
-                <a-select
-                  style="width: 100%; margin-left: 10px"
-                  placeholder="请选择岗位"
-                  :allowClear="true"
-                  @change="handleProvince"
-                >
-                  <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{
-                    item.stationName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-button style="float: right; margin-top: 5px" type="primary" @click="whole"> 全部</a-button>
-          </a-form>
-        </a-row>
+        <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+          <a-select
+            style="width: 250px; margin-bottom: 10px"
+            @change="handleProvinceChange"
+            :allowClear="true"
+            placeholder="请选择部门"
+            v-model="departmentId"
+          >
+            <a-select-option :value="undefined">请选择部门</a-select-option>
+            <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
+          </a-select>
+          <a-select
+            style="width: 250px; margin-left: 10px"
+            placeholder="请选择岗位"
+            :allowClear="true"
+            @change="handleProvince"
+          >
+            <a-select-option v-for="item in roleList" :key="item.id" :value="item.id">{{
+              item.stationName
+            }}</a-select-option>
+          </a-select>
+          <a-button style="margin-left: 10px" type="primary" @click="whole"> 全部</a-button>
+          <a-button style="margin-left: 10px" type="primary" @click="empty"> 清空</a-button>
+        </div>
 
+        <!-- <div class="table-page-search-wrapper" style="margin-bottom: 20px">
+          <a-input
+            class="main-items"
+            style="width: 250px; margin-right: 10px"
+            placeholder="姓名"
+            allowClear
+            v-model="queryParam.name"
+          />
+          <a-button style="margin-left: 10px" type="primary">查询</a-button>
+        </div> -->
         <a-table style="margin-left: 10px" :columns="columns" :dataSource="dataSource">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -204,11 +201,13 @@ export default {
       let that = this
       that.visible = true
       that.resId = res.id
-      GatelistEquipmentId({ id: res.id }).then((rs) => {
+      GatelistEquipmentId({ id: res.id, name: '' }).then((rs) => {
         this.dataSource = rs.data
       })
     },
-
+    empty() {
+      this.dataSource = []
+    },
     // 选择全部部门人员
     whole() {
       if (this.dataSource.length > 0) {
@@ -226,9 +225,6 @@ export default {
       this.dataSource.splice(roleId, 1)
     },
     handleOk() {
-      if (this.dataSource.length == 0) {
-        return this.$message.error('请选择人员')
-      }
       let arr = this.dataSource.map((rs) => {
         return {
           userId: rs.userId,
