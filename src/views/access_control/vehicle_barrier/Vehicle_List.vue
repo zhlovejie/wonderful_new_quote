@@ -60,7 +60,7 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
-      <template v-if="$auth('year:add')">
+      <template v-if="$auth('VehicleList:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="showModal()">车位管理 </a-button>
         </a-dropdown>
@@ -74,7 +74,7 @@
         <a-tab-pane tab="公车" key="1" />
       </a-tabs>
       <a-table
-        v-if="$auth('year:lists') && this.activeKey === 0"
+        v-if="$auth('VehicleList:lists') && this.activeKey === 0"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -92,7 +92,7 @@
       </a-table>
 
       <a-table
-        v-if="$auth('year:lists') && this.activeKey === 1"
+        v-if="$auth('VehicleList:lists') && this.activeKey === 1"
         :columns="colu"
         :dataSource="dataSource1"
         :pagination="pagination3"

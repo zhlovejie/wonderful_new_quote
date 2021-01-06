@@ -43,7 +43,9 @@
         @change="rangePickerChange"
       />
       <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
-      <a-button style="margin-left: 10px" type="primary" @click="downloadAction">下载</a-button>
+      <template v-if="$auth('sidewalkgateList:download')">
+        <a-button style="margin-left: 10px" type="primary" @click="downloadAction">下载</a-button>
+      </template>
     </div>
 
     <a-layout>
@@ -54,7 +56,7 @@
           :data-source="this.dataSource"
           :pagination="pagination"
           @change="handleTableChange"
-          v-if="$auth('electricity:list')"
+          v-if="$auth('sidewalkgateList:list')"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>

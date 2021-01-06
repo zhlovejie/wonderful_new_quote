@@ -30,15 +30,21 @@
         :dataSource="dataSource"
         :pagination="pagination"
         :loading="loading"
+        v-if="$auth('GateequipmentList:list')"
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template> <a @click="doAction('opening', record)">远程开门</a></template>
-          <template> <a-divider type="vertical" /><a @click="doAction('modify', record)">修改</a> </template
-          ><template> <a-divider type="vertical" /> <a @click="doAction('jurisdiction', record)">权限</a></template>
+          <template v-if="$auth('GateequipmentList:opening')">
+            <a @click="doAction('opening', record)">远程开门</a></template
+          >
+          <template v-if="$auth('GateequipmentList:modify')">
+            <a-divider type="vertical" /><a @click="doAction('modify', record)">修改</a> </template
+          ><template v-if="$auth('GateequipmentList:jurisdiction')">
+            <a-divider type="vertical" /> <a @click="doAction('jurisdiction', record)">权限</a></template
+          >
         </div>
       </a-table>
     </div>
