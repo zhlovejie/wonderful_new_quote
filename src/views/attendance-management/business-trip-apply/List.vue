@@ -112,6 +112,15 @@
               <a type="primary" @click="doAction('routeAdd', record)">添加行程</a>
             </template>
 
+            <!-- 行程审批通过，尚未完结状态，，显示结束行程按钮 -->
+            <template v-if="+record.status === 2 && +record.financeStatus === 0">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认结束行程吗?" @confirm="() => doAction('routeEnd', record)">
+                <a type="primary" href="javascript:;">结束行程</a>
+              </a-popconfirm>
+            </template>
+
+            
             <!--查看 修改:只添加行程 -->
             <template v-if="+record.status === 2">
               <a-divider type="vertical" />
@@ -139,6 +148,7 @@ import {
   attenceTravelApplyWithdraw,
   attenceTravelUserCheckUserTravel,
   attenceTravelApplySubmit,
+  attenceTravelApplyFinishTravel
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 import FinanceForm from './FinanceForm'
@@ -147,6 +157,7 @@ import AddRoute from './AddRoute'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { getDictionaryList } from '@/api/workBox'
+import action from '@/core/directives/action'
 
 export default {
   name: 'business-trip-apply-list',
@@ -374,6 +385,16 @@ export default {
       } else if (actionType === 'routeAdd') {
         //添加行程
         that.$refs.addRoute.query(actionType, record)
+      } else if(actionType === 'routeEnd'){
+        attenceTravelApplyFinishTravel(`id=${record.id}`).then((res) => {
+            that.$message.info(res.msg)
+            if(+res.code === 200){
+              that.searchAction()
+            }
+          })
+          .catch((err) => {
+            that.$message.info(`错误：${err.message}`)
+          })
       }
     },
     tabChange(tagKey) {
