@@ -35,13 +35,15 @@
         </div>
       </a-form>
     </div>
-    <div style="color:red !important;margin-top:10px;">
-      <h3 style="color:red !important;">出差规则：</h3>
-      <p>1、提前提交出差申请，审批通过后方可离开工作岗位。</p>
-      <p>2、预支金额：单次最多可预支2000元，可预支3次费用，超过3次，需财务完结出差申请后，方可再次预支费用。</p>
-      <p>3、出差行程结束后，需要手动点“完结行程”按钮，未及时完结行程导致的后果由员工承担</p>
-    </div>
-    
+
+    <a-alert message="出差规则" type="warning" show-icon style="margin-top:10px;">
+      <div slot="description">
+        <div>1、提前提交出差申请，审批通过后方可离开工作岗位。</div>
+        <div>2、预支金额：单次最多可预支2000元，可预支3次费用，超过3次，需财务完结出差申请后，方可再次预支费用。</div>
+        <div>3、出差行程结束后，需要手动点“完结行程”按钮，未及时完结行程导致的后果由员工承担。</div>
+      </div>
+    </a-alert>
+
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
