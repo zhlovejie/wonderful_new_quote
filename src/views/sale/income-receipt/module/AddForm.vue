@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="600"
+    :width="850"
     :visible="visible"
     @cancel="handleCancel"
     :maskClosable="false"
@@ -15,7 +15,7 @@
       <a-form :form="form" class="add-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width:150px;">进款单编号</td>
+            <td style="width:200px;">进款单编号</td>
             <td>
               <a-form-item>
                 <a-input disabled v-decorator="['incomeNum']" />
@@ -42,9 +42,23 @@
           <tr>
             <td>客户名称/个人名称</td>
             <td>
-              <a-form-item>
+              <!-- <a-form-item>
                 <a-input
                   placeholder="客户名称"
+                  :allowClear="true"
+                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称/个人名称'}]}]"
+                />
+              </a-form-item> -->
+
+
+              <CustomerSelect
+                ref="customerSelect"
+                :options="customerSelectOptions"
+                @selected="handleCustomerSelected"
+              />
+              <a-form-item hidden>
+                <a-input 
+                  placeholder="客户名称" 
                   :allowClear="true"
                   v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称/个人名称'}]}]"
                 />
@@ -92,7 +106,6 @@
             <td colspan="3">
               <a-form-item>
                 <a-textarea
-                  :disabled="isDisabled"
                   placeholder="备注"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '备注' }] }]"
@@ -109,17 +122,34 @@
 <script>
 import moment from 'moment'
 import { incomeDetail, incomeSaveOrUpdate, getAccountBankList } from '@/api/receipt'
-
+import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 export default {
   name: 'AddForm',
-  components: {},
+  components: {CustomerSelect},
   data() {
     return {
       form: this.$form.createForm(this),
       visible: false,
       actionType: 'add',
       spinning: false,
-      moneyTypes: []
+      moneyTypes: [],
+      customerSelectOptions: {
+        inputLabel: '',
+        wrapperStyle: {
+          width: '100%',
+        },
+
+        formItemLayout: {
+          labelCol: { span: '' },
+          wrapperCol: { span: '' },
+        },
+        inputRequired: true,
+        inputAllowClear: false,
+        inputDisable: false,
+      },
+      needOptions: {
+        userId: undefined,
+      },
     }
   },
   computed: {
@@ -150,7 +180,15 @@ export default {
         that.handleCancel()
         return
       }
+      
+      let customerSelectResult = await that.$refs.customerSelect.validate().then(res => res)
+      
+
+
       that.form.validateFields((err, values) => {
+        if (customerSelectResult.err) {
+          return
+        }
         if (!err) {
           if (that.isEdit) {
             values.id = that.record.id
@@ -164,6 +202,7 @@ export default {
               console.log(res)
               if (res.code === 200) {
                 that.form.resetFields() // 清空表
+                that.$refs.customerSelect && that.$refs.customerSelect.reset()
                 that.visible = false
                 that.$message.info(res.msg)
                 that.$emit('finish')
@@ -203,13 +242,24 @@ export default {
       
       _detail.incomeTime = that.moment(_detail.incomeTime)
       that.form.setFieldsValue(_detail)
+      that.$refs.customerSelect && that.$refs.customerSelect.fill({
+        name:_detail.customerName,
+        id:0
+      })
     },
     resetData() {
       let that = this
       that.visible = false
       that.actionType = 'add'
       that.spinning = false
-    }
+      that.$refs.customerSelect && that.$refs.customerSelect.reset()
+    },
+    handleCustomerSelected(item) {
+      this.form.setFieldsValue({
+        customerId: item && item.id ? item.id : undefined,
+        customerName: item.name,
+      })
+    },
   }
 }
 </script>
