@@ -42,6 +42,15 @@
         </div>
       </a-form>
     </div>
+    <div style="margin-top: 20px">
+      <h3 class="color">补卡规则：</h3>
+      <p class="color">
+        1）每月可提交 {{ detail.permitRecardTims }}
+        次补卡，超过次数后不可进行补卡申请。
+      </p>
+      <p class="color">2）可申请过去{{ detail.permitDelayDayTims }}天内的补卡，超过时间未申请按旷工处理</p>
+      　　
+    </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
@@ -120,7 +129,9 @@
 import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
+
 import {
+  attenceRecardRuleDetail,
   resignApplyAddAndUpdate,
   resignApplyApproval,
   resignApplyDel,
@@ -197,6 +208,7 @@ export default {
   data() {
     return {
       columns: columns,
+      detail: {},
       dataSource: [],
       pagination: {
         current: 1,
@@ -238,6 +250,7 @@ export default {
     init() {
       let that = this
       that.searchParam.searchStatus = that.activeKey
+      attenceRecardRuleDetail().then((res) => (that.detail = res.data))
       let queue = []
       let task1 = departmentList().then((res) => (that.depList = res.data))
       queue.push(task1)
@@ -333,5 +346,8 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
+}
+.color {
+  color: red;
 }
 </style>

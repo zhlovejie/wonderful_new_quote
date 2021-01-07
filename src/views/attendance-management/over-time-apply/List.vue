@@ -34,6 +34,19 @@
         </div>
       </a-form>
     </div>
+
+    <div style="margin-top: 20px">
+      <h3 class="color">加班规则：</h3>
+      <p class="color">
+        1）加班单位：最小加班单位{{ ovwework.overWorkCaculatorType }}，超过下班时间{{
+          ovwework.overWorkCaculatorType
+        }}才记为加班。
+      </p>
+
+      <p class="color">2）加班时间：可申请过去{{ ovwework.limitTime }}天内的加班，超过时间不予提交申请。</p>
+      　　
+    </div>
+
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
@@ -109,6 +122,7 @@ import {
   overworkApplyList,
   overworkApplyHours,
   overworkApplyWithdraw,
+  overworkRuleList,
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
@@ -186,6 +200,7 @@ export default {
     return {
       columns: columns,
       dataSource: [],
+      ovwework: {},
       pagination: {
         current: 1,
       },
@@ -227,6 +242,10 @@ export default {
       let that = this
       that.searchParam.searchStatus = that.activeKey
       let queue = []
+      overworkRuleList().then((rs) => {
+        that.ovwework = rs.data.records[0]
+        that.ovwework.overWorkCaculatorType = that.getOverWorkCaculatorType(rs.data.records[0].overWorkCaculatorType)
+      })
       let task1 = departmentList().then((res) => (that.depList = res.data))
       queue.push(task1)
       that.searchAction()
@@ -285,6 +304,9 @@ export default {
           })
       }
     },
+    getOverWorkCaculatorType(type) {
+      return { 1: '按半小时加班', 2: '按小时加班', 3: '按半天加班', 4: '按天加班' }[type] || '未知'
+    },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
       this.searchParam.searchStatus = this.activeKey
@@ -305,6 +327,7 @@ export default {
       }
     },
   },
+
   beforeDestroy() {
     let that = this
     let ele = document.querySelector('#attendance-over-time-apply')
@@ -321,5 +344,8 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
+}
+.color {
+  color: red;
 }
 </style>
