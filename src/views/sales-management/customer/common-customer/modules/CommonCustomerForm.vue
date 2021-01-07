@@ -99,6 +99,20 @@
           </a-select>
         </a-form-item>
       </a-col>
+
+      <a-col v-if="cId == 0" :lg="12" :md="12" :sm="24">
+        <a-form-item label="客户维护周期(天)" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input-number 
+            style="width:100%;"
+            :min="5"
+            :max="90"
+            :step="1"
+            v-decorator="['contactCycle', {initialValue:90,rules: [{ required: true, message: '客户维护周期' }]}]" 
+            @change="contactCycleChange"
+          />
+        </a-form-item>
+      </a-col>
+
       <a-col v-if="cId == 0" :lg="12" :md="12" :sm="24">
         <a-form-item label="选择客户池" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select read-only="read-only" placeholder="请选择客户池" v-decorator="['pool',{rules: [{required: true}],initialValue: 3}]">
@@ -233,7 +247,7 @@ export default {
   },
   mounted (record) { // 初始化
     getDictionary({ text: '客户录入渠道' }).then(res => {
-      this.sources = res.data
+      this.sources = res.data.filter(item => item.text !== '自开发客户')
     }).catch(function (err) {
       console.log(err)
     })
@@ -391,7 +405,8 @@ export default {
           area: record.area,
           address: record.address,
           businessDescription: record.businessDescription,
-          licenseImg: record.licenseImg
+          licenseImg: record.licenseImg,
+          contactCycle:record.contactCycle
         })
       })
       if (record.province != null && record.province > 0) { // 渲染市
@@ -477,6 +492,15 @@ export default {
     },
     handleCancel () {
       this.form.resetFields() // 清空表
+    },
+    contactCycleChange(val){
+      if(+val > 90){
+        this.$message.info(`客户维护周期 最大为【${90}】天`)
+        return
+      }else if(+val <= 5){
+        this.$message.info(`客户维护周期 最小为【5】天`)
+        return
+      }
     }
   }
 }

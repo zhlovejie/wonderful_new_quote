@@ -113,7 +113,14 @@ export default {
       }
       that.form.validateFields((err, values) => {
         if (!err) {
-          values.ruleId = that.record.id
+          //debugger
+          if(that.isAdd){
+            values.ruleId = that.record.id
+          }else if(that.isEdit){
+            values.id = that.record.id
+            values.ruleId = that.record.ruleId
+          }
+          
           //提交
           that.spinning = true
           customerPunishDetailAddOrUpdate(values)

@@ -42,6 +42,11 @@
           </a-form-item>
         </a-col>
         <a-col :lg="12" :md="12" :sm="24">
+          <a-form-item label="客户维护周期(天)" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input read-only="read-only" v-model="customer.contactCycle"/>
+          </a-form-item>
+        </a-col>
+        <a-col :lg="12" :md="12" :sm="24">
           <a-form-item label="客户意向" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input read-only="read-only" v-if="customer.intention == 1" value="有效客户"/>
             <a-input read-only="read-only" v-if="customer.intention == 2" value="无效客户"/>
@@ -154,20 +159,20 @@ export default {
       visible: false, // 是否显示
       customer: {},
       labelCol: {
-        xs: { span: 24 },
-        sm: { span: 4 }
+        xs: { span: 8 },
+        sm: { span: 8 }
       },
       wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 20 }
+        xs: { span: 16 },
+        sm: { span: 16 }
       },
       labelColOne: {
-        xs: { span: 24 },
-        sm: { span: 2 }
+        xs: { span: 4 },
+        sm: { span: 4 }
       },
       wrapperOne: {
-        xs: { span: 24 },
-        sm: { span: 22 }
+        xs: { span: 20 },
+        sm: { span: 20 }
       },
       form: this.$form.createForm(this),
       columns: [

@@ -255,6 +255,7 @@ export default {
     toAdd () {
       if (!this.salesJurisdiction.top && this.salesJurisdiction.canEnterDep !== 1) { // 没有新增部门客户权限
         this.$message.error('你没有新增部门客户的权限！')
+        return
       } else {
         this.$refs.depStepForm.add()
       }
