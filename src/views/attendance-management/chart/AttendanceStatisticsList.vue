@@ -115,13 +115,19 @@ const columns = [
     dataIndex: 'leaveHours',
     key: 'leaveHours',
   },
-
   {
     align: 'center',
-    title: '外出（h）',
-    dataIndex: 'egressLeaveHours',
-    key: 'egressLeaveHours',
+    title: '调休（h）',
+    dataIndex: 'leaveWithRestHours',
+    key: 'leaveWithRestHours',
   },
+
+  // {
+  //   align: 'center',
+  //   title: '外出（h）',
+  //   dataIndex: 'egressLeaveHours',
+  //   key: 'egressLeaveHours',
+  // },
 
   {
     align: 'center',
