@@ -42,15 +42,15 @@
         </div>
       </a-form>
     </div>
-    <div style="margin-top: 20px">
-      <h3 class="color">补卡规则：</h3>
-      <p class="color">
-        1）每月可提交 {{ detail.permitRecardTims }}
-        次补卡，超过次数后不可进行补卡申请。
-      </p>
-      <p class="color">2）可申请过去{{ detail.permitDelayDayTims }}天内的补卡，超过时间未申请按旷工处理</p>
-      　　
-    </div>
+    <a-alert message="补卡规则" type="warning" show-icon style="margin-top: 10px">
+      <div slot="description">
+        <div>
+          1）每月可提交 {{ detail.permitRecardTims }}
+          次补卡，超过次数后不可进行补卡申请。
+        </div>
+        <div>2）可申请过去{{ detail.permitDelayDayTims }}天内的补卡，超过时间未申请按旷工处理。</div>
+      </div>
+    </a-alert>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />

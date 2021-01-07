@@ -35,18 +35,16 @@
       </a-form>
     </div>
 
-    <div style="margin-top: 20px">
-      <h3 class="color">加班规则：</h3>
-      <p class="color">
-        1）加班单位：最小加班单位{{ ovwework.overWorkCaculatorType }}，超过下班时间{{
-          ovwework.overWorkCaculatorType
-        }}才记为加班。
-      </p>
-
-      <p class="color">2）加班时间：可申请过去{{ ovwework.limitTime }}天内的加班，超过时间不予提交申请。</p>
-      　　
-    </div>
-
+    <a-alert message="加班规则" type="warning" show-icon style="margin-top: 10px">
+      <div slot="description">
+        <div>
+          1）加班单位：最小加班单位{{ ovwework.overWorkCaculatorType }}，超过下班时间{{
+            ovwework.overWorkCaculatorType
+          }}才记为加班。
+        </div>
+        <div>2）加班时间：可申请过去{{ ovwework.limitTime }}天内的加班，超过时间不予提交申请。</div>
+      </div>
+    </a-alert>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
@@ -344,8 +342,5 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
-}
-.color {
-  color: red;
 }
 </style>

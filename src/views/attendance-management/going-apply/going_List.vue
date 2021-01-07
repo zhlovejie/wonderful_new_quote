@@ -27,13 +27,14 @@
         </div>
       </a-form>
     </div>
-    <div style="margin-top: 20px">
-      <h3 class="color">外出规则：</h3>
-      <p class="color">1）上班时间因公外出，员工提交申请，仅限本市范围内。</p>
-      <p class="color">2）外出申请需要提前提交，外出开始时间不得早于当前时间（无法补交）。</p>
-      <p class="color">3）因公外出下班无法返厂时，出厂打下班卡。下班可返厂，出厂无需打下班卡。</p>
-      　　
-    </div>
+
+    <a-alert message="外出规则" type="warning" show-icon style="margin-top: 10px">
+      <div slot="description">
+        <div>1）上班时间因公外出，员工提交申请，仅限本市范围内。</div>
+        <div>2）外出申请需要提前提交，外出开始时间不得早于当前时间（无法补交）。</div>
+        <div>3）因公外出下班无法返厂时，出厂打下班卡。下班可返厂，出厂无需打下班卡。</div>
+      </div>
+    </a-alert>
 
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -288,8 +289,5 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
-}
-.color {
-  color: red;
 }
 </style>
