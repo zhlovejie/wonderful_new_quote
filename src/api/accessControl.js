@@ -16,6 +16,7 @@ const api = {
   GateEquipmentUpdate: '/gate/oa-access-gate-equipment/update', //修改闸机设备列表
   GatelistEquipmentId: '/gate/oa-access-gate-equipment-jurisdiction/listEquipmentId', //权限详情
   GatelistAdd: '/gate/oa-access-gate-equipment-jurisdiction/addUser', //权限新增
+  GatelistOpen: '/gate/oa-access-gate-equipment/open', //远程开门
 
 
 
@@ -24,6 +25,19 @@ const api = {
 
 
 }
+
+
+
+//远程开门
+export function GatelistOpen(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.GatelistOpen,
+    method: 'get',
+    params: parameter
+  })
+}
+
 //权限新增
 export function GatelistAdd(parameter) {
   return axios({

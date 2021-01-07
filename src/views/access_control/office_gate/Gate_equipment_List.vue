@@ -81,7 +81,7 @@
   </div>
 </template>
 <script>
-import { GateEquipment, GateEquipmentUpdate } from '@/api/accessControl'
+import { GateEquipment, GateEquipmentUpdate, GatelistOpen } from '@/api/accessControl'
 import Jurisdiction from './Jurisdiction'
 import DetailsAuthority from './DetailsAuthority'
 import moment from 'moment'
@@ -195,7 +195,13 @@ export default {
     },
     doAction(type, record) {
       if (type === 'opening') {
-        return this.$message.info('此功能还没开发')
+        GatelistOpen({ mainBoardNo: record.mainBoardNo })
+          .then((res) => {
+            if (res.code === 200) {
+              this.$message.info(res.msg)
+            }
+          })
+          .catch((err) => {})
       }
       if (type === 'modify') {
         this.visible = true
