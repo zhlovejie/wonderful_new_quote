@@ -1,14 +1,20 @@
 <template>
   <div class="software-contract-list-wrapper">
     <div class="search-wrapper">
-      <a-input :allowClear="true" class="a-input" style="width:180px;" placeholder="合同编号"  v-model="contractNum" />
+      <a-input :allowClear="true" class="a-input" style="width: 180px" placeholder="合同编号" v-model="contractNum" />
       <!-- <CustomerSelect
         ref="customerSelect"
         :options="customerSelectOptions"
         @selected="handleCustomerSelected"
         @inputClear="handleCustomerClear"
       /> -->
-      <a-input :allowClear="true"  class="a-select" style="width:180px;" placeholder="客户名称模糊查询" v-model="customerName" />
+      <a-input
+        :allowClear="true"
+        class="a-select"
+        style="width: 180px"
+        placeholder="客户名称模糊查询"
+        v-model="customerName"
+      />
       <a-select placeholder="合同状态" v-model="contractStatus" style="width: 150px">
         <a-select-option :value="-1">合同状态</a-select-option>
         <a-select-option :value="0">未启动</a-select-option>
@@ -39,10 +45,10 @@
     <div class="list-wrap">
       <a-spin :spinning="loading">
         <a-tabs :activeKey="String(status)" defaultActiveKey="0" @change="tabChange">
-          <a-tab-pane tab="全部" key="0" />
+          <a-tab-pane tab="我的" key="0" />
           <template v-if="$auth('softwareContract:approval')">
-            <a-tab-pane tab="待审批" key="1" />
-            <a-tab-pane tab="已审批" key="2" />
+            <a-tab-pane tab="待我审批" key="1" />
+            <a-tab-pane tab="我已审批" key="2" />
           </template>
         </a-tabs>
         <a-table
@@ -267,7 +273,7 @@ export default {
       userInfo: this.$store.getters.userInfo,
       contractNum: '', //合同编号
       customerId: '', //客户名称编号
-      customerName:undefined,
+      customerName: undefined,
       contractStatus: -1, //合同状态 0 未启动  1已启动 2已作废
       status: 0, //审批状态 0全部 1待审批 2已审批
       approveStatus: -1, //审批状态 -1 全部，0待审批，1通过， 2不通过
@@ -315,7 +321,7 @@ export default {
       //组合搜索参数
       return {
         contractNum: this.contractNum,
-        customerName:this.customerName,
+        customerName: this.customerName,
         customerId: this.customerId,
         contractStatus: this.contractStatus,
         status: this.status,

@@ -97,14 +97,14 @@
     </div>
     <div>
       <a-tabs defaultActiveKey="0" @change="callback">
-        <a-tab-pane tab="全部" key="0">
+        <a-tab-pane tab="我的" key="0">
           <all-the-contract ref="allTheContract" />
         </a-tab-pane>
         <template v-if="$auth('pricing:approval')">
-          <a-tab-pane tab="待审批" key="1">
+          <a-tab-pane tab="待我审批" key="1">
             <approval-pending ref="ApprovalPending" />
           </a-tab-pane>
-          <a-tab-pane tab="已审批" key="2">
+          <a-tab-pane tab="我已审批" key="2">
             <approved-contract ref="ApprovedContract" />
           </a-tab-pane>
         </template>
@@ -197,12 +197,13 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-
       this.dayWeekMonth = type
-      this.searchParams = { ...this.searchParams, dayWeekMonth: +this.dayWeekMonth === 4 ? undefined : this.dayWeekMonth}
+      this.searchParams = {
+        ...this.searchParams,
+        dayWeekMonth: +this.dayWeekMonth === 4 ? undefined : this.dayWeekMonth,
+      }
       this.isExpanded = false
       this.searchAction()
-
 
       // if (type === 4) {
       //   //this.searchParams.dayWeekMonth = undefined

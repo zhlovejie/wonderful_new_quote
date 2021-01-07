@@ -27,12 +27,21 @@
         </div>
       </a-form>
     </div>
+
+    <a-alert message="外出规则" type="warning" show-icon style="margin-top: 10px">
+      <div slot="description">
+        <div>1）上班时间因公外出，员工提交申请，仅限本市范围内。</div>
+        <div>2）外出申请需要提前提交，外出开始时间不得早于当前时间（无法补交）。</div>
+        <div>3）因公外出下班无法返厂时，出厂打下班卡。下班可返厂，出厂无需打下班卡。</div>
+      </div>
+    </a-alert>
+
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('going:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table

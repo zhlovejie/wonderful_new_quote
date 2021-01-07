@@ -34,10 +34,10 @@
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('severanceAgreement:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -115,7 +115,7 @@ import {
   personnelLeaveOfficeAgreementPageList,
   personnelLeaveOfficeAgreementChangeIsEnd,
   personnelLeaveOfficeAgreementCancel,
-  deleteLeaveOfficeAgreement
+  deleteLeaveOfficeAgreement,
 } from '@/api/personnelManagement'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -272,7 +272,7 @@ export default {
         that.$refs.viewForm.query(type, record)
         return
       }
-      if(type === 'del'){
+      if (type === 'del') {
         deleteLeaveOfficeAgreement(`id=${record.id}`)
           .then((res) => {
             that.$message.info(res.msg)
@@ -282,9 +282,9 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
         return
-      }else{
+      } else {
         that.$refs.addForm.query(type, record)
-        return 
+        return
       }
       //this.$message.info('功能尚未实现...')
     },

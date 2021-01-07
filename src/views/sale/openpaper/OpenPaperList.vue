@@ -35,10 +35,10 @@
       <a-col>
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
-            <a-tab-pane tab="全部" key="0" forceRender> </a-tab-pane>
+            <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
             <template v-if="$auth('paper:approval')">
-              <a-tab-pane tab="待审批" key="5"> </a-tab-pane>
-              <a-tab-pane tab="已审批" key="2"> </a-tab-pane>
+              <a-tab-pane tab="待我审批" key="5"> </a-tab-pane>
+              <a-tab-pane tab="我已审批" key="2"> </a-tab-pane>
             </template>
           </a-tabs>
         </div>

@@ -4,30 +4,18 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width:200px;" />
+          <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width: 200px" />
         </a-form-item>
         <a-form-item>
-          <a-select 
-            placeholder="选择部门"
-            v-model="searchParam.depId"
-            :allowClear="true" 
-            style="width:200px;"
-          >
-            <a-select-option
-              v-for="item in depList"
-              :key="item.id"
-              :value="item.id"
-            >{{item.departmentName}}</a-select-option>
+          <a-select placeholder="选择部门" v-model="searchParam.depId" :allowClear="true" style="width: 200px">
+            <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
-        
+
         <a-form-item>
-          <a-select 
-            placeholder="选择审批状态"
-            v-model="searchParam.status"
-            :allowClear="true" 
-            style="width:200px;"
-          >
+          <a-select placeholder="选择审批状态" v-model="searchParam.status" :allowClear="true" style="width: 200px">
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
@@ -35,29 +23,24 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-range-picker v-model="sDate" @change="rangePickerChange" style="width:220px;" :allowClear="true"/>
+          <a-range-picker v-model="sDate" @change="rangePickerChange" style="width: 220px" :allowClear="true" />
         </a-form-item>
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            icon="search"
-            @click="searchAction({current:1})"
-          >查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;" v-if="$auth('attenceLeaveApply:add')">
+        <div class="action-wrapper" style="float: right" v-if="$auth('attenceLeaveApply:add')">
           <a-form-item>
-          <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+            <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
         </div>
       </a-form>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('attenceLeaveApply:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -71,48 +54,46 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="editContent" slot-scope="text, record">
-          <a href="javascript:void(0);" @click="doAction('editView',record)">查看</a>
+          <a href="javascript:void(0);" @click="doAction('editView', record)">查看</a>
         </div>
         <div slot="status" slot-scope="text, record">
           <a href="javascript:void(0);" @click="approvalPreview(record)">
-            {{ {1:'待审批',2:'通过',3:'不通过',4:'已撤回'}[text] || '未知' }}
+            {{ { 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知' }}
           </a>
         </div>
         <div slot="userName" slot-scope="text, record">
-          {{record.createdName}}
+          {{ record.createdName }}
         </div>
 
-        
         <div slot="beginTime" slot-scope="text, record">
-          {{ +record.holidayCaculatorType === 1 ? text : text.slice(0,10) }}
+          {{ +record.holidayCaculatorType === 1 ? text : text.slice(0, 10) }}
         </div>
         <div slot="endTime" slot-scope="text, record">
-          {{ +record.holidayCaculatorType === 1 ? text : text.slice(0,10) }}
+          {{ +record.holidayCaculatorType === 1 ? text : text.slice(0, 10) }}
         </div>
         <div slot="leaveTime" slot-scope="text, record">
-          {{text}}{{{1:'天',3:'小时'}[record.holidayUnitType] || ''}}
+          {{ text }}{{ { 1: '天', 3: '小时' }[record.holidayUnitType] || '' }}
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          
           <template v-if="+activeKey === 1">
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('approval',record)">审批</a>
+            <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
           <template v-if="+activeKey === 2">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
 
           <template v-if="+activeKey === 0">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
             <template v-if="+record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw',record)">
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
             <template v-if="+record.status === 2 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
             </template>
@@ -125,7 +106,7 @@
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
-    <AddForm ref="addForm" @finish="searchAction({current:1})" />
+    <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
   </div>
 </template>
 
@@ -138,9 +119,9 @@ import {
   attenceLeaveApplyApprove,
   attenceLeaveApplyDel,
   attenceLeaveApplyDetail,
-  attenceLeaveApplyList, 
+  attenceLeaveApplyList,
   attenceLeaveApplyWithdraw,
-  attenceLeaveApplyComputeLeaveTime
+  attenceLeaveApplyComputeLeaveTime,
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
@@ -152,97 +133,98 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '员工名',
-    dataIndex:'userName'
+    dataIndex: 'userName',
   },
   {
     align: 'center',
     title: '部门',
-    dataIndex:'departmentName'
+    dataIndex: 'departmentName',
   },
   {
     align: 'center',
     title: '请假类型',
-    dataIndex:'holidayName'
+    dataIndex: 'holidayName',
   },
   {
     align: 'center',
     title: '开始时间',
-    dataIndex:'beginTime',
-    scopedSlots: { customRender: 'beginTime' }
+    dataIndex: 'beginTime',
+    scopedSlots: { customRender: 'beginTime' },
   },
   {
     align: 'center',
     title: '结束时间',
-    dataIndex:'endTime',
-    scopedSlots: { customRender: 'endTime' }
+    dataIndex: 'endTime',
+    scopedSlots: { customRender: 'endTime' },
   },
   {
     align: 'center',
     title: '请假时长',
-    dataIndex:'leaveTime',
-    scopedSlots: { customRender: 'leaveTime' }
+    dataIndex: 'leaveTime',
+    scopedSlots: { customRender: 'leaveTime' },
   },
   {
     align: 'center',
     title: '审批状态',
     dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
+    scopedSlots: { customRender: 'status' },
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'attendance-leave-apply-list',
   components: {
     AddForm,
-    ApproveInfo
+    ApproveInfo,
   },
   data() {
     return {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
       loading: false,
-      searchParam:{},
-      sDate:[undefined,undefined],
-      activeKey:0,
-      depList:[],
-      bindEnterFn:null,
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      searchParam: {},
+      sDate: [undefined, undefined],
+      activeKey: 0,
+      depList: [],
+      bindEnterFn: null,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'attendance-leave-apply') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
-  mounted(){
+  mounted() {
     let that = this
     let ele = document.querySelector('#attendance-leave-apply')
-    that.bindEnterFn = (event) =>{
-      if(event.type === 'keyup' && event.keyCode === 13){ //Enter
+    that.bindEnterFn = (event) => {
+      if (event.type === 'keyup' && event.keyCode === 13) {
+        //Enter
         that.searchAction()
       }
     }
-    if(ele){
-      ele.addEventListener('keyup',that.bindEnterFn)
+    if (ele) {
+      ele.addEventListener('keyup', that.bindEnterFn)
     }
   },
   methods: {
@@ -251,7 +233,7 @@ export default {
       let that = this
       that.searchParam.searchStatus = that.activeKey
       let queue = []
-      let task1 = departmentList().then(res => (that.depList = res.data))
+      let task1 = departmentList().then((res) => (that.depList = res.data))
       queue.push(task1)
       that.searchAction()
       return Promise.all(queue)
@@ -262,7 +244,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       attenceLeaveApplyList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -275,7 +257,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -287,24 +269,24 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if(['view','add','edit','approval'].includes(actionType)){
-        that.$refs.addForm.query(actionType,record || {})
-      }else if(actionType === 'del'){
+      if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
+        that.$refs.addForm.query(actionType, record || {})
+      } else if (actionType === 'del') {
         attenceLeaveApplyDel(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
-      }else if(actionType === 'withdraw'){
+      } else if (actionType === 'withdraw') {
         attenceLeaveApplyWithdraw(`id=${record.id}`)
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
       }
@@ -312,28 +294,28 @@ export default {
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
       this.searchParam.searchStatus = this.activeKey
-      this.searchAction({ current: 1})
+      this.searchAction({ current: 1 })
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-    rangePickerChange(arrMoment,arrStrs){
-      if(Array.isArray(arrMoment)){
-        if(arrMoment.length === 2){
+    rangePickerChange(arrMoment, arrStrs) {
+      if (Array.isArray(arrMoment)) {
+        if (arrMoment.length === 2) {
           this.searchParam.beginTime = arrMoment[0].format('YYYY-MM-DD')
           this.searchParam.endTime = arrMoment[1].format('YYYY-MM-DD')
-        }else{
+        } else {
           this.searchParam.beginTime = undefined
           this.searchParam.endTime = undefined
         }
       }
-    }
+    },
   },
-  beforeDestroy(){
+  beforeDestroy() {
     let that = this
     let ele = document.querySelector('#attendance-leave-apply')
-    ele && that.bindEnterFn && ele.removeEventListener('keyup',that.bindEnterFn) 
-  }
+    ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
+  },
 }
 </script>
 
@@ -346,5 +328,4 @@ export default {
 .main-wrapper {
   margin-top: 20px;
 }
-
 </style>

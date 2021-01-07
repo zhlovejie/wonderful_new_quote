@@ -22,7 +22,7 @@ export default {
 
 
 
-   baseURL: 'http://192.168.13.253/oa',
+  // baseURL: 'http://192.168.13.253/oa',
 
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   primaryColor: '#1890FF', // primary color of ant design

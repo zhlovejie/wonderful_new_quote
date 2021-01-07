@@ -12,7 +12,13 @@
             @selected="handleCustomerSelected"
             @inputClear="handleCustomerClear"
           /> -->
-          <a-input :allowClear="true"  class="a-select" style="width:180px;" placeholder="客户名称模糊查询" v-model="customerName" />
+          <a-input
+            :allowClear="true"
+            class="a-select"
+            style="width: 180px"
+            placeholder="客户名称模糊查询"
+            v-model="customerName"
+          />
         </a-form-item>
         <!-- <a-form-item label="投标单位名称">
           <a-select
@@ -58,15 +64,23 @@
       <a-col>
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
-            <a-tab-pane tab="全部" key="0" forceRender></a-tab-pane>
+            <a-tab-pane tab="我的" key="0" forceRender></a-tab-pane>
 
             <template v-if="$auth('investigate:approval')">
-              <a-tab-pane tab="待审批" key="1"></a-tab-pane>
-              <a-tab-pane tab="已审批" key="2"></a-tab-pane>
+              <a-tab-pane tab="待我审批" key="1"></a-tab-pane>
+              <a-tab-pane tab="我已审批" key="2"></a-tab-pane>
             </template>
           </a-tabs>
         </div>
-        <s-table rowKey="id" ref="table" size="default" :columns="columns" :data="loadData" :alert="false"  :pagination="pagination">
+        <s-table
+          rowKey="id"
+          ref="table"
+          size="default"
+          :columns="columns"
+          :data="loadData"
+          :alert="false"
+          :pagination="pagination"
+        >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -84,7 +98,7 @@
             <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
           </div>
           <div slot="states" slot-scope="text, record">
-            <a @click="handleClick(record)" >{{ {1:'待审批',2:'通过',3:'不通过',9:'已撤回'}[text] }}</a>
+            <a @click="handleClick(record)">{{ { 1: '待审批', 2: '通过', 3: '不通过', 9: '已撤回' }[text] }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="+approvalStatus === 0">
@@ -95,23 +109,28 @@
                 <a target="_blank" :href="record.wordUrl">下载</a>
               </template>
 
-              <template v-if="$auth('investigate:edit') && [3,9].includes(+record.approvalStatus)">
+              <template v-if="$auth('investigate:edit') && [3, 9].includes(+record.approvalStatus)">
                 <a-divider type="vertical" />
                 <a @click="updateProject(record)">修改</a>
               </template>
 
-              <template v-if="$auth('investigate:del') && (+record.approvalStatus === 2 || +record.approvalStatus === 9) && userInfo.id == record.createdId ">
+              <template
+                v-if="
+                  $auth('investigate:del') &&
+                  (+record.approvalStatus === 2 || +record.approvalStatus === 9) &&
+                  userInfo.id == record.createdId
+                "
+              >
                 <a-divider type="vertical" />
                 <a @click="() => del(record)">删除</a>
               </template>
 
               <template v-if="+record.approvalStatus === 1">
-                <a-divider type="vertical"/>
-                <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback',record)">
+                <a-divider type="vertical" />
+                <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                   <a type="primary" href="javascript:;">撤回</a>
                 </a-popconfirm>
               </template>
-
             </template>
 
             <template v-if="+approvalStatus === 1">
@@ -121,7 +140,6 @@
             <template v-if="+approvalStatus === 2">
               <a @click="handleVue(record)">查看</a>
             </template>
-
           </span>
         </s-table>
       </a-col>
@@ -136,7 +154,7 @@
 
 <script>
 import { STable } from '@/components'
-import { customerList, deleteInvestigate, getServiceList, goAdd ,investigateRevocation} from '@/api/investigate'
+import { customerList, deleteInvestigate, getServiceList, goAdd, investigateRevocation } from '@/api/investigate'
 import InvestigateForm from './InvestigateAdd'
 import Tendering from './TenderingUnit'
 import InvestigateNode from './InvestigateNode'
@@ -178,11 +196,11 @@ export default {
       approvalStatus: 0,
       saleCustomer: 0,
       projectName: '',
-      customerName:'',
+      customerName: '',
       vueBoolean: this.$store.getters.vueBoolean,
       isLook: 0,
-         pagination: {
-        showTotal: total=> '共' + total +'条数据'
+      pagination: {
+        showTotal: (total) => '共' + total + '条数据',
       },
       saleCustomers: [],
       contractStatus: [
@@ -309,7 +327,7 @@ export default {
         projectName: this.projectName,
         contractStatus: this.contractState,
         //saleCustomerId: this.saleCustomer,
-        saleCustomerName:this.customerName,
+        saleCustomerName: this.customerName,
         approvalStatus: this.approvalStatus,
       }
       this.$refs.table.refresh(true)
@@ -401,16 +419,16 @@ export default {
     handleMenuClick(e) {
       this.handleAdd(parseInt(e.key, 10))
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'reback'){
-        investigateRevocation({id:record.id}).then(res =>{
+      if (type === 'reback') {
+        investigateRevocation({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.search()
         })
         return
       }
-    }
+    },
   },
 }
 </script>
