@@ -49,6 +49,11 @@
               :active-tab-key="sysInfoBarKey"
               @tabChange="key => onTabChange(key, 'sysInfoBarKey')"
             >
+              <span slot="customRender" slot-scope="item"> 
+                <a-badge :count="item.msgCount" :offset="[20,0]" show-zero>
+                  <span>{{ item._tab }}</span>
+                </a-badge>
+              </span>
               <PushMsgList :msgType="sysInfoBarKey"/>
             </a-card>
         </a-col>
@@ -119,6 +124,7 @@ import FastPathView from './module/FastPathView' //快速通道
 import NoticeView from './module/NoticeView' //公告详情
 import CommonFiles from './module/CommonFiles' //常用文件下载
 import Swiper from './module/Swiper' //幻灯片
+import {getPushMsg} from '@/api/common'  //消息
 
 import moment from 'moment'
 export default {
@@ -157,21 +163,27 @@ export default {
       tabListSysInfo:[
         {
           key:'1',
-          tab:'系统消息'
+          tab:'系统消息',
+          msgCount:null,
+          //scopedSlots: { tab: 'customRender' }
         },
         {
           key:'2',
-          tab:'待办事项'
+          _tab:'待办事项',
+          msgCount:null,
+          scopedSlots: { tab: 'customRender' }
         },
         {
           key:'5',
-          tab:'已办事项'
+          tab:'已办事项',
+          msgCount:null,
+          //scopedSlots: { tab: 'customRender' }
         }
       ],
 
       NoticeList:[],
       statiticsMonthDate:undefined,
-      userName:undefined
+      userName:undefined,
     }
   },
   computed: {
@@ -194,6 +206,7 @@ export default {
   },
   mounted () {
     this.fetchNoticeTop4()
+    this.initPushMsgCount()
   },
   methods: {
     moment,
@@ -223,6 +236,27 @@ export default {
         this.$refs.noticeView.query(record)
         return
       }
+    },
+    async initPushMsgCount(){
+      let that = this
+      let userId = that.userInfo.id
+      let queue = that.tabListSysInfo.map(item =>{
+        return getPushMsg({msgType:item.key,userId}).then(res => {
+          try{
+            return {key:item.key,count:res.data.msgList.total}
+          }catch(err){
+            return {key:item.key,count:null}
+          }
+        })
+      })
+      let res = await Promise.all(queue)
+      that.tabListSysInfo = that.tabListSysInfo.map(item => {
+        let target = res.find(r => r.key === item.key)
+        if(target){
+          item.msgCount = target.count
+        }
+        return item
+      })
     }
   }
 }
