@@ -50,7 +50,7 @@
               @tabChange="key => onTabChange(key, 'sysInfoBarKey')"
             >
               <span slot="customRender" slot-scope="item"> 
-                <a-badge :count="item.msgCount" :offset="[20,0]" show-zero>
+                <a-badge :count="item.msgCount || 0" :offset="[20,0]" :showZero="item.msgCount !== null">
                   <span>{{ item._tab }}</span>
                 </a-badge>
               </span>
@@ -163,9 +163,9 @@ export default {
       tabListSysInfo:[
         {
           key:'1',
-          tab:'系统消息',
+          _tab:'系统消息',
           msgCount:null,
-          //scopedSlots: { tab: 'customRender' }
+          scopedSlots: { tab: 'customRender' }
         },
         {
           key:'2',
@@ -175,9 +175,9 @@ export default {
         },
         {
           key:'5',
-          tab:'已办事项',
+          _tab:'已办事项',
           msgCount:null,
-          //scopedSlots: { tab: 'customRender' }
+          scopedSlots: { tab: 'customRender' }
         }
       ],
 
