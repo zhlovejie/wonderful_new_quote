@@ -35,12 +35,19 @@
         </div>
       </a-form>
     </div>
+    <div style="color:red !important;margin-top:10px;">
+      <h3 style="color:red !important;">出差规则：</h3>
+      <p>1、提前提交出差申请，审批通过后方可离开工作岗位。</p>
+      <p>2、预支金额：单次最多可预支2000元，可预支3次费用，超过3次，需财务完结出差申请后，方可再次预支费用。</p>
+      <p>3、出差行程结束后，需要手动点“完结行程”按钮，未及时完结行程导致的后果由员工承担</p>
+    </div>
+    
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('attenceTravelApply:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -112,6 +119,15 @@
               <a type="primary" @click="doAction('routeAdd', record)">添加行程</a>
             </template>
 
+            <!-- 行程审批通过，尚未完结状态，，显示结束行程按钮 -->
+            <template v-if="+record.status === 2 && record.createdId === userInfo.id && !isFinished(record)">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认结束行程吗?" @confirm="() => doAction('routeEnd', record)">
+                <a type="primary" href="javascript:;">结束行程</a>
+              </a-popconfirm>
+            </template>
+
+            
             <!--查看 修改:只添加行程 -->
             <template v-if="+record.status === 2">
               <a-divider type="vertical" />
@@ -139,6 +155,7 @@ import {
   attenceTravelApplyWithdraw,
   attenceTravelUserCheckUserTravel,
   attenceTravelApplySubmit,
+  attenceTravelApplyFinishTravel
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 import FinanceForm from './FinanceForm'
@@ -147,6 +164,7 @@ import AddRoute from './AddRoute'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { getDictionaryList } from '@/api/workBox'
+import action from '@/core/directives/action'
 
 export default {
   name: 'business-trip-apply-list',
@@ -374,6 +392,16 @@ export default {
       } else if (actionType === 'routeAdd') {
         //添加行程
         that.$refs.addRoute.query(actionType, record)
+      } else if(actionType === 'routeEnd'){
+        attenceTravelApplyFinishTravel(`id=${record.id}`).then((res) => {
+            that.$message.info(res.msg)
+            if(+res.code === 200){
+              that.searchAction()
+            }
+          })
+          .catch((err) => {
+            that.$message.info(`错误：${err.message}`)
+          })
       }
     },
     tabChange(tagKey) {
@@ -408,12 +436,23 @@ export default {
     areaCascadeChange() {
       console.log(arguments)
     },
+    //是否完结行程
+    isFinished(record){
+      let that = this
+      //出差人员和随性人员都点击结束行程后，，会生成 endTime 
+      let case1 = record.endTime ? true : false 
+      let user = (record.users || []).find(u => u.userId === that.userInfo.id)
+      //人员的 isFinished 标志 0未结束，1已经结束
+      let case2 = user && +user.isFinished === 1
+      return case1 || case2
+    }
   },
   beforeDestroy() {
     let that = this
     let ele = document.querySelector('#attendance-over-time-apply')
     ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
-  },
+  }
+  
 }
 </script>
 

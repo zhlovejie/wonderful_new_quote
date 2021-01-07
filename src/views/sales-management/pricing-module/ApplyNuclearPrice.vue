@@ -69,6 +69,7 @@
               checked-children="启用" 
               un-checked-children="禁用" 
               default-checked 
+              :disabled="true"
             />
           </template>
           

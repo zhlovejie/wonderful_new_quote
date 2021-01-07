@@ -30,6 +30,13 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row :gutter="24">
+          <a-col :md="24" :sm="24">
+            <a-form-item label="备注">
+              {{ projectCase.remark }}
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </div>
     <ImgView ref="imgView" />

@@ -158,8 +158,8 @@ export default {
       //console.log(from)
       if (to.name === 'pricing') {
         console.log('刷新核价列表this.$refs', this.$refs)
-        this.dayWeekMonth = 1
-        this.searchAction({ dayWeekMonth: this.dayWeekMonth })
+        //this.dayWeekMonth = 1
+        this.searchAction()
       }
     },
   },
@@ -197,18 +197,25 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-      if (type === 4) {
-        this.searchParams.dayWeekMonth = undefined
-        this.dayWeekMonth = undefined
-        this.searchParams = { ...this.searchParams, dayWeekMonth: this.dayWeekMonth }
-        this.searchAction()
-      } else {
-        this.isExpanded = false
-        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
-        this.searchParams = { ...this.searchParams, dayWeekMonth: this.dayWeekMonth }
-        this.searchAction()
-        //this.searchAction()
-      }
+
+      this.dayWeekMonth = type
+      this.searchParams = { ...this.searchParams, dayWeekMonth: +this.dayWeekMonth === 4 ? undefined : this.dayWeekMonth}
+      this.isExpanded = false
+      this.searchAction()
+
+
+      // if (type === 4) {
+      //   //this.searchParams.dayWeekMonth = undefined
+      //   this.dayWeekMonth = type
+      //   this.searchParams = { ...this.searchParams, dayWeekMonth: +this.dayWeekMonth === 4 ? undefined : this.dayWeekMonth}
+      //   this.searchAction()
+      // } else {
+      //   this.isExpanded = false
+      //   this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+      //   this.searchParams = { ...this.searchParams, dayWeekMonth: this.dayWeekMonth }
+      //   this.searchAction()
+      //   //this.searchAction()
+      // }
       // this.isExpanded = false
       // this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
       // this.searchAction()

@@ -96,7 +96,8 @@
                 @change="statusChange(record, $event)" 
                 checked-children="启用" 
                 un-checked-children="禁用" 
-                :checked="+text === 0 ? true : false"
+                :checked="+text === 0 ? true : false" 
+                :disabled="true"
               />
             </template>
             <template slot="operation" slot-scope="text, record">

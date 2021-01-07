@@ -38,8 +38,8 @@
             </td>
           </tr>
 
-          <tr>
-            <td style="width:120px;">出差类型</td>
+          <tr v-if="isSalesman">
+            <!-- <td style="width:120px;">出差类型</td>
             <td :colspan="!isSalesman ? 3 : 1">
               <a-form-item>
                 <a-select
@@ -56,9 +56,9 @@
                   {{ {1:'出差',2:'公事外出'}[detail.travelType] }}
                 </span>
               </a-form-item>
-            </td>
-            <td style="width:120px;" v-if="isSalesman">客户名称</td>
-            <td v-if="isSalesman">
+            </td> -->
+            <td style="width:120px;" >客户名称</td>
+            <td colspan="3">
               <a-form-item>
                 <a-input
                   v-if="!isDisabled"
@@ -70,7 +70,7 @@
                   @click="handleCustomerClick"
                   v-decorator="['customerName',{initialValue:detail.customerName,rules: [{ required: true, message: '选择客户名称'}]}]"
                 />
-                <span v-else>{{detail.customerName}}</span>
+                <span v-else>{{detail.customerName }}</span>
               </a-form-item>
               <a-form-item hidden>
                 <a-input v-decorator="['customerId',{initialValue:detail.customerId}]" />
@@ -725,6 +725,7 @@ export default {
             that.spinning = false
             this.$message.warning('选择时间不能在当前时间之前')
           } else {
+            values.travelType = 1 //默认都是出差
             attenceTravelApplyAddAndUpdate(values)
               .then(res => {
                 that.$message.info(res.msg)
@@ -819,5 +820,14 @@ export default {
 .custom-table-border td {
   padding: 5px 10px;
   text-align: left;
+  line-height: 40px;
+}
+.custom-table-border tr:nth-child(odd)
+{
+  background:#f5f5f5;
+}
+.custom-table-border tr:nth-child(even)
+{
+  background:#fff;
 }
 </style>

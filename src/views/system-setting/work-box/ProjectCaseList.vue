@@ -106,6 +106,10 @@ export default {
           dataIndex: 'unitName'
         },
         {
+          title: '备注',
+          dataIndex: 'remark'
+        },
+        {
           title: '创建人',
           dataIndex: 'createdName'
         },
