@@ -39,30 +39,52 @@
               </a-form-item>
             </td>
           </tr>
+
+
           <tr>
-            <td>客户名称/个人名称</td>
+            <td>名称类型</td>
             <td>
-              <!-- <a-form-item>
-                <a-input
-                  placeholder="客户名称"
-                  :allowClear="true"
-                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称/个人名称'}]}]"
-                />
-              </a-form-item> -->
-
-
-              <CustomerSelect
-                ref="customerSelect"
-                :options="customerSelectOptions"
-                @selected="handleCustomerSelected"
-              />
-              <a-form-item hidden>
-                <a-input 
-                  placeholder="客户名称" 
-                  :allowClear="true"
-                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称/个人名称'}]}]"
-                />
+              <a-form-item >
+                <a-radio-group :value="nameType" @change="nameTypeChangeHandler">
+                  <a-radio :value="0">客户名称</a-radio>
+                  <a-radio :value="1">个人名称</a-radio>
+                </a-radio-group>
               </a-form-item>
+            </td>
+          </tr>
+
+          
+          <tr>
+            <td>{{nameType === 0 ? '客户名称' : '个人名称'}}</td>
+            <td>
+              <template v-if="nameType === 1">
+                <a-form-item>
+                  <a-input
+                    placeholder="个人名称"
+                    :allowClear="true"
+                    v-decorator="['customerName',{rules: [{required: true,message: '输入个人名称'}]}]"
+                  />
+                </a-form-item>
+              </template>
+
+
+              <template v-if="nameType === 0">
+                <CustomerSelect
+                  ref="customerSelect"
+                  :options="customerSelectOptions"
+                  @selected="handleCustomerSelected"
+                />
+                <a-form-item hidden>
+                  <a-input 
+                    placeholder="客户名称" 
+                    :allowClear="true"
+                    v-decorator="['customerName',{rules: [{required: true,message: '输入客户名称'}]}]"
+                  />
+                </a-form-item>
+                <a-form-item hidden>
+                  <a-input v-decorator="['customerId']"/>
+                </a-form-item>
+              </template>
             </td>
           </tr>
           <tr>
@@ -150,6 +172,7 @@ export default {
       needOptions: {
         userId: undefined,
       },
+      nameType:0
     }
   },
   computed: {
@@ -180,13 +203,12 @@ export default {
         that.handleCancel()
         return
       }
-      
-      let customerSelectResult = await that.$refs.customerSelect.validate().then(res => res)
-      
-
-
-      that.form.validateFields((err, values) => {
-        if (customerSelectResult.err) {
+      let customerSelectResult = null
+      if(that.$refs.customerSelect){
+        customerSelectResult = await that.$refs.customerSelect.validate().then(res => res)
+      }
+      that.form.validateFields({force:true},(err, values) => {
+        if (customerSelectResult && customerSelectResult.err) {
           return
         }
         if (!err) {
@@ -244,7 +266,7 @@ export default {
       that.form.setFieldsValue(_detail)
       that.$refs.customerSelect && that.$refs.customerSelect.fill({
         name:_detail.customerName,
-        id:0
+        id:_detail.customerId || 0
       })
     },
     resetData() {
@@ -260,6 +282,12 @@ export default {
         customerName: item.name,
       })
     },
+    nameTypeChangeHandler(e){
+      this.nameType = +e.target.value
+      this.$nextTick(() => {
+        this.form.validateFields(['customerName'],{force:true})
+      })
+    }
   }
 }
 </script>
