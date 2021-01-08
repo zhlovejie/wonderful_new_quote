@@ -66,13 +66,12 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a
-            v-if="$auth('income:edit') && userInfo.id === record.createdUserId" 
+            v-if="+activeKey === 0 && $auth('income:edit') && userInfo.id === record.createdUserId" 
             type="primary" 
             @click="doAction('edit', record)" 
           >修改</a>
-          <a-divider type="vertical" v-if="$auth('income:edit') && userInfo.id === record.createdUserId && $auth('income:claim') && record.status === 0"  />
-          <template v-if="$auth('income:claim') && record.status === 0">
-            <a type="primary" @click="doAction('get', record)">认领</a>
+          <template v-if="+activeKey === 0 && record.status === 0 && $auth('income:claim')">
+            <a type="primary" style="margin-left:10px;" @click="doAction('get', record)">认领</a>
           </template>
         </div>
       </a-table>
