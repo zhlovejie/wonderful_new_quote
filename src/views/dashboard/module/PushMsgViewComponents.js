@@ -83,5 +83,7 @@ export default {
 	79:'salary-subsidy-industrial-accident', //'工伤补贴'
 	80:'salary-details', //'月度工资条申请单'
 	81:'agencyContractList', //'代理合同'
-	82:'vehicle-management-use-record' //'出车回车
+	82:'vehicle-management-use-record', //'出车回车
+	85:'attendance-abnormal-events',//迟到事件
+	86:'attendance-abnormal-events',//早退事件
 }
