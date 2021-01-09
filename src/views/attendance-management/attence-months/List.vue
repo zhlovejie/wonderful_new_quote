@@ -19,8 +19,16 @@
               }}</a-select-option>
             </a-select>
           </a-form-item>
+          
           <a-form-item>
             <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width: 160px" />
+          </a-form-item>
+
+          <a-form-item v-if="$auth('months:personStatus')">
+            <a-select placeholder="人员状态" v-model="searchParam.userPositionStatus" :allowClear="true" style="width: 160px">
+              <a-select-option :value="1">在职</a-select-option>
+              <a-select-option :value="0">离职</a-select-option>
+            </a-select>
           </a-form-item>
 
           <a-form-item>
@@ -100,6 +108,7 @@ export default {
       loading: false,
       searchParam: {
         statiticsMonthDate: moment(),
+        userPositionStatus:1
       },
       depList: [],
       bindEnterFn: null,

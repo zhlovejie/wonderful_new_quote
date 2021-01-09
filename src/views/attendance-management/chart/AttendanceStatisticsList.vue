@@ -35,6 +35,14 @@
             placeholder="请选择月份"
           />
         </a-form-item>
+
+
+        <a-form-item v-if="$auth('attendanceStatistics:personStatus')">
+            <a-select placeholder="人员状态" v-model="searchParam.userPositionStatus" :allowClear="true" style="width: 160px">
+              <a-select-option :value="1">在职</a-select-option>
+              <a-select-option :value="0">离职</a-select-option>
+            </a-select>
+          </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction()">查询</a-button>
         </a-form-item>
@@ -183,8 +191,9 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading: false,
-      searchParam: {},
-      searchParam: {}, //查询参数
+      searchParam: {
+        userPositionStatus:1
+      }, //查询参数
       downParam: {}, //下载参数
       depList: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
