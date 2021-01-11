@@ -4,15 +4,15 @@
     <div class="depcustomer-list-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="客户名称/别名">
-          <a-input v-model.trim="queryParam.name" placeholder="根据客户名模糊查询"/>
+          <a-input :allowClear="true" v-model.trim="queryParam.name" placeholder="根据客户名模糊查询"/>
         </a-form-item>
         <a-form-item label="客户类型">
-          <a-select style="width:200px;" v-model.trim="queryParam.type" placeholder="请选择客户类型" default-value="">
+          <a-select :allowClear="true" style="width:200px;" v-model.trim="queryParam.type" placeholder="请选择客户类型" default-value="">
             <a-select-option v-for="cType in customerTypes" :key="cType.index" :value="cType.id">{{ cType.text }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="客户意向度">
-          <a-select style="width:200px;" v-model.trim="queryParam.intention" placeholder="请选择客户意向度" default-value="">
+          <a-select :allowClear="true" style="width:200px;" v-model.trim="queryParam.intention" placeholder="请选择客户意向度" default-value="">
             <a-select-option value="1">有效客户</a-select-option>
             <a-select-option value="2">无效客户</a-select-option>
             <a-select-option value="3">竞争对手</a-select-option>
@@ -20,23 +20,32 @@
           </a-select>
         </a-form-item>
         <a-form-item label="联系人手机号">
-          <a-input v-model.trim="queryParam.phone" placeholder="根据联系人手机号模糊查询"/>
+          <a-input :allowClear="true" v-model.trim="queryParam.phone" placeholder="根据联系人手机号模糊查询"/>
         </a-form-item>
         <a-form-item label="联系人名">
-          <a-input v-model.trim="queryParam.linkmanName" placeholder="根据联系人名模糊查询"/>
+          <a-input :allowClear="true" v-model.trim="queryParam.linkmanName" placeholder="根据联系人名模糊查询"/>
         </a-form-item>
         <a-form-item label="是否需要申诉">
-          <a-select style="width:200px;" v-model.trim="queryParam.needAppeal" placeholder="请选择是否需要申诉" default-value="">
+          <a-select style="width:200px;" :allowClear="true" v-model.trim="queryParam.needAppeal" placeholder="请选择是否需要申诉" default-value="">
             <a-select-option value="0">不需要</a-select-option>
             <a-select-option value="1">需要</a-select-option>
             <a-select-option value="2">申诉中</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="所属销售" v-if="allSalesman.length > 0">
-          <a-select style="width:200px;" v-model.trim="queryParam.userId" placeholder="请选择所属销售" default-value="">
+          <a-select style="width:200px;" :allowClear="true" v-model.trim="queryParam.userId" placeholder="请选择所属销售" default-value="">
             <a-select-option v-for="salesMan in allSalesman" :key="salesMan.index" :value="salesMan.userId">{{ salesMan.salesmanName }}</a-select-option>
           </a-select>
         </a-form-item>
+
+        <a-form-item label="录入渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select style="width:200px;" :allowClear="true" placeholder="请选录入渠道" v-model.trim="queryParam.source" >
+            <a-select-option v-for="sc in sources.filter(sc => ['部门客户','自开发客户'].includes(sc.text)) " :key="sc.index" :value="sc.id">
+              {{ sc.text }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
         <template v-if="$auth('depCustomer:list')">
           <a-form-item>
           <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
@@ -208,6 +217,7 @@ export default {
       customerTypes: [],
       salesJurisdiction: {}, // 当前用户销售权限
       allSalesman: [], // 所有销售人员
+      sources:[],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         return getDepList(Object.assign(parameter, this.queryParam)).then(res => {
@@ -237,6 +247,12 @@ export default {
     })
     getDictionary({ text: '客户类型' }).then(res => { // 所有客户类型
       this.customerTypes = res.data
+    }).catch(function (err) {
+      console.log(err)
+    })
+
+    getDictionary({ text: '客户录入渠道' }).then(res => {
+      this.sources = res.data
     }).catch(function (err) {
       console.log(err)
     })
