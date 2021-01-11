@@ -61,7 +61,7 @@
             <a-input read-only="read-only" v-model="customer.superiorName"/>
           </a-form-item>
         </a-col>
-        <a-col :lg="12" :md="12" :sm="24" v-show="customer.controlArea != undefined && customer.controlArea.length > 0">
+        <a-col :lg="12" :md="12" :sm="24" v-show="customer.controlArea && customer.controlArea !== 'null'">
           <a-form-item label="代理区域" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input read-only="read-only" v-model="customer.controlArea"/>
           </a-form-item>

@@ -316,7 +316,7 @@ export default {
         })
         setFieldsValue({ superiorId: this.customer.superiorId })
       }
-      if (this.customer.controlArea != null && this.customer.controlArea.length > 0) { // 代理区域
+      if (this.customer.controlArea && this.customer.controlArea !== 'null') { // 代理区域
         this.isAgency = true
         setFieldsValue({ controlArea: this.customer.controlArea })
       }
