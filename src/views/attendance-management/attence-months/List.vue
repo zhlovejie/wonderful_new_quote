@@ -12,7 +12,7 @@
               placeholder="选择月份"
             />
           </a-form-item>
-          <a-form-item v-if="depList.length > 0">
+          <a-form-item >
             <a-select placeholder="选择部门" v-model="searchParam.departmentId" :allowClear="true" style="width: 160px">
               <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
                 item.departmentName
@@ -202,7 +202,9 @@ export default {
     init() {
       let that = this
       let queue = []
-      let task1 = departmentList({ id: this.$store.getters.userInfo.departmentId }).then(
+      //有查看全部权限时， 部门搜索条件 去除，显示全部部门
+      let hasAuth = that.$auth('attendanceStatistics:findAll')
+      let task1 = departmentList(hasAuth ? undefined : { id: this.$store.getters.userInfo.departmentId }).then(
         (res) => (that.depList = res.data)
       )
       queue.push(task1)
