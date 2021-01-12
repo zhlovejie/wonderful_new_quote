@@ -186,6 +186,23 @@ export default {
       userName:undefined,
     }
   },
+  watch:{
+    '$route':{
+      handler:function(to,from) {
+        if(to.name === 'Workplace'){
+          let stack = this.$ls.get('StackScrollBehavior',[])
+          if(stack.length){
+            let item = stack.pop()
+            setTimeout(function(){
+              document.body.scrollTop = item._scrollTop
+            },500)
+            this.$ls.set('StackScrollBehavior',stack)
+          }
+        }
+      },
+      immediate:true
+    }
+  },
   computed: {
     ...mapGetters(['userInfo','avatar','nickname','roles']),
     jobInfo(){
@@ -203,6 +220,12 @@ export default {
       });
       return
     }
+  },
+  beforeRouteLeave (to,from,next){
+    let stack = this.$ls.get('StackScrollBehavior',[])
+    stack.push({ name:from.name,title:from.meta.title, _scrollTop:document.body.scrollTop })
+    this.$ls.set('StackScrollBehavior',stack)
+    next()
   },
   mounted () {
     this.fetchNoticeTop4()
