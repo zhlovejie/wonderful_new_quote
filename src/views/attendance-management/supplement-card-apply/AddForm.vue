@@ -130,7 +130,6 @@
                 <a-radio-group
                   name="radioGroup"
                   @change="isEvidences"
-                  :default-value="0"
                   v-decorator="[
                     'isEvidence',
                     { initialValue: 0, rules: [{ required: false, message: '请选择是否有凭证' }] },
@@ -159,7 +158,7 @@
                     <div class="ant-upload-text">上传</div>
                   </div>
                 </a-upload>
-                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel1">
                   <img alt="example" style="width: 100%" :src="previewImage" />
                 </a-modal>
               </a-form-item>
@@ -242,9 +241,7 @@ export default {
     isEvidences(e) {
       this.isEvidence = e.target.value
     },
-    handleCancel() {
-      this.previewVisible = false
-    },
+
     init() {
       let that = this
       let queue = []
@@ -359,7 +356,14 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
+      this.fileList = []
+      this.detail = {}
+      this.isEvidence = 0
+      this.exceptionItem = {}
       this.$nextTick(() => (this.visible = false))
+    },
+    handleCancel1() {
+      this.previewVisible = false
     },
     submitAction(opt) {
       let that = this
