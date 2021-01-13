@@ -59,24 +59,21 @@
             </td>
           </tr>
           <tr v-if="this.record.thingType !== 1">
-            <td style="width: 120px">入场时间</td>
+            <td style="width: 120px">入厂时间</td>
             <td>
               <a-form-item>
                 <a-time-picker
-                  use12-hours
+                  :disabled="isResignType.flag"
                   format="h:mm a"
                   v-if="!isDisabled"
                   style="width: 100%"
                   placeholder="参考时间"
                   :allowClear="true"
-                  v-decorator="[
-                    'resignTime',
-                    { initialValue: detail.reason, rules: [{ required: true, message: '参考入厂时间' }] },
-                  ]"
+                  v-decorator="['resignTime', { rules: [{ required: true, message: '参考入厂时间' }] }]"
                 />
 
                 <span v-else>
-                  {{ detail.reason }}
+                  {{ detail.resignTime }}
                 </span>
               </a-form-item>
             </td>
@@ -134,7 +131,10 @@
                   name="radioGroup"
                   @change="isEvidences"
                   :default-value="0"
-                  v-decorator="['isEvidence', { rules: [{ required: true, message: '请选择是否有凭证' }] }]"
+                  v-decorator="[
+                    'isEvidence',
+                    { initialValue: 0, rules: [{ required: false, message: '请选择是否有凭证' }] },
+                  ]"
                 >
                   <a-radio :value="0"> 有 </a-radio>
                   <a-radio :value="1"> 没有 </a-radio>
@@ -184,6 +184,7 @@ import {
   resignApplyApproval,
   signExceptionByCondition,
   overworkApplyHours,
+  accessHumanCardInfo,
 } from '@/api/attendanceManagement'
 import Approval from './Approval'
 import moment from 'moment'
@@ -206,6 +207,8 @@ export default {
       actionType: 'view',
       detail: {},
       record: {},
+      isResignType: {},
+      dataType: {},
       spinning: false,
       exceptionList: [],
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -275,6 +278,7 @@ export default {
       resignApplyDetail({ id: record.id }).then((res) => {
         //debugger
         let data = res.data
+        this.dataType = res.data
 
         //异常事件修改的时候，已经使用掉，列表中已经没有该条异常事件 这里加上
         if (that.isEdit) {
@@ -311,6 +315,17 @@ export default {
     },
     exceptionChange(val) {
       this.exceptionItem = { ...(this.exceptionList.find((item) => +item.id === +val) || {}) }
+      accessHumanCardInfo({
+        status: this.exceptionItem.exceptionType,
+        date: this.exceptionItem.happenDate,
+        userId: this.userInfo.id,
+      }).then((res) => {
+        console.log(res)
+        this.isResignType = res.data
+        this.form.setFieldsValue({
+          resignTime: res.data.createdTime !== null ? moment(res.data.createdTime) : '',
+        })
+      })
     },
     handleSubmit() {
       let that = this
@@ -327,7 +342,8 @@ export default {
             values.exceptionType = target.exceptionType
           }
           that.spinning = true
-
+          values.isResignTime = this.isResignType.flag
+          values.resignTime = this.exceptionItem.happenDate + ' ' + values.resignTime.format('hh:mm')
           resignApplyAddAndUpdate(values)
             .then((res) => {
               that.$message.info(res.msg)
@@ -361,7 +377,29 @@ export default {
         .catch((err) => (that.spinning = false))
     },
     passAction(opt = {}) {
-      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+      if (this.record.thingType === 2) {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log('Received values of form: ', values)
+            let target = this.exceptionList.find((item) => +item.id === +values.exceptionId)
+            if (target) {
+              //把异常类型也传过去
+              values.exceptionType = target.exceptionType
+            }
+            values.isResignTime = this.isResignType.flag
+            values.resignTime = this.detail.resignTime
+            values.evidenceUrl = this.fileList[0].response.data
+            let arr = {
+              isAdopt: 0,
+              opinion: '通过',
+            }
+            values = { ...this.dataType, ...values }
+            this.submitAction(Object.assign({}, { commonApprovalVO: arr, resignApply: values }, opt || {}))
+          }
+        })
+      } else {
+        this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+      }
     },
     noPassAction() {
       let that = this
