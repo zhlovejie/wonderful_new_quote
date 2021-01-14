@@ -16,11 +16,11 @@
           <tr>
             <td class="wdf-column">编号</td>
             <td>
-              <a-form-item>{{ record.meetingNum }}</a-form-item>
+              <a-form-item>{{ detail.meetingNum }}</a-form-item>
             </td>
             <td class="wdf-column">会议类别</td>
             <td style="width: 35%">
-              <a-form-item>{{ record.typeDicName }}</a-form-item>
+              <a-form-item>{{ detail.typeDicName }}</a-form-item>
             </td>
           </tr>
           <tr>
@@ -58,7 +58,7 @@
             </td>
             <td class="wdf-column">会议名称</td>
             <td style="width: 35%">
-              <a-form-item>{{ record.name }}</a-form-item>
+              <a-form-item>{{ detail.name }}</a-form-item>
             </td>
           </tr>
           <tr>
@@ -354,6 +354,14 @@ export default {
       let result = await meetingRecordDetail({ id: that.record.id })
         .then((res) => res.data)
         .catch((err) => null)
+
+      if(!result){
+        setTimeout(function(){
+          that.visible = false
+          that.$message.info('获取会议详情信息失败。')
+        },500)
+        return
+      }
       if (that.isView) {
         that.detail = Object.assign({}, result)
         return

@@ -76,9 +76,8 @@
                           @blur="onBlur"
                           @pressEnter="numpressEnter"
                           placeholder="请输入数字金额"
-                          maxlength="25"
                           style="width: 140px;border: none;"
-                          v-decorator="['money', {rules: [{required: true, message: '请输入金额！'}]}]"
+                          v-decorator="['money', {rules: [{required: true,max: 25, message: '请输入金额！'}]}]"
                         />
                       </a-form-item>
                     </a-tooltip>

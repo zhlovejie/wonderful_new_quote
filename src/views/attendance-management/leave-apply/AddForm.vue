@@ -370,9 +370,19 @@ export default {
         that.detail = {}
         return
       }
+      
+      that.spinning = true
       await attenceLeaveApplyDetail({ id: record.id }).then(res => {
+        that.spinning = false
         //debugger
         let data = res.data
+        if(!data){
+          setTimeout(function(){
+            that.visible = false
+            that.$message.info('获取信息失败。')
+          },500)
+          return
+        }
         that.detail = { ...data }
 
         let holidayTarget = that.holidayList.find(item => +item.id === +that.detail.holidayId)
@@ -405,6 +415,9 @@ export default {
             that.userRestHours = res.data ? res.data.remainHours : 0
           })
         }
+      }).catch(err =>{
+        that.spinning = false
+        that.$message.info(err.message)
       })
     },
     handleSubmit() {

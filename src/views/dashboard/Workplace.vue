@@ -54,7 +54,7 @@
                   <span>{{ item._tab }}</span>
                 </a-badge>
               </span>
-              <PushMsgList :msgType="sysInfoBarKey"/>
+              <PushMsgList :msgType="sysInfoBarKey" @finish="() => initPushMsgCount()"/>
             </a-card>
         </a-col>
         <a-col
@@ -190,13 +190,23 @@ export default {
     '$route':{
       handler:function(to,from) {
         if(to.name === 'Workplace'){
-          let stack = this.$ls.get('StackScrollBehavior',[])
+          if(this.roles.length === 0){
+            let res = this.$warning({
+              title: '警告',
+              content: '您的账号现在没有权限使用该系统，请联系管理员设置权限。',
+            });
+            return
+          }
+
+          let that = this
+          let stack = that.$ls.get('StackScrollBehavior',[])
           if(stack.length){
-            let item = stack.pop()
+            let {_scrollTop,sysInfoBarKey} = stack.pop()
             setTimeout(function(){
-              document.body.scrollTop = item._scrollTop
+              document.body.scrollTop = _scrollTop
+              that.sysInfoBarKey = sysInfoBarKey
             },500)
-            this.$ls.set('StackScrollBehavior',stack)
+            that.$ls.set('StackScrollBehavior',stack)
           }
         }
       },
@@ -213,17 +223,22 @@ export default {
     }
   },
   created () {
-    if(this.roles.length <= 0){
-      this.$warning({
-        title: '警告',
-        content: '您的账号现在没有权限使用该系统，请联系管理员设置权限。',
-      });
-      return
-    }
+    // if(this.roles.length === 0){
+    //   this.$warning({
+    //     title: '警告',
+    //     content: '您的账号现在没有权限使用该系统，请联系管理员设置权限。',
+    //   });
+    //   return
+    // }
   },
   beforeRouteLeave (to,from,next){
     let stack = this.$ls.get('StackScrollBehavior',[])
-    stack.push({ name:from.name,title:from.meta.title, _scrollTop:document.body.scrollTop })
+    stack.push({ 
+      name:from.name,
+      title:from.meta.title, 
+      _scrollTop:document.body.scrollTop,
+      sysInfoBarKey:this.sysInfoBarKey //当前页面的消息tab Key
+    })
     this.$ls.set('StackScrollBehavior',stack)
     next()
   },

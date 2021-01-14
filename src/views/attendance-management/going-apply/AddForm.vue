@@ -255,12 +255,24 @@ export default {
         that.detail = {}
         return
       }
+      that.spinning = true
       await going_detail({ id: record.id }).then((res) => {
+        that.spinning = false
         //debugger
         let data = res.data
+        if(!data){
+          setTimeout(function(){
+            that.visible = false
+            that.$message.info('获取信息失败。')
+          },500)
+          return
+        }
         that.detail = { ...data }
 
         that.leaveTime = that.detail.duration
+      }).catch(err =>{
+        that.spinning = false
+        that.$message.info(err.message)
       })
     },
     handleSubmit() {

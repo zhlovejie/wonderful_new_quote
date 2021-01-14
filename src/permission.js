@@ -36,8 +36,13 @@ router.beforeEach((to, from, next) => {
       }else{
         store.dispatch('GetInfo').then(() => { //获取权限
           store.dispatch('GenerateRoutes').then(() => { //获取路由
-            if(store.getters.roles.length <= 0 && to.path === "/dashboard/workplace"){ //用户无权限
-              next()
+            if(store.getters.roles.length === 0){
+              if(to.path === "/dashboard/workplace"){
+                next()
+              }else{
+                next({ path: "/dashboard/workplace" ,replace: true,query:{t:Date.now()}})
+                NProgress.done()
+              }
             }else{
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
@@ -47,6 +52,7 @@ router.beforeEach((to, from, next) => {
               if (to.path === redirect) {
                 // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
                 next({ ...to, replace: true })
+                //next()
               } else {
                 // 跳转到目的路由
                 next({ path: redirect })

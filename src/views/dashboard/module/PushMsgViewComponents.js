@@ -84,6 +84,8 @@ export default {
 	80:'salary-details', //'月度工资条申请单'
 	81:'agencyContractList', //'代理合同'
 	82:'vehicle-management-use-record', //'出车回车
+	83:'human_Resources_room',//电费预警
+	84:'attendance-going-apply',//外出申请
 	85:'attendance-abnormal-events',//迟到事件
 	86:'attendance-abnormal-events',//早退事件
 }

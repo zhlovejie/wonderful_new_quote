@@ -53,11 +53,10 @@
               <a-input
                 type="text"
                 placeholder="请输入验证码"
-                maxlength="4"
                 style="width: 120px"
                 v-decorator="[
                     'code',
-                    {rules: [{ required: true, message: '请输入验证码' }]}
+                    {rules: [{ required: true, max: 4,message: '请输入验证码' }]}
                   ]"
               />
               <img
@@ -90,11 +89,10 @@
               <a-input
                 type="text"
                 placeholder="请输入验证码"
-                maxlength="4"
                 style="width: 120px"
                 v-decorator="[
                     'mobileCode',
-                    {rules: [{ required: true, message: '请输入验证码' }]}
+                    {rules: [{ required: true, max:4,message: '请输入验证码' }]}
                   ]"
               />
             </div>
@@ -103,7 +101,7 @@
       </a-tabs>
 
       <a-form-item>
-        <a-checkbox v-decorator="['rememberMe']">自动登录</a-checkbox>
+        <a-checkbox v-decorator="['rememberMe',{ initialValue: false, valuePropName: 'checked' }]">自动登录</a-checkbox>
         <!--        <router-link-->
         <!--          :to="{ name: 'recover', params: { user: 'aaa'} }"-->
         <!--          class="forge-password"-->
@@ -123,18 +121,18 @@
       </a-form-item>
     </a-form>
 
-    <two-step-captcha
+    <!-- <two-step-captcha
       v-if="requiredTwoStepCaptcha"
       :visible="stepCaptchaVisible"
       @success="stepCaptchaSuccess"
       @cancel="stepCaptchaCancel"
-    ></two-step-captcha>
+    ></two-step-captcha> -->
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
+//import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 // import { getSmsCaptcha, get2step, turingNumber } from '@/api/login'
@@ -146,7 +144,7 @@ import VueQr from 'vue-qr'
 export default {
   components: {
     AFormItem,
-    TwoStepCaptcha,
+    //TwoStepCaptcha,
     VueQr
   },
   data () {

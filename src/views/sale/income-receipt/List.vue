@@ -65,9 +65,11 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
+          <a type="primary"  @click="doAction('view', record)">查看</a>
           <a
             v-if="+activeKey === 0 && $auth('income:edit') && userInfo.id === record.createdUserId" 
             type="primary" 
+            style="margin-left:10px;" 
             @click="doAction('edit', record)" 
           >修改</a>
           <template v-if="+activeKey === 0 && record.status === 0 && $auth('income:claim')">
