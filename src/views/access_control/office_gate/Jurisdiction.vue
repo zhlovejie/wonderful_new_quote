@@ -38,16 +38,6 @@
           <a-button style="margin-left: 10px" type="primary" @click="empty"> 清空</a-button>
         </div>
 
-        <!-- <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-          <a-input
-            class="main-items"
-            style="width: 250px; margin-right: 10px"
-            placeholder="姓名"
-            allowClear
-            v-model="queryParam.name"
-          />
-          <a-button style="margin-left: 10px" type="primary">查询</a-button>
-        </div> -->
         <a-table style="margin-left: 10px" :columns="columns" :dataSource="dataSource">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -66,7 +56,7 @@
 <script>
 import { routeTreeList } from '@/api/system/menu'
 import { departmentList, getStationList, getUserByStation, getUserByDep } from '@/api/systemSetting'
-import { GatelistEquipmentId, GatelistAdd } from '@/api/accessControl'
+import { GatelistEquipmentDe, GatelistAdd } from '@/api/accessControl'
 const columns = [
   {
     align: 'center',
@@ -201,7 +191,7 @@ export default {
       let that = this
       that.visible = true
       that.resId = res.id
-      GatelistEquipmentId({ id: res.id, name: '' }).then((rs) => {
+      GatelistEquipmentDe({ id: res.id }).then((rs) => {
         this.dataSource = rs.data
       })
     },

@@ -59,14 +59,14 @@ export function GatelistEquipmentDe(parameter) {
 }
 
 //权限
-export function GatelistEquipmentId(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: api.GatelistEquipmentId,
-    method: 'get',
-    params: parameter
-  })
-}
+// export function GatelistEquipmentId(parameter) {
+//   return axios({
+//     baseURL: system.baseURL,
+//     url: api.GatelistEquipmentId,
+//     method: 'get',
+//     params: parameter
+//   })
+// }
 //修改闸机设备列表
 export function GateEquipmentUpdate(parameter) {
   return axios({
