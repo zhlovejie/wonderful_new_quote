@@ -21,10 +21,15 @@
         </div>
         <div slot="action" slot-scope="text, record, index">
           <a href="javascript:void(0);" @click="doAction('view',record)">查看</a>
+          <template v-if="+msgType === 2">
+          <a-divider type="vertical" />
+          <a href="javascript:void(0);" @click="doAction('approval',record)">审批</a>
+          </template>
         </div>
       </a-table>
     </div>
     <!-- <PushMsgView ref="pushMsgView"/> -->
+    <PushMsgApprove ref="pushMsgApprove" @finish="finishAction"/>
   </div>
 </template>
 <script>
@@ -32,8 +37,8 @@
 import {getPushMsg} from '@/api/common'  //消息
 //import PushMsgView from './PushMsgView'
 import pushMsgTypeEnum from './pushMsgTypeEnum'
-import PushMsgViewComponents from './PushMsgViewComponents'
-
+//import PushMsgViewComponents from './PushMsgViewComponents'
+import PushMsgApprove from './PushMsgApprove'
 const columns = [
   {
     align: 'center',
@@ -74,6 +79,7 @@ export default {
   },
   components:{
     //PushMsgView
+    PushMsgApprove
   },
   data(){
     return {
@@ -130,15 +136,11 @@ export default {
       this.searchAction({current:pagination.current})
     },
     doAction(type,record){
-      //this.$refs.pushMsgView.query(record)
-      let routerName = PushMsgViewComponents[record.businessType]
-      if(routerName){
-        this.$router.push({name:routerName})
-        return
-      }else{
-        this.$message.info('此消息不支持查看')
-        return
-      }
+      this.$refs.pushMsgApprove.query(type,record)
+    },
+    finishAction(){
+      this.searchAction()
+      this.$emit('finish')
     }
   }
 }

@@ -945,14 +945,6 @@ export default {
             title: '利润率分析汇总',
             permission: ['permission']
           }
-        }, {
-          path: '/sale/salesReport/ProfitMarginSummaryChart',
-          name: 'ProfitMarginSummaryChart',
-          component: () => import('@/views/sale/report/ProfitMarginSummaryChart'),
-          meta: {
-            title: '客户预收款表',
-            permission: ['permission']
-          }
         }
       ]
     },

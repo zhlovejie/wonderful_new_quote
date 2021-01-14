@@ -20,18 +20,24 @@
     <a-spin :spinning="spinning">
       <div class="recipes-wrapper">
         <a-form layout="inline" class="recipes-form">
-          <p class="recipes-date-wrapper">
-            <a-form-item label="选择日期">
-              <a-range-picker 
-                :disabled="isDisabled"
-                :disabled-date="disabledDate"
-                v-model="sDate"
-                style="width:300px;"
-                :allowClear="true"
-                @change="dateChange"
-              />
-            </a-form-item>
-          </p>
+          
+            <template v-if="isDisabled">
+              <h2>日期：{{getDateText()}}</h2>
+            </template>
+            <template v-else>
+              <p class="recipes-date-wrapper">
+              <a-form-item label="选择日期">
+                <a-range-picker 
+                  :disabled-date="disabledDate"
+                  v-model="sDate"
+                  style="width:300px;"
+                  :allowClear="true"
+                  @change="dateChange"
+                />
+              </a-form-item>
+              </p>
+            </template>
+          
           <table class="custom-table custom-table-border" v-if="recipeList.length > 0">
             <tr>
               <th style="width:100px;">日期</th>
@@ -62,14 +68,18 @@
                 </div>
               </th>
               <th style="width:150px;" v-for="(recipe,__idx) in recipeList" :key="recipe.key">
+                <template v-if="isDisabled">
+                  <span>{{recipe.recipes[index].name}}</span>
+                </template>
+                <template v-else>
                 <a-form-item>
                   <a-input 
-                    :disabled="isDisabled"
                     placeholder="输入菜单"
                     :value="recipe.recipes[index].name"
                     @input="recipeInputChange(__idx,recipe.recipes[index],$event)"
                   />
                 </a-form-item>
+                </template>
               </th>
             </tr>
           </table>
@@ -185,7 +195,7 @@ export default {
         return _item
       })
 
-      console.log(values)
+      //console.log(values)
       //提交
       that.spinning = true
       canteenMenuAddAndUpdate(values)
@@ -375,6 +385,10 @@ export default {
           return false
         }
       })
+    },
+    getDateText(){
+      let [sDate,eDate] = this.sDate
+      return `${sDate.format('YYYY/MM/DD')} ~ ${eDate.format('YYYY/MM/DD')}`
     }
   }
 }

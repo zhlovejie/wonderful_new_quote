@@ -13,7 +13,7 @@ import {
 export default {
   path: '/system-setting',
   name: 'SystemSetting',
-  component: PageView,
+  component: RouteView,
   meta: {
     title: '系统设置',
     icon: 'tool',
@@ -22,7 +22,7 @@ export default {
   redirect: '/system-setting/permission',
   children: [{
       path: '/system-setting/permission/devision-management',
-      component: RouteView,
+      component: PageView,
       name: 'AuthManagement',
       redirect: '/system-setting/permission/devision-management',
       meta: {
@@ -109,7 +109,7 @@ export default {
     },
     {
       path: '/system-setting/security-settings',
-      component: RouteView,
+      component: PageView,
       name: 'SecuritySetting',
       meta: {
         title: '安全设置',
@@ -140,6 +140,7 @@ export default {
           component: () => import('@/views/system-setting/security-settings/WhiteList'),
           meta: {
             title: '白名单管理',
+            keepAlive: false,
             permission: ['permission']
           }
         },
@@ -193,7 +194,7 @@ export default {
     {
 
       path: '/system-setting/work-box',
-      component: RouteView,
+      component: PageView,
       name: 'workBox',
       meta: {
         title: '工具箱',
@@ -387,7 +388,7 @@ export default {
     {
 
       path: '/system-setting/work-box-foreign-trade',
-      component: RouteView,
+      component: PageView,
       name: 'workBoxForeignTrade',
       redirect: '/system-setting/work-box-foreign-trade/Qualification',
       meta: {

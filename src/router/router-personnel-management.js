@@ -55,14 +55,13 @@ export default { //人事管理
       },
       children: []
     },
-    // {
-    //   path: '/personnel-management/report',
-    //   name: 'personnel-report',
-    //   component: () => import('@/views/personnel-management/report/ReportList'),
-    //   meta: { title: '人事报表', icon: 'file', keepAlive: false, permission: ['permission'] },
-    //   children:[]
-    // },
-
+    {
+      path: '/personnel-management/report',
+      name: 'personnel-report',
+      component: () => import('@/views/personnel-management/report/ReportList'),
+      meta: { title: '人事报表', icon: 'file', keepAlive: false, permission: ['permission'] },
+      children:[]
+    },
     {
       path: '/personnel-management/personnel-apply',
       name: 'personnel-apply',

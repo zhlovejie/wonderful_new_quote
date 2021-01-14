@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="850"
+    :width="650"
     :visible="visible"
     @cancel="handleCancel"
     :maskClosable="false"
@@ -18,7 +18,8 @@
             <td style="width:200px;">进款单编号</td>
             <td>
               <a-form-item>
-                <a-input disabled v-decorator="['incomeNum']" />
+                <a-input v-if="!isView" disabled v-decorator="['incomeNum']" />
+                <span v-else>{{detail.incomeNum}}</span>
               </a-form-item>
               <a-form-item hidden>
                 <a-input v-decorator="['id']" />
@@ -29,19 +30,20 @@
             <td>收款银行</td>
             <td>
               <a-form-item>
-                <a-select placeholder="收款银行" v-decorator="['accountId',{rules: [{required: true,message: '选择收款银行'}]}]">
+                <a-select v-if="!isView" placeholder="收款银行" v-decorator="['accountId',{rules: [{required: true,message: '选择收款银行'}]}]">
                   <a-select-option
                     :key="item.id"
                     v-for="item in moneyTypes"
                     :value="item.id"
                   >{{item.unitName}}</a-select-option>
                 </a-select>
+                <span v-else>{{getMoneyTypesText(detail.accountId)}}</span>
               </a-form-item>
             </td>
           </tr>
 
 
-          <tr>
+          <tr v-if="!isView">
             <td>名称类型</td>
             <td>
               <a-form-item >
@@ -53,8 +55,16 @@
             </td>
           </tr>
 
+          <tr v-if="isView">
+            <td>{{nameType === 0 ? '客户名称' : '个人名称'}}</td>
+            <td>
+                <a-form-item>
+                  {{detail.customerName}}
+                </a-form-item>
+            </td>
+          </tr>
           
-          <tr>
+          <tr v-if="!isView">
             <td>{{nameType === 0 ? '客户名称' : '个人名称'}}</td>
             <td>
               <template v-if="nameType === 1">
@@ -91,12 +101,14 @@
             <td>收款日期</td>
             <td>
               <a-form-item>
-                <a-date-picker
+                <a-date-picker 
+                  v-if="!isView" 
                   style="width:100%;" 
                   :showTime="{ format: 'HH:mm' }"  
                   v-decorator="['incomeTime',{ initialValue:moment(),rules: [{required: true,message: '输入收款日期'}]}]"
                   format="YYYY-MM-DD HH:mm"
                 />
+                <span v-else>{{detail.incomeTime}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -104,7 +116,8 @@
             <td>账户</td>
             <td colspan="3">
               <a-form-item>
-                <a-input v-decorator="['customerAccount',{rules: [{required: true,message: '输入账户'}]}]" />
+                <a-input v-if="!isView" v-decorator="['customerAccount',{rules: [{required: true,message: '输入账户'}]}]" />
+                <span v-else>{{detail.customerAccount}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -112,7 +125,8 @@
             <td>金额</td>
             <td colspan="3">
               <a-form-item>
-                <a-input-number
+                <a-input-number 
+                  v-if="!isView"
                   style="width:100%;"
                   :min="0"
                   :step="0.1"
@@ -120,6 +134,7 @@
                   placeholder="金额"
                   v-decorator="['amount', {rules: [{required: true, message: '请输入金额'}]}]"
                 />
+                <span v-else>{{detail.amount | moneyFormatNumber}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -127,11 +142,15 @@
             <td>备注</td>
             <td colspan="3">
               <a-form-item>
-                <a-textarea
+                <a-textarea 
+                  v-if="!isView"
                   placeholder="备注"
                   :rows="3"
                   v-decorator="['remark', { rules: [{ required: false, message: '备注' }] }]"
                 />
+                <span v-else>
+                  {{detail.remark}}
+                </span>
               </a-form-item>
             </td>
           </tr>
@@ -172,7 +191,8 @@ export default {
       needOptions: {
         userId: undefined,
       },
-      nameType:0
+      nameType:0,
+      detail:{}
     }
   },
   computed: {
@@ -257,17 +277,20 @@ export default {
         incomeId: that.record.id
       }
       const _detail = await incomeDetail(_param).then(res => res.data)
+      that.detail = {..._detail}
       let taskQueue = []
       if (taskQueue.length > 0) {
         await Promise.all(taskQueue)
       }
+      if(!that.isView){
+        _detail.incomeTime = that.moment(_detail.incomeTime)
+        that.form.setFieldsValue(_detail)
+        that.$refs.customerSelect && that.$refs.customerSelect.fill({
+          name:_detail.customerName,
+          id:_detail.customerId || 0
+        })
+      }
       
-      _detail.incomeTime = that.moment(_detail.incomeTime)
-      that.form.setFieldsValue(_detail)
-      that.$refs.customerSelect && that.$refs.customerSelect.fill({
-        name:_detail.customerName,
-        id:_detail.customerId || 0
-      })
     },
     resetData() {
       let that = this
@@ -287,6 +310,10 @@ export default {
       this.$nextTick(() => {
         this.form.validateFields(['customerName'],{force:true})
       })
+    },
+    getMoneyTypesText(type){
+      let target = this.moneyTypes.find(item => +item.id === +type)
+      return target ? target.unitName : '-'
     }
   }
 }

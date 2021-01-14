@@ -181,10 +181,18 @@ export default {
         that.detail = {}
         return
       }
+      that.spinning = true
       resignApplyDetail({id:record.id}).then(res =>{
+        that.spinning = false
         //debugger
         let data = res.data
-
+        if(!data){
+          setTimeout(function(){
+            that.visible = false
+            that.$message.info('获取信息失败。')
+          },500)
+          return
+        }
         //异常事件修改的时候，已经使用掉，列表中已经没有该条异常事件 这里加上
         if(that.isEdit){
           let target = that.exceptionList.find(item => +item.id === +data.exceptionId)
@@ -208,7 +216,10 @@ export default {
 
         that.$nextTick(() => that.detail = {...data})
         //data.exceptionId && that.exceptionChange(data.exceptionId)
-        console.log(res)
+        //console.log(res)
+      }).catch(err =>{
+        this.spinning = false
+        this.$message.info(err.message)
       })
     },
     getExceptionTypeTxt(type){

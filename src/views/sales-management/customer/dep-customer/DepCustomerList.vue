@@ -38,7 +38,7 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="录入渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="录入渠道" >
           <a-select style="width:200px;" :allowClear="true" placeholder="请选录入渠道" v-model.trim="queryParam.source" >
             <a-select-option v-for="sc in sources.filter(sc => ['部门客户','自开发客户'].includes(sc.text)) " :key="sc.index" :value="sc.id">
               {{ sc.text }}

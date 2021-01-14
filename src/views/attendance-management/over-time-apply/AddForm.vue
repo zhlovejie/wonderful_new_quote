@@ -263,9 +263,18 @@ export default {
         that.detail = {}
         return
       }
+      that.spinning = true
       overworkApplyDetail({ id: record.id }).then((res) => {
         //debugger
+        that.spinning = false
         let data = res.data
+        if(!data){
+          setTimeout(function(){
+            that.visible = false
+            that.$message.info('获取信息失败。')
+          },500)
+          return
+        }
         that.duration.hour = data.duration
         that.duration.isMeal = data.isMeal
         let beginTime = moment(data.beginTime)
@@ -295,6 +304,9 @@ export default {
         that.$nextTick(() => (that.detail = { ...data }))
         //that.fetchOverworkApplyHours({beginTime,endTime})
         console.log(res)
+      }).catch(err =>{
+        that.spinning = false
+        that.$message.info(err.message)
       })
     },
     fetchSignExceptionByCondition(userId) {

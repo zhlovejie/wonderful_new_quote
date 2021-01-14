@@ -462,8 +462,6 @@ export default {
       await that.init()
       that.visible = true
 
-
-
       if (that.isAdd) {
         that.detail = {}
         attenceTravelApplyGetNewstAccount().then(res =>{
@@ -474,9 +472,17 @@ export default {
         that.routeAction('add')
         return
       }
+      that.spinning = true
       attenceTravelApplyDetail({ id: record.id }).then(res => {
+        that.spinning = false
         let data = res.data
-
+        if(!data){
+          setTimeout(function(){
+            that.visible = false
+            that.$message.info('获取信息失败。')
+          },500)
+          return
+        }
         data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
         //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
         that.detail = { ...data }
@@ -513,6 +519,9 @@ export default {
         if(+data.status === 2){
           that.fetchApprovedNode(data.instanceId)
         }
+      }).catch(err =>{
+        that.spinning = false
+        that.$message.info(err.message)
       })
     },
     fetchApprovedNode(instanceId){

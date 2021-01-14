@@ -154,13 +154,19 @@ export default {
         let _detail = null
         try {
           _detail = await carUseDetail({ id: record.id }).then((res) => res.data)
+          if(!_detail){
+            setTimeout(function(){
+              that.visible = false
+              that.$message.info('获取信息失败。')
+            },500)
+            return
+          }
           that.spinning = false
           that.detail = { ..._detail }
         } catch (err) {
-          console.log(err)
+          that.$message.info(`发生错误：${err.message}`)
           that.spinning = false
         }
-      
     },
     initData() {
       let that = this

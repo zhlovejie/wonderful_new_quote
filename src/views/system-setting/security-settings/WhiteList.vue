@@ -141,6 +141,18 @@ export default {
       }
     }
   },
+  watch:{
+    '$route':{
+      handler:function(to,from) {
+        if(to.name === 'WhiteList'){
+          //debugger
+          let that = this
+          that.$refs.table && that.$refs.table.refresh(true)
+        }
+      },
+      immediate:true
+    }
+  },
   methods: {
     handleOk () {
       this.$refs.table.refresh()
