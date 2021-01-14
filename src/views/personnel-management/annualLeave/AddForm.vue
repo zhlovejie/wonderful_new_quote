@@ -1,33 +1,66 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="660"
+    :width="800"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
     :footer="null"
   >
-    <a-table
-      :columns="columns"
-      :dataSource="dataSource"
-      :pagination="pagination"
-      :loading="loading"
-      @change="handleTableChange"
-      size="middle"
-    >
-      <div slot="operationType" slot-scope="text, record, index">
-        <span v-if="text === 1">调休请假</span>
-        <span v-if="text === 2"> 年假请假 </span>
-        <span v-if="text === 3">加班 </span>
-        <span v-if="text === 4">年假定时刷新</span>
+    <div class="adjust-apply-list-wrapper">
+      <div class="search-wrapper">
+        <a-range-picker @change="dateChange" style="width: 250px; margin-right: 10px" />
+        <a-button
+          class="a-button"
+          type="primary"
+          style="position: relative; top: -1px"
+          icon="search"
+          @click="searchAction()"
+          >查询</a-button
+        >
       </div>
-    </a-table>
+      <div class="main-wrapper">
+        <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
+          <a-tab-pane tab="调休" key="1" />
+          <template>
+            <a-tab-pane tab="年假" key="2" />
+          </template>
+        </a-tabs>
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="pagination"
+          :loading="loading"
+          @change="handleTableChange"
+          size="middle"
+        >
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
+          </div>
+          <div slot="operationType" slot-scope="text, record, index">
+            <span v-if="text === 1">调休请假</span>
+            <span v-if="text === 2"> 年假请假 </span>
+            <span v-if="text === 3">加班 </span>
+            <span v-if="text === 4">年假定时刷新</span>
+            <span v-if="text === 5">手动修改调休</span>
+            <span v-if="text === 6">手动修改年假</span>
+          </div>
+        </a-table>
+      </div>
+    </div>
   </a-modal>
 </template>
 <script>
 import { annualLeave } from '@/api/personnelManagement'
 const columns = [
+  {
+    align: 'center',
+    title: '序号',
+    key: 'order',
+    width: '70px',
+    scopedSlots: { customRender: 'order' },
+  },
   {
     align: 'center',
     title: '来源',
@@ -47,6 +80,12 @@ const columns = [
   },
   {
     align: 'center',
+    title: '人工变更原因',
+    dataIndex: 'reason',
+  },
+
+  {
+    align: 'center',
     title: '操作时间',
     dataIndex: 'createdTime',
   },
@@ -58,11 +97,13 @@ export default {
       visible: false,
       columns: columns,
       dataSource: [],
+      record: {},
+      activeKey: 0,
       pagination: {
         current: 1,
       },
       loading: false,
-      searchParam: {},
+      searchParam: { type: 1 },
     }
   },
   computed: {
@@ -71,16 +112,22 @@ export default {
     },
   },
   methods: {
+    // 获取时间
+    dateChange(date, dateString) {
+      this.$set(this.searchParam, 'startTime', dateString[0])
+      this.$set(this.searchParam, 'endTime', dateString[1])
+    },
     async query(type, record) {
       let that = this
       that.visible = true
-      that.searchParam = { userId: record.userId }
-      that.searchAction()
+      that.record = record
+      that.searchParam.userId = record.userId
+      that.searchAction({ type: 1 })
     },
     searchAction(opt) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {})
-      console.log('执行搜索...', _searchParam)
+      // debugger
+      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
       that.loading = true
       annualLeave(_searchParam)
         .then((res) => {
@@ -106,6 +153,15 @@ export default {
     },
     handleCancel() {
       this.visible = false
+    },
+    tabChange(tagKey) {
+      this.activeKey = parseInt(tagKey)
+      if (this.activeKey !== 0) {
+        this.approval_status = undefined
+      }
+      this.searchParam.type = this.activeKey
+      //this.$message.info('全部，待审批，审批尚未实现')
+      this.searchAction({ current: 1 })
     },
   },
 }
