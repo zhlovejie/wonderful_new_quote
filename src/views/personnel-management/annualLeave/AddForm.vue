@@ -16,7 +16,7 @@
           type="primary"
           style="position: relative; top: -1px"
           icon="search"
-          @click="searchAction()"
+          @click="searchAction({ current: 1 })"
           >查询</a-button
         >
       </div>
@@ -38,11 +38,18 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+          <div slot="changeHours" slot-scope="text, record, index">
+            <span v-if="record.operationType === 3 || record.operationType === 4">+{{ text }}</span>
+            <span v-if="record.operationType === 1 || record.operationType === 2">-{{ text }}</span>
+            <span v-if="(record.operationType === 5 || record.operationType === 6) && text > 0">+{{ text }}</span>
+            <span v-if="(record.operationType === 5 || record.operationType === 6) && text < 0">{{ text }}</span>
+          </div>
+
           <div slot="operationType" slot-scope="text, record, index">
             <span v-if="text === 1">调休请假</span>
-            <span v-if="text === 2"> 年假请假 </span>
-            <span v-if="text === 3">加班 </span>
-            <span v-if="text === 4">年假定时刷新</span>
+            <span v-if="text === 2">年假请假</span>
+            <span v-if="text === 3">加班</span>
+            <span v-if="text === 4">年假发放</span>
             <span v-if="text === 5">手动修改调休</span>
             <span v-if="text === 6">手动修改年假</span>
           </div>
@@ -71,6 +78,7 @@ const columns = [
     align: 'center',
     title: '变更时长(H)',
     dataIndex: 'changeHours',
+    scopedSlots: { customRender: 'changeHours' },
   },
 
   {

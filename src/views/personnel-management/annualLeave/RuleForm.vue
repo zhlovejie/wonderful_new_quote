@@ -39,9 +39,10 @@
               <a-form-item>
                 <a-input-number
                   :min="0"
-                  :precision="0"
-                  step="1"
+                  :precision="1"
+                  step="0.5"
                   style="width: 100%"
+                  @change="onChange"
                   v-decorator="['restHours', { rules: [{ required: false, message: '请输入可用调休' }] }]"
                 />
               </a-form-item>
@@ -53,8 +54,10 @@
               <a-form-item>
                 <a-input-number
                   :min="0"
-                  step="1"
+                  :precision="1"
+                  step="0.5"
                   style="width: 100%"
+                  @change="onChange1"
                   v-decorator="['annualVacationHours', { rules: [{ required: false, message: '请输入剩余年假' }] }]"
                 />
               </a-form-item>
@@ -66,7 +69,7 @@
               <a-form-item>
                 <a-textarea
                   style="width: 100%"
-                  placeholder="缺卡原因"
+                  placeholder="修改原因"
                   :rows="2"
                   v-decorator="['reason', { rules: [{ required: true, message: '请输入修改原因' }] }]"
                 />
@@ -135,6 +138,32 @@ export default {
             .catch((err) => (that.spinning = false))
         }
       })
+    },
+    onChange(value) {
+      let tmp = value * 10
+      if (!(tmp % 5) && value * 10 - tmp < 0.000001) {
+        return
+      } else {
+        this.$message.error('最小时长半小时')
+        this.$nextTick(() =>
+          this.form.setFieldsValue({
+            restHours: '',
+          })
+        )
+      }
+    },
+    onChange1(value) {
+      let tmp = value * 10
+      if (!(tmp % 5) && value * 10 - tmp < 0.000001) {
+        return
+      } else {
+        this.$message.error('最小时长半小时')
+        this.$nextTick(() =>
+          this.form.setFieldsValue({
+            annualVacationHours: '',
+          })
+        )
+      }
     },
     handleCancel() {
       this.form.resetFields()
