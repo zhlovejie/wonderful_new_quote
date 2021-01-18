@@ -84,7 +84,7 @@
             </td>
           </tr>
           <tr v-if="isViews">
-            <td style="width: 120px">入厂时间</td>
+            <td style="width: 120px">入厂/出厂时间</td>
             <td>
               {{ detail.resignTime }}
             </td>
@@ -111,7 +111,7 @@
             </td>
           </tr>
           <tr v-if="isfactory">
-            <td style="width: 120px">入厂时间</td>
+            <td style="width: 120px">入厂/出厂时间</td>
             <td>
               <a-form-item>
                 <a-time-picker
@@ -119,14 +119,14 @@
                   format="HH:mm"
                   v-if="!isView"
                   style="width: 100%"
-                  placeholder="入厂时间"
+                  placeholder="入厂/出厂时间"
                   :allowClear="true"
                   v-decorator="[
                     'resignTime',
                     {
                       initialValue: detail.resignTime === null ? undefined : moment(detail.resignTime),
 
-                      rules: [{ required: true, message: '入厂时间' }],
+                      rules: [{ required: true, message: '入厂/出厂时间' }],
                     },
                   ]"
                 />
@@ -518,7 +518,7 @@ export default {
                 return this.$message.error('请上传凭证')
               }
             }
-            if (this.isEvidence === 0 && this.detail.isResignTime === 1) {
+            if (this.detail.isEvidence === 0 || this.detail.isResignTime === 1) {
               values.resignTime = this.exceptionItem.happenDate + ' ' + values.resignTime.format('HH:mm')
             }
 
@@ -531,7 +531,12 @@ export default {
           }
         })
       } else {
-        this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+        let arr = {
+          isAdopt: 0,
+          opinion: '通过',
+          approveId: this.record.id,
+        }
+        this.submitAction(Object.assign({}, { commonApprovalVO: arr }, opt || {}))
       }
     },
     noPassAction() {
