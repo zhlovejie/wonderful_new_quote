@@ -49,41 +49,13 @@
               </a-form-item>
             </td>
           </tr>
-
-          <tr>
-            <td style="width: 120px">日期</td>
-            <td>
-              <a-form-item>
-                {{ exceptionItem.happenDate }}
-              </a-form-item>
-            </td>
-          </tr>
-          <tr v-if="this.record.thingType !== 1">
-            <td style="width: 120px">入厂时间</td>
-            <td>
-              <a-form-item>
-                <a-time-picker
-                  :disabled="isResignType.flag"
-                  format="h:mm a"
-                  v-if="!isDisabled"
-                  style="width: 100%"
-                  placeholder="参考时间"
-                  :allowClear="true"
-                  v-decorator="['resignTime', { rules: [{ required: true, message: '参考入厂时间' }] }]"
-                />
-
-                <span v-else>
-                  {{ detail.resignTime }}
-                </span>
-              </a-form-item>
-            </td>
-          </tr>
           <tr>
             <td style="width: 120px">异常类型</td>
             <td>
               <a-form-item>
                 <a-select
                   v-if="!isDisabled"
+                  @change="exceptionChange1"
                   placeholder="异常类型"
                   v-decorator="[
                     'thingType',
@@ -99,6 +71,100 @@
                 </a-select>
                 <span v-else>
                   {{ { 1: '设备异常', 2: '忘记打卡', 3: '停电', 4: '天气异常' }[detail.thingType] }}
+                </span>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 120px">日期</td>
+            <td>
+              <a-form-item>
+                {{ exceptionItem.happenDate }}
+              </a-form-item>
+            </td>
+          </tr>
+          <tr v-if="isViews">
+            <td style="width: 120px">入厂时间</td>
+            <td>
+              {{ detail.resignTime }}
+            </td>
+          </tr>
+
+          <tr
+            v-if="
+              (this.isResignType.flag === true && isAdd) ||
+              (isApproval && detail.thingType !== 1) ||
+              (detail.isResignTime === 0 && isEdit && detail.thingType !== 1)
+            "
+          >
+            <td style="width: 120px">入厂时间</td>
+            <td>
+              <a-form-item>
+                <a-time-picker
+                  :disabled="!isApproval"
+                  format="HH:mm"
+                  v-if="!isView"
+                  style="width: 100%"
+                  placeholder="入厂时间"
+                  :allowClear="true"
+                  v-decorator="[
+                    'resignTime',
+                    {
+                      initialValue: detail.resignTime === null ? undefined : moment(detail.resignTime),
+
+                      rules: [{ required: true, message: '入厂时间' }],
+                    },
+                  ]"
+                />
+                <span v-else>
+                  {{ detail.resignTime }}
+                </span>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr
+            v-if="
+              this.record.thingType !== 1 &&
+              ((this.isResignType.flag === false && thingTypes === 2) || detail.isResignTime === 1)
+            "
+          >
+            <td style="width: 120px">入厂范围</td>
+            <td>
+              <a-form-item>
+                <a-time-picker
+                  format="HH:mm"
+                  v-if="!isDisabled"
+                  style="width: 40%"
+                  placeholder="入厂开始时间"
+                  :allowClear="true"
+                  v-decorator="[
+                    'factoryBeginTime',
+                    {
+                      initialValue: actionType === 'add' ? '' : moment(detail.factoryBeginTime),
+                      rules: [{ required: true, message: '入厂开始时间' }],
+                    },
+                  ]"
+                />
+                <span v-else>
+                  {{ detail.factoryBeginTime }}
+                </span>
+                <span>至</span>
+                <a-time-picker
+                  format="HH:mm"
+                  v-if="!isDisabled"
+                  style="width: 40%"
+                  placeholder="入厂结束时间"
+                  :allowClear="true"
+                  v-decorator="[
+                    'factoryEndTime',
+                    {
+                      initialValue: actionType === 'add' ? '' : moment(detail.factoryEndTime),
+                      rules: [{ required: true, message: '入厂结束时间' }],
+                    },
+                  ]"
+                />
+                <span v-else>
+                  {{ detail.factoryEndTime }}
                 </span>
               </a-form-item>
             </td>
@@ -141,11 +207,13 @@
               </a-form-item>
             </td>
           </tr>
-          <tr v-if="isApproval && this.isEvidence === 0 && this.record.thingType !== 1">
+          <tr v-if="(isApproval && this.isEvidence === 0 && this.record.thingType !== 1) || isViews">
             <td style="width: 120px">凭证</td>
             <td>
               <a-form-item>
                 <a-upload
+                  key=""
+                  :disabled="isViews"
                   :action="uploadPath"
                   accept=".png, .jpg"
                   list-type="picture-card"
@@ -153,7 +221,7 @@
                   @preview="handlePreview"
                   @change="handleChange"
                 >
-                  <div v-if="fileList.length < 5">
+                  <div v-if="fileList.length < 1">
                     <a-icon type="plus" />
                     <div class="ant-upload-text">上传</div>
                   </div>
@@ -200,6 +268,7 @@ export default {
       fileList: [], //凭证
       previewVisible: false,
       isEvidence: 0,
+      thingTypes: 0,
       previewImage: '',
       visible: false,
       spinning: false,
@@ -216,11 +285,14 @@ export default {
   },
   computed: {
     modalTitle() {
-      let obj = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
+      let obj = { view: '查看', add: '新增', edit: '修改', approval: '审批', view1: '查看' }
       return `${obj[this.actionType]}补卡申请`
     },
     isView() {
       return this.actionType === 'view'
+    },
+    isViews() {
+      return this.actionType === 'view1'
     },
     isAdd() {
       return this.actionType === 'add'
@@ -233,7 +305,7 @@ export default {
     },
     isDisabled() {
       //此状态下表单元素被禁用
-      return this.isView || this.isApproval
+      return this.isView || this.isApproval || this.isViews
     },
   },
   methods: {
@@ -276,6 +348,20 @@ export default {
         //debugger
         let data = res.data
         this.dataType = res.data
+        if (this.isViews) {
+          that.fileList =
+            res.data.faceUrl !== null
+              ? [
+                  {
+                    uid: 2,
+                    id: 1,
+                    url: res.data.evidenceUrl,
+                    status: 'done',
+                    name: '1',
+                  },
+                ]
+              : []
+        }
 
         //异常事件修改的时候，已经使用掉，列表中已经没有该条异常事件 这里加上
         if (that.isEdit) {
@@ -299,7 +385,10 @@ export default {
 
         that.$nextTick(() => (that.detail = { ...data }))
         //data.exceptionId && that.exceptionChange(data.exceptionId)
-        console.log(res)
+        if (that.isApproval) {
+          that.detail.resignTime = null
+          return
+        }
       })
     },
     getExceptionTypeTxt(type) {
@@ -317,12 +406,12 @@ export default {
         date: this.exceptionItem.happenDate,
         userId: this.userInfo.id,
       }).then((res) => {
-        console.log(res)
         this.isResignType = res.data
-        this.form.setFieldsValue({
-          resignTime: res.data.createdTime !== null ? moment(res.data.createdTime) : '',
-        })
+        this.detail.resignTime = res.data.createdTime
       })
+    },
+    exceptionChange1(val) {
+      this.thingTypes = val
     },
     handleSubmit() {
       let that = this
@@ -330,6 +419,7 @@ export default {
         that.handleCancel()
         return
       }
+
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
@@ -339,8 +429,17 @@ export default {
             values.exceptionType = target.exceptionType
           }
           that.spinning = true
-          values.isResignTime = this.isResignType.flag
-          values.resignTime = this.exceptionItem.happenDate + ' ' + values.resignTime.format('hh:mm')
+          if (this.isAdd) {
+            values.isResignTime = this.isResignType.flag === true ? 0 : 1
+          } else {
+            values.isResignTime = this.detail.isResignTime
+          }
+          if (this.isResignType.flag === true || this.detail.isResignTime === 0) {
+            values.resignTime = this.exceptionItem.happenDate + ' ' + values.resignTime.format('HH:mm')
+          } else {
+            values.factoryBeginTime = this.exceptionItem.happenDate + ' ' + values.factoryBeginTime.format('HH:mm')
+            values.factoryEndTime = this.exceptionItem.happenDate + ' ' + values.factoryEndTime.format('HH:mm')
+          }
           resignApplyAddAndUpdate(values)
             .then((res) => {
               that.$message.info(res.msg)
@@ -358,6 +457,7 @@ export default {
       this.form.resetFields()
       this.fileList = []
       this.detail = {}
+      this.isResignType = {}
       this.isEvidence = 0
       this.exceptionItem = {}
       this.$nextTick(() => (this.visible = false))
@@ -390,9 +490,13 @@ export default {
               //把异常类型也传过去
               values.exceptionType = target.exceptionType
             }
-            values.isResignTime = this.isResignType.flag
-            values.resignTime = this.detail.resignTime
-            values.evidenceUrl = this.fileList[0].response.data
+            if (this.fileList.length > 0) {
+              values.evidenceUrl = this.fileList[0].response.data
+            } else if (this.isEvidence === 0) {
+              return this.$message.error('请上传凭证')
+            }
+
+            values.resignTime = this.exceptionItem.happenDate + ' ' + values.resignTime.format('HH:mm')
             let arr = {
               isAdopt: 0,
               opinion: '通过',
