@@ -51,7 +51,7 @@ export default {
       sourceData,
       visible: false, // 表单对话框是否可见
       record: {},
-      dataSource:[],
+      dataSource: [],
       scale: [
         {
           dataKey: 'month',
@@ -65,34 +65,34 @@ export default {
   },
   computed: {
     chartData() {
-    参考 https://viserjs.github.io/demo.html#/viser/bar/grouped-column
-      let fields = [...new Set(this.dataSource.map((item) => item.date))]
-    //   let _formatChartData = (records) => {
-    //     if (!Array.isArray(records)) {
-    //       return []
-    //     }
-    //     if (records.length === 0) {
-    //       return []
-    //     }
-    // let keys = Object.keys(records[0]).filter(
-    //   (v) => v !== 'date' && v !== 'key' && v !== 'sumMoney' && v.indexOf('占比%') === -1
-    // )
-    // let result = []
-    // records.map((item) => {
-    //   keys.map((k) => {
-    //     let target = result.find((item) => item.name === k + '(万元)')
-    //     if (target) {
-    //       target[`${item.date}`] = +item[k]
-    //     } else {
-    //       let obj = {}
-    //       obj.name = k + '(万元)'
-    //       obj[`${item.date}`] = +item[k]
-    //       result.push(obj)
-    //     }
-    //   })
-    // })
-        // return result
-    //   }
+      // 参考 https://viserjs.github.io/demo.html#/viser/bar/grouped-column
+      //   let fields = [...new Set(this.dataSource.map((item) => item.date))]
+      //   let _formatChartData = (records) => {
+      //     if (!Array.isArray(records)) {
+      //       return []
+      //     }
+      //     if (records.length === 0) {
+      //       return []
+      //     }
+      // let keys = Object.keys(records[0]).filter(
+      //   (v) => v !== 'date' && v !== 'key' && v !== 'sumMoney' && v.indexOf('占比%') === -1
+      // )
+      // let result = []
+      // records.map((item) => {
+      //   keys.map((k) => {
+      //     let target = result.find((item) => item.name === k + '(万元)')
+      //     if (target) {
+      //       target[`${item.date}`] = +item[k]
+      //     } else {
+      //       let obj = {}
+      //       obj.name = k + '(万元)'
+      //       obj[`${item.date}`] = +item[k]
+      //       result.push(obj)
+      //     }
+      //   })
+      // })
+      // return result
+      //   }
       const dv = new DataSet.View().source(_formatChartData(this.dataSource))
       dv.transform({
         type: 'fold',
@@ -101,7 +101,7 @@ export default {
         value: '销售金额',
       })
       return dv.rows
-    }, 
+    },
   },
   methods: {
     async query(record) {
@@ -112,7 +112,18 @@ export default {
     },
     searchAction() {
       getFloatingFigure(this.record).then((res) => {
-        this.dataSource=res.data
+        let { code, data, msg } = res
+        if (code !== 200) {
+          return
+        }
+        let res1 = []
+        let len = Math.max([...data.map((item) => item.priceChangeRecordVo.length)])
+        console.log(len)
+        for (let i = 0; i < len; i++) {
+          res.push({
+            priceType,
+          })
+        }
       })
     },
     handleSubmit() {

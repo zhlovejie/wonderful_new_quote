@@ -105,7 +105,6 @@ export default {
   name: 'PriceEdit',
   components: {
     // 组件
-
     waveChart,
   },
   data() {
