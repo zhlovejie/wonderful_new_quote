@@ -34,6 +34,13 @@ const api = {
   androidVersionEquipmentEdit: '/android-version-equipment/updateVersion',
   androidVersionEquipmentDelete: '/android-version-equipment/deleteVersion',
   androidApkEquipmentUpload: '/android-version-equipment/uploadApkFile',
+  //消息推送列表
+
+  messagePushList: '/message/message-push/page',
+  messagePushaddAndUpdate: '/message/message-push/addAndUpdate',
+  messagePushaddInfo: '/message/message-push/info',
+  messagePushDel: '/message/message-push/del',
+
   //数据字典接口 
   getListByCode: 'dictionary/getListByCode'
 }
@@ -47,6 +54,49 @@ export function queryCode(parameter) {
     params: parameter
   })
 }
+
+//消息推送列表  
+export function messagePushList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.messagePushList,
+    method: 'get',
+    params: parameter
+  })
+}
+//消息推送列表删除
+export function messagePushDel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.messagePushDel,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//消息推送详情
+export function messagePushaddInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.messagePushaddInfo,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//消息推送新增修改
+export function messagePushaddAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.messagePushaddAndUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+
 
 
 
@@ -332,7 +382,7 @@ export function downProductInformation(params) {
     baseURL: system.baseURL,
     url: '/productInformation/downProductInformation',
     method: 'get',
-    responseType:'blob',
+    responseType: 'blob',
     params: params
   })
 }
