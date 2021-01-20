@@ -80,6 +80,14 @@
               >修改</a
             >
           </template>
+          <template v-if="$auth('productPrice:eidt')">
+            <a-divider type="vertical" />
+            <a
+              @click="handleModification(record)"
+              v-if="record.costPrice != null || record.priceA != null || record.priceB != null || record.priceC != null"
+              >修改记录</a
+            >
+          </template>
           <template v-if="$auth('productPrice:add')">
             <a
               @click="handleEdit(record)"
@@ -92,12 +100,14 @@
     </s-table>
     <price-edit ref="priceEdit" @ok="handleOk" />
     <preview ref="previewModal" @ok="handleOk" />
+    <Modification ref="modification" @ok="handleOk" />
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
 import priceEdit from './modules/priceEdit'
+import Modification from './modules/Modification'
 import Preview from './modules/Preview'
 import { getProductList, delProduct, editProduct, downProductInformation } from '@/api/workBox'
 import { getDictionary } from '@/api/common'
@@ -109,6 +119,7 @@ export default {
     STable,
     priceEdit,
     Preview,
+    Modification,
   },
   data() {
     return {
@@ -207,6 +218,10 @@ export default {
     })
   },
   methods: {
+    //修改记录
+    handleModification(record) {
+      this.$refs.modification.query(record)
+    },
     handleEdit(record) {
       // 修改
       this.$refs.priceEdit.edit(record)
