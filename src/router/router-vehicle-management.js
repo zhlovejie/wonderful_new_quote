@@ -1,9 +1,17 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
-export default {//车辆管理
-        
+export default { //车辆管理
+
   path: '/vehicle-management',
   name: 'vehicle-management',
   component: PageView,
@@ -122,6 +130,16 @@ export default {//车辆管理
           component: () => import('@/views/vehicle-management/supervision/issues-record/List'),
           meta: {
             title: '车辆问题上报记录',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        }, {
+          path: '/vehicle-management/supervision/travelPath',
+          name: 'vehicle-management-supervision-travelPath',
+          component: () => import('@/views/vehicle-management/supervision/travelPath/travelPathList'),
+          meta: {
+            title: '行程轨迹 ',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']

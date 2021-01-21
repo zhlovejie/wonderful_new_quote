@@ -93,13 +93,17 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
           <template v-if="+activeKey === 1">
+            <a type="primary" @click="doAction('view', record)">查看</a>
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
+          <template v-if="+activeKey === 2">
+            <a type="primary" @click="doAction('view1', record)">查看</a>
+          </template>
 
           <template v-if="+activeKey === 0">
+            <a type="primary" @click="doAction('view', record)">查看</a>
             <template v-if="+record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
@@ -288,7 +292,7 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
+      if (['view', 'add', 'edit', 'approval', 'view1'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
         resignApplyDel({ id: record.id })
@@ -346,8 +350,5 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
-}
-.color {
-  color: red;
 }
 </style>

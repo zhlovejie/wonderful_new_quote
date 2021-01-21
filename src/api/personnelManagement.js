@@ -26,6 +26,18 @@ export function annualLeave(parameter) {
     params: parameter
   })
 }
+//时长修改
+
+export function annualupdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/restHoursRecord/rest-hours-record/update',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
 
 
 

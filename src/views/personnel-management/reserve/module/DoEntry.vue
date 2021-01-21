@@ -519,6 +519,10 @@
                                 rules: [
                                   { required: false, message: '输入常用车牌号' },
                                   { max: 10, message: '最多可输入10个字符' },
+                                  {
+                                    pattern: /^[^\s]*$/,
+                                    message: '禁止输入空格',
+                                  },
                                 ],
                               },
                             ]"
@@ -539,6 +543,10 @@
                                 rules: [
                                   { required: false, message: '输入备用车牌号' },
                                   { max: 10, message: '最多可输入10个字符' },
+                                  {
+                                    pattern: /^[^\s]*$/,
+                                    message: '禁止输入空格',
+                                  },
                                 ],
                               },
                             ]"
