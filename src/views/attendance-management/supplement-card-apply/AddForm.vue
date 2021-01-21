@@ -518,7 +518,7 @@ export default {
                 return this.$message.error('请上传凭证')
               }
             }
-            if (this.detail.isEvidence === 0 || this.detail.isResignTime === 1) {
+            if ((this.isEvidence === 0 && this.detail.isResignTime === 1) || this.detail.isResignTime === 0) {
               values.resignTime = this.exceptionItem.happenDate + ' ' + values.resignTime.format('HH:mm')
             }
 

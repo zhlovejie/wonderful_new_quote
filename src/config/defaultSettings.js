@@ -16,7 +16,7 @@
 export default {
   // baseURL: 'http://106.14.246.246:8091',    // 正式服
   // baseURL: 'http://192.168.13.158:8999/oa',
-  baseURL: 'http://192.168.13.158:8998/oa',
+  baseURL: 'http://192.168.13.158:8997/oa',
   // baseURL: '  http://192.168.13.138:8999',
   // baseURL: 'http://192.168.13.158:8997/oa',
 

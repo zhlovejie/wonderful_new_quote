@@ -20,7 +20,7 @@
         <a-input placeholder="修改人名称" v-model="createdName" :allowClear="true" style="width: 150px" />
       </a-form-item>
       <a-form-item>
-        <a-range-picker v-model="sDate" :allowClear="true" />
+        <a-range-picker style="width: 300px" v-model="sDate" :allowClear="true" />
       </a-form-item>
       <a-form-item>
         <a-button class="a-button" type="primary" icon="search" @click="searchAction()">查询</a-button>
@@ -129,14 +129,14 @@ export default {
   },
   computed: {
     searchParam() {
-      let startTime = undefined,
+      let beginTime = undefined,
         endTime = undefined
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
-        startTime = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        beginTime = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
         endTime = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       return {
-        startTime,
+        beginTime,
         endTime,
         priceType: this.priceType,
         createdName: this.createdName,
