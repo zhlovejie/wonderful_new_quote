@@ -257,5 +257,16 @@ export default { //考勤管理
         permission: ['permission']
       },
     },
+    {
+      path: '/attendance-management/attendance-monitoring',
+      name: 'attendance-monitoring',
+      component: () => import('@/views/attendance-management/attendance-monitoring/List'),
+      meta: {
+        title: '考勤监控',
+        icon: 'video-camera',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
   ]
 }

@@ -22,6 +22,7 @@
     "core-js": "^2.6.9",
     "cross-env": "^5.2.0",
     "enquire.js": "^2.1.6",
+    "ezuikit-js": "^0.2.3",
     "file-save": "^0.2.0",
     "file-saver": "^2.0.2",
     "html2canvas": "^1.0.0-rc.3",

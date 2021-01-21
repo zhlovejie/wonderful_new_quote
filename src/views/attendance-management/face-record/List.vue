@@ -184,7 +184,11 @@ export default {
     init() {
       let that = this
       let queue = []
-      let task1 = departmentList().then(res => (that.depList = res.data))
+      //有查看全部权限时， 部门搜索条件 去除，显示全部部门
+      let hasAuth = that.$auth('signHistory:all')
+      let task1 = departmentList(hasAuth ? undefined : { id: this.$store.getters.userInfo.departmentId }).then(
+        (res) => (that.depList = res.data)
+      )
       queue.push(task1)
       that.searchAction()
       return Promise.all(queue)
