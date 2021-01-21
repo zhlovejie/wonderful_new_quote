@@ -125,6 +125,15 @@ export default {
           }
         },
         {
+          path: '/system-setting/messagePush',
+          name: 'messagePush',
+          component: () => import('@/views/system-setting/messagePush/list'),
+          meta: {
+            title: '消息推送',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/system-setting/work-box/CommonSeal',
           name: 'CommonSeal',
           component: () => import('@/views/system-setting/work-box/CommonSeal'),

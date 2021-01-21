@@ -38,6 +38,7 @@
               >
                 <a-select-option :value="1">1年</a-select-option>
                 <a-select-option :value="2">2年</a-select-option>
+                <a-select-option :value="3">3年</a-select-option>
               </a-select>
               <span>表面涂层:</span>
               <a-select
@@ -742,8 +743,10 @@ export default {
       console.log('电子件质下拉改变', this.qualityElectronics)
       if (this.qualityElectronics === 1) {
         this.qualityElectronicsPre = 0
-      } else {
+      } else if (this.qualityElectronics === 2) {
         this.qualityElectronicsPre = 10
+      } else {
+        this.qualityElectronicsPre = 20
       }
       console.log(this.qualityElectronicsPre)
       // this.increaseTotalPayment = this.queryOneData.totalAmount * (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100)
