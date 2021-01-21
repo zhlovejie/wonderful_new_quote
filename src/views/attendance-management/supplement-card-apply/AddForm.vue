@@ -66,11 +66,9 @@
                 >
                   <a-select-option :value="1">设备异常</a-select-option>
                   <a-select-option :value="2">忘记打卡</a-select-option>
-                  <a-select-option :value="3">停电</a-select-option>
-                  <a-select-option :value="4">天气异常</a-select-option>
                 </a-select>
                 <span v-else>
-                  {{ { 1: '设备异常', 2: '忘记打卡', 3: '停电', 4: '天气异常' }[detail.thingType] }}
+                  {{ { 1: '设备异常', 2: '忘记打卡' }[detail.thingType] }}
                 </span>
               </a-form-item>
             </td>
