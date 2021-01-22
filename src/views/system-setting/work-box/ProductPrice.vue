@@ -80,7 +80,7 @@
               >修改</a
             >
           </template>
-          <template v-if="$auth('productPrice:eidt')">
+          <template v-if="$auth('productPrice:modification')">
             <a-divider type="vertical" />
             <a
               @click="handleModification(record)"
