@@ -21,10 +21,10 @@
         >
       </div>
       <div class="main-wrapper">
-        <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-          <a-tab-pane tab="调休" key="1" />
+        <a-tabs :activeKey="activeKey" defaultActiveKey="1" @change="tabChange">
+          <a-tab-pane tab="调休" :key="1" />
           <template>
-            <a-tab-pane tab="年假" key="2" />
+            <a-tab-pane tab="年假" :key="2" />
           </template>
         </a-tabs>
         <a-table
@@ -106,7 +106,7 @@ export default {
       columns: columns,
       dataSource: [],
       record: {},
-      activeKey: 0,
+      activeKey: 1,
       pagination: {
         current: 1,
       },
@@ -129,8 +129,8 @@ export default {
       let that = this
       that.visible = true
       that.record = record
-      that.searchParam.userId = record.userId
-      that.searchAction({ type: 1 })
+      that.searchParam = {...that.searchParam,userId:record.userId}
+      this.searchAction({ current: 1 })
     },
     searchAction(opt) {
       let that = this
@@ -163,12 +163,8 @@ export default {
       this.visible = false
     },
     tabChange(tagKey) {
-      this.activeKey = parseInt(tagKey)
-      if (this.activeKey !== 0) {
-        this.approval_status = undefined
-      }
-      this.searchParam.type = this.activeKey
-      //this.$message.info('全部，待审批，审批尚未实现')
+      this.activeKey = +tagKey
+      this.searchParam = {...this.searchParam,type:this.activeKey}
       this.searchAction({ current: 1 })
     },
   },
