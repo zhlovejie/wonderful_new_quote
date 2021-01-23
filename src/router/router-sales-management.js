@@ -618,8 +618,39 @@ export default {
             title: '进款单',
             permission: ['permission']
           }
+        },
+        {
+          path: '/sale/refund-apply/List',
+          name: 'sale-refund-apply-list',
+          hidden: true,
+          component: () => import('@/views/sale/refund-apply/List'),
+          meta: {
+            title: '返款申请',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/record-deducted/List',
+          name: 'sale-record-deducted-list',
+          hidden: true,
+          component: () => import('@/views/sale/record-deducted/List'),
+          meta: {
+            title: '业绩扣除单',
+            permission: ['permission']
+          }
         }
       ]
+    },
+    {
+      path: '/sale/qualifications-borrow-management-list',
+      name: 'qualifications-borrow-management-list',
+      component: () => import('@/views/sale/qualifications-borrow-management/List'),
+      meta: {
+        title: '资质借用管理',
+        icon: 'team',
+        keepAlive: false,
+        permission: ['permission']
+      }
     },
     {
       path: '/sales-management/contract-list-management',
@@ -743,6 +774,24 @@ export default {
           component: () => import('@/views/sales-management/agency-contract-management/agencyContractView'),
           meta: {
             title: '代理合同预览',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/distributor-contract-management/list',
+          name: 'distributor-contract-management-list',
+          component: () => import('@/views/sales-management/distributor-contract-management/List'),
+          meta: {
+            title: '经销商合同',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/strategic-cooperation-agreement/list',
+          name: 'strategic-cooperation-agreement-list',
+          component: () => import('@/views/sales-management/strategic-cooperation-agreement/List'),
+          meta: {
+            title: '战略合作协议',
             permission: ['permission']
           }
         },
