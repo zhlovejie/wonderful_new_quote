@@ -16,14 +16,19 @@
 export default {
   // baseURL: 'http://106.14.246.246:8091',    // 正式服
   // baseURL: 'http://192.168.13.158:8999/oa',
-  baseURL: 'http://192.168.13.221:8999/oa',
-  // baseURL: '  http://192.168.13.138:8999',
+  //baseURL: 'http://192.168.13.2:8999/oa',
+  //baseURL: 'http://192.168.13.197:8999/oa',
   // baseURL: 'http://192.168.13.158:8997/oa',
+  //baseURL: 'http://106.14.194.64/cloud_new',
+  baseURL: 'http://192.168.13.253/oa',
 
-
-
-  //  baseURL: 'http://192.168.13.253/oa',
+  //baseURL:'http://192.168.13.158:8997/oa',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
+  attendanceMonitoringConfig: { //考勤监控 摄像头信息
+    appKey: 'd39b58df3a9b437cac8a0c6a120ef1eb',
+    appSecret: 'bbe8423572c73f7ef47002d28852c26b',
+    deviceSerial: 'E54619002'
+  },
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
   layout: 'sidemenu', // nav menu position: sidemenu or topmenu
