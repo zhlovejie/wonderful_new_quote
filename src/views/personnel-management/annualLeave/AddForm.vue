@@ -129,7 +129,7 @@ export default {
       let that = this
       that.visible = true
       that.record = record
-      that.searchParam = {...that.searchParam,userId:record.userId}
+      that.searchParam = { ...that.searchParam, userId: record.userId }
       this.searchAction({ current: 1 })
     },
     searchAction(opt) {
@@ -161,10 +161,11 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.searchParam = {}
     },
     tabChange(tagKey) {
       this.activeKey = +tagKey
-      this.searchParam = {...this.searchParam,type:this.activeKey}
+      this.searchParam = { ...this.searchParam, type: this.activeKey }
       this.searchAction({ current: 1 })
     },
   },
