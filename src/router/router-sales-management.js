@@ -737,6 +737,44 @@ export default {
             permission: ['permission']
           }
         },
+        // {
+        //   path: '/sales-management/agency-contract-management/agencyContractList',
+        //   name: 'agencyContractList',
+        //   component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
+        //   meta: {
+        //     title: '代理合同',
+        //     keepAlive: false,
+        //     permission: ['permission']
+        //   }
+        // }, {
+        //   path: '/sales-management/agency-contract-management/agencyContractList',
+        //   name: 'agencyContractList',
+        //   component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
+        //   meta: {
+        //     title: '代理合同',
+        //     keepAlive: false,
+        //     permission: ['permission']
+        //   }
+        // }, {
+        //   path: '/sales-management/agency-contract-management/agencyContractList',
+        //   name: 'agencyContractList',
+        //   component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
+        //   meta: {
+        //     title: '代理合同',
+        //     keepAlive: false,
+        //     permission: ['permission']
+        //   }
+        // },
+        // {
+        //   path: '/sales-management/agency-contract-management/agencyContractList',
+        //   name: 'agencyContractList',
+        //   component: () => import('@/views/sales-management/agency-contract-management/agencyContractList'),
+        //   meta: {
+        //     title: '代理合同',
+        //     keepAlive: false,
+        //     permission: ['permission']
+        //   }
+        // },
         {
           path: '/sales-management/agency-contract-management/preview/agencyContractView',
           name: 'agencyContractView',
