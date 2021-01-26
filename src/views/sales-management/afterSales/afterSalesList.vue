@@ -115,6 +115,9 @@
                 <a-menu-item key="4" v-if="+record.state !== 1">
                   <a target="_blank" :href="record.pdfUrl">下载</a>
                 </a-menu-item>
+                <a-menu-item key="5" v-if="+record.state !== 1">
+                  <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
+                </a-menu-item>
               </a-menu>
             </a-dropdown>
           </template>
@@ -157,6 +160,7 @@
     <ApproveInfo ref="approveInfoCard" />
     <CustomerInfo ref="customerInfoCard" />
     <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
+    <UploadPhoto ref="uploadPhoto" @ok="handleSaveOk" />
   </div>
 </template>
 
@@ -181,6 +185,7 @@ import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import CustomerInfo from '@/components/CustomerList/CustomerInfo'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
+import UploadPhoto from './UploadPhoto'
 const columns = [
   {
     align: 'center',
@@ -241,6 +246,7 @@ export default {
     CustomerSelect,
     ApproveInfo,
     CustomerInfo,
+    UploadPhoto,
   },
   data() {
     return {
@@ -412,6 +418,9 @@ export default {
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    uploadPhoto(record) {
+      this.$refs.uploadPhoto.showForm(record)
     },
     handleSaveOk() {
       this.searchAction()
