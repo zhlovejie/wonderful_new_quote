@@ -511,7 +511,18 @@ export default {
     async handleOk() {
       //debugger
       let that = this
-
+      //员工审批调薪填写业绩的特别处理
+      if(that.isApproval && that.isSelfApproval){
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.passAction({attachInfo:values.attachInfo})
+          }
+        })
+        return
+      }else if(that.isView || that.isApproval){
+        that.handleCancel()
+        return 
+      }
       let apiMap = {
         0: saveOrUpdatePositionChangeApply,
         1: saveOrUpdateSalaryChangeApply,
