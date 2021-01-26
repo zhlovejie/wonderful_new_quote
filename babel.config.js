@@ -10,7 +10,12 @@ module.exports = {
   ],
   "plugins": [
     ["@babel/plugin-transform-runtime",{}]
-  ]
+  ],
+  env: {
+      development: {
+        plugins: ['dynamic-import-node']
+      }
+  }
   // if your use import on Demand, Use this code
   // ,
   // plugins: [

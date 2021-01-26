@@ -72,7 +72,7 @@ export default {
           this.$refs.customerList.init({userId:_needOptions.userId})
           return
         }else{
-          this.$message.info('请选择销售人员后，再选择客户')
+          this.$message.info('请选择销售经理后，再选择客户')
           return
         }
       }
