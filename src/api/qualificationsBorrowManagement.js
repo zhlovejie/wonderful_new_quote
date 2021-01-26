@@ -70,4 +70,13 @@ export function dealerContractPageList (parameter) {
   })
 }
 
+/**经销商合同 添加附件 */
+export function dealerContractAddAccessoryn (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/dealerContract/addAccessory',
+    method: 'post',
+    data:parameter
+  })
+}
 

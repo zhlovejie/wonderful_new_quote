@@ -15,9 +15,9 @@
         :filterOption="filterSalersOption"
         placeholder="请选择销售人员"
         style="width: 200px"
-        v-model="searchParam.salesmanName"
+        v-model="searchParam.salesmanId"
       >
-        <a-select-option v-for="item in saleUser" :value="item.salesmanName" :key="item.userId">{{
+        <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
           item.salesmanName
         }}</a-select-option>
       </a-select>
@@ -66,6 +66,8 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
+          <a-divider type="vertical" />
+          <a type="primary" @click="doAction('preview', record)">预览</a>
           <template v-if="activeKey === 1">
             <template v-if="record.status === 1">
               <a-divider type="vertical" />
@@ -79,7 +81,7 @@
             </template>
             <template v-if="record.status === 3">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('file', record)">附件</a>
+              <a type="primary" @click="doAction('upload', record)">附件</a>
             </template>
             <template v-if="[4, 5].includes(+record.status)">
               <a-divider type="vertical" />
@@ -100,6 +102,8 @@
     </div>
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction()" />
+    <UploadFile ref="uploadFile" />
+    <PreView ref="preView" />
   </div>
 </template>
 <script>
@@ -111,7 +115,10 @@ import {
 
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import AddForm from './module/AddForm'
+import PreView from './module/View'
+import UploadFile from './module/UploadFile'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+
 const columns = [
   {
     align: 'center',
@@ -166,8 +173,10 @@ const columns = [
 export default {
   name: 'distributor-contract-management-list',
   components: {
-    AddForm: AddForm,
-    ApproveInfo: ApproveInfo,
+    AddForm,
+    ApproveInfo,
+    PreView,
+    UploadFile,
   },
   data() {
     return {
@@ -260,7 +269,6 @@ export default {
           .catch((err) => that.$message.error(err.message))
         return
       }
-
       if (type === 'del') {
         dealerContractDelete(`id=${record.id}`)
           .then((res) => {
@@ -270,6 +278,14 @@ export default {
             }
           })
           .catch((err) => that.$message.error(err.message))
+        return
+      }
+      if (type === 'preview') {
+        this.$refs.preView.query(type, record)
+        return
+      }
+      if (type === 'upload') {
+        that.$refs.uploadFile.query(type, record)
         return
       }
       that.$refs.addForm.query(type, record)

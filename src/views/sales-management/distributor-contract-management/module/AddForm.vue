@@ -192,6 +192,9 @@
             </td>
           </tr>
         </table>
+        <p v-if="isView && detail.accessory">
+          已上传文件：<a target="_blank" v-download="detail.accessory">{{detail.accessory}}</a>
+        </p>
         <StatusView :statusFn="statusFn"/>
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
