@@ -23,7 +23,7 @@
       </a-select>
 
       <a-select
-        v-if="activeKey === 0"
+        v-if="+activeKey === 1"
         placeholder="处理状态"
         :allowClear="true"
         v-model="searchParam.status"
@@ -37,14 +37,20 @@
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
-      <a-button class="a-button" style="float: right" type="primary" icon="plus" @click="doAction('add', null)"
-        >新增</a-button
+      <a-button 
+        v-if="$auth('distributor-contract-management-list:add')"
+        class="a-button" 
+        style="float: right" 
+        type="primary" 
+        icon="plus" 
+        @click="doAction('add', null)"
+      >新增</a-button
       >
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="activeKey" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" :key="1" />
-        <template v-if="$auth('present:approval')">
+        <template v-if="$auth('distributor-contract-management-list:approve')">
           <a-tab-pane tab="待我审批" :key="2" />
           <a-tab-pane tab="我已审批" :key="3" />
         </template>

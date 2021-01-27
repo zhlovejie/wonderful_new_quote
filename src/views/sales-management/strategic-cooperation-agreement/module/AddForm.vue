@@ -120,76 +120,27 @@
             </td>
           </tr>
           <tr>
-            <td>有效期</td>
+            <td>合作期限(年)</td>
             <td>
               <a-form-item>
-                <a-range-picker
+                <a-input-number
                   v-if="!isDisabled"
-                  style="width: 100%"
-                  :allowClear="true"
+                  :min="1"
+                  :max="99"
+                  :step="1" 
+                  style="width:100%" 
                   v-decorator="[
-                    `effective`,
+                    'cooperationYear', 
                     {
-                      initialValue: [moment(detail.effectiveStart), moment(detail.effectiveEnd)],
-                      rules: [{ required: true, message: '请选择代班时间' }],
-                    },
-                  ]"
-                  @change="rangePickerChange"
-                />
-                <span v-else>{{ detail.effectiveStart }} ~ {{ detail.effectiveEnd }}</span>
-              </a-form-item>
-            </td>
-            <td>单位全称</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  v-if="!isDisabled"
-                  v-decorator="[
-                    'fullName',
-                    { initialValue: detail.fullName, rules: [{ required: true, message: '请输入单位全称' }] },
+                      initialValue:detail.cooperationYear,
+                      rules: [{ required: true, message: '请输入合作期限' }],
+                    }
                   ]"
                 />
-                <span v-else>{{ detail.fullName }}</span>
+                <span v-else>{{ detail.cooperationYear }}</span>
               </a-form-item>
             </td>
-          </tr>
-          <tr>
-            <td>电话/传真</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  v-if="!isDisabled"
-                  v-decorator="[
-                    'tel',
-                    { initialValue: detail.tel, rules: [{ required: true, message: '请输入电话/传真' }] },
-                  ]"
-                />
-                <span v-else>{{ detail.tel }}</span>
-              </a-form-item>
-            </td>
-            <td>地址</td>
-            <td>
-              <a-form-item>
-                <a-input v-if="!isDisabled" v-decorator="['address', { initialValue: detail.address }]" />
-                <span v-else>{{ detail.address }}</span>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>微信号</td>
-            <td>
-              <a-form-item>
-                <a-input v-if="!isDisabled" v-decorator="['customerWxNum', { initialValue: detail.customerWxNum }]" />
-                <span v-else>{{ detail.customerWxNum }}</span>
-              </a-form-item>
-            </td>
-            <td>邮政编码</td>
-            <td>
-              <a-form-item>
-                <a-input v-if="!isDisabled" v-decorator="['postalCode', { initialValue: detail.postalCode }]" />
-                <span v-else>{{ detail.postalCode }}</span>
-              </a-form-item>
-            </td>
+            <td colspan="2"></td>
           </tr>
         </table>
         <p v-if="isView && detail.accessory">
@@ -204,10 +155,10 @@
 
 <script>
 import {
-  dealerContractAddOrUpdate,
-  dealerContractDetail,
-  dealerContractGenerateContractNum,
-  dealerContractApprove,
+  cooperationProtocolAddOrUpdate,
+  cooperationProtocolDetail,
+  cooperationProtocolGenerateContractNum,
+  cooperationProtocolApprove,
 } from '@/api/qualificationsBorrowManagement'
 
 //销售人员接口
@@ -257,7 +208,7 @@ export default {
   computed: {
     modalTitle() {
       let m = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
-      return `${m[this.actionType]}经销商合同`
+      return `${m[this.actionType]}战略合作协议`
     },
     isView() {
       return this.actionType === 'view'
@@ -319,7 +270,7 @@ export default {
           //values.
           //提交
           that.spinning = true
-          dealerContractAddOrUpdate(values)
+          cooperationProtocolAddOrUpdate(values)
             .then((res) => {
               that.spinning = false
               console.log(res)
@@ -355,14 +306,14 @@ export default {
           effectiveStart: moment().format('YYYY-MM-DD'),
           effectiveEnd: moment().format('YYYY-MM-DD'),
         }
-        dealerContractGenerateContractNum().then((res) => {
+        cooperationProtocolGenerateContractNum().then((res) => {
           that.detail = { ...that.detail, contractNum: res.data }
         })
         that.$refs.customerSelect && that.$refs.customerSelect.handleClear()
         return
       }
       //填充数据
-      const _detail = await dealerContractDetail({ id: that.record.id }).then((res) => res.data)
+      const _detail = await cooperationProtocolDetail({ id: that.record.id }).then((res) => res.data)
       that.needOptions = {userId:_detail.userId}
       that.detail = _detail
       that.$refs.customerSelect &&
@@ -376,7 +327,7 @@ export default {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
-      dealerContractApprove(values)
+      cooperationProtocolApprove(values)
         .then((res) => {
           that.spinning = false
           console.log(res)
