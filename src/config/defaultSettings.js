@@ -18,11 +18,11 @@ export default {
   // baseURL: 'http://192.168.13.158:8999/oa',
   // baseURL: 'http://192.168.13.221:8999/oa',
   // baseURL: '  http://192.168.13.138:8999',
-  // baseURL: 'http://192.168.13.158:8997/oa',
+  baseURL: 'http://192.168.13.101:8995/oa',
 
 
 
-  baseURL: 'http://192.168.13.253/oa',
+  // baseURL: 'http://192.168.13.253/oa',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu

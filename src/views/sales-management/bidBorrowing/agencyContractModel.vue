@@ -1,8 +1,11 @@
-<template></template>
+<template>
+  
+</template>
 <script>
 export default {
-  name: 'agencyContractModel',
+  name:'agencyContractModel'  
 }
 </script>
 <style scoped>
+
 </style>

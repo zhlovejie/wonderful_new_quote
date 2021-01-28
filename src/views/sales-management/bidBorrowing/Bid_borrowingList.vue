@@ -4,18 +4,8 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input style="width: 200px" :allowClear="true" placeholder="合同编号" v-model="searchParam.contractNum" />
-        </a-form-item>
-        <a-form-item>
           <a-input style="width: 200px" :allowClear="true" placeholder="客户名称" v-model="searchParam.customerName" />
         </a-form-item>
-
-        <!-- <CustomerSelect
-          ref="customerSelect"
-          :options="customerSelectOptions"
-          @selected="(e) => customAction('select', e)"
-          @inputClear="(e) => customAction('clear', null)"
-        /> -->
         <a-form-item>
           <a-select placeholder="销售人员" v-model="searchParam.salesmanId" style="width: 150px" :allowClear="true">
             <a-select-option v-for="val in saleUsers" :key="val.id" :value="val.id">{{ val.trueName }}</a-select-option>
@@ -23,8 +13,8 @@
         </a-form-item>
         <a-form-item>
           <a-select
-            placeholder="审批状态"
-            v-model="searchParam.state"
+            placeholder="单据状态"
+            v-model="searchParam.status"
             style="width: 150px"
             :allowClear="true"
             v-if="+activeKey === 1"
@@ -40,16 +30,6 @@
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-
-        <!-- <a-button
-          v-if="$auth('agencyContractList:add')"
-          style="float: right"
-          type="primary"
-          icon="plus"
-          @click="doAction('add', null)"
-          >申请</a-button
-        > -->
-        <a-button style="float: right" type="primary" icon="plus" @click="doAction('add', null)">申请</a-button>
       </a-form>
     </div>
     <div class="main-wrapper">
@@ -71,15 +51,12 @@
           <span>{{ index + 1 }}</span>
         </div>
 
-        <div slot="state" slot-scope="text, record">
+        <div slot="status" slot-scope="text, record">
           <a href="javascript:void(0);" @click="approvalPreview(record)">{{
-            { 1: '待提交', 2: '待审批', 3: '已撤回', 4: '不通过', 5: '通过' }[text] || '未知'
+            { 1: '待提交', 2: '待审批', 3: '通过', 4: '不通过', 5: '已撤回' }[text] || '未知'
           }}</a>
         </div>
-        <div slot="validityDate" slot-scope="text, record, index">
-          <span>{{ record.validityDateStart }} ~ {{ record.validityDateEnd }}</span>
-        </div>
-        <a slot="customerName" slot-scope="text, record" @click="consumerInfoShow(record)">{{ text }}</a>
+        <!-- <a slot="customerName" slot-scope="text, record" @click="consumerInfoShow(record)">{{ text }}</a> -->
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="+activeKey === 3 || activeKey === 1">
@@ -95,70 +72,45 @@
             <a-dropdown :trigger="['click']">
               <a class="ant-dropdown-link" @click="(e) => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
               <a-menu slot="overlay">
-                <a-menu-item key="0" v-if="+record.state === 2">
+                <a-menu-item key="0" v-if="+record.status === 2 && record.createdId === userInfo.id">
                   <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                     <a type="primary" href="javascript:;">撤回</a>
                   </a-popconfirm>
                 </a-menu-item>
-                <a-menu-item key="1" v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:edit')">
+                <a-menu-item
+                  key="1"
+                  v-if="
+                    [1, 4, 5].includes(+record.status) &&
+                    $auth('agencyContractList:edit') &&
+                    record.createdId === userInfo.id
+                  "
+                >
                   <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
                 </a-menu-item>
                 <a-menu-divider />
-                <a-menu-item key="2" v-if="+record.state === 1">
-                  <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
-                </a-menu-item>
-                <a-menu-item key="3" v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:del')">
+                <a-menu-item
+                  key="3"
+                  v-if="
+                    [4, 5].includes(+record.status) &&
+                    $auth('agencyContractList:del') &&
+                    record.createdId === userInfo.id
+                  "
+                >
                   <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                     <a type="primary" href="javascript:;">删除</a>
                   </a-popconfirm>
                 </a-menu-item>
-                <a-menu-item key="4" v-if="+record.state !== 1">
-                  <a target="_blank" :href="record.pdfUrl">下载</a>
-                </a-menu-item>
-                <a-menu-item key="5" v-if="+record.state !== 1">
+
+                <a-menu-item key="5" v-if="+record.status !== 1">
                   <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>
           </template>
-
-          <!-- <template v-if="+activeKey === 1"> -->
-          <!-- <template v-if="+record.state === 2">
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
-                <a type="primary" href="javascript:;">撤回</a>
-              </a-popconfirm>
-            </template> -->
-
-          <!-- <template v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:edit')">
-              <a-divider type="vertical" />
-              <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
-            </template> -->
-          <!-- 
-            <template v-if="+record.state === 1">
-              <a-divider type="vertical" />
-              <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
-            </template> -->
-          <!-- 
-            <template v-if="[1, 3, 4].includes(+record.state) && $auth('agencyContractList:del')">
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-                <a type="primary" href="javascript:;">删除</a>
-              </a-popconfirm>
-            </template> -->
-
-          <!-- <template v-if="+record.state !== 1">
-              <a-divider type="vertical" />
-              <a target="_blank" :href="record.pdfUrl">下载</a>
-            </template>
-            <a-divider type="vertical" />
-            <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
-          </template> -->
         </div>
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
-    <CustomerInfo ref="customerInfoCard" />
     <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
     <UploadPhoto ref="uploadPhoto" @ok="handleSaveOk" />
   </div>
@@ -166,24 +118,11 @@
 
 <script>
 import { listUserBySale } from '@/api/systemSetting'
-import {
-  agencyContractAddOrUpdate,
-  agencyContractApprove,
-  agencyContractDel,
-  agencyContractDetail,
-  agencyContractGenerateContractNum,
-  agencyContractPageList,
-  agencyContractGenerateFDF,
-  agencyContractRevocation,
-  agencyContractAttachmentAddOrUpdate,
-  agencyContractAttachmentDel,
-  agencyContractAttachmentList,
-} from '@/api/agencyContract'
+import { bidList, bidrevocation, biddelete } from '@/api/agencyContract'
 import AddForm from './AddForm'
 
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-import CustomerInfo from '@/components/CustomerList/CustomerInfo'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import UploadPhoto from './UploadPhoto'
 const columns = [
@@ -201,25 +140,25 @@ const columns = [
   },
   {
     align: 'center',
+    title: '销售负责人',
+    dataIndex: 'trueName',
+  },
+  {
+    align: 'center',
     title: '客户名称',
     dataIndex: 'customerName',
-    scopedSlots: { customRender: 'customerName' },
+    // scopedSlots: { customRender: 'customerName' },
   },
   {
     align: 'center',
-    title: '销售人员',
-    dataIndex: 'salesmanName',
-  },
-  {
-    align: 'center',
-    title: '协议有效期',
-    scopedSlots: { customRender: 'validityDate' },
+    title: '信誉保证金(元)',
+    dataIndex: 'earnestMoney',
   },
   {
     align: 'center',
     title: '单据状态',
-    dataIndex: 'state',
-    scopedSlots: { customRender: 'state' },
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
   },
   {
     align: 'center',
@@ -245,7 +184,6 @@ export default {
     AddForm,
     CustomerSelect,
     ApproveInfo,
-    CustomerInfo,
     UploadPhoto,
   },
   data() {
@@ -285,7 +223,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'agencyContractList') {
+        if (to.name === 'Bid_borrowingList') {
           this.init()
         }
       },
@@ -320,9 +258,9 @@ export default {
       that.searchAction()
       return Promise.all(queue)
     },
-    consumerInfoShow(record) {
-      this.$refs.customerInfoCard.init(record.customerId)
-    },
+    // consumerInfoShow(record) {
+    //   this.$refs.customerInfoCard.init(record.customerId)
+    // },
     customAction(type, data) {
       console.log(arguments)
       let searchParam = { ...this.searchParam }
@@ -342,7 +280,7 @@ export default {
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      agencyContractPageList(_searchParam)
+      bidList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -381,10 +319,10 @@ export default {
 
     doAction(actionType, record) {
       let that = this
-      if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
+      if (['view', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
-        agencyContractDel(`id=${record.id}`)
+        biddelete(`id=${record.id}`)
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -393,18 +331,10 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        agencyContractRevocation(`id=${record.id}`)
+        bidrevocation(`id=${record.id}`)
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
-          })
-          .catch((err) => {
-            that.$message.info(`错误：${err.message}`)
-          })
-      } else if (actionType === 'pdf') {
-        agencyContractGenerateFDF(`id=${record.id}`)
-          .then((res) => {
-            that.$message.info(res.msg)
           })
           .catch((err) => {
             that.$message.info(`错误：${err.message}`)
