@@ -160,3 +160,54 @@ export function cooperationProtocolAddAccessory (parameter) {
   })
 }
 
+
+/**资质借用合同 绑定代理合同 */
+export function borrowBindingAgencyContract (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/borrow/bindingAgencyContract',
+    method: 'post',
+    data:parameter
+  })
+}
+
+
+/**资质借用合同 绑定销售合同 */
+export function borrowBindingSaleContract (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/borrow/bindingSaleContract',
+    method: 'post',
+    data:parameter
+  })
+}
+/**资质借用合同 判断客户是否签订了相关合同，如果是则返回合同 */
+export function borrowCheckContract (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/borrow/checkContract',
+    method: 'get',
+    params:parameter
+  })
+}
+
+/**资质借用合同 详情 */
+export function borrowDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/borrow/detail',
+    method: 'get',
+    params:parameter
+  })
+}
+
+/**资质借用合同 分页列表，所有权限码：borrow:all */
+export function borrowPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/borrow/pageList',
+    method: 'get',
+    params:parameter
+  })
+}
+

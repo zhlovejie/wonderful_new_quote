@@ -18,7 +18,8 @@
       <MultiForm v-if="+activeKey === 2" :param="record" :action="type" @finish="finishAction" @close="handleCancel" />
     </div>
     <div v-if="isView || isEdit">
-      <SingleForm :param="record" :action="type" @finish="finishAction"/>
+      <!-- <MultiForm :param="record" :action="type" @finish="finishAction" @close="handleCancel" /> -->
+      <SingleForm :param="record" :action="type" @finish="finishAction"  @close="handleCancel" />
     </div>
   </a-modal>
 </template>
