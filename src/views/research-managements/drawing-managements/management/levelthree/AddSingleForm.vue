@@ -193,11 +193,23 @@ export default {
       if(file){
         let pictureNum = ''
         let fileName = ''
-        try {
-          fileName = file.name.split('.')[0]
-          pictureNum = file.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
-        } catch (err) {
-          pictureNum = ''
+        if(file.pictureNum && file.fileName){
+          pictureNum = file.pictureNum
+          fileName = file.fileName
+        }else{
+          try {
+            //fileName = f.name.split('.')[0]
+            //pictureNum = f.name.match(/([^\u4e00-\u9fa5]+)/g)[0]
+            //新文件格式 图号__文件名.pdf   10月1之后执行
+            let fullName = file.name.split('.')[0]
+            let _arr = fullName.split('__')
+            fileName = _arr[1]
+            pictureNum = _arr[0]
+          } catch (err) {
+            console.log(err)
+            fileName = file.name.split('.')[0]
+            pictureNum = ''
+          }
         }
         this.$nextTick(() => this.form.setFieldsValue({pictureNum:pictureNum,fileName:fileName}))
       }
@@ -239,6 +251,8 @@ export default {
                 name: that.detail.fileName,
                 status: 'done',
                 url: that.detail.fileUrl,
+                pictureNum:that.detail.pictureNum,
+                fileName:that.detail.fileName
               },
             ]
           }
