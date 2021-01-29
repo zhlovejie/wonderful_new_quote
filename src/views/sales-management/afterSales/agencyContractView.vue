@@ -65,7 +65,7 @@
 
             <div class="content-p">第一条：</div>
             <div class="content-p p-text-index">
-              乙方承揽甲方产品售后日常维护以及辅助安装调试服务，所在<span class="span-underline">{{ detail.area }}</span>区域内的所有甲方产品，共需要维修费用人民币<span class="span-underline">{{ detail.maintenanceCost }}</span>元/年，合同期内如果甲方新增其它服务项目，服务费用按双方另行约定的标准进行计算。
+              乙方承揽甲方产品售后日常维护以及辅助安装调试服务，所在<span class="span-underline">{{ detail.areaName }}</span>区域内的所有甲方产品，共需要维修费用人民币<span class="span-underline">{{ detail.maintenanceCost }}</span>元/年，合同期内如果甲方新增其它服务项目，服务费用按双方另行约定的标准进行计算。
 
             </div>
                <div class="content-p">第二条：服务具体要求</div>
@@ -197,7 +197,7 @@ export default {
   computed: {},
   watch: {
     $route(to, from) {
-      if (to.name === 'Bid_borrowingView') {
+      if (to.name === 'afterSalesView') {
         console.log('agencyContractView $route called...')
         this.init()
       }

@@ -396,8 +396,8 @@ export default {
           if (+type === 1 && that.record.id) {
             that.visible = false
             that.$router.push({
-              name: 'Business_borrowingView',
-              params: { id: that.record.id, action: 'view', from: 'agencyContractList' },
+              name: 'Bid_borrowingView',
+              params: { id: that.record.id, action: this.actionType, from: 'Bid_borrowingList' },
             })
             return
           }
@@ -424,8 +424,8 @@ export default {
                 that.$emit('finish')
                 if (+type === 1) {
                   that.$router.push({
-                    name: 'Business_borrowingView',
-                    params: { id: that.record.id, action: 'view', from: 'agencyContractList' },
+                    name: 'Bid_borrowingView',
+                    params: { id: that.record.id, action: this.actionType, from: 'Bid_borrowingList' },
                   })
                 }
               } else {

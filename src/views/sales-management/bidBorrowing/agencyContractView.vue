@@ -173,7 +173,6 @@
 
 <script>
 import { biddetail, bidapprove } from '@/api/agencyContract'
-import { getListByText } from '@/api/workBox'
 import util from '@/components/_util/util'
 
 import moment from 'moment'
@@ -203,7 +202,7 @@ export default {
   computed: {},
   watch: {
     $route(to, from) {
-      if (to.name === 'agencyContractView') {
+      if (to.name === 'Bid_borrowingView') {
         console.log('agencyContractView $route called...')
         this.init()
       }
@@ -228,10 +227,6 @@ export default {
             let arr = data.products.split(';')
             data.productsName = arr.length === 2 ? data.products.split(';')[1] : data.products
           }
-
-          data.validityDateStartTxt = moment(data.validityDateStart).format('YYYY年MM月DD日')
-          data.validityDateEndTxt = moment(data.validityDateEnd).format('YYYY年MM月DD日')
-
           that.detail = data
         })
         .finally(() => {
@@ -243,7 +238,7 @@ export default {
       // 点击返回，返回合同列表页
       let that = this
       that.$nextTick(() => {
-        let _from = that.$route.params.from || 'Business_borrowingList'
+        let _from = that.$route.params.from || 'Bid_borrowingList'
         that.$router.push({ name: _from })
       })
     },
@@ -314,7 +309,7 @@ export default {
       }, 500)
     },
     getPDF() {
-      util.handleWindowPrint('#pdfDom', '经营借用协议')
+      util.handleWindowPrint('#pdfDom', '项目投标资质借用协议')
     },
     isEmpty(o) {
       if (typeof o === 'string') {

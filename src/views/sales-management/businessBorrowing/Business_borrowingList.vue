@@ -35,7 +35,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="1" />
-        <template v-if="$auth('agencyContractList:approval')">
+        <template v-if="$auth('businessBorrowing:approval')">
           <a-tab-pane tab="待我审批" key="2" />
           <a-tab-pane tab="我已审批" key="3" />
         </template>
@@ -81,7 +81,7 @@
                   key="1"
                   v-if="
                     [1, 4, 5].includes(+record.status) &&
-                    $auth('agencyContractList:edit') &&
+                    $auth('businessBorrowing:edit') &&
                     record.createdId === userInfo.id
                   "
                 >
@@ -95,7 +95,7 @@
                   key="3"
                   v-if="
                     [4, 5].includes(+record.status) &&
-                    $auth('agencyContractList:del') &&
+                    $auth('businessBorrowing:del') &&
                     record.createdId === userInfo.id
                   "
                 >
