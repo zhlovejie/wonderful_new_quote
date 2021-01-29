@@ -764,7 +764,8 @@ export default {
             title: '经营借用协议预览',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sales-management/bidBorrowing/Bid_borrowingList',
           name: 'Bid_borrowingList',
           component: () => import('@/views/sales-management/bidBorrowing/Bid_borrowingList'),
