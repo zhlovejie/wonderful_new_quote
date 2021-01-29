@@ -23,11 +23,11 @@
                 <a-input
                   v-if="!isDisabled"
                   :disabled="true"
-                  placeholder="返款编号"
+                  placeholder="系统自动生成"
                   v-decorator="[
                     'rebatesNum',
                     {
-                      initialValue: detail.rebatesNum || '系统自动生成',
+                      initialValue: detail.rebatesNum || undefined,
                       rules: [{ required: false, message: '请输入返款编号' }],
                     },
                   ]"
@@ -104,7 +104,7 @@
                     { initialValue: record.paymentAmount, rules: [{ required: true, message: '请输入付款金额' }] },
                   ]"
                 />
-                <span v-else>{{ detail.paymentAmount || moneyFormatNumber }}</span>
+                <span v-else>{{ detail.paymentAmount | moneyFormatNumber }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -183,63 +183,105 @@
             </td>
           </tr>
 
-          <template v-if="isEdit && detail.rebatesDetailsList && detail.rebatesDetailsList.length > 0">
+          <template v-if="isDisabled">
             <tr>
-              <th>已付情况</th>
-              <th>付款金额(元)</th>
-              <th>付款比例(选填)</th>
-              <th>备注</th>
+              <td colspan="4" style="padding: 0">
+                <table class="custom-table custom-table-border">
+                  <tr>
+                    <th style="width: 15%">已付情况</th>
+                    <th style="width: 35%">付款金额(元)</th>
+                    <th style="width: 15%">付款比例(选填)</th>
+                    <th style="width: 35%">备注</th>
+                  </tr>
+                  <tr v-for="(item, idx) in rebatesDetailsList" :key="item.key">
+                    <td>{{ idx + 1 }}</td>
+                    <td>{{ item.paymentAmount | moneyFormatNumber }}</td>
+                    <td>{{ item.paymentProportion + '%' }}</td>
+                    <td>{{ item.remark }}</td>
+                  </tr>
+                </table>
+              </td>
             </tr>
-            <tr v-for="item in detail.rebatesDetailsList" :key="item.id">
-              <td>{{ item.prepaidSituation }}</td>
-              <td>
-                <a-form-item>
-                  <a-input-number
-                    v-if="!isDisabled"
-                    style="width: 100%"
-                    :min="0"
-                    :step="1"
-                    :precision="2"
-                    v-decorator="[
-                      'rebatesDetailsList.paymentAmount',
-                      { initialValue: item.paymentAmount, rules: [{ required: true, message: '请输入付款金额' }] },
-                    ]"
-                  />
-                  <span v-else>{{ item.paymentAmount || moneyFormatNumber }}</span>
-                </a-form-item>
-              </td>
-              <td>
-                <a-form-item>
-                  <a-input-number
-                    v-if="!isDisabled"
-                    style="width: 100%"
-                    :min="0"
-                    :max="100"
-                    :step="1"
-                    :precision="0"
-                    v-decorator="[
-                      'rebatesDetailsList.paymentProportion',
-                      { initialValue: item.paymentProportion, rules: [{ required: false, message: '请输入付款比例' }] },
-                    ]"
-                  />
-                  <span v-else>{{ item.paymentProportion + '%' }}</span>
-                </a-form-item>
-              </td>
-              <td>
-                <a-form-item>
-                  <a-input
-                    v-if="!isDisabled"
-                    placeholder="备注"
-                    v-decorator="[
-                      'rebatesDetailsList.remark',
-                      {
-                        initialValue: item.remark,
-                        rules: [{ required: false, message: '请输入备注' }],
-                      },
-                    ]"
-                  />
-                  <span v-else>{{ item.remark }}</span>
-                </a-form-item>
+          </template>
+          <template v-if="isAdd || isEdit">
+            <tr>
+              <td colspan="4" style="padding: 0">
+                <table class="custom-table custom-table-border">
+                  <tr>
+                    <th style="width: 15%">已付情况</th>
+                    <th style="width: 35%">付款金额(元)</th>
+                    <th style="width: 15%">付款比例(选填)</th>
+                    <th style="width: 25%">备注</th>
+                    <th style="width: 10%">操作</th>
+                  </tr>
+                  <tr v-for="(item, idx) in rebatesDetailsList" :key="item.key">
+                    <td>{{ idx + 1 }}</td>
+                    <td>
+                      <a-form-item>
+                        <a-input-number
+                          v-if="!isDisabled"
+                          style="width: 100%"
+                          :min="0"
+                          :step="1"
+                          :precision="2"
+                          v-decorator="[
+                            `rebatesDetailsList.${idx}.paymentAmount`,
+                            {
+                              initialValue: item.paymentAmount,
+                              rules: [{ required: true, message: '请输入付款金额' }],
+                            },
+                          ]"
+                          @change="(e) => itemChange(item.key, 'paymentAmount', e)"
+                        />
+                        <span v-else>{{ item.paymentAmount | moneyFormatNumber }}</span>
+                      </a-form-item>
+                    </td>
+                    <td>
+                      <a-form-item>
+                        <a-input-number
+                          v-if="!isDisabled"
+                          style="width: 100%"
+                          :min="0"
+                          :max="100"
+                          :step="1"
+                          :precision="0"
+                          v-decorator="[
+                            `rebatesDetailsList.${idx}.paymentProportion`,
+                            {
+                              initialValue: item.paymentProportion,
+                              rules: [{ required: false, message: '请输入付款比例' }],
+                            },
+                          ]"
+                          @change="(e) => itemChange(item.key, 'paymentProportion', e)"
+                        />
+                        <span v-else>{{ item.paymentProportion + '%' }}</span>
+                      </a-form-item>
+                    </td>
+                    <td>
+                      <a-form-item>
+                        <a-input
+                          v-if="!isDisabled"
+                          placeholder="备注"
+                          v-decorator="[
+                            `rebatesDetailsList.${idx}.remark`,
+                            {
+                              initialValue: item.remark,
+                              rules: [{ required: false, message: '请输入备注' }],
+                            },
+                          ]"
+                          @change="(e) => itemChange(item.key, 'remark', e)"
+                        />
+                        <span v-else>{{ item.remark }}</span>
+                      </a-form-item>
+                    </td>
+                    <td>
+                      <a href="javascript:void();" @click="removeItem(item.key)">删除</a>
+                    </td>
+                  </tr>
+                </table>
+                <a-button v-if="!isView" style="width: 100%" type="dashed" icon="plus" @click="addItem"
+                  >添加付款项</a-button
+                >
               </td>
             </tr>
           </template>
@@ -255,7 +297,7 @@
                   v-decorator="[
                     'thePaymentAmount',
                     {
-                      initialValue: detail.thePaymentAmount || '系统自动生成',
+                      initialValue: detail.thePaymentAmount || 0,
                       rules: [{ required: false }],
                     },
                   ]"
@@ -269,11 +311,11 @@
                 <a-input
                   v-if="!isDisabled"
                   :disabled="true"
-                  placeholder="金额大写"
+                  placeholder="系统自动生成"
                   v-decorator="[
                     'amountCapital',
                     {
-                      initialValue: detail.amountCapital || '系统自动生成',
+                      initialValue: detail.amountCapital || 0,
                       rules: [{ required: false }],
                     },
                   ]"
@@ -285,7 +327,7 @@
           <tr>
             <td>发票凭证</td>
             <td colspan="3">
-              <a-form-item v-if="!isView">
+              <a-form-item v-if="!isDisabled">
                 <UploadFile ref="uploadFile" maxFileCount="3" />
                 <a-input
                   hidden
@@ -295,6 +337,19 @@
                   ]"
                 />
               </a-form-item>
+              <div v-else>
+                <template v-if="detail.proofInvoiceUrl">
+                  <img
+                    v-for="url in detail.proofInvoiceUrl.split(',').map((url) => decodeURIComponent(url))"
+                    :key="url"
+                    :src="url"
+                    @click="showImg(url)"
+                    style="width: 128px; height: auto; overflow: hidden; margin: 10px 10px 0 0"
+                    alt="图片"
+                  />
+                </template>
+                <template v-else>未上传发票凭证</template>
+              </div>
             </td>
           </tr>
         </table>
@@ -302,7 +357,7 @@
         <!-- <p v-if="isView && detail.accessory">
           已上传文件：<a target="_blank" v-download="detail.accessory">{{detail.accessory}}</a>
         </p> -->
-        <ImgViewList ref="imgViewList" title="预览发票凭证" />
+        <ImgView ref="imgView" />
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
@@ -318,18 +373,21 @@ import {
 
 //销售人员接口
 import { getListSaleContractUser } from '@/api/contractListManagement'
+import { turnTheCapital } from '@/api/contractListManagement'
 import moment from 'moment'
 import Approval from './Approval'
 //客户列表选择
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import StatusView from '@/components/CustomerList/StatusView'
 import UploadFile from '@/components/CustomerList/UploadFile'
-import ImgViewList from '@/components/CustomerList/ImgViewList'
+import ImgView from '@/components/CustomerList/ImgView'
 
 /*
 let imgList = res.data.fileUrl.split(',').map(url => decodeURIComponent(url))
             that.$refs.imgViewList.show(imgList)
 */
+
+let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 export default {
   name: 'AddForm',
@@ -338,7 +396,7 @@ export default {
     CustomerSelect,
     StatusView,
     UploadFile,
-    ImgViewList,
+    ImgView,
   },
   data() {
     return {
@@ -366,6 +424,7 @@ export default {
       },
       detail: {},
       record: {},
+      rebatesDetailsList: [],
     }
   },
   computed: {
@@ -400,23 +459,16 @@ export default {
         btn.push(
           h(
             'a-button',
-            { key: 'save', on: { click: () => that.handleOk(1) }, props: { type: 'primary', loading: that.spinning } },
-            '保存'
-          )
-        )
-        btn.push(
-          h(
-            'a-button',
             {
               key: 'submit',
-              on: { click: () => that.handleOk(2) },
+              on: { click: () => that.handleOk() },
               props: { type: 'primary', loading: that.spinning },
             },
             '提交'
           )
         )
       } else if (that.isApproval) {
-        btn.push(h('a-button', { key: 'no-pass', on: { click: that.noPassAction } }, '不通过'))
+        btn.push(h('a-button', { key: 'no-pass', on: { click: that.noPassAction } ,props:{loading: that.spinning}}, '不通过'))
         btn.push(
           h(
             'a-button',
@@ -435,7 +487,45 @@ export default {
       let task1 = getListSaleContractUser().then((res) => (that.saleUsers = res.data))
       return Promise.all([task1])
     },
-    async handleOk(saveType) {
+    async updateMoney() {
+      let that = this
+      let thePaymentAmount =
+        this.rebatesDetailsList.reduce((a, b) => {
+          //debugger
+          let m = (parseFloat(a.paymentAmount) || 0) + (parseFloat(b.paymentAmount) || 0)
+          return m
+        }) || 0
+      let amountCapital =
+        thePaymentAmount > 0 ? await turnTheCapital({ money: thePaymentAmount }).then((res) => res.data) : '零'
+      that.form.setFieldsValue({
+        thePaymentAmount,
+        amountCapital,
+      })
+    },
+    addItem() {
+      let rebatesDetailsList = [...this.rebatesDetailsList]
+      rebatesDetailsList.push({
+        key: uuid(),
+        paymentAmount: undefined,
+        paymentProportion: undefined,
+        remark: undefined,
+      })
+      this.rebatesDetailsList = rebatesDetailsList
+    },
+    removeItem(key) {
+      this.rebatesDetailsList = this.rebatesDetailsList.filter((item) => item.key !== key)
+    },
+    itemChange(key, field, e) {
+      //debugger
+      let rebatesDetailsList = [...this.rebatesDetailsList]
+      let target = rebatesDetailsList.find((item) => item.key === key)
+      target[field] = e instanceof Event ? e.target.value : e
+      this.rebatesDetailsList = rebatesDetailsList
+      if (field === 'paymentAmount') {
+        this.updateMoney()
+      }
+    },
+    async handleOk() {
       let that = this
       if (that.isView || that.isApproval) {
         that.handleCancel()
@@ -443,11 +533,11 @@ export default {
       }
 
       let files = that.$refs.uploadFile.getFiles()
-      if(Array.isArray(files) && files.length > 0){
+      if (Array.isArray(files) && files.length > 0) {
         await that.form.setFieldsValue({
-          proofInvoiceUrl:files.map(f => encodeURIComponent(f.url)).join(',')
+          proofInvoiceUrl: files.map((f) => encodeURIComponent(f.url)).join(','),
         })
-      }else{
+      } else {
         that.$message.info('请上传发票凭证')
         return
       }
@@ -458,10 +548,11 @@ export default {
             values.id = that.record.id
           }
           values.infoId = 1
-          console.log(arguments)
-          debugger
-          //values.
-          //提交
+
+          values.rebatesDetailsList = that.rebatesDetailsList.map((item, idx) => {
+            item.prepaidSituation = idx + 1
+            return item
+          })
           that.spinning = true
           qualificationBorrowRebatesAddAndUpdate(values)
             .then((res) => {
@@ -489,17 +580,11 @@ export default {
       that.resetData()
       that.actionType = type
       that.record = record || {}
-
+      that.detail = {}
       that.form.resetFields()
       await that.init()
       that.visible = true
       if (that.isAdd) {
-        that.detail = {
-          ...that.detail,
-          effectiveStart: moment().format('YYYY-MM-DD'),
-          effectiveEnd: moment().format('YYYY-MM-DD'),
-        }
-
         that.$refs.customerSelect && that.$refs.customerSelect.handleClear()
         return
       }
@@ -507,11 +592,24 @@ export default {
       const _detail = await qualificationBorrowRebatesDetail({ id: that.record.id }).then((res) => res.data)
       that.needOptions = { userId: _detail.userId }
       that.detail = _detail
+      that.rebatesDetailsList = (that.detail.rebatesDetailsList || []).map(item =>{
+        item.key = uuid()
+        return item
+      })
       that.$refs.customerSelect &&
         that.$refs.customerSelect.fill({
           id: _detail.customerId || undefined,
           name: _detail.customerName,
         })
+      if (that.isEdit && that.detail.proofInvoiceUrl) {
+        let imgList = that.detail.proofInvoiceUrl.split(',').map((url) => {
+          return {
+            url: decodeURIComponent(url),
+          }
+        })
+        that.$refs.uploadFile && that.$refs.uploadFile.setFiles(imgList)
+      }
+
       //that.form.setFieldsValue(_detail)
     },
     submitAction(opt) {
@@ -620,11 +718,10 @@ export default {
     },
     statusFn() {
       let map = {
-        1: '待提交',
-        2: '待审批',
-        3: '通过',
-        4: '不通过',
-        5: '已撤回',
+        1: '待审批',
+        2: '通过',
+        3: '不通过',
+        4: '已撤回',
       }
       let detail = this.detail
       if (!this.isView || !(detail && 'status' in detail)) {
@@ -634,9 +731,12 @@ export default {
       return {
         map,
         cur,
-        pass: 3,
-        nopass: 4,
+        pass: 2,
+        nopass: 3,
       }
+    },
+    showImg(url) {
+      this.$refs.imgView.show(url)
     },
   },
 }
@@ -672,5 +772,6 @@ export default {
 .custom-table >>> .custom-table {
   margin-bottom: 0;
   margin: -1px;
+  width: calc(100% + 2px);
 }
 </style>

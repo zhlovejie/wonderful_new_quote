@@ -29,7 +29,7 @@ export default {
     }
     let ele = [
       h('a-icon',{props:{type},style}),
-      h('span',{},`当前状态【${map[cur]}】`)
+      h('span',{},`审批状态【${map[cur]}】`)
     ]
     return h('h3',{},ele)
   }

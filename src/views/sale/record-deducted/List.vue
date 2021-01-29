@@ -2,12 +2,6 @@
   <!-- 业绩扣除单 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
-      <a-input
-        placeholder="客户名称模糊查询"
-        :allowClear="true"
-        v-model="searchParam.customerName"
-        style="width: 200px"
-      />
       <a-select
         optionFilterProp="children"
         showSearch
@@ -15,7 +9,7 @@
         :filterOption="filterSalersOption"
         placeholder="请选择销售人员"
         style="width: 200px"
-        v-model="searchParam.salesmanId"
+        v-model="searchParam.saleUserId"
       >
         <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
           item.salesmanName
@@ -23,22 +17,21 @@
       </a-select>
 
       <a-select
-        v-if="+activeKey === 1"
+        v-if="+activeKey === 0"
         placeholder="处理状态"
         :allowClear="true"
         v-model="searchParam.status"
         style="width: 120px"
       >
-        <a-select-option :value="1">待提交</a-select-option>
-        <a-select-option :value="2">待审批</a-select-option>
-        <a-select-option :value="3">通过</a-select-option>
-        <a-select-option :value="4">不通过</a-select-option>
-        <a-select-option :value="5">已撤回</a-select-option>
+        <a-select-option :value="1">待审批</a-select-option>
+        <a-select-option :value="2">通过</a-select-option>
+        <a-select-option :value="3">不通过</a-select-option>
+        <a-select-option :value="4">已撤回</a-select-option>
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <a-button 
-        v-if="$auth('strategic-cooperation-agreement-list:add')"
+        v-if="$auth('sale-record-deducted-list:add')"
         class="a-button" 
         style="float: right" 
         type="primary" 
@@ -49,10 +42,10 @@
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="activeKey" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="我的" :key="1" />
-        <template v-if="$auth('strategic-cooperation-agreement-list:approve')">
-          <a-tab-pane tab="待我审批" :key="2" />
-          <a-tab-pane tab="我已审批" :key="3" />
+        <a-tab-pane tab="我的" :key="0" />
+        <template v-if="$auth('sale-record-deducted-list:approve')">
+          <a-tab-pane tab="待我审批" :key="1" />
+          <a-tab-pane tab="我已审批" :key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -70,26 +63,24 @@
           <a @click="approvalPreview(record)">{{ getStatusText(text) }}</a>
         </div>
 
+        <div slot="amount" slot-scope="text, record, index">
+          <span>{{text | moneyFormatNumber}}</span>
+        </div>
+        
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('preview', record)">预览</a>
-          <template v-if="activeKey === 1">
+          <template v-if="activeKey === 0">
             <template v-if="record.status === 1">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit', record)">修改</a>
-            </template>
-            <template v-if="record.status === 2">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="record.status === 3">
+            <template v-if="record.status === 2">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('upload', record)">附件</a>
             </template>
-            <template v-if="[4, 5].includes(+record.status)">
+            <template v-if="[3,4].includes(+record.status)">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
               <a-divider type="vertical" />
@@ -99,7 +90,7 @@
             </template>
           </template>
 
-          <template v-if="activeKey === 2">
+          <template v-if="activeKey === 1">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
@@ -109,7 +100,6 @@
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction()" />
     <UploadFile ref="uploadFile" />
-    <PreView ref="preView" />
   </div>
 </template>
 <script>
@@ -121,7 +111,6 @@ import {
 
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import AddForm from './module/AddForm'
-import PreView from './module/View'
 import UploadFile from './module/UploadFile'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 
@@ -136,22 +125,23 @@ const columns = [
   {
     align: 'center',
     title: '编号',
-    dataIndex: 'contractNum',
+    dataIndex: 'deductionNum',
   },
   {
     align: 'center',
     title: '销售负责人',
-    dataIndex: 'salesmanName',
+    dataIndex: 'saleUserName',
   },
   {
     align: 'center',
-    title: '金额',
-    dataIndex: 'customerName',
+    title: '金额(元)',
+    dataIndex: 'amount',
+    scopedSlots: { customRender: 'amount' }
   },
   {
     align: 'center',
     title: '时间',
-    dataIndex: 'cooperationYear',
+    dataIndex: 'deductionTime',
   },
   {
     align: 'center',
@@ -181,13 +171,12 @@ export default {
   components: {
     AddForm,
     ApproveInfo,
-    PreView,
     UploadFile,
   },
   data() {
     return {
       searchParam: {},
-      activeKey: 1,
+      activeKey: 0,
       columns: columns,
       dataSource: [],
       saleUser: [],
@@ -218,16 +207,16 @@ export default {
     init() {
       let that = this
       getListSaleContractUser().then((res) => (that.saleUser = res.data))
-      that.searchAction()
+      that.searchAction({ current: 1})
     },
-    searchAction(opt) {
+    searchAction(opt={}) {
       let that = this
       let paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
       }
-      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam, {
-        queryType: that.activeKey,
+      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam,{...opt},{
+        searchStatus: that.activeKey,
       })
       that.loading = true
       qualificationBorrowPerformanceDeductionPageList(_searchParam)
@@ -265,7 +254,7 @@ export default {
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        qualificationBorrowPerformanceDeductionRevocation(`id=${record.id}`)
+        qualificationBorrowPerformanceDeductionRevocation({id:record.id})
           .then((res) => {
             that.$message.info(res.msg)
             if (+res.code === 200) {
@@ -276,7 +265,7 @@ export default {
         return
       }
       if (type === 'del') {
-        qualificationBorrowPerformanceDeductionDelete(`id=${record.id}`)
+        qualificationBorrowPerformanceDeductionDelete({id:record.id})
           .then((res) => {
             that.$message.info(res.msg)
             if (+res.code === 200) {
@@ -286,10 +275,7 @@ export default {
           .catch((err) => that.$message.error(err.message))
         return
       }
-      if (type === 'preview') {
-        this.$refs.preView.query(type, record)
-        return
-      }
+
       if (type === 'upload') {
         that.$refs.uploadFile.query(type, record)
         return
@@ -298,17 +284,16 @@ export default {
     },
     getStatusText(state) {
       let stateMap = {
-        1: '待提交',
-        2: '待审批',
-        3: '通过',
-        4: '不通过',
-        5: '已撤回',
+        1: '待审批',
+        2: '通过',
+        3: '不通过',
+        4: '已撤回',
       }
       return stateMap[state] || `未知状态:${state}`
     },
     tabChange(tagKey) {
       this.activeKey = +tagKey
-      this.searchAction({ current: 1, queryType: this.activeKey })
+      this.searchAction({ current: 1, searchStatus: this.activeKey })
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)

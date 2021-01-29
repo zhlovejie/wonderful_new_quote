@@ -71,24 +71,18 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('preview', record)">预览</a>
-          <template v-if="activeKey === 1">
+          <template v-if="activeKey === 0">
             <template v-if="record.status === 1">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit', record)">修改</a>
-            </template>
-            <template v-if="record.status === 2">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="record.status === 3">
+            <template v-if="record.status === 2">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('upload', record)">附件</a>
             </template>
-            <template v-if="[4, 5].includes(+record.status)">
+            <template v-if="[3,4].includes(+record.status)">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
               <a-divider type="vertical" />
@@ -98,7 +92,7 @@
             </template>
           </template>
 
-          <template v-if="activeKey === 2">
+          <template v-if="activeKey === 1">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>
@@ -108,7 +102,6 @@
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction()" />
     <UploadFile ref="uploadFile" />
-    <PreView ref="preView" />
   </div>
 </template>
 <script>
@@ -120,7 +113,6 @@ import {
 
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import AddForm from './module/AddForm'
-import PreView from './module/View'
 import UploadFile from './module/UploadFile'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 
@@ -185,7 +177,6 @@ export default {
   components: {
     AddForm,
     ApproveInfo,
-    PreView,
     UploadFile,
   },
   data() {
@@ -269,7 +260,7 @@ export default {
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        qualificationBorrowRebatesRevocation(`id=${record.id}`)
+        qualificationBorrowRebatesRevocation({id:record.id})
           .then((res) => {
             that.$message.info(res.msg)
             if (+res.code === 200) {
@@ -280,7 +271,7 @@ export default {
         return
       }
       if (type === 'del') {
-        qualificationBorrowRebatesDelete(`id=${record.id}`)
+        qualificationBorrowRebatesDelete({id:record.id})
           .then((res) => {
             that.$message.info(res.msg)
             if (+res.code === 200) {
@@ -288,10 +279,6 @@ export default {
             }
           })
           .catch((err) => that.$message.error(err.message))
-        return
-      }
-      if (type === 'preview') {
-        this.$refs.preView.query(type, record)
         return
       }
       if (type === 'upload') {
