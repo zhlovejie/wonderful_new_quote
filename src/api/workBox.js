@@ -8,6 +8,9 @@ const api = {
   addProduct: '/productInformation/add',
   delProduct: '/productInformation/del',
   editProduct: '/productInformation/edit',
+  editPrice: 'productInformation/editPrice',
+  getChangeRecordPageList: '/productPriceChangeRecord/product-price-change-record/getChangeRecordPageList',
+  getFloatingFigure: '/productPriceChangeRecord/product-price-change-record/getFloatingFigure',
   productList: '/productInformation/toList',
   checkName: '/productInformation/checkName',
   getPDF: '/productInformation/getPDF',
@@ -99,7 +102,15 @@ export function messagePushaddAndUpdate(parameter) {
 
 
 
-
+// 产品价格波动图
+export function getFloatingFigure(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getFloatingFigure,
+    method: 'post',
+    data: parameter
+  })
+}
 // 上传android设备 apk
 export function uploadAndroidApkEquipment(parameter) {
   return axios({
@@ -424,6 +435,27 @@ export function editProduct(parameter) {
     data: parameter
   })
 }
+//修改产品价格
+
+export function editPrice(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.editPrice,
+    method: 'post',
+    data: parameter
+  })
+}
+
+//产品修改记录 
+export function getChangeRecordPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL, // 服务器ip和端口
+    url: api.getChangeRecordPageList,
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 // 获取数据字典列表
 export function getDictionaryList(parameter) {

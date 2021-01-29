@@ -27,12 +27,17 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template>
+            <a type="primary" @click="doAction('change', record)">变更</a>
+          </template>
+          <template>
+            <a-divider type="vertical" />
             <a type="primary" @click="doAction('edit', record)">变更记录</a>
           </template>
         </div>
       </a-table>
     </div>
     <AddForm ref="addForm" @finish="searchAction" />
+    <RuleForm ref="ruleForm" @finish="searchAction" />
   </div>
 </template>
 
@@ -46,6 +51,7 @@ import { getDictionaryList } from '@/api/workBox'
 import { annualLeaveList } from '@/api/personnelManagement'
 // import { oaSalaryInfoStationStandardPageList, oaSalaryInfoStationStandardDel } from '@/api/salaryManagement'
 import AddForm from './AddForm'
+import RuleForm from './RuleForm'
 const columns = [
   {
     align: 'center',
@@ -86,6 +92,7 @@ export default {
   name: 'salary-reference-record',
   components: {
     AddForm,
+    RuleForm,
   },
   data() {
     return {
@@ -200,7 +207,11 @@ export default {
       this.searchAction()
     },
     doAction(actionType, record) {
-      this.$refs.addForm.query(actionType, record)
+      if (actionType === 'change') {
+        this.$refs.ruleForm.query(actionType, record)
+      } else {
+        this.$refs.addForm.query(actionType, record)
+      }
     },
   },
 }

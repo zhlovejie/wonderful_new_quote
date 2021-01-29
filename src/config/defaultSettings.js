@@ -23,7 +23,7 @@ export default {
    //baseURL: 'http://192.168.13.138:8995',
    //baseURL: 'http://192.168.13.253/oa',
   baseURL:'http://192.168.13.158:8999/oa', //张恒~
-  //baseURL:'http://192.168.13.158:8997/oa',
+
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig:{ //考勤监控 摄像头信息
     appKey:'d39b58df3a9b437cac8a0c6a120ef1eb',

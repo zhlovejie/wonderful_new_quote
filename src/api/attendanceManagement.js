@@ -5,6 +5,107 @@ import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
 
+// 补卡罚款规则设置
+
+export function getFineRuleList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineRule/recard-fine-rule/getFineRuleList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 补卡罚款规则设置删除
+
+export function delFineRule(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineRule/recard-fine-rule/delFineRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 补卡罚款规则设置添加规则
+
+export function addAndUpdateFineConfig(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineConfig/recard-fine-config/addAndUpdateFineConfig',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//罚款规则列表
+
+export function getFineConfigList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineConfig/recard-fine-config/getFineConfigList',
+    method: 'get',
+    params: parameter
+  })
+}
+//删除
+export function delFineConfig(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineConfig/recard-fine-config/delFineConfig',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function addAndUpdateFineRule(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineRule/recard-fine-rule/addAndUpdateFineRule',
+    method: 'post',
+    data: parameter
+  })
+}
+//罚款列表
+export function getFineRecordList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineRecord/recard-fine-record/getFineRecordList',
+    method: 'get',
+    params: parameter
+  })
+}
+// 入厂记录 
+export function accessHumanCardInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/human/oa-access-human-decency/accessHumanCardInfo',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //---------------------外出申请-----------------------
 /** 外出申请列表  */
 

@@ -55,6 +55,28 @@ export default { //考勤管理
           }
         },
         {
+          path: '/attendance-management/rules-setting/fine-rules',
+          name: 'attendance-rules-setting-fine-rules',
+          component: () => import('@/views/attendance-management/rules-setting/fine-rules/list'),
+          meta: {
+            title: '补卡罚款规则设置',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/attendance-management/rules-setting/penaltyList',
+          name: 'attendance-rules-setting-penaltyList',
+          component: () => import('@/views/attendance-management/rules-setting/penaltyList/List'),
+          meta: {
+            title: '补卡罚款列表',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
           path: '/attendance-management/rules-setting/over-time-rule',
           name: 'attendance-rules-setting-over-time-rule',
           component: () => import('@/views/attendance-management/rules-setting/over-time-rule/List'),
