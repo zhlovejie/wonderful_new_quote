@@ -225,7 +225,6 @@
 <script>
 import { biddetail, bidaddOrUpdat, bidapprove } from '@/api/agencyContract'
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
-import { getAreaByParent } from '@/api/common'
 import { getListSalesman } from '@/api/contractListManagement'
 import { getListByText } from '@/api/workBox'
 import Approval from './Approval'

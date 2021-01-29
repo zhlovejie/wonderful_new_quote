@@ -21,9 +21,9 @@
           >
             <a-select-option :value="1">待提交</a-select-option>
             <a-select-option :value="2">待审批</a-select-option>
-            <a-select-option :value="3">已撤回</a-select-option>
+            <a-select-option :value="3">通过</a-select-option>
             <a-select-option :value="4">不通过</a-select-option>
-            <a-select-option :value="5">通过</a-select-option>
+            <a-select-option :value="5">已撤回</a-select-option>
           </a-select>
         </a-form-item>
 

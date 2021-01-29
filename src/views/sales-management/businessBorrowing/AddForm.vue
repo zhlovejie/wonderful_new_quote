@@ -207,27 +207,9 @@
   </a-modal>
 </template>
 <script>
-import {
-  businessdetail,
-  businessaddOrUpdate,
-  businessapprove,
-  // agencyContractAddOrUpdate,
-  // agencyContractApprove,
-  // agencyContractDel,
-  // agencyContractDetail,
-  // agencyContractGenerateContractNum,
-  // agencyContractPageList,
-  // agencyContractGenerateFDF,
-  // agencyContractRevocation,
-  // agencyContractAttachmentAddOrUpdate,
-  // agencyContractAttachmentDel,
-  // agencyContractAttachmentList,
-} from '@/api/agencyContract'
-// import CustomerSelect from '@/components/CustomerList/CustomerSelect'
+import { businessdetail, businessaddOrUpdate, businessapprove } from '@/api/agencyContract'
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
-import { getAreaByParent } from '@/api/common'
 import { getListSalesman } from '@/api/contractListManagement'
-import { getListByText } from '@/api/workBox'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -294,14 +276,10 @@ export default {
     init() {
       let that = this
       let queue = []
-      let task1 = getListByText({ text: '产品类型' }).then((res) => {
-        that.productCategoryList = res.data.records
-      })
-      queue.push(task1)
-      let task2 = getListSalesman().then((res) => {
+      getListSalesman().then((res) => {
         that.saleUsers = res.data
       })
-      queue.push(task2)
+
       if (that.isAdd) {
         let task3 = agencyContractGenerateContractNum().then((res) => {
           let detail = { ...that.detail, contractNum: res.data }
@@ -398,7 +376,7 @@ export default {
             that.visible = false
             that.$router.push({
               name: 'Business_borrowingView',
-              params: { id: that.record.id, action: 'view', from: 'agencyContractList' },
+              params: { id: that.record.id, action: this.actionType, from: 'Business_borrowingList' },
             })
             return
           }
@@ -429,7 +407,7 @@ export default {
                 if (+type === 1) {
                   that.$router.push({
                     name: 'Business_borrowingView',
-                    params: { id: that.record.id, action: 'view', from: 'agencyContractList' },
+                    params: { id: that.record.id, action: this.actionType, from: 'Business_borrowingList' },
                   })
                 }
               } else {

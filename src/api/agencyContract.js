@@ -4,6 +4,69 @@ import {
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
+//产品售后服务外包协议列表
+export function afterList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/pageList',
+    method: 'get',
+    params: params
+  })
+}
+
+// 投标借用撤回
+export function afterrevocation(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/revocation',
+    method: 'post',
+    data: params
+  })
+}
+// 投标借用删除
+export function afterdelete(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/delete',
+    method: 'post',
+    data: params
+  })
+}
+// 投标借用详情
+export function afterdetail(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/detail',
+    method: 'get',
+    params: params
+  })
+}
+
+// 投标借用修改 新增
+export function afteraddOrUpdate(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/addOrUpdate',
+    method: 'post',
+    data: params
+  })
+}
+// 投标借用审批
+export function afteraddOrapprove(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/approve',
+    method: 'post',
+    data: params
+  })
+}
+
+
+
+
+
+
+
 
 // 投标借用列表 
 export function bidList(params) {

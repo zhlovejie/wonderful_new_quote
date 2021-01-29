@@ -18,6 +18,111 @@
         </a-form-item>
 
         <table class="custom-table custom-table-border">
+          <h3>基本信息</h3>
+          <tr>
+            <td>销售人员</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  v-if="!isDisabled && !isEdit"
+                  :disabled="isEdit"
+                  :allowClear="true"
+                  v-decorator="[
+                    'userId',
+                    { initialValue: detail.userId, rules: [{ required: true, message: '请选择销售人员' }] },
+                  ]"
+                  placeholder="请选择销售人员"
+                  @change="saleUserChange"
+                >
+                  <a-select-option v-for="item in saleUsers" :value="item.userId" :key="item.userId">{{
+                    item.salesmanName
+                  }}</a-select-option>
+                </a-select>
+                <span v-else>{{ detail.trueName }}</span>
+              </a-form-item>
+            </td>
+            <td>客户名称</td>
+            <td>
+              <!-- <CustomerSelect
+                v-if="!isDisabled && !isEdit"
+                ref="customerSelect"
+                :needOptions="needOptions"
+                :options="customerSelectOptions"
+                @selected="handleCustomerSelected"
+              /> -->
+              <a-form-item>
+                <a-input
+                  v-if="!isDisabled && !isEdit"
+                  hidden
+                  v-decorator="[
+                    'customerName',
+                    { initialValue: detail.customerName, rules: [{ required: true, message: '请选择客户名称' }] },
+                  ]"
+                />
+                <span v-else>{{ detail.customerName }}</span>
+              </a-form-item>
+              <a-form-item hidden>
+                <a-input v-decorator="['customerName', { initialValue: detail.customerName }]" />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>微信号</td>
+            <td>
+              <a-form-item>
+                <a-input
+                  v-if="!isDisabled && !isEdit"
+                  type="text"
+                  v-decorator="[
+                    'wxNum',
+                    { initialValue: detail.wxNum, rules: [{ required: true, message: '填写微信号' }] },
+                  ]"
+                />
+                <span v-else>{{ detail.wxNum }}</span>
+              </a-form-item>
+            </td>
+            <td>邮箱</td>
+            <td>
+              <a-form-item>
+                <a-input
+                  v-if="!isDisabled && !isEdit"
+                  type="text"
+                  v-decorator="[
+                    'email',
+                    {
+                      initialValue: detail.email,
+                      rules: [{ required: true, message: '填写电子邮箱' }],
+                    },
+                  ]"
+                />
+                <span v-else>{{ detail.email }}</span>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>协议</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-select
+                  v-if="!isDisabled && !isEdit"
+                  style="width: 300px"
+                  :allowClear="true"
+                  v-decorator="[
+                    'borrowId',
+                    { initialValue: detail.borrowId, rules: [{ required: true, message: '请选择协议' }] },
+                  ]"
+                  placeholder="请选择协议"
+                >
+                  <a-select-option v-for="item in agreement" :value="item.id" :key="item.id">{{
+                    item.text
+                  }}</a-select-option>
+                </a-select>
+                <span v-else>产品售后服务外包协议</span>
+              </a-form-item>
+            </td>
+          </tr>
+
+          <h3 style="margin-top: 10px">合同信息</h3>
           <tr>
             <td style="width: 15%">合同编号</td>
             <td style="width: 35%">
@@ -30,110 +135,92 @@
                   v-if="!isDisabled"
                   placeholder="签订日期"
                   v-decorator="[
-                    'signedDate',
+                    'signingDate',
                     {
-                      initialValue: detail.signedDate ? moment(detail.signedDate) : moment(),
+                      initialValue: detail.signingDate ? moment(detail.signingDate) : moment(),
                       rules: [{ required: true, message: '选择签订日期' }],
                     },
                   ]"
                   style="width: 100%"
                 />
-                <span v-else :style="{ color: moment().format('YYYY-MM-DD') !== detail.signedDate ? 'red' : '' }">{{
-                  detail.signedDate
+                <span v-else :style="{ color: moment().format('YYYY-MM-DD') !== detail.signingDate ? 'red' : '' }">{{
+                  detail.signingDate
                 }}</span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>销售人员</td>
+            <td>区域</td>
             <td>
               <a-form-item>
                 <a-select
-                  v-if="!isDisabled"
-                  :disabled="isEdit"
-                  :allowClear="true"
-                  v-decorator="[
-                    'salesmanId',
-                    { initialValue: detail.salesmanId, rules: [{ required: true, message: '请选择销售人员' }] },
-                  ]"
-                  placeholder="请选择销售人员"
-                  @change="saleUserChange"
+                  style="width: 100px"
+                  :disabled="isDisabled"
+                  placeholder="省"
+                  :precision="0"
+                  v-decorator="['province', { initialValue: prov, rules: [{ required: true, message: '请选择省！' }] }]"
                 >
-                  <a-select-option v-for="item in saleUsers" :value="item.userId" :key="item.userId">{{
-                    item.salesmanName
-                  }}</a-select-option>
+                  <a-select-option
+                    @click="getCity(1, province.id)"
+                    v-for="province in this.provinces"
+                    :key="province.index"
+                    :value="province.id"
+                    >{{ province.area }}</a-select-option
+                  >
                 </a-select>
-                <span v-else>{{ detail.salemanName }}</span>
+                <a-select
+                  style="width: 100px"
+                  :disabled="isDisabled"
+                  placeholder="市"
+                  :precision="0"
+                  v-decorator="['city', { initialValue: prov1, rules: [{ required: true, message: '请选择区！' }] }]"
+                >
+                  <a-select-option
+                    @click="getCity(2, city.id)"
+                    v-for="city in this.citys"
+                    :key="city.index"
+                    :value="city.id"
+                    >{{ city.area }}</a-select-option
+                  >
+                </a-select>
+                <a-select
+                  style="width: 100px"
+                  :disabled="isDisabled"
+                  placeholder="区"
+                  :precision="0"
+                  v-decorator="['arealse', { initialValue: prov2, rules: [{ required: true, message: '请选择区！' }] }]"
+                >
+                  <a-select-option
+                    @click="getCity(3, null)"
+                    v-for="area in this.arealse"
+                    :key="area.index"
+                    :value="area.id"
+                    >{{ area.area }}</a-select-option
+                  >
+                </a-select>
               </a-form-item>
             </td>
-            <td>客户名称</td>
+            <td>维修费用(元)</td>
             <td>
-              <CustomerSelect
-                v-if="!isDisabled"
-                ref="customerSelect"
-                :needOptions="needOptions"
-                :options="customerSelectOptions"
-                @selected="handleCustomerSelected"
-              />
               <a-form-item>
-                <a-input
+                <a-input-number
                   v-if="!isDisabled"
-                  hidden
+                  style="width: 300px"
+                  :min="0"
+                  :step="1"
+                  :precision="2"
                   v-decorator="[
-                    'customerId',
-                    { initialValue: detail.customerId, rules: [{ required: true, message: '请选择客户名称' }] },
+                    'maintenanceCost',
+                    { initialValue: detail['maintenanceCost'], rules: [{ required: true, message: '请输入维修费用' }] },
                   ]"
                 />
-                <span v-else>{{ detail.customerName }}</span>
-              </a-form-item>
-              <a-form-item hidden>
-                <a-input v-decorator="['customerName', { initialValue: detail.customerName }]" />
+                <span v-else>{{ detail['maintenanceCost'] | moneyFormatNumber }}</span>
               </a-form-item>
             </td>
           </tr>
-
           <tr>
-            <td>开票类型</td>
-            <td>
-              <a-form-item>
-                <a-radio-group
-                  v-if="!isDisabled"
-                  v-decorator="[
-                    'invoiceType',
-                    { initialValue: detail.invoiceType || 1, rules: [{ required: true, message: '请选择开票类型' }] },
-                  ]"
-                >
-                  <a-radio :value="1">增票</a-radio>
-                  <a-radio :value="2">普票</a-radio>
-                </a-radio-group>
-                <span v-else>{{ { 1: '增票', 2: '普票' }[detail.invoiceType] }}</span>
-              </a-form-item>
-            </td>
-            <td>产品</td>
-            <td>
-              <a-form-item>
-                <a-select
-                  v-if="!isDisabled"
-                  mode="multiple"
-                  placeholder="产品"
-                  :allowClear="true"
-                  v-decorator="[
-                    `products`,
-                    { initialValue: detail.productsVal, rules: [{ required: true, message: '请选择产品' }] },
-                  ]"
-                >
-                  <a-select-option v-for="item in productCategoryList" :key="item.id" :value="item.id">{{
-                    item.text
-                  }}</a-select-option>
-                </a-select>
-                <span v-else>{{ detail.productsTxt }}</span>
-              </a-form-item>
-            </td>
-          </tr>
-
-          <tr>
-            <td>协议有效期</td>
-            <td>
+            <td>合同有效期</td>
+            <td colspan="3">
               <a-form-item>
                 <a-range-picker
                   v-if="!isDisabled"
@@ -141,337 +228,74 @@
                     'validityDate',
                     {
                       initialValue: [
-                        detail.validityDateStart ? moment(detail.validityDateStart) : undefined,
-                        detail.validityDateEnd ? moment(detail.validityDateEnd) : undefined,
+                        detail.effectiveStart ? moment(detail.effectiveStart) : undefined,
+                        detail.effectiveEnd ? moment(detail.effectiveEnd) : undefined,
                       ],
                       rules: [{ required: true, message: '请选择协议有效期' }],
                     },
                   ]"
-                  style="width: 100%"
+                  style="width: 50%"
                   :allowClear="true"
                 />
-                <span v-else>{{ detail.validityDateStart }}~{{ detail.validityDateEnd }}</span>
+                <span v-else>{{ detail.effectiveStart }}~{{ detail.effectiveEnd }}</span>
               </a-form-item>
             </td>
-            <td>销售区域</td>
-            <td>
+          </tr>
+          <tr>
+            <td>结算方式</td>
+            <td colspan="3">
               <a-form-item>
-                <ProvinceTreeCascade
+                <span>自合同签订之日起</span>
+                <a-input-number
                   v-if="!isDisabled"
-                  @change="provinceTreeCascadeChange"
-                  :areaList="detail.salesAreaVal || []"
-                />
-
-                <a-input
-                  v-if="!isDisabled"
-                  hidden
+                  :precision="0"
+                  style="width: 100px"
                   v-decorator="[
-                    'salesArea',
+                    'startPayment',
+                    { initialValue: detail['startPayment'], rules: [{ required: true, message: '请输入几日内' }] },
+                  ]"
+                />
+                <span v-else>{{ detail.startPayment }}</span>
+                <span> 日内,甲方向乙方指定账号内分 </span>
+                <a-input-number
+                  :precision="0"
+                  v-if="!isDisabled"
+                  style="width: 100px"
+                  v-decorator="[
+                    'paymentCount',
+                    { initialValue: detail['paymentCount'], rules: [{ required: true, message: '请输入分几次' }] },
+                  ]"
+                />
+                <span v-else>{{ detail.paymentCount }}</span>
+                <span>次</span>
+                <br />
+                <span>每次支付人民币</span>
+                <a-input-number
+                  :precision="2"
+                  v-if="!isDisabled"
+                  style="width: 100px"
+                  v-decorator="[
+                    'paymentAmount',
                     {
-                      initialValue: detail.salesArea,
-                      rules: [{ required: true, message: '选择销售区域' }],
+                      initialValue: detail['paymentAmount'],
+                      rules: [{ required: true, message: '请输入每次支付多少元' }],
                     },
                   ]"
                 />
-                <span v-else>{{ detail.salesAreaTxt }}</span>
-
-                <!-- <a-cascader
-                  v-decorator="['salesArea', {initialValue:detail.salesArea ? detail.salesArea.split(',') : undefined, rules: [{ required: true, message: '选择省市区' }] }]"
-                  :options="birthplaceOptions"
-                  @change="birthplaceCascaderChange"
-                  :loadData="birthplaceCascaderLoadData"
-                  placeholder="选择省市区"
-                /> -->
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>保证金</td>
-            <td>
-              <a-form-item>
-                <a-radio-group
-                  v-if="!isDisabled"
-                  v-decorator="[
-                    'haveDeposit',
-                    { initialValue: +detail.haveDeposit || 1, rules: [{ required: true, message: '选择保证金' }] },
-                  ]"
-                  @change="depositChange"
-                >
-                  <a-radio :value="1">有</a-radio>
-                  <a-radio :value="2">无</a-radio>
-                </a-radio-group>
-                <span v-else>{{ { 1: '有', 2: '无' }[detail.haveDeposit] }}</span>
-              </a-form-item>
-            </td>
-            <td>返点</td>
-            <td>
-              <a-form-item>
-                <a-radio-group
-                  v-if="!isDisabled"
-                  v-decorator="[
-                    'haveRepay',
-                    { initialValue: +detail.haveRepay || 2, rules: [{ required: true, message: '选择返点' }] },
-                  ]"
-                >
-                  <a-radio :value="1">有</a-radio>
-                  <a-radio :value="2">无</a-radio>
-                </a-radio-group>
-                <span v-else>{{ { 1: '有', 2: '无' }[detail.haveRepay] }}</span>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>完成任务额(万元)</td>
-            <td>
-              <a-form-item>
+                <span v-else>{{ detail.paymentAmount }}</span>
+                <span> 元,合计年服务费人民币 </span>
                 <a-input-number
-                  v-if="!isDisabled"
-                  style="width: 100%"
-                  :min="0"
-                  :step="1"
                   :precision="2"
+                  v-if="!isDisabled"
+                  style="width: 100px"
                   v-decorator="[
-                    'quotas',
-                    { initialValue: detail['quotas'], rules: [{ required: true, message: '请输入任务额' }] },
+                    'yearCost',
+                    { initialValue: detail['yearCost'], rules: [{ required: true, message: '请输入年服务费' }] },
                   ]"
                 />
-                <span v-else>{{ detail['quotas'] | moneyFormatNumber }}</span>
+                <span v-else>{{ detail.yearCost }}</span>
+                <span>元</span>
               </a-form-item>
-            </td>
-            <template v-if="haveDeposit">
-              <td>保证金(万元)</td>
-              <td>
-                <a-form-item>
-                  <a-input-number
-                    v-if="!isDisabled"
-                    style="width: 100%"
-                    :min="0"
-                    :step="1"
-                    :precision="2"
-                    v-decorator="[
-                      'deposit',
-                      { initialValue: detail['deposit'], rules: [{ required: true, message: '请输入保证金' }] },
-                    ]"
-                  />
-                  <span v-else>{{ detail['deposit'] | moneyFormatNumber }}</span>
-                </a-form-item>
-              </td>
-            </template>
-            <template v-else>
-              <td colspan="2"></td>
-            </template>
-          </tr>
-
-          <tr>
-            <td>甲方信息</td>
-            <td colspan="3">
-              <a-row>
-                <a-col :span="24" justify="center" align="middle">
-                  <a-row class="inner-row">
-                    <a-col :span="12">
-                      <a-form-item label="微信号" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'salesmanWechat',
-                            { initialValue: detail.salesmanWechat, rules: [{ required: true, message: '填写微信号' }] },
-                          ]"
-                        />
-                        <span v-else>{{ detail.salesmanWechat }}</span>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item label="电子邮箱" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'salesmanEmail',
-                            {
-                              initialValue: detail.salesmanEmail,
-                              rules: [{ required: true, message: '填写电子邮箱' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.salesmanEmail }}</span>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                </a-col>
-              </a-row>
-            </td>
-          </tr>
-
-          <tr>
-            <td>乙方信息<br />（开票信息）</td>
-            <td colspan="3">
-              <a-row>
-                <a-col :span="24" justify="center" align="middle">
-                  <a-row class="inner-row">
-                    <a-col :span="12">
-                      <a-form-item label="微信号" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerWechat',
-                            { initialValue: detail.customerWechat, rules: [{ required: true, message: '填写微信号' }] },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerWechat }}</span>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item label="电子邮箱" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerEmail',
-                            {
-                              initialValue: detail.customerEmail,
-                              rules: [{ required: true, message: '填写电子邮箱' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerEmail }}</span>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                  <a-row class="inner-row">
-                    <a-col :span="12">
-                      <a-form-item label="地址" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerAddress',
-                            {
-                              initialValue: detail.customerAddress,
-                              rules: [{ required: true, message: '填写详细地址' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerAddress }}</span>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item label="手机号" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerPhone',
-                            { initialValue: detail.customerPhone, rules: [{ required: true, message: '填写手机号' }] },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerPhone }}</span>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-
-                  <a-row class="inner-row">
-                    <a-col :span="12">
-                      <a-form-item label="单位全称" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerCorporation',
-                            {
-                              initialValue: detail.customerCorporation,
-                              rules: [{ required: true, message: '填写单位全称' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerCorporation }}</span>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item label="邮政编码" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerPostalCode',
-                            {
-                              initialValue: detail.customerPostalCode,
-                              rules: [{ required: false, message: '填写邮政编码' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerPostalCode }}</span>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                  <a-row class="inner-row">
-                    <a-col :span="12">
-                      <a-form-item label="开户行名称" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerBank',
-                            {
-                              initialValue: detail.customerBank,
-                              rules: [{ required: false, message: '填写开户行名称' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerBank }}</span>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item label="银行账号" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerBankAccount',
-                            {
-                              initialValue: detail.customerBankAccount,
-                              rules: [{ required: false, message: '填写银行账号' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerBankAccount }}</span>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                  <a-row class="inner-row">
-                    <a-col :span="12">
-                      <a-form-item label="税号" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerTaxId',
-                            { initialValue: detail.customerTaxId, rules: [{ required: false, message: '填写税号' }] },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerTaxId }}</span>
-                      </a-form-item>
-                    </a-col>
-                    <a-col :span="12">
-                      <a-form-item label="银行账号名称" :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }">
-                        <a-input
-                          v-if="!isDisabled"
-                          type="text"
-                          v-decorator="[
-                            'customerBankUser',
-                            {
-                              initialValue: detail.customerBankUser,
-                              rules: [{ required: false, message: '填写银行账号名称' }],
-                            },
-                          ]"
-                        />
-                        <span v-else>{{ detail.customerBankUser }}</span>
-                      </a-form-item>
-                    </a-col>
-                  </a-row>
-                </a-col>
-              </a-row>
             </td>
           </tr>
         </table>
@@ -482,7 +306,7 @@
             <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
             <a-button
               key="submit"
-              style="margin-left: 10px"
+              style="margin-left: 10px;margin-right: 10px;”"
               type="primary"
               icon="check"
               :loading="spinning"
@@ -521,24 +345,11 @@
   </a-modal>
 </template>
 <script>
-import {
-  agencyContractAddOrUpdate,
-  agencyContractApprove,
-  agencyContractDel,
-  agencyContractDetail,
-  agencyContractGenerateContractNum,
-  agencyContractPageList,
-  agencyContractGenerateFDF,
-  agencyContractRevocation,
-  agencyContractAttachmentAddOrUpdate,
-  agencyContractAttachmentDel,
-  agencyContractAttachmentList,
-} from '@/api/agencyContract'
-import CustomerSelect from '@/components/CustomerList/CustomerSelect'
-import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
+import { afterdetail, afteraddOrUpdate, afteraddOrapprove } from '@/api/agencyContract'
+import { getDictionaryList } from '@/api/workBox'
 import { getAreaByParent } from '@/api/common'
+import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getListSalesman } from '@/api/contractListManagement'
-import { getListByText } from '@/api/workBox'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -546,7 +357,7 @@ let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { Approval, CustomerSelect, ProvinceTreeCascade },
+  components: { Approval, ProvinceTreeCascade },
   data() {
     return {
       form: this.$form.createForm(this),
@@ -555,9 +366,16 @@ export default {
       actionType: 'view',
       detail: {},
       record: {},
+      provinces: [], // 省下拉框数据
+      citys: [], // 城市下拉框数据
+      arealse: [], // 区下拉框数据
+      prov: undefined,
+      prov1: undefined,
+      prov2: undefined,
       spinning: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       saleUsers: [],
+      agreement: [],
       productCategoryList: [],
       customerSelectOptions: {
         inputLabel: '',
@@ -574,9 +392,7 @@ export default {
       needOptions: {
         userId: undefined,
       },
-      birthplaceOptions: [], //籍贯 级联 省市
       contractNum: undefined,
-      haveDeposit: true,
     }
   },
   computed: {
@@ -607,14 +423,21 @@ export default {
     init() {
       let that = this
       let queue = []
-      let task1 = getListByText({ text: '产品类型' }).then((res) => {
-        that.productCategoryList = res.data.records
-      })
-      queue.push(task1)
-      let task2 = getListSalesman().then((res) => {
+      getAreaByParent({ pId: 100000 })
+        .then((res) => {
+          // 所有省
+          this.provinces = res.data
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
+      getListSalesman().then((res) => {
         that.saleUsers = res.data
       })
-      queue.push(task2)
+      getDictionaryList({ parentId: 641 }).then((res) => {
+        that.agreement = res.data
+      })
+
       if (that.isAdd) {
         let task3 = agencyContractGenerateContractNum().then((res) => {
           let detail = { ...that.detail, contractNum: res.data }
@@ -623,22 +446,31 @@ export default {
         queue.push(task3)
       }
 
-      //let task4 = that.loadAreaAction(100000).then(res => that.birthplaceOptions = res)
-      //queue.push(task4)
       //修改时 客户名称不可修改
       that.customerSelectOptions = { ...that.customerSelectOptions, inputDisable: that.isEdit }
 
       return Promise.all(queue)
+    },
+    getCity(type, pId) {
+      if (type != 3) {
+        getAreaByParent({ pId: pId })
+          .then((res) => {
+            if (type === 1) {
+              this.citys = res.data
+            } else if (type === 2) {
+              this.arealse = res.data
+            }
+          })
+          .catch(function (err) {
+            console.log(err)
+          })
+      }
     },
     handleCustomerSelected(item) {
       this.form.setFieldsValue({
         customerId: item && item.id ? item.id : undefined,
         customerName: item.name,
       })
-    },
-    depositChange(e) {
-      const v = e.target.value
-      this.haveDeposit = +v === 1
     },
     saleUserChange(saleUserId) {
       //选择销售人员 填充对应的 微信和邮箱
@@ -651,22 +483,22 @@ export default {
       let target = this.saleUsers.find((user) => +user.userId === parseInt(saleUserId))
       //console.log(target)
       if (target) {
-        let salesmanEmail = undefined,
-          salesmanWechat = undefined
+        let email = undefined,
+          wxNum = undefined
         if (target.email) {
-          salesmanEmail = target.email
+          email = target.email
         } else if (target.userInfo && target.userInfo.email) {
-          salesmanEmail = target.userInfo.email
+          email = target.userInfo.email
         }
-        salesmanEmail = salesmanEmail || undefined
+        email = email || undefined
 
         if (target.wxNum) {
-          salesmanWechat = target.wxNum
+          wxNum = target.wxNum
         } else if (target.userInfo && target.userInfo.wxNum) {
-          salesmanWechat = target.userInfo.wxNum
+          wxNum = target.userInfo.wxNum
         }
-        salesmanWechat = salesmanWechat || undefined
-        this.form.setFieldsValue({ salesmanEmail, salesmanWechat })
+        wxNum = wxNum || undefined
+        this.form.setFieldsValue({ email, wxNum })
       }
     },
 
@@ -700,47 +532,30 @@ export default {
         return
       }
 
-      await agencyContractDetail({ id: record.id }).then((res) => {
-        //console.log(res)
-        //debugger
-        if (res.data.salesArea) {
-          let _arr = res.data.salesArea.split(';')
-          res.data.salesAreaVal = _arr.length >= 1 ? _arr[0].split(',') : []
-          res.data.salesAreaTxt = _arr.length === 2 ? _arr[1] : ''
-        }
-        if (res.data.products) {
-          let _arr = res.data.products.split(';')
-          res.data.productsVal = _arr.length >= 1 ? _arr[0].split(',').map((v) => +v) : []
-          res.data.productsTxt = _arr.length === 2 ? _arr[1] : undefined
-        }
-        if (res.data.salesmanId) {
-          res.data.salemanName = that.getSaleManName(res.data.salesmanId)
-        }
+      await afterdetail({ id: record.id }).then((res) => {
         that.detail = res.data
-
-        //是否显示保证金
-        that.haveDeposit = +that.detail.haveDeposit === 1
-
-        that.$refs.customerSelect &&
-          that.$refs.customerSelect.fill({
-            id: that.detail.customerId,
-            name: that.detail.customerName,
-          })
-
-        //that.form.setFieldsValue({...that.detail})
+        let arrs = that.detail.area.split(',')
+        that.prov = Number(arrs[0])
+        that.prov1 = Number(arrs[1])
+        that.prov2 = Number(arrs[2])
+        // that.form.setFieldsValue({ ...that.detail })
+        let arr = (res.data.area || '').split(',')
+        that.getCity(1, arr[0])
+        that.getCity(2, arr[1])
+        that.getCity(3, null)
       })
     },
     handleSubmit(type) {
       let that = this
       this.form.validateFields((err, values) => {
         if (!err) {
-          values.state = +type === 3 ? 2 : 1
+          values.saveType = +type === 3 ? 2 : 1
 
           if (+type === 1 && that.record.id) {
             that.visible = false
             that.$router.push({
-              name: 'agencyContractView',
-              params: { id: that.record.id, action: 'view', from: 'agencyContractList' },
+              name: 'afterSalesView',
+              params: { id: that.record.id, action: this.actionType, from: 'afterSalesList' },
             })
             return
           }
@@ -748,33 +563,24 @@ export default {
           values.contractNum = that.detail.contractNum
           if (that.isEdit) {
             values.id = that.record.id
+            values.userId = that.detail.userId
+            values.wxNum = that.detail.wxNum
+            values.email = that.detail.email
           }
-          // if(values.salesArea){
-          //   values.salesArea = values.salesArea.join(',')
-          // }
-          values.signedDate = values.signedDate.format('YYYY-MM-DD')
-          values.validityDateStart = values.validityDate[0].format('YYYY-MM-DD')
-          values.validityDateEnd = values.validityDate[1].format('YYYY-MM-DD')
-
+          values.signingDate = values.signingDate.format('YYYY-MM-DD')
+          values.effectiveStart = values.validityDate[0].format('YYYY-MM-DD')
+          values.effectiveEnd = values.validityDate[1].format('YYYY-MM-DD')
+          values.area = values.province + ',' + values.city + ',' + values.arealse
           delete values.validityDate
-
-          if (Array.isArray(values.products)) {
-            let ids = values.products.join(',')
-            let strs = values.products
-              .map((v) => {
-                let target = that.productCategoryList.find((item) => +item.id === +v)
-                return target.text
-              })
-              .join(',')
-
-            values.products = `${ids};${strs}`
-          }
+          delete values.province
+          delete values.city
+          delete values.arealse
 
           //productCategoryList
           console.log('Received values of form: ', values)
           //return
           that.spinning = true
-          agencyContractAddOrUpdate(values)
+          afteraddOrUpdate(values)
             .then((res) => {
               that.spinning = false
               if (res.code === 200) {
@@ -783,8 +589,8 @@ export default {
                 that.$emit('finish')
                 if (+type === 1) {
                   that.$router.push({
-                    name: 'agencyContractView',
-                    params: { id: that.record.id, action: 'view', from: 'agencyContractList' },
+                    name: 'afterSalesView',
+                    params: { id: that.record.id, action: this.actionType, from: 'afterSalesList' },
                   })
                 }
               } else {
@@ -806,7 +612,7 @@ export default {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
-      agencyContractApprove(values)
+      afteraddOrapprove(values)
         .then((res) => {
           that.spinning = false
           console.log(res)

@@ -16,8 +16,8 @@
         >
 
         <a-button class="fl-r" type="primary" @click="goBackConstractList" icon="backward">返回</a-button>
-        <!-- <a-button class="fl-r" type="primary" @click="getPDF()" >导出成PDF</a-button> -->
-        <a :href="detail.pdfUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
+        <a-button class="fl-r" type="primary" @click="getPDF()" >导出成PDF</a-button>
+        <!-- <a :href="detail.pdfUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a> -->
       </div>
 
       <div class="contract-wrap" id="pdfDom">
@@ -133,7 +133,7 @@
                 <div class="card">
                   <p class="card-tit">乙方</p>
                   <p>
-                      甲方（盖章）：<span class="span-paddings">{{ detail.customerName }}</span>
+                      乙方（盖章）：<span class="span-paddings">{{ detail.customerName }}</span>
                   </p>
                   <p>
                    代理人：
@@ -196,7 +196,7 @@ export default {
   computed: {},
   watch: {
     $route(to, from) {
-      if (to.name === 'agencyContractView') {
+      if (to.name === 'Business_borrowingView') {
         console.log('agencyContractView $route called...')
         this.init()
       }
@@ -217,13 +217,6 @@ export default {
       businessdetail({ id: routeParam.id })
         .then((res) => {
           let data = res.data
-          if (data.products) {
-            let arr = data.products.split(';')
-            data.productsName = arr.length === 2 ? data.products.split(';')[1] : data.products
-          }
-
-          data.validityDateStartTxt = moment(data.validityDateStart).format('YYYY年MM月DD日')
-          data.validityDateEndTxt = moment(data.validityDateEnd).format('YYYY年MM月DD日')
 
           that.detail = data
         })
