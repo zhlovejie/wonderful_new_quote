@@ -130,7 +130,7 @@ export default {
       that.visible = true
       that.record = record
       that.searchParam = { ...that.searchParam, userId: record.userId }
-      this.searchAction({ current: 1 })
+      this.searchAction({ current: 1, type: 1 })
     },
     searchAction(opt) {
       let that = this
