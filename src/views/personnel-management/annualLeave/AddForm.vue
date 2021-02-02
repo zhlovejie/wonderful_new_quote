@@ -21,7 +21,7 @@
         >
       </div>
       <div class="main-wrapper">
-        <a-tabs :activeKey="activeKey" defaultActiveKey="1" @change="tabChange">
+        <a-tabs :activeKey="activeKey" :defaultActiveKey="1" @change="tabChange">
           <a-tab-pane tab="调休" :key="1" />
           <template>
             <a-tab-pane tab="年假" :key="2" />
@@ -128,9 +128,10 @@ export default {
     async query(type, record) {
       let that = this
       that.visible = true
+      that.activeKey = 1
       that.record = record
       that.searchParam = { ...that.searchParam, userId: record.userId }
-      this.searchAction({ current: 1, type: 1 })
+      that.searchAction({ current: 1, type: 1 })
     },
     searchAction(opt) {
       let that = this
