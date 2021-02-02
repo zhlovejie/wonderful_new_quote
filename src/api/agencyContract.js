@@ -4,6 +4,19 @@ import {
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
+// 代签合同接口
+export function purchaseList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/pageList',
+    method: 'get',
+    params: params
+  })
+}
+
+
+
+
 //产品售后服务外包协议列表
 export function afterList(params) {
   return axios({

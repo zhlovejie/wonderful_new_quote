@@ -651,6 +651,17 @@ export default {
           }
         },
         {
+          path: '/sales-management/contractBehalf/step-forms/basicInformation1',
+          name: 'basicInformation2',
+          hidden: true,
+          component: () => import('@/views/sales-management/contractBehalf/step-forms/basicInformation1'),
+          meta: {
+            title: '代签购货合同',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
           path: '/sales-management/contract-list-management/step-forms-edit/basicInformation1',
           name: 'basicInformationEdit',
           hidden: true,
@@ -809,6 +820,17 @@ export default {
           meta: {
             title: '代签购货合同',
             keepAlive: false,
+            permission: ['permission']
+          }
+        },
+
+        {
+          path: '/sales-management/contractBehalf/preview/previewTripartiteContract',
+          name: 'previewTripartiteContracts', //三方合同
+          hidden: true,
+          component: () => import('@/views/sales-management/contractBehalf/preview/previewTripartiteContract'),
+          meta: {
+            title: '销售合同',
             permission: ['permission']
           }
         },
