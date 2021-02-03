@@ -128,9 +128,10 @@ export default {
       //debugger
       let that = this
       that.visible = true
+      that.activeKey = 1
       that.record = record
       that.searchParam = { ...that.searchParam, userId: record.userId }
-      this.searchAction({ current: 1 })
+      that.searchAction({ current: 1, type: 1 })
     },
     searchAction(opt) {
       let that = this
