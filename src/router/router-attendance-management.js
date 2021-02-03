@@ -55,6 +55,17 @@ export default { //考勤管理
           }
         },
         {
+          path: '/attendance-management/rules-setting/rest-timeout',
+          name: 'attendance-rules-setting-rest-timeout',
+          component: () => import('@/views/attendance-management/rules-setting/rest-timeout/List'),
+          meta: {
+            title: '调休规则设置',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
           path: '/attendance-management/rules-setting/fine-rules',
           name: 'attendance-rules-setting-fine-rules',
           component: () => import('@/views/attendance-management/rules-setting/fine-rules/list'),

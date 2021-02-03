@@ -1194,3 +1194,25 @@ export function no_rules_List(parameter) {
     params: parameter
   })
 }
+
+
+//-------------------调休规则设置-----------------------
+export function attenceRestTimeoutPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceRestTimeout/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**更新超时记录 */
+export function attenceRestTimeoutUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceRestTimeout/update',
+    method: 'post',
+    data: parameter
+  })
+}
+//-------------------调休规则设置--END------------------
