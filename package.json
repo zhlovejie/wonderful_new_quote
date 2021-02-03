@@ -16,7 +16,7 @@
     "@antv/data-set": "^0.10.1",
     "@tinymce/tinymce-vue": "^2.0.0",
     "accounting": "^0.4.1",
-    "ant-design-vue": "^1.4.11",
+    "ant-design-vue": "^1.7.2",
     "axios": "^0.19.0",
     "braft-editor": "^2.3.2",
     "core-js": "^2.6.9",

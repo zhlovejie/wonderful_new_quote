@@ -98,7 +98,8 @@
           <tr>
             <td style="width: 15%">合同编号</td>
             <td style="width: 35%">
-              <span>{{ detail.contractNum }}</span>
+              <span v-if="!isDisabled" style="color:#999;">系统自动生成</span>
+              <span v-else>{{detail.contractNum}}</span>
             </td>
             <td style="width: 15%">签订日期</td>
             <td style="width: 35%">
@@ -206,7 +207,7 @@
 import {
   dealerContractAddOrUpdate,
   dealerContractDetail,
-  dealerContractGenerateContractNum,
+  //dealerContractGenerateContractNum,
   dealerContractApprove,
 } from '@/api/qualificationsBorrowManagement'
 
@@ -310,8 +311,7 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          let { effectiveStart, effectiveEnd, contractNum } = that.detail
-          values.contractNum = contractNum
+          let { effectiveStart, effectiveEnd } = that.detail
           values.saveType = saveType
           values.effectiveStart = effectiveStart
           values.effectiveEnd = effectiveEnd
@@ -355,9 +355,9 @@ export default {
           effectiveStart: moment().format('YYYY-MM-DD'),
           effectiveEnd: moment().format('YYYY-MM-DD'),
         }
-        dealerContractGenerateContractNum().then((res) => {
-          that.detail = { ...that.detail, contractNum: res.data }
-        })
+        // dealerContractGenerateContractNum().then((res) => {
+        //   that.detail = { ...that.detail, contractNum: res.data }
+        // })
         that.$refs.customerSelect && that.$refs.customerSelect.handleClear()
         return
       }

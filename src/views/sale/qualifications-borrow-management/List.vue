@@ -79,43 +79,11 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
           <a-divider type="vertical" />
-          <a type="primary" @click="doAction('preview', record)">预览</a>
-          <template v-if="activeKey === 1">
-            <template v-if="record.status === 1">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit', record)">修改</a>
-            </template>
-            <template v-if="record.status === 2">
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
-                <a type="primary" href="javascript:;">撤回</a>
-              </a-popconfirm>
-            </template>
-            <template v-if="record.status === 3">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('upload', record)">附件</a>
-            </template>
-            <template v-if="[4, 5].includes(+record.status)">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit', record)">修改</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-                <a type="primary" href="javascript:;">删除</a>
-              </a-popconfirm>
-            </template>
-          </template>
-
-          <template v-if="activeKey === 2">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('approval', record)">审批</a>
-          </template>
+          <a type="primary" @click="doAction('do', record)">处理</a>
         </div>
       </a-table>
     </div>
-    <!-- <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction()" />
-    <UploadFile ref="uploadFile" />
-    <PreView ref="preView" /> -->
   </div>
 </template>
 <script>
@@ -124,10 +92,7 @@ import {
 } from '@/api/qualificationsBorrowManagement'
 
 import { getListSaleContractUser } from '@/api/contractListManagement'
-// import AddForm from './module/AddForm'
-// import PreView from './module/View'
-// import UploadFile from './module/UploadFile'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import AddForm from './AddForm'
 
 const columns = [
   {
@@ -180,10 +145,7 @@ const columns = [
 export default {
   name: 'qualifications-borrow-management-list',
   components: {
-    // AddForm,
-    // ApproveInfo,
-    // PreView,
-    // UploadFile,
+     AddForm
   },
   data() {
     return {
@@ -262,50 +224,10 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      if (type === 'reback') {
-        dealerContractRevocation(`id=${record.id}`)
-          .then((res) => {
-            that.$message.info(res.msg)
-            if (+res.code === 200) {
-              that.searchAction()
-            }
-          })
-          .catch((err) => that.$message.error(err.message))
-        return
-      }
-      if (type === 'del') {
-        dealerContractDelete(`id=${record.id}`)
-          .then((res) => {
-            that.$message.info(res.msg)
-            if (+res.code === 200) {
-              that.searchAction()
-            }
-          })
-          .catch((err) => that.$message.error(err.message))
-        return
-      }
-      if (type === 'preview') {
-        this.$refs.preView.query(type, record)
-        return
-      }
-      if (type === 'upload') {
-        that.$refs.uploadFile.query(type, record)
-        return
-      }
       that.$refs.addForm.query(type, record)
     },
-    getStatusText(state) {
-      let stateMap = {
-        1: '待提交',
-        2: '待审批',
-        3: '通过',
-        4: '不通过',
-        5: '已撤回',
-      }
-      return stateMap[state] || `未知状态:${state}`
-    },
     approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId)
+      //this.$refs.approveInfoCard.init(record.instanceId)
     },
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0

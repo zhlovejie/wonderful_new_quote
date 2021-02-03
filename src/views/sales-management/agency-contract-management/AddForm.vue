@@ -21,7 +21,9 @@
           <tr>
             <td style="width: 15%">合同编号</td>
             <td style="width: 35%">
-              <span>{{ detail.contractNum }}</span>
+              <!-- <span>{{ detail.contractNum }}</span> -->
+              <span v-if="!isDisabled" style="color: #999">系统自动生成</span>
+              <span v-else>{{ detail.contractNum }}</span>
             </td>
             <td style="width: 15%">签订日期</td>
             <td style="width: 35%">
@@ -615,13 +617,13 @@ export default {
         that.saleUsers = res.data
       })
       queue.push(task2)
-      if (that.isAdd) {
-        let task3 = agencyContractGenerateContractNum().then((res) => {
-          let detail = { ...that.detail, contractNum: res.data }
-          that.detail = detail
-        })
-        queue.push(task3)
-      }
+      // if (that.isAdd) {
+      //   let task3 = agencyContractGenerateContractNum().then((res) => {
+      //     let detail = { ...that.detail, contractNum: res.data }
+      //     that.detail = detail
+      //   })
+      //   queue.push(task3)
+      // }
 
       //let task4 = that.loadAreaAction(100000).then(res => that.birthplaceOptions = res)
       //queue.push(task4)
@@ -745,7 +747,7 @@ export default {
             return
           }
 
-          values.contractNum = that.detail.contractNum
+          //values.contractNum = that.detail.contractNum
           if (that.isEdit) {
             values.id = that.record.id
           }
