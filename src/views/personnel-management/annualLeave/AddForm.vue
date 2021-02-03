@@ -21,11 +21,9 @@
         >
       </div>
       <div class="main-wrapper">
-        <a-tabs :activeKey="activeKey" defaultActiveKey="1" @change="tabChange">
+        <a-tabs :activeKey="activeKey" :defaultActiveKey="1" @change="tabChange">
           <a-tab-pane tab="调休" :key="1" />
-          <template>
-            <a-tab-pane tab="年假" :key="2" />
-          </template>
+          <a-tab-pane tab="年假" :key="2" />
         </a-tabs>
         <a-table
           :columns="columns"
@@ -52,6 +50,7 @@
             <span v-if="text === 4">年假发放</span>
             <span v-if="text === 5">手动修改调休</span>
             <span v-if="text === 6">手动修改年假</span>
+            <span v-if="text === 7">调休负时长清零</span>
           </div>
         </a-table>
       </div>
@@ -126,6 +125,7 @@ export default {
       this.$set(this.searchParam, 'endTime', dateString[1])
     },
     async query(type, record) {
+      //debugger
       let that = this
       that.visible = true
       that.record = record
@@ -135,7 +135,7 @@ export default {
     searchAction(opt) {
       let that = this
       // debugger
-      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
+      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination },{type: that.activeKey}, opt || {})
       that.loading = true
       annualLeave(_searchParam)
         .then((res) => {
@@ -161,11 +161,9 @@ export default {
     },
     handleCancel() {
       this.visible = false
-      this.searchParam = {}
     },
     tabChange(tagKey) {
       this.activeKey = +tagKey
-      this.searchParam = { ...this.searchParam, type: this.activeKey }
       this.searchAction({ current: 1 })
     },
   },

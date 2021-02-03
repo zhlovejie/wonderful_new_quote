@@ -1197,6 +1197,35 @@ export function no_rules_List(parameter) {
 
 
 //-------------------调休规则设置-----------------------
+export function attenceRestRuleDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceRestRule/detail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function attenceRestRuleAddOrUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceRestRule/addOrUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function attenceRestRuleDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceRestRule/delete',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
 export function attenceRestTimeoutPageList(parameter) {
   return axios({
     baseURL: system.baseURL,

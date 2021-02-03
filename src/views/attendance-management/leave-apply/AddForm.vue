@@ -250,11 +250,11 @@ export default {
     }
   },
   watch: {
-    isLeaveTimeThanUserRestHours(res) {
-      if (res && (this.isAdd || this.isEdit)) {
-        this.$message.info('请假时长大于可以调休时长，禁止操作')
-      }
-    }
+    // isLeaveTimeThanUserRestHours(res) {
+    //   if (res && (this.isAdd || this.isEdit)) {
+    //     this.$message.info('请假时长大于可以调休时长，禁止操作')
+    //   }
+    // }
   },
   methods: {
     moment,
@@ -432,10 +432,10 @@ export default {
         return
       }
 
-      if (that.isLeaveTimeThanUserRestHours) {
-        that.$message.info('请假时长大于可以调休时长，禁止操作')
-        return
-      }
+      // if (that.isLeaveTimeThanUserRestHours) {
+      //   that.$message.info('请假时长大于可以调休时长，禁止操作')
+      //   return
+      // }
       
 
       this.form.validateFields((err, values) => {

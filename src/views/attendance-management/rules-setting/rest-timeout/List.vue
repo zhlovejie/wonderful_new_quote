@@ -1,8 +1,15 @@
 <template>
-  <!-- 考核规则 -->
+  <!-- 调休规则设置 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-button v-if="dataSource.length === 0" style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+      <a-button
+        v-if="dataSource.length === 0"
+        style="float: right"
+        type="primary"
+        icon="plus"
+        @click="doAction('add', null)"
+        >新增</a-button
+      >
     </div>
     <div class="main-wrapper">
       <a-table
@@ -15,123 +22,124 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="negative" slot-scope="text, record, index">
+          <span>{{ { 1: '是', 2: '否' }[text] }}</span>
+        </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <a type="primary" @click="doAction('edit', record)">修改</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+          <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
             <a>删除</a>
           </a-popconfirm>
+          <a-divider type="vertical" />
+          <a type="primary" @click="doAction('record', record)">调休超时记录</a>
         </div>
       </a-table>
     </div>
 
     <AddRuleForm ref="addForm" @finish="searchAction()" />
+    <RestTimeoutList ref="restTimeoutList" @finish="searchAction()" />
   </div>
 </template>
 
 <script>
-import {
-  attenceRecardRuleDetail,
-  attenceRecardRuleDel
-} from '@/api/attendanceManagement'
+import { attenceRestRuleDetail, attenceRestRuleDelete } from '@/api/attendanceManagement'
 import AddRuleForm from './AddRuleForm'
+import RestTimeoutList from './RestTimeoutList'
 const columns = [
   {
     align: 'center',
     title: '序号',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
-    title: '规则名称',
-    dataIndex: 'ruleName'
+    title: '是否可以为负数',
+    dataIndex: 'negative',
+    scopedSlots: { customRender: 'negative' },
   },
   {
     align: 'center',
-    title: '补卡次数(次)',
-    dataIndex: 'permitRecardTims'
+    title: '允许负小时数',
+    dataIndex: 'negativeHours',
   },
   {
     align: 'center',
-    title: '补卡时间(天)',
-    dataIndex: 'permitDelayDayTims'
+    title: '抵扣时限（多少天内可以抵消）',
+    dataIndex: 'timeLimit',
   },
   {
     align: 'center',
-    title: '提交人',
-    dataIndex: 'createdName'
+    title: '创建人',
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
-    title: '提交时间',
-    dataIndex: 'createdTime'
+    title: '创建时间',
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
     title: '操作',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
-  name: 'supplement-card-rule-list',
+  name: 'attenceRestRule',
   components: {
-    AddRuleForm: AddRuleForm
+    AddRuleForm,
+    RestTimeoutList,
   },
   data() {
     return {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
-      loading: false
+      loading: false,
     }
   },
   computed: {
     searchParam() {
-      return {
-        
-      }
-    }
+      return {}
+    },
   },
   watch: {
     $route: {
-      handler: function(to, from) {
-        if (to.name === 'attendance-rules-setting-supplement-card-rule') {
+      handler: function (to, from) {
+        if (to.name === 'attendance-rules-setting-rest-timeout') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     init() {
-      let that = this
       this.searchAction()
     },
     searchAction(opt = {}) {
       let that = this
-      //let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
-      //console.log('执行搜索...', _searchParam)
       that.loading = true
-      attenceRecardRuleDetail()
-        .then(res => {
+      attenceRestRuleDetail()
+        .then((res) => {
           that.loading = false
-          let result = res.data = res.data ? [res.data] : []
+          let result = typeof res.data === 'object' && 'id' in res.data ? [res.data] : []
           that.dataSource = result.map((item, index) => {
             item.key = index + 1
             return item
           })
           //设置数据总条数
           const pagination = { ...that.pagination }
-          pagination.total =  0
+          pagination.total = 0
           pagination.current = 1
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -143,25 +151,29 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-     if(actionType === 'add' || actionType === 'edit'){
+      if (actionType === 'add' || actionType === 'edit') {
         that.$refs.addForm.query(actionType, record)
       } else if (actionType === 'del') {
         console.log(record)
-        attenceRecardRuleDel(`id=${record.id}`)
-          .then(res => {
+        attenceRestRuleDelete(`id=${record.id}`)
+          .then((res) => {
             that.$message.info(res.msg)
-            if(+res.code === 200){
+            if (+res.code === 200) {
               that.searchAction()
             }
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
-      }  else {
-        this.$message.info('功能尚未实现！')
+      } else if (actionType === 'record') {
+        that.$refs.restTimeoutList.query(actionType, record)
+        return
+      } else {
+        that.$message.info('功能尚未实现！')
+        return
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -170,7 +182,7 @@ export default {
   background-color: #fff;
   padding: 10px 20px;
 }
-.wdf-custom-wrapper .search-wrapper{
+.wdf-custom-wrapper .search-wrapper {
   overflow: hidden;
 }
 .wdf-custom-wrapper .search-wrapper * {

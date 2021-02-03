@@ -16,43 +16,34 @@
         </a-form-item>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>是否可以为负数</td>
-            <td>
-              <a-form-item>
-                <a-radio-group v-decorator="['negative', { initialValue: detail.negative }]">
-                  <a-radio :value="1"> 是 </a-radio>
-                  <a-radio :value="2"> 否 </a-radio>
-                </a-radio-group>
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>允许负小时数</td>
+            <td>超出小时数</td>
             <td style="text-align: left">
               <a-form-item>
                 <a-input-number
                   style="width: 100%"
                   :min="0"
                   :step="1"
+                  :precision="1"
                   v-decorator="[
-                    'negativeHours',
-                    { initialValue: detail.negativeHours, rules: [{ required: true, message: '请输入允许负小时数' }] },
+                    'exceedHours',
+                    { initialValue: detail.exceedHours, rules: [{ required: true, message: '请输入超出小时数' }] },
                   ]"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>抵扣时限（多少天内可以抵消）</td>
+            <td>扣除工资</td>
             <td style="text-align: left">
               <a-form-item>
                 <a-input-number
                   style="width: 100%"
                   :min="0"
                   :step="1"
+                  :precision="2"
                   v-decorator="[
-                    'timeLimit',
-                    { initialValue: detail.timeLimit, rules: [{ required: true, message: '请输入抵扣时限' }] },
+                    'deductWages',
+                    { initialValue: detail.deductWages, rules: [{ required: true, message: '请输入扣除工资' }] },
                   ]"
                 />
               </a-form-item>
@@ -64,9 +55,9 @@
   </a-modal>
 </template>
 <script>
-import { attenceRestRuleAddOrUpdate } from '@/api/attendanceManagement'
+import { attenceRestTimeoutUpdate } from '@/api/attendanceManagement'
 export default {
-  name: 'attenceRestRule-add',
+  name: 'attendance-rules-setting-rest-timeout-add',
   data() {
     return {
       form: this.$form.createForm(this),
@@ -78,7 +69,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      return `${this.isView ? '查看' : this.isAdd ? '新增' : '修改'}调休记录`
+      return `${this.isView ? '查看' : this.isAdd ? '新增' : '修改'}调休超时记录`
     },
     isView() {
       return this.actionType === 'view'
@@ -110,11 +101,12 @@ export default {
     },
     handleSubmit() {
       let that = this
-      this.form.validateFields((err, values) => {
+      that.form.validateFields((err, values) => {
         if (!err) {
+          values.id = that.detail.id
           console.log('Received values of form: ', values)
           that.spinning = true
-          attenceRestRuleAddOrUpdate(values)
+          attenceRestTimeoutUpdate(values)
             .then((res) => {
               that.$message.info(res.msg)
               that.spinning = false
@@ -130,8 +122,8 @@ export default {
     handleCancel() {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
