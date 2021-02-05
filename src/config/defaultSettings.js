@@ -18,8 +18,8 @@ export default {
   // baseURL: 'http://192.168.13.158:8999/oa',
   // baseURL: 'http://192.168.13.221:8999/oa',
   // baseURL: '  http://192.168.13.138:8999',
-  // baseURL: 'http://192.168.13.101:8995/oa',
-  baseURL: '  http://192.168.13.3:8999/oa',
+  baseURL: 'http://192.168.13.101:8995/oa',
+  // baseURL: '  http://192.168.13.3:8999/oa',
 
 
 

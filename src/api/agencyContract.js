@@ -26,8 +26,17 @@ export function afterList(params) {
     params: params
   })
 }
+//产品售后服务流水号
+export function afterProtocolNum(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/generateProtocolNum',
+    method: 'get',
+    params: params
+  })
+}
 
-// 投标借用撤回
+// 产品售后服务外包协议撤回
 export function afterrevocation(params) {
   return axios({
     baseURL: system.baseURL,
@@ -36,7 +45,7 @@ export function afterrevocation(params) {
     data: params
   })
 }
-// 投标借用删除
+// 产品售后服务外包协议删除
 export function afterdelete(params) {
   return axios({
     baseURL: system.baseURL,
@@ -45,7 +54,7 @@ export function afterdelete(params) {
     data: params
   })
 }
-// 投标借用详情
+// 产品售后服务外包协议详情
 export function afterdetail(params) {
   return axios({
     baseURL: system.baseURL,
@@ -55,7 +64,7 @@ export function afterdetail(params) {
   })
 }
 
-// 投标借用修改 新增
+// 产品售后服务外包协议修改 新增
 export function afteraddOrUpdate(params) {
   return axios({
     baseURL: system.baseURL,
@@ -64,7 +73,7 @@ export function afteraddOrUpdate(params) {
     data: params
   })
 }
-// 投标借用审批
+// 产品售后服务外包协议审批
 export function afteraddOrapprove(params) {
   return axios({
     baseURL: system.baseURL,
@@ -126,6 +135,16 @@ export function bidaddOrUpdat(params) {
     data: params
   })
 }
+// 投标流水
+export function bidProtocolNum(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/generateProtocolNum',
+    method: 'get',
+    params: params
+  })
+}
+
 // 投标借用审批
 export function bidapprove(params) {
   return axios({
@@ -181,6 +200,16 @@ export function businessaddOrUpdate(params) {
     data: params
   })
 }
+// 经营流水号 
+export function generateProtocolNum(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/generateProtocolNum',
+    method: 'get',
+    params: params
+  })
+}
+
 // 经营借用列表审批
 export function businessapprove(params) {
   return axios({
