@@ -280,7 +280,7 @@ export default {
           freightType: qt.freightType,
           freight: qt.freight || 0,
           contractType: qt.contractType || 1,
-          freightAllotType: qt.freightAllotType || 1,
+          freightAllotType: qt.freightAllotType || 2,
         })
         //不含税 禁用 开票类型
         this.disabled = qt.isTax === 0 ? true : false
@@ -331,6 +331,7 @@ export default {
             freight: values.freight,
             contractType: values.contractType,
             freightAllotType: values.freightAllotType,
+            borrowId: Math.floor(Math.random() * 100),
           }
           let arr = {
             purchaseContractSaveBo: params,

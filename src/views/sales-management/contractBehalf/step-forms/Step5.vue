@@ -16,7 +16,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['wx', { rules: [{ required: true, message: '填写微信号' }] }]"
+                    v-decorator="['customerWxNum', { rules: [{ required: true, message: '填写微信号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -25,7 +25,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['email', { rules: [{ required: !isProductOrder, message: '填写电子邮箱' }] }]"
+                    v-decorator="['customerEmail', { rules: [{ required: !isProductOrder, message: '填写电子邮箱' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -41,7 +41,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['address', { rules: [{ required: true, message: '填写详细地址' }] }]"
+                    v-decorator="['customerAddress', { rules: [{ required: true, message: '填写详细地址' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -50,7 +50,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['mobile', { rules: [{ required: true, message: '填写手机号' }] }]"
+                    v-decorator="['customerPhone', { rules: [{ required: true, message: '填写手机号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -58,7 +58,7 @@
             <!-- <a-row class="inner-row">
                  <a-col :span="12">
                    <a-form-item  label="手机号" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                     <a-input type="text" v-decorator="['mobile',{rules: [{ required: true, message: '填写电话' }]}]" />
+                     <a-input type="text" v-decorator="['customerPhone',{rules: [{ required: true, message: '填写电话' }]}]" />
                    </a-form-item>
                  </a-col>
                  <a-col :span="12" >
@@ -73,7 +73,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['unitFullName', { rules: [{ required: true, message: '填写单位全称' }] }]"
+                    v-decorator="['customerFullName', { rules: [{ required: true, message: '填写单位全称' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -82,7 +82,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['zipCode', { rules: [{ required: false, message: '填写邮政编码' }] }]"
+                    v-decorator="['customerPostcode', { rules: [{ required: false, message: '填写邮政编码' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -93,7 +93,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['openingBank', { rules: [{ required: false, message: '填写开户行名称' }] }]"
+                    v-decorator="['customerBankName', { rules: [{ required: false, message: '填写开户行名称' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -102,7 +102,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['bankCardAccount', { rules: [{ required: false, message: '填写银行账号' }] }]"
+                    v-decorator="['customerBankAccount', { rules: [{ required: false, message: '填写银行账号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -113,7 +113,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['dutyParagraph', { rules: [{ required: false, message: '填写税号' }] }]"
+                    v-decorator="['customerTfn', { rules: [{ required: false, message: '填写税号' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -122,7 +122,7 @@
                   <a-input
                     type="text"
                     :disabled="this.$parent.routeParams.action === 'see'"
-                    v-decorator="['accountTitle', { rules: [{ required: false, message: '填写银行账号名称' }] }]"
+                    v-decorator="['customerBankUser', { rules: [{ required: false, message: '填写银行账号名称' }] }]"
                   />
                 </a-form-item>
               </a-col>
@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import { getQueryOne, saveBInformation, deleteQueryOne } from '@/api/contractListManagement'
+import { saveNewstCustomer, saveBInformation, deleteQueryOne } from '@/api/contractListManagement'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
 export default {
   name: 'Step5',
@@ -188,85 +188,41 @@ export default {
   methods: {
     init() {
       const that = this
-      that.id = that.queryonedata.id
-      const params = { id: that.queryonedata.id }
-      if (that.id > 0) {
-        console.log('step5 called ... getQueryOne')
-        getQueryOne(params)
-          .then((res) => {
-            //debugger
-            that.queryOneData = res.data
-
-            that.isProductOrder = that.queryOneData.isTax === 0 ? true : false
-
-            that.form.setFieldsValue({
-              id: res.data.id || 0,
-            })
-
-            if (res.data.customerInfo) {
-              that.form.setFieldsValue({
-                wx: res.data.customerInfo.wx || '',
-                demandUnit: res.data.customerInfo.demandUnit || '',
-                mobile: res.data.customerInfo.mobile || 0,
-                unitFullName: res.data.customerInfo.unitFullName || '',
-                openingBank: res.data.customerInfo.openingBank || '',
-                dutyParagraph: res.data.customerInfo.dutyParagraph || '',
-                email: res.data.customerInfo.email || '',
-                address: res.data.customerInfo.address || '',
-                fax: res.data.customerInfo.fax || '',
-                zipCode: res.data.customerInfo.zipCode || '',
-                bankCardAccount: res.data.customerInfo.bankCardAccount || '',
-                accountTitle: res.data.customerInfo.accountTitle || '',
-              })
-            }
-
-            that.contractId = res.data.id
-            that.id = res.data.id
-            that.contractId = res.data.id
-            that.customerId = res.data.customerId
-
-            if (res.data.customerInfo) {
-              ;(that.wx = res.data.customerInfo.wx || ''),
-                (that.demandUnit = res.data.customerInfo.demandUnit || ''),
-                (that.mobile = res.data.customerInfo.mobile || 0),
-                (that.unitFullName = res.data.customerInfo.unitFullName || ''),
-                (that.openingBank = res.data.customerInfo.openingBank || ''),
-                (that.dutyParagraph = res.data.customerInfo.dutyParagraph || ''),
-                (that.email = res.data.customerInfo.email || ''),
-                (that.address = res.data.customerInfo.address || ''),
-                (that.fax = res.data.customerInfo.fax || ''),
-                (that.zipCode = res.data.customerInfo.zipCode || ''),
-                (that.bankCardAccount = res.data.customerInfo.bankCardAccount || ''),
-                (that.accountTitle = res.data.customerInfo.accountTitle || '')
-            }
-          })
-          .catch((error) => {
-            console.error(error)
-          })
+      if (that.queryonedata && that.queryonedata.purchaseContractSaveBo.customerWxNum) {
+        let rest = that.queryonedata.purchaseContractSaveBo
+        that.form.setFieldsValue({
+          customerWxNum: rest.customerWxNum || '',
+          customerEmail: rest.customerEmail || '',
+          customerAddress: rest.customerAddress || '',
+          customerPhone: rest.customerPhone || '',
+          customerFullName: rest.customerFullName || '',
+          customerPostcode: rest.customerPostcode || '',
+          customerBankName: rest.customerBankName || '',
+          customerBankAccount: rest.customerBankAccount || '',
+          customerTfn: rest.customerTfn || '',
+          customerBankUser: rest.customerBankUser || '',
+        })
       } else {
-        //
-        try {
-          that.form.setFieldsValue({
-            id: this.queryonedata.id || 0,
-          })
-
-          if (this.queryonedata.customerInfo) {
+        let arrId = that.queryonedata.purchaseContractSaveBo.customerId
+        console.log(arrId)
+        // `customerId=${arrId}`
+        saveNewstCustomer({ customerId: arrId }).then((res) => {
+          console.log(res)
+          if (res === 200) {
             that.form.setFieldsValue({
-              wx: this.queryonedata.customerInfo.wx || '',
-              demandUnit: this.queryonedata.customerInfo.demandUnit || '',
-              mobile: this.queryonedata.customerInfo.mobile || 0,
-              unitFullName: this.queryonedata.customerInfo.unitFullName || '',
-              openingBank: this.queryonedata.customerInfo.openingBank || '',
-              dutyParagraph: this.queryonedata.customerInfo.dutyParagraph || '',
-              email: this.queryonedata.customerInfo.email || '',
-              address: this.queryonedata.customerInfo.address || '',
-              fax: this.queryonedata.customerInfo.fax || '',
-              zipCode: this.queryonedata.customerInfo.zipCode || '',
-              bankCardAccount: this.queryonedata.customerInfo.bankCardAccount || '',
-              accountTitle: this.queryonedata.customerInfo.accountTitle || '',
+              customerWxNum: res.data.customerWxNum || '',
+              customerEmail: res.data.customerEmail || '',
+              customerAddress: res.data.customerAddress || '',
+              customerPhone: res.data.customerPhone || '',
+              customerFullName: res.data.customerFullName || '',
+              customerPostcode: res.data.customerPostcode || '',
+              customerBankName: res.data.customerBankName || '',
+              customerBankAccount: res.data.customerBankAccount || '',
+              customerTfn: res.data.customerTfn || '',
+              customerBankUser: res.data.customerBankUser || '',
             })
           }
-        } catch (err) {}
+        })
       }
     },
     // handler 表单数据验证成功后回调事件
@@ -295,39 +251,42 @@ export default {
         console.log('先校验，通过表单校验后，才进入下一步', values)
         if (!err) {
           const params = {
-            contractId: that.queryonedata.id,
+            // contractId: that.queryonedata.id,
             //customerId: that.customerId,
-            wx: values.wx,
-            demandUnit: values.demandUnit,
-            mobile: values.mobile,
-            unitFullName: values.unitFullName,
-            openingBank: values.openingBank,
-            dutyParagraph: values.dutyParagraph,
-            accountTitle: values.accountTitle,
-            email: values.email,
-            address: values.address,
-            fax: values.fax,
-            zipCode: values.zipCode,
-            bankCardAccount: values.bankCardAccount,
+            customerWxNum: values.customerWxNum,
+            // demandUnit: values.demandUnit,
+            customerPhone: values.customerPhone,
+            customerFullName: values.customerFullName,
+            customerBankName: values.customerBankName,
+            customerTfn: values.customerTfn,
+            customerBankUser: values.customerBankUser,
+            customerEmail: values.customerEmail,
+            customerAddress: values.customerAddress,
+            // fax: values.fax,
+            customerPostcode: values.customerPostcode,
+            customerBankAccount: values.customerBankAccount,
+          }
+          let params1 = {
+            purchaseContractSaveBo: { ...that.queryonedata.purchaseContractSaveBo, ...params },
           }
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-          saveBInformation(params)
-            .then((res) => {
-              console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-              that.id = res.data.id
-              that.loading = false
-              // that.form.setFieldsValue({
-              //   contractNum: res.data.contractNum
-              // })
-              if (status != 1) {
-                that.$emit('nextStep', { ...res.data })
-              } else {
-                that.$message.success('保存成功')
-              }
-            })
-            .catch((error) => {
-              console.error(error)
-            })
+          // saveBInformation(params)
+          //   .then((res) => {
+          //     console.log('校验成功，保存填写的信息，请求后端接口结果', res)
+          //     that.id = res.data.id
+          //     that.loading = false
+          //     // that.form.setFieldsValue({
+          //     //   contractNum: res.data.contractNum
+          //     // })
+          //     if (status != 1) {
+          that.$emit('nextStep', { ...params1 })
+          //     } else {
+          //       that.$message.success('保存成功')
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     console.error(error)
+          //   })
         }
       })
     },

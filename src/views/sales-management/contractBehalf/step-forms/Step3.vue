@@ -15,10 +15,10 @@
                 class="year-select"
                 :disabled="this.$parent.routeParams.action === 'see'"
                 v-decorator="[
-                  'qualityFrame',
-                  { initialValue: 3, rules: [{ required: true, message: '选择质保期限' }] },
+                  'frameWarranty',
+                  { initialValue: frameWarranty, rules: [{ required: true, message: '选择质保期限' }] },
                 ]"
-                @change="qualityFrameChange"
+                @change="frameWarrantyChange"
               >
                 <a-select-option :value="1">1年</a-select-option>
                 <a-select-option :value="2">2年</a-select-option>
@@ -31,10 +31,10 @@
                 class="year-select"
                 :disabled="this.$parent.routeParams.action === 'see'"
                 v-decorator="[
-                  'qualityElectronics',
-                  { initialValue: 1, rules: [{ required: true, message: '选择质保期限' }] },
+                  'electricWarranty',
+                  { initialValue: electricWarranty, rules: [{ required: true, message: '选择质保期限' }] },
                 ]"
-                @change="qualityElectronicsChange"
+                @change="electricWarrantyChange"
               >
                 <a-select-option :value="1">1年</a-select-option>
                 <a-select-option :value="2">2年</a-select-option>
@@ -45,10 +45,10 @@
                 class="year-select"
                 :disabled="this.$parent.routeParams.action === 'see'"
                 v-decorator="[
-                  'qualityLayer',
-                  { initialValue: 3, rules: [{ required: true, message: '选择质保期限' }] },
+                  'coatingWarranty',
+                  { initialValue: coatingWarranty, rules: [{ required: true, message: '选择质保期限' }] },
                 ]"
-                @change="qualityLayerChange"
+                @change="coatingWarrantyChange"
               >
                 <a-select-option :value="1">1年</a-select-option>
                 <a-select-option :value="2">2年</a-select-option>
@@ -174,7 +174,7 @@
                         <a-input
                           :disabled="this.$parent.routeParams.action === 'see'"
                           placeholder="备注信息"
-                          v-decorator="['convention.4.remarks']"
+                          v-decorator="['convention.4.remark']"
                         />
                       </a-form-item>
                     </a-col>
@@ -242,7 +242,7 @@
                         <a-input
                           :disabled="this.$parent.routeParams.action === 'see'"
                           placeholder="备注信息"
-                          v-decorator="['convention.2.remarks']"
+                          v-decorator="['convention.2.remark']"
                         />
                       </a-form-item>
                     </a-col>
@@ -314,7 +314,7 @@
                         <a-input
                           :disabled="this.$parent.routeParams.action === 'see'"
                           placeholder="备注信息"
-                          v-decorator="['convention.5.remarks']"
+                          v-decorator="['convention.5.remark']"
                         />
                       </a-form-item>
                     </a-col>
@@ -381,7 +381,7 @@
                         <a-input
                           :disabled="this.$parent.routeParams.action === 'see'"
                           placeholder="备注信息"
-                          v-decorator="['convention.3.remarks']"
+                          v-decorator="['convention.3.remark']"
                         />
                       </a-form-item>
                     </a-col>
@@ -462,7 +462,7 @@
                         <a-input
                           :disabled="this.$parent.routeParams.action === 'see'"
                           placeholder="备注信息"
-                          v-decorator="['convention.1.remarks']"
+                          v-decorator="['convention.1.remark']"
                         />
                       </a-form-item>
                       <a-form-item>
@@ -490,7 +490,7 @@
 </template>
 
 <script>
-import { getQueryOne, saveSettlementMethod, deleteQueryOne, checkRemoveSettle } from '@/api/contractListManagement'
+import { saveSettlementMethod, checkRemoveSettle } from '@/api/contractListManagement'
 import moment from 'moment'
 
 export default {
@@ -512,8 +512,6 @@ export default {
       dataf: [],
       increaseTotalPayment: 0, // 增加总货款金额
       allPayment: queryOneData.totalAmount, // 全款应付金额
-      conventionalMoney: queryOneData.conventionalMoney, // 常规产品总价
-      unConventionalMoney: queryOneData.unConventionalMoney, // 非常规产品总价
       allPaymentDate: moment(), // 全款付款日期
       // 常规--付款日期
       cQualityDate: moment(), // 常规-质保金-付款日期
@@ -522,34 +520,20 @@ export default {
       cpaymentForGoodsDate: moment(), // 常规--提货款-付款日期
       cAcceptDate: moment(), // 常规--验收款-付款日期
 
-      // 常规--折算金额
-      cQualityAmount: (queryOneData.totalAmount * 3) / 100, // 常规--质保金折算金额
-      cadvanceAmount: (queryOneData.totalAmount * 30) / 100, // 常规--预付款折算金额
-      cprogressAmount: 0, // 常规--进度款折算金额
-      cpaymentForGoodsAmount: 0, // 常规--提货款折算金额
-      cAcceptAmount: 0, // 常规--验收款
-
-      // 常规---款项百分比
-      cqualitypercentage: 3, // 常规--质保金百分比
-      cadvancePercentage: 30, // 常规--预付款百分比
-      cprogressPayment: 0, // 常规--进度款百分比
-      cpaymentForGoods: 0, // 常规--提货款百分比
-      cAcceptPayment: 0, // 常规--验收款百分比
-
-      fullAmount: this.queryonedata.fullAmount, // 是否全款
+      fullAmount: this.queryonedata.purchaseContractSaveBo.fullPayment, // 是否全款
       product: {}, // 产品类型常规非常规数组
       // productTypes: [],
-      qualityFrame: 3, // 主框架质保年限
-      qualityElectronics: 1, // 电子质保年限
-      qualityLayer: 3, // 图层质保年限
-      qualityFramePre: 0, // 主框架质保增加百分比
-      qualityElectronicsPre: 0, // 电子质保增加百分比
-      qualityLayerPre: 0, // 图层质保增加百分比
+      frameWarranty: 3, // 主框架质保年限
+      electricWarranty: 1, // 电子质保年限
+      coatingWarranty: 3, // 图层质保年限
+      frameWarrantyPre: 0, // 主框架质保增加百分比
+      electricWarrantyPre: 0, // 电子质保增加百分比
+      coatingWarrantyPre: 0, // 图层质保增加百分比
       qualityLimit: 0, //常规桶质保期限
       qualityLimitPre: 0, //常规桶质保期限增加百分比
       conventionValue: [], // 常规产品复选框数组value值
       unConventionValue: [], // 非常规产品复选框数组value值
-      c1: (queryOneData.conventionalMoney * 3) / 100, // 常规--质保金折算金额,
+      c1: (queryOneData.totalAmount * 3) / 100, // 常规--质保金折算金额,
       c2: 0,
       c3: 0,
       c4: 0,
@@ -578,7 +562,7 @@ export default {
     // console.log(this)
     console.log('queryOneData====', this.queryOneData)
     this.init()
-    this.fullAmount = this.queryonedata.fullAmount
+    this.fullAmount = this.queryonedata.purchaseContractSaveBo.fullPayment
   },
   computed: {
     isSmartBucket: function () {
@@ -589,7 +573,7 @@ export default {
         let _result = this.isSmartBucket
           ? (
               this.queryOneData.totalAmount *
-              (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100)
+              (this.frameWarrantyPre / 100 + this.electricWarrantyPre / 100 + this.coatingWarrantyPre / 100)
             ).toFixed(2)
           : (this.queryOneData.totalAmount * (this.qualityLimitPre / 100)).toFixed(2)
         return _result
@@ -601,7 +585,7 @@ export default {
       let _result = this.isSmartBucket
         ? (
             this.queryOneData.totalAmount *
-            (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100 + 1)
+            (this.frameWarrantyPre / 100 + this.electricWarrantyPre / 100 + this.coatingWarrantyPre / 100 + 1)
           ).toFixed(2)
         : (this.queryOneData.totalAmount * (this.qualityLimitPre / 100 + 1)).toFixed(2)
       return _result
@@ -610,88 +594,114 @@ export default {
   methods: {
     init() {
       const that = this
-      that.id = that.queryonedata.id
-
-      const params = { id: that.queryonedata.id }
       //拆分流程
       if (this.$parent.routeParams.action == 'split') {
         params['type'] = 3
       }
+      if (that.queryonedata && that.queryonedata.purchaseContractSaveBo) {
+        let react = that.queryonedata.purchaseContractSaveBo
+        that.form.setFieldsValue({
+          fullAmount: react.fullPayment, // 是否全款 0全款  1非全款
+          totalAmount: react.totalAmount,
+          frameWarranty: react.frameWarranty ? react.frameWarranty : 3, // 主框架,
+          electricWarranty: react.electricWarranty ? react.electricWarranty : 1,
+          coatingWarranty: react.coatingWarranty ? react.coatingWarranty : 3,
+          purchaseContractSettlementSaveBoList: that.queryonedata.purchaseContractSettlementSaveBoList || [],
+        })
 
-      if (that.id > 0) {
-        getQueryOne(params)
-          .then((res) => {
-            that.queryOneData = res.data
-            that.form.setFieldsValue({
-              contractId: res.data.id,
-              fullAmount: res.data.fullAmount, // 是否全款 0全款  1非全款
-              allPayment: res.data.totalAmount,
-              totalAmount: res.data.totalAmount, // 总金额(已经判断过是否含税了)
-              conventionalMoney: res.data.conventionalMoney, // 常规产品总价
-              unConventionalMoney: res.data.unConventionalMoney, // 非常规产品总价
-              product: res.data.product, // 常规产品或者非常规产品  0 常规产品 1非常规产品
-              qualityFrame: res.data.qualityFrame ? res.data.qualityFrame : 3,
-              qualityElectronics: res.data.qualityElectronics ? res.data.qualityElectronics : 1,
-              qualityLayer: res.data.qualityLayer ? res.data.qualityLayer : 3,
-              allPaymentDate: res.data.settlement ? moment(res.data.settlement.paymentDate) : moment(), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
-              routineSettlement: res.data.routineSettlement || [],
-              increaseTotalPayment: res.data.increaseTotalPayment, // 增加总货款金额
-              qualityLimit: res.data.qualityLimit || 1,
-            })
-
-            let routineSettlement = res.data.routineSettlement || []
-            // let unconventionalSettlement = res.data.unconventionalSettlement || []
-            if (routineSettlement.length > 0) {
-              that.fillConventionalData(routineSettlement)
-            }
-            // if (unconventionalSettlement.length > 0) {
-            //   that.fillConventionalData(unconventionalSettlement)
-            // }
-
-            that.contractId = this.queryonedata.id
-            that.id = this.queryonedata.id
-            that.contractId = res.data.id
-            that.fullAmount = res.data.fullAmount
-            that.product = res.data.product
-            that.allPayment = res.data.totalAmount
-            that.conventionalMoney = res.data.conventionalMoney
-            that.unConventionalMoney = res.data.unConventionalMoney
-            that.increaseTotalPayment = res.data.increaseTotalPayment
-            that.bucketType = res.data.bucketType
-
-            that.qualityFrameChange(res.data.qualityFrame)
-            that.qualityElectronicsChange(res.data.qualityElectronics)
-            that.qualityLayerChange(res.data.qualityLayer)
-            that.qualityLimitChange(res.data.qualityLimit)
-
-            // [{id: 0, productType: 1}]     // [], [0,0], [1,1], [0,1,0]
-            // that.productTypes = that.product.map((item) => {
-            //   return item.productType
-            // })
-          })
-          .catch((error) => {
-            console.error(error)
-          })
+        that.fullAmount = react.fullPayment // 是否全款 0全款  1非全款
+        that.totalAmount = react.totalAmount
+        that.c1 = react.c1 === undefined ? (that.queryOneData.totalAmount * 3) / 100 : react.c1
+        that.c2 = react.c2 || 0
+        that.c3 = react.c3 || 0
+        that.c4 = react.c4 === undefined ? (that.queryOneData.totalAmount * 30) / 100 : react.c4
+        that.c5 = react.c5 || 0
+        that.frameWarranty = react.frameWarranty ? react.frameWarranty : 3 // 主框架
+        that.electricWarranty = react.electricWarranty ? react.electricWarranty : 1 // 电器
+        that.coatingWarranty = react.coatingWarranty ? react.coatingWarranty : 3 // 涂层
+        if (
+          that.queryonedata.purchaseContractSettlementSaveBoList &&
+          that.queryonedata.purchaseContractSettlementSaveBoList.length > 0
+        ) {
+          that.fillConventionalData(that.queryonedata.purchaseContractSettlementSaveBoList)
+          that.frameWarrantyChange(react.frameWarranty)
+          that.electricWarrantyChange(react.electricWarranty)
+          that.coatingWarrantyChange(react.coatingWarranty)
+          that.qualityLimitChange(react.qualityLimit)
+        }
       }
 
-      try {
-        that.form.setFieldsValue({
-          contractId: this.queryonedata.id,
-          fullAmount: this.queryonedata.fullAmount, // 是否全款 0全款  1非全款
-          allPayment: this.queryonedata.totalAmount,
-          totalAmount: this.queryonedata.totalAmount, // 总金额(已经判断过是否含税了)
-          conventionalMoney: this.queryonedata.conventionalMoney, // 常规产品总价
-          // unConventionalMoney: this.queryonedata.unConventionalMoney, // 非常规产品总价
-          product: this.queryonedata.product, // 常规产品或者非常规产品  0 常规产品 1非常规产品
-          qualityFrame: this.queryonedata.qualityFrame || 3,
-          qualityElectronics: this.queryonedata.qualityElectronics || 1,
-          qualityLayer: this.queryonedata.qualityLayer || 3,
-          allPaymentDate: this.queryonedata.settlement ? moment(this.queryonedata.settlement.paymentDate) : moment(), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
-          routineSettlement: this.queryonedata.routineSettlement || [],
-          unconventionalSettlement: this.queryonedata.unconventionalSettlement || [],
-          increaseTotalPayment: this.queryonedata.increaseTotalPayment, // 增加总货款金额
-        })
-      } catch (err) {}
+      // if (that.id > 0) {
+      //   getQueryOne(params)
+      //     .then((res) => {
+      //       that.queryOneData = res.data
+      //       that.form.setFieldsValue({
+      //         contractId: res.data.id,
+      //         fullAmount: res.data.fullAmount, // 是否全款 0全款  1非全款
+      //         allPayment: res.data.totalAmount,
+      //         totalAmount: res.data.totalAmount, // 总金额(已经判断过是否含税了)
+      //         conventionalMoney: res.data.conventionalMoney, // 常规产品总价
+      //         unConventionalMoney: res.data.unConventionalMoney, // 非常规产品总价
+      //         product: res.data.product, // 常规产品或者非常规产品  0 常规产品 1非常规产品
+      //         frameWarranty: res.data.frameWarranty ? res.data.frameWarranty : 3,
+      //         electricWarranty: res.data.electricWarranty ? res.data.electricWarranty : 1,
+      //         coatingWarranty: res.data.coatingWarranty ? res.data.coatingWarranty : 3,
+      //         allPaymentDate: res.data.settlement ? moment(res.data.settlement.paymentDate) : moment(), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
+      //         routineSettlement: res.data.routineSettlement || [],
+      //         qualityLimit: res.data.qualityLimit || 1,
+      //       })
+
+      //       let routineSettlement = res.data.routineSettlement || []
+      //       // let unconventionalSettlement = res.data.unconventionalSettlement || []
+      //       if (routineSettlement.length > 0) {
+      //         that.fillConventionalData(routineSettlement)
+      //       }
+      //       // if (unconventionalSettlement.length > 0) {
+      //       //   that.fillConventionalData(unconventionalSettlement)
+      //       // }
+
+      //       that.contractId = this.queryonedata.id
+      //       that.id = this.queryonedata.id
+      //       that.contractId = res.data.id
+      //       that.fullAmount = res.data.fullAmount
+      //       that.product = res.data.product
+      //       that.allPayment = res.data.totalAmount
+      //       that.conventionalMoney = res.data.conventionalMoney
+      //       that.unConventionalMoney = res.data.unConventionalMoney
+      //       that.bucketType = res.data.bucketType
+
+      //       that.frameWarrantyChange(res.data.frameWarranty)
+      //       that.electricWarrantyChange(res.data.electricWarranty)
+      //       that.coatingWarrantyChange(res.data.coatingWarranty)
+      //       that.qualityLimitChange(res.data.qualityLimit)
+
+      //       // [{id: 0, productType: 1}]     // [], [0,0], [1,1], [0,1,0]
+      //       // that.productTypes = that.product.map((item) => {
+      //       //   return item.productType
+      //       // })
+      //     })
+      //     .catch((error) => {
+      //       console.error(error)
+      //     })
+      // }
+
+      // try {
+      //   that.form.setFieldsValue({
+      //     contractId: this.queryonedata.id,
+      //     fullAmount: this.queryonedata.fullAmount, // 是否全款 0全款  1非全款
+      //     allPayment: this.queryonedata.totalAmount,
+      //     totalAmount: this.queryonedata.totalAmount, // 总金额(已经判断过是否含税了)
+      //     conventionalMoney: this.queryonedata.conventionalMoney, // 常规产品总价
+      //     // unConventionalMoney: this.queryonedata.unConventionalMoney, // 非常规产品总价
+      //     product: this.queryonedata.product, // 常规产品或者非常规产品  0 常规产品 1非常规产品
+      //     frameWarranty: this.queryonedata.frameWarranty || 3,
+      //     electricWarranty: this.queryonedata.electricWarranty || 1,
+      //     coatingWarranty: this.queryonedata.coatingWarranty || 3,
+      //     allPaymentDate: this.queryonedata.settlement ? moment(this.queryonedata.settlement.paymentDate) : moment(), // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
+      //     routineSettlement: this.queryonedata.routineSettlement || [],
+      //     unconventionalSettlement: this.queryonedata.unconventionalSettlement || [],
+      //   })
+      // } catch (err) {}
     },
 
     fillConventionalData(items) {
@@ -702,23 +712,23 @@ export default {
         obj[`convention.${item.moneyType}.number`] = item.percentage
         obj[`convention.${item.moneyType}.selected`] = parseFloat(item.percentage) > 0 ? true : false
         obj[`convention.${item.moneyType}.date`] = moment(item.paymentDate)
-        obj[`convention.${item.moneyType}.remarks`] = item.remarks
+        obj[`convention.${item.moneyType}.remark`] = item.remark
       })
       this.form.setFieldsValue({ ...obj })
       this.percentagesStatus = this.fullAmount === 0 ? true : _percentage === 100
     },
     // 主框架下拉改变
-    qualityFrameChange(e) {
+    frameWarrantyChange(e) {
       console.log('主框架下拉改变', e)
-      this.qualityFrame = e ? e : 3
-      if (this.qualityFrame === 3 || this.qualityFrame === 1 || this.qualityFrame === 2) {
-        this.qualityFramePre = 0
-      } else if (this.qualityFrame === 4) {
-        this.qualityFramePre = 3
+      this.frameWarranty = e ? e : 3
+      if (this.frameWarranty === 3 || this.frameWarranty === 1 || this.frameWarranty === 2) {
+        this.frameWarrantyPre = 0
+      } else if (this.frameWarranty === 4) {
+        this.frameWarrantyPre = 3
       } else {
-        this.qualityFramePre = 6
+        this.frameWarrantyPre = 6
       }
-      console.log(this.qualityFramePre)
+      console.log(this.frameWarrantyPre)
     },
 
     // 上一步
@@ -737,35 +747,31 @@ export default {
       })
     },
     // 电子件质保年限
-    qualityElectronicsChange(e) {
+    electricWarrantyChange(e) {
       console.log('电子件质下拉改变', e)
-      this.qualityElectronics = e ? e : 1
-      console.log('电子件质下拉改变', this.qualityElectronics)
-      if (this.qualityElectronics === 1) {
-        this.qualityElectronicsPre = 0
-      } else if (this.qualityElectronics === 2) {
-        this.qualityElectronicsPre = 10
+      this.electricWarranty = e ? e : 1
+      console.log('电子件质下拉改变', this.electricWarranty)
+      if (this.electricWarranty === 1) {
+        this.electricWarrantyPre = 0
+      } else if (this.electricWarranty === 2) {
+        this.electricWarrantyPre = 10
       } else {
-        this.qualityElectronicsPre = 20
+        this.electricWarrantyPre = 20
       }
-      console.log(this.qualityElectronicsPre)
-      // this.increaseTotalPayment = this.queryOneData.totalAmount * (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100)
-      // this.allPayment = this.queryOneData.totalAmount * (1 + this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100 + 1)
+      console.log(this.electricWarrantyPre)
     },
     // 图层质保年限
-    qualityLayerChange(e) {
+    coatingWarrantyChange(e) {
       console.log('图层质保年限', e)
-      this.qualityLayer = e ? e : 3
-      if (this.qualityLayer === 3 || this.qualityLayer === 2 || this.qualityLayer === 1) {
-        this.qualityLayerPre = 0
-      } else if (this.qualityLayer === 4) {
-        this.qualityLayerPre = 3
+      this.coatingWarranty = e ? e : 3
+      if (this.coatingWarranty === 3 || this.coatingWarranty === 2 || this.coatingWarranty === 1) {
+        this.coatingWarrantyPre = 0
+      } else if (this.coatingWarranty === 4) {
+        this.coatingWarrantyPre = 3
       } else {
-        this.qualityLayerPre = 6
+        this.coatingWarrantyPre = 6
       }
-      console.log(this.qualityLayerPre)
-      // this.increaseTotalPayment = this.queryOneData.totalAmount * (this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100)
-      // this.allPayment = this.queryOneData.totalAmount * (1 + this.qualityFramePre / 100 + this.qualityElectronicsPre / 100 + this.qualityLayerPre / 100 + 1)
+      console.log(this.coatingWarrantyPre)
     },
     qualityLimitChange(e) {
       let _v = parseInt(e, 10)
@@ -796,42 +802,41 @@ export default {
         if (!err) {
           if (that.fullAmount === 0) {
             // 全款
-            that.allPaymentDate = values.allPaymentDate.format('YYYY-MM-DD')
+            // that.allPaymentDate = values.allPaymentDate.format('YYYY-MM-DD')
             const params = {
-              contractId: that.id,
-              qualityFrame: values.qualityFrame,
-              qualityElectronics: values.qualityElectronics,
-              qualityLayer: values.qualityLayer,
+              frameWarranty: values.frameWarranty,
+              electricWarranty: values.electricWarranty,
+              coatingWarranty: values.coatingWarranty,
               qualityLimit: values.qualityLimit || 1,
-              allPaymentDate: that.allPaymentDate, // 提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
-              routineSettlement: [],
-              unconventionalSettlement: [],
             }
-            // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-            saveSettlementMethod(params)
-              .then((res) => {
-                console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-                that.id = res.data.id
-                that.loading = false
-                that.form.setFieldsValue({})
-                if (status != 1) {
-                  that.$emit('nextStep', { ...res.data })
-                } else {
-                  that.$message.success('保存成功')
-                }
-              })
-              .catch((error) => {
-                console.error(error)
-              })
-          } else {
-            // for (i=0;i<this._getParam('convention').length;i++){
-            //   let percentages=percentages+this._getParam('convention').number
-            // }
 
-            // 各个款项的百分比之和应为100%
-            // if(that.percentages!=100){
-            //   that.$message.error('各个款项的百分比之和应为100%')
-            // }else{
+            let arr = {
+              purchaseContractSaveBo: { ...params, ...that.queryonedata.purchaseContractSaveBo },
+              purchaseContractSettlementSaveBoList: [
+                {
+                  paymentDate: that.paymentDate,
+                  moneyType: 0,
+                  percentage: 100,
+                },
+              ],
+            }
+            // // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
+            // saveSettlementMethod(params)
+            //   .then((res) => {
+            //     console.log('校验成功，保存填写的信息，请求后端接口结果', res)
+            //     that.id = res.data.id
+            //     that.loading = false
+            //     that.form.setFieldsValue({})
+            //     if (status != 1) {
+            that.$emit('nextStep', { ...arr })
+            //     } else {
+            //       that.$message.success('保存成功')
+            //     }
+            //   })
+            //   .catch((error) => {
+            //     console.error(error)
+            //   })
+          } else {
             let percentagesStatus = this.checkPercentages()
             if (!percentagesStatus) {
               that.$message.error('各个款项的百分比之和应为100%')
@@ -840,28 +845,36 @@ export default {
             // debugger
             // that.allPaymentDate = ''
             //  that.paymentDate = moment()
-            const params = {
-              contractId: that.contractId,
-              qualityFrame: values.qualityFrame,
-              qualityElectronics: values.qualityElectronics,
-              qualityLayer: values.qualityLayer,
+            let arr = {
+              frameWarranty: values.frameWarranty,
+              electricWarranty: values.electricWarranty,
+              coatingWarranty: values.coatingWarranty,
               qualityLimit: values.qualityLimit || 1,
+              c1: that.c1,
+              c2: that.c2,
+              c3: that.c3,
+              c4: that.c4,
+              c5: that.c5,
+            }
+            const params = {
+              purchaseContractSaveBo: { ...arr, ...that.queryonedata.purchaseContractSaveBo },
               //  paymentDate: that.paymentDate,    //提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
-              routineSettlement: this._getParam('convention') || [],
+              purchaseContractSettlementSaveBoList: this._getParam('convention') || [],
               // unconventionalSettlement: this._getParam('unConvention') || [],
             }
             // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-            saveSettlementMethod(params)
-              .then((res) => {
-                console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-                that.id = res.data.id
-                that.loading = false
-                that.form.setFieldsValue({})
-                that.$emit('nextStep', { ...res.data })
-              })
-              .catch((error) => {
-                console.error(error)
-              })
+            // saveSettlementMethod(params)
+            //   .then((res) => {
+            //     console.log('校验成功，保存填写的信息，请求后端接口结果', res)
+            //     that.id = res.data.id
+            //     that.loading = false
+            //     that.form.setFieldsValue({})
+            that.$emit('nextStep', { ...params })
+            console.log(params)
+            //   })
+            //   .catch((error) => {
+            //     console.error(error)
+            //   })
 
             // }
           }
@@ -885,19 +898,19 @@ export default {
       const convention = this.form.getFieldValue(name)
       console.log('convention----', Object.entries(convention))
       const temp = {
-        contractId: this.queryOneData.id || 0,
+        // contractId: this.queryOneData.id || 0,
         productType: name === 'convention' ? 0 : 1,
       }
       for (const [key, value] of Object.entries(convention)) {
-        const { selected, number, date, remarks, order } = value
+        const { selected, number, date, remark } = value
         if (selected) {
           result.push({
             ...temp,
             moneyType: key,
             percentage: Number(number),
             paymentDate: date.format('YYYY-MM-DD'),
-            remarks: remarks || '',
-            order: order,
+            remark: remark || '',
+            // order: order,
           })
           // this.percentages = this.percentages + percentage
         }
@@ -913,20 +926,11 @@ export default {
         }
       })
     },
-    // 非常规 - 下拉发生改变时触发
-    // unConventionChange(type, event) {
-    //   this.$nextTick(() => {
-    //     this[`unC${type}`] = this._calculateAmount(event, this.queryOneData.unConventionalMoney)
-    //     if (type === 1 || type === 4) {
-    //       this.autoFill()
-    //     }
-    //   })
-    // },
     // 计算金额
     _calculateAmount(percent, total) {
       if (!percent) return 0
       if (this.calcIncreaseTotalPayment > 0) {
-        const amount = (percent / 100) * (total + Number(this.calcIncreaseTotalPayment))
+        const amount = (percent / 100) * (Number(total) + Number(this.calcIncreaseTotalPayment))
 
         return amount.toFixed(2)
       } else {
@@ -937,7 +941,6 @@ export default {
     // 填充常规和非常规的折算金额
     fillMoney() {
       const that = this
-
       this.$nextTick(() => {
         // debugger
         const { convention } = that.form.getFieldsValue()
@@ -992,11 +995,7 @@ export default {
       return percentagesStatus
     },
     autoFill() {
-      // let isNormal = this.productTypes.includes(0) //常规
-      // let isUnNormal = this.productTypes.includes(1) //非常规
-      // debugger
       this.autoFillAction(true)
-      // isUnNormal && this.autoFillAction(false)
     },
     autoFillAction(isNormal = true) {
       //自动补全 100%

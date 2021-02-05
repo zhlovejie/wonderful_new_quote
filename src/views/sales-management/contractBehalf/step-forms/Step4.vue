@@ -28,7 +28,7 @@
                     <a-input
                       :disabled="this.$parent.routeParams.action === 'see'"
                       placeholder="输入详细地址"
-                      v-decorator="['detailDeliveryAddress', { rules: [{ required: true, message: '输入详细地址' }] }]"
+                      v-decorator="['deliveryPlace', { rules: [{ required: true, message: '输入详细地址' }] }]"
                     />
                   </a-form-item>
                 </a-col>
@@ -60,14 +60,14 @@
                     <a-radio-group
                       :disabled="this.$parent.routeParams.action === 'see'"
                       @change="transportTypeSelected"
-                      v-decorator="['transportType', { initialValue: 1 }]"
+                      v-decorator="['transportMode', { initialValue: 1 }]"
                     >
                       <a-radio :value="1">代办运输</a-radio>
-                      <a-radio :value="0">自提</a-radio>
+                      <a-radio :value="2">自提</a-radio>
                     </a-radio-group>
                     <!-- <a-radio-group
                     @change="transportTypeSelected"
-                    v-decorator="['transportType',{initialValue: 1}]"
+                    v-decorator="['transportMode',{initialValue: 1}]"
                     :disabled="freightType === 0"
                   >
                     <a-radio :value=1>代办运输</a-radio>
@@ -88,7 +88,7 @@
                     <a-input
                       :disabled="this.$parent.routeParams.action === 'see'"
                       type="text"
-                      v-decorator="['otherMsg']"
+                      v-decorator="['deliveryOther']"
                     />
                   </a-form-item>
                 </a-col>
@@ -166,72 +166,37 @@ export default {
     },
     async init() {
       const that = this
-      that.id = that.queryonedata.id
-      const params = { id: that.queryonedata.id }
-      await getQueryOne(params)
-        .then((res) => {
-          that.queryOneData = res.data
-          that.form.setFieldsValue({
-            id: this.queryonedata.id || 0,
-            // deliveryAddress: res.data.deliveryAddress || '',
-            // deliveryName: res.data.deliveryName || '',
-            // deliveryMobile: res.data.deliveryMobile || '',
-            freightType: res.data.freightType || 0,
-            transportType: res.data.transportType,
-            deliveryDate: res.data.deliveryDate,
-            otherMsg: res.data.otherMsg === null ? '' : res.data.otherMsg,
-            detailDeliveryAddress: res.data.deliveryAddress || '',
-          })
-          that.contractId = this.queryonedata.id
-          that.id = this.queryonedata.id
-          that.contractId = res.data.id
-          // that.deliveryAddress = res.data.deliveryAddress
-          // that.deliveryName = res.data.deliveryName
-          // that.deliveryMobile = res.data.deliveryMobile
-          that.freightType = res.data.freightType || 0
-
-          // this.contacts = this.makeContact({
-          //   addressStr: res.data.deliveryAddress,
-          //   nameStr: res.data.deliveryName,
-          //   mobilStr: res.data.deliveryMobile
-          // })
+      if (that.queryonedata && that.queryonedata.purchaseContractSaveBo) {
+        let react = that.queryonedata.purchaseContractSaveBo
+        that.form.setFieldsValue({
+          freightType: react.freightType || 0,
+          transportMode: react.transportMode || 1,
+          deliveryDate: react.deliveryDate,
+          deliveryOther: react.deliveryOther === null ? '' : react.deliveryOther,
+          deliveryPlace: react.deliveryAddress || '',
         })
-        .catch((error) => {
-          console.error(error)
-        })
+        let { deliveryPlace, detailDeliveryAreaIds } = react
+        let _areaData = await that.loadAreaAction(100000)
+        that.birthplaceOptions = _areaData
+        if (detailDeliveryAreaIds) {
+          let _arr = detailDeliveryAreaIds.split(',')
+          _arr = _arr.map((v) => parseInt(v, 10))
+          let _areaCityData = await that.loadAreaAction(_arr[0])
+          let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
+          if (ctiyTargetOption) {
+            ctiyTargetOption.children = _areaCityData
+            that.birthplaceOptions = [...that.birthplaceOptions]
+          }
 
-      //填充省市区
-      let { detailDeliveryAddress, detailDeliveryAreaIds } = that.queryOneData
-      let _areaData = await that.loadAreaAction(100000)
-      that.birthplaceOptions = _areaData
-      if (detailDeliveryAreaIds) {
-        let _arr = detailDeliveryAreaIds.split(',')
-        _arr = _arr.map((v) => parseInt(v, 10))
-        let _areaCityData = await that.loadAreaAction(_arr[0])
-        let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
-        if (ctiyTargetOption) {
-          ctiyTargetOption.children = _areaCityData
-          that.birthplaceOptions = [...that.birthplaceOptions]
+          let _areaAreaData = await that.loadAreaAction(_arr[1])
+          let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
+          if (areaTargetOption) {
+            areaTargetOption.children = _areaAreaData
+            that.birthplaceOptions = [...that.birthplaceOptions]
+          }
+          that.$nextTick(() => that.form.setFieldsValue({ areaPlace: _arr }))
         }
-
-        let _areaAreaData = await that.loadAreaAction(_arr[1])
-        let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
-        if (areaTargetOption) {
-          areaTargetOption.children = _areaAreaData
-          that.birthplaceOptions = [...that.birthplaceOptions]
-        }
-        that.$nextTick(() => that.form.setFieldsValue({ areaPlace: _arr }))
       }
-
-      //填充省市区 END
-      // that.form.setFieldsValue({
-      //   id: this.queryonedata.id || 0,
-      //   deliveryAddress: this.queryonedata.deliveryAddress || '',
-      //   deliveryName: this.queryonedata.deliveryName || '',
-      //   deliveryMobile: this.queryonedata.deliveryMobile || '',
-      //   freightType: this.queryonedata.freightType || 0,
-      //   transportType: this.queryonedata.transportType || 1
-      // })
     },
 
     // handler 表单数据验证成功后回调事件
@@ -274,38 +239,43 @@ export default {
           }
 
           const params = {
-            id: that.queryonedata.id,
+            // id: that.queryonedata.id,
             // deliveryAddress: values.deliveryAddress,
             // deliveryName: values.deliveryName,
             // deliveryMobile: values.deliveryMobile,
             // deliveryAddress: contactResult.addressStr,
             // deliveryName: contactResult.nameStr,
             // deliveryMobile: contactResult.mobilStr,
-            deliveryAddress: values.detailDeliveryAddress || '',
+            detailDeliveryAreaIds: values.areaPlace.toString(),
+            deliveryAddress: values.deliveryPlace || '',
             deliveryAreaId: deliveryAreaId,
             freightType: values.freightType,
-            transportType: values.transportType,
-            otherMsg: values.otherMsg ? values.otherMsg : '无',
+            transportMode: values.transportMode,
+            deliveryOther: values.deliveryOther ? values.deliveryOther : '无',
             deliveryDate: values.deliveryDate,
           }
+          let reacts = {
+            purchaseContractSaveBo: { ...params, ...that.queryOneData.purchaseContractSaveBo },
+          }
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
-          saveDeliveryAddress(params)
-            .then((res) => {
-              console.log('校验成功，保存填写的信息，请求后端接口结果', res)
-              that.id = res.data.id
-              that.loading = false
-              // that.form.setFieldsValue({
-              //   contractNum: res.data.contractNum
-              // })
-              if (status != 1) {
-                that.$emit('nextStep', { ...res.data })
-              } else {
-                that.$message.success('保存成功')
-              }
-            })
-            .catch((error) => {
-              console.error(error)
-            })
+          // saveDeliveryAddress(params)
+          //   .then((res) => {
+          //     console.log('校验成功，保存填写的信息，请求后端接口结果', res)
+          //     that.id = res.data.id
+          //     that.loading = false
+          //     // that.form.setFieldsValue({
+          //     //   contractNum: res.data.contractNum
+          //     // })
+          //     if (status != 1) {
+          console.log(params)
+          that.$emit('nextStep', { ...reacts })
+          //     } else {
+          //       that.$message.success('保存成功')
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     console.error(error)
+          //   })
         }
       })
     },
@@ -331,13 +301,13 @@ export default {
       this.freightType = e.target.value
       if (this.freightType === 0) {
         // 如果含运费择默认选择代办运输
-        this.form.setFieldsValue({ transportType: 1 })
+        this.form.setFieldsValue({ transportMode: 1 })
       }
       console.log('//选择是否含运费', e.target.value)
     },
     // 自提/代办运输
     transportTypeSelected(e) {
-      this.transportType = e.target.value
+      this.transportMode = e.target.value
       console.log('选择自提/代办运输', e.target.value)
     },
     /**

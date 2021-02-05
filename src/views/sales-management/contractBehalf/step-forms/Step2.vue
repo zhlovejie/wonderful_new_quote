@@ -136,7 +136,7 @@ export default {
       splitNormalTotalAmount: 0,
       splitChangeTotalAmount: 0,
       chineseTotalAmount: '零', //仅拆分使用
-      freightDivType: 2, //运费分配类型 1单价 2金额
+      freightDivType: 1, //运费分配类型 1单价 2金额
     }
   },
   computed: {
@@ -180,7 +180,7 @@ export default {
         this.freight = result.freight
         this.freightMoneyWithRate = parseInt(result.freight + result.freight * 0.13)
         this.freightType = parseInt(result.freightType)
-        this.freightDivType = result.freightDivType || 1
+        this.freightDivType = result.freightAllotType || 1
         this.isTax = result.isTax
         // this.productCommonParams.freight = parseInt(result.freight + result.freight * 0.13)
         if (this.queryonedata.purchaseContractProductSaveBoList) {
@@ -206,14 +206,14 @@ export default {
         this.productCommonParams = {
           dataSource: product || [],
           saleContractLowCPriceAllAmount: result.saleContractLowCPriceAllAmount,
-          totalAmount: result.totalAmount,
+          totalAmount: this.queryonedata.totalAmount,
           chineseTotalAmount: result.chineseTotalAmount,
           isTax: result.isTax === 1,
           __fromAction: this.$parent.routeParams.action,
           freightType: result.freightType,
           freight: parseInt(result.freight + result.freight * 0.13),
-          freightDivType: result.freightDivType || 1,
-          lowPriceDesc: this.queryonedata.lowPriceDesc,
+          freightDivType: result.freightAllotType || 2,
+          lowPriceDesc: result.lowPriceDesc,
         }
         // 正常流程END
 
@@ -348,7 +348,7 @@ export default {
           that.$message.success('保存成功')
         }
       } else {
-        let { errors, values, lowPriceDesc, ispriceC } = this.$refs.productCommon.validate()
+        let { errors, values, lowPriceDesc } = this.$refs.productCommon.validate()
         if (errors) {
           return
         }
@@ -367,9 +367,14 @@ export default {
         // let products = this.formatProduct(values)
         // // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
         // console.log(products)
+        let { totalAmount } = this.$refs.productCommon.istotalAmount()
+        let react = {
+          lowPriceDesc: lowPriceDesc,
+        }
         let arr = {
           purchaseContractProductSaveBoList: values,
-          lowPriceDesc: lowPriceDesc && ispriceC !== false ? lowPriceDesc : '',
+          totalAmount: totalAmount,
+          purchaseContractSaveBo: { ...react, ...that.queryonedata.purchaseContractSaveBo },
         }
         // saveProduct(products)
         //   .then((res) => {

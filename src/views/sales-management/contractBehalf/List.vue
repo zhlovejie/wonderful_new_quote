@@ -19,6 +19,7 @@
             :allowClear="true"
             v-if="+activeKey === 0"
           >
+            <a-select-option :value="0">待提交</a-select-option>
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
@@ -53,7 +54,7 @@
 
         <div slot="status" slot-scope="text, record">
           <a href="javascript:void(0);" @click="approvalPreview(record)">{{
-            { 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知'
+            { 0: '待提交', 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知'
           }}</a>
         </div>
         <!-- <a slot="customerName" slot-scope="text, record" @click="consumerInfoShow(record)">{{ text }}</a> -->
@@ -80,7 +81,7 @@
                 <a-menu-item
                   key="1"
                   v-if="
-                    [1, 4, 5].includes(+record.status) &&
+                    [0, 3, 4].includes(+record.status) &&
                     $auth('businessBorrowing:edit') &&
                     record.createdId === userInfo.id
                   "
@@ -327,7 +328,7 @@ export default {
       if (['add', 'see', 'edit', 'approval'].includes(actionType)) {
         this.$router.push({
           name: 'basicInformation2',
-          params: { id: null, action: actionType, from: 'contractBehalfList' },
+          params: { id: record.id, action: actionType, from: 'contractBehalfList' },
         })
         // that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {

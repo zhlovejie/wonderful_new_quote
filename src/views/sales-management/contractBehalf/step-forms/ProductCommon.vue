@@ -757,15 +757,20 @@ export default {
     //       })
     //   }
     // },
+    istotalAmount() {
+      return {
+        totalAmount: this.totalAmount,
+      }
+    },
     validate() {
       let hasError = this.freshValidateData()
-      if (this.ispriceC === true && (this.lowPriceDesc === null || this.lowPriceDesc.trim() !== '')) {
+      if (this.ispriceC === true && (this.lowPriceDesc === null || this.lowPriceDesc.trim().length === 0)) {
         return this.$message.error('特价说明不能为空')
       }
       return {
         errors: hasError,
         values: [...this.data],
-        lowPriceDesc: this.lowPriceDesc,
+        lowPriceDesc: this.lowPriceDesc===''? this.params.lowPriceDesc:this.lowPriceDesc,
         ispriceC: this.ispriceC,
       }
     },

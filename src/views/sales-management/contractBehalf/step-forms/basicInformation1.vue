@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { getQueryOne, deleteQueryOne, delSplitProductTemp } from '@/api/contractListManagement'
+import { contractDetail, getQueryOne, deleteQueryOne, delSplitProductTemp } from '@/api/contractListManagement'
 
 import moment from 'moment'
 import Step1 from './Step1'
@@ -153,12 +153,18 @@ export default {
         if (this.routeParams.show) {
           this.show = this.routeParams.show
         }
-        if (this.routeParams.id) {
-          this.id = this.routeParams.id
-          this.resetQueryonedata(this.routeParams.id)
-        }
       }
     },
+  },
+  created() {
+    this.queryonedata = {}
+    let that = this
+    if (that.$route.params.action === 'edit' || that.$route.params.action === 'see') {
+      contractDetail({ purchaseContractId: that.$route.params.id }).then((res) => {
+        console.log(res.data)
+        // this.queryonedata = { ...res.data }
+      })
+    }
   },
   beforeRouteLeave(to, from, next) {
     //用户未点击删除按钮，离开此页面 自动触发删除订单操作
@@ -180,7 +186,7 @@ export default {
     }
     if (this.routeParams.id) {
       this.id = this.routeParams.id
-      this.resetQueryonedata(this.routeParams.id)
+      // this.resetQueryonedata(this.routeParams.id)
     }
   },
   methods: {
@@ -223,16 +229,16 @@ export default {
       //   })
     },
 
-    resetQueryonedata(id) {
-      console.log('resetQueryonedata called...')
-      getQueryOne({ id: id })
-        .then((res) => {
-          this.queryonedata = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
+    // resetQueryonedata(id) {
+    //   console.log('resetQueryonedata called...')
+    //   getQueryOne({ id: id })
+    //     .then((res) => {
+    //       this.queryonedata = res.data
+    //     })
+    //     .catch((error) => {
+    //       console.error(error)
+    //     })
+    // },
     finish() {
       this.currentTab = 0
     },
