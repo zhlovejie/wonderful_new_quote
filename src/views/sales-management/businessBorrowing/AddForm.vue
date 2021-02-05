@@ -43,13 +43,13 @@
             </td>
             <td>客户名称</td>
             <td>
-              <!-- <CustomerSelect
+              <CustomerSelect
                 v-if="!isDisabled && !isEdit"
                 ref="customerSelect"
                 :needOptions="needOptions"
                 :options="customerSelectOptions"
                 @selected="handleCustomerSelected"
-              /> -->
+              />
               <a-form-item>
                 <a-input
                   v-if="!isDisabled && !isEdit"
@@ -207,7 +207,8 @@
   </a-modal>
 </template>
 <script>
-import { businessdetail, businessaddOrUpdate, businessapprove } from '@/api/agencyContract'
+import { businessdetail, businessaddOrUpdate, businessapprove, generateProtocolNum } from '@/api/agencyContract'
+import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getListSalesman } from '@/api/contractListManagement'
 import Approval from './Approval'
@@ -217,7 +218,7 @@ let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { Approval, ProvinceTreeCascade },
+  components: { Approval, ProvinceTreeCascade, CustomerSelect },
   data() {
     return {
       form: this.$form.createForm(this),
@@ -275,25 +276,29 @@ export default {
     moment,
     init() {
       let that = this
-      let queue = []
+      // let queue = []
       getListSalesman().then((res) => {
         that.saleUsers = res.data
       })
-
       if (that.isAdd) {
-        let task3 = agencyContractGenerateContractNum().then((res) => {
-          let detail = { ...that.detail, contractNum: res.data }
-          that.detail = detail
+        generateProtocolNum().then((res) => {
+          that.detail.contractNum = res.data
         })
-        queue.push(task3)
       }
+      // if (that.isAdd) {
+      //   let task3 = agencyContractGenerateContractNum().then((res) => {
+      //     let detail = { ...that.detail, contractNum: res.data }
+      //     that.detail = detail
+      //   })
+      // queue.push(task3)
+      // }
 
       //let task4 = that.loadAreaAction(100000).then(res => that.birthplaceOptions = res)
       //queue.push(task4)
       //修改时 客户名称不可修改
       that.customerSelectOptions = { ...that.customerSelectOptions, inputDisable: that.isEdit }
 
-      return Promise.all(queue)
+      // return Promise.all(queue)
     },
     handleCustomerSelected(item) {
       this.form.setFieldsValue({

@@ -188,6 +188,17 @@ export function getTarget(parameter) {
     params: parameter
   })
 }
+//获取代购合同详情
+export function contractDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/getPurchaseContractDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 // 获取单个信息
 export function getQueryOne(parameter) {
   return axios({
@@ -300,6 +311,16 @@ export function saveBInformation(data) {
   })
 }
 
+// 获取乙方信息
+export function saveNewstCustomer(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/getPurchaseContractNewstCustomer',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 插入 软件合同乙方信息
 export function saveSoftwareContractBInformation(data) {
   return axios({
@@ -319,6 +340,25 @@ export function saveOtherInfo(data) {
     data: data
   })
 }
+// 获取销售人员的微信及邮箱
+export function mobilesId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: `user/getUserInfoById`,
+    method: 'get',
+    params: params
+  })
+}
+//新增代签购货合同
+export function purchaseAdd(data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/addOrUpdate',
+    method: 'post',
+    data: data
+  })
+}
+
 // 7修改附加条款
 export function saveAdditionalClause(data) {
   return axios({

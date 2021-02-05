@@ -29,6 +29,7 @@
 
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="doAction('add', null)">新增</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -315,7 +316,7 @@ export default {
 
     doAction(actionType, record) {
       let that = this
-      if (['view', 'edit', 'approval'].includes(actionType)) {
+      if (['add', 'view', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
         biddelete(`id=${record.id}`)

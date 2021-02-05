@@ -43,13 +43,13 @@
             </td>
             <td>客户名称</td>
             <td>
-              <!-- <CustomerSelect
+              <CustomerSelect
                 v-if="!isDisabled && !isEdit"
                 ref="customerSelect"
                 :needOptions="needOptions"
                 :options="customerSelectOptions"
                 @selected="handleCustomerSelected"
-              /> -->
+              />
               <a-form-item>
                 <a-input
                   v-if="!isDisabled && !isEdit"
@@ -223,7 +223,8 @@
   </a-modal>
 </template>
 <script>
-import { biddetail, bidaddOrUpdat, bidapprove } from '@/api/agencyContract'
+import { biddetail, bidaddOrUpdat, bidapprove, bidProtocolNum } from '@/api/agencyContract'
+import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getListSalesman } from '@/api/contractListManagement'
 import { getListByText } from '@/api/workBox'
@@ -234,7 +235,7 @@ let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { Approval, ProvinceTreeCascade },
+  components: { Approval, ProvinceTreeCascade, CustomerSelect },
   data() {
     return {
       form: this.$form.createForm(this),
@@ -302,9 +303,8 @@ export default {
       })
       queue.push(task2)
       if (that.isAdd) {
-        let task3 = agencyContractGenerateContractNum().then((res) => {
-          let detail = { ...that.detail, contractNum: res.data }
-          that.detail = detail
+        let task3 = bidProtocolNum().then((res) => {
+          that.detail.contractNum = res.data
         })
         queue.push(task3)
       }
