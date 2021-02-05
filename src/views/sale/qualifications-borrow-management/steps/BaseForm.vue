@@ -20,12 +20,12 @@
                 v-decorator="[
                   'borrowNum',
                   {
-                    initialValue: detail.borrowNum || undefined,
+                    initialValue: detail.id || undefined,
                     rules: [{ required: false }],
                   },
                 ]"
               />
-              <span v-else>{{ detail.borrowNum }}</span>
+              <span v-else>{{ detail.id }}</span>
             </a-form-item>
           </td>
           <td style="width: 15%">类型</td>
@@ -67,7 +67,7 @@
                   item.salesmanName
                 }}</a-select-option>
               </a-select>
-              <span v-else>{{ detail.userName }}</span>
+              <span v-else>{{ detail.salesmanName }}</span>
             </a-form-item>
           </td>
           <td style="width: 15%">客户名称</td>
@@ -140,8 +140,8 @@
                 :disabled="isEdit"
                 :allowClear="true"
                 v-decorator="[
-                  'contractAttr',
-                  { initialValue: detail.contractAttr, rules: [{ required: true, message: '请选择合同属性' }] },
+                  'contractProperty',
+                  { initialValue: detail.contractProperty, rules: [{ required: true, message: '请选择合同属性' }] },
                 ]"
                 placeholder="请选择合同属性"
                 @change="contractAttrChange"
@@ -150,7 +150,7 @@
                 <a-select-option :value="2">战略合作协议</a-select-option>
                 <a-select-option :value="3">代理合同</a-select-option>
               </a-select>
-              <span v-else>{{ { 1: '经销商合同', 2: '代理合同', 3: '战略合作协议' }[detail.contractAttr] }}</span>
+              <span v-else>{{ { 1: '经销商合同', 2: '代理合同', 3: '战略合作协议' }[detail.contractProperty] }}</span>
             </a-form-item>
           </td>
         </tr>
@@ -255,16 +255,14 @@ export default {
         return
       }
       //填充数据
-      if(that.record.id){
-        const _detail = await dealerContractDetail({ id: that.record.id }).then((res) => res.data)
-        that.needOptions = { userId: _detail.userId }
-        that.detail = _detail
+      console.log(record)
+        that.needOptions = { userId: record.userId }
+        that.detail = record
         that.$refs.customerSelect &&
           that.$refs.customerSelect.fill({
-            id: _detail.customerId || undefined,
-            name: _detail.customerName,
+            id: that.detail.customerId || undefined,
+            name: that.detail.customerName,
           })
-      }
       //that.form.setFieldsValue(_detail)
     },
     filterSalersOption(input, option) {

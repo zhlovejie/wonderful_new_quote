@@ -176,8 +176,16 @@ export default {
       if (that.isAdd) {
         return
       }
+      let {id,borrowId} = that.record
+      let param = {}
+      if(id && borrowId){
+        param.id = id
+        param.borrowId = borrowId
+      }else{
+        param.id = id
+      }
       //填充数据
-      const _detail = await cooperationProtocolDetail({ id: that.record.id }).then((res) => res.data)
+      const _detail = await cooperationProtocolDetail(param).then((res) => res.data)
       that.detail = _detail
     },
     resetData() {

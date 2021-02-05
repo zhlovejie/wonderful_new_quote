@@ -506,7 +506,16 @@ export default {
         return
       }
 
-      await agencyContractDetail({ id: record.id }).then((res) => {
+      let {id,borrowId} = that.record
+      let param = {}
+      if(id && borrowId){
+        param.id = id
+        param.borrowId = borrowId
+      }else{
+        param.id = id
+      }
+
+      await agencyContractDetail(param).then((res) => {
         //console.log(res)
         //debugger
         if (res.data.salesArea) {

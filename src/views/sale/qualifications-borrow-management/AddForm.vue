@@ -16,32 +16,64 @@
         <a-step title="产品售后服务外包协议" />
       </a-steps>
       <template v-if="+currentStep === 0">
-        <Step1 ref="step1" :action="{isView,isAdd}" :detail="{...record,...detail}"/>
+        <Step1 ref="step1" :actionType="actionType" :record="record" />
       </template>
-      
+      <template v-if="+currentStep === 1">
+        <Step2 ref="step2" :actionType="actionType" :record="record" />
+      </template>
 
-      <p v-if="isView" style="text-align:center;">
+      <p v-if="isView" style="text-align: center">
         <a-button :disabled="currentStep === 0" @click="(e) => stepChange(e, -1)">上一步</a-button>
-        <a-button style="margin-left:10px;" :disabled="currentStep === 5" @click="(e) => stepChange(e, 1)">下一步</a-button>
+        <a-button style="margin-left: 10px" :disabled="currentStep >= maxStep" @click="(e) => stepChange(e, 1)"
+          >下一步</a-button
+        >
       </p>
-      
     </a-spin>
   </a-modal>
 </template>
 
 <script>
 import Step1 from './steps/Step1'
-import { 
-  borrowDetail, 
+import Step2 from './steps/Step2'
+import {
+  borrowDetail,
   borrowCheckContract,
-  borrowBindingAgencyContract, 
-  borrowBindingSaleContract
+  borrowBindingAgencyContract,
+  borrowBindingSaleContract,
 } from '@/api/qualificationsBorrowManagement'
+//1 经销商合同 id
+import { dealerContractDetail } from '@/api/qualificationsBorrowManagement'
+//1 战略合作协议 id
+import { cooperationProtocolDetail } from '@/api/qualificationsBorrowManagement'
+//1 代理合同 id
+import { agencyContractDetail } from '@/api/agencyContract'
+//2 投标借用协议 id
+import { biddetail } from '@/api/agencyContract'
+//2 经营借用协议 id
+import { businessdetail } from '@/api/agencyContract'
+//3 代签购物合同的详情 purchaseContractId
+//接口地址 /purchase-contract/getPurchaseContractDetail
+//4 销售合同 
+
+//5 投标借用详情 id
+import { afterdetail } from '@/api/agencyContract'
+
+const __APIS__ = {
+    '1-1':dealerContractDetail,
+    '1-2':cooperationProtocolDetail,
+    '1-3':agencyContractDetail,
+    '2-1':biddetail,
+    '2-2':businessdetail,
+    '3':null,
+    '4':null,
+    '5':afterdetail
+  }
 
 export default {
   name: 'qualifications-borrow-management-list-add',
-  components:{
-    Step1
+  components: {
+    Step1,
+    Step2
   },
   data() {
     return {
@@ -51,8 +83,8 @@ export default {
       currentStep: -1,
       currentStatus: 'process',
       sizeStep: 'small',
-      record:{},
-      detail:{}
+      maxStep:-1,
+      record: {}
     }
   },
   computed: {
@@ -66,42 +98,67 @@ export default {
     isAdd() {
       return this.actionType === 'add'
     },
-    isEdit() {
-      return this.actionType === 'edit'
-    },
-    isApproval() {
-      return this.actionType === 'approval'
+    isDo() {
+      return this.actionType === 'do'
     },
     isDisabled() {
       //此状态下表单元素被禁用
-      return this.isView || this.isApproval
+      return this.isView 
     },
   },
   methods: {
-    async query(type, record={}) {
+    async query(type, record = {}) {
       let that = this
       that.actionType = type
       that.visible = true
-      that.record = {...record}
-      that.detail = {}
-      if(that.isAdd){
-        that.currentStep = 0
-      }else{
-        let res = await borrowDetail({id:that.record.id}).then(res =>res.data)
-        that.detail = res
+      that.record = { ...record }
+      /*
+        检测是否存在当前状态对应的合同
+        存在状态和合同不统一的问题，前一个合同审批通过后，状态更新为下个状态节点，但新的状态节点对应的合同尚未创建。
+      */
+      let _isCreatedContract = await that.isCreatedContract(that.record.id)
+      console.log(`_isCreatedContract:${_isCreatedContract}`)
+      that.record = {...that.record,isCreatedContract:_isCreatedContract}
+      //if()
+      that.maxStep = +that.record.status - 1
+      if(!_isCreatedContract){
+        that.maxStep = that.maxStep - 1
+      }
+
+      if (that.isDo) {
+        //let res = await borrowDetail({ id: that.record.id }).then((res) => res.data)
         that.currentStep = +that.record.status - 1
+      } else {
+        that.currentStep = 0
       }
     },
     stepChange(e, step) {
       console.log(arguments)
       if (step !== null) {
         let currentStep = this.currentStep + step
+
         this.currentStep = currentStep
       }
     },
     handleCancel() {
       this.visible = false
     },
+    async isCreatedContract(borrowId){
+      let {status,type,contractProperty} = this.record
+      let key = null
+      if(status === 1){
+        key = `${status}-${contractProperty}`
+      }else if(status === 2){
+        key = `${status}-${type}`
+      }else{
+        key = `${status}`
+      }
+      if(__APIS__[key]){
+        let resCode = await __APIS__[key]({id:-1,borrowId}).then(res => res.code)
+        return resCode === 200
+      }
+      return null
+    }
   },
 }
 </script>

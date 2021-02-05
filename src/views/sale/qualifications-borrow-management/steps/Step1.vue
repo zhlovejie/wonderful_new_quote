@@ -11,48 +11,59 @@
 
 <script>
 import BaseForm from './BaseForm'
-import Step11 from './Step1-1'
-import Step12 from './Step1-2'
-import Step13 from './Step1-3'
+import Step11 from './Step1-1' //经销商合同
+import Step12 from './Step1-2' //战略合作协议
+import Step13 from './Step1-3' //代理合同
+
+import { borrowDetail } from '@/api/qualificationsBorrowManagement'
+
 export default {
   name:'step',
   components:{
     BaseForm
   },
   props:{
-    action:Object,
-    detail:Object
+    actionType:String,
+    record:Object
   },
   data(){
     return {
-      currentComponent:null
+      currentComponent:null,
+      detail:{},
+      steps:{ 1:Step11,2:Step12,3:Step13 }
+    }
+  },
+  watch:{
+    actionType(){
+      this.init()
     }
   },
   created(){
-    // if(this.currentComponent === null){
-    //   this.currentComponent = Step11
-    // }
-
-
-    //borrowId
-
-    let that = this
-    that.$nextTick(() =>{
-      if(that.action.isView){
-        //that.$refs.baseForm && that.$refs.baseForm.query('view',{id:-1,borrowId:that.detail.id})
-        that.$refs.currentComponent && that.$refs.currentComponent.query('view',{id:-1,borrowId:that.detail.id})
-      }else{
-        that.$refs.baseForm && that.$refs.baseForm.query('add',{})
-        //that.$refs.currentComponent && that.$refs.currentComponent.query('add',{})
-      }
-    })
+    this.init()
   },
   methods:{
+    async init(){
+      const that = this
+      let res = await borrowDetail({ id: that.record.id }).then((res) => res.data)
+      that.detail = {...that.record,...res}
+
+      if(that.actionType === 'view'){
+        that.currentComponent = null
+        that.$refs.baseForm.query(that.actionType,{...that.detail})
+        that.currentComponent = that.steps[that.detail.contractProperty]
+        that.$nextTick(() =>{
+          that.$refs.currentComponent.query(that.actionType,{id:-1,borrowId:that.detail.id})
+        })
+      }else{
+        that.$refs.baseForm.query('add',{})
+        that.currentComponent = null
+      }
+    },
     contractAttrChange(type){
-      let m = { 1:Step11,2:Step12,3:Step13 }
-      this.currentComponent = m[type]
-      this.$nextTick(() =>{
-        this.$refs.currentComponent && this.$refs.currentComponent.query('add',{})
+      const that = this
+      that.currentComponent = that.steps[type]
+      that.$nextTick(() =>{
+        that.$refs.currentComponent.query('add',{})
       })
     },
     async handlerSubmitClick(values){
@@ -65,7 +76,7 @@ export default {
       _values.salesmanId = _values.userId
       _values.salesmanWechat = _values.wxNum
       _values.salesmanEmail = _values.email
-
+      console.log(_values)
       let result = await that.$refs.currentComponent.handleOkSubmit(_values)
       if(result.code !== 200){
         return

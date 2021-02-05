@@ -497,7 +497,7 @@
         <template v-else>
           <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
           <div style="text-align: center">
-            <a-button v-if="isDisabled" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
+            <a-button v-if="isDisabled" style="margin-left: 10px" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
             <a-button
               v-if="!isDisabled"
               style="margin-left: 10px"

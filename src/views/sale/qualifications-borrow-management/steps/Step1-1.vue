@@ -138,7 +138,10 @@ export default {
       opinion: '', //审批意见
       spinning: false,
       contractId: undefined,
-      detail: {},
+      detail: {
+        effectiveStart:moment().format('YYYY-MM-DD'),
+        effectiveEnd:moment().format('YYYY-MM-DD'),
+      },
       record: {},
     }
   },
@@ -171,14 +174,15 @@ export default {
       //return Promise.all([])
     },
     handleOk(saveType) {
-      let that = this
+      const that = this
       that.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          let { effectiveStart, effectiveEnd, contractNum } = that.detail
-          values.contractNum = contractNum
+          debugger
+          let { effectiveStart, effectiveEnd } = that.detail
+          values.signingDate = values.signingDate.format('YYYY-MM-DD')
           values.saveType = saveType
           values.effectiveStart = effectiveStart
           values.effectiveEnd = effectiveEnd
@@ -244,7 +248,7 @@ export default {
       that.spinning = false
     },
     rangePickerChange(arr, strs) {
-      console.log(arguments)
+      console.log(arguments,arr[0] instanceof moment,arr[1] instanceof moment)
       this.detail = {
         ...this.detail,
         effectiveStart: arr[0] instanceof moment ? arr[0].format('YYYY-MM-DD') : undefined,
