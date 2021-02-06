@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 20px">
     <template v-if="isBidBorrow">
       <BidBorrow ref="bidBorrow" @finish="finish" />
     </template>
@@ -51,7 +51,7 @@ export default {
       that.$nextTick(() =>{
         that.$refs[key].query(
           _actionType,
-          _actionType === 'add' ? {} : {id:-1,borrowId:that.record.id}
+          _actionType === 'add' ? {borrowId:that.record.id} : {id:that.record.id}
         )
       })
     },

@@ -126,6 +126,17 @@ export function biddetail(params) {
     params: params
   })
 }
+
+export function bidDetailBorrowId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/getDetailBorrowId',
+    method: 'get',
+    params: params
+  })
+}
+
+
 // 投标借用修改
 export function bidaddOrUpdat(params) {
   return axios({
@@ -182,6 +193,16 @@ export function businessdetail(params) {
     params: params
   })
 }
+
+export function businessDetailBorrowId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/getDetailBorrowId',
+    method: 'get',
+    params: params
+  })
+}
+
 // 经营借用列表撤回
 export function businessrevocation(params) {
   return axios({

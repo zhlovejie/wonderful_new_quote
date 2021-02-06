@@ -48,9 +48,9 @@ import { cooperationProtocolDetail } from '@/api/qualificationsBorrowManagement'
 //1 代理合同 id
 import { agencyContractDetail } from '@/api/agencyContract'
 //2 投标借用协议 id
-import { biddetail } from '@/api/agencyContract'
+import { bidDetailBorrowId } from '@/api/agencyContract'
 //2 经营借用协议 id
-import { businessdetail } from '@/api/agencyContract'
+import { businessDetailBorrowId } from '@/api/agencyContract'
 //3 代签购物合同的详情 purchaseContractId
 //接口地址 /purchase-contract/getPurchaseContractDetail
 //4 销售合同 
@@ -62,8 +62,8 @@ const __APIS__ = {
     '1-1':dealerContractDetail,
     '1-2':cooperationProtocolDetail,
     '1-3':agencyContractDetail,
-    '2-1':biddetail,
-    '2-2':businessdetail,
+    '2-1':bidDetailBorrowId,
+    '2-2':businessDetailBorrowId,
     '3':null,
     '4':null,
     '5':afterdetail
@@ -89,7 +89,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      let m = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
+      let m = { view: '查看', add: '新增', do: '处理', approval: '审批' }
       return `${m[this.actionType]}资质借用管理`
     },
     isView() {
