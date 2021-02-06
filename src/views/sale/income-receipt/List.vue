@@ -2,9 +2,24 @@
   <!-- 进款单 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="客户名称/个人名称模糊查询" :allowClear="true" v-model="customerName" style="width: 200px" />
-      <a-input placeholder="认领人模糊查询" :allowClear="true" v-model="claimUserName" style="width: 200px" />
-      <a-select placeholder="收款银行" :allowClear="true" v-model="accountId" style="width: 200px">
+      
+      <a-input placeholder="客户/个人名称模糊查询" :allowClear="true" v-model="customerName" style="width: 200px" />
+      <a-select
+        optionFilterProp="children"
+        showSearch
+        :allowClear="true"
+        :filterOption="filterSalersOption"
+        placeholder="销售经理"
+        style="width: 160px"
+        v-model="saleUserId"
+      >
+        <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+          item.salesmanName
+        }}</a-select-option>
+      </a-select>
+
+      <a-input placeholder="认领人模糊查询" :allowClear="true" v-model="claimUserName" style="width: 160px" />
+      <a-select placeholder="收款银行" :allowClear="true" v-model="accountId" style="width: 260px">
         <a-select-option :key="item.id" v-for="item in moneyTypes" :value="item.id">{{
           item.unitName
         }}</a-select-option>
@@ -13,7 +28,7 @@
         <a-select-option :value="0">未认领</a-select-option>
         <a-select-option :value="1">已认领</a-select-option>
       </a-select> -->
-      <a-range-picker v-model="sDate" />
+      <a-range-picker v-model="sDate" style="width: 200px"/>
 
       <a-button
         v-if="$auth('income:one')"
@@ -34,6 +49,7 @@
       >
     </div>
     <div class="main-wrapper">
+      <a-alert :message="searchTotalMoney" type="info" />
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="1" @change="tabChange">
         <a-tab-pane tab="未认领" key="0" />
         <a-tab-pane tab="已认领" key="1" />
@@ -82,9 +98,10 @@
   </div>
 </template>
 <script>
-import { incomePageList, incomeClaim, getAccountBankList } from '@/api/receipt'
+import { incomePageList, incomeClaim, getAccountBankList,saleIncomeGetSumAmountByList } from '@/api/receipt'
 import AddForm from './module/AddForm'
 import moment from 'moment'
+import { getListSaleContractUser } from '@/api/contractListManagement'
 const columns = [
   {
     align: 'center',
@@ -110,6 +127,10 @@ const columns = [
     title: '客户名称/个人名称',
     dataIndex: 'customerName',
     key: 'customerName',
+  },
+  {
+    title: '销售经理',
+    dataIndex: 'saleUserName'
   },
   {
     align: 'center',
@@ -177,6 +198,7 @@ export default {
       accountId: undefined,
       status: undefined,
       sDate: [undefined, undefined],
+      saleUserId:undefined,
       moneyTypes: [],
       columns: columns,
       dataSource: [],
@@ -191,7 +213,9 @@ export default {
         },
       },
       loading: false,
-      activeKey:0
+      activeKey:0,
+      saleUser:[],
+      searchTotalMoney:''
     }
   },
   computed: {
@@ -210,7 +234,8 @@ export default {
         //status: this.status,
         incomeBeginTime: startTime,
         incomeEndTime: endTime,
-        status:this.activeKey
+        status:this.activeKey,
+        saleUserId:this.saleUserId
       }
     },
   },
@@ -229,6 +254,7 @@ export default {
     init() {
       let that = this
       getAccountBankList().then((res) => (that.moneyTypes = res.data))
+      getListSaleContractUser().then((res) => (that.saleUser = res.data))
       that.searchAction()
     },
     searchAction(opt) {
@@ -255,6 +281,21 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
+
+      saleIncomeGetSumAmountByList(_searchParam).then(res =>{
+          console.log(that,res)
+          if(+res.code !== 200){
+            let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+            msg += `查询参数:${_searchParam}，`
+            msg += '请与管理员联系，谢谢合作。'
+            that.searchTotalMoney = 0
+            that.$message.error(msg)
+            return
+          }
+          that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+        }).catch(err =>{
+          that.$message.error(err.message)
+        })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

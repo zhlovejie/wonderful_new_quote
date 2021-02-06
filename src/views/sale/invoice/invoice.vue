@@ -21,6 +21,9 @@
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
         </a-form-item>
+        <a-form-item>
+          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
+        </a-form-item>
         <div class="table-operator fl-r">
           <template v-if="$auth('invoice:add')">
             <a-button type="primary" icon="plus" @click="handleAdd">申请</a-button>
@@ -170,6 +173,7 @@ import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getLoginUser } from '@api/systemSetting'
 import SearchForm from './modules/SearchForm'
+import { exprotAction } from '@/api/receipt'
 const innerColumns = [
   {
     align: 'center',
@@ -219,7 +223,7 @@ export default {
     Tendering,
     InvestigateNode,
     STable,
-    SearchForm,
+    SearchForm
   },
   data() {
     return {
@@ -259,6 +263,10 @@ export default {
           title: '客户名称',
           dataIndex: 'customerName',
           scopedSlots: { customRender: 'customerName' },
+        },
+        {
+          title: '销售经理',
+          dataIndex: 'saleUserName'
         },
         {
           title: '运费结算方式',
@@ -529,6 +537,12 @@ export default {
         return
       }
     },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(1,{...that.queryParam},'发货单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
   },
 }
 </script>

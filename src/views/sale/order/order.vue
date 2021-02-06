@@ -4,17 +4,17 @@
     <div class="order-search-wrapper">
       <a-form>
         <a-row :gutter="24">
-          <a-col :span="7">
+          <a-col :span="8">
             <a-form-item label="订单编号">
               <a-input v-model.trim="queryParam.orderNum" placeholder="根据订单编号模糊查询" />
             </a-form-item>
           </a-col>
-          <a-col :span="7">
+          <a-col :span="8">
             <a-form-item label="合同编号">
               <a-input v-model.trim="queryParam.contractNum" placeholder="根据合同编号模糊查询" />
             </a-form-item>
           </a-col>
-          <a-col :span="7">
+          <a-col :span="8">
             <!-- <CustomerSelect
               ref="customerSelect"
               :options="customerSelectOptions"
@@ -25,14 +25,8 @@
             <a-input :allowClear="true"  class="a-select" style="width:100%;" placeholder="客户名称模糊查询" v-model="queryParam.customerName" />
             </a-form-item>
           </a-col>
-          <a-col :span="3">
-            <template v-if="$auth('order:list')">
-              <a-form-item>
-                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-              </a-form-item>
-            </template>
-          </a-col>
-          <a-col :span="7">
+          
+          <a-col :span="8">
             <a-form-item label="销售人员">
               <a-select
                 showSearch
@@ -49,10 +43,18 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="14">
+          <a-col :span="8">
             <a-form-item label="创建时间">
               <a-range-picker style="width: calc(100% - 12px)" @change="onPickerChange" />
             </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <template v-if="$auth('order:list')">
+              <a-form-item>
+                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+                <a-button style="margin-left:10px;" type="primary" icon="download" @click="exportHandler">导出</a-button>
+              </a-form-item>
+            </template>
           </a-col>
         </a-row>
 
@@ -97,6 +99,7 @@ import orderModule from './modules/orderModule'
 import system from '@/config/defaultSettings'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import moment from 'moment'
+import { exprotAction } from '@/api/receipt'
 const columns = [
   {
     align: 'center',
@@ -258,7 +261,13 @@ export default {
       //this.queryParam.startTime = arrMoment.length === 0 ? null : arrMoment[0].format('YYYY-MM-DD HH:mm:ss')
       //this.queryParam.endTime = arrMoment.length === 0 ? null : arrMoment[1].format('YYYY-MM-DD HH:mm:ss')
     },
-  },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(4,{...that.queryParam},'销售订单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
+  }
 }
 </script>
 

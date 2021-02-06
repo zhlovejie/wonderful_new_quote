@@ -41,6 +41,7 @@
       >
     </div>
     <div class="main-wrapper">
+      <a-alert :message="searchTotalMoney" type="info" />
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('refund:approval')">
@@ -107,7 +108,7 @@
 </template>
 <script>
 import { getListSaleContractUser } from '@/api/contractListManagement'
-import { refundPageList, refundRevocation, refundDel } from '@/api/receipt'
+import { refundPageList, refundRevocation, refundDel ,saleRefundGetSumAmountByList} from '@/api/receipt'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
@@ -213,6 +214,7 @@ export default {
         onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
+      searchTotalMoney:''
     }
   },
   computed: {
@@ -244,7 +246,7 @@ export default {
       that.searchAction()
     },
     searchAction(opt) {
-      let that = this
+      const that = this
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
       })
@@ -263,6 +265,21 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
+
+        saleRefundGetSumAmountByList(_searchParam).then(res =>{
+          console.log(that,res)
+          if(+res.code !== 200){
+            let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+            msg += `查询参数:${_searchParam}，`
+            msg += '请与管理员联系，谢谢合作。'
+            that.searchTotalMoney = 0
+            that.$message.error(msg)
+            return
+          }
+          that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+        }).catch(err =>{
+          that.$message.error(err.message)
+        })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

@@ -521,3 +521,129 @@ export function presentOrderUpdate (data) {
   })
 }
 //----------------------赠送订单-END------------------
+
+
+/**收款单列表金额汇总 */
+export function receiptGetSumAmountByList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receipt/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**开票单列表金额汇总 */
+export function openpaperGetSumAmountByList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/openpaper/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**进款单列表金额汇总 */
+export function saleIncomeGetSumAmountByList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/saleIncome/income/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**退款单列表金额汇总 */
+export function saleRefundGetSumAmountByList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/saleRefund/refund/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+/**预收款单列表金额汇总 */
+export function advancesGetSumAmountByList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/advances/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**单据 导出 */
+export function exportInvoiceExcel(url,params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: url,
+    method: 'get',
+    responseType:'blob',
+    params: params
+  })
+}
+
+const _EXPORT_API_ = {
+  1: '/invoice/exportList', //发货单
+  2: '/delayedPayment/exportList', //延迟付款单
+  3: '/receipt/exportList', //收款单
+  4: '/sale-contract/exportOrder', //销售订单
+}
+export function exprotAction(type, param,fileName='download.xls') {
+  return exportInvoiceExcel(_EXPORT_API_[type], param)
+    .then((res) => {
+      console.log(res)
+      if (res instanceof Blob) {
+        const isFile = res.type === 'application/vnd.ms-excel'
+        const isJson = res.type === 'application/json'
+        if (isFile) {
+          //返回文件 则下载
+          const objectUrl = URL.createObjectURL(res)
+          const a = document.createElement('a')
+          document.body.appendChild(a)
+          a.style = 'display: none'
+          a.href = objectUrl
+          a.download = `${fileName}.xls`
+          a.click()
+          document.body.removeChild(a)
+          return {code:200,msg:'下载成功'}
+        } else if (isJson) {
+          //返回json处理
+          return new Promise(resolve =>{
+            var reader = new FileReader()
+            reader.onload = function (e) {
+              let _res = null
+              try {
+                _res = JSON.parse(e.target.result)
+              } catch (err) {
+                _res = null
+              }
+              if (_res !== null) {
+                if (_res.code !== 0) {
+                  resolve({code:500,msg:_res.message})
+                } else {
+                  resolve({code:200,msg:'下载成功'})
+                }
+              } else {
+                resolve({code:500,msg:`json解析出错 e.target.result：${e.target.result}`})
+              }
+            }
+            try{
+              reader.readAsText(res)
+            }catch(err){
+              resolve({code:500,msg:err.message})
+            }
+          })
+        } else {
+          return {code:500,msg:`不支持的类型:${res}`}
+        }
+      }else{
+        return {code:500,msg:`返回数据不是Blob类型:${typeof res}`}
+      }
+    })
+    .catch((err) => {
+      return {code:500,msg:`请求出错：${err.message}`}
+    })
+}

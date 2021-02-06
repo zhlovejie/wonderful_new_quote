@@ -11,6 +11,23 @@
       <a-row :gutter="0">
         <a-col :span="24">基本信息</a-col>
         <a-col :span="12">
+          <a-form-item label="销售经理">
+            <a-select
+              optionFilterProp="children"
+              showSearch
+              :allowClear="true"
+              :filterOption="filterSalersOption"
+              placeholder="销售经理"
+              style="width: 100%;"
+              v-decorator="['saleUserId']"
+            >
+              <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+                item.salesmanName
+              }}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
           <a-form-item label="客户名称">
             <a-input v-decorator="['customerName']" placeholder="客户名称" :allowClear="true"/>
           </a-form-item>
@@ -88,6 +105,7 @@
   </a-modal>
 </template>
 <script>
+import { getListSaleContractUser } from '@/api/contractListManagement'
 export default {
   name: 'searchForm',
   components:{
@@ -96,12 +114,14 @@ export default {
     return {
       modalTitle: '高级筛选',
       visible: false,
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      saleUser:[]
     }
   },
   methods: {
     query() {
       this.visible = true
+      getListSaleContractUser().then((res) => (this.saleUser = res.data))
     },
     handleCancel() {
       this.visible = false
@@ -135,7 +155,10 @@ export default {
         this.$emit('change', values)
         this.handleCancel()
       }
-    }
+    },
+    filterSalersOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
   }
 }
 </script>

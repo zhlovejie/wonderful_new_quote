@@ -20,6 +20,7 @@
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
+          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
         <!-- <a-form-item label="客户名称">
           <a-input v-model="customerName"/>
@@ -48,6 +49,7 @@
       </a-form>
     </div>
     <a-row>
+      <a-alert :message="searchTotalMoney" type="info" />
       <a-col>
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
@@ -165,12 +167,12 @@
 
 <script>
 import { STable } from '@/components'
-import { deleteReceipt, getContractOne, getServiceList, revocationReceipt } from '@/api/receipt'
+import { deleteReceipt, getContractOne, getServiceList, revocationReceipt ,receiptGetSumAmountByList} from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import SearchForm from './SearchForm'
-
+import { exprotAction } from '@/api/receipt'
 const innerColumns = [
   {
     align: 'center',
@@ -298,6 +300,10 @@ export default {
           width: '200px',
         },
         {
+          title: '销售经理',
+          dataIndex: 'saleUserName'
+        },
+        {
           title: '收款日期',
           dataIndex: 'receiptTime',
           scopedSlots: { customRender: 'receiptTime' },
@@ -355,6 +361,7 @@ export default {
       loading: false,
       isExpanded: false, //是否展开列表子数据
       expandedRowKeys: [],
+      searchTotalMoney:''
     }
   },
   watch: {
@@ -390,6 +397,21 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
+
+      receiptGetSumAmountByList(_searchParam).then(res =>{
+        console.log(that,res)
+        if(+res.code !== 200){
+          let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+          msg += `查询参数:${_searchParam}，`
+          msg += '请与管理员联系，谢谢合作。'
+          that.searchTotalMoney = 0
+          that.$message.error(msg)
+          return
+        }
+        that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+      }).catch(err =>{
+         that.$message.error(err.message)
+      })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -594,6 +616,12 @@ export default {
         return
       }
     },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(3,{...that.queryParam},'收款单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
   },
 }
 </script>

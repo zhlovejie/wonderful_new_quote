@@ -194,8 +194,8 @@ export default {
       } else {
         that.$refs.addForm.query(type, record)
       }
-    },
-  },
+    }
+  }
 }
 </script>
 <style scoped>

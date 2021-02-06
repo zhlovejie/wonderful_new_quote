@@ -19,36 +19,54 @@
           </a-button-group>
         </a-form-item>
         <a-form-item>
-          <a-input v-model="customerName" placeholder="客户名称模糊查询" style="width: 200px" :allowClear="true" />
+          <a-input v-model="customerName" placeholder="客户名称模糊查询" style="width: 160px" :allowClear="true" />
         </a-form-item>
         <a-form-item>
           <a-input
             v-model="delayedPaymentNum"
             placeholder="延迟付款编号模糊查询"
-            style="width: 200px"
+            style="width: 160px"
             :allowClear="true"
           />
         </a-form-item>
+
+        <a-form-item>
+          <a-select
+            optionFilterProp="children"
+            showSearch
+            :allowClear="true"
+            :filterOption="filterSalersOption"
+            placeholder="销售经理"
+            style="width: 160px"
+            v-model="saleUserId"
+          >
+            <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+              item.salesmanName
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
+
         <a-form-item v-show="show">
           <a-select
-            style="width: 150px"
+            style="width: 120px"
             placeholder="审批状态"
             v-model="approvalStatusSelect"
             :allowClear="true"
             defaultValue="0"
           >
-            <a-select-option :value="0">请选择审批状态</a-select-option>
+            <a-select-option :value="0">审批状态</a-select-option>
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="日期">
-          <a-range-picker v-model="sDate" style="width: 280px" />
+          <a-range-picker v-model="sDate" style="width: 200px" />
         </a-form-item>
         <a-form-item>
           <template v-if="$auth('payment:list')">
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
+            <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
           </template>
           <!--          <div class="table-operator fl-r">-->
           <!--              <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>-->
@@ -141,8 +159,11 @@ import { getDelayedList, changeState, revocationDelayedPayment } from '@/api/del
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getLoginUser } from '@api/systemSetting'
-import UploadFile from './modules/UploadFile'
+import UploadFile from './modules/UploadFile' 
+import { exprotAction } from '@/api/receipt'
 import moment from 'moment'
+
+import { getListSaleContractUser } from '@/api/contractListManagement'
 export default {
   name: 'DelayedPayment',
   components: {
@@ -169,6 +190,7 @@ export default {
       customerName: undefined,
       delayedPaymentNum: undefined,
       sDate: [undefined, undefined],
+      saleUserId:undefined,
       dayWeekMonth: 1,
       vueBoolean: this.$store.getters.vueBoolean,
       saleCustomers: [],
@@ -202,6 +224,10 @@ export default {
           title: '客户名称',
           dataIndex: 'customerName',
           scopedSlots: { customRender: 'customerName' },
+        },
+        {
+          title: '销售经理',
+          dataIndex: 'saleUserName'
         },
         {
           title: '承诺付款时间',
@@ -256,6 +282,7 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: [],
+      saleUser:[]
     }
   },
   watch: {
@@ -276,6 +303,7 @@ export default {
       getLoginUser().then((res) => {
         this.userInfo = res.data
       })
+      getListSaleContractUser().then((res) => (this.saleUser = res.data))
     },
     search(opt = {}) {
       let startTime = undefined,
@@ -292,6 +320,7 @@ export default {
         startTime: startTime,
         endTime: endTime,
         dayWeekMonth: this.dayWeekMonth,
+        saleUserId:this.saleUserId,
         ...opt,
       }
       if (this.audit == 0) {
@@ -405,6 +434,15 @@ export default {
         return
       }
     },
+    filterSalersOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(2,{...that.queryParam},'延迟付款单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
   },
 }
 </script>

@@ -5,6 +5,21 @@
         <a-form-item label="客户名称">
           <a-input v-model="customerName" />
         </a-form-item>
+        <a-form-item label="销售经理">
+          <a-select
+            optionFilterProp="children"
+            showSearch
+            :allowClear="true"
+            :filterOption="filterSalersOption"
+            placeholder="销售经理"
+            style="width: 160px"
+            v-model="saleUserId"
+          >
+            <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+              item.salesmanName
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="审批状态" v-show="show">
           <a-select style="width: 150px" v-model="approvalStatusSelect" defaultValue="0">
             <a-select-option :value="0">请选择审批状态</a-select-option>
@@ -32,6 +47,7 @@
       </a-form>
     </div>
     <a-row>
+      <a-alert :message="searchTotalMoney" type="info" />
       <a-col>
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
@@ -121,9 +137,10 @@
 <script>
 import { STable } from '@/components'
 import { getServiceList, openPaperDelete, revocationOpenpaper } from '@/api/openpaper'
+import { openpaperGetSumAmountByList} from '@/api/receipt'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
-
+import { getListSaleContractUser } from '@/api/contractListManagement'
 export default {
   name: 'OpenPaperList',
   components: {
@@ -143,6 +160,7 @@ export default {
       saleCustomer: 0,
       vueBoolean: this.$store.getters.vueBoolean,
       customerName: '',
+      saleUserId:undefined,
       saleCustomers: [],
       pagination: {
         showTotal: (total) => '共' + total + '条数据',
@@ -167,6 +185,10 @@ export default {
           title: '客户名称',
           dataIndex: 'saleCustomerName',
           scopedSlots: { customRender: 'customerName' },
+        },
+        {
+          title: '销售经理',
+          dataIndex: 'saleUserName'
         },
         {
           title: '发票类型',
@@ -213,14 +235,15 @@ export default {
           return res
         })
       },
-      mounted() {
-        this.search()
-      },
+      
       selectedRowKeys: [],
       selectedRows: [],
+      saleUser:[],
+      searchTotalMoney:''
     }
   },
-  created() {
+  mounted() {
+    getListSaleContractUser().then((res) => (this.saleUser = res.data))
     this.search()
   },
   watch: {
@@ -242,13 +265,32 @@ export default {
       this.queryParam = {
         customerName: this.customerName,
         state: this.contractState,
+        saleUserId:this.saleUserId
       }
       if (this.show == true) {
         this.queryParam['approvalStatue'] = this.approvalStatusSelect
       }
       if (this.$refs.table != null && this.$refs.table != undefined) {
         this.$refs.table.refresh(true)
+        this.fetchTotalMoney()
       }
+    },
+    fetchTotalMoney(){
+      const that = this
+      openpaperGetSumAmountByList(that.queryParam).then(res =>{
+        console.log(that,res)
+        if(+res.code !== 200){
+          let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+          msg += `查询参数:${_searchParam}，`
+          msg += '请与管理员联系，谢谢合作。'
+          that.searchTotalMoney = 0
+          that.$message.error(msg)
+          return
+        }
+        that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+      }).catch(err =>{
+         that.$message.error(err.message)
+      })
     },
     handleAdd(e) {
       if (e.key === '1') {
@@ -340,6 +382,9 @@ export default {
         })
         return
       }
+    },
+    filterSalersOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
   },
 }

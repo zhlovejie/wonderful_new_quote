@@ -5,6 +5,21 @@
         <a-form-item label="客户名称">
           <a-input v-model="customerName" />
         </a-form-item>
+        <a-form-item label="销售经理">
+          <a-select
+            optionFilterProp="children"
+            showSearch
+            :allowClear="true"
+            :filterOption="filterSalersOption"
+            placeholder="销售经理"
+            style="width: 160px"
+            v-model="saleUserId"
+          >
+            <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+              item.salesmanName
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="单据状态" v-show="showFlag">
           <a-select v-model="approveStatus" style="width: 150px">
             <a-select-option :value="0">请选择审批状态</a-select-option>
@@ -26,6 +41,7 @@
       </a-form>
     </div>
     <a-row>
+      <a-alert :message="searchTotalMoney" type="info" />
       <a-col>
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
@@ -115,12 +131,13 @@
 <script>
 import { STable } from '@/components'
 import { getServiceList, deleteById, revocationAdvances } from '@/api/advances'
+import { advancesGetSumAmountByList} from '@/api/receipt'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import AdvancesAdd from './AdvancesAdd'
 import AdvancesVue from './AdvancesVue'
 import AdvancesAudit from './AdvancesAudit'
-
+import { getListSaleContractUser } from '@/api/contractListManagement'
 export default {
   name: 'AdvancesList',
   components: {
@@ -146,6 +163,7 @@ export default {
       vueBoolean: this.$store.getters.vueBoolean,
       saleCustomer: 0,
       customerName: '',
+      saleUserId:undefined,
       saleCustomers: [],
       audit: false,
       showFlag: true,
@@ -189,6 +207,10 @@ export default {
           scopedSlots: { customRender: 'customerName' },
         },
         {
+          title: '销售经理',
+          dataIndex: 'saleUserName'
+        },
+        {
           title: '收款日期',
           dataIndex: 'receiptTime',
         },
@@ -223,25 +245,51 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
         console.log('开始加载数据', JSON.stringify(this.queryParam))
+        
         return getServiceList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
       },
-      mounted() {},
       selectedRowKeys: [],
       selectedRows: [],
+      saleUser:[],
+      searchTotalMoney:''
     }
+  },
+  mounted() {
+    getListSaleContractUser().then((res) => (this.saleUser = res.data))
+    this.fetchTotalMoney()
   },
   methods: {
     search() {
+      const that = this
       this.queryParam = {
         customerName: this.customerName,
         statue: this.contractState,
+        saleUserId:this.saleUserId,
       }
       if (this.showFlag) {
         this.queryParam['approveStatus'] = this.approveStatus
       }
       this.$refs.table.refresh(true)
+      this.fetchTotalMoney()
+    },
+    fetchTotalMoney(){
+      const that = this
+      advancesGetSumAmountByList(that.queryParam).then(res =>{
+        console.log(that,res)
+        if(+res.code !== 200){
+          let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+          msg += `查询参数:${that.queryParam}，`
+          msg += '请与管理员联系，谢谢合作。'
+          that.searchTotalMoney = 0
+          that.$message.error(msg)
+          return
+        }
+        that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+      }).catch(err =>{
+         that.$message.error(err.message)
+      })
     },
     handleAdd() {
       this.$refs.add.add()
@@ -345,6 +393,9 @@ export default {
         })
         return
       }
+    },
+    filterSalersOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
   },
 }
