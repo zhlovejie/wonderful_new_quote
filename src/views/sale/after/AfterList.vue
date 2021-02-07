@@ -17,6 +17,7 @@
           <template v-if="$auth('after:list')">
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
+          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
         <div class="table-operator fl-r">
           <template v-if="$auth('after:add')">
@@ -148,7 +149,7 @@ import { deleteAfterSale, getServiceList, updateAfterSale, revocationAfterSale }
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getUploadPath } from '@/api/manage'
-
+import { exprotAction } from '@/api/receipt'
 export default {
   name: 'AfterList',
   components: {
@@ -463,7 +464,13 @@ export default {
         return
       }
     },
-  },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(6,{...that.queryParam},'产品调试任务单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
+  }
 }
 </script>
 

@@ -85,6 +85,9 @@
           <a-form-item>
             <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
           </a-form-item>
+          <a-form-item>
+            <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
+          </a-form-item>
         </template>
         <div class="action-wrapper" style="float: right">
           <a-form-item>
@@ -123,6 +126,7 @@ import ApprovedContract from './pricings/ApprovedContract'
 //import ProductModel from '@/views/sales-management/contract-list-management/step-forms/productModel'
 
 import SearchForm from './pricings/SearchForm'
+import { exprotAction } from '@/api/receipt'
 export default {
   name: 'Pricing',
   components: {
@@ -233,6 +237,18 @@ export default {
       }
       return target
     },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(8,
+        {
+          ...that.searchParams,
+          statue:that.tabKey,
+          dayWeekMonth:that.dayWeekMonth
+        },'核价单'
+      )
+      console.log(res)
+      that.$message.info(res.msg)
+    }
   },
 }
 </script>
@@ -245,9 +261,7 @@ export default {
 .search-input {
   width: 160px;
 }
-.a-button {
-  margin-right: 8px;
-}
+
 .fl-r {
   float: right;
 }

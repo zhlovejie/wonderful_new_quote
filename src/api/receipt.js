@@ -590,6 +590,13 @@ const _EXPORT_API_ = {
   2: '/delayedPayment/exportList', //延迟付款单
   3: '/receipt/exportList', //收款单
   4: '/sale-contract/exportOrder', //销售订单
+
+  5: '/advances/exportList',//预收款单
+  6: '/after-sale/exportList',//产品调试任务单
+  7: '/openpaper/exportList',//开票单
+  8: '/api/exportList',//核价单
+  9: '/saleIncome/income/exportList',//进款单
+  10: '/saleRefund/refund/exportList',//退款单
 }
 export function exprotAction(type, param,fileName='download.xls') {
   return exportInvoiceExcel(_EXPORT_API_[type], param)
@@ -621,8 +628,8 @@ export function exprotAction(type, param,fileName='download.xls') {
                 _res = null
               }
               if (_res !== null) {
-                if (_res.code !== 0) {
-                  resolve({code:500,msg:_res.message})
+                if (_res.code == 500) {
+                  resolve({code:500,msg:_res.msg})
                 } else {
                   resolve({code:200,msg:'下载成功'})
                 }

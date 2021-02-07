@@ -32,6 +32,7 @@
           <template v-if="$auth('advances:list')">
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
+          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
         <div class="table-operator fl-r">
           <template v-if="$auth('advances:add')">
@@ -138,6 +139,7 @@ import AdvancesAdd from './AdvancesAdd'
 import AdvancesVue from './AdvancesVue'
 import AdvancesAudit from './AdvancesAudit'
 import { getListSaleContractUser } from '@/api/contractListManagement'
+import { exprotAction } from '@/api/receipt'
 export default {
   name: 'AdvancesList',
   components: {
@@ -397,7 +399,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-  },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(5,{...that.queryParam},'预收款单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
+  }
 }
 </script>
 

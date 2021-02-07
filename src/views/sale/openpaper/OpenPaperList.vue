@@ -32,6 +32,7 @@
           <template v-if="$auth('paper:list')">
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
+          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
         <div class="table-operator fl-r">
           <template v-if="$auth('paper:add')">
@@ -141,6 +142,7 @@ import { openpaperGetSumAmountByList} from '@/api/receipt'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getListSaleContractUser } from '@/api/contractListManagement'
+import { exprotAction } from '@/api/receipt'
 export default {
   name: 'OpenPaperList',
   components: {
@@ -178,7 +180,7 @@ export default {
           scopedSlots: { customRender: 'order' },
         },
         {
-          title: '收款编号',
+          title: '开票编号',
           dataIndex: 'paperCode',
         },
         {
@@ -386,7 +388,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-  },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(7,{...that.queryParam},'开票单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
+  }
 }
 </script>
 

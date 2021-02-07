@@ -38,6 +38,7 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
+      <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
       <a-button
         class="a-button"
         style="float: right"
@@ -102,6 +103,7 @@ import { incomePageList, incomeClaim, getAccountBankList,saleIncomeGetSumAmountB
 import AddForm from './module/AddForm'
 import moment from 'moment'
 import { getListSaleContractUser } from '@/api/contractListManagement'
+import { exprotAction } from '@/api/receipt'
 const columns = [
   {
     align: 'center',
@@ -337,8 +339,14 @@ export default {
       this.activeKey = +key
       this.pagination = {...this.pagination,current:1}
       this.searchAction()
+    },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(9,{...that.searchParam},'进款单')
+      console.log(res)
+      that.$message.info(res.msg)
     }
-  },
+  }
 }
 </script>
 <style scoped>
