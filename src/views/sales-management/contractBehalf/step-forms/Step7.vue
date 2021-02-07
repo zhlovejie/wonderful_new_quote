@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     isView() {
-      //新增
+      //查看
       return this.$parent.routeParams.action === 'see'
     },
   },
@@ -77,13 +77,9 @@ export default {
     init() {
       const that = this
 
-      if (
-        that.$parent.routeParams.action !== 'add' &&
-        that.queryonedata &&
-        that.queryonedata.purchaseContractInfoSaveBo
-      ) {
+      if (that.$parent.routeParams.action !== 'add' && that.queryonedata) {
         that.form.setFieldsValue({
-          additionalTreaty: that.queryonedata.purchaseContractInfoSaveBo.additionalTreaty || '',
+          additionalTreaty: that.queryonedata.additionalTreaty || '',
         })
       }
     },
@@ -120,50 +116,80 @@ export default {
                   productId: item.productId,
                   productType: item.productType,
                   targetId: item.targetId,
-                  taxRate: item.tax,
+                  taxRate: item.tax || item.taxRate,
                   unit: item.unit,
                   unitPrice: item.unitPrice,
                 }
               }
             )
+            let arrs = { additionalTreaty: values.additionalTreaty }
+            that.queryonedata.purchaseContractInfoSaveBo = { ...arrs, ...that.queryonedata.purchaseContractInfoSaveBo }
             let react = that.queryonedata.purchaseContractSaveBo
+            let reactData = that.queryonedata
             that.queryonedata.purchaseContractSaveBo = {
+              coatingWarranty: reactData.coatingWarranty,
+              qualityWarranty: reactData.qualityWarranty,
+              customerBankAccount: reactData.customerBankAccount,
+              customerBankName: reactData.customerBankName,
+              customerBankUser: reactData.customerBankUser,
+              customerPostcode: reactData.customerPostcode,
+              customerTfn: reactData.customerTfn,
+              deliveryAreaId: reactData.deliveryAreaId,
+              deliveryOther: reactData.deliveryOther,
+              customerAddress: reactData.customerAddress,
+              customerEmail: reactData.customerEmail,
+              customerFullName: reactData.customerFullName,
+              customerPhone: reactData.customerPhone,
+              customerWxNum: reactData.customerWxNum,
+              deliveryDate: reactData.deliveryDate,
+              transportMode: reactData.transportMode,
+              electricWarranty: reactData.electricWarranty,
+              frameWarranty: reactData.frameWarranty,
+              lowPriceDesc: reactData.lowPriceDesc,
               borrowId: react.borrowId,
+              freightType: react.freightType,
               contractType: react.contractType,
-              customerAddress: react.customerAddress,
-              customerEmail: react.customerEmail,
-              customerFullName: react.customerFullName,
               customerId: react.customerId,
               customerName: react.customerName,
-              customerPhone: react.customerPhone,
-              customerWxNum: react.customerWxNum,
-              deliveryDate: react.deliveryDate,
-              freightType: react.freightType,
               fullPayment: react.fullPayment,
               invoiceType: react.invoiceType,
               isTax: react.isTax,
               signingDate: react.signingDate,
-              transportMode: react.transportMode,
               userId: react.userId,
-              coatingWarranty: react.coatingWarranty,
-              customerBankAccount: react.customerBankAccount,
-              customerBankName: react.customerBankName,
-              customerBankUser: react.customerBankUser,
-              customerPostcode: react.customerPostcode,
-              customerTfn: react.customerTfn,
-              deliveryAreaId: react.deliveryAreaId,
-              deliveryOther: react.deliveryOther,
-              deliveryPlace: react.deliveryPlace,
-              electricWarranty: react.electricWarranty,
-              frameWarranty: react.frameWarranty,
+              deliveryPlace: reactData.deliveryPlace,
               freight: react.freight,
               freightAllotType: react.freightAllotType,
-              lowPriceDesc: react.lowPriceDesc,
               usingPlatform: react.usingPlatform,
-              additionalTreaty: values.additionalTreaty,
             }
             that.queryonedata.submitStatus = status
             delete that.queryonedata.totalAmount
+            delete that.queryonedata.lowPriceDesc
+            delete that.queryonedata.frameWarranty
+            delete that.queryonedata.electricWarranty
+            delete that.queryonedata.coatingWarranty
+            delete that.queryonedata.qualityWarranty
+            //运输数据
+            delete that.queryonedata.detailDeliveryAreaIds
+            delete that.queryonedata.deliveryPlace
+            delete that.queryonedata.deliveryAreaId
+            delete that.queryonedata.freightType
+            delete that.queryonedata.transportMode
+            delete that.queryonedata.deliveryOther
+            delete that.queryonedata.deliveryDate
+            //乙方信息
+            delete that.queryonedata.customerWxNum
+            delete that.queryonedata.customerPhone
+            delete that.queryonedata.customerFullName
+            delete that.queryonedata.customerBankName
+            delete that.queryonedata.customerTfn
+            delete that.queryonedata.customerBankUser
+            delete that.queryonedata.customerEmail
+            delete that.queryonedata.customerAddress
+            delete that.queryonedata.customerPostcode
+            delete that.queryonedata.customerBankAccount
+            if (that.$parent.routeParams.action === 'edit') {
+              delete that.queryonedata.additionalTreaty
+            }
             purchaseAdd(that.queryonedata).then((res) => {
               console.log(res)
               if (res.code === 200 && that.$parent.routeParams.action === 'edit') {

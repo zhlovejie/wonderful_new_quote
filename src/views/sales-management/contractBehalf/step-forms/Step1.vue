@@ -61,7 +61,7 @@
               <a-radio-group
                 @change="selectedBillingType"
                 v-decorator="['invoiceType', { initialValue: 1 }]"
-                :disabled="disabled"
+                :disabled="this.$parent.routeParams.action === 'see' && disabled"
               >
                 <a-radio :value="1"> 增票 </a-radio>
                 <a-radio :value="0"> 普票 </a-radio>
@@ -133,10 +133,10 @@
               <a-radio-group
                 :disabled="this.$parent.routeParams.action !== 'add'"
                 @change="isFullAmount"
-                v-decorator="['fullPayment', { initialValue: 0 }]"
+                v-decorator="['fullPayment', { initialValue: 1 }]"
               >
-                <a-radio :value="0"> 是 </a-radio>
-                <a-radio :value="1"> 否 </a-radio>
+                <a-radio :value="1"> 是 </a-radio>
+                <a-radio :value="2"> 否 </a-radio>
               </a-radio-group>
             </a-col>
           </a-row>
@@ -149,10 +149,10 @@
               <a-radio-group
                 @change="freightTypeChange"
                 :disabled="this.$parent.routeParams.action === 'see'"
-                v-decorator="['freightType', { initialValue: 0 }]"
+                v-decorator="['freightType', { initialValue: 1 }]"
               >
-                <a-radio :value="0"> 含运费 </a-radio>
-                <a-radio :value="1"> 不含运费 </a-radio>
+                <a-radio :value="1"> 含运费 </a-radio>
+                <a-radio :value="0"> 不含运费 </a-radio>
               </a-radio-group>
             </a-col>
 
@@ -170,7 +170,7 @@
         </a-form-item>
 
         <a-form-item :style="{ borderBottom: '1px solid #ddd' }">
-          <a-row type="flex" v-if="parseInt(freightType) === 0">
+          <a-row type="flex" v-if="parseInt(freightType) === 1">
             <a-col class="col-border" :span="3" justify="center" align="middle">运费(元)</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-input-number
@@ -230,6 +230,7 @@ export default {
       // form
       form: this.$form.createForm(this),
       contractNum: this.queryonedata.contractNum, // 合同编号
+      queryonedata1: {},
       saleCustomers: {}, // 客户名称数组
       customerId: 0, // 客户id
       customerName: '',
@@ -241,7 +242,7 @@ export default {
       timer: 0,
       disabledDateTime: function () {},
       id: 0,
-      freightType: 0,
+      freightType: 1,
     }
   },
   computed: {},
@@ -249,12 +250,14 @@ export default {
     $route(to, from) {
       console.log('watch $route called...')
     },
-    queryonedata() {
+    queryonedata(val) {
+      this.queryonedata1 = val
       console.log('from watch queryonedata....')
       this.init()
     },
   },
   created() {
+    this.queryonedata1 = this.queryonedata
     this.getSalesList()
   },
   mounted() {
@@ -263,8 +266,10 @@ export default {
   },
   methods: {
     init() {
-      let qt = this.queryonedata.purchaseContractSaveBo ? this.queryonedata.purchaseContractSaveBo : {}
+      let qt = this.queryonedata1.purchaseContractSaveBo ? this.queryonedata1.purchaseContractSaveBo : {}
+      console.log(qt)
       if (JSON.stringify(qt) != '{}') {
+        console.log(qt)
         this.freightType = qt.freightType
         this.form.setFieldsValue({
           id: qt.id,
@@ -318,7 +323,7 @@ export default {
         if (!err) {
           //debugger
           const params = {
-            contractNum: that.queryonedata.contractNum,
+            contractNum: values.contractNum,
             customerId: values.customerId,
             customerName: values.customerName,
             userId: values.userId,

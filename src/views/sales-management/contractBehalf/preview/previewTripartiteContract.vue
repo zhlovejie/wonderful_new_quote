@@ -70,6 +70,9 @@
               <template slot="productImage" slot-scope="text, record">
                 <img style="height: 50px; lenght: 40px" :src="text" />
               </template>
+              <template slot="trademark" slot-scope="text, record">
+                <span>德澜仕</span>
+              </template>
 
               <template slot="price" slot-scope="text, record">
                 <span v-if="record.showRedFlag == 0">{{ text }}</span>
@@ -92,7 +95,7 @@
                 <span style="color: red">{{ record.productLowCPriceAllAmount }}</span>
               </template>
               <template slot="footer" slot-scope="text">
-                <div v-if="queryOne_freightType === 0">
+                <div v-if="queryOne_freightType === 1">
                   运费：&nbsp;{{
                     Math.ceil(queryOne_freightCharge * 1.13) | moneyFormatNumber
                   }}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{
@@ -149,18 +152,16 @@
             <div class="content-p">八、运输方式及到达（港）站和费用承担：</div>
             <div class="content-p p-text-index">
               运费类型：
-              <span class="span-paddings">{{ freightType }}</span>
+              <span class="span-paddings">{{ freightType === 1 ? '含运费' : '不含运费' }}</span>
             </div>
             <div class="content-p p-text-index">
-              运输方式：{{
-                transportType === '自提' ? '自提。 乙方自提货物，甲方负责将货物装入乙方委派车辆。' : '代办运输'
-              }}
+              运输方式：{{ transportType === 2 ? '自提。 乙方自提货物，甲方负责将货物装入乙方委派车辆。' : '代办运输' }}
             </div>
-            <div v-if="transportType === '代办运输'" class="content-p p-text-index">代办托运说明</div>
-            <div v-if="transportType === '代办运输'" class="content-p p-text-index">
+            <div v-if="transportType === 1" class="content-p p-text-index">代办托运说明</div>
+            <div v-if="transportType === 1" class="content-p p-text-index">
               甲方为乙方代办托运时，运输费用由乙方承担，甲方负责运输货物的装卸相关事宜。甲方货物从仓库配送出库后，在运输途中发生的一切安全、短少、变更路线等问题，由甲方帮助乙方协调承运方，协商解决。凡因人力不可抗拒因素，如自然灾害、合理损耗等非甲方造成的损失或货物延迟，甲方概不负责。
             </div>
-            <div v-if="transportType === '代办运输'" class="content-p p-text-index">
+            <div v-if="transportType === 1" class="content-p p-text-index">
               乙方收到货物应先进行验货，确认无误后再签名签收。如因乙方在不验货的情况下直接签收货物，所产生的一切责任及经济纠纷全部由乙方负责，甲方不承担任何责任。
             </div>
             <div class="content-p p-text-index">备注信息：{{ otherInfo }}</div>
@@ -169,21 +170,15 @@
               九．甲方仅负责指导安装设备，设备的具体安装操作工作需乙方派专人进行.在设备和系统的维护及维修过程中，乙方需派专人对接。
             </div>
             <div class="content-p">十、结算方式及时间：（多选）</div>
-            <div v-if="convention === true">
-              <!-- <div class="content-p p-text-index">常规产品结算方式及时间</div> -->
-              <div :key="item.moneyName" v-for="item in conventionList" class="content-p p-text-index">
+            <div v-if="!isFull">
+              <div
+                :key="item.moneyName"
+                v-for="item in purchaseContractSettlementDetailVoList"
+                class="content-p p-text-index"
+              >
                 {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
                 >。付款周期：
-                <span class="span-paddings">{{ item.date }}</span>
-                <span class="span-paddings">备注:{{ item.remarks || '无' }}</span>
-              </div>
-            </div>
-            <div v-if="unconvention === true">
-              <!-- <div class="content-p p-text-index">非常规产品结算方式及时间</div> -->
-              <div :key="item.moneyName" v-for="item in unconventionList" class="content-p p-text-index">
-                {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
-                >。付款周期：
-                <span class="span-paddings">{{ item.date }}</span>
+                <span class="span-paddings">{{ item.paymentDateStr }}</span>
                 <span class="span-paddings">备注:{{ item.remarks || '无' }}</span>
               </div>
             </div>
@@ -192,7 +187,7 @@
               <div :key="item.moneyName" v-for="item in fullList" class="content-p p-text-index">
                 {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
                 >。付款周期：
-                <span class="span-paddings">{{ item.date }}</span>
+                <span class="span-paddings">{{ item.paymentDateStr }}</span>
               </div>
             </div>
             <div v-if="increaseTotalPayment > 0" class="content-p p-text-index">
@@ -201,11 +196,19 @@
             </div>
             <div>注：交货时间按预付款到账时间顺延。（按照签订协议时间和交货时间的周期顺延）</div>
             <div class="content-p">十一、违约责任： 按《中华人民共和国合同法》追究责任。</div>
-            <!-- <div class="content-p">  十二、合同争议的解决方式：本合同在履行过程中发生的争执，由双方当事人协商解决，也可由当地工商行政管理部门调解；协商或调解不成，按下列第 <span class="span-underline" v-if="contractDispute===0">一</span><span class="span-underline" v-else>二</span>种方式解决。</div>
-          <div class="content-p p-text-index" v-if="contractDispute===0">（一）、提交仲裁委员会仲裁；</div>
-          <div class="content-p p-text-index" v-if="contractDispute===1">（二）、向 <span style="margin: 0 12px;text-decoration: underline">甲</span> 方所在地人民法院提起诉讼<</div>
-            <div class="content-p p-text-index" v-if="contractDispute===2">（二）、向<span style="margin: 0 12px;text-decoration: underline">乙</span>方所在地人民法院提起诉讼</div>-->
             <div class="content-p">
+              十二、合同争议的解决方式：本合同在履行过程中发生的争执，由双方当事人协商解决，也可由当地工商行政管理部门调解；协商或调解不成，按下列第
+              <span class="span-underline" v-if="contractDispute === 1">一</span
+              ><span class="span-underline" v-else>二</span>种方式解决。
+            </div>
+            <div class="content-p p-text-index">（一）、提交仲裁委员会仲裁；</div>
+            <div class="content-p p-text-index">
+              （二）、向 <span style="margin: 0 12px; text-decoration: underline">甲</span> 方所在地人民法院提起诉讼
+            </div>
+            <div class="content-p p-text-index">
+              （二）、向<span style="margin: 0 12px; text-decoration: underline">乙</span>方所在地人民法院提起诉讼
+            </div>
+            <!-- <div class="content-p">
               十二、合同争议的解决方式：本合同在履行过程中发生的争执，由双方当事人协商解决，也可由当地工商行政管理部门调解；协商或调解不成，按下列第
               <span class="span-underline">{{ contractDispute }}</span
               >种方式解决。
@@ -217,20 +220,20 @@
               方所在地人民法院提起诉讼
             </div>
 
-            <div class="content-p">十三、</div>
+            <div class="content-p">十三、</div> -->
 
-            <div class="content-p p-text-index" v-if="signForm === 0">
+            <div class="content-p p-text-index" v-if="signForm === 1">
               1、此协议通过邮件形式签订（甲方邮箱账号：
               <span class="span-paddings">{{ partAemail }}</span>
               乙方邮箱账号： {{ partBemail }} ），合同自双方签字盖章并回复确认后方可生效，合同的附件享有同等法律效力。
             </div>
-            <div class="content-p p-text-index" v-if="signForm === 1">
+            <div class="content-p p-text-index" v-if="signForm === 2">
               2、此协议通过书面签订形式签订，合同自双方签字盖章后生效，合同的附件享有同等法律效力。本合同一式
               <span class="span-paddings">{{ contractTotalNumber }}</span
               >份，甲乙双方各 <span class="span-paddings">{{ contractABNumber }}</span
               >份，由于保管不当而引起的纠纷由当事人负全部责任。
             </div>
-            <div v-if="signForm === 2" class="content-p p-text-index">
+            <div v-if="signForm === 3" class="content-p p-text-index">
               1、此协议通过微信形式签订（甲方微信账号：
               <span class="span-paddings">{{ partAemail }}</span>
               乙方微信账号： {{ partBemail }} ），合同自双方签字盖章并回复确认后方可生效，合同的附件享有同等法律效力。
@@ -343,15 +346,7 @@
 </template>
 
 <script>
-import {
-  mobileTerminal,
-  contractApproval,
-  getQueryOne,
-  getSplitApprovingProduct,
-  getApprovalNode,
-  checkCurrentNode,
-  approvalSplitProduct,
-} from '@/api/contractListManagement.js'
+import { contractDetail, PurchaseContract } from '@/api/contractListManagement.js'
 import util from '@/components/_util/util'
 const renderContent = (value, row, index) => {
   const obj = {
@@ -363,62 +358,6 @@ const renderContent = (value, row, index) => {
   }
   return obj
 }
-const data = [
-  {
-    key: '1',
-    underlyingName: '智能产品系列',
-    productCategory: '常规产品',
-    brand: '德澜仕',
-    productModel: 'ZFL-960L1.0S',
-    productImage: 'www.baidu,com', // 图片路径
-    productColor: '常规色',
-    unit: '套',
-    number: 23,
-    unitPrice: '10000',
-    Amount: 23000,
-    taxRate: '8%',
-    amountIncludingTax: 21600,
-    deliveryDate: '2019-05-01',
-  },
-  {
-    key: '2',
-    underlyingName: '智能产品系列',
-    productCategory: '常规产品',
-    brand: '德澜仕',
-    productModel: 'ZFL-KKY01A(高配)',
-    productImage: 'www.baidu,com', // 图片路径
-    productColor: '常规色',
-    unit: '套',
-    number: 1,
-    unitPrice: '20000',
-    Amount: 20000,
-    taxRate: '8%',
-    amountIncludingTax: 21600,
-    deliveryDate: '2019-06-03',
-  },
-  {
-    key: '3',
-    underlyingName: '智能产品系列',
-    productCategory: '常规产品',
-    brand: '德澜仕',
-    productModel: 'ZFL-KKY01A(高配)',
-    productImage: 'www.baidu,com', // 图片路径
-    productColor: '常规色',
-    unit: '套',
-    number: 1,
-    unitPrice: '20000',
-    Amount: 20000,
-    taxRate: '8%',
-    amountIncludingTax: 21600,
-    deliveryDate: '2019-06-05',
-  },
-  {
-    key: '4',
-    title: '状态',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'states' },
-  },
-]
 export default {
   name: 'PreviewTripartiteContract',
   components: {},
@@ -426,6 +365,7 @@ export default {
   data() {
     return {
       data: [],
+      instanceId: undefined,
       saleContractLowCPriceAllAmount: 0,
       enterpriseName: '江苏万德福公共设施科技有限公司',
       enterpriseNameEnglish: 'JiangSu Wonderful Infrastructure Manufacturing co.,Ltd',
@@ -474,12 +414,9 @@ export default {
       partBBankDeposit: '',
       partBBehalfWeChat: '',
       partBBehalfEmail: '',
-      convention: false, // 是否含有常规结算
-      unconvention: false, // 是否含有非常规结算
       isFull: false, // 是否全款
       fullPayDate: '', // 全款付款日期
-      conventionList: [],
-      unconventionList: [],
+      purchaseContractSettlementDetailVoList: [],
       fullList: [],
       unitFullName: '',
       dutyParagraph: '',
@@ -495,7 +432,7 @@ export default {
       commonSeal: '', // 公章Src地址
       saleUserSeal: '', // 供方代表销售人员章
 
-      signForm: 0, // 合同签订方式 0 邮件签订 1 书面签订
+      signForm: 1, // 合同签订方式 1 邮件签订2 书面签订
       increaseTotalPayment: 0, //质保期限及要求 增加总金额
 
       requirementSpecification: '',
@@ -526,7 +463,7 @@ export default {
       detailDeliveryAddress: '', //新地址
 
       getLookDetail_isTax: true,
-      getLookDetail_freightType: 0,
+      getLookDetail_freightType: 1,
       getLookDetail_freightDivType: 2,
     }
   },
@@ -546,7 +483,7 @@ export default {
         },
         {
           title: '商标',
-          dataIndex: 'trademark',
+          scopedSlots: { customRender: 'trademark' },
         },
         {
           title: '产品型号',
@@ -554,7 +491,7 @@ export default {
         },
         {
           title: '图片',
-          dataIndex: 'productImage',
+          dataIndex: 'productPic',
           scopedSlots: { customRender: 'productImage' },
         },
         {
@@ -570,7 +507,7 @@ export default {
       let case1 = baseColumns.concat([
         {
           title: '单价(元)',
-          dataIndex: 'price',
+          dataIndex: 'countMoney',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -583,7 +520,7 @@ export default {
       let case2 = baseColumns.concat([
         {
           title: '含税单价(元)',
-          dataIndex: 'price',
+          dataIndex: 'countMoney',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -596,7 +533,7 @@ export default {
       let case3 = baseColumns.concat([
         {
           title: '单价(元)',
-          dataIndex: 'price',
+          dataIndex: 'countMoney',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -614,7 +551,7 @@ export default {
       let case4 = baseColumns.concat([
         {
           title: '单价(元)',
-          dataIndex: 'price',
+          dataIndex: 'countMoney',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -632,7 +569,7 @@ export default {
       let case5 = baseColumns.concat([
         {
           title: '含税单价(元)',
-          dataIndex: 'price',
+          dataIndex: 'countMoney',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -667,9 +604,9 @@ export default {
       let targetColumns = []
       //this.freightDivType  1单价 2金额
       //是否含运费
-      let hasFreight = this.getLookDetail_freightType === 0 ? true : false
+      let hasFreight = this.getLookDetail_freightType === 1 ? true : false
       //是否单价
-      let hasFreightDivOne = this.getLookDetail_freightDivType === 1 ? true : false
+      let hasFreightDivOne = this.getLookDetail_freightDivType === 2 ? true : false
       //是否含税
       let hasTax = this.getLookDetail_isTax
 
@@ -736,34 +673,7 @@ export default {
       if (this.$router.currentRoute.params.action === 'edit') {
         this.isPassBtn = false
       }
-      const params = {
-        id: queryOneData.id,
-      }
       this.getInfor()
-      this.getSeal()
-
-      await checkCurrentNode({ contractId: id })
-        .then((res) => {
-          try {
-            that.isSalesManager = parseInt(res.data.checkFlag) === 1 ? true : false
-          } catch (err) {
-            console.log('checkCurrentNode API error', res)
-            that.isSalesManager = false
-          }
-        })
-        .catch((err) => {
-          console.log('checkCurrentNode API error', err)
-          that.isSalesManager = false
-        })
-
-      if (that.isSalesManager) {
-        //销售经理需要选择审批节点
-        await getApprovalNode().then((res) => {
-          that.approvalNodeData = res.data.map((item) => {
-            return { label: item.name, value: item.id }
-          })
-        })
-      }
     },
 
     // 获取合同的详细信息
@@ -771,83 +681,82 @@ export default {
       let that = this
       let queryOneData = this.$router.currentRoute.params.queryOneData
       // 获取合同预览信息
-      mobileTerminal({
-        id: this.$router.currentRoute.params.queryOneData.id,
+      contractDetail({
+        purchaseContractId: this.$router.currentRoute.params.queryOneData.id,
       })
         .then((res) => {
-          console.log('预览合同需要的接口mobileTerminal', res)
-          this.contractNum = res.data.合同编号
-          this.demandUnit = res.data.乙方
-          this.createTime = res.data.签订时间
-          //this.data = res.data.产品列表
-          this.chineseTotalAmount = res.data.bigCountMoney
-          this.totalAmount = parseFloat(res.data.countMoney)
-          this.qualityFrame = res.data.qualityFrame
-          this.qualityElectronics = res.data.qualityElectronics
-          this.qualityLayer = res.data.qualityLayer
-          this.deliveryDate = res.data.提货日期
-          this.deliveryAddress = res.data.address
-          this.deliveryName = res.data.联系人名称
-          this.mobile = res.data.联系人电话
-          this.freightType = res.data.运费类型
-          this.transportType = res.data.运输方式
-          this.convention = res.data.常规
-          this.unconvention = res.data.非常规
-          this.partAemail = res.data.甲方邮箱账号
-          this.partBemail = res.data.乙方邮箱账号
-          this.requirementSpecification = res.data.requirementSpecification
-          this.isFull = res.data.全款
-          this.conventionList = res.data.常规产品
-          this.unconventionList = res.data.非常规产品
-          this.fullList = res.data.全款产品
-          this.partBAddress = res.data.customerInfo.address
-          this.partBPhone = res.data.customerInfo.mobile
-          this.partBPostalCode = res.data.customerInfo.zipCode
-          this.unitFullName = res.data.customerInfo.unitFullName
-          this.partBBankDeposit = res.data.customerInfo.openingBank
-          this.partBBankNumber = res.data.customerInfo.bankCardAccount
-          this.partBBankName = res.data.customerInfo.accountTitle
-          this.dutyParagraph = res.data.customerInfo.dutyParagraph
-          this.partBBehalfWeChat = res.data.customerInfo.wx
-          this.partBBehalfEmail = res.data.customerInfo.email
-          this.contractDispute = res.data.contractDispute
-          this.increaseTotalPayment = res.data.increaseTotalPayment
-          this.unIsTax = res.data.unIsTax
-          this.isNeedFreshChaper = res.data.isNeedFreshChaper
-          this.otherInfo = res.data.otherInfo
+          console.log(res.data)
+          let react = res.data.purchaseContractDetailVo
+
+          let purchase = res.data.purchaseContractInfoDetailVo
+
+          // console.log('预览合同需要的接口mobileTerminal', res)
+          this.instanceId = react.instanceId
+          this.contractNum = react.contractNum
+          this.demandUnit = react.customerName
+          this.createTime = react.signingDate
+          this.data = res.data.purchaseContractProductDetailVoList
+          this.chineseTotalAmount = res.data.chineseTotalAmount
+          this.totalAmount = parseFloat(res.data.totalAmount)
+          this.qualityFrame = react.frameWarranty //主框架
+          this.qualityElectronics = react.electricWarranty // 电器
+          this.qualityLayer = react.coatingWarranty // 涂层
+          this.deliveryDate = react.deliveryDate // 交货日期
+          this.deliveryAddress = react.detailDeliveryAddress // 地址
+          this.freightType = react.freightType ///运费类型
+          this.transportType = react.transportMode //运输方式
+          this.purchaseContractSettlementDetailVoList = res.data.purchaseContractSettlementDetailVoList // 结算方式
+          this.partAemail = purchase.ourEmail //甲方邮箱账号
+          this.partBemail = purchase.customerEmail // 乙方邮箱
+          this.requirementSpecification = purchase.requirementSpecification //需方产品特殊说明
+          this.isFull = react.fullPayment //全款
+          this.fullList = res.data.purchaseContractSettlementDetailVoList //全款结算方式
+          this.partBAddress = react.detailDeliveryAddress //乙方地址
+          this.partBPhone = react.customerPhone // 乙方手机号
+          this.partBPostalCode = react.customerPostcode //邮编
+          this.unitFullName = react.customerFullName // 单位全称
+          this.partBBankDeposit = react.customerBankName // 开户行
+          this.partBBankNumber = react.customerBankAccount //银行账号
+          this.partBBankName = react.customerBankName // 银行账号名称
+          this.dutyParagraph = react.customerTfn //税号
+          this.partBBehalfWeChat = react.customerWxNum
+          this.partBBehalfEmail = react.customerEmail
+          this.contractDispute = purchase.solveDispute //争议方式
+          // this.increaseTotalPayment = res.data.increaseTotalPayment
+          this.unIsTax = react.isTax === 1 ? true : false
+          this.isNeedFreshChaper = purchase.needSignet
+          this.otherInfo = react.deliveryOther
           this.saleContractLowCPriceAllAmount = res.data.saleContractLowCPriceAllAmount
 
-          this.bucketType = res.data.bucketType || 1
-          this.qualityLimit = res.data.qualityLimit || 1
-          this.detailDeliveryAddress = res.data.detailDeliveryAddress || ''
+          this.bucketType = react.bucketType || 1
+          this.qualityLimit = react.qualityWarranty || 1
+          this.detailDeliveryAddress = react.detailDeliveryAddress || ''
 
-          this.getLookDetail_isTax = res.data.isTax
-          this.getLookDetail_freightType = res.data.freightType
-          this.getLookDetail_freightDivType = res.data.freightDivType
+          this.getLookDetail_isTax = react.isTax === 1 ? true : false
+          this.getLookDetail_freightType = react.freightType
+          this.getLookDetail_freightDivType = react.freightAllotType
 
-          if (res.data.contractDisputeName) {
-            this.contractDisputeName = res.data.contractDisputeName
-          }
-          this.additionalTreaty = res.data.additionalTreaty
+          // if (res.data.contractDisputeName) {
+          //   this.contractDisputeName = res.data.contractDisputeName
+          // }
+          this.additionalTreaty = purchase.additionalTreaty
+          this.approvalStatus = react.status
+          this.commonSeal = react.commonSeal
+          this.saleUserSeal = react.saleUserSeal
+          this.partABehalf = react.userName
+          this.signForm = parseInt(purchase.signType)
+          this.wordUrl = react.detailUrl
 
-          if (parseInt(queryOneData.approvalStatus) === 4) {
-            getSplitApprovingProduct({ contractId: queryOneData.id })
-              .then((res) => {
-                let _key = 0
-                that.data = res.data.map((item) => {
-                  item.key = ++_key
-                  return item
-                })
-                that.productLoading = false
-              })
-              .catch((err) => {
-                that.productLoading = false
-                that.$message.error('获取合同产品数据失败')
-                return
-              })
-          } else {
-            that.data = res.data.产品列表
-            that.productLoading = false
+          this.queryOne_freightType = react.freightType
+          this.queryOne_freightCharge = react.freight
+
+          if (this.queryOne_freightType === 1) {
+            let _columns = [...this.columns]
+            let _item = _columns.find((item) => item.dataIndex === 'raitMoney')
+            if (_item) {
+              _item.title = this.queryOne_freightType === 1 ? '含税含运费金额(元)' : '含税金额(元)'
+              this.columns = _columns
+            }
           }
         })
         .catch((error) => {
@@ -858,94 +767,39 @@ export default {
           this.$router.go(-1)
         })
     },
-    // 获取单个信息(合同章/个人章)
-    getSeal() {
-      getQueryOne({
-        id: this.$router.currentRoute.params.queryOneData.id,
-      })
-        .then((res) => {
-          this.approvalStatus = res.data.approvalStatus
-          this.commonSeal = res.data.commonSeal
-          this.saleUserSeal = res.data.saleUserSeal
-          this.partABehalf = res.data.saleUserTrueName
-          this.signForm = parseInt(res.data.otherInfo.signForm)
-
-          this.wordUrl = res.data.wordUrl
-
-          this.queryOne_freightType = res.data.freightType
-          this.queryOne_freightCharge = res.data.freightCharge
-
-          if (this.queryOne_freightType === 0) {
-            let _columns = [...this.columns]
-            let _item = _columns.find((item) => item.dataIndex === 'raitMoney')
-            if (_item) {
-              _item.title = this.queryOne_freightType === 0 ? '含税含运费金额(元)' : '含税金额(元)'
-              this.columns = _columns
-            }
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
     // 返回
     goBackConstractList() {
       let that = this
       that.$destroy('previewTripartiteContract')
       that.$nextTick(() => {
-        let _from = that.$route.params.from || 'distributionContractList'
+        let _from = that.$route.params.from || 'contractBehalfList'
         that.$router.push({ name: _from })
       })
     },
     // 通过
     okPass() {
       let that = this
-
-      let queryOneData = that.$router.currentRoute.params.queryOneData
       const params = {
-        contractId: queryOneData.id,
+        approveId: this.$router.currentRoute.params.queryOneData.id,
         isAdopt: 0,
         opinion: '',
       }
-      //审批通过新增 拆分审批 以及 销售经理审批的情况
-      if (parseInt(queryOneData.approvalStatus) === 4) {
-        if (that.isSalesManager) {
-          if (that.checkedValues.length === 0) {
-            that.$message.error('请必须选择至少一个审批节点')
-            return
-          }
-          params.nextNodes = that.checkedValues.join(',')
-        }
-        that.spinning = true
-        approvalSplitProduct(params)
-          .then((res) => {
-            that.$router.go(-1) // 返回上一页
-            // this.$router.push({name:'distributionContractList'})
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-          .finally(() => {
-            that.loading = false
-            that.spinning = false
-          })
-      } else {
-        that.spinning = true
-        //原流程
-        contractApproval(params)
-          .then((res) => {
-            that.spinning = false
-            that.$router.go(-1) // 返回上一页
-            // this.$router.push({name:'distributionContractList'})
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-          .finally(() => {
-            that.loading = false
-            that.spinning = false
-          })
-      }
+      that.spinning = true
+      //   //原流程
+      PurchaseContract(params)
+        .then((res) => {
+          that.spinning = false
+          that.$router.go(-1) // 返回上一页
+          // this.$router.push({name:'distributionContractList'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          that.loading = false
+          that.spinning = false
+        })
+      // }
     },
     // 不通过
     isPass(e) {
@@ -963,44 +817,25 @@ export default {
 
       setTimeout(function () {
         that.spinning = true
-        let queryOneData = that.$router.currentRoute.params.queryOneData
         const params = {
-          contractId: queryOneData.id,
+          approveId: that.$router.currentRoute.params.queryOneData.id,
           opinion: that.opinion,
           isAdopt: that.isAdopt,
         }
-        //拆分审批不通过流程
-        if (parseInt(queryOneData.approvalStatus) === 4) {
-          approvalSplitProduct(params)
-            .then((res) => {
-              that.visible = false
-              that.$router.go(-1) // 返回上一页
-              // this.$router.push({name:'distributionContractList'})
-            })
-            .catch((error) => {
-              console.error(error)
-            })
-            .finally(() => {
-              that.loading = false
-              that.spinning = false
-            })
-        } else {
-          //原流程
-          contractApproval(params)
-            .then((res) => {
-              console.log('通过或者不通过点击确定调取接口的结果', res)
-              that.visible = false
-              that.$router.go(-1) // 返回上一页
-              // this.$router.push({name:'distributionContractList'})
-            })
-            .catch((error) => {
-              console.error(error)
-            })
-            .finally(() => {
-              that.loading = false
-              that.spinning = false
-            })
-        }
+        //   //原流程
+        PurchaseContract(params)
+          .then((res) => {
+            console.log('通过或者不通过点击确定调取接口的结果', res)
+            that.visible = false
+            that.$router.go(-1) // 返回上一页
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+          .finally(() => {
+            that.loading = false
+            that.spinning = false
+          })
       }, 500)
     },
     getPDF() {

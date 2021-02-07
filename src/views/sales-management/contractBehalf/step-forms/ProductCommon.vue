@@ -25,13 +25,13 @@
             <a-select-option value="1">非常规产品</a-select-option>
           </a-select>
         </template>
-        <template slot="productModel" slot-scope="text, record">
+        <template slot="productCode" slot-scope="text, record">
           <a-form-item :validate-status="validateData[record.key]['productId'].validateStatus">
             <a-input
               read-only="read-only"
               @click="openModel(record)"
               placeholder="选择产品代码"
-              :value="record.productModel"
+              :value="record.productCode"
             />
           </a-form-item>
         </template>
@@ -124,7 +124,7 @@
         <span class="span-mount">(&nbsp;{{ totalAmount | moneyFormatNumber }}&nbsp;)</span>
         <!-- <span class="span-mount" v-if="isTax">此价格含质保、不含运费。</span> -->
         <span class="span-mount"
-          >此价格{{ isTax ? '含税' : '不含税' }}、{{ freightType === 0 ? '含运费' : '不含运费' }}。</span
+          >此价格{{ isTax ? '含税' : '不含税' }}、{{ freightType === 1 ? '含运费' : '不含运费' }}。</span
         >
       </a-col>
     </a-row>
@@ -205,10 +205,10 @@ export default {
         {
           align: 'center',
           title: '产品代码',
-          dataIndex: 'productModel',
-          key: 'productModel',
+          dataIndex: 'productCode',
+          key: 'productCode',
           width: '200px',
-          scopedSlots: { customRender: 'productModel' },
+          scopedSlots: { customRender: 'productCode' },
         },
         {
           align: 'center',
@@ -383,9 +383,9 @@ export default {
       let targetColumns = []
       //this.freightDivType  1单价 2金额
       //是否含运费
-      let hasFreight = this.freightType === 0 ? true : false
+      let hasFreight = this.freightType === 1 ? true : false
       //是否单价
-      let hasFreightDivOne = this.freightDivType === 1 ? true : false
+      let hasFreightDivOne = this.freightDivType === 2 ? true : false
       //是否含税
       let hasTax = this.isTax
 
@@ -471,7 +471,7 @@ export default {
       this.totalAmount = this.params.totalAmount
       this.saleContractLowCPriceAllAmount = this.params.saleContractLowCPriceAllAmount
       this.chineseTotalAmount = this.params.freight
-      this.isTax = this.params.isTax
+      this.isTax = this.params.isTax === 1 ? true : false
       this.freightType = this.params.freightType
       this.freight = this.params.freight
       this.freightDivType = this.params.freightDivType || 2
@@ -549,7 +549,7 @@ export default {
         editable: true,
         isNew: true,
         productPic: null,
-        productModel: null,
+        productCode: null,
         productType: '0',
         freightUnitPrice: '',
         productLowCPriceAllAmount: 0, //总差价
@@ -606,7 +606,7 @@ export default {
       if (target) {
         target['productType'] = e
         target.productPic = null
-        target.productModel = null
+        target.productCode = null
         target.productId = null
         target.productName = null
         this.data = dataSource
@@ -644,7 +644,7 @@ export default {
       if (target) {
         target['priceC'] = selectItem.priceC
         target['productPic'] = selectItem.productPic
-        target['productModel'] = selectItem.productModel
+        target['productCode'] = selectItem.productModel
         target['productTypeDicId'] = selectItem.productTypeDicId
         target['productId'] = selectItem.id
         target['productName'] = selectItem.productName
@@ -677,7 +677,7 @@ export default {
       if (target.targetId === null) {
         return this.$message.error('请先选择标的名称')
       }
-      if (target.productModel === null) {
+      if (target.productCode === null) {
         return this.$message.error('请先选择产品代码')
       }
       if (target) {
@@ -770,7 +770,7 @@ export default {
       return {
         errors: hasError,
         values: [...this.data],
-        lowPriceDesc: this.lowPriceDesc===''? this.params.lowPriceDesc:this.lowPriceDesc,
+        lowPriceDesc: this.lowPriceDesc === '' ? this.params.lowPriceDesc : this.lowPriceDesc,
         ispriceC: this.ispriceC,
       }
     },

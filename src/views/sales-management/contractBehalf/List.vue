@@ -73,7 +73,7 @@
             <a-dropdown :trigger="['click']">
               <a class="ant-dropdown-link" @click="(e) => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
               <a-menu slot="overlay">
-                <a-menu-item key="0" v-if="+record.status === 2 && record.createdId === userInfo.id">
+                <a-menu-item key="0" v-if="+record.status === 1 && record.createdId === userInfo.id">
                   <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                     <a type="primary" href="javascript:;">撤回</a>
                   </a-popconfirm>
@@ -104,11 +104,18 @@
                     <a type="primary" href="javascript:;">删除</a>
                   </a-popconfirm>
                 </a-menu-item>
-                <!-- <a-menu-item key="4" v-if="+record.status !== 1">
-                  <a target="_blank" :href="record.pdfUrl">下载</a>
-                </a-menu-item> -->
-                <a-menu-item key="5" v-if="+record.status !== 1">
-                  <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
+                <a-menu-item
+                  key="3"
+                  v-if="
+                    [0].includes(+record.status) && $auth('businessBorrowing:del') && record.createdId === userInfo.id
+                  "
+                >
+                  <a-popconfirm title="确认提交审批吗?" @confirm="() => doAction('submitApproval', record)">
+                    <a type="primary" href="javascript:;">提交审批</a>
+                  </a-popconfirm>
+                </a-menu-item>
+                <a-menu-item key="4" v-if="+record.status === 2">
+                  <a target="_blank" :href="record.detailUrl">下载</a>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>
@@ -125,7 +132,7 @@
 
 <script>
 import { listUserBySale } from '@/api/systemSetting'
-import { purchaseList, businessrevocation, businessdelete } from '@/api/agencyContract'
+import { purchaseList, purchaseProcess, purchaseWithdra, purchaseDel } from '@/api/agencyContract'
 // import AddForm from './AddForm'
 
 import moment from 'moment'
@@ -325,14 +332,37 @@ export default {
 
     doAction(actionType, record) {
       let that = this
-      if (['add', 'see', 'edit', 'approval'].includes(actionType)) {
-        this.$router.push({
-          name: 'basicInformation2',
-          params: { id: record.id, action: actionType, from: 'contractBehalfList' },
-        })
+      if (['add', 'see', 'edit'].includes(actionType)) {
+        if (actionType === 'add') {
+          this.$router.push({
+            name: 'basicInformation2',
+            params: { id: null, action: actionType, from: 'contractBehalfList' },
+          })
+        } else {
+          this.$router.push({
+            name: 'basicInformation2',
+            params: { id: record.id, action: actionType, from: 'contractBehalfList' },
+          })
+        }
+
         // that.$refs.addForm.query(actionType, record || {})
+      } else if (actionType === 'approval') {
+        this.$router.push({
+          name: 'previewTripartiteContracts',
+          params: { queryOneData: { id: record.id }, action: actionType },
+        })
+      } else if (actionType === 'submitApproval') {
+        //发起审批
+        purchaseProcess(`id=${record.id}`)
+          .then((res) => {
+            that.$message.info(res.msg)
+            that.searchAction()
+          })
+          .catch((err) => {
+            that.$message.info(`错误：${err.message}`)
+          })
       } else if (actionType === 'del') {
-        businessdelete(`id=${record.id}`)
+        purchaseDel(`id=${record.id}`)
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -341,7 +371,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        businessrevocation(`id=${record.id}`)
+        purchaseWithdra(`id=${record.id}`)
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()

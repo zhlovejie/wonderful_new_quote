@@ -23,7 +23,7 @@
 
         <a-row justify="start" align="middle">
           <a-col :span="24">
-            <div v-if="freightType === 0">
+            <div v-if="freightType === 1">
               <span v-if="isTax === 0"> 运费：&nbsp;{{ freight | moneyFormatNumber }} </span>
               <span v-else>
                 运费：&nbsp;{{
@@ -39,14 +39,14 @@
             <span class="span-mount bigword">{{ chineseTotalAmount }}</span>
             <span class="span-mount">(&nbsp;{{ totalAmount | moneyFormatNumber }}&nbsp;)</span>
             <span class="span-mount"
-              >此价格{{ isTax ? '含税' : '不含税' }}、{{ freightType === 0 ? '含运费' : '不含运费' }}。</span
+              >此价格{{ isTax ? '含税' : '不含税' }}、{{ freightType === 1 ? '含运费' : '不含运费' }}。</span
             >
           </a-col>
         </a-row>
       </template>
       <template v-if="this.$parent.routeParams.action === 'see'">
         <ProductC ref="productCommon" :params="productCommonParams">
-          <div v-if="freightType === 0">
+          <div v-if="freightType === 1">
             <span v-if="isTax === 0"> 运费：&nbsp;{{ freight | moneyFormatNumber }} </span>
             <span v-else>
               运费：&nbsp;{{ freightMoneyWithRate | moneyFormatNumber }}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{
@@ -58,7 +58,7 @@
       </template>
       <template v-if="this.$parent.routeParams.action !== 'split' && this.$parent.routeParams.action !== 'see'">
         <ProductCommon ref="productCommon" :params="productCommonParams">
-          <div v-if="freightType === 0">
+          <div v-if="freightType === 1">
             <span v-if="isTax === 0"> 运费：&nbsp;{{ freight | moneyFormatNumber }} </span>
             <span v-else>
               运费：&nbsp;{{ freightMoneyWithRate | moneyFormatNumber }}&nbsp;&nbsp;包含&nbsp;&nbsp;(&nbsp;运费：{{
@@ -129,7 +129,7 @@ export default {
         startKey: 2000,
         __name: 'SplitChange',
       },
-      freightType: 0, //运费类型 0含运费 1不含运费
+      freightType: 1, //运费类型 1含运费 0不含运费
       freight: 0, //运费显示用
       freightMoneyWithRate: 0,
       isTax: 0, // 1 含税（销售合同） 0 不含税（产品订货单）
@@ -142,7 +142,7 @@ export default {
   computed: {
     totalAmount: function () {
       let _totalAmount = Number(this.splitNormalTotalAmount) + Number(this.splitChangeTotalAmount)
-      if (this.freightType === 0) {
+      if (this.freightType === 1) {
         _totalAmount += Number(this.freightMoneyWithRate)
       }
       debugger
@@ -208,12 +208,12 @@ export default {
           saleContractLowCPriceAllAmount: result.saleContractLowCPriceAllAmount,
           totalAmount: this.queryonedata.totalAmount,
           chineseTotalAmount: result.chineseTotalAmount,
-          isTax: result.isTax === 1,
+          isTax: result.isTax || 1,
           __fromAction: this.$parent.routeParams.action,
           freightType: result.freightType,
           freight: parseInt(result.freight + result.freight * 0.13),
           freightDivType: result.freightAllotType || 2,
-          lowPriceDesc: result.lowPriceDesc,
+          lowPriceDesc: that.queryonedata.lowPriceDesc,
         }
         // 正常流程END
 
@@ -368,13 +368,10 @@ export default {
         // // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
         // console.log(products)
         let { totalAmount } = this.$refs.productCommon.istotalAmount()
-        let react = {
-          lowPriceDesc: lowPriceDesc,
-        }
         let arr = {
           purchaseContractProductSaveBoList: values,
           totalAmount: totalAmount,
-          purchaseContractSaveBo: { ...react, ...that.queryonedata.purchaseContractSaveBo },
+          lowPriceDesc: lowPriceDesc,
         }
         // saveProduct(products)
         //   .then((res) => {

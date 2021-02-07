@@ -166,14 +166,14 @@ export default {
     },
     async init() {
       const that = this
-      if (that.queryonedata && that.queryonedata.purchaseContractSaveBo) {
-        let react = that.queryonedata.purchaseContractSaveBo
+      if (that.queryonedata && that.queryonedata) {
+        let react = that.queryonedata
         that.form.setFieldsValue({
           freightType: react.freightType || 0,
           transportMode: react.transportMode || 1,
           deliveryDate: react.deliveryDate,
           deliveryOther: react.deliveryOther === null ? '' : react.deliveryOther,
-          deliveryPlace: react.deliveryAddress || '',
+          deliveryPlace: react.deliveryPlace,
         })
         let { deliveryPlace, detailDeliveryAreaIds } = react
         let _areaData = await that.loadAreaAction(100000)
@@ -239,23 +239,13 @@ export default {
           }
 
           const params = {
-            // id: that.queryonedata.id,
-            // deliveryAddress: values.deliveryAddress,
-            // deliveryName: values.deliveryName,
-            // deliveryMobile: values.deliveryMobile,
-            // deliveryAddress: contactResult.addressStr,
-            // deliveryName: contactResult.nameStr,
-            // deliveryMobile: contactResult.mobilStr,
             detailDeliveryAreaIds: values.areaPlace.toString(),
-            deliveryAddress: values.deliveryPlace || '',
+            deliveryPlace: values.deliveryPlace,
             deliveryAreaId: deliveryAreaId,
             freightType: values.freightType,
             transportMode: values.transportMode,
             deliveryOther: values.deliveryOther ? values.deliveryOther : '无',
             deliveryDate: values.deliveryDate,
-          }
-          let reacts = {
-            purchaseContractSaveBo: { ...params, ...that.queryOneData.purchaseContractSaveBo },
           }
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           // saveDeliveryAddress(params)
@@ -268,7 +258,7 @@ export default {
           //     // })
           //     if (status != 1) {
           console.log(params)
-          that.$emit('nextStep', { ...reacts })
+          that.$emit('nextStep', { ...params })
           //     } else {
           //       that.$message.success('保存成功')
           //     }
