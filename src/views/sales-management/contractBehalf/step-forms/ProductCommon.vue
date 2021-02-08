@@ -180,7 +180,7 @@ export default {
       saleContractLowCPriceAllAmount: 0,
       freightDivType: 2,
       ispriceC: false,
-      lowPriceDesc: '',
+      lowPriceDesc: undefined,
     }
   },
   computed: {
@@ -765,7 +765,10 @@ export default {
     },
     validate() {
       let hasError = this.freshValidateData()
-      if (this.ispriceC === true && (this.lowPriceDesc === null || this.lowPriceDesc.trim().length === 0)) {
+      if (
+        this.ispriceC === true &&
+        (this.lowPriceDesc === undefined || (this.lowPriceDesc.length > 0 && this.lowPriceDesc.trim().length != 0))
+      ) {
         return this.$message.error('特价说明不能为空')
       }
       return {

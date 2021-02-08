@@ -511,7 +511,7 @@ export default {
       let case1 = baseColumns.concat([
         {
           title: '单价(元)',
-          dataIndex: 'countMoney',
+          dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -524,7 +524,7 @@ export default {
       let case2 = baseColumns.concat([
         {
           title: '含税单价(元)',
-          dataIndex: 'countMoney',
+          dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -537,7 +537,7 @@ export default {
       let case3 = baseColumns.concat([
         {
           title: '单价(元)',
-          dataIndex: 'countMoney',
+          dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -555,7 +555,7 @@ export default {
       let case4 = baseColumns.concat([
         {
           title: '单价(元)',
-          dataIndex: 'countMoney',
+          dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -573,7 +573,7 @@ export default {
       let case5 = baseColumns.concat([
         {
           title: '含税单价(元)',
-          dataIndex: 'countMoney',
+          dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'price' },
         },
         {
