@@ -5,6 +5,21 @@
         <a-form-item label="客户名称">
           <a-input v-model="customerName" />
         </a-form-item>
+        <a-form-item label="销售经理">
+          <a-select
+            optionFilterProp="children"
+            showSearch
+            :allowClear="true"
+            :filterOption="filterSalersOption"
+            placeholder="销售经理"
+            style="width: 200px"
+            v-model="saleUserId"
+          >
+            <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+              item.salesmanName
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="审批状态" v-show="show">
           <a-select style="width: 150px" v-model="approvalStatusSelect" defaultValue="0">
             <a-select-option :value="0">请选择审批状态</a-select-option>
@@ -150,6 +165,7 @@ import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getUploadPath } from '@/api/manage'
 import { exprotAction } from '@/api/receipt'
+import { getListSaleContractUser } from '@/api/contractListManagement'
 export default {
   name: 'AfterList',
   components: {
@@ -170,6 +186,7 @@ export default {
       vueBoolean: this.$store.getters.vueBoolean,
       saleCustomer: 0,
       customerName: '',
+      saleUserId:undefined,
       saleCustomers: [],
       pagination: {
         showTotal: (total) => '共' + total + '条数据',
@@ -178,6 +195,7 @@ export default {
       confirmLoadingTwo: false,
       visibleTwo: false,
       fileList: [],
+      saleUser: [],
       uploadPath: getUploadPath,
       acceptanceUrl: '',
       id: 0,
@@ -274,6 +292,7 @@ export default {
     }
   },
   mounted() {
+    getListSaleContractUser().then((res) => (this.saleUser = res.data))
     this.search()
   },
   watch: {
@@ -288,6 +307,7 @@ export default {
       this.queryParam = {
         customerName: this.customerName,
         statue: this.contractState,
+        saleUserId:this.saleUserId
       }
       if (this.show == true) {
         this.queryParam['approvalStatue'] = this.approvalStatusSelect
@@ -469,6 +489,9 @@ export default {
       let res = await exprotAction(6,{...that.queryParam},'产品调试任务单')
       console.log(res)
       that.$message.info(res.msg)
+    },
+    filterSalersOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     }
   }
 }

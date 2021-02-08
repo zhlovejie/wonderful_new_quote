@@ -85,13 +85,13 @@
           <span v-else>***</span>
         </div>
         <div slot="aprice" slot-scope="text, record">
-          <span>{{ record.aprice | moneyFormatNumber }}</span>
+          <span>{{ record.aPrice | moneyFormatNumber }}</span>
         </div>
         <div slot="bprice" slot-scope="text, record">
-          <span>{{ record.bprice | moneyFormatNumber }}</span>
+          <span>{{ record.bPrice | moneyFormatNumber }}</span>
         </div>
         <div slot="cprice" slot-scope="text, record">
-          <span>{{ record.cprice | moneyFormatNumber }}</span>
+          <span>{{ record.cPrice | moneyFormatNumber }}</span>
         </div>
 
         <div slot="productName" slot-scope="text, record">
@@ -363,24 +363,18 @@ const innerColumns = [
   {
     align: 'center',
     title: 'A价（元）',
-    dataIndex: 'aprice',
-    key: 'aprice',
     scopedSlots: { customRender: 'aprice' },
     width: '120px',
   },
   {
     align: 'center',
     title: 'B价（元）',
-    dataIndex: 'bprice',
-    key: 'bprice',
     scopedSlots: { customRender: 'bprice' },
     width: '120px',
   },
   {
     align: 'center',
     title: 'C价（元）',
-    dataIndex: 'cprice',
-    key: 'cprice',
     scopedSlots: { customRender: 'cprice' },
     width: '120px',
   },
