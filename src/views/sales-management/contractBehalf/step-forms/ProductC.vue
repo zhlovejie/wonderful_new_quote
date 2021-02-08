@@ -11,33 +11,49 @@
       >
         <template slot="targetId" slot-scope="text, record">
           <a-form-item :validate-status="validateData[record.key]['targetId'].validateStatus">
-            <!-- @click="targetIdModel(record)" -->
-            <a-input disabled read-only="read-only" placeholder="选择标的名称" :value="record.targetName" />
+            <a-input
+              disabled
+              read-only="read-only"
+              @click="targetIdModel(record)"
+              placeholder="选择标的名称"
+              :value="record.targetName"
+            />
           </a-form-item>
         </template>
         <template slot="productType" slot-scope="text, record">
-          <a-select disabled :value="record.productType" placeholder="选择产品类别">
+          <a-select
+            disabled
+            :value="record.productType"
+            placeholder="选择产品类别"
+            @change="typeSelectChange(record, $event)"
+          >
             <a-select-option value="0">常规产品</a-select-option>
             <a-select-option value="1">非常规产品</a-select-option>
           </a-select>
         </template>
-        <template slot="productModel" slot-scope="text, record">
+        <template slot="productCode" slot-scope="text, record">
           <a-form-item :validate-status="validateData[record.key]['productId'].validateStatus">
-            <a-input read-only="read-only" disabled placeholder="选择产品代码" :value="record.productModel" />
+            <a-input
+              disabled
+              read-only="read-only"
+              @click="openModel(record)"
+              placeholder="选择产品代码"
+              :value="record.productCode"
+            />
           </a-form-item>
         </template>
 
         <template slot="productName" slot-scope="text, record">
           <a-form-item>
-            <a-input read-only="read-only" disabled :value="record.productName" />
+            <a-input disabled read-only="read-only" :value="record.productName" />
           </a-form-item>
         </template>
 
         <!-- <template slot="productPic" slot-scope="text">
           <img style="width:50px;height:auto;" :src="text"/>
         </template> -->
-        <template slot="company" slot-scope="text, record">
-          <a-select :value="record.company" placeholder="选择单位" disabled>
+        <template slot="unit" slot-scope="text, record">
+          <a-select disabled :value="record.unit" placeholder="选择单位" @change="companySelectChange(record, $event)">
             <a-select-option value="0">套</a-select-option>
             <a-select-option value="1">台</a-select-option>
             <a-select-option value="2">个</a-select-option>
@@ -50,19 +66,31 @@
         </template>
         <template slot="count" slot-scope="text, record">
           <a-form-item :validate-status="validateData[record.key]['count'].validateStatus">
-            <a-input type="number" :min="0" :value="record.count" disabled />
+            <a-input disabled type="number" :min="0" :value="record.count" @change="countChange(record, $event)" />
           </a-form-item>
         </template>
         <template slot="unitPrice" slot-scope="text, record">
           <a-form-item :validate-status="validateData[record.key]['unitPrice'].validateStatus">
-            <a-input-number :precision="2" :min="0" disabled :value="record.unitPrice" />
+            <a-input-number
+              disabled
+              :precision="2"
+              :min="0"
+              :value="record.unitPrice"
+              @change="multiplyMoney(record, 'unitPrice', $event)"
+            />
           </a-form-item>
         </template>
 
         <!--新增2列  单价和金额 -->
         <template slot="freightUnitPrice" slot-scope="text, record">
           <a-form-item>
-            <a-input-number :precision="2" :min="0" disabled :value="record.freightUnitPrice" />
+            <a-input-number
+              disabled
+              :precision="2"
+              :min="0"
+              :value="record.freightUnitPrice"
+              @change="multiplyMoney(record, 'freightUnitPrice', $event)"
+            />
           </a-form-item>
         </template>
         <template slot="totalFreightUnitPrice" slot-scope="text, record">
@@ -72,13 +100,6 @@
 
         <template slot="oneMoney" slot-scope="text, record">
           <span>{{ record.oneMoney | moneyFormatNumber }}</span>
-        </template>
-
-        <template slot="productLowCPriceUnitAmount" slot-scope="text, record">
-          <span style="color: red">{{ record.productLowCPriceUnitAmount }}</span>
-        </template>
-        <template slot="productLowCPriceAllAmount" slot-scope="text, record">
-          <span style="color: red">{{ record.productLowCPriceAllAmount }}</span>
         </template>
         <template slot="tax" slot-scope="text, record">
           <span>{{ record.tax }}%</span>
@@ -92,11 +113,11 @@
           </a-form-item>
         </template>
         <!-- <template slot="operation" slot-scope="text, record">
-            <span v-if="record.editable && record.isNew">
-              <a-popconfirm title="是否要删除此行？" @confirm="remove(record)">
-                <a>删除</a>
-              </a-popconfirm>
-            </span>
+          <span v-if="record.editable && record.isNew">
+            <a-popconfirm title="是否要删除此行？" @confirm="remove(record)">
+              <a>删除</a>
+            </a-popconfirm>
+          </span>
         </template> -->
       </a-table>
     </a-form>
@@ -112,15 +133,16 @@
         <span class="span-mount">(&nbsp;{{ totalAmount | moneyFormatNumber }}&nbsp;)</span>
         <!-- <span class="span-mount" v-if="isTax">此价格含质保、不含运费。</span> -->
         <span class="span-mount"
-          >此价格{{ isTax ? '含税' : '不含税' }}、{{ freightType === 0 ? '含运费' : '不含运费' }}。</span
+          >此价格{{ isTax ? '含税' : '不含税' }}、{{ freightType === 1 ? '含运费' : '不含运费' }}。</span
         >
       </a-col>
     </a-row>
-    <template v-if="this.saleContractLowCPriceAllAmount > 0">
+    <template v-if="saleContractLowCPriceAllAmount > 0 && this.data.length > 0">
       <span> 合同低于C价总差额: </span>
       <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
     </template>
-    <template v-if="ispriceC">
+
+    <template v-if="ispriceC && this.data.length > 0">
       <a-row type="flex" justify="center" style="margin-top: 20px">
         <a-col class="closep" :span="1"> 特价说明 </a-col>
         <a-col class="col-mount" :span="23">
@@ -128,6 +150,7 @@
         </a-col>
       </a-row>
     </template>
+
     <product-model ref="productModel" @custom-change="productChange"></product-model>
     <targetid-model ref="targetidModel" @custom-change="targetidChange"></targetid-model>
   </div>
@@ -160,13 +183,13 @@ export default {
       validateData: {}, //验证行信息
       totalAmount: 0,
       chineseTotalAmount: '零',
-      saleContractLowCPriceAllAmount: 0,
       isTax: false,
       freightType: 1,
-      freightCharge: 0,
+      freight: 0,
+      saleContractLowCPriceAllAmount: 0,
       freightDivType: 2,
+      ispriceC: false,
       lowPriceDesc: '',
-      ispriceC: true,
     }
   },
   computed: {
@@ -191,10 +214,10 @@ export default {
         {
           align: 'center',
           title: '产品代码',
-          dataIndex: 'productModel',
-          key: 'productModel',
+          dataIndex: 'productCode',
+          key: 'productCode',
           width: '200px',
-          scopedSlots: { customRender: 'productModel' },
+          scopedSlots: { customRender: 'productCode' },
         },
         {
           align: 'center',
@@ -207,9 +230,9 @@ export default {
         {
           align: 'center',
           title: '单位',
-          dataIndex: 'company',
-          key: 'company',
-          scopedSlots: { customRender: 'company' },
+          dataIndex: 'unit',
+          key: 'unit',
+          scopedSlots: { customRender: 'unit' },
           width: '120px',
         },
         {
@@ -296,6 +319,7 @@ export default {
           scopedSlots: { customRender: 'unitPrice' },
           width: '150px',
         },
+
         {
           align: 'center',
           title: '金额(元)',
@@ -368,9 +392,9 @@ export default {
       let targetColumns = []
       //this.freightDivType  1单价 2金额
       //是否含运费
-      let hasFreight = this.freightType === 0 ? true : false
+      let hasFreight = this.freightType === 1 ? true : false
       //是否单价
-      let hasFreightDivOne = this.freightDivType === 1 ? true : false
+      let hasFreightDivOne = this.freightDivType === 2 ? true : false
       //是否含税
       let hasTax = this.isTax
 
@@ -379,38 +403,27 @@ export default {
       } else {
         targetColumns = hasFreight ? (hasFreightDivOne ? case3 : case4) : case1
       }
-      let productL = this.saleContractLowCPriceAllAmount > 0 ? true : false
-      if (productL) {
-        targetColumns.push(
-          {
-            align: 'center',
-            title: '低于C价差额',
-            width: '200px',
-            dataIndex: 'productLowCPriceUnitAmount',
-            scopedSlots: { customRender: 'productLowCPriceUnitAmount' },
-          },
-          {
-            align: 'center',
-            width: '200px',
-            title: '低于C价总差额',
-            dataIndex: 'productLowCPriceAllAmount',
-            scopedSlots: { customRender: 'productLowCPriceAllAmount' },
-          }
-        )
-      }
       // targetColumns.push({
       //   title: '交货日期',
       //   dataIndex: 'dateTime'
       // })
 
-      //   targetColumns.push(
-      //     {
-      //       title: '操作',
-      //       key: 'action',
-      //       width:'100px',
-      //       scopedSlots: { customRender: 'operation' }
-      //     }
-      //   )
+      targetColumns.push(
+        {
+          align: 'center',
+          title: '低于C价差额',
+          width: '200px',
+          dataIndex: 'productLowCPriceUnitAmount',
+          scopedSlots: { customRender: 'productLowCPriceUnitAmount' },
+        },
+        {
+          align: 'center',
+          width: '200px',
+          title: '低于C价总差额',
+          dataIndex: 'productLowCPriceAllAmount',
+          scopedSlots: { customRender: 'productLowCPriceAllAmount' },
+        }
+      )
       return targetColumns
     },
   },
@@ -420,26 +433,50 @@ export default {
   watch: {
     params: function () {
       this.init()
-      this.isprice()
     },
-  },
-  methods: {
-    isprice() {
+    data: function () {
       if (this.isTax === false) {
         this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice + parseFloat(i.unitPrice * (i.tax / 100)))
       }
       if (this.isTax === true) {
         this.ispriceC = this.data.some((i) => i.priceC > i.unitPrice)
       }
+      //合计总差价
+      let saleContractLowCPriceAllAmount = this.data.reduce((calc, item) => {
+        return (Number(calc) + Number(item.productLowCPriceAllAmount)).toFixed(2)
+      }, 0)
+      this.saleContractLowCPriceAllAmount = Number(saleContractLowCPriceAllAmount)
+      let hasTax = this.isTax
+      let totalAmount = this.data.reduce((calc, item) => {
+        return calc + (hasTax ? item.taxAmount : item.oneMoney)
+      }, 0)
+      let _freight = this.freight
+      totalAmount = totalAmount + _freight
+      totalAmount = Number(totalAmount).toFixed(2)
+      this.totalAmount = totalAmount
+      if (totalAmount <= 0) {
+        this.chineseTotalAmount = '零'
+      } else {
+        turnTheCapital({ money: totalAmount })
+          .then((res) => {
+            console.log('转大写，请求后端接口结果', res)
+            this.chineseTotalAmount = res.data
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
     },
+  },
+  methods: {
     init() {
       let that = this
       this.totalAmount = this.params.totalAmount
-      this.chineseTotalAmount = this.params.chineseTotalAmount
       this.saleContractLowCPriceAllAmount = this.params.saleContractLowCPriceAllAmount
+      this.chineseTotalAmount = this.params.freight
       this.isTax = this.params.isTax
       this.freightType = this.params.freightType
-      this.freightCharge = this.params.freightCharge
+      this.freight = this.params.freight
       this.freightDivType = this.params.freightDivType || 2
       this.lowPriceDesc = this.params.lowPriceDesc
       if (this.params.dataSource <= 0) {
@@ -494,62 +531,64 @@ export default {
       return hasError
     },
     // 添加行
-    // newMember() {
-    //   productKeyID++
-    //   this.data.push({
-    //     key: productKeyID,
-    //     targetId: null, //标的编号
-    //     targetName: null, //标的名称
-    //     quantityRequired: null,
-    //     productId: null,
-    //     productName: '', //产品名称
-    //     requirementDescription: null,
-    //     company: '0',
-    //     count: '',
-    //     unitPrice: '', // 单价
-    //     oneMoney: 0, // 一行产品的金额
-    //     tax: 0, // 税率%
-    //     taxAmount: 0, // 含税金额（元）
-    //     deliveryDate: moment(), // 签订日期, 默认今天
-    //     editable: true,
-    //     isNew: true,
-    //     productPic: null,
-    //     productModel: null,
-    //     productType: '0',
-    //     freightUnitPrice: '',
-    //   })
-    //   this.freshValidateData()
-    // },
+    newMember() {
+      productKeyID++
+      this.data.push({
+        key: productKeyID,
+        targetId: null, //标的编号
+        targetName: null, //标的名称
+        quantityRequired: null,
+        productId: null,
+        productName: '', //产品名称
+        priceC: '', //产品c价
+        requirementDescription: null,
+        unit: '0',
+        count: '',
+        unitPrice: '', // 单价
+        oneMoney: 0, // 一行产品的金额
+        tax: 0, // 税率%
+        taxAmount: 0, // 含税金额（元）
+        deliveryDate: moment(), // 签订日期, 默认今天
+        editable: true,
+        isNew: true,
+        productPic: null,
+        productCode: null,
+        productType: '0',
+        freightUnitPrice: '',
+        productLowCPriceAllAmount: 0, //总差价
+        productLowCPriceUnitAmount: 0, //差价
+      })
+      this.freshValidateData()
+    },
     // 删除行
-    // async remove(record) {
-    //   debugger
-    //   if (this.params.__fromAction === 'add') {
-    //     const data = [...this.data]
-    //     this.data = data.filter((item) => item.key !== record.key)
-    //   }
-    //   if (this.params.__fromAction === 'edit') {
-    //     let params = { contractId: record.contractId, productId: record.id }
-    //     if (record.id != undefined) {
-    //       let checkResult = await checkDeletedProduct(params).then((res) => res)
-    //       if (checkResult.code === 500) {
-    //         this.$message.error(checkResult.msg)
-    //         return
-    //       } else if (checkResult.code === 200) {
-    //         const data = [...this.data]
-    //         this.data = data.filter((item) => item.key !== record.key)
-    //       } else {
-    //         console.error(`删除 非变动部分 产品 出现未知情况 :`, res)
-    //       }
-    //     } else {
-    //       const data = [...this.data]
-    //       this.data = data.filter((item) => item.key !== record.key)
-    //     }
-    //   }
-    // },
+    async remove(record) {
+      if (this.params.__fromAction === 'add') {
+        const data = [...this.data]
+        this.data = data.filter((item) => item.key !== record.key)
+      }
+      if (this.params.__fromAction === 'edit') {
+        let params = { contractId: record.contractId, productId: record.id }
+        if (record.id != undefined) {
+          let checkResult = await checkDeletedProduct(params).then((res) => res)
+          if (checkResult.code === 500) {
+            this.$message.error(checkResult.msg)
+            return
+          } else if (checkResult.code === 200) {
+            const data = [...this.data]
+            this.data = data.filter((item) => item.key !== record.key)
+          } else {
+            console.error(`删除 非变动部分 产品 出现未知情况 :`, res)
+          }
+        } else {
+          const data = [...this.data]
+          this.data = data.filter((item) => item.key !== record.key)
+        }
+      }
+    },
     // 标的id的改变 弹出层
-    // targetIdModel(record) {
-    //   this.$refs.targetidModel.query(record)
-    // },
+    targetIdModel(record) {
+      this.$refs.targetidModel.query(record)
+    },
     targetidChange(data) {
       console.log('JSON 页面传值事件 标的id的改变 弹出层:', data)
       const dataSource = [...this.data]
@@ -570,7 +609,7 @@ export default {
       if (target) {
         target['productType'] = e
         target.productPic = null
-        target.productModel = null
+        target.productCode = null
         target.productId = null
         target.productName = null
         this.data = dataSource
@@ -581,7 +620,7 @@ export default {
       const dataSource = [...this.data]
       const target = dataSource.find((item) => item.key === record.key)
       if (target) {
-        target['company'] = e
+        target['unit'] = e
         this.data = dataSource
       }
     },
@@ -606,8 +645,10 @@ export default {
       const dataSource = [...this.data]
       const target = dataSource.find((item) => item.key === recordParam.key)
       if (target) {
+        target['priceC'] = selectItem.priceC
         target['productPic'] = selectItem.productPic
-        target['productModel'] = selectItem.productModel
+        target['productCode'] = selectItem.productModel
+        target['productTypeDicId'] = selectItem.productTypeDicId
         target['productId'] = selectItem.id
         target['productName'] = selectItem.productName
         this.data = dataSource
@@ -626,76 +667,114 @@ export default {
         let calcObj = this.calcNumber(target)
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
+        target['productLowCPriceAllAmount'] = calcObj.productLowCPriceAllAmount
         this.data = dataSource
-        this.totalMmountChange()
+        // this.totalMmountChange()
       }
       this.freshValidateData()
     },
     // 输入单价后，求相乘的一行的金额
     multiplyMoney(record, key, e) {
-      //debugger
       const dataSource = [...this.data]
       const target = dataSource.find((item) => item.key === record.key)
+      if (target.targetId === null) {
+        return this.$message.error('请先选择标的名称')
+      }
+      if (target.productCode === null) {
+        return this.$message.error('请先选择产品代码')
+      }
       if (target) {
-        //let val = e.target.value.trim()
         target[key] = e
         let calcObj = this.calcNumber(target)
         target['oneMoney'] = calcObj.oneMoney
         target['taxAmount'] = calcObj.taxAmount
         target['totalFreightUnitPrice'] = calcObj.totalFreightUnitPrice
+        target['productLowCPriceUnitAmount'] =
+          Number(calcObj.productLowCPriceUnitAmount) > 0 && target.productTypeDicId !== 356
+            ? parseInt(Number(calcObj.productLowCPriceUnitAmount))
+            : Number(calcObj.productLowCPriceUnitAmount) > 0 && target.productTypeDicId === 356
+            ? Number(calcObj.productLowCPriceUnitAmount).toFixed(2)
+            : 0
+        target['productLowCPriceAllAmount'] =
+          target.productTypeDicId !== 356
+            ? parseInt(Number(calcObj.productLowCPriceAllAmount))
+            : Number(calcObj.productLowCPriceAllAmount).toFixed(2)
         this.data = dataSource
-        this.totalMmountChange()
+        // this.totalMmountChange()
       }
       this.freshValidateData()
     },
     calcNumber(item) {
-      //debugger
       let count = parseInt(item.count, 10)
       let unitPrice = parseFloat(item.unitPrice || 0)
-      let tax = this.isTax ? parseFloat(item.tax || 0) : 0
+      let priceC = parseFloat(item.priceC || 0)
       let oneMoney = count * unitPrice
 
       let freightUnitPrice = parseFloat(item.freightUnitPrice || 0)
       let totalFreightUnitPrice = count * freightUnitPrice
-      //let taxAmount = tax > 0 ? parseFloat(oneMoney) + parseFloat(oneMoney / 100 * tax) : oneMoney
+      let productLowCPriceUnitAmount = 0
+      let productLowCPriceAllAmount = 0
+      if (unitPrice > 0) {
+        productLowCPriceUnitAmount =
+          this.isTax === false && priceC > unitPrice
+            ? priceC - (parseFloat(unitPrice) + parseFloat(unitPrice * (item.tax / 100)))
+            : priceC > unitPrice
+            ? priceC - unitPrice
+            : 0
+        productLowCPriceAllAmount =
+          parseFloat(count * productLowCPriceUnitAmount) > 0 ? parseFloat(count * productLowCPriceUnitAmount) : 0
+      }
+
       return {
         oneMoney: oneMoney,
         taxAmount: oneMoney,
         freightUnitPrice: freightUnitPrice,
         totalFreightUnitPrice: totalFreightUnitPrice,
+        productLowCPriceAllAmount: productLowCPriceAllAmount,
+        productLowCPriceUnitAmount: productLowCPriceUnitAmount,
       }
     },
-    // 合计总金额
-    totalMmountChange() {
-      //debugger
-      let that = this
-      let hasTax = this.isTax
-      let totalAmount = this.data.reduce((calc, item) => {
-        return calc + (hasTax ? item.taxAmount : item.oneMoney)
-      }, 0)
 
-      let _freightCharge = this.freightCharge
-      totalAmount = totalAmount + _freightCharge
-      totalAmount = Number(totalAmount).toFixed(2)
-      this.totalAmount = totalAmount
-      if (totalAmount <= 0) {
-        that.chineseTotalAmount = '零'
-      } else {
-        turnTheCapital({ money: totalAmount })
-          .then((res) => {
-            console.log('转大写，请求后端接口结果', res)
-            that.chineseTotalAmount = res.data
-          })
-          .catch((error) => {
-            console.error(error)
-          })
+    // // 合计总金额
+    // totalMmountChange() {
+    //   let that = this
+    //   let hasTax = this.isTax
+    //   let totalAmount = this.data.reduce((calc, item) => {
+    //     return calc + (hasTax ? item.taxAmount : item.oneMoney)
+    //   }, 0)
+
+    //   let _freight = this.freight
+    //   totalAmount = totalAmount + _freight
+    //   totalAmount = Number(totalAmount).toFixed(2)
+    //   this.totalAmount = totalAmount
+    //   if (totalAmount <= 0) {
+    //     that.chineseTotalAmount = '零'
+    //   } else {
+    //     turnTheCapital({ money: totalAmount })
+    //       .then((res) => {
+    //         console.log('转大写，请求后端接口结果', res)
+    //         that.chineseTotalAmount = res.data
+    //       })
+    //       .catch((error) => {
+    //         console.error(error)
+    //       })
+    //   }
+    // },
+    istotalAmount() {
+      return {
+        totalAmount: this.totalAmount,
       }
     },
     validate() {
       let hasError = this.freshValidateData()
+      if (this.ispriceC === true && (this.lowPriceDesc === null || this.lowPriceDesc.trim().length === 0)) {
+        return this.$message.error('特价说明不能为空')
+      }
       return {
         errors: hasError,
         values: [...this.data],
+        lowPriceDesc: this.lowPriceDesc === '' ? this.params.lowPriceDesc : this.lowPriceDesc,
+        ispriceC: this.ispriceC,
       }
     },
   },

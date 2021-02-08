@@ -3,7 +3,7 @@
     <div class="top-right clearfix">
       <template v-if="routeParams.action === 'see'">
         <a-button class="fl-r" type="danger" @click="goBackAction1" icon="left">返回</a-button>
-        <a-button class="fl-r" type="danger" @click="showModal('edit', routeParams.idx)" icon="left">预览</a-button>
+        <a-button class="fl-r" type="danger" @click="showModal('edit', idx)" icon="left">预览</a-button>
       </template>
       <template v-else>
         <a-button class="fl-r" type="danger" @click="goBackAction" icon="left">返回</a-button>
@@ -76,9 +76,7 @@
 </template>
 
 <script>
-import { contractDetail, getQueryOne, deleteQueryOne, delSplitProductTemp } from '@/api/contractListManagement'
-
-import moment from 'moment'
+import { contractDetail } from '@/api/contractListManagement'
 import Step1 from './Step1'
 import Step2 from './Step2'
 import Step3 from './Step3'
@@ -101,18 +99,8 @@ export default {
   data() {
     return {
       form: this.$form.createForm(this),
-      signDate: {
-        rules: [{ type: 'object', required: true, message: '请选择日期!' }],
-      },
+      idx: undefined,
       currentTab: 0, // tab切换，当前tab
-      contractNum: '', // 合同编号
-      saleCustomers: {}, // 客户名称数组
-      customerId: 0, // 客户id
-      saleUser: {}, // 销售经理名称列表
-      saleUserId: 0, // 选中的销售经理id
-      signDate: moment(), // 签订日期, 默认今天
-      disabled: false, // 是否含税启用/禁用
-      id: 0, // 这个是主键id,名称是唯一的，要在7个组件中都能使用，别的地方不要定义成id
       queryonedata: {}, // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
       routeParams: {
         //路由参数
@@ -125,44 +113,51 @@ export default {
       show: false,
     }
   },
-  watch: {
-    $route(to, from) {
-      console.log('from.fullPath--------', from.fullPath)
-      if (from.fullPath === '/sales-management/contractBehalf/List') {
-        this.currentTab = 0
-        ;(this.form = this.$form.createForm(this)),
-          (this.signDate = {
-            rules: [{ type: 'object', required: true, message: '请选择日期!' }],
-          }),
-          (this.currentTab = 0), // tab切换，当前tab
-          (this.contractNum = ''), // 合同编号
-          (this.saleCustomers = {}), // 客户名称数组
-          (this.customerId = 0), // 客户id
-          (this.saleUser = {}), // 销售经理名称列表
-          (this.saleUserId = 0), // 选中的销售经理id
-          (this.signDate = moment()), // 签订日期, 默认今天
-          (this.disabled = false), // 是否含税启用/禁用
-          (this.id = 0), // 这个是主键id,名称是唯一的，要在7个组件中都能使用，别的地方不要定义成id
-          (this.queryonedata = {}) // 这是获取到的单个节点所有返回数据，要通过父组件传给子组件
-      }
-
-      if (to.name === 'basicInformation2') {
-        this.currentTab = 0
-        this.__isFinished = false
-        this.routeParams = Object.assign({}, this.routeParams, this.$route.params)
-        if (this.routeParams.show) {
-          this.show = this.routeParams.show
-        }
-      }
-    },
-  },
   created() {
     this.queryonedata = {}
     let that = this
     if (that.$route.params.action === 'edit' || that.$route.params.action === 'see') {
+      this.idx = that.$route.params.id
       contractDetail({ purchaseContractId: that.$route.params.id }).then((res) => {
         console.log(res.data)
-        // this.queryonedata = { ...res.data }
+        let purch = res.data.purchaseContractDetailVo
+        let infos = res.data.purchaseContractInfoDetailVo
+        let react = {
+          id: res.data.id,
+          purchaseContractSaveBo: res.data.purchaseContractDetailVo, //基本信息
+          purchaseContractInfoSaveBo: res.data.purchaseContractInfoDetailVo, //其他信息
+          purchaseContractProductSaveBoList: res.data.purchaseContractProductDetailVoList, //产品信息列表
+          purchaseContractSettlementSaveBoList: res.data.purchaseContractSettlementDetailVoList, // 结算方式
+          totalAmount: res.data.totalAmount, //总金额
+          lowPriceDesc: purch.lowPriceDesc,
+          frameWarranty: purch.frameWarranty, //主框架
+          electricWarranty: purch.electricWarranty, //电器
+          coatingWarranty: purch.coatingWarranty, //图层
+          qualityWarranty: purch.qualityWarranty, //常规桶质保期
+          //运输数据
+          detailDeliveryAreaIds: purch.detailDeliveryAreaIds,
+          deliveryPlace: purch.deliveryPlace,
+          deliveryAreaId: purch.deliveryAreaId,
+          freightType: purch.freightType,
+          transportMode: purch.transportMode,
+          deliveryOther: purch.deliveryOther,
+          deliveryDate: purch.deliveryDate,
+          //乙方信息
+          customerWxNum: purch.customerWxNum,
+          customerPhone: purch.customerPhone,
+          customerFullName: purch.customerFullName,
+          customerBankName: purch.customerBankName,
+          customerTfn: purch.customerTfn,
+          customerBankUser: purch.customerBankUser,
+          customerEmail: purch.customerEmail,
+          customerAddress: purch.customerAddress,
+          customerPostcode: purch.customerPostcode,
+          customerBankAccount: purch.customerBankAccount,
+          // 附加信息
+          additionalTreaty: infos.additionalTreaty,
+        }
+
+        this.queryonedata = { ...react }
       })
     }
   },
@@ -184,10 +179,6 @@ export default {
     if (this.routeParams.show) {
       this.show = this.routeParams.show
     }
-    if (this.routeParams.id) {
-      this.id = this.routeParams.id
-      // this.resetQueryonedata(this.routeParams.id)
-    }
   },
   methods: {
     // 返回
@@ -197,7 +188,10 @@ export default {
     // },
     showModal(action, record) {
       // 选择三方合同
-      this.$router.push({ name: 'previewTripartiteContracts', params: { queryOneData: record, action: action } })
+      this.$router.push({
+        name: 'previewTripartiteContracts',
+        params: { queryOneData: { id: record }, action: action },
+      })
       console.log('queryOneData:record', record)
     },
 
@@ -214,31 +208,7 @@ export default {
       if (this.currentTab > 0) {
         this.currentTab -= 1
       }
-      // 点击上一步，相当于修改操作
-      // const params={id:e}
-      // const params = { id: this.queryonedata.id }
-      // console.log('点击上一步传入的参数', params)
-      // getQueryOne(params)
-      //   .then((res) => {
-      //     console.log('点击上一步,请求的结果', res)
-      //     this.queryonedata = res.data
-      //     console.log('这个是父页面的打印，要传入到子页面的数据对象', this.queryonedata)
-      //   })
-      //   .catch((error) => {
-      //     console.error(error)
-      //   })
     },
-
-    // resetQueryonedata(id) {
-    //   console.log('resetQueryonedata called...')
-    //   getQueryOne({ id: id })
-    //     .then((res) => {
-    //       this.queryonedata = res.data
-    //     })
-    //     .catch((error) => {
-    //       console.error(error)
-    //     })
-    // },
     finish() {
       this.currentTab = 0
     },

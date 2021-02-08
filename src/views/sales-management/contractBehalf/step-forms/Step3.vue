@@ -7,7 +7,7 @@
       <a-form :form="form" @submit="handleSubmit" class="form wdf-form">
         <a-form-item>
           <!-- 智能桶 -->
-          <a-row v-if="bucketType === 1">
+          <a-row v-if="contractType === 1">
             <a-col class="col-border" :span="4">质保期限及要求</a-col>
             <a-col class="col-border" :span="20">
               <span>主框架:</span>
@@ -62,14 +62,14 @@
           </a-row>
 
           <!-- 常规桶 -->
-          <a-row v-if="bucketType === 2">
+          <a-row v-if="contractType === 2">
             <a-col class="col-border" :span="4">质保期</a-col>
             <a-col class="col-border" :span="20">
               <a-select
                 class="year-select"
                 :disabled="this.$parent.routeParams.action === 'see'"
                 v-decorator="[
-                  'qualityLimit',
+                  'qualityWarranty',
                   { initialValue: 1, rules: [{ required: true, message: '选择质保期限' }] },
                 ]"
                 @change="qualityLimitChange"
@@ -84,7 +84,7 @@
           </a-row>
         </a-form-item>
 
-        <a-form-item v-if="fullAmount === 0">
+        <a-form-item v-if="fullAmount === 1">
           <a-row class="wdf-row">
             <a-col class="col-border" :span="4">全款结算方式及时间</a-col>
             <a-col class="col-border" :span="20">
@@ -529,7 +529,7 @@ export default {
       frameWarrantyPre: 0, // 主框架质保增加百分比
       electricWarrantyPre: 0, // 电子质保增加百分比
       coatingWarrantyPre: 0, // 图层质保增加百分比
-      qualityLimit: 0, //常规桶质保期限
+      qualityWarranty: 0, //常规桶质保期限
       qualityLimitPre: 0, //常规桶质保期限增加百分比
       conventionValue: [], // 常规产品复选框数组value值
       unConventionValue: [], // 非常规产品复选框数组value值
@@ -542,7 +542,7 @@ export default {
       percentages: 0,
       percentagesStatus: false,
       paymentDate: moment(),
-      bucketType: 1, //1 智能桶合同  2 常规桶合同
+      contractType: 1, //1 智能桶合同  2 常规桶合同
     }
   },
   watch: {
@@ -551,7 +551,7 @@ export default {
         this.currentTab = 0
       }
     },
-    queryOneData: function (newVal, oldVal) {
+    queryonedata: function (newVal, oldVal) {
       this.fillMoney()
     },
   },
@@ -566,16 +566,16 @@ export default {
   },
   computed: {
     isSmartBucket: function () {
-      return this.bucketType === 1 ? true : false
+      return this.contractType === 1 ? true : false
     },
     calcIncreaseTotalPayment: {
       get() {
         let _result = this.isSmartBucket
           ? (
-              this.queryOneData.totalAmount *
+              this.queryonedata.totalAmount *
               (this.frameWarrantyPre / 100 + this.electricWarrantyPre / 100 + this.coatingWarrantyPre / 100)
             ).toFixed(2)
-          : (this.queryOneData.totalAmount * (this.qualityLimitPre / 100)).toFixed(2)
+          : (this.queryonedata.totalAmount * (this.qualityLimitPre / 100)).toFixed(2)
         return _result
       },
       set(newValue) {},
@@ -584,15 +584,16 @@ export default {
       //debugger
       let _result = this.isSmartBucket
         ? (
-            this.queryOneData.totalAmount *
+            this.queryonedata.totalAmount *
             (this.frameWarrantyPre / 100 + this.electricWarrantyPre / 100 + this.coatingWarrantyPre / 100 + 1)
           ).toFixed(2)
-        : (this.queryOneData.totalAmount * (this.qualityLimitPre / 100 + 1)).toFixed(2)
+        : (this.queryonedata.totalAmount * (this.qualityLimitPre / 100 + 1)).toFixed(2)
       return _result
     },
   },
   methods: {
     init() {
+      this.fillMoney()
       const that = this
       //拆分流程
       if (this.$parent.routeParams.action == 'split') {
@@ -600,34 +601,38 @@ export default {
       }
       if (that.queryonedata && that.queryonedata.purchaseContractSaveBo) {
         let react = that.queryonedata.purchaseContractSaveBo
-        that.form.setFieldsValue({
-          fullAmount: react.fullPayment, // 是否全款 0全款  1非全款
-          totalAmount: react.totalAmount,
-          frameWarranty: react.frameWarranty ? react.frameWarranty : 3, // 主框架,
-          electricWarranty: react.electricWarranty ? react.electricWarranty : 1,
-          coatingWarranty: react.coatingWarranty ? react.coatingWarranty : 3,
-          purchaseContractSettlementSaveBoList: that.queryonedata.purchaseContractSettlementSaveBoList || [],
-        })
-
+        that.contractType = react.contractType
         that.fullAmount = react.fullPayment // 是否全款 0全款  1非全款
         that.totalAmount = react.totalAmount
-        that.c1 = react.c1 === undefined ? (that.queryOneData.totalAmount * 3) / 100 : react.c1
-        that.c2 = react.c2 || 0
-        that.c3 = react.c3 || 0
-        that.c4 = react.c4 === undefined ? (that.queryOneData.totalAmount * 30) / 100 : react.c4
-        that.c5 = react.c5 || 0
-        that.frameWarranty = react.frameWarranty ? react.frameWarranty : 3 // 主框架
-        that.electricWarranty = react.electricWarranty ? react.electricWarranty : 1 // 电器
-        that.coatingWarranty = react.coatingWarranty ? react.coatingWarranty : 3 // 涂层
+        if (react.fullPayment === 1) {
+          that.form.setFieldsValue({
+            allPaymentDate: moment(that.queryonedata.purchaseContractSettlementSaveBoList[0].paymentDate),
+          })
+        }
+        if (react.contractType === 2) {
+          that.form.setFieldsValue({
+            qualityWarranty: that.queryonedata.qualityWarranty ? that.queryonedata.qualityWarranty : 1,
+          })
+          that.qualityLimitChange(react.qualityWarranty)
+        } else {
+          that.form.setFieldsValue({
+            frameWarranty: that.queryonedata.frameWarranty ? that.queryonedata.frameWarranty : 3, // 主框架,
+            electricWarranty: that.queryonedata.electricWarranty ? that.queryonedata.electricWarranty : 1,
+            coatingWarranty: that.queryonedata.coatingWarranty ? that.queryonedata.coatingWarranty : 3,
+          })
+          that.frameWarranty = that.queryonedata.frameWarranty ? that.queryonedata.frameWarranty : 3 // 主框架
+          that.electricWarranty = that.queryonedata.electricWarranty ? that.queryonedata.electricWarranty : 1 // 电器
+          that.coatingWarranty = that.queryonedata.coatingWarranty ? that.queryonedata.coatingWarranty : 3 // 涂层
+          that.frameWarrantyChange(that.queryonedata.frameWarranty)
+          that.electricWarrantyChange(that.queryonedata.electricWarranty)
+          that.coatingWarrantyChange(that.queryonedata.coatingWarranty)
+        }
+
         if (
           that.queryonedata.purchaseContractSettlementSaveBoList &&
           that.queryonedata.purchaseContractSettlementSaveBoList.length > 0
         ) {
           that.fillConventionalData(that.queryonedata.purchaseContractSettlementSaveBoList)
-          that.frameWarrantyChange(react.frameWarranty)
-          that.electricWarrantyChange(react.electricWarranty)
-          that.coatingWarrantyChange(react.coatingWarranty)
-          that.qualityLimitChange(react.qualityLimit)
         }
       }
 
@@ -668,7 +673,7 @@ export default {
       //       that.allPayment = res.data.totalAmount
       //       that.conventionalMoney = res.data.conventionalMoney
       //       that.unConventionalMoney = res.data.unConventionalMoney
-      //       that.bucketType = res.data.bucketType
+      //       that.contractType = res.data.contractType
 
       //       that.frameWarrantyChange(res.data.frameWarranty)
       //       that.electricWarrantyChange(res.data.electricWarranty)
@@ -715,7 +720,7 @@ export default {
         obj[`convention.${item.moneyType}.remark`] = item.remark
       })
       this.form.setFieldsValue({ ...obj })
-      this.percentagesStatus = this.fullAmount === 0 ? true : _percentage === 100
+      this.percentagesStatus = this.fullAmount === 1 ? true : _percentage === 100
     },
     // 主框架下拉改变
     frameWarrantyChange(e) {
@@ -775,7 +780,7 @@ export default {
     },
     qualityLimitChange(e) {
       let _v = parseInt(e, 10)
-      this.qualityLimit = _v
+      this.qualityWarranty = _v
       if (_v === 1) {
         this.qualityLimitPre = 0
       } else if (_v === 2) {
@@ -800,21 +805,18 @@ export default {
       validateFields((err, values) => {
         console.log('先校验，通过表单校验后，才进入下一步', values)
         if (!err) {
-          if (that.fullAmount === 0) {
+          if (that.fullAmount === 1) {
             // 全款
             // that.allPaymentDate = values.allPaymentDate.format('YYYY-MM-DD')
-            const params = {
+
+            let arr = {
               frameWarranty: values.frameWarranty,
               electricWarranty: values.electricWarranty,
               coatingWarranty: values.coatingWarranty,
-              qualityLimit: values.qualityLimit || 1,
-            }
-
-            let arr = {
-              purchaseContractSaveBo: { ...params, ...that.queryonedata.purchaseContractSaveBo },
+              qualityWarranty: values.qualityWarranty || 1,
               purchaseContractSettlementSaveBoList: [
                 {
-                  paymentDate: that.paymentDate,
+                  paymentDate: values.allPaymentDate.format('YYYY-MM-DD'),
                   moneyType: 0,
                   percentage: 100,
                 },
@@ -845,19 +847,12 @@ export default {
             // debugger
             // that.allPaymentDate = ''
             //  that.paymentDate = moment()
-            let arr = {
+
+            const params = {
               frameWarranty: values.frameWarranty,
               electricWarranty: values.electricWarranty,
               coatingWarranty: values.coatingWarranty,
-              qualityLimit: values.qualityLimit || 1,
-              c1: that.c1,
-              c2: that.c2,
-              c3: that.c3,
-              c4: that.c4,
-              c5: that.c5,
-            }
-            const params = {
-              purchaseContractSaveBo: { ...arr, ...that.queryonedata.purchaseContractSaveBo },
+              qualityWarranty: values.qualityWarranty || 1,
               //  paymentDate: that.paymentDate,    //提交的时候将moment对象格式的日期转化为后端接口需要的字符串格式的日期
               purchaseContractSettlementSaveBoList: this._getParam('convention') || [],
               // unconventionalSettlement: this._getParam('unConvention') || [],

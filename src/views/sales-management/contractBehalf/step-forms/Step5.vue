@@ -189,18 +189,18 @@ export default {
     init() {
       const that = this
       if (that.queryonedata && that.queryonedata.purchaseContractSaveBo.customerWxNum) {
-        let rest = that.queryonedata.purchaseContractSaveBo
+        let rest = that.queryonedata
         that.form.setFieldsValue({
-          customerWxNum: rest.customerWxNum || '',
-          customerEmail: rest.customerEmail || '',
-          customerAddress: rest.customerAddress || '',
-          customerPhone: rest.customerPhone || '',
-          customerFullName: rest.customerFullName || '',
-          customerPostcode: rest.customerPostcode || '',
-          customerBankName: rest.customerBankName || '',
-          customerBankAccount: rest.customerBankAccount || '',
-          customerTfn: rest.customerTfn || '',
-          customerBankUser: rest.customerBankUser || '',
+          customerWxNum: rest.customerWxNum,
+          customerEmail: rest.customerEmail,
+          customerAddress: rest.customerAddress,
+          customerPhone: rest.customerPhone,
+          customerFullName: rest.customerFullName,
+          customerPostcode: rest.customerPostcode,
+          customerBankName: rest.customerBankName,
+          customerBankAccount: rest.customerBankAccount,
+          customerTfn: rest.customerTfn,
+          customerBankUser: rest.customerBankUser,
         })
       } else {
         let arrId = that.queryonedata.purchaseContractSaveBo.customerId
@@ -208,18 +208,18 @@ export default {
         // `customerId=${arrId}`
         saveNewstCustomer({ customerId: arrId }).then((res) => {
           console.log(res)
-          if (res === 200) {
+          if (res.code === 200) {
             that.form.setFieldsValue({
-              customerWxNum: res.data.customerWxNum || '',
-              customerEmail: res.data.customerEmail || '',
-              customerAddress: res.data.customerAddress || '',
-              customerPhone: res.data.customerPhone || '',
-              customerFullName: res.data.customerFullName || '',
-              customerPostcode: res.data.customerPostcode || '',
-              customerBankName: res.data.customerBankName || '',
-              customerBankAccount: res.data.customerBankAccount || '',
-              customerTfn: res.data.customerTfn || '',
-              customerBankUser: res.data.customerBankUser || '',
+              customerWxNum: res.data.customerWxNum,
+              customerEmail: res.data.customerEmail,
+              customerAddress: res.data.customerAddress,
+              customerPhone: res.data.customerPhone,
+              customerFullName: res.data.customerFullName,
+              customerPostcode: res.data.customerPostcode,
+              customerBankName: res.data.customerBankName,
+              customerBankAccount: res.data.customerBankAccount,
+              customerTfn: res.data.customerTfn,
+              customerBankUser: res.data.customerBankUser,
             })
           }
         })
@@ -251,10 +251,7 @@ export default {
         console.log('先校验，通过表单校验后，才进入下一步', values)
         if (!err) {
           const params = {
-            // contractId: that.queryonedata.id,
-            //customerId: that.customerId,
             customerWxNum: values.customerWxNum,
-            // demandUnit: values.demandUnit,
             customerPhone: values.customerPhone,
             customerFullName: values.customerFullName,
             customerBankName: values.customerBankName,
@@ -262,13 +259,10 @@ export default {
             customerBankUser: values.customerBankUser,
             customerEmail: values.customerEmail,
             customerAddress: values.customerAddress,
-            // fax: values.fax,
             customerPostcode: values.customerPostcode,
             customerBankAccount: values.customerBankAccount,
           }
-          let params1 = {
-            purchaseContractSaveBo: { ...that.queryonedata.purchaseContractSaveBo, ...params },
-          }
+
           // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
           // saveBInformation(params)
           //   .then((res) => {
@@ -279,7 +273,7 @@ export default {
           //     //   contractNum: res.data.contractNum
           //     // })
           //     if (status != 1) {
-          that.$emit('nextStep', { ...params1 })
+          that.$emit('nextStep', { ...params })
           //     } else {
           //       that.$message.success('保存成功')
           //     }

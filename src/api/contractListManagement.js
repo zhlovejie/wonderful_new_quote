@@ -188,7 +188,7 @@ export function getTarget(parameter) {
     params: parameter
   })
 }
-//获取代购合同详情
+//获取代签合同详情
 export function contractDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -537,7 +537,15 @@ export function checkCurrentNode(params) {
     params: params
   })
 }
-
+// 审批代签合同 
+export function PurchaseContract(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/approvalPurchaseContract',
+    method: 'post',
+    data: params
+  })
+}
 
 
 /**

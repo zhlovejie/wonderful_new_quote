@@ -4,7 +4,8 @@ import {
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
-// 代签合同接口
+
+//代签合同列表接口 
 export function purchaseList(params) {
   return axios({
     baseURL: system.baseURL,
@@ -13,6 +14,41 @@ export function purchaseList(params) {
     params: params
   })
 }
+
+// 代签合同提交审核 
+
+export function purchaseProcess(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/startPurchaseContractProcess',
+    method: 'post',
+    data: params
+  })
+}
+
+//代签合同撤回 
+export function purchaseWithdra(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/withdrawPurchaseContract',
+    method: 'post',
+    data: params
+  })
+}
+
+
+//代签合同删除 
+export function purchaseDel(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/removePurchaseContractProcess',
+    method: 'post',
+    data: params
+  })
+}
+
+
+
 
 
 
