@@ -77,14 +77,7 @@
 </template>
 
 <script>
-import {
-  getQueryOne,
-  saveProduct,
-  getSplitProductTemp,
-  saveSplitProductTemp,
-  turnTheCapital,
-  copyCPriceDesc,
-} from '@/api/contractListManagement'
+import { getQueryOne, getSplitProductTemp, saveSplitProductTemp, turnTheCapital } from '@/api/contractListManagement'
 
 import moment from 'moment'
 import ProductCommon from './ProductCommon'
@@ -192,7 +185,7 @@ export default {
             p.productName = p.productName
             p.productLowCPriceAllAmount = p.productLowCPriceAllAmount === 0 ? null : p.productLowCPriceAllAmount
             p.productLowCPriceUnitAmount = p.productLowCPriceUnitAmount === 0 ? null : p.productLowCPriceUnitAmount
-            p.tax = p.v
+            p.tax = p.tax
             p.id = p.id
             p.productId = p.productId
             p.unit = String(p.unit)
@@ -206,9 +199,9 @@ export default {
         this.productCommonParams = {
           dataSource: product || [],
           saleContractLowCPriceAllAmount: result.saleContractLowCPriceAllAmount,
-          totalAmount: this.queryonedata.totalAmount,
+          totalAmount: this.queryonedata.totalAmount || 0,
           chineseTotalAmount: result.chineseTotalAmount,
-          isTax: result.isTax || 1,
+          isTax: result.isTax === 1 ? true : false,
           __fromAction: this.$parent.routeParams.action,
           freightType: result.freightType,
           freight: parseInt(result.freight + result.freight * 0.13),

@@ -468,30 +468,31 @@ export default {
   methods: {
     init() {
       let that = this
-      this.totalAmount = this.params.totalAmount
+      this.totalAmount = this.params.totalAmount || 0
       this.saleContractLowCPriceAllAmount = this.params.saleContractLowCPriceAllAmount
-      this.chineseTotalAmount = this.params.freight
-      this.isTax = this.params.isTax === 1 ? true : false
+      this.chineseTotalAmount = this.params.freight || 0
+      this.isTax = this.params.isTax
       this.freightType = this.params.freightType
-      this.freight = this.params.freight
+      this.freight = this.params.freight || 0
       this.freightDivType = this.params.freightDivType || 2
       this.lowPriceDesc = this.params.lowPriceDesc
       if (this.params.dataSource <= 0) {
         return
       }
-      this.data = this.params.dataSource.map((item) => {
-        let o = Object.assign({}, item)
-        productKeyID++
-        o.key = productKeyID
-        o.productType = String(item.productType)
-        let calcObj = that.calcNumber(o)
-        o.oneMoney = calcObj.oneMoney
-        o.taxAmount = calcObj.taxAmount
+      this.data =
+        this.params.dataSource.map((item) => {
+          let o = Object.assign({}, item)
+          productKeyID++
+          o.key = productKeyID
+          o.productType = String(item.productType)
+          let calcObj = that.calcNumber(o)
+          o.oneMoney = calcObj.oneMoney
+          o.taxAmount = calcObj.taxAmount
 
-        o.freightUnitPrice = calcObj.freightUnitPrice
-        o.totalFreightUnitPrice = calcObj.totalFreightUnitPrice
-        return o
-      })
+          o.freightUnitPrice = calcObj.freightUnitPrice
+          o.totalFreightUnitPrice = calcObj.totalFreightUnitPrice
+          return o
+        }) || []
 
       this.freshValidateData()
     },
@@ -594,7 +595,7 @@ export default {
       if (target) {
         target.targetId = selectItem.id
         target.targetName = selectItem.text
-        target.tax = parseFloat(selectItem.tax)
+        target.tax = parseFloat(recordParam.tax) || parseFloat(selectItem.tax)
         this.data = dataSource
       }
       this.freshValidateData()
@@ -732,7 +733,7 @@ export default {
       }
     },
 
-    // // 合计总金额
+    // // // 合计总金额
     // totalMmountChange() {
     //   let that = this
     //   let hasTax = this.isTax

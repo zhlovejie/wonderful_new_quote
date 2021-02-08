@@ -136,7 +136,7 @@
                 v-decorator="['fullPayment', { initialValue: 1 }]"
               >
                 <a-radio :value="1"> 是 </a-radio>
-                <a-radio :value="2"> 否 </a-radio>
+                <a-radio :value="0"> 否 </a-radio>
               </a-radio-group>
             </a-col>
           </a-row>

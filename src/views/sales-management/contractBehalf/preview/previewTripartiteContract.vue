@@ -172,11 +172,11 @@
             <div class="content-p">十、结算方式及时间：（多选）</div>
             <div v-if="!isFull">
               <div
-                :key="item.moneyName"
+                :key="item.settleName"
                 v-for="item in purchaseContractSettlementDetailVoList"
                 class="content-p p-text-index"
               >
-                {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
+                {{ item.settleName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
                 >。付款周期：
                 <span class="span-paddings">{{ item.paymentDateStr }}</span>
                 <span class="span-paddings">备注:{{ item.remarks || '无' }}</span>
@@ -184,8 +184,8 @@
             </div>
             <div v-if="isFull">
               <div class="content-p p-text-index">全款结算方式及时间</div>
-              <div :key="item.moneyName" v-for="item in fullList" class="content-p p-text-index">
-                {{ item.moneyName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
+              <div :key="item.settleName" v-for="item in fullList" class="content-p p-text-index">
+                {{ item.settleName }}应付金额： <span class="span-paddings">{{ item.money | moneyFormatNumber }}</span
                 >。付款周期：
                 <span class="span-paddings">{{ item.paymentDateStr }}</span>
               </div>
@@ -218,9 +218,9 @@
               （二）、向
               <span style="margin: 0 12px; text-decoration: underline">{{ contractDisputeName }}</span>
               方所在地人民法院提起诉讼
-            </div>
+            </div> -->
 
-            <div class="content-p">十三、</div> -->
+            <div class="content-p">十三、</div>
 
             <div class="content-p p-text-index" v-if="signForm === 1">
               1、此协议通过邮件形式签订（甲方邮箱账号：

@@ -192,8 +192,12 @@ export default {
             }
             purchaseAdd(that.queryonedata).then((res) => {
               console.log(res)
-              if (res.code === 200 && that.$parent.routeParams.action === 'edit') {
+              if (res.code === 200) {
+                that.$message.info(res.msg)
                 that.$router.push({ name: 'contractBehalfList' })
+              } else {
+                that.$router.push({ name: 'contractBehalfList' })
+                that.$message.error(res.msg)
               }
             })
           }
