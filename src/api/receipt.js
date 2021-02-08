@@ -597,6 +597,7 @@ const _EXPORT_API_ = {
   8: '/api/exportList',//核价单
   9: '/saleIncome/income/exportList',//进款单
   10: '/saleRefund/refund/exportList',//退款单
+  11: '/salePresent/present/exportList',//赠送单
 }
 export function exprotAction(type, param,fileName='download.xls') {
   return exportInvoiceExcel(_EXPORT_API_[type], param)

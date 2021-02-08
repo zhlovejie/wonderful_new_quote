@@ -24,6 +24,7 @@
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+      <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
       <a-button
         class="a-button"
         style="float: right"
@@ -126,6 +127,7 @@ import { getListSaleContractUser } from '@/api/contractListManagement'
 import { presentPageList, presentRevocation, presentDel } from '@/api/receipt'
 import AddForm from './module/AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import { exprotAction } from '@/api/receipt'
 const columns = [
   {
     align: 'center',
@@ -356,7 +358,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-  },
+    async exportHandler(){
+      const that = this
+      let res = await exprotAction(11,{...that.searchParam,searchStatus: that.activeKey},'赠送单')
+      console.log(res)
+      that.$message.info(res.msg)
+    }
+  }
 }
 </script>
 <style scoped>
