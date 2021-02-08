@@ -79,6 +79,9 @@
                 <span v-else style="color: red" class="print-color-style">{{ text }}</span>
               </template>
 
+              <template slot="productType" slot-scope="text">
+                <span>{{ text === 0 ? '常规产品' : '非常规产品' }}</span>
+              </template>
               <template slot="unitAmount" slot-scope="text">
                 <span>{{ text | moneyFormatNumber }}</span>
               </template>
@@ -462,7 +465,7 @@ export default {
       qualityLimit: 1, //常规桶 质保期
       detailDeliveryAddress: '', //新地址
 
-      getLookDetail_isTax: true,
+      getLookDetail_isTax: 1,
       getLookDetail_freightType: 1,
       getLookDetail_freightDivType: 2,
     }
@@ -480,6 +483,7 @@ export default {
         {
           title: '产品类别',
           dataIndex: 'productType',
+          scopedSlots: { customRender: 'productType' },
         },
         {
           title: '商标',
@@ -587,7 +591,7 @@ export default {
       let case6 = baseColumns.concat([
         {
           title: '含税单价(元)',
-          dataIndex: 'price',
+          dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'price' },
         },
         {
@@ -595,11 +599,11 @@ export default {
           dataIndex: 'unitAmount',
           scopedSlots: { customRender: 'unitAmount' },
         },
-        {
-          title: '含税含运费金额(元)',
-          dataIndex: 'freightUnitAmount',
-          scopedSlots: { customRender: 'freightUnitAmount' },
-        },
+        // {
+        //   title: '含税含运费金额(元)',
+        //   dataIndex: 'freightUnitAmount',
+        //   scopedSlots: { customRender: 'freightUnitAmount' },
+        // },
       ])
       let targetColumns = []
       //this.freightDivType  1单价 2金额
@@ -608,7 +612,7 @@ export default {
       //是否单价
       let hasFreightDivOne = this.getLookDetail_freightDivType === 2 ? true : false
       //是否含税
-      let hasTax = this.getLookDetail_isTax
+      let hasTax = this.getLookDetail_isTax === 1 ? true : false
 
       if (hasTax) {
         targetColumns = hasFreight ? (hasFreightDivOne ? case5 : case6) : case2
@@ -732,7 +736,7 @@ export default {
           this.qualityLimit = react.qualityWarranty || 1
           this.detailDeliveryAddress = react.detailDeliveryAddress || ''
 
-          this.getLookDetail_isTax = react.isTax === 1 ? true : false
+          this.getLookDetail_isTax = react.isTax
           this.getLookDetail_freightType = react.freightType
           this.getLookDetail_freightDivType = react.freightAllotType
 
