@@ -1,4 +1,5 @@
 <template>
+  <a-spin :spinning="spinning">
   <div>
     <BaseForm ref="baseForm" @contractAttrChange="contractAttrChange"/>
     <component 
@@ -7,6 +8,7 @@
       @click="handlerSubmitClick" 
     />
   </div>
+  </a-spin>
 </template>
 
 <script>
@@ -30,7 +32,8 @@ export default {
     return {
       currentComponent:null,
       detail:{},
-      steps:{ 1:Step11,2:Step12,3:Step13 }
+      steps:{ 1:Step11,2:Step12,3:Step13 },
+      spinning:false
     }
   },
   watch:{
@@ -77,11 +80,21 @@ export default {
       _values.salesmanWechat = _values.wxNum
       _values.salesmanEmail = _values.email
       console.log(_values)
+      that.spinning = true
       let result = await that.$refs.currentComponent.handleOkSubmit(_values)
+      that.spinning = false
       if(result.code !== 200){
         return
+      }else{
+        const h = that.$createElement;
+        that.$info({
+          title: '提示',
+          content: h('div', {}, [
+            h('p', '合同创建成功，等待合同审批通过后，在资质借用列表中，点击【处理】进行下一步操作。')
+          ]),
+          onOk() {},
+        });
       }
-      
     }
   }
 }

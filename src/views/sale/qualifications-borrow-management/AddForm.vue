@@ -154,8 +154,10 @@ export default {
         key = `${status}`
       }
       if(__APIS__[key]){
-        let resCode = await __APIS__[key]({id:-1,borrowId}).then(res => res.code)
-        return resCode === 200
+        let startWidth2 = key.startsWith('2')
+        let res = await __APIS__[key](startWidth2 ? {id:borrowId} : {id:-1,borrowId}).then(res => res)
+        //统一返回接口数据 
+        return +res.code === 200 && res.data && res.data !== null
       }
       return null
     }

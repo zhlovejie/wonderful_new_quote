@@ -44,7 +44,10 @@
               v-decorator="[
                 `effective`,
                 {
-                  initialValue: [moment(detail.effectiveStart), moment(detail.effectiveEnd)],
+                  initialValue: [
+                    detail.effectiveStart ? moment(detail.effectiveStart) : moment(), 
+                    detail.effectiveEnd ? moment(detail.effectiveEnd) : moment()
+                  ],
                   rules: [{ required: true, message: '请选择代班时间' }],
                 },
               ]"
@@ -180,12 +183,14 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          debugger
-          let { effectiveStart, effectiveEnd } = that.detail
+          //debugger
           values.signingDate = values.signingDate.format('YYYY-MM-DD')
           values.saveType = saveType
-          values.effectiveStart = effectiveStart
-          values.effectiveEnd = effectiveEnd
+
+          if(values.effective){
+            values.effectiveStart = values.effective[0].format('YYYY-MM-DD')
+            values.effectiveEnd = values.effective[1].format('YYYY-MM-DD')
+          }
           delete values.effective
           that.$emit('click', { ...values })
         } else {
@@ -224,6 +229,7 @@ export default {
       await that.init()
       that.visible = true
       if (that.isAdd) {
+        that.form.setFieldsValue({effective:[moment(),moment()] })
         return
       }
       //填充数据
