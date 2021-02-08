@@ -106,7 +106,7 @@
                   合计：（人民币）
                   <span class="span-paddings">{{ chineseTotalAmount }}</span>
                   <span class="span-paddings">￥{{ totalAmount | NumberFormat(2) }}</span>
-                  。此价格{{ unIsTax ? '含税' : '不含税' }}、{{ freightType }}。
+                  。此价格{{ unIsTax ? '含税' : '不含税' }}、{{ freightType === 1 ? '含运费' : '不含运费' }}。
                   <template v-if="saleContractLowCPriceAllAmount > 0">
                     <span style="color: red"> 合同低于C价总差额: </span>
                     <span style="color: red">{{ saleContractLowCPriceAllAmount }}</span>
@@ -371,7 +371,7 @@ export default {
       enterpriseNameEnglish: 'JiangSu Wonderful Infrastructure Manufacturing co.,Ltd',
       contractNum: '', // 合同编号
       createTime: '', // 签订日期
-      contractTitle: '三方合同',
+      contractTitle: '代签购货合同',
       supplier: '江苏万德福公共设施科技有限公司', // 供方（甲方）
       demandUnit: '', // 需方（乙方）
       chineseTotalAmount: '零',

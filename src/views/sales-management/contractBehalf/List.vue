@@ -36,7 +36,7 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
-        <template v-if="$auth('businessBorrowing:approval')">
+        <template v-if="$auth('contractBehalf:approval')">
           <a-tab-pane tab="待我审批" key="1" />
           <a-tab-pane tab="我已审批" key="2" />
         </template>
@@ -73,7 +73,10 @@
             <a-dropdown :trigger="['click']">
               <a class="ant-dropdown-link" @click="(e) => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
               <a-menu slot="overlay">
-                <a-menu-item key="0" v-if="+record.status === 1 && record.createdId === userInfo.id">
+                <a-menu-item
+                  key="0"
+                  v-if="+record.status === 1 && $auth('contractBehalf:withdraw') && record.createdId === userInfo.id"
+                >
                   <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                     <a type="primary" href="javascript:;">撤回</a>
                   </a-popconfirm>
@@ -82,7 +85,7 @@
                   key="1"
                   v-if="
                     [0, 3, 4].includes(+record.status) &&
-                    $auth('businessBorrowing:edit') &&
+                    $auth('contractBehalf:edit') &&
                     record.createdId === userInfo.id
                   "
                 >
@@ -95,9 +98,7 @@
                 <a-menu-item
                   key="3"
                   v-if="
-                    [4, 5].includes(+record.status) &&
-                    $auth('businessBorrowing:del') &&
-                    record.createdId === userInfo.id
+                    [4, 5].includes(+record.status) && $auth('contractBehalf:del') && record.createdId === userInfo.id
                   "
                 >
                   <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
@@ -107,7 +108,9 @@
                 <a-menu-item
                   key="3"
                   v-if="
-                    [0].includes(+record.status) && $auth('businessBorrowing:del') && record.createdId === userInfo.id
+                    [0].includes(+record.status) &&
+                    $auth('contractBehalf:submitApproval') &&
+                    record.createdId === userInfo.id
                   "
                 >
                   <a-popconfirm title="确认提交审批吗?" @confirm="() => doAction('submitApproval', record)">

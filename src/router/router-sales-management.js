@@ -830,7 +830,7 @@ export default {
           hidden: true,
           component: () => import('@/views/sales-management/contractBehalf/preview/previewTripartiteContract'),
           meta: {
-            title: '销售合同',
+            title: '代签购货合同',
             permission: ['permission']
           }
         },
