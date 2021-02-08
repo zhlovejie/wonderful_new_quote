@@ -52,6 +52,7 @@ import { bidDetailBorrowId } from '@/api/agencyContract'
 //2 经营借用协议 id
 import { businessDetailBorrowId } from '@/api/agencyContract'
 //3 代签购物合同的详情 purchaseContractId
+import { getPurchaseContractDetailByBorrowId } from '@/api/contractListManagement'
 //接口地址 /purchase-contract/getPurchaseContractDetail
 //4 销售合同 
 
@@ -64,7 +65,7 @@ const __APIS__ = {
     '1-3':agencyContractDetail,
     '2-1':bidDetailBorrowId,
     '2-2':businessDetailBorrowId,
-    '3':null,
+    '3':getPurchaseContractDetailByBorrowId,
     '4':null,
     '5':afterdetail
   }
@@ -153,15 +154,17 @@ export default {
       }else{
         key = `${status}`
       }
+      console.log(key)
+      
       if(__APIS__[key]){
-        let startWidth2 = key.startsWith('2')
-        let res = await __APIS__[key](startWidth2 ? {id:borrowId} : {id:-1,borrowId}).then(res => res)
+        let startWidth = key.startsWith('2') || key.startsWith('3')
+        let res = await __APIS__[key](startWidth ? {id:borrowId} : {id:-1,borrowId}).then(res => res)
         //统一返回接口数据 
         return +res.code === 200 && res.data && res.data !== null
       }
       return null
     }
-  },
+  }
 }
 </script>
 

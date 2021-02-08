@@ -198,6 +198,16 @@ export function contractDetail(parameter) {
   })
 }
 
+/* 代签购物合同的详情（通过资质借用id获取） */
+export function getPurchaseContractDetailByBorrowId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/getPurchaseContractDetailByBorrowId',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 // 获取单个信息
 export function getQueryOne(parameter) {
