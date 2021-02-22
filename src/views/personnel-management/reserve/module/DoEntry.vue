@@ -1105,7 +1105,7 @@ export default {
             uid: 0,
             name: fileName,
             status: 'done',
-            url: values.headUrl,
+            url: values.sealUrl,
           },
         ]
       }
