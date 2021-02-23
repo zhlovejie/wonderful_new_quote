@@ -19,7 +19,7 @@
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
-            <a-select-option :value="4">已撤回</a-select-option>
+            <a-select-option :value="4">已作废</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -58,7 +58,7 @@
         </div>
         <div slot="status" slot-scope="text, record">
           <a href="javascript:void(0);" @click="approvalPreview(record)">
-            {{ { 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知' }}
+            {{ { 1: '待审批', 2: '通过', 3: '不通过', 4: '已作废' }[text] || '未知' }}
           </a>
         </div>
         <div slot="userName" slot-scope="text, record">
@@ -85,7 +85,7 @@
 
           <template v-if="+activeKey === 0">
             <a type="primary" @click="doAction('view', record)">查看</a>
-            <template v-if="+record.status === 1 && +record.createdId === +userInfo.id">
+            <template v-if="+record.status === 1 && +record.status === 2 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -114,15 +114,7 @@
 import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
-import {
-  attenceLeaveApplyAddOrUpdate,
-  attenceLeaveApplyApprove,
-  attenceLeaveApplyDel,
-  attenceLeaveApplyDetail,
-  attenceLeaveApplyList,
-  attenceLeaveApplyWithdraw,
-  attenceLeaveApplyComputeLeaveTime,
-} from '@/api/attendanceManagement'
+import { attenceLeaveApplyDel, attenceLeaveApplyList, attenceLeaveApplyWithdraw } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
 import moment from 'moment'
