@@ -7,13 +7,13 @@
           <a-button-group>
             <a-button
               type="primary"
-              :class="{ currentDayWeekMonth: +searchParam.isToday === 1 }"
+              :class="{ currentDayWeekMonth: +searchParam.isToday === 2 }"
               @click="simpleSearch(2)"
               >今天</a-button
             >
             <a-button
               type="primary"
-              :class="{ currentDayWeekMonth: +searchParam.isToday === 0 }"
+              :class="{ currentDayWeekMonth: +searchParam.isToday === 1 }"
               @click="simpleSearch(1)"
               >全部</a-button
             >
@@ -71,12 +71,7 @@
 import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
-import {
-  getTemperatureList,
-  getWorkLunchCensus,
-  getCustomerLunchById,
-  getWorkLunchNum,
-} from '@/api/attendanceManagement'
+import { getTemperatureList } from '@/api/attendanceManagement'
 
 const columns = [
   {
@@ -127,7 +122,7 @@ export default {
       },
       loading: false,
       searchParam: {
-        isToday: 1,
+        isToday: 2,
         type: 1,
       },
       sDate: [undefined, undefined],
