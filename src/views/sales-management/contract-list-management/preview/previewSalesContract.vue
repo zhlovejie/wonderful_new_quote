@@ -857,6 +857,24 @@ export default {
           //     this.columns = _columns
           //   }
           // }
+          let _wxNum = null,
+            _email = null
+          let _otherInfo = res.data.otherInfo
+          if (_otherInfo && _otherInfo.wxA && _otherInfo.emailA) {
+            _wxNum = _otherInfo.wxA
+            _email = _otherInfo.emailA
+          } else {
+            let _saleUser = res.data.saleUser || {}
+            let _userInfo = _saleUser.userInfo ? _saleUser.userInfo : _saleUser
+            _wxNum = _userInfo.wxNum
+            _email = _userInfo.email
+          }
+          this.partABehalfWeChat = _wxNum // 甲方代表微信号
+          this.partABehalfEmail = _email // 甲方代表邮箱号
+          // let _saleUser = res.data.saleUser || {}
+          // let _userInfo = _saleUser.userInfo ? _saleUser.userInfo : _saleUser
+          // this.partABehalfWeChat = _userInfo.wxNum // 甲方代表微信号
+          // this.partABehalfEmail = _userInfo.email // 甲方代表邮箱号
         })
         .catch((error) => {
           console.error(error)
