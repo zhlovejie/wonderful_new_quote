@@ -178,6 +178,17 @@ export default { //考勤管理
       },
     },
     {
+      path: '/attendance-management/body-temperature',
+      name: 'attendance-body-temperature',
+      component: () => import('@/views/attendance-management/body-temperature/list'),
+      meta: {
+        title: '体温计记录表',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
       path: '/attendance-management/attendance-abnormal-events',
       name: 'attendance-abnormal-events',
       component: () => import('@/views/attendance-management/attendance-abnormal-events/List'),

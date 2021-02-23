@@ -5,6 +5,21 @@ import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
 
+
+// 体温积累表
+
+export function getTemperatureList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/temperature/temperature/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
 // 补卡罚款规则设置
 
 export function getFineRuleList(parameter) {
