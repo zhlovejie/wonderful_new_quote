@@ -59,6 +59,10 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="statusData" slot-scope="text, record, index">
+          <span>{{ record.createdTime.slice(0, 10) }}</span>
+        </div>
+
         <div slot="status" slot-scope="text, record">
           {{ +text === 1 ? '正常体温' : +text === 2 ? '异常体温' : '未知' }}
         </div>
@@ -80,6 +84,11 @@ const columns = [
     key: 'order',
     width: '70px',
     scopedSlots: { customRender: 'order' },
+  },
+  {
+    align: 'center',
+    title: '日期',
+    scopedSlots: { customRender: 'statusData' },
   },
   {
     align: 'center',
