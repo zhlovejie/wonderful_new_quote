@@ -51,12 +51,31 @@ export default {
       that.$nextTick(() =>{
         that.$refs[key].query(
           _actionType,
-          _actionType === 'add' ? {borrowId:that.record.id} : {id:that.record.id}
+          _actionType === 'add' ? {borrowId:that.record.id} : {id:that.record.id},
+          {
+            salesmanName:that.record.salesmanName,
+            userId:that.record.userId,
+            customerName:that.record.customerName,
+            customerId:that.record.customerId,
+            wxNum:that.record.wxNum,
+            email:that.record.email
+          }
         )
       })
     },
     finish(){
       console.log('over...')
+      const that = this
+      const h = that.$createElement;
+        that.$info({
+          title: '提示',
+          content: h('div', {}, [
+            h('p', `【${that.isBidBorrow ? '投标借用协议' : '经营借用协议'}合同】创建成功，等待合同审批通过后，在资质借用列表中，点击【处理】进行下一步操作。`)
+          ]),
+          onOk() {
+            that.$emit('end',2)
+          },
+        });
     }
   }
 }

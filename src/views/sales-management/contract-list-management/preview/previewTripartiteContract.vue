@@ -894,7 +894,8 @@ export default {
       that.$destroy('previewTripartiteContract')
       that.$nextTick(() => {
         let _from = that.$route.params.from || 'distributionContractList'
-        that.$router.push({ name: _from })
+        //that.$router.push({ name: _from })
+        that.$router.push({ name: _from ,params:{...(that.$route.params || {})}})
       })
     },
     // 通过

@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h3>合同信息</h3>
+    <h3>
+      <span>合同信息</span>
+      <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
+    </h3>
     <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
       <a-form-item hidden>
         <a-input v-decorator="['id', { initialValue: detail.id }]" />
@@ -375,9 +378,7 @@
     </a-form>
     <div style="margin: 20px 0">
       <template>
-        <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
         <div style="text-align: center">
-          <a-button v-if="isDisabled" key="submit1" type="primary" @click="() => handleOk(1)">预览</a-button>
           <a-button v-if="!isDisabled" style="margin-left: 10px" key="submit2" type="primary" @click="() => handleOk(2)"
             >保存</a-button
           >
@@ -387,6 +388,15 @@
         </div>
       </template>
     </div>
+    <a-modal
+      title="预览合同"
+      :width="1200"
+      :visible="visible"
+      :footer="null"
+      @cancel="handleCancel"
+    >
+      <PreviewAgencyContract :contractId="detail.id"/>
+    </a-modal>
   </div>
 </template>
 <script>
@@ -394,17 +404,18 @@ import { agencyContractAddOrUpdate, agencyContractDetail } from '@/api/agencyCon
 import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getListSalesman } from '@/api/contractListManagement'
 import { getListByText } from '@/api/workBox'
-
+import PreviewAgencyContract from '../contractView/previewAgencyContract'
 import moment from 'moment'
 
 export default {
   name: 'addForm',
   components: {
     ProvinceTreeCascade,
+    PreviewAgencyContract
   },
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this,{name:'qualifications-borrow-management-step1-3'}),
       visible: false,
       spinning: false,
       actionType: 'view',
@@ -500,7 +511,6 @@ export default {
       that.record = Object.assign({}, record)
       that.detail = {}
       await that.init()
-      that.visible = true
 
       if (that.isAdd) {
         return
@@ -593,10 +603,12 @@ export default {
         })
     },
     handleCancel() {
-      this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
-  },
+    viewContract(){
+      this.visible = true
+    }
+  }
 }
 </script>
 <style>

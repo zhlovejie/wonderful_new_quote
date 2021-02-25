@@ -78,8 +78,10 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('do', record)">处理</a>
+          <template v-if="+record.status < 6">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('do', record)">处理</a>
+          </template>
         </div>
       </a-table>
     </div>
@@ -89,6 +91,7 @@
 <script>
 import {
   borrowPageList,
+  borrowDetail
 } from '@/api/qualificationsBorrowManagement'
 
 import { getListSaleContractUser } from '@/api/contractListManagement'
@@ -177,10 +180,25 @@ export default {
     },
   },
   methods: {
-    init() {
+    async init() {
       let that = this
-      getListSaleContractUser().then((res) => (that.saleUser = res.data))
-      that.searchAction()
+      await getListSaleContractUser().then((res) => (that.saleUser = res.data))
+      await that.searchAction()
+
+      //新增完 [代签销售合同]后，显示 之前的步骤状态
+      // let {borrowId,action} = that.$route.params
+      // if(borrowId && action){
+      //   let res = await borrowDetail({ id: borrowId }).then((res) => res.data)
+      //   that.doAction( ['see','view'].includes(action) ? 'view' : 'do',res)
+      //   return
+      // }
+      // let {_viewPos} = that.$route.params
+      // console.log(that.$route.params)
+      // if(_viewPos){
+      //   //debugger
+      //   let {step,type,record} = _viewPos
+      //   that.doAction( ['see','view'].includes(type) ? 'view' : 'do',{...record,__step:step})
+      // }
     },
     searchAction(opt) {
       let that = this
@@ -190,7 +208,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam)
       that.loading = true
-      borrowPageList(_searchParam)
+      return borrowPageList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -239,7 +257,7 @@ export default {
       return {1:'经销商合同',2:'代理商合同',3:'战略合作协议'}[type] || '未知'
     },
     getStatusText(type){
-      return {1:'签订合同',2:'签订借用协议',3:'带线购货合同',4:'销售合同',5:'外包协议',6:'完结'}[type] || '未知'
+      return {1:'签订合同',2:'签订借用协议',3:'代签购货合同',4:'销售合同',5:'外包协议',6:'完结'}[type] || '未知'
     }
   }
 }

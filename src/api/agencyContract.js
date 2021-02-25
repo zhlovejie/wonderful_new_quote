@@ -119,6 +119,16 @@ export function afteraddOrapprove(params) {
   })
 }
 
+// 根据资质借用id查询产品售后服务外包协议详情
+export function afterDetailBorrowId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/getDetailBorrowId',
+    method: 'get',
+    params: params
+  })
+}
+
 
 
 

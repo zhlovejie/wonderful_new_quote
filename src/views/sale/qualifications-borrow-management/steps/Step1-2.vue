@@ -6,7 +6,10 @@
     <a-form-item hidden>
       <a-input v-decorator="['instanceId']" />
     </a-form-item>
-    <h3>合同信息</h3>
+    <h3>
+      <span>合同信息</span>
+      <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
+    </h3>
     <table class="custom-table custom-table-border">
       <tr>
         <td style="width: 15%">合同编号</td>
@@ -73,23 +76,24 @@
       </template>
       <template v-else></template>
     </p>
+    <PreviewStrategicCooperationAgreement ref="previewStrategicCooperationAgreement" />
   </a-form>
 </template>
 
 <script>
 import { cooperationProtocolAddOrUpdate, cooperationProtocolDetail } from '@/api/qualificationsBorrowManagement'
-
+import PreviewStrategicCooperationAgreement from '@/views/sales-management/strategic-cooperation-agreement/module/View.vue'
 import moment from 'moment'
 //import StatusView from '@/components/CustomerList/StatusView'
 
 export default {
   name: 'AddForm',
   components: {
-    //StatusView
+    PreviewStrategicCooperationAgreement
   },
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this,{name:'qualifications-borrow-management-step1-2'}),
       visible: false,
       actionType: 'add',
       opinion: '', //审批意见
@@ -216,7 +220,10 @@ export default {
         nopass: 4,
       }
     },
-  },
+    viewContract(){
+      this.$refs.previewStrategicCooperationAgreement.query('view',{id:this.detail.id})
+    }
+  }
 }
 </script>
 

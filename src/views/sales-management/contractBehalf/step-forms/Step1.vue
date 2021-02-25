@@ -17,7 +17,7 @@
                 <a-input
                   type="text"
                   style="border: none; width: 60%"
-                  v-decorator="['contractNum', { rules: [{ required: false, message: '请' }] }]"
+                  v-decorator="['contractNum', { rules: [{ required: false}] }]"
                   disabled
                 />
               </a-form-item>
@@ -256,22 +256,21 @@ export default {
       this.init()
     },
   },
-  created() {
-    this.queryonedata1 = this.queryonedata
-    this.getSalesList()
-  },
   mounted() {
     console.log('from mounted....')
     this.init()
   },
   methods: {
-    init() {
-      let qt = this.queryonedata1.purchaseContractSaveBo ? this.queryonedata1.purchaseContractSaveBo : {}
+    async init() {
+      const that = this
+      that.queryonedata1 = that.queryonedata
+      await that.getSalesList()
+      let qt = that.queryonedata1.purchaseContractSaveBo ? that.queryonedata1.purchaseContractSaveBo : {}
       console.log(qt)
       if (JSON.stringify(qt) != '{}') {
         console.log(qt)
-        this.freightType = qt.freightType
-        this.form.setFieldsValue({
+        that.freightType = qt.freightType
+        that.form.setFieldsValue({
           id: qt.id,
           contractNum: qt.contractNum,
           customerId: qt.customerId,
@@ -288,7 +287,18 @@ export default {
           freightAllotType: qt.freightAllotType || 2,
         })
         //不含税 禁用 开票类型
-        this.disabled = qt.isTax === 0 ? true : false
+        that.disabled = qt.isTax === 0 ? true : false
+      }
+
+      let _params = that.$parent.routeParams
+      if(_params.action === 'add' && _params.fillData){
+        let {customerName,customerId,userId} = _params.fillData
+        that.userId = userId
+        that.$nextTick(() => that.form.setFieldsValue({
+          customerName,
+          customerId,
+          userId
+        }))
       }
     },
     // handler 表单数据验证成功后回调事件
@@ -336,7 +346,8 @@ export default {
             freight: values.freight,
             contractType: values.contractType,
             freightAllotType: values.freightAllotType,
-            borrowId: Math.floor(Math.random() * 100),
+            //borrowId: Math.floor(Math.random() * 100),
+            borrowId:that.$parent.routeParams.borrowId
           }
           let arr = {
             purchaseContractSaveBo: params,

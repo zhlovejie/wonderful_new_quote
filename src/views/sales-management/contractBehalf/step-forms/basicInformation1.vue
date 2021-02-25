@@ -215,7 +215,8 @@ export default {
 
     goBackAction1() {
       const _this = this
-      _this.$router.go(-1)
+      //_this.$router.go(-1)
+      _this.$router.push({ name: _this.routeParams.from, params: { ..._this.routeParams } })
     },
     goBackAction() {
       const _this = this
@@ -227,7 +228,8 @@ export default {
         onOk() {
           //清空Local Storage 中的数据  然后返回
 
-          _this.$router.go(-1)
+          //_this.$router.go(-1)
+          _this.$router.push({ name: _this.routeParams.from, params: { ..._this.routeParams } })
         },
         onCancel() {
           console.log('Cancel')

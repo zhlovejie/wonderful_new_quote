@@ -228,7 +228,15 @@ export function getSoftwareContractQueryOne(parameter) {
     params: parameter
   })
 }
-
+/**根据资质借用id获取销售合同详情 */
+export function saleContractDetailForBorrow(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/detailForBorrow',
+    method: 'get',
+    params: parameter
+  })
+}
 
 // 常规非常规产品 根据不同的产品获取产品代码和产品数据
 export function getProductType(parameter) {

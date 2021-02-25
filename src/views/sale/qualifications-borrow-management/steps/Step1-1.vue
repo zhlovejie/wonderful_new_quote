@@ -6,7 +6,10 @@
     <a-form-item hidden>
       <a-input v-decorator="['instanceId']" />
     </a-form-item>
-    <h3>合同信息</h3>
+    <h3>
+      <span>合同信息</span>
+      <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
+    </h3>
     <table class="custom-table custom-table-border">
       <tr>
         <td style="width: 15%">合同编号</td>
@@ -123,19 +126,22 @@
         >
       </template>
     </p>
+    <PreviewDistributorContract ref="previewDistributorContract" />
   </a-form>
 </template>
 
 <script>
 import { dealerContractAddOrUpdate, dealerContractDetail } from '@/api/qualificationsBorrowManagement'
-
+import PreviewDistributorContract from '@/views/sales-management/distributor-contract-management/module/View.vue'
 import moment from 'moment'
 export default {
   name: 'AddForm',
-  components: {},
+  components: {
+    PreviewDistributorContract
+  },
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this,{name:'qualifications-borrow-management-step1-1'}),
       visible: false,
       actionType: 'add',
       opinion: '', //审批意见
@@ -262,7 +268,10 @@ export default {
       }
       this.form.setFieldsValue({ effective: arr })
     },
-  },
+    viewContract(){
+      this.$refs.previewDistributorContract.query('view',{id:this.detail.id})
+    }
+  }
 }
 </script>
 

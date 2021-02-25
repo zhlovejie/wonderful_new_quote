@@ -484,7 +484,7 @@
             <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
             <a-button
               key="submit"
-              style="margin-left: 10px"
+              style="margin: 0 10px"
               type="primary"
               icon="check"
               :loading="spinning"

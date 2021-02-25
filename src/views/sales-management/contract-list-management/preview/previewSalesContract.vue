@@ -746,6 +746,7 @@ export default {
     getInfor() {
       let that = this
       let queryOneData = this.$router.currentRoute.params.queryOneData
+      debugger
       // 获取合同预览信息
       mobileTerminal({
         id: this.$router.currentRoute.params.queryOneData.id,
@@ -870,7 +871,8 @@ export default {
       that.$destroy('previewSalesContract')
       that.$nextTick(() => {
         let _from = that.$route.params.from || 'distributionContractList'
-        that.$router.push({ name: _from })
+        //that.$router.push({ name: _from })
+        that.$router.push({ name: _from ,params:{...(that.$route.params || {})}})
       })
     },
     // 通过

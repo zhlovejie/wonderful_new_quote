@@ -147,8 +147,8 @@
                 @change="contractAttrChange"
               >
                 <a-select-option :value="1">经销商合同</a-select-option>
-                <a-select-option :value="2">战略合作协议</a-select-option>
-                <a-select-option :value="3">代理合同</a-select-option>
+                <a-select-option :value="2">代理合同</a-select-option>
+                <a-select-option :value="3">战略合作协议</a-select-option>
               </a-select>
               <span v-else>{{ { 1: '经销商合同', 2: '代理合同', 3: '战略合作协议' }[detail.contractProperty] }}</span>
             </a-form-item>
@@ -174,7 +174,7 @@ export default {
   },
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this,{name:'qualifications-borrow-management-baseForm'}),
       visible: false,
       actionType: 'add',
       spinning: false,

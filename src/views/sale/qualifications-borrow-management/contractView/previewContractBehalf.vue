@@ -1,27 +1,7 @@
 <template>
+  <!-- 代签购货合同预览 -->
   <a-spin :spinning="spinning">
     <div>
-      <div class="top-ation clearfix margin-b">
-        <a-button class="fl-r" type="primary" v-if="isPassBtn" @click="okPass()" :loading="loading" icon="check"
-          >通过</a-button
-        >
-        <a-button
-          class="fl-r"
-          type="primary"
-          v-if="isPassBtn"
-          @click="isPass({ isAdopt: 1 })"
-          :loading="loading"
-          icon="close"
-          >不通过</a-button
-        >
-        <a-button class="fl-r" type="primary" @click="goBackConstractList" icon="backward">返回</a-button>
-        <!-- <a-button class="fl-r" type="primary" @click="getPDF()" >导出成PDF</a-button> -->
-        <a :href="wordUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
-      </div>
-      <div class="approval-checkbox-wrapper" v-if="isSalesManager && approvalNodeData.length > 0">
-        <span style="margin-right: 8px">审批节点：</span>
-        <a-checkbox-group :options="approvalNodeData" @change="onChange" />
-      </div>
       <div class="contract-wrap" id="pdfDom">
         <div class="contract-header">
           <div class="log-wrap">
@@ -329,39 +309,20 @@
           </div>
         </div>
       </div>
-      <a-modal
-        :title="dialogTitle"
-        v-model="visible"
-        v-if="visible"
-        @ok="handleSubmit()"
-        @cancel="handleCancel"
-        okText="确认"
-        cancelText="取消"
-        :maskClosable="false"
-      >
-        <a-textarea :autosize="{ minRows: 2, maxRows: 6 }" v-model="opinion" />
-      </a-modal>
     </div>
   </a-spin>
 </template>
 
 <script>
-import { contractDetail, PurchaseContract } from '@/api/contractListManagement.js'
-import util from '@/components/_util/util'
-const renderContent = (value, row, index) => {
-  const obj = {
-    children: value,
-    attrs: {},
-  }
-  if (index === 4) {
-    obj.attrs.colSpan = 0
-  }
-  return obj
-}
+import { contractDetail } from '@/api/contractListManagement.js'
+import moment from 'moment'
+
 export default {
-  name: 'PreviewTripartiteContract',
+  name: 'PreviewTripartiteContract-contractView',
   components: {},
-  props: {},
+  props: {
+    contractId:[Number,String]
+  },
   data() {
     return {
       data: [],
@@ -468,9 +429,6 @@ export default {
     }
   },
   computed: {
-    contactList() {
-      return this.makeContact({ addressStr: this.deliveryAddress, nameStr: this.deliveryName, mobilStr: this.mobile })
-    },
     columns() {
       let baseColumns = [
         {
@@ -634,264 +592,113 @@ export default {
       }
       //targetColumns.push({title: '交货日期',dataIndex: 'dateTime'})
       return targetColumns
-    },
+    }
   },
-  watch: {
-    $route(to, from) {
-      console.log(to)
-      if (to.name === 'previewTripartiteContract') {
-        this.init()
-      }
-    },
-  },
-  cerated() {},
   mounted() {
     this.init()
-    // 获取当前时间
-    var date = new Date()
-    var year = date.getFullYear()
-    var month = date.getMonth() + 1
-    var strDate = date.getDate()
-    if (month >= 1 && month <= 9) {
-      month = '0' + month
+  },
+  watch:{
+    contractId(){
+      this.init()
     }
-    if (strDate >= 0 && strDate <= 9) {
-      strDate = '0' + strDate
-    }
-    this.nowDate = year + '年' + month + '月' + strDate + '日'
   },
   methods: {
     async init() {
-      let that = this
-      const queryOneData = this.$router.currentRoute.params.queryOneData
-      if (!queryOneData) return
-      const id = queryOneData.id
-      console.log('预览合同的查询queryOneData', queryOneData)
-      if (this.$router.currentRoute.params.action === 'approval') {
-        this.isPassBtn = true
+      if(!this.contractId){
+        return
       }
-      if (this.$router.currentRoute.params.action === 'edit') {
-        this.isPassBtn = false
-      }
+      this.nowDate = moment().format('YYYY年MM月DD日')
       this.getInfor()
     },
-
     // 获取合同的详细信息
     getInfor() {
-      let that = this
-      let queryOneData = this.$router.currentRoute.params.queryOneData
+      //debugger
       // 获取合同预览信息
+      const that = this
+      that.spinning = true
       contractDetail({
-        purchaseContractId: this.$router.currentRoute.params.queryOneData.id,
+        purchaseContractId: that.contractId
       })
         .then((res) => {
-          console.log(res.data)
+          that.spinning = false
+          //console.log(res.data)
           let react = res.data.purchaseContractDetailVo
-
           let purchase = res.data.purchaseContractInfoDetailVo
-
           // console.log('预览合同需要的接口mobileTerminal', res)
-          this.instanceId = react.instanceId
-          this.contractNum = react.contractNum
-          this.demandUnit = react.customerName
-          this.createTime = react.signingDate
-          this.data = res.data.purchaseContractProductDetailVoList
-          this.chineseTotalAmount = res.data.chineseTotalAmount
-          this.totalAmount = parseFloat(res.data.totalAmount)
-          this.qualityFrame = react.frameWarranty //主框架
-          this.qualityElectronics = react.electricWarranty // 电器
-          this.qualityLayer = react.coatingWarranty // 涂层
-          this.deliveryDate = react.deliveryDate // 交货日期
-          this.deliveryAddress = react.detailDeliveryAddress // 地址
-          this.freightType = react.freightType ///运费类型
-          this.transportType = react.transportMode //运输方式
-          this.purchaseContractSettlementDetailVoList = res.data.purchaseContractSettlementDetailVoList // 结算方式
-          this.partAemail = purchase.ourEmail //甲方邮箱账号
-          this.partBemail = purchase.customerEmail // 乙方邮箱
-          this.requirementSpecification = purchase.requirementSpecification //需方产品特殊说明
-          this.isFull = react.fullPayment //全款
-          this.fullList = res.data.purchaseContractSettlementDetailVoList //全款结算方式
-          this.partBAddress = react.detailDeliveryAddress //乙方地址
-          this.partBPhone = react.customerPhone // 乙方手机号
-          this.partBPostalCode = react.customerPostcode //邮编
-          this.unitFullName = react.customerFullName // 单位全称
-          this.partBBankDeposit = react.customerBankName // 开户行
-          this.partBBankNumber = react.customerBankAccount //银行账号
-          this.partBBankName = react.customerBankName // 银行账号名称
-          this.dutyParagraph = react.customerTfn //税号
-          this.partBBehalfWeChat = react.customerWxNum
-          this.partBBehalfEmail = react.customerEmail
-          this.contractDispute = purchase.solveDispute //争议方式
-          // this.increaseTotalPayment = res.data.increaseTotalPayment
-          this.unIsTax = react.isTax === 1 ? true : false
-          this.isNeedFreshChaper = purchase.needSignet
-          this.otherInfo = react.deliveryOther
-          this.saleContractLowCPriceAllAmount = res.data.saleContractLowCPriceAllAmount
+          that.instanceId = react.instanceId
+          that.contractNum = react.contractNum
+          that.demandUnit = react.customerName
+          that.createTime = react.signingDate
+          that.data = res.data.purchaseContractProductDetailVoList
+          that.chineseTotalAmount = res.data.chineseTotalAmount
+          that.totalAmount = parseFloat(res.data.totalAmount)
+          that.qualityFrame = react.frameWarranty //主框架
+          that.qualityElectronics = react.electricWarranty // 电器
+          that.qualityLayer = react.coatingWarranty // 涂层
+          that.deliveryDate = react.deliveryDate // 交货日期
+          that.deliveryAddress = react.detailDeliveryAddress // 地址
+          that.freightType = react.freightType ///运费类型
+          that.transportType = react.transportMode //运输方式
+          that.purchaseContractSettlementDetailVoList = res.data.purchaseContractSettlementDetailVoList // 结算方式
+          that.partAemail = purchase.ourEmail //甲方邮箱账号
+          that.partBemail = purchase.customerEmail // 乙方邮箱
+          that.requirementSpecification = purchase.requirementSpecification //需方产品特殊说明
+          that.isFull = react.fullPayment //全款
+          that.fullList = res.data.purchaseContractSettlementDetailVoList //全款结算方式
+          that.partBAddress = react.detailDeliveryAddress //乙方地址
+          that.partBPhone = react.customerPhone // 乙方手机号
+          that.partBPostalCode = react.customerPostcode //邮编
+          that.unitFullName = react.customerFullName // 单位全称
+          that.partBBankDeposit = react.customerBankName // 开户行
+          that.partBBankNumber = react.customerBankAccount //银行账号
+          that.partBBankName = react.customerBankName // 银行账号名称
+          that.dutyParagraph = react.customerTfn //税号
+          that.partBBehalfWeChat = react.customerWxNum
+          that.partBBehalfEmail = react.customerEmail
+          that.contractDispute = purchase.solveDispute //争议方式
+          // that.increaseTotalPayment = res.data.increaseTotalPayment
+          that.unIsTax = react.isTax === 1 ? true : false
+          that.isNeedFreshChaper = purchase.needSignet
+          that.otherInfo = react.deliveryOther
+          that.saleContractLowCPriceAllAmount = res.data.saleContractLowCPriceAllAmount
 
-          this.bucketType = react.bucketType || 1
-          this.qualityLimit = react.qualityWarranty || 1
-          this.detailDeliveryAddress = react.detailDeliveryAddress || ''
+          that.bucketType = react.bucketType || 1
+          that.qualityLimit = react.qualityWarranty || 1
+          that.detailDeliveryAddress = react.detailDeliveryAddress || ''
 
-          this.getLookDetail_isTax = react.isTax === 1 ? true : false
-          this.getLookDetail_freightType = react.freightType
-          this.getLookDetail_freightDivType = react.freightAllotType
+          that.getLookDetail_isTax = react.isTax === 1 ? true : false
+          that.getLookDetail_freightType = react.freightType
+          that.getLookDetail_freightDivType = react.freightAllotType
 
           // if (res.data.contractDisputeName) {
-          //   this.contractDisputeName = res.data.contractDisputeName
+          //   that.contractDisputeName = res.data.contractDisputeName
           // }
-          this.additionalTreaty = purchase.additionalTreaty
-          this.approvalStatus = react.status
-          this.commonSeal = react.commonSeal
-          this.saleUserSeal = react.saleUserSeal
-          this.partABehalf = react.userName
-          this.signForm = parseInt(purchase.signType)
-          this.wordUrl = react.detailUrl
+          that.additionalTreaty = purchase.additionalTreaty
+          that.approvalStatus = react.status
+          that.commonSeal = react.commonSeal
+          that.saleUserSeal = react.saleUserSeal
+          that.partABehalf = react.userName
+          that.signForm = parseInt(purchase.signType)
+          that.wordUrl = react.detailUrl
 
-          this.queryOne_freightType = react.freightType
-          this.queryOne_freightCharge = react.freight
+          that.queryOne_freightType = react.freightType
+          that.queryOne_freightCharge = react.freight
 
-          if (this.queryOne_freightType === 1) {
-            let _columns = [...this.columns]
+          if (that.queryOne_freightType === 1) {
+            let _columns = [...that.columns]
             let _item = _columns.find((item) => item.dataIndex === 'raitMoney')
             if (_item) {
-              _item.title = this.queryOne_freightType === 1 ? '含税含运费金额(元)' : '含税金额(元)'
-              this.columns = _columns
+              _item.title = that.queryOne_freightType === 1 ? '含税含运费金额(元)' : '含税金额(元)'
+              that.columns = _columns
             }
           }
         })
         .catch((error) => {
-          this.loading = false
-          console.error(error)
-          this.$message.error('网络异常，尝试重新操作')
-          // this.$router.push({ name: 'distributionContractList'})
-          this.$router.go(-1)
-        })
-    },
-    // 返回
-    goBackConstractList() {
-      let that = this
-      that.$destroy('previewTripartiteContract')
-      that.$nextTick(() => {
-        let _from = that.$route.params.from || 'contractBehalfList'
-        //that.$router.push({ name: _from })
-        that.$router.push({ name: _from ,params:{...(that.$route.params || {})}})
-      })
-    },
-    // 通过
-    okPass() {
-      let that = this
-      const params = {
-        approveId: this.$router.currentRoute.params.queryOneData.id,
-        isAdopt: 0,
-        opinion: '',
-      }
-      that.spinning = true
-      //   //原流程
-      PurchaseContract(params)
-        .then((res) => {
           that.spinning = false
-          that.$router.go(-1) // 返回上一页
-          // this.$router.push({name:'distributionContractList'})
+          that.$message.error('网络异常，尝试重新操作')
         })
-        .catch((error) => {
-          console.error(error)
-        })
-        .finally(() => {
-          that.loading = false
-          that.spinning = false
-        })
-      // }
-    },
-    // 不通过
-    isPass(e) {
-      this.visible = true
-      console.log('点击的到底是通过还是不通过', e)
-      this.isAdopt = e.isAdopt
-    },
-    // 取消
-    handleCancel() {
-      this.visible = false
-    },
-    handleSubmit() {
-      let that = this
-      that.visible = false
-
-      setTimeout(function () {
-        that.spinning = true
-        const params = {
-          approveId: that.$router.currentRoute.params.queryOneData.id,
-          opinion: that.opinion,
-          isAdopt: that.isAdopt,
-        }
-        //   //原流程
-        PurchaseContract(params)
-          .then((res) => {
-            console.log('通过或者不通过点击确定调取接口的结果', res)
-            that.visible = false
-            that.$router.go(-1) // 返回上一页
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-          .finally(() => {
-            that.loading = false
-            that.spinning = false
-          })
-      }, 500)
-    },
-    getPDF() {
-      util.handleWindowPrint('#pdfDom', '销售合同')
-    },
-    onChange(checkedValues) {
-      console.log('checked = ', checkedValues)
-      this.checkedValues = checkedValues
-    },
-    makeContact(contactOpt = {}) {
-      //联系人数据源
-      let _addressStr = contactOpt.addressStr || ''
-      let _nameStr = contactOpt.nameStr || ''
-      let _mobilStr = contactOpt.mobilStr || ''
-
-      let addressArr = _addressStr.split(';')
-      let nameArr = _nameStr.split(';')
-      let mobileArr = _mobilStr.split(';')
-      let maxLen = Math.max(addressArr.length, nameArr.length, mobileArr.length)
-      let minLen = Math.min(maxLen, 3)
-      if (addressArr.length < minLen) {
-        let arr = new Array(minLen)
-        addressArr.map((val, index) => (arr[index] = val))
-        addressArr = arr
-      }
-      if (nameArr.length < minLen) {
-        let arr = new Array(minLen)
-        nameArr.map((val, index) => (arr[index] = val))
-        nameArr = arr
-      }
-      if (mobileArr.length < minLen) {
-        let arr = new Array(minLen)
-        mobileArr.map((val, index) => (arr[index] = val))
-        mobileArr = arr
-      }
-      let contacts = []
-      addressArr.map((val, index) => {
-        contacts.push({
-          name: nameArr[index] ? nameArr[index] : '',
-          telphone: mobileArr[index] ? mobileArr[index] : '',
-          address: addressArr[index] ? addressArr[index] : '',
-        })
-      })
-      //过滤
-      let filterContact = contacts.filter((c) => c.name !== '' && c.telphone !== '' && c.address !== '')
-      //格式化
-      let result = filterContact.map((c) => {
-        let nameHTML = `<span style="margin:0 5px;">姓名：${c.name}</span>`
-        let telphoneHTML = `<span style="margin:0 5px;">电话：${c.telphone}</span>`
-        let addressHTML = `<span style="margin:0 5px;">详细地址：${c.address}</span>`
-        return `${nameHTML} ${telphoneHTML} ${addressHTML}`
-      })
-      return result
-    },
-  },
+    }
+  }
 }
 </script>
 

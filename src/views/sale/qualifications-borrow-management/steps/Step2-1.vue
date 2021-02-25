@@ -12,90 +12,48 @@
           <a-input v-decorator="['borrowId', { initialValue: detail.borrowId }]" />
         </a-form-item>
 
+        <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
-          <h3>基本信息</h3>
           <tr>
             <td>销售人员</td>
             <td>
               <a-form-item>
-                <a-select
-                  v-if="!isDisabled && !isEdit"
-                  :disabled="isEdit"
-                  :allowClear="true"
-                  v-decorator="[
-                    'userId',
-                    { initialValue: detail.userId, rules: [{ required: true, message: '请选择销售人员' }] },
-                  ]"
-                  placeholder="请选择销售人员"
-                  @change="saleUserChange"
-                >
-                  <a-select-option v-for="item in saleUsers" :value="item.userId" :key="item.userId">{{
-                    item.salesmanName
-                  }}</a-select-option>
-                </a-select>
-                <span v-else>{{ detail.trueName }}</span>
+                <a-form-item hidden>
+                  <a-input v-decorator="['userId', { initialValue: detail.userId }]" />
+                </a-form-item>
+                <span>{{ detail.trueName || detail.salesmanName }}</span>
               </a-form-item>
             </td>
             <td>客户名称</td>
             <td>
-              <CustomerSelect
-                v-if="!isDisabled && !isEdit"
-                ref="customerSelect"
-                :needOptions="needOptions"
-                :options="customerSelectOptions"
-                @selected="handleCustomerSelected"
-              />
-              <a-form-item>
-                <a-input
-                  v-if="!isDisabled && !isEdit"
-                  hidden
-                  v-decorator="[
-                    'customerName',
-                    { initialValue: detail.customerName, rules: [{ required: true, message: '请选择客户名称' }] },
-                  ]"
-                />
-                <span v-else>{{ detail.customerName }}</span>
-              </a-form-item>
               <a-form-item hidden>
                 <a-input v-decorator="['customerName', { initialValue: detail.customerName }]" />
               </a-form-item>
+              <span>{{ detail.customerName }}</span>
             </td>
           </tr>
           <tr>
             <td>微信号</td>
             <td>
-              <a-form-item>
-                <a-input
-                  v-if="!isDisabled && !isEdit"
-                  type="text"
-                  v-decorator="[
-                    'wxNum',
-                    { initialValue: detail.wxNum, rules: [{ required: true, message: '填写微信号' }] },
-                  ]"
-                />
-                <span v-else>{{ detail.wxNum }}</span>
+              <a-form-item hidden>
+                <a-input v-decorator="['wxNum', { initialValue: detail.wxNum }]" />
               </a-form-item>
+              <span>{{ detail.wxNum }}</span>
             </td>
             <td>邮箱</td>
             <td>
-              <a-form-item>
-                <a-input
-                  v-if="!isDisabled && !isEdit"
-                  type="text"
-                  v-decorator="[
-                    'email',
-                    {
-                      initialValue: detail.email,
-                      rules: [{ required: true, message: '填写电子邮箱' }],
-                    },
-                  ]"
-                />
-                <span v-else>{{ detail.email }}</span>
+              <a-form-item hidden>
+                <a-input v-decorator="['email', { initialValue: detail.email }]" />
               </a-form-item>
+              <span>{{ detail.email }}</span>
             </td>
           </tr>
-
-          <h3 style="margin-top: 10px">合同信息</h3>
+        </table>
+          <h3 style="margin-top: 10px">
+            <span>合同信息</span>
+            <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
+          </h3>
+          <table class="custom-table custom-table-border">
           <tr>
             <td style="width: 15%">合同编号</td>
             <td style="width: 35%">
@@ -195,6 +153,16 @@
           </div>
         </template>
       </div>
+
+      <a-modal
+        title="预览合同"
+        :width="1200"
+        :visible="visible"
+        :footer="null"
+        @cancel="handleCancel"
+      >
+        <PreviewBidBorrowing :contractId="detail.id"/>
+      </a-modal>
     </a-spin>
 </template>
 <script>
@@ -204,15 +172,15 @@ import ProvinceTreeCascade from '@/components/CustomerList/ProvinceTreeCascade'
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import { getListByText } from '@/api/workBox'
 import moment from 'moment'
-
+import PreviewBidBorrowing from '../contractView/previewBidBorrowing'
 let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { ProvinceTreeCascade, CustomerSelect },
+  components: { ProvinceTreeCascade, CustomerSelect ,PreviewBidBorrowing},
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this,{name:'qualifications-borrow-management-step2-1'}),
       visible: false,
       spinning: false,
       actionType: 'view',
@@ -278,7 +246,7 @@ export default {
       queue.push(task2)
       if (that.isAdd) {
         let task3 = bidProtocolNum().then((res) => {
-          that.detail.contractNum = res.data
+          that.detail = {...that.detail,contractNum:res.data}
         })
         queue.push(task3)
       }
@@ -342,7 +310,7 @@ export default {
       let target = this.saleUsers.find((item) => +item.userId === +id)
       return target ? target.salesmanName : ''
     },
-    async query(type, record={}) {
+    async query(type, record={},fillData={}) {
       //debugger
       let that = this
       await that.form.resetFields()
@@ -350,10 +318,13 @@ export default {
       that.record = Object.assign({}, record)
       that.detail = {}
       await that.init()
-      that.visible = true
 
       if (that.isAdd) {
-        that.form.setFieldsValue({borrowId:that.record.borrowId || undefined})
+        that.detail = {...that.detail,...fillData,borrowId:that.record.borrowId}
+        that.$nextTick(() =>{
+          that.form.setFieldsValue({borrowId:that.record.borrowId || undefined})
+          that.form.setFieldsValue(fillData)
+        })
         return
       }
 
@@ -409,8 +380,10 @@ export default {
       })
     },
     handleCancel() {
-      this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
+    },
+    viewContract(){
+      this.visible = true
     }
   }
 }
