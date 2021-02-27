@@ -222,7 +222,7 @@ export default {
           component: () => import('@/views/sale/order/order'),
           meta: {
             title: '销售订单',
-            keepAlive: false,
+            keepAlive: true,
             permission: ['permission']
           }
         },
