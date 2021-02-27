@@ -1,4 +1,6 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 
 /**
@@ -6,7 +8,7 @@ import system from '@/config/defaultSettings'
  * @param parameter
  * @returns {*}
  */
-export function getServiceList (parameter) {
+export function getServiceList(parameter) {
   console.log('getServiceList manages' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -17,7 +19,7 @@ export function getServiceList (parameter) {
 }
 
 /**收款单 撤回 */
-export function revocationReceipt (parameter) {
+export function revocationReceipt(parameter) {
   console.log('getServiceList manages' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -32,7 +34,7 @@ export function revocationReceipt (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function goAdd (parameter) {
+export function goAdd(parameter) {
   console.log('goAdd manages' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -47,7 +49,7 @@ export function goAdd (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function receiptSaleContract (parameter) {
+export function receiptSaleContract(parameter) {
   console.log('ReceiptSaleContract manages' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -63,7 +65,7 @@ export function receiptSaleContract (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function receiptSaleContractNoType (parameter) {
+export function receiptSaleContractNoType(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/listBySaleReceiptType',
@@ -78,7 +80,7 @@ export function receiptSaleContractNoType (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function listSaleCOntractPageForOpenPaper (parameter) {
+export function listSaleCOntractPageForOpenPaper(parameter) {
   return axios({
     baseURL: system.baseURL,
     //url: '/sale-contract/listBySaleReceiptType',
@@ -92,7 +94,7 @@ export function listSaleCOntractPageForOpenPaper (parameter) {
  * 所有的软件合同分页列表
  * @param {} parameter 
  */
-export function allSoftwareContract (parameter) {
+export function allSoftwareContract(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/software-contract/listBySaleReceipt',
@@ -106,7 +108,7 @@ export function allSoftwareContract (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function getContractOne (parameter) {
+export function getContractOne(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/queryOne',
@@ -120,7 +122,7 @@ export function getContractOne (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function getAccountBankList () {
+export function getAccountBankList() {
   console.log('getAccountBankList manages')
   return axios({
     baseURL: system.baseURL,
@@ -134,7 +136,7 @@ export function getAccountBankList () {
  * @param parameter
  * @returns {*}
  */
-export function save (parameter) {
+export function save(parameter) {
   console.log('save parameter', JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -149,7 +151,7 @@ export function save (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function receiptDetail (parameter) {
+export function receiptDetail(parameter) {
   console.log('receiptDetail ', JSON.stringify(parameter))
   const url = '/receipt/receiptDetail/' + parameter.id
   return axios({
@@ -163,7 +165,7 @@ export function receiptDetail (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function receiptAudit (parameter) {
+export function receiptAudit(parameter) {
   console.log('receiptAudit ', JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -178,7 +180,7 @@ export function receiptAudit (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function deleteReceipt (parameter) {
+export function deleteReceipt(parameter) {
   console.log('deleteReceipt ', JSON.stringify(parameter))
   const url = '/receipt/delete/' + parameter.id
   return axios({
@@ -193,7 +195,7 @@ export function deleteReceipt (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function updateReceipt (parameter) {
+export function updateReceipt(parameter) {
   console.log('updateReceipt parameter', JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -208,7 +210,7 @@ export function updateReceipt (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function getSoftContractProductListById (parameter) {
+export function getSoftContractProductListById(parameter) {
   console.log('getSoftContractProductListById', JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -219,7 +221,7 @@ export function getSoftContractProductListById (parameter) {
 }
 
 
-export function getReceiptAgencyContractListById (parameter) {
+export function getReceiptAgencyContractListById(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/pageListForReceipt',
@@ -228,7 +230,7 @@ export function getReceiptAgencyContractListById (parameter) {
   })
 }
 
-export function getSoftContractListById (parameter) {
+export function getSoftContractListById(parameter) {
   console.log('getSoftContractListById', JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -239,7 +241,7 @@ export function getSoftContractListById (parameter) {
 }
 
 //收款单，发货单，开票单，产品调度任务单：选择合同编号时，界面显示订单详情，下拉框带入 
-export function productListByContract (parameter) {
+export function productListByContract(parameter) {
   console.log('productListByContract', JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -255,7 +257,7 @@ export function productListByContract (parameter) {
  * 退款单申请分页列表
  * @param {*} parameter 
  */
-export function refundPageList (parameter) {
+export function refundPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/pageList',
@@ -268,7 +270,7 @@ export function refundPageList (parameter) {
  * 查询退款单详情
  * @param {*} parameter 
  */
-export function refundDetail (parameter) {
+export function refundDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/getRefundDetail',
@@ -281,7 +283,7 @@ export function refundDetail (parameter) {
  * 销售退款单申请新增或者更新
  * @param {*} parameter 
  */
-export function refundSaveOrUpdate (parameter) {
+export function refundSaveOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/saveOrUpdateRefund',
@@ -294,7 +296,7 @@ export function refundSaveOrUpdate (parameter) {
  * 销售退款单的审批
  * @param {*} parameter 
  */
-export function refundApproval (parameter) {
+export function refundApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/approvalRefund',
@@ -307,7 +309,7 @@ export function refundApproval (parameter) {
  * 获取已审批完的合同列表
  * @param {*} parameter 
  */
-export function refundGetApprovedSaleContract (parameter) {
+export function refundGetApprovedSaleContract(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/getApprovedSaleContract',
@@ -320,7 +322,7 @@ export function refundGetApprovedSaleContract (parameter) {
  * 通过合同id查询关联的收款单
  * @param {*} parameter 
  */
-export function refundGetSaleContractReceipt (parameter) {
+export function refundGetSaleContractReceipt(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/getSaleContractReceipt',
@@ -330,7 +332,7 @@ export function refundGetSaleContractReceipt (parameter) {
 }
 
 /**退款单 撤回 */
-export function refundRevocation (parameter) {
+export function refundRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/revocation',
@@ -340,7 +342,7 @@ export function refundRevocation (parameter) {
 }
 
 /**退款单 删除 */
-export function refundDel (parameter) {
+export function refundDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/delRefund',
@@ -358,7 +360,7 @@ export function refundDel (parameter) {
  * 赠送单申请分页列表
  * @param {*} parameter 
  */
-export function presentPageList (parameter) {
+export function presentPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/pageList',
@@ -371,7 +373,7 @@ export function presentPageList (parameter) {
  * 查询赠送单详情
  * @param {*} parameter 
  */
-export function presentDetail (parameter) {
+export function presentDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/getPresentDetail',
@@ -384,7 +386,7 @@ export function presentDetail (parameter) {
  * 赠送单的审批
  * @param {*} parameter 
  */
-export function presentApproval (parameter) {
+export function presentApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/approvalPresent',
@@ -397,7 +399,7 @@ export function presentApproval (parameter) {
  * 赠送单申请新增或者更新
  * @param {*} parameter 
  */
-export function presentSaveOrUpdate (parameter) {
+export function presentSaveOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/saveOrUpdatePresent',
@@ -407,7 +409,7 @@ export function presentSaveOrUpdate (parameter) {
 }
 
 /**赠送单 撤回 */
-export function presentRevocation (parameter) {
+export function presentRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/revocation',
@@ -417,7 +419,7 @@ export function presentRevocation (parameter) {
 }
 
 /**赠送单 删除 */
-export function presentDel (parameter) {
+export function presentDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/present/delPresent',
@@ -432,7 +434,7 @@ export function presentDel (parameter) {
  * 进款单分页列表
  * @param {*} parameter 
  */
-export function incomePageList (parameter) {
+export function incomePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleIncome/income/pageList',
@@ -445,7 +447,7 @@ export function incomePageList (parameter) {
  * 获取进款单详情信息
  * @param {*} parameter 
  */
-export function incomeDetail (parameter) {
+export function incomeDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleIncome/income/getIncomeDetail',
@@ -457,7 +459,7 @@ export function incomeDetail (parameter) {
  * 认领进款单
  * @param {*} parameter 
  */
-export function incomeClaim (parameter) {
+export function incomeClaim(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleIncome/income/claimIncome',
@@ -469,7 +471,7 @@ export function incomeClaim (parameter) {
  * 销售进款单申请新增或者更新
  * @param {*} data 
  */
-export function incomeSaveOrUpdate (data) {
+export function incomeSaveOrUpdate(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleIncome/income/saveOrUpdateIncome',
@@ -482,7 +484,7 @@ export function incomeSaveOrUpdate (data) {
 
 //----------------------赠送订单----------------------
 /**赠送订单申请分页列表 */
-export function presentOrderPageList (parameter) {
+export function presentOrderPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/presentOrder/presentOrderPageList',
@@ -492,7 +494,7 @@ export function presentOrderPageList (parameter) {
 }
 
 /**赠送订单详情 */
-export function presentOrderDetail (parameter) {
+export function presentOrderDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/presentOrder/getPresentOrderDetail',
@@ -502,7 +504,7 @@ export function presentOrderDetail (parameter) {
 }
 
 /**下载赠送订单 */
-export function presentOrderDownload (parameter) {
+export function presentOrderDownload(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/presentOrder/download',
@@ -512,7 +514,7 @@ export function presentOrderDownload (parameter) {
 }
 
 /**修改赠送订单 */
-export function presentOrderUpdate (data) {
+export function presentOrderUpdate(data) {
   return axios({
     baseURL: system.baseURL,
     url: '/salePresent/presentOrder/updatePresentOrderDetail',
@@ -524,7 +526,7 @@ export function presentOrderUpdate (data) {
 
 
 /**收款单列表金额汇总 */
-export function receiptGetSumAmountByList (parameter) {
+export function receiptGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/receipt/getSumAmountByList',
@@ -534,7 +536,7 @@ export function receiptGetSumAmountByList (parameter) {
 }
 
 /**开票单列表金额汇总 */
-export function openpaperGetSumAmountByList (parameter) {
+export function openpaperGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/openpaper/getSumAmountByList',
@@ -544,7 +546,7 @@ export function openpaperGetSumAmountByList (parameter) {
 }
 
 /**进款单列表金额汇总 */
-export function saleIncomeGetSumAmountByList (parameter) {
+export function saleIncomeGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleIncome/income/getSumAmountByList',
@@ -554,7 +556,7 @@ export function saleIncomeGetSumAmountByList (parameter) {
 }
 
 /**退款单列表金额汇总 */
-export function saleRefundGetSumAmountByList (parameter) {
+export function saleRefundGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/getSumAmountByList',
@@ -565,7 +567,7 @@ export function saleRefundGetSumAmountByList (parameter) {
 
 
 /**预收款单列表金额汇总 */
-export function advancesGetSumAmountByList (parameter) {
+export function advancesGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/advances/getSumAmountByList',
@@ -575,12 +577,12 @@ export function advancesGetSumAmountByList (parameter) {
 }
 
 /**单据 导出 */
-export function exportInvoiceExcel(url,params) {
+export function exportInvoiceExcel(url, params) {
   return axios({
     baseURL: system.baseURL,
     url: url,
     method: 'get',
-    responseType:'blob',
+    responseType: 'blob',
     params: params
   })
 }
@@ -591,15 +593,16 @@ const _EXPORT_API_ = {
   3: '/receipt/exportList', //收款单
   4: '/sale-contract/exportOrder', //销售订单
 
-  5: '/advances/exportList',//预收款单
-  6: '/after-sale/exportList',//产品调试任务单
-  7: '/openpaper/exportList',//开票单
-  8: '/api/exportList',//核价单
-  9: '/saleIncome/income/exportList',//进款单
-  10: '/saleRefund/refund/exportList',//退款单
-  11: '/salePresent/present/exportList',//赠送单
+  5: '/advances/exportList', //预收款单
+  6: '/after-sale/exportList', //产品调试任务单
+  7: '/openpaper/exportList', //开票单
+  8: '/api/exportList', //核价单
+  9: '/saleIncome/income/exportList', //进款单
+  10: '/saleRefund/refund/exportList', //退款单
+  11: '/salePresent/present/exportList', //赠送单
+  12: 'saleReport/exportList', // 销售报表 订单详情
 }
-export function exprotAction(type, param,fileName='download.xls') {
+export function exprotAction(type, param, fileName = 'download.xls') {
   return exportInvoiceExcel(_EXPORT_API_[type], param)
     .then((res) => {
       console.log(res)
@@ -616,10 +619,13 @@ export function exprotAction(type, param,fileName='download.xls') {
           a.download = `${fileName}.xls`
           a.click()
           document.body.removeChild(a)
-          return {code:200,msg:'下载成功'}
+          return {
+            code: 200,
+            msg: '下载成功'
+          }
         } else if (isJson) {
           //返回json处理
-          return new Promise(resolve =>{
+          return new Promise(resolve => {
             var reader = new FileReader()
             reader.onload = function (e) {
               let _res = null
@@ -630,28 +636,49 @@ export function exprotAction(type, param,fileName='download.xls') {
               }
               if (_res !== null) {
                 if (_res.code == 500) {
-                  resolve({code:500,msg:_res.msg})
+                  resolve({
+                    code: 500,
+                    msg: _res.msg
+                  })
                 } else {
-                  resolve({code:200,msg:'下载成功'})
+                  resolve({
+                    code: 200,
+                    msg: '下载成功'
+                  })
                 }
               } else {
-                resolve({code:500,msg:`json解析出错 e.target.result：${e.target.result}`})
+                resolve({
+                  code: 500,
+                  msg: `json解析出错 e.target.result：${e.target.result}`
+                })
               }
             }
-            try{
+            try {
               reader.readAsText(res)
-            }catch(err){
-              resolve({code:500,msg:err.message})
+            } catch (err) {
+              resolve({
+                code: 500,
+                msg: err.message
+              })
             }
           })
         } else {
-          return {code:500,msg:`不支持的类型:${res}`}
+          return {
+            code: 500,
+            msg: `不支持的类型:${res}`
+          }
         }
-      }else{
-        return {code:500,msg:`返回数据不是Blob类型:${typeof res}`}
+      } else {
+        return {
+          code: 500,
+          msg: `返回数据不是Blob类型:${typeof res}`
+        }
       }
     })
     .catch((err) => {
-      return {code:500,msg:`请求出错：${err.message}`}
+      return {
+        code: 500,
+        msg: `请求出错：${err.message}`
+      }
     })
 }

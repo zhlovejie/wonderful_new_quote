@@ -20,6 +20,7 @@
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
+          <a-button style="margin-left: 10px" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -84,6 +85,7 @@ import { pageListSaleOrderReport, listTargetTaxRate } from '@/api/saleReport'
 import SearchForm from './SearchForm'
 import Accounting from 'accounting'
 import { companyFormat } from '@/utils/util'
+import { exprotAction } from '@/api/receipt'
 const columns = [
   {
     align: 'center',
@@ -228,6 +230,12 @@ export default {
     },
   },
   methods: {
+    async exportHandler() {
+      const that = this
+      let res = await exprotAction(12, { ...that.searchParam }, '订单详情')
+      console.log(res)
+      that.$message.info(res.msg)
+    },
     init() {
       this.dayWeekMonth = 1 //默认为今天
       this.searchAction()
@@ -284,6 +292,7 @@ export default {
         this.searchAction()
       }
     },
+
     openSearchModel() {
       this.$refs.searchForm.query()
     },

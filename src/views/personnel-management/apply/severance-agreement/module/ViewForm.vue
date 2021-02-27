@@ -135,11 +135,27 @@ export default {
     downFileAction() {
       let that = this
       if (that.record.wordUrl) {
-        window.location.href = that.record.wordUrl
+        let eleA = document.createElement('a')
+        eleA.href = that.record.wordUrl
+        eleA.target = '_blank'
+        eleA.style = 'display:none;'
+        document.body.appendChild(eleA)
+        eleA.click()
+        document.body.removeChild(eleA)
+        //window.location.href = that.record.wordUrl
       } else {
-        that.$message.info('下载地址有误')
+        that.$message.info('请稍等！正在生成离职协议单。')
+        return
       }
     },
+    // downFileAction() {
+    //   let that = this
+    //   if (that.record.wordUrl) {
+    //     window.location.href = that.record.wordUrl
+    //   } else {
+    //     that.$message.info('下载地址有误')
+    //   }
+    // },
   },
 }
 </script>
