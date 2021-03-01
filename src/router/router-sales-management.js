@@ -987,5 +987,14 @@ export default {
         permission: ['permission']
       }
     },
+    {
+      path: '/system-setting/work-box/Unconventional',
+      name: 'Unconventional',
+      component: () => import('@/views/system-setting/work-box/Unconventional'),
+      meta: {
+        title: '非常规产品信息',
+        permission: ['permission']
+      }
+    },
   ]
 }
