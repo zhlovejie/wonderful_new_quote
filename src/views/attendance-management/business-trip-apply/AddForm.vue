@@ -312,11 +312,11 @@
                 <a-input
                   v-if="!isDisabled"
                   style="width:100%;"
-                  placeholder="银行名称"
-                  v-decorator="['bankName', {initialValue:detail.bankName,rules: [{required:isBankRequired, message: '请输入银行名称具体到分行信息' }]}]"
+                  placeholder="输入银行名称具体至开户行"
+                  v-decorator="['bankName', {initialValue:detail.bankName,rules: [{required:isBankRequired, message: '请输入银行名称具体至开户行' }]}]"
                 />
                 <span v-else>
-                  {{detail.bankAccount}}
+                  {{detail.bankName}}
                 </span>
               </a-form-item>
             </td>

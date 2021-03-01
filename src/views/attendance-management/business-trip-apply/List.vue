@@ -108,7 +108,7 @@
               </a-popconfirm>
             </template>
 
-            <template v-if="+record.financeStatus === 1 && +record.createdId === +userInfo.id">
+            <template v-if="[0,3,4].includes(+record.status) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
