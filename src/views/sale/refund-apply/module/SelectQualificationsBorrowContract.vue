@@ -1,5 +1,13 @@
 <template>
   <!-- 资质借用管理 -->
+  <a-modal
+    title="选择资质借用管理合同"
+    :width="1000"
+    :visible="visible"
+    :footer="null"
+    @cancel="handleCancel"
+    :maskClosable="false"
+  >
   <div class="container-list-wrapper">
     <div class="search-wrapper">
       <a-input
@@ -44,15 +52,6 @@
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
-      <a-button 
-        v-if="$auth('qualifications-borrow-management-list:add')"
-        class="a-button" 
-        style="float: right" 
-        type="primary" 
-        icon="plus" 
-        @click="doAction('add', null)"
-      >新增</a-button
-      >
     </div>
     <div class="main-wrapper">
       <a-table
@@ -65,38 +64,32 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-
-        <div slot="contractProperty" slot-scope="text, record, index">
+        <div slot="contractProperty" slot-scope="text">
           <span>{{getContractPropertyText(text)}}</span>
         </div>
-        <div slot="type" slot-scope="text, record, index">
+        <div slot="type" slot-scope="text">
           <span>{{getTypeText(text)}}</span>
         </div>
-        <div slot="status" slot-scope="text, record, index">
-          <a @click="approvalPreview(record)">{{ getStatusText(text) }}</a>
+        <div slot="status" slot-scope="text">
+          <span>{{ getStatusText(text) }}</span>
         </div>
-
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
-          <template v-if="+record.status < 6">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('do', record)">处理</a>
-          </template>
+        <div slot="customerName" slot-scope="text, record">
+          <a href="javascript:void(0);" @click="selectedItem(record)">{{text}}</a>
         </div>
       </a-table>
     </div>
-    <AddForm ref="addForm" @finish="searchAction()" />
   </div>
+  </a-modal>
 </template>
 <script>
 import {
   borrowPageList,
   borrowDetail
 } from '@/api/qualificationsBorrowManagement'
+//产品售后服务外包协议
+import { afterDetailBorrowId } from '@/api/agencyContract'
 
 import { getListSaleContractUser } from '@/api/contractListManagement'
-import AddForm from './AddForm'
-
 const columns = [
   {
     align: 'center',
@@ -114,6 +107,7 @@ const columns = [
     align: 'center',
     title: '客户名称',
     dataIndex: 'customerName',
+    scopedSlots: { customRender: 'customerName' },
     width:300
   },
   {
@@ -130,12 +124,6 @@ const columns = [
   },
   {
     align: 'center',
-    title: '项目状态',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
-  },
-  {
-    align: 'center',
     title: ' 提交人',
     dataIndex: 'createdName'
   },
@@ -143,26 +131,16 @@ const columns = [
     align: 'center',
     title: ' 提交时间',
     dataIndex: 'createdTime'
-  },
-  {
-    align: 'center',
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' }
-  },
+  }
 ]
 export default {
-  name: 'qualifications-borrow-management-list',
-  components: {
-     AddForm
-  },
+  name: 'SelectQualificationsBorrowContract',
   data() {
     return {
       searchParam: {},
       columns: columns,
       dataSource: [],
       saleUser: [],
-      pagination1: {},
       pagination: {
         current: 1,
         pageSize: 10,
@@ -172,42 +150,26 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
+      visible:false
     }
   },
-  computed: {},
-  watch: {
-    $route: {
-      handler: function (to, from) {
-        if (to.name === 'qualifications-borrow-management-list') {
-          this.init()
-        }
-      },
-      immediate: true,
-    },
+  created(){
+    this.init()
   },
   methods: {
     async init() {
       let that = this
       await getListSaleContractUser().then((res) => (that.saleUser = res.data))
-      await that.searchAction()
-
-      //新增完 [代签销售合同]后，显示 之前的步骤状态
-      // let {borrowId,action} = that.$route.params
-      // if(borrowId && action){
-      //   let res = await borrowDetail({ id: borrowId }).then((res) => res.data)
-      //   that.doAction( ['see','view'].includes(action) ? 'view' : 'do',res)
-      //   return
-      // }
-      // let {_viewPos} = that.$route.params
-      // console.log(that.$route.params)
-      // if(_viewPos){
-      //   //debugger
-      //   let {step,type,record} = _viewPos
-      //   that.doAction( ['see','view'].includes(type) ? 'view' : 'do',{...record,__step:step})
-      // }
+      //await that.searchAction()
     },
-    searchAction(opt) {
-      let that = this
+    query(searchParam){
+      this.visible = true
+      this.dataSource = []
+      this.searchParam = {...this.searchParam,...searchParam}
+      this.$nextTick(() => this.searchAction())
+    },
+    searchAction() {
+      const that = this
       let paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
@@ -246,13 +208,6 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
-    doAction(type, record) {
-      let that = this
-      that.$refs.addForm.query(type, record)
-    },
-    approvalPreview(record) {
-      //this.$refs.approveInfoCard.init(record.instanceId)
-    },
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
@@ -264,6 +219,25 @@ export default {
     },
     getStatusText(type){
       return {1:'签订合同',2:'签订借用协议',3:'代签购货合同',4:'销售合同',5:'外包协议',6:'完结'}[type] || '未知'
+    },
+    async selectedItem(record){
+      const that = this
+      that.visible = false
+      let result = {}
+      //产品售后服务外包协议
+      let afterDetailResult = await afterDetailBorrowId({ id: record.id }).then((res) => res.data)
+      //{
+        // that.detail = res.data
+        // let arrs = that.detail.area.split(',')
+        // that.prov = Number(arrs[0])
+        // that.prov1 = Number(arrs[1])
+        // that.prov2 = Number(arrs[2])
+      //})
+      result = {...afterDetailResult,__agreeName:'产品售后服务外包协议'}
+      that.$emit('select',result)
+    },
+    handleCancel(){
+      this.visible = false
     }
   }
 }

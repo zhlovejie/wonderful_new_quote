@@ -244,6 +244,7 @@ export default {
       this.$emit('contractAttrChange', type)
     },
     async query(type, record) {
+      //debugger
       let that = this
       that.actionType = type
       that.record = record || {}

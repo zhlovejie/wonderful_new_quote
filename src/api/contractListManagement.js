@@ -52,6 +52,17 @@ export function getSalesList(parameter) {
   })
 }
 
+/**资质借用管理第四部 绑定合同专用接口， 条件查询销售合同分页列表 */
+export function getSaleContractSalesList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 // 获取销售合同列表
 export function getSoftwareContractList(parameter) {
   return axios({

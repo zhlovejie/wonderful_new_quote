@@ -36,12 +36,22 @@
               </a-form-item>
             </td>
             <td style="width: 15%">资质借用管理</td>
-            <td style="width: 35%">infoId-资质借用基本信息表id</td>
+            <td style="width: 35%">
+              infoId-资质借用基本信息表id
+              <a-form-item>
+                <a-button @click="qualificationsBorrowContractClickHandler">选择资质借用管理合同</a-button>
+              </a-form-item>
+              <a-form-item hidden>
+                <a-input v-decorator="['infoId']" />
+              </a-form-item>
+            </td>
           </tr>
 
           <tr>
             <td style="width: 15%">协议</td>
             <td style="width: 35%">test</td>
+
+
             <td style="width: 15%">销售经理</td>
             <td style="width: 35%">
               <a-form-item>
@@ -360,6 +370,7 @@
         <ImgView ref="imgView" />
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
+      <SelectQualificationsBorrowContract ref="selectQualificationsBorrowContract" @select="qualificationsBorrowContractSelectHandler" />
     </a-spin>
   </a-modal>
 </template>
@@ -382,6 +393,7 @@ import StatusView from '@/components/CustomerList/StatusView'
 import UploadFile from '@/components/CustomerList/UploadFile'
 import ImgView from '@/components/CustomerList/ImgView'
 
+import SelectQualificationsBorrowContract from './SelectQualificationsBorrowContract'
 /*
 let imgList = res.data.fileUrl.split(',').map(url => decodeURIComponent(url))
             that.$refs.imgViewList.show(imgList)
@@ -397,6 +409,7 @@ export default {
     StatusView,
     UploadFile,
     ImgView,
+    SelectQualificationsBorrowContract
   },
   data() {
     return {
@@ -738,7 +751,21 @@ export default {
     showImg(url) {
       this.$refs.imgView.show(url)
     },
-  },
+    qualificationsBorrowContractSelectHandler(data){
+      console.log(data.borrowId)
+      infoId
+    },
+    qualificationsBorrowContractClickHandler(){
+      this.$refs.selectQualificationsBorrowContract.query({
+        //返款单调用传 1，会过滤 完结的且未被返款单绑定的 资质借用管理合同列表
+        isRebates:1,
+        //type, //类型 1项目投标 2 项目经营
+        //contractProperty, 合同属性 1 经销商合同 2代理商合同 3 战略合作协议
+        //salemanId, //销售经理编号
+        //customerName, //客户名称
+      })
+    }
+  }
 }
 </script>
 

@@ -51,13 +51,12 @@ export default {
   methods:{
     async init(){
       const that = this
-      if(!that.record || !that.record.id){
-        return
-      }
-      let res = await borrowDetail({ id: that.record.id }).then((res) => res.data)
-      that.detail = {...that.record,...res}
-
       if(that.actionType === 'view'){
+        if(!that.record || !that.record.id){
+          return
+        }
+        let res = await borrowDetail({ id: that.record.id }).then((res) => res.data)
+        that.detail = {...that.record,...res}
         that.currentComponent = null
         that.$refs.baseForm.query(that.actionType,{...that.detail})
         that.currentComponent = that.steps[that.detail.contractProperty]
@@ -65,10 +64,11 @@ export default {
           that.$refs.currentComponent.query(that.actionType,{id:-1,borrowId:that.detail.id})
         })
       }else{
-        that.$refs.baseForm.query('add',{})
         that.currentComponent = null
+        that.$nextTick(() => {
+          that.$refs.baseForm.query('add',{})
+        })
       }
-      
     },
     contractAttrChange(type){
       //debugger

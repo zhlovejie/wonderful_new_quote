@@ -137,7 +137,7 @@ export default {
         //customerName:customerName,
         saleUserId:userId,
         customerId,
-        status:0,
+        //status:0,
         approveStatus:2,
         contractStatus:1
       })
@@ -145,7 +145,8 @@ export default {
     contractChange(record) {
       //debugger
       this.contractId = record.id
-      this.contractText = `编号：【${record.contractNum}】  销售经理：【${record.saleUser.trueName}】  客户名称：【${record.customerName}】`
+      //this.contractText = `编号：【${record.contractNum}】  销售经理：【${record.saleUser.trueName}】  客户名称：【${record.customerName}】`
+      this.contractText = `编号：【${record.contractNum}】  客户名称：【${record.customerName}】`
     },
     finish() {
       console.log('over...')

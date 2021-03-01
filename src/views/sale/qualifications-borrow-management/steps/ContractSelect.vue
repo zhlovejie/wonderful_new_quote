@@ -28,7 +28,7 @@
 
 <script>
 import { STable } from '@/components'
-import { getSalesList } from '@/api/contractListManagement'
+import { getSaleContractSalesList } from '@/api/contractListManagement'
 import ContractInfo from '@/components/CustomerList/ContractInfo'
 const columns = [
   {
@@ -47,12 +47,12 @@ const columns = [
     title: '客户名称',
     dataIndex: 'saleCustomerName'
   },
+  // {
+  //   title: '对应销售',
+  //   dataIndex: 'saleUserTrueName'
+  // },
   {
-    title: '对应销售',
-    dataIndex: 'saleUserTrueName'
-  },
-  {
-    title: '操作时间',
+    title: '更新时间',
     dataIndex: 'modifyTime'
   }
 ]
@@ -82,11 +82,12 @@ export default {
         current:1,size:100
       })
       this.loading = true
-      getSalesList(_searchParam)
+      getSaleContractSalesList(_searchParam)
         .then((res) => {
           this.loading = false
           let records = res.data.records
-          this.data = records.filter(item => +item.saleUser.id === +_searchParam.saleUserId)
+          //this.data = records.filter(item => +item.saleUser.id === +_searchParam.saleUserId)
+          this.data = records
         })
         .catch((error) => {
           this.loading = false

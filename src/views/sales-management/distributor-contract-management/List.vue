@@ -79,7 +79,7 @@
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
             </template>
-            <template v-if="record.status === 2">
+            <template v-if="record.status === 2 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -201,6 +201,7 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
       loading: false,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {},
