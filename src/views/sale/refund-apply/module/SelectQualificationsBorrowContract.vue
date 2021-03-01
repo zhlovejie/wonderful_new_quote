@@ -233,7 +233,8 @@ export default {
         // that.prov1 = Number(arrs[1])
         // that.prov2 = Number(arrs[2])
       //})
-      result = {...afterDetailResult,__agreeName:'产品售后服务外包协议'}
+      let borrowBaseInfo = await borrowDetail({id:record.id}).then(res => res.data)
+      result = {baseInfo:borrowBaseInfo, detailInfo: afterDetailResult,__agreeName:'产品售后服务外包协议'}
       that.$emit('select',result)
     },
     handleCancel(){

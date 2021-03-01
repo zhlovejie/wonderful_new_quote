@@ -555,6 +555,13 @@ export default {
         return
       }
 
+      /**
+       * @ApiModelProperty(value = "资质借用编号")
+    private String borrowNum;
+
+    @ApiModelProperty(value = "协议")
+    private String protocol;
+       */
       that.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {
@@ -752,8 +759,21 @@ export default {
       this.$refs.imgView.show(url)
     },
     qualificationsBorrowContractSelectHandler(data){
-      console.log(data.borrowId)
-      infoId
+      console.log(data)
+      const that = this
+      let {baseInfo,detailInfo,__agreeName} = data
+      let {customerName,customerId,salesmanName,userId} = baseInfo
+
+      that.form.setFieldsValue({
+        saleUserId:userId,
+        customerId,
+        customerName
+      })
+      that.needOptions = { userId }
+      that.$refs.customerSelect && that.$refs.customerSelect.fill({id: customerId,name: customerName })
+
+      //console.log(data.borrowId)
+      //infoId
     },
     qualificationsBorrowContractClickHandler(){
       this.$refs.selectQualificationsBorrowContract.query({
