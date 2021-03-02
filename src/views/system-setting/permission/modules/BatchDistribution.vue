@@ -203,7 +203,14 @@ export default {
         // this.depart = value
         queryRoleListById({ departmentId: value, status: 0 })
           .then((rs) => {
-            this.roleList = rs.data
+            this.roleList = rs.data.map((item) => {
+              return {
+                roleName: item.roleName,
+                id: item.id,
+                departmentId: item.departmentId,
+                departmentName: this.getDepartmentName(item.departmentId),
+              }
+            })
           })
           .catch((error) => {
             console.error(error)
@@ -250,32 +257,27 @@ export default {
       this.dataSource = []
       this.form.resetFields() // 清空表
     },
-
+    unique(arr) {
+      //Set数据结构，它类似于数组，其成员的值都是唯一的
+      return Array.from(new Set(arr)) // 利用Array.from将Set结构转换成数组
+    },
     // 选择全部角色
     whole() {
       if (this.departmentId) {
-        this.roleArr = this.roleArr.concat(this.roleList.map((role) => role.id))
+        let arr = this.roleArr.concat(this.roleList.map((role) => role.id))
+        this.roleArr = this.unique(arr)
         this.dataSource = this.dataSource.concat(
-          this.roleList.map((role) => {
-            return {
-              roleName: role.roleName,
-              id: role.id,
-              departmentId: this.departmentId,
-              departmentName: this.getDepartmentName(this.departmentId),
-            }
+          this.roleList.filter((role) => {
+            return !this.dataSource.some((item) => item.id === role.id)
           })
         )
       } else {
         this.dataSource = []
-        this.roleArr = this.roleArr.concat(this.roleList.map((role) => role.id))
+        let arr = this.roleArr.concat(this.roleList.map((role) => role.id))
+        this.roleArr = this.unique(arr)
         this.dataSource = this.dataSource.concat(
-          this.roleList.map((role) => {
-            return {
-              roleName: role.roleName,
-              id: role.id,
-              departmentId: role.departmentId,
-              departmentName: role.departmentName,
-            }
+          this.roleList.filter((role) => {
+            return !this.dataSource.some((item) => item.id === role.id)
           })
         )
       }
