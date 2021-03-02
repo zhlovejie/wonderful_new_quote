@@ -209,6 +209,7 @@
                   :min="0"
                   :step="1"
                   :precision="2"
+                  @change="maintenanceCostChange"
                   v-decorator="[
                     'maintenanceCost',
                     { initialValue: detail['maintenanceCost'], rules: [{ required: true, message: '请输入维修费用' }] },
@@ -284,7 +285,7 @@
                 />
                 <span v-else>{{ detail.paymentAmount }}</span>
                 <span> 元,合计年服务费人民币 </span>
-                <a-input-number
+                <!-- <a-input-number
                   :precision="2"
                   v-if="!isDisabled"
                   style="width: 100px"
@@ -292,8 +293,8 @@
                     'yearCost',
                     { initialValue: detail['yearCost'], rules: [{ required: true, message: '请输入年服务费' }] },
                   ]"
-                />
-                <span v-else>{{ detail.yearCost }}</span>
+                /> -->
+                <span>{{ detail.maintenanceCost }}</span>
                 <span>元</span>
               </a-form-item>
             </td>
@@ -471,6 +472,9 @@ export default {
         customerId: item && item.id ? item.id : undefined,
         customerName: item.name,
       })
+    },
+    maintenanceCostChange(arrSelected) {
+      this.detail.maintenanceCost = arrSelected
     },
     saleUserChange(saleUserId) {
       //选择销售人员 填充对应的 微信和邮箱
