@@ -37,19 +37,31 @@
             </td>
             <td style="width: 15%">资质借用管理</td>
             <td style="width: 35%">
-              infoId-资质借用基本信息表id
-              <a-form-item>
-                <a-button @click="qualificationsBorrowContractClickHandler">选择资质借用管理合同</a-button>
-              </a-form-item>
-              <a-form-item hidden>
-                <a-input v-decorator="['infoId']" />
-              </a-form-item>
+              <template v-if="!isDisabled">
+                <a-form-item>
+                  <a-button @click="qualificationsBorrowContractClickHandler">选择资质借用管理合同</a-button>
+                </a-form-item>
+                <a-form-item hidden>
+                  <a-input v-decorator="['infoId']" />
+                </a-form-item>
+                <a-form-item hidden>
+                  <a-input v-decorator="['borrowNum']" />
+                </a-form-item>
+              </template>
+              <template v-else>
+                {{detail.borrowNum}}
+              </template>
             </td>
           </tr>
 
           <tr>
             <td style="width: 15%">协议</td>
-            <td style="width: 35%">test</td>
+            <td style="width: 35%">
+              <a-form-item>
+                <a-input v-if="!isDisabled" read-only="read-only" v-decorator="['protocol']" />
+                <span>{{detail.protocol}}</span>
+              </a-form-item>
+            </td>
 
 
             <td style="width: 15%">销售经理</td>
@@ -413,7 +425,7 @@ export default {
   },
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this,{name:'refund-apply-addform'}),
       visible: false,
       actionType: 'add',
       opinion: '', //审批意见
@@ -502,14 +514,16 @@ export default {
     },
     async updateMoney() {
       let that = this
-      let thePaymentAmount =
-        this.rebatesDetailsList.reduce((a, b) => {
-          //debugger
-          let m = (parseFloat(a.paymentAmount) || 0) + (parseFloat(b.paymentAmount) || 0)
-          return m
-        }) || 0
-      let amountCapital =
-        thePaymentAmount > 0 ? await turnTheCapital({ money: thePaymentAmount }).then((res) => res.data) : '零'
+      let thePaymentAmount = that.rebatesDetailsList.reduce((a, b) => a + (parseFloat(b.paymentAmount) || 0),0) || 0
+      //console.log(`thePaymentAmount:${thePaymentAmount}`)
+      let _amountCapital = '零'
+      if(thePaymentAmount > 0){
+        _amountCapital = await turnTheCapital({ money: thePaymentAmount }).then((res) => res.data)
+      }
+
+      let amountCapital = _amountCapital
+      
+      //console.log(`amountCapital:${amountCapital}`)
       that.form.setFieldsValue({
         thePaymentAmount,
         amountCapital,
@@ -529,7 +543,7 @@ export default {
       this.rebatesDetailsList = this.rebatesDetailsList.filter((item) => item.key !== key)
     },
     itemChange(key, field, e) {
-      //debugger
+      debugger
       let rebatesDetailsList = [...this.rebatesDetailsList]
       let target = rebatesDetailsList.find((item) => item.key === key)
       target[field] = e instanceof Event ? e.target.value : e
@@ -567,7 +581,7 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          values.infoId = 1
+          //values.infoId = 1
 
           values.rebatesDetailsList = that.rebatesDetailsList.map((item, idx) => {
             item.prepaidSituation = idx + 1
@@ -763,15 +777,34 @@ export default {
       const that = this
       let {baseInfo,detailInfo,__agreeName} = data
       let {customerName,customerId,salesmanName,userId} = baseInfo
-
+      let {maintenanceCost,paymentCount,paymentAmount} = detailInfo
+      //根据资质借用合同 填充数据
       that.form.setFieldsValue({
         saleUserId:userId,
         customerId,
-        customerName
+        customerName,
+        protocol:__agreeName, //协议名称
+        borrowNum:baseInfo.id, //资质借用编号
+        infoId:baseInfo.id,
+        paymentAmount:maintenanceCost || undefined , //总付款金额
       })
       that.needOptions = { userId }
       that.$refs.customerSelect && that.$refs.customerSelect.fill({id: customerId,name: customerName })
-
+      
+      //填充已付款情况
+      if(paymentCount && paymentCount > 0){
+        let rebatesDetailsList = [...that.rebatesDetailsList]
+        for(let i=0;i<paymentCount;i++){
+          rebatesDetailsList.push({
+            key: uuid(),
+            paymentAmount: paymentAmount || 0,
+            paymentProportion: undefined,
+            remark: undefined,
+          })
+        }
+        that.rebatesDetailsList = rebatesDetailsList
+        that.$nextTick(() => that.updateMoney())
+      }
       //console.log(data.borrowId)
       //infoId
     },
