@@ -543,7 +543,6 @@ export default {
       this.rebatesDetailsList = this.rebatesDetailsList.filter((item) => item.key !== key)
     },
     itemChange(key, field, e) {
-      debugger
       let rebatesDetailsList = [...this.rebatesDetailsList]
       let target = rebatesDetailsList.find((item) => item.key === key)
       target[field] = e instanceof Event ? e.target.value : e
@@ -582,6 +581,10 @@ export default {
             values.id = that.record.id
           }
           //values.infoId = 1
+          if(!values.infoId){
+            that.$message.info('请选择资质借用管理管理合同')
+            return
+          }
 
           values.rebatesDetailsList = that.rebatesDetailsList.map((item, idx) => {
             item.prepaidSituation = idx + 1
@@ -773,7 +776,7 @@ export default {
       this.$refs.imgView.show(url)
     },
     qualificationsBorrowContractSelectHandler(data){
-      console.log(data)
+      //console.log(data)
       const that = this
       let {baseInfo,detailInfo,__agreeName} = data
       let {customerName,customerId,salesmanName,userId} = baseInfo

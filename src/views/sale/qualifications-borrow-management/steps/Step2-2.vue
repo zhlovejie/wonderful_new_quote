@@ -50,7 +50,7 @@
           </tr>
         </table>
         <h3 style="margin-top: 10px">
-          <span>投标借用协议合同信息</span>
+          <span>经营借用协议合同信息</span>
           <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
         </h3>
         <table class="custom-table custom-table-border">
@@ -307,7 +307,7 @@ export default {
 
       if (that.isAdd) {
         that.detail = {...that.detail,...fillData,borrowId:that.record.borrowId}
-        console.log(detail)
+        // console.log(that.detail)
         that.$nextTick(() =>{
           that.form.setFieldsValue({borrowId:that.record.borrowId || undefined})
           that.form.setFieldsValue(fillData)

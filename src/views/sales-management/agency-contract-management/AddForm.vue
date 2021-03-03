@@ -65,7 +65,7 @@
                     item.salesmanName
                   }}</a-select-option>
                 </a-select>
-                <span v-else>{{ detail.salemanName }}</span>
+                <span v-else>{{ detail.salesmanName }}</span>
               </a-form-item>
             </td>
             <td>客户名称</td>
@@ -715,9 +715,9 @@ export default {
           res.data.productsVal = _arr.length >= 1 ? _arr[0].split(',').map((v) => +v) : []
           res.data.productsTxt = _arr.length === 2 ? _arr[1] : undefined
         }
-        if (res.data.salesmanId) {
-          res.data.salemanName = that.getSaleManName(res.data.salesmanId)
-        }
+        // if (res.data.salesmanId) {
+        //   res.data.salemanName = that.getSaleManName(res.data.salesmanId)
+        // }
         that.detail = res.data
 
         //是否显示保证金

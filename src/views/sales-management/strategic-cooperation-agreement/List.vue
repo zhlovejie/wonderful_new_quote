@@ -71,25 +71,22 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('preview', record)">预览</a>
-          <template v-if="activeKey === 1 && +record.createdId === +userInfo.id">
-            <template v-if="record.status === 1">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit', record)">修改</a>
-            </template>
+          
+          <template v-if="activeKey === 1 ">
+            <a type="primary" @click="doAction('view', record)">查看</a>
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('preview', record)">预览</a>
             <template v-if="record.status === 2 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="record.status === 3">
+            <template v-if="record.status === 3 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('upload', record)">附件</a>
             </template>
-            <template v-if="[4, 5].includes(+record.status)">
+            <template v-if="[1, 4, 5].includes(+record.status) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
               <a-divider type="vertical" />
@@ -102,6 +99,9 @@
           <template v-if="activeKey === 2">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
+          </template>
+          <template v-if="activeKey === 3">
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
