@@ -5,7 +5,7 @@
         <!-- <a-button class="fl-r" type="primary" @click="lastSubmit(1)" icon="backward">预览</a-button> -->
         <template v-if="!isView">
           <a-button class="fl-r" type="primary" @click="lastSubmit(1)" icon="check">保存</a-button>
-          <a-button class="fl-r" type="primary" @click="lastSubmit(2)" icon="check">保存提交</a-button>
+          <a-button class="fl-r" type="primary" @click="lastSubmit(2)" icon="check">提交审批</a-button>
         </template>
       </div>
       <div>

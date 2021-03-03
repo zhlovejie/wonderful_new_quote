@@ -69,59 +69,46 @@
           </template>
 
           <template v-if="+activeKey === 0">
-            <a-divider type="vertical" />
-            <a-dropdown :trigger="['click']">
-              <a class="ant-dropdown-link" @click="(e) => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
-              <a-menu slot="overlay">
-                <a-menu-item
-                  key="0"
-                  v-if="+record.status === 1 && $auth('contractBehalf:withdraw') && record.createdId === userInfo.id"
-                >
-                  <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
-                    <a type="primary" href="javascript:;">撤回</a>
-                  </a-popconfirm>
-                </a-menu-item>
-                <a-menu-item
-                  key="1"
-                  v-if="
-                    [0, 3, 4].includes(+record.status) &&
-                    $auth('contractBehalf:edit') &&
-                    record.createdId === userInfo.id
-                  "
-                >
-                  <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
-                </a-menu-item>
-                <a-menu-divider />
-                <!-- <a-menu-item key="2" v-if="+record.status === 1">
-                  <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
-                </a-menu-item> -->
-                <a-menu-item
-                  key="3"
-                  v-if="
-                    [4, 5].includes(+record.status) && $auth('contractBehalf:del') && record.createdId === userInfo.id
-                  "
-                >
-                  <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-                    <a type="primary" href="javascript:;">删除</a>
-                  </a-popconfirm>
-                </a-menu-item>
-                <a-menu-item
-                  key="3"
-                  v-if="
-                    [0].includes(+record.status) &&
-                    $auth('contractBehalf:submitApproval') &&
-                    record.createdId === userInfo.id
-                  "
-                >
-                  <a-popconfirm title="确认提交审批吗?" @confirm="() => doAction('submitApproval', record)">
-                    <a type="primary" href="javascript:;">提交审批</a>
-                  </a-popconfirm>
-                </a-menu-item>
-                <a-menu-item key="4" v-if="+record.status === 2">
-                  <a target="_blank" :href="record.detailUrl">下载</a>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
+            <template
+              v-if="+record.status === 1 && $auth('contractBehalf:withdraw') && record.createdId === userInfo.id"
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+            <template
+              v-if="
+                [0, 3, 4].includes(+record.status) && $auth('contractBehalf:edit') && record.createdId === userInfo.id
+              "
+            >
+              <a-divider type="vertical" />
+              <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
+            </template>
+            <template
+              v-if="[4, 5].includes(+record.status) && $auth('contractBehalf:del') && record.createdId === userInfo.id"
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
+            <template
+              v-if="
+                [0].includes(+record.status) &&
+                $auth('contractBehalf:submitApproval') &&
+                record.createdId === userInfo.id
+              "
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认提交审批吗?" @confirm="() => doAction('submitApproval', record)">
+                <a type="primary" href="javascript:;">提交审批</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="+record.status === 2">
+              <a-divider type="vertical" />
+              <a target="_blank" :href="record.detailUrl">下载</a>
+            </template>
           </template>
         </div>
       </a-table>
@@ -129,7 +116,7 @@
     <ApproveInfo ref="approveInfoCard" />
     <!-- <CustomerInfo ref="customerInfoCard" /> -->
     <!-- <AddForm ref="addForm" @finish="searchAction({ current: 1 })" /> -->
-    <UploadPhoto ref="uploadPhoto" @ok="handleSaveOk" />
+    <!-- <UploadPhoto ref="uploadPhoto" @ok="handleSaveOk" /> -->
   </div>
 </template>
 
@@ -141,7 +128,7 @@ import { purchaseList, purchaseProcess, purchaseWithdra, purchaseDel } from '@/a
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
-import UploadPhoto from './UploadPhoto'
+// import UploadPhoto from './UploadPhoto'
 const columns = [
   {
     align: 'center',
@@ -200,7 +187,6 @@ export default {
   components: {
     CustomerSelect,
     ApproveInfo,
-    UploadPhoto,
   },
   data() {
     return {
@@ -392,9 +378,9 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-    uploadPhoto(record) {
-      this.$refs.uploadPhoto.showForm(record)
-    },
+    // uploadPhoto(record) {
+    //   this.$refs.uploadPhoto.showForm(record)
+    // },
     handleSaveOk() {
       this.searchAction()
     },
