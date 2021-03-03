@@ -219,6 +219,16 @@ export function getSoftContractProductListById(parameter) {
     params: parameter
   })
 }
+//收款单选择预收款单选择
+export function getDeductionList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'advances/getDeductionList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 
 export function getReceiptAgencyContractListById(parameter) {
