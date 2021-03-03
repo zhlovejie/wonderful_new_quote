@@ -10,40 +10,35 @@
     :maskClosable="false"
   >
     <div>
-      <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;" class="sForm">
+      <a-form :form="form" style="max-width: 500px; margin: 40px auto 0" class="sForm">
         <a-form-item hidden>
-          <a-input v-decorator="['id']"/>
+          <a-input v-decorator="['id']" />
         </a-form-item>
 
         <a-form-item label="选择部门" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             placeholder="选择部门"
-            v-decorator="['depId',{rules: [{required: true,message: '请选择部门'}]}]"
+            v-decorator="['depId', { rules: [{ required: true, message: '请选择部门' }] }]"
             @change="depChangeHandler"
             :allowClear="true"
           >
-            <a-select-option
-              v-for="item in depSelectDataSource"
-              :key="item.id"
-              :value="item.id"
-            >{{item.departmentName}}</a-select-option>
+            <a-select-option v-for="item in depSelectDataSource" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item label="选择岗位" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             placeholder="选择岗位"
-            v-decorator="['stationId',{rules: [{required: true,message: '请选择岗位'}]}]"
+            v-decorator="['stationId', { rules: [{ required: true, message: '请选择岗位' }] }]"
             :allowClear="true"
           >
-            <a-select-option
-              v-for="item in postSelectDataSource"
-              :key="item.id"
-              :value="item.id"
-            >{{item.stationName}}</a-select-option>
+            <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+              item.stationName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
-
 
         <a-form-item label="选择销售人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
@@ -52,8 +47,10 @@
             optionFilterProp="children"
             :filterOption="userFilter"
             @change="checkUser"
-            v-decorator="['userId',{rules: [{required: true, message: '请选择销售人员！'}]}]">
-            <a-select-option v-for="user in allUser" :key="user.index" :value="user.id">{{ user.trueName }}
+            v-decorator="['userId', { rules: [{ required: true, message: '请选择销售人员！' }] }]"
+          >
+            <a-select-option v-for="user in allUser" :key="user.index" :value="user.id"
+              >{{ user.trueName }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -63,10 +60,12 @@
             showSearch
             placeholder="请选择对应领导"
             optionFilterProp="children"
-            :filterOption="userFilter" 
+            :filterOption="userFilter"
             @change="leaderChange"
-            v-decorator="['leader',{rules: [{required: true, message: '请选择对应领导'}]}]">
-            <a-select-option v-for="user in allUser" :key="user.index" :value="user.id">{{ user.trueName }}
+            v-decorator="['leader', { rules: [{ required: true, message: '请选择对应领导' }] }]"
+          >
+            <a-select-option v-for="user in allUser" :key="user.index" :value="user.id"
+              >{{ user.trueName }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -77,41 +76,101 @@
             placeholder="请选择对应销售助理"
             optionFilterProp="children"
             :filterOption="userFilter"
-            v-decorator="['assistantId',{rules: [{required: false, message: '请选择对应销售助理'}]}]">
-            <a-select-option v-for="user in salesAssistantList" :key="user.index" :value="user.id">{{ user.trueName }}
+            v-decorator="['assistantId', { rules: [{ required: false, message: '请选择对应销售助理' }] }]"
+          >
+            <a-select-option v-for="user in salesAssistantList" :key="user.index" :value="user.id"
+              >{{ user.trueName }}
             </a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item label="被分配权" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cdsc" @change="changeDstb"/>
-          <a-input type="hidden" v-decorator="['canDistribute', {rules: [{required: true,message: '请选择被分配权！'}],initialValue:1}]"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :checked="cdsc" @change="changeDstb" />
+          <a-input
+            type="hidden"
+            v-decorator="[
+              'canDistribute',
+              { rules: [{ required: true, message: '请选择被分配权！' }], initialValue: 1 },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="提取客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cesc" @change="changeExtc"/>
-          <a-input type="hidden" v-decorator="['canExtract', {rules: [{required: true,message: '请选择提取客户权限！'}],initialValue:1}]"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :checked="cesc" @change="changeExtc" />
+          <a-input
+            type="hidden"
+            v-decorator="[
+              'canExtract',
+              { rules: [{ required: true, message: '请选择提取客户权限！' }], initialValue: 1 },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="录入部门客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cedsc" @change="changeEtdp"/>
-          <a-input type="hidden" v-decorator="['canEnterDep', {rules: [{required: true,message: '请选择录入部门客户权限！'}],initialValue:1}]"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :checked="cedsc" @change="changeEtdp" />
+          <a-input
+            type="hidden"
+            v-decorator="[
+              'canEnterDep',
+              { rules: [{ required: true, message: '请选择录入部门客户权限！' }], initialValue: 1 },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="给其他人员录入客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="ceosc" @change="changeEtoh"/>
-          <a-input type="hidden" v-decorator="['canEnterOther', {rules: [{required: true,message: '请选择给其他人员录入客户权限！'}],initialValue:1}]"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :checked="ceosc" @change="changeEtoh" />
+          <a-input
+            type="hidden"
+            v-decorator="[
+              'canEnterOther',
+              { rules: [{ required: true, message: '请选择给其他人员录入客户权限！' }], initialValue: 1 },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="录入公共客户权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="cecsc" @change="changeEtcm"/>
-          <a-input type="hidden" v-decorator="['canEnterCommon', {rules: [{required: true,message: '请选择录入公共客户权限！'}],initialValue:1}]"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :checked="cecsc" @change="changeEtcm" />
+          <a-input
+            type="hidden"
+            v-decorator="[
+              'canEnterCommon',
+              { rules: [{ required: true, message: '请选择录入公共客户权限！' }], initialValue: 1 },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="未维护处罚" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-switch checkedChildren="有" unCheckedChildren="无" :defaultChecked="op" @change="changeOP"/>
-          <a-input type="hidden" v-decorator="['overduePunish', {rules: [{required: true,message: '请选择未维护处罚！'}],initialValue:0}]"/>
+          <a-switch checkedChildren="有" unCheckedChildren="无" :checked="op" @change="changeOP" />
+          <a-input
+            type="hidden"
+            v-decorator="[
+              'overduePunish',
+              { rules: [{ required: true, message: '请选择未维护处罚！' }], initialValue: 0 },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="客户上限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['maximum', {rules: [{required: true,message: '请填写客户上限！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:230}]"/>
+          <a-input
+            v-decorator="[
+              'maximum',
+              {
+                rules: [
+                  { required: true, message: '请填写客户上限！' },
+                  { pattern: /^\d+$/, message: '必须是数字' },
+                ],
+                initialValue: 230,
+              },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="提取周期（天）" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['recoverTime', {rules: [{required: true, message: '请填写提取周期！'},{ pattern: /^\d+$/,message: '必须是数字'}],initialValue:180}]"/>
+          <a-input
+            v-decorator="[
+              'recoverTime',
+              {
+                rules: [
+                  { required: true, message: '请填写提取周期！' },
+                  { pattern: /^\d+$/, message: '必须是数字' },
+                ],
+                initialValue: 180,
+              },
+            ]"
+          />
         </a-form-item>
       </a-form>
     </div>
@@ -120,23 +179,23 @@
 
 <script>
 import ATextarea from 'ant-design-vue/es/input/TextArea'
-import { getAllUser, addSalesman, getOneSalesman, editSalesman ,getSaleAssistant} from '@/api/customer/salesman'
+import { getAllUser, addSalesman, getOneSalesman, editSalesman, getSaleAssistant } from '@/api/customer/salesman'
 import {
   departmentList, //所有部门
-  getStationList //获取所有岗位
+  getStationList, //获取所有岗位
 } from '@/api/systemSetting'
 export default {
   name: 'AddSalesman',
   components: { ATextarea },
-  data () {
+  data() {
     return {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 12 }
+        sm: { span: 12 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 12 }
+        sm: { span: 12 },
       },
       form: this.$form.createForm(this), // 只有这样注册后，才能通过表单拉取数据
       visible: false, // 表单对话框是否可见
@@ -150,87 +209,90 @@ export default {
       ceosc: true,
       cecsc: true,
       op: true,
-      salesAssistantList:[], //销售助理列表
+      salesAssistantList: [], //销售助理列表
       depSelectDataSource: [],
       postSelectDataSource: [],
     }
   },
-  created () {
-    getAllUser().then(res => {
+  created() {
+    getAllUser().then((res) => {
       if (res.code === 200) {
         this.allUser = res.data
       } else {
         this.$message.error(res.msg)
       }
     })
-    departmentList().then(res => (this.depSelectDataSource = res.data))
+    departmentList().then((res) => (this.depSelectDataSource = res.data))
   },
   methods: {
-    leaderChange(leaderID){
-      return getSaleAssistant({id:leaderID}).then(res => this.salesAssistantList = res.data)
+    leaderChange(leaderID) {
+      return getSaleAssistant({ id: leaderID }).then((res) => (this.salesAssistantList = res.data))
     },
-    checkUser (value) {
-      getOneSalesman({ userId: value }).then(res => {
+    checkUser(value) {
+      getOneSalesman({ userId: value }).then((res) => {
         if (res.code === 200) {
           if (res.data != null && res.data.length > 0) {
-            this.form.setFields({ 'userId': { value: '', errors: [{ 'message': '该人员已经是销售人员!', 'field': 'userId' }] } })
+            this.form.setFields({
+              userId: { value: '', errors: [{ message: '该人员已经是销售人员!', field: 'userId' }] },
+            })
           }
         } else {
           this.$message.error(res.msg)
         }
       })
     },
-    changeDstb (checked) {
+    changeDstb(checked) {
       if (checked) {
-        this.form.setFieldsValue({ 'canDistribute': 1 })
+        this.form.setFieldsValue({ canDistribute: 1 })
       } else {
-        this.form.setFieldsValue({ 'canDistribute': 0 })
+        this.form.setFieldsValue({ canDistribute: 0 })
       }
     },
-    changeExtc (checked) {
+    changeExtc(checked) {
       if (checked) {
-        this.form.setFieldsValue({ 'canExtract': 1 })
+        this.form.setFieldsValue({ canExtract: 1 })
       } else {
-        this.form.setFieldsValue({ 'canExtract': 0 })
+        this.form.setFieldsValue({ canExtract: 0 })
       }
     },
-    changeEtdp (checked) {
+    changeEtdp(checked) {
       if (checked) {
-        this.form.setFieldsValue({ 'canEnterDep': 1 })
+        this.form.setFieldsValue({ canEnterDep: 1 })
       } else {
-        this.form.setFieldsValue({ 'canEnterDep': 0 })
+        this.form.setFieldsValue({ canEnterDep: 0 })
       }
     },
-    changeEtoh (checked) {
+    changeEtoh(checked) {
       if (checked) {
-        this.form.setFieldsValue({ 'canEnterOther': 1 })
+        this.form.setFieldsValue({ canEnterOther: 1 })
       } else {
-        this.form.setFieldsValue({ 'canEnterOther': 0 })
+        this.form.setFieldsValue({ canEnterOther: 0 })
       }
     },
-    changeEtcm (checked) {
+    changeEtcm(checked) {
       if (checked) {
-        this.form.setFieldsValue({ 'canEnterCommon': 1 })
+        this.form.setFieldsValue({ canEnterCommon: 1 })
       } else {
-        this.form.setFieldsValue({ 'canEnterCommon': 0 })
+        this.form.setFieldsValue({ canEnterCommon: 0 })
       }
     },
-    changeOP (checked) {
+    changeOP(checked) {
       if (checked) {
-        this.form.setFieldsValue({ 'overduePunish': 1 })
+        this.form.setFieldsValue({ overduePunish: 1 })
       } else {
-        this.form.setFieldsValue({ 'overduePunish': 0 })
-      }    
+        this.form.setFieldsValue({ overduePunish: 0 })
+      }
     },
-    userFilter (input, option) { // 下拉框搜索
+    userFilter(input, option) {
+      // 下拉框搜索
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    async showForm (record) {
+    async showForm(record) {
       this.visible = true
-      if (record.id != null){
+      if (record.id != null) {
         this.subType = 'edit'
         this.formTitle = '修改权限分配'
-        await getStationList({ id: record.depId }).then(res => (this.postSelectDataSource = res.data))
+        await getStationList({ id: record.depId }).then((res) => (this.postSelectDataSource = res.data))
         this.$nextTick(() => {
           this.form.setFieldsValue({
             id: record.id,
@@ -244,12 +306,20 @@ export default {
             overduePunish: record.overduePunish,
             maximum: record.maximum,
             recoverTime: record.recoverTime,
-            depId:record.depId,
-            stationId:record.stationId
+            depId: record.depId,
+            stationId: record.stationId,
             //assistantId:record.assistantId
           })
-          this.leaderChange(record.leader).then(() =>{
-            this.form.setFieldsValue({assistantId:record.assistantId})
+
+          // this.changeDstb(record.canDistribute)
+          // this.changeExtc(record.canExtract)
+          // this.changeEtdp(record.canEnterDep)
+          // this.changeEtoh(record.canEnterOther)
+          // this.changeEtcm(record.canEnterCommon)
+          // this.changeOP(record.overduePunish)
+
+          this.leaderChange(record.leader).then(() => {
+            this.form.setFieldsValue({ assistantId: record.assistantId })
           })
         })
         this.cdsc = record.canDistribute === 1 ? true : false
@@ -260,11 +330,11 @@ export default {
         this.op = record.overduePunish === 1 ? true : false
       }
     },
-    handleCancel () {
+    handleCancel() {
       this.subType = 'add'
       this.formTitle = '新增销售人员'
-      this.cdsc =true
-      this.cesc =true
+      this.cdsc = true
+      this.cesc = true
       this.cedsc = true
       this.ceosc = true
       this.cecsc = true
@@ -272,27 +342,29 @@ export default {
       this.form.resetFields() // 清空表
       this.visible = false
     },
-    handleSubmit () {
-      const { form: { validateFields } } = this
+    handleSubmit() {
+      const {
+        form: { validateFields },
+      } = this
       this.confirmLoading = true
       // 通过validateFields的方法，能够校验必填项是否有值，若无，则页面会给出警告！
       // 执行this.form.resetFields()，则会将表单清空。
       validateFields((errors, values) => {
         if (!errors) {
-          if(this.subType === 'add') {
-            addSalesman(values).then(res => {
+          if (this.subType === 'add') {
+            addSalesman(values).then((res) => {
               if (res.code === 200) {
                 this.visible = false
-                this.$emit('ok')// 刷新父组件
+                this.$emit('ok') // 刷新父组件
               } else {
                 this.$message.error(res.msg)
               }
-            }) 
-          } else if(this.subType === 'edit') {
-            editSalesman(values).then(res => {
+            })
+          } else if (this.subType === 'edit') {
+            editSalesman(values).then((res) => {
               if (res.code === 200) {
                 this.visible = false
-                this.$emit('ok')// 刷新父组件
+                this.$emit('ok') // 刷新父组件
               } else {
                 this.$message.error(res.msg)
               }
@@ -305,15 +377,15 @@ export default {
     depChangeHandler(dep_id) {
       let that = this
       that.postSelectDataSource = []
-      that.form.setFieldsValue({stationId:undefined})
-      return getStationList({ id: dep_id }).then(res => (that.postSelectDataSource = res.data))
-    }
-  }
+      that.form.setFieldsValue({ stationId: undefined })
+      return getStationList({ id: dep_id }).then((res) => (that.postSelectDataSource = res.data))
+    },
+  },
 }
 </script>
 
 <style scoped>
-.sForm >>> .ant-form-item-label{
+.sForm >>> .ant-form-item-label {
   text-align: left;
 }
 </style>
