@@ -50,7 +50,7 @@
           </tr>
         </table>
         <h3 style="margin-top: 10px">
-          <span>合同信息</span>
+          <span>投标借用协议合同信息</span>
           <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
         </h3>
         <table class="custom-table custom-table-border">
