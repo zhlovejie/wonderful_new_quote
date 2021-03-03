@@ -10,7 +10,7 @@
     <a-spin :spinning="spinning">
       <a-steps :current="currentStep" :size="sizeStep" :status="currentStatus" @change="(e) => stepChange(e, null)">
         <a-step title="签订合同" />
-        <a-step title="签订资质借用协议" />
+        <a-step title="签订借用协议" />
         <a-step title="代签购货合同" />
         <a-step title="销售合同" />
         <a-step title="产品售后服务外包协议" />

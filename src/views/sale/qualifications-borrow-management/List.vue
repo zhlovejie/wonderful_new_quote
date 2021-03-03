@@ -73,7 +73,8 @@
           <span>{{getTypeText(text)}}</span>
         </div>
         <div slot="status" slot-scope="text, record, index">
-          <a @click="approvalPreview(record)">{{ getStatusText(text) }}</a>
+          <!-- <a @click="approvalPreview(record)">{{ getStatusText(text) }}</a> -->
+          {{ getStatusText(text) }}
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
