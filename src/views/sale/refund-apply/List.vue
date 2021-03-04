@@ -80,7 +80,12 @@
             </template>
             <template v-if="record.status === 2">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('upload', record)">附件</a>
+              <template v-if="record.attachmentUrl"> 
+                <a type="primary" target="_blank" :href="record.attachmentUrl" >下载附件</a>
+              </template>
+              <template v-else>
+                <a type="primary" @click="doAction('upload', record)">上传附件</a>
+              </template>
             </template>
             <template v-if="[3,4].includes(+record.status)">
               <a-divider type="vertical" />
@@ -101,7 +106,7 @@
     </div>
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction()" />
-    <UploadFile ref="uploadFile" />
+    <UploadFile ref="uploadFile" @finish="searchAction()" />
   </div>
 </template>
 <script>

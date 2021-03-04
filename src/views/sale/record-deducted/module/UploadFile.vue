@@ -27,7 +27,7 @@
 
 <script>
 import { getUploadPath2 } from '@/api/common'
-import { cooperationProtocolAddAccessory } from '@/api/qualificationsBorrowManagement'
+import { qualificationBorrowPerformanceDeductionUploadAttachment } from '@/api/receipt'
 
 export default {
   name: 'uploadFile',
@@ -63,12 +63,13 @@ export default {
       }
       let accessoryUrl = files[0].url
       that.spinning = true
-      cooperationProtocolAddAccessory(`id=${id}&accessoryUrl=${accessoryUrl}`)
+      qualificationBorrowPerformanceDeductionUploadAttachment({id:id,attachmentUrl:accessoryUrl})
         .then((res) => {
           that.spinning = false
           that.$message.info(res.msg)
           if (+res.code === 200) {
             that.handleCancel()
+            that.$emit('finish')
           }
         })
         .catch((err) => {

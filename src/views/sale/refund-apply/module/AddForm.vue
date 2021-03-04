@@ -218,7 +218,7 @@
                   <tr v-for="(item, idx) in rebatesDetailsList" :key="item.key">
                     <td>{{ idx + 1 }}</td>
                     <td>{{ item.paymentAmount | moneyFormatNumber }}</td>
-                    <td>{{ item.paymentProportion + '%' }}</td>
+                    <td>{{ item.paymentProportion ? item.paymentProportion + '%' : '' }}</td>
                     <td>{{ item.remark }}</td>
                   </tr>
                 </table>
@@ -580,7 +580,9 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
+          //for test
           //values.infoId = 1
+          
           if(!values.infoId){
             that.$message.info('请选择资质借用管理管理合同')
             return

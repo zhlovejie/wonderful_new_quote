@@ -581,6 +581,17 @@ export function qualificationBorrowRebatesRevocation (parameter) {
     params: parameter
   })
 }
+
+/**返款申请  上传附件 */
+export function qualificationBorrowRebatesUploadAttachment (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/uploadAttachment',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //----------------------返款申请-END------------------
 
 //----------------------业绩扣除单----------------------
@@ -639,6 +650,16 @@ export function qualificationBorrowPerformanceDeductionRevocation (parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/qualificationBorrow/performance-deduction/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**业绩扣除单  上传附件 */
+export function qualificationBorrowPerformanceDeductionUploadAttachment (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/uploadAttachment',
     method: 'get',
     params: parameter
   })
