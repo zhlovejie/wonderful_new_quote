@@ -69,45 +69,36 @@
           </template>
 
           <template v-if="+activeKey === 1">
-            <a-divider type="vertical" />
-            <a-dropdown :trigger="['click']">
-              <a class="ant-dropdown-link" @click="(e) => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
-              <a-menu slot="overlay">
-                <a-menu-item key="0" v-if="+record.status === 2 && record.createdId === userInfo.id">
-                  <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
-                    <a type="primary" href="javascript:;">撤回</a>
-                  </a-popconfirm>
-                </a-menu-item>
-                <a-menu-item
-                  key="1"
-                  v-if="
-                    [1, 4, 5].includes(+record.status) && $auth('afterSales:edit') && record.createdId === userInfo.id
-                  "
-                >
-                  <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
-                </a-menu-item>
-                <a-menu-divider />
-                <a-menu-item
-                  key="3"
-                  v-if="[4, 5].includes(+record.status) && $auth('afterSales:del') && record.createdId === userInfo.id"
-                >
-                  <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-                    <a type="primary" href="javascript:;">删除</a>
-                  </a-popconfirm>
-                </a-menu-item>
-
-                <a-menu-item key="5" v-if="+record.status !== 1">
-                  <a type="primary" href="javascript:;" @click="uploadPhoto(record)">附件</a>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
+            <template v-if="+record.status === 2 && record.createdId === userInfo.id">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+            <template
+              v-if="[1, 4, 5].includes(+record.status) && $auth('afterSales:edit') && record.createdId === userInfo.id"
+            >
+              <a-divider type="vertical" />
+              <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
+            </template>
+            <template
+              v-if="[4, 5].includes(+record.status) && $auth('afterSales:del') && record.createdId === userInfo.id"
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="+record.status !== 1">
+              <a-divider type="vertical" />
+              <a type="primary" href="javascript:;" @click="preview(record)">预览</a>
+            </template>
           </template>
         </div>
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
-    <UploadPhoto ref="uploadPhoto" @ok="handleSaveOk" />
   </div>
 </template>
 
@@ -119,7 +110,6 @@ import AddForm from './AddForm'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
-import UploadPhoto from './UploadPhoto'
 const columns = [
   {
     align: 'center',
@@ -179,7 +169,6 @@ export default {
     AddForm,
     CustomerSelect,
     ApproveInfo,
-    UploadPhoto,
   },
   data() {
     return {
@@ -344,8 +333,11 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-    uploadPhoto(record) {
-      this.$refs.uploadPhoto.showForm(record)
+    preview(record) {
+      this.$router.push({
+        name: 'afterSalesView',
+        params: { id: record.id, action: 'view', from: 'afterSalesList' },
+      })
     },
     handleSaveOk() {
       this.searchAction()
