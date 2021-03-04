@@ -29,7 +29,7 @@
 
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
-          <a-button class="a-button" type="primary" icon="search" @click="doAction('add', null)">新增</a-button>
+          <!-- <a-button class="a-button" type="primary" icon="search" @click="doAction('add', null)">新增</a-button> -->
         </a-form-item>
       </a-form>
     </div>
