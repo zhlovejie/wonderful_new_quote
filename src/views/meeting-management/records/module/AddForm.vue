@@ -246,7 +246,7 @@ export default {
       personJoinList: [],
       oaMeetingJoinList: [],
       currentPerson: null,
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this, { name: 'meeting-management_AddForm' }),
       visible: false,
       actionType: 'view',
       spinning: false,
@@ -331,6 +331,7 @@ export default {
       that.actionType = type
       that.record = record || {}
       that.oaMeetingJoinList = []
+      that.detail = {}
       await that.form.resetFields()
       await that.init()
 
@@ -349,17 +350,19 @@ export default {
         that.$nextTick(() => that.form.setFieldsValue(obj))
 
         that.setRootPerson(that.record.chargePersonId)
+
+        that.detail = { ...that.record }
         return
       }
       let result = await meetingRecordDetail({ id: that.record.id })
         .then((res) => res.data)
         .catch((err) => null)
 
-      if(!result){
-        setTimeout(function(){
+      if (!result) {
+        setTimeout(function () {
           that.visible = false
           that.$message.info('获取会议详情信息失败。')
-        },500)
+        }, 500)
         return
       }
       if (that.isView) {
