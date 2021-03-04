@@ -337,7 +337,7 @@
                   v-decorator="[
                     'amountCapital',
                     {
-                      initialValue: detail.amountCapital || 0,
+                      initialValue: detail.amountCapital || '零',
                       rules: [{ required: false }],
                     },
                   ]"
