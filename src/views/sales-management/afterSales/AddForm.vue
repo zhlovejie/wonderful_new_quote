@@ -161,7 +161,7 @@
                   v-decorator="['province', { initialValue: prov, rules: [{ required: true, message: '请选择省！' }] }]"
                 >
                   <a-select-option
-                    @click="getCity(1, province.id)"
+                    @click="getCity(1, province.id, province.area)"
                     v-for="province in this.provinces"
                     :key="province.index"
                     :value="province.id"
@@ -176,7 +176,7 @@
                   v-decorator="['city', { initialValue: prov1, rules: [{ required: true, message: '请选择区！' }] }]"
                 >
                   <a-select-option
-                    @click="getCity(2, city.id)"
+                    @click="getCity(2, city.id, city.area)"
                     v-for="city in this.citys"
                     :key="city.index"
                     :value="city.id"
@@ -191,7 +191,7 @@
                   v-decorator="['arealse', { initialValue: prov2, rules: [{ required: true, message: '请选择区！' }] }]"
                 >
                   <a-select-option
-                    @click="getCity(3, null)"
+                    @click="getCity(3, null, area.area)"
                     v-for="area in this.arealse"
                     :key="area.index"
                     :value="area.id"
@@ -375,6 +375,9 @@ export default {
       prov1: undefined,
       prov2: undefined,
       spinning: false,
+      provincesl: undefined,
+      citysl: undefined,
+      areassl: undefined,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       saleUsers: [],
       agreement: [],
@@ -452,19 +455,23 @@ export default {
 
       return Promise.all(queue)
     },
-    getCity(type, pId) {
+    getCity(type, pId, name) {
       if (type != 3) {
         getAreaByParent({ pId: pId })
           .then((res) => {
             if (type === 1) {
+              this.provincesl = name
               this.citys = res.data
             } else if (type === 2) {
+              this.citysl = name
               this.arealse = res.data
             }
           })
           .catch(function (err) {
             console.log(err)
           })
+      } else {
+        this.areassl = name
       }
     },
     handleCustomerSelected(item) {
@@ -539,14 +546,15 @@ export default {
       await afterdetail({ id: record.id }).then((res) => {
         that.detail = res.data
         let arrs = that.detail.area.split(',')
+        let react = that.detail.areaName.slice(',')
         that.prov = Number(arrs[0])
         that.prov1 = Number(arrs[1])
         that.prov2 = Number(arrs[2])
         // that.form.setFieldsValue({ ...that.detail })
         let arr = (res.data.area || '').split(',')
-        that.getCity(1, arr[0])
-        that.getCity(2, arr[1])
-        that.getCity(3, null)
+        that.getCity(1, arr[0], react[0])
+        that.getCity(2, arr[1], react[1])
+        that.getCity(3, null, react[2])
       })
     },
     handleSubmit(type) {
@@ -571,6 +579,7 @@ export default {
             values.wxNum = that.detail.wxNum
             values.email = that.detail.email
           }
+          values.areaName = this.provincesl + ',' + this.citysl + ',' + this.areassl
           values.signingDate = values.signingDate.format('YYYY-MM-DD')
           values.effectiveStart = values.validityDate[0].format('YYYY-MM-DD')
           values.effectiveEnd = values.validityDate[1].format('YYYY-MM-DD')
