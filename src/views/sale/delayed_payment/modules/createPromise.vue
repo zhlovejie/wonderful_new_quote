@@ -78,10 +78,10 @@
 import { getContractById } from '@/api/delayedPayment'
 import { getRmb } from '@api/electronicReceipt'
 import html2Canvas from 'html2canvas'
-import JsPDF from 'jspdf'
+//import JsPDF from 'jspdf'
 import moment from 'moment'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
-
+import util from '@/components/_util/util'
 export default {
   name: 'CreatePromise',
   components: {
@@ -171,6 +171,8 @@ export default {
       })
     },
     getPdf (id) {
+      util.handleWindowPrint(`#${id}`, '延迟付款承诺书')
+      /* 
       html2Canvas(document.querySelector(`#${id}`), {
         // allowTaint: true
         useCORS: true// 看情况选用上面还是下面的，
@@ -199,6 +201,7 @@ export default {
         PDF.save('延迟付款承诺书.pdf')
       }
       )
+      */
     }
   }
 }
