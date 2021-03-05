@@ -383,6 +383,7 @@ export default {
       }
 
       await biddetail({ id: record.id }).then((res) => {
+        res.data.signingDate = res.data.signingDate.substr(0, 10)
         that.detail = res.data
         // that.form.setFieldsValue({ ...that.detail })
       })

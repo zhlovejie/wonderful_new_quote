@@ -225,7 +225,7 @@ export default {
 
           data.effectiveStart = moment(data.effectiveStart).format('YYYY年MM月DD日')
           data.effectiveEnd = moment(data.effectiveEnd).format('YYYY年MM月DD日')
-
+          data.signingDate = data.signingDate.substr(0, 10)
           that.detail = data
         })
         .finally(() => {

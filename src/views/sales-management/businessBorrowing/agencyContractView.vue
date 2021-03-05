@@ -217,7 +217,7 @@ export default {
       businessdetail({ id: routeParam.id })
         .then((res) => {
           let data = res.data
-
+          data.signingDate = data.signingDate.substr(0, 10)
           that.detail = data
         })
         .finally(() => {
