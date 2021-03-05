@@ -138,7 +138,7 @@
 <script>
 import { STable } from '@/components'
 import { getServiceList, openPaperDelete, revocationOpenpaper } from '@/api/openpaper'
-import { openpaperGetSumAmountByList} from '@/api/receipt'
+import { openpaperGetSumAmountByList } from '@/api/receipt'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import { getListSaleContractUser } from '@/api/contractListManagement'
@@ -162,7 +162,7 @@ export default {
       saleCustomer: 0,
       vueBoolean: this.$store.getters.vueBoolean,
       customerName: '',
-      saleUserId:undefined,
+      saleUserId: undefined,
       saleCustomers: [],
       pagination: {
         showTotal: (total) => '共' + total + '条数据',
@@ -190,7 +190,7 @@ export default {
         },
         {
           title: '销售经理',
-          dataIndex: 'saleUserName'
+          dataIndex: 'saleUserName',
         },
         {
           title: '发票类型',
@@ -237,11 +237,11 @@ export default {
           return res
         })
       },
-      
+
       selectedRowKeys: [],
       selectedRows: [],
-      saleUser:[],
-      searchTotalMoney:''
+      saleUser: [],
+      searchTotalMoney: '',
     }
   },
   mounted() {
@@ -267,7 +267,7 @@ export default {
       this.queryParam = {
         customerName: this.customerName,
         state: this.contractState,
-        saleUserId:this.saleUserId
+        saleUserId: this.saleUserId,
       }
       if (this.show == true) {
         this.queryParam['approvalStatue'] = this.approvalStatusSelect
@@ -277,22 +277,24 @@ export default {
         this.fetchTotalMoney()
       }
     },
-    fetchTotalMoney(){
+    fetchTotalMoney() {
       const that = this
-      openpaperGetSumAmountByList(that.queryParam).then(res =>{
-        console.log(that,res)
-        if(+res.code !== 200){
-          let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
-          msg += `查询参数:${_searchParam}，`
-          msg += '请与管理员联系，谢谢合作。'
-          that.searchTotalMoney = 0
-          that.$message.error(msg)
-          return
-        }
-        that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
-      }).catch(err =>{
-         that.$message.error(err.message)
-      })
+      openpaperGetSumAmountByList(that.queryParam)
+        .then((res) => {
+          console.log(that, res)
+          if (+res.code !== 200) {
+            let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+            msg += `查询参数:${_searchParam}，`
+            msg += '请与管理员联系，谢谢合作。'
+            that.searchTotalMoney = 0
+            that.$message.error(msg)
+            return
+          }
+          that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+        })
+        .catch((err) => {
+          that.$message.error(err.message)
+        })
     },
     handleAdd(e) {
       if (e.key === '1') {
@@ -345,6 +347,7 @@ export default {
       this.contractState = key
       this.queryParam = { state: key }
       this.$refs.table.refresh(true)
+      this.fetchTotalMoney()
     },
     handleEdit(e) {
       // 重新提交
@@ -388,13 +391,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(7,{...that.queryParam},'开票单')
+      let res = await exprotAction(7, { ...that.queryParam }, '开票单')
       console.log(res)
       that.$message.info(res.msg)
-    }
-  }
+    },
+  },
 }
 </script>
 

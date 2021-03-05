@@ -132,7 +132,7 @@
 <script>
 import { STable } from '@/components'
 import { getServiceList, deleteById, revocationAdvances } from '@/api/advances'
-import { advancesGetSumAmountByList} from '@/api/receipt'
+import { advancesGetSumAmountByList } from '@/api/receipt'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
 import AdvancesAdd from './AdvancesAdd'
@@ -165,7 +165,7 @@ export default {
       vueBoolean: this.$store.getters.vueBoolean,
       saleCustomer: 0,
       customerName: '',
-      saleUserId:undefined,
+      saleUserId: undefined,
       saleCustomers: [],
       audit: false,
       showFlag: true,
@@ -210,7 +210,7 @@ export default {
         },
         {
           title: '销售经理',
-          dataIndex: 'saleUserName'
+          dataIndex: 'saleUserName',
         },
         {
           title: '收款日期',
@@ -247,15 +247,15 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
         console.log('开始加载数据', JSON.stringify(this.queryParam))
-        
+
         return getServiceList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
       },
       selectedRowKeys: [],
       selectedRows: [],
-      saleUser:[],
-      searchTotalMoney:''
+      saleUser: [],
+      searchTotalMoney: '',
     }
   },
   mounted() {
@@ -268,7 +268,7 @@ export default {
       this.queryParam = {
         customerName: this.customerName,
         statue: this.contractState,
-        saleUserId:this.saleUserId,
+        saleUserId: this.saleUserId,
       }
       if (this.showFlag) {
         this.queryParam['approveStatus'] = this.approveStatus
@@ -276,22 +276,24 @@ export default {
       this.$refs.table.refresh(true)
       this.fetchTotalMoney()
     },
-    fetchTotalMoney(){
+    fetchTotalMoney() {
       const that = this
-      advancesGetSumAmountByList(that.queryParam).then(res =>{
-        console.log(that,res)
-        if(+res.code !== 200){
-          let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
-          msg += `查询参数:${that.queryParam}，`
-          msg += '请与管理员联系，谢谢合作。'
-          that.searchTotalMoney = 0
-          that.$message.error(msg)
-          return
-        }
-        that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
-      }).catch(err =>{
-         that.$message.error(err.message)
-      })
+      advancesGetSumAmountByList(that.queryParam)
+        .then((res) => {
+          console.log(that, res)
+          if (+res.code !== 200) {
+            let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+            msg += `查询参数:${that.queryParam}，`
+            msg += '请与管理员联系，谢谢合作。'
+            that.searchTotalMoney = 0
+            that.$message.error(msg)
+            return
+          }
+          that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+        })
+        .catch((err) => {
+          that.$message.error(err.message)
+        })
     },
     handleAdd() {
       this.$refs.add.add()
@@ -359,6 +361,7 @@ export default {
       this.contractState = key
       this.queryParam = { statue: key }
       this.$refs.table.refresh(true)
+      this.fetchTotalMoney()
       console.log(key)
     },
     handleVue(e) {
@@ -399,13 +402,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(5,{...that.queryParam},'预收款单')
+      let res = await exprotAction(5, { ...that.queryParam }, '预收款单')
       console.log(res)
       that.$message.info(res.msg)
-    }
-  }
+    },
+  },
 }
 </script>
 
