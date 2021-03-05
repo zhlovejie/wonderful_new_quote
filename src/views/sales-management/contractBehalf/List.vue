@@ -85,14 +85,14 @@
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
             </template>
-            <template
+            <!-- <template
               v-if="[4, 5].includes(+record.status) && $auth('contractBehalf:del') && record.createdId === userInfo.id"
             >
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
-            </template>
+            </template> -->
             <template
               v-if="
                 [0].includes(+record.status) &&

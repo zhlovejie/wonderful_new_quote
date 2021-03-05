@@ -86,7 +86,7 @@
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a></template
             >
-            <template
+            <!-- <template
               v-if="
                 [4, 5].includes(+record.status) && $auth('businessBorrowing:del') && record.createdId === userInfo.id
               "
@@ -95,7 +95,7 @@
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm></template
-            >
+            > -->
             <template v-if="+record.status !== 1">
               <a-divider type="vertical" /><a type="primary" href="javascript:;" @click="preview(record)"
                 >预览</a
