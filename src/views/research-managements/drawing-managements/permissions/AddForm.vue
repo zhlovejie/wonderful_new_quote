@@ -59,9 +59,7 @@
 </template>
 <script>
 import { blueprintPermissionAddOrUpdate } from '@/api/researchManagement'
-import moment from 'moment'
 import DepPostTree from './DepPostTree'
-import { values } from 'mockjs2'
 
 export default {
   name: 'AddForm',

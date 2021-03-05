@@ -14,7 +14,6 @@
 <script>
 import { oaAssertsInfoRecoveUpload } from '@/api/assetManagement'
 import UploadFile from './UploadFile'
-import { file } from 'jszip/lib/object'
 export default {
   name: 'upload-file-model',
   components:{UploadFile},

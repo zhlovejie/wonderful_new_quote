@@ -387,8 +387,6 @@ import {
   checkCurrentNode,
   approvalSplitProduct,
 } from '@/api/contractListManagement.js'
-import util from '@/components/_util/util'
-// import vuePrint from 'vue-print-nb'
 
 const renderContent = (value, row, index) => {
   const obj = {
@@ -981,7 +979,6 @@ export default {
       }, 500)
     },
     getPDF() {
-      //util.handleWindowPrint('#pdfDom', '销售合同')
       window.location.href = this.wordUrl
     },
     onChange(checkedValues) {
