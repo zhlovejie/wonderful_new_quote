@@ -91,7 +91,7 @@
               <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
             </template>
 
-            <template v-if="record.status === 3">
+            <template v-if="record.status === 3 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('upload', record)">附件</a>
             </template>

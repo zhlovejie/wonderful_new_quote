@@ -194,7 +194,7 @@
           </tr>
         </table>
         <p v-if="isView && detail.accessory">
-          已上传文件：<a target="_blank" v-download="detail.accessory">{{detail.accessory}}</a>
+          已上传附件：<a target="_blank" v-download="detail.accessory">{{detail.accessory.slice(detail.accessory.lastIndexOf('/')+1) }}</a>
         </p>
         <StatusView :statusFn="statusFn"/>
       </a-form>

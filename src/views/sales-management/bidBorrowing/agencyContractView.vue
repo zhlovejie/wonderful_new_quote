@@ -17,7 +17,7 @@
 
         <a-button class="fl-r" type="primary" @click="goBackConstractList" icon="backward">返回</a-button>
         <!-- <a-button class="fl-r" type="primary" @click="getPDF()" >导出成PDF</a-button> -->
-        <a :href="detail.pdfUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
+        <a :href="detail.accessory" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
       </div>
 
       <div class="contract-wrap" id="pdfDom">

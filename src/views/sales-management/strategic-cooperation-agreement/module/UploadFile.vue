@@ -29,6 +29,10 @@
 import { getUploadPath2 } from '@/api/common'
 import { cooperationProtocolAddAccessory } from '@/api/qualificationsBorrowManagement'
 
+import {
+  cooperationProtocolDetail
+} from '@/api/qualificationsBorrowManagement'
+
 export default {
   name: 'uploadFile',
   data() {
@@ -48,10 +52,23 @@ export default {
     }
   },
   methods: {
-    query(type, record) {
-      this.visible = true
-      this.fileList = []
-      this.record = record || {}
+    async query(type, record) {
+      const that = this
+      that.visible = true
+      that.fileList = []
+      that.record = record || {}
+      that.record = await cooperationProtocolDetail({id:that.record.id}).then(res =>res.data)
+      if(that.record.accessory){
+        let accessory = that.record.accessory
+        that.fileList = [
+          {
+            uid:1,
+            name:accessory.slice(accessory.lastIndexOf('/')+1),
+            status:'done',
+            url:that.record.accessory
+          }
+        ]
+      }
     },
     handleOk() {
       let that = this

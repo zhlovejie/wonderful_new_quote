@@ -104,9 +104,13 @@
           <template v-if="activeKey === 2">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('preview', record)">预览</a>
           </template>
           <template v-if="activeKey === 3">
             <a type="primary" @click="doAction('view', record)">查看</a>
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('preview', record)">预览</a>
           </template>
         </div>
       </a-table>

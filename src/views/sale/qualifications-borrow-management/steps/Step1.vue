@@ -77,7 +77,7 @@ export default {
       that.$nextTick(() =>{
         that.$refs.currentComponent.query('add',{})
       })
-      that.currentComponentTitle = { 1: '经销商合同', 2: '代理合同', 3: '战略合作协议' }[type]
+      that.currentComponentTitle = { 1: '经销商', 2: '代理', 3: '战略合作协议' }[type]
     },
     async handlerSubmitClick(values){
       let that = this
