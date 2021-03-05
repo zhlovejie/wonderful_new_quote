@@ -54,11 +54,14 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <div v-for="item in extColumns" :key="item.dataIndex" :slot="'title' + item.dataIndex" style="color: #096dd9">
-            <div>{{ item._date }}</div>
-            <div>{{ item._week }}</div>
-          </div>
-          <div v-for="item in extColumns" :key="item.dataIndex" :slot="item.dataIndex" slot-scope="text, record, index">
+          <template v-for="item in extColumns"  :slot="'title' + item.dataIndex" style="color: #096dd9">
+            <div :key="item.dataIndex">
+              <div>{{ item._date }}</div>
+              <div>{{ item._week }}</div>
+            </div>
+          </template>
+          <template v-for="item in extColumns"  :slot="item.dataIndex" slot-scope="text, record, index">
+            <div :key="item.dataIndex">
             <template v-if="$auth('months:edit')">
               <a-popover title="操作" trigger="hover">
                 <div slot="content">
@@ -75,7 +78,8 @@
             <template v-else>
               <div v-html="formatHTML(text)" />
             </template>
-          </div>
+            </div>
+          </template>
         </a-table>
       </div>
 

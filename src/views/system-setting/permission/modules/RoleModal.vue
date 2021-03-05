@@ -14,7 +14,7 @@
         <a-form-item label="部门">
           <a-select placeholder="请选择部门" v-model="Selected" name="departmentId" id="departmentId" @change="handleChange">
             <a-select-option :value="0" >请选择部门</a-select-option>
-            <a-select-option v-for="item in options" :value="item.id">{{ item.departmentName }}</a-select-option>
+            <a-select-option v-for="item in options" :key="item.id" :value="item.id">{{ item.departmentName }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item

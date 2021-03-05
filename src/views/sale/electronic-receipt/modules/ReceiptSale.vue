@@ -16,7 +16,7 @@
         <a-form-item label="销售人员">
           <a-select class="a-select" style="width: 150px" v-model="userId" defaultValue="0">
             <a-select-option :value="0">请选择销售</a-select-option>
-            <a-select-option v-for="val in saleUsers" :value="val.id">{{ val.trueName }}</a-select-option>
+            <a-select-option v-for="val in saleUsers" :key="val.id" :value="val.id">{{ val.trueName }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>

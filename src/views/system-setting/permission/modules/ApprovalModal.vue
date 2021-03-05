@@ -31,7 +31,7 @@
             id="userId"
             @change="handleChange">
             <a-select-option :value="0">请选择用户</a-select-option>
-            <a-select-option v-for="item in options" :value="item.id">{{ item.trueName }}</a-select-option>
+            <a-select-option v-for="item in options" :key="item.id" :value="item.id">{{ item.trueName }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>

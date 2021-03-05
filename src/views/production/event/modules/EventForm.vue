@@ -139,7 +139,7 @@
                   </a-form-item>
                 </a-col>
               </a-row>
-              <a-row v-for="owner in owners" class="form-row" :gutter="24">
+              <a-row v-for="owner in owners" :key="owner.id" class="form-row" :gutter="24">
                 <a-col :lg="12" :md="12" :sm="24">
                   <a-form-item label="责任人:" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     {{ owner.trueName }}  <a-divider type="vertical"/><b>是否为主责任人:</b>
