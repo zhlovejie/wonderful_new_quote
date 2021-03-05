@@ -26,6 +26,9 @@
 </template>
 
 <script>
+import {
+  dealerContractDetail
+} from '@/api/qualificationsBorrowManagement'
 import { getUploadPath2 } from '@/api/common'
 import { dealerContractAddAccessoryn } from '@/api/qualificationsBorrowManagement'
 
@@ -48,10 +51,23 @@ export default {
     }
   },
   methods: {
-    query(type, record) {
-      this.visible = true
-      this.fileList = []
-      this.record = record || {}
+    async query(type, record) {
+      const that = this
+      that.visible = true
+      that.fileList = []
+      that.record = record || {}
+      that.record = await dealerContractDetail({id:that.record.id}).then(res =>res.data)
+      if(that.record.accessory){
+        let accessory = that.record.accessory
+        that.fileList = [
+          {
+            uid:1,
+            name:accessory.slice(accessory.lastIndexOf('/')+1),
+            status:'done',
+            url:that.record.accessory
+          }
+        ]
+      }
     },
     handleOk() {
       let that = this

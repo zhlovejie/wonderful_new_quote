@@ -88,4 +88,15 @@ export default {
 	84:'attendance-going-apply',//外出申请
 	85:'attendance-abnormal-events',//迟到事件
 	86:'attendance-abnormal-events',//早退事件
+
+	87:'access_control',//门禁通知
+	88:'distributor-contract-management-list',//经销商合同
+	89:'strategic-cooperation-agreement-list',//战略合作协议
+	90:'sale-refund-apply-list',//返款申请
+	91:'sale-record-deducted-list',//业绩扣除单
+	92:'Business_borrowingList',//经营借用协议
+	93:'Bid_borrowingList',//资质借用投标借用协议
+	94:'contractBehalfList',//代签购货合同
+	95:'afterSalesList',//产品售后服务外包协议
+	//96:'体温异常通知',
 }
