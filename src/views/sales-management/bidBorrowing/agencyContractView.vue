@@ -65,8 +65,8 @@
 
             <div class="content-p">第一条：</div>
             <div class="content-p p-text-index">
-              乙方因经营所需借用甲方资质，以甲方名义进行项目名称：<span class="span-underline">{{ detail.fullName }}</span>
-              项目编号：<span class="span-underline">{{ detail.fullName }}</span> 的项目投标。
+              乙方因经营所需借用甲方资质，以甲方名义进行项目名称：<span class="span-underline">{{ detail.projectName }}</span>
+              项目编号：<span class="span-underline">{{ detail.projectNum }}</span> 的项目投标。
               乙方承诺在此投标过程中，甲方代替乙方所签订的所有与本投标项目相关的合同、协议均为乙方的意愿，属于乙方独立经营行为与甲方
               无关；且项目经营过程中所产生的一切法律后果以及违约责任均由乙方承担。乙方承诺在借用甲方资质以甲方的名义进行产品销售或项
               目投标过程中，遵守中华人民共和国法律法规，无违规违法行为。
@@ -227,6 +227,7 @@ export default {
             let arr = data.products.split(';')
             data.productsName = arr.length === 2 ? data.products.split(';')[1] : data.products
           }
+          data.signingDate = data.signingDate.substr(0, 10)
           that.detail = data
         })
         .finally(() => {
