@@ -20,7 +20,14 @@
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
-          <a-button style="margin-left: 10px" type="primary" icon="download" @click="exportHandler">导出</a-button>
+          <a-button
+            v-if="$auth('SaleOrderReport:export')"
+            style="margin-left: 10px"
+            type="primary"
+            icon="download"
+            @click="exportHandler"
+            >导出</a-button
+          >
         </a-form-item>
       </a-form>
     </div>
