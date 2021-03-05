@@ -167,7 +167,13 @@
 
 <script>
 import { STable } from '@/components'
-import { deleteReceipt, getContractOne, getServiceList, revocationReceipt ,receiptGetSumAmountByList} from '@/api/receipt'
+import {
+  deleteReceipt,
+  getContractOne,
+  getServiceList,
+  revocationReceipt,
+  receiptGetSumAmountByList,
+} from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
@@ -301,7 +307,7 @@ export default {
         },
         {
           title: '销售经理',
-          dataIndex: 'saleUserName'
+          dataIndex: 'saleUserName',
         },
         {
           title: '收款日期',
@@ -361,7 +367,7 @@ export default {
       loading: false,
       isExpanded: false, //是否展开列表子数据
       expandedRowKeys: [],
-      searchTotalMoney:''
+      searchTotalMoney: '',
     }
   },
   watch: {
@@ -398,20 +404,22 @@ export default {
         })
         .catch((err) => (that.loading = false))
 
-      receiptGetSumAmountByList(_searchParam).then(res =>{
-        console.log(that,res)
-        if(+res.code !== 200){
-          let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
-          msg += `查询参数:${_searchParam}，`
-          msg += '请与管理员联系，谢谢合作。'
-          that.searchTotalMoney = 0
-          that.$message.error(msg)
-          return
-        }
-        that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
-      }).catch(err =>{
-         that.$message.error(err.message)
-      })
+      receiptGetSumAmountByList(_searchParam)
+        .then((res) => {
+          console.log(that, res)
+          if (+res.code !== 200) {
+            let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
+            msg += `查询参数:${_searchParam}，`
+            msg += '请与管理员联系，谢谢合作。'
+            that.searchTotalMoney = 0
+            that.$message.error(msg)
+            return
+          }
+          that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
+        })
+        .catch((err) => {
+          that.$message.error(err.message)
+        })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -581,7 +589,7 @@ export default {
     },
     paramChangeHandler(params) {
       this.isExpanded = true
-      this.queryParam = { ...params }
+      this.queryParam = { ...params, dayWeekMonth: this.dayWeekMonth }
       this.searchAction()
     },
     simpleSearch(type) {
@@ -616,12 +624,12 @@ export default {
         return
       }
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(3,{...that.queryParam},'收款单')
+      let res = await exprotAction(3, { ...that.queryParam }, '收款单')
       console.log(res)
       that.$message.info(res.msg)
-    }
+    },
   },
 }
 </script>

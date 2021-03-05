@@ -324,6 +324,7 @@ import EditableCell from '@/components/Table/EditableCell'
 import { getAccountBankList, getContractOne, goAdd, save, receiptDetail, updateReceipt } from '@/api/receipt'
 import ReceiptSaleContract from './ReceiptSaleContract'
 import Receiptdocument from './Receiptdocument'
+import { getDeductionList } from '@/api/receipt'
 
 import { getDeliverProductList, getContractById, getUnshipped } from '@/api/delayedPayment'
 import moment from 'moment'
@@ -563,6 +564,14 @@ export default {
         //根据合同id获取合同信息
         let contractResult = await getContractById({ id: receiptDetailResult.contractId }).then((res) => {
           return res.data
+        })
+        //获取预收款的对象
+        getDeductionList({
+          id: receiptDetailResult.saleAdvancesId,
+          receiptId: that.$route.params.id,
+        }).then((res) => {
+          this.Deduction = res.data.records[0]
+          this.Deduction.Deduction = Number(this.Deduction.paidMoney) - Number(this.Deduction.deductionMoney)
         })
 
         that.contractId = contractResult.id
@@ -934,7 +943,7 @@ export default {
             that.spinning = false
             return
           }
-          if (this.Deduction.Deduction == values.deductionMoney || this.Deduction.Deduction < values.deductionMoney) {
+          if (this.Deduction.Deduction < values.deductionMoney && this.showadd) {
             that.spinning = false
             return this.$message.error('抵扣金额必须小于等于预收款单金额 不得大于')
           }

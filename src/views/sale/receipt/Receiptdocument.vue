@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="操作"
-    :width="800"
+    :width="1200"
     :confirmLoading="confirmLoading"
     :footer="null"
     v-model="visible"
@@ -62,7 +62,7 @@ export default {
           scopedSlots: { customRender: 'order' },
         },
         {
-          title: '收款编号',
+          title: '预收款编号',
           dataIndex: 'advancesCode',
           scopedSlots: { customRender: 'advancesCode' },
         },
