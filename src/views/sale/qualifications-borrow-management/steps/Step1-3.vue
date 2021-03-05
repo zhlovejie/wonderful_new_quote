@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>
-      <span>合同信息</span>
+      <span>代理合同信息</span>
       <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
     </h3>
     <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">

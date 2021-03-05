@@ -7,7 +7,7 @@
       <a-input v-decorator="['instanceId']" />
     </a-form-item>
     <h3>
-      <span>合同信息</span>
+      <span>经销商合同信息</span>
       <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
     </h3>
     <table class="custom-table custom-table-border">
