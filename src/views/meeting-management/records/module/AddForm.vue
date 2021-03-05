@@ -186,13 +186,13 @@
             </td>
           </tr>
           <tr v-if="isView">
-            <td class="wdf-column">会议启动时间</td>
+            <td class="wdf-column">会议启动开始时间</td>
             <td>
               <a-form-item>{{ detail.startTime || '尚未启动' }}</a-form-item>
             </td>
-            <td class="wdf-column">会议完结时间</td>
+            <td class="wdf-column">会议启动结束时间</td>
             <td>
-              <a-form-item>{{ detail.finishTime }}</a-form-item>
+              <a-form-item>{{ detail.overTime }}</a-form-item>
             </td>
           </tr>
           <tr v-if="isView">
