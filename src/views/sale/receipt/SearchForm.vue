@@ -47,9 +47,20 @@
             <a-input v-decorator="['contractNum']" placeholder="合同编号" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="24">
-          <a-form-item label="提交时间">
-            <a-range-picker v-decorator="['sDate']" style="width: 100%" :allowClear="true" />
+        <a-col :span="12">
+          <a-form-item label="销售出库时间">
+            <a-select v-decorator="['outBoundTime']" placeholder="销售出库时间">
+              <a-select-option :value="1">2021年1月1日前发货</a-select-option>
+              <a-select-option :value="2">2021年1月1日后发货</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="是否存在抵扣">
+            <a-select v-decorator="['isDeduction']" placeholder="是否存在抵扣">
+              <a-select-option :value="0">否</a-select-option>
+              <a-select-option :value="1">是</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="12">
@@ -61,6 +72,11 @@
               <a-select-option :value="3">不通过</a-select-option>
               <a-select-option :value="9">已撤回</a-select-option>
             </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="24">
+          <a-form-item label="提交时间">
+            <a-range-picker v-decorator="['sDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>
         <a-col :span="24">

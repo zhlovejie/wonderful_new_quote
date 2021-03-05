@@ -86,10 +86,70 @@
                 />
               </a-form-item>
             </a-col>
+            <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24">
+              <a-form-item label="销售出库时间">
+                <a-select
+                  v-decorator="[
+                    'outBoundTime',
+                    { initialValue: 2, rules: [{ required: true, message: '请选择选择销售出库时间' }] },
+                  ]"
+                >
+                  <a-select-option :value="1">2021年1月1日前发货</a-select-option>
+                  <a-select-option :value="2">2021年1月1日后发货</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24">
+              <a-form-item label="是否存在抵扣">
+                <a-select
+                  @change="isDeductionclick"
+                  v-decorator="[
+                    'isDeduction',
+                    { initialValue: 0, rules: [{ required: true, message: '请选择是否存在抵扣' }] },
+                  ]"
+                >
+                  <a-select-option :value="0">否</a-select-option>
+                  <a-select-option :value="1">是</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </a-row>
 
-            <a-col :span="7" :offset="1">
+          <a-row class="form-row" :gutter="16">
+            <a-col :span="6">
               <a-form-item label="备注">
                 <a-input placeholder="请输入备注信息" v-model="remark" />
+              </a-form-item>
+            </a-col>
+            <a-col :xl="{ span: 7, offset: 1 }" :lg="{ span: 8 }" :md="{ span: 12 }" :sm="24" v-if="showadd">
+              <a-form-item label="抵扣单据">
+                <a-input
+                  read-only="read-only"
+                  @click="paidModel"
+                  :precision="2"
+                  :min="0"
+                  v-decorator="[
+                    'saleAdvancesId',
+                    { rules: [{ required: true, message: '请输入抵扣单据', whitespace: true }] },
+                  ]"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col
+              :xl="{ span: 7, offset: 1 }"
+              :lg="{ span: 8 }"
+              :md="{ span: 12 }"
+              :sm="24"
+              v-if="showDeduction && showadd"
+            >
+              <a-form-item label="抵扣金额">
+                <a-input-number
+                  :precision="2"
+                  :min="0"
+                  v-decorator="['deductionMoney', { rules: [{ required: true, message: '请输入抵扣金额' }] }]"
+                  style="width: 100%"
+                />
               </a-form-item>
             </a-col>
           </a-row>
@@ -253,6 +313,7 @@
         </a-table>
 
         <receipt-sale-contract ref="receiptContract" @custom-change="contractChange"></receipt-sale-contract>
+        <Receiptdocument ref="receiptdocument" @custom-change="receiptChange" />
       </a-card>
     </div>
   </a-spin>
@@ -262,6 +323,9 @@
 import EditableCell from '@/components/Table/EditableCell'
 import { getAccountBankList, getContractOne, goAdd, save, receiptDetail, updateReceipt } from '@/api/receipt'
 import ReceiptSaleContract from './ReceiptSaleContract'
+import Receiptdocument from './Receiptdocument'
+import { getDeductionList } from '@/api/receipt'
+
 import { getDeliverProductList, getContractById, getUnshipped } from '@/api/delayedPayment'
 import moment from 'moment'
 
@@ -343,6 +407,7 @@ export default {
   components: {
     ReceiptSaleContract,
     EditableCell,
+    Receiptdocument,
   },
   data() {
     return {
@@ -351,6 +416,8 @@ export default {
       memberLoading: false,
       moneyTypes: [],
       loading: false,
+      showadd: false,
+      showDeduction: false,
       visibleBoolean: false,
       dataSourceContract: [], //合同产品列表
       dataSourceDelivered: [], //已发货产品列表
@@ -409,6 +476,8 @@ export default {
 
       dataSource: [],
       queryParam: [],
+      saleUserId: undefined,
+      Deduction: {},
       spinning: false,
       freightType: 1,
       freightCharge: 0,
@@ -454,6 +523,11 @@ export default {
   },
   methods: {
     moment: moment,
+    // 动态控制抵扣单据 抵扣金额的显示隐藏
+    isDeductionclick(e) {
+      this.showadd = e === 0 ? false : true
+    },
+
     // 编辑表格
     onCellChange(key, dataIndex, value) {
       this.visibleBoolean = false
@@ -491,6 +565,14 @@ export default {
         let contractResult = await getContractById({ id: receiptDetailResult.contractId }).then((res) => {
           return res.data
         })
+        //获取预收款的对象
+        getDeductionList({
+          id: receiptDetailResult.saleAdvancesId,
+          receiptId: that.$route.params.id,
+        }).then((res) => {
+          this.Deduction = res.data.records[0]
+          this.Deduction.Deduction = Number(this.Deduction.paidMoney) - Number(this.Deduction.deductionMoney)
+        })
 
         that.contractId = contractResult.id
         that.customName = contractResult.customerName
@@ -502,9 +584,23 @@ export default {
           customerName: contractResult.saleCustomer.name,
           contractId: contractResult.id,
         }
+        if (receiptDetailResult.isDeduction === 1) {
+          this.showadd = true
+          this.showDeduction = true
+          this.Deduction.id = receiptDetailResult.saleAdvancesId
+        }
 
         this.$nextTick(() => {
           this.form.setFieldsValue({ ...record })
+        })
+        let arr = {
+          saleAdvancesId: receiptDetailResult.advancesCode,
+          outBoundTime: receiptDetailResult.outBoundTime,
+          isDeduction: receiptDetailResult.isDeduction,
+          deductionMoney: receiptDetailResult.deductionMoney,
+        }
+        this.$nextTick(() => {
+          this.form.setFieldsValue({ ...arr })
         })
 
         that.form.setFieldsValue({
@@ -590,8 +686,32 @@ export default {
       }
       this.$refs.receiptContract.query({ type: 0 })
     },
+
+    //接收弹出单据数据
+    receiptChange(data) {
+      this.Deduction = data
+      this.showDeduction = true
+      const record = {
+        saleAdvancesId: this.Deduction.advancesCode,
+      }
+      this.$nextTick(() => {
+        this.form.setFieldsValue({ ...record })
+      })
+    },
+    //弹出单据
+    paidModel() {
+      if (this.isEdit) {
+        return
+      }
+      if (this.saleUserId) {
+        this.$refs.receiptdocument.query({ saleUserId: this.saleUserId })
+      } else {
+        this.$message.error('请先选择销售合同编码')
+      }
+    },
     contractChange(data) {
       const paramter = { id: data.contractId, type: 1 }
+      this.saleUserId = data.saleUserId
       getContractOne(paramter)
         .then((res) => {
           const record = {
@@ -823,6 +943,10 @@ export default {
             that.spinning = false
             return
           }
+          if (this.Deduction.Deduction < values.deductionMoney && this.showadd) {
+            that.spinning = false
+            return this.$message.error('抵扣金额必须小于等于预收款单金额 不得大于')
+          }
           var money = Number(0)
           for (const key in this.dataSource) {
             // 需要数据转换
@@ -839,6 +963,7 @@ export default {
           this.$set(values, 'receiptProductVo', parameter)
           values.receiptTime = values.receiptTime.format('YYYY-MM-DD')
           console.log(values)
+          values.saleAdvancesId = this.Deduction.id
           //return
           if (that.isEdit) {
             values.id = that.$route.params.id

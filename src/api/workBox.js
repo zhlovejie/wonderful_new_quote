@@ -45,7 +45,9 @@ const api = {
   messagePushDel: '/message/message-push/del',
 
   //数据字典接口 
-  getListByCode: 'dictionary/getListByCode'
+  getListByCode: 'dictionary/getListByCode',
+  //非常规产品信息列表
+  saleValencyProduct: '/api/saleValencyProduct'
 }
 
 //数据字典 
@@ -57,6 +59,18 @@ export function queryCode(parameter) {
     params: parameter
   })
 }
+
+
+//非常规产品信息列表
+export function saleValencyProductList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.saleValencyProduct,
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 //消息推送列表  
 export function messagePushList(parameter) {
@@ -407,6 +421,7 @@ export function checkName(parameter) {
     params: parameter
   })
 }
+
 
 export function addProduct(parameter) {
   return axios({
