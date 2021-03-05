@@ -208,7 +208,7 @@
           <template v-if="isDisabled">
             <tr>
               <td colspan="4" style="padding: 0">
-                <table class="custom-table custom-table-border">
+                <table class="custom-table custom-table-border" style="margin: 20px -1px;">
                   <tr>
                     <th style="width: 15%">已付情况</th>
                     <th style="width: 35%">付款金额(元)</th>
@@ -228,82 +228,84 @@
           <template v-if="isAdd || isEdit">
             <tr>
               <td colspan="4" style="padding: 0">
-                <table class="custom-table custom-table-border">
-                  <tr>
-                    <th style="width: 15%">已付情况</th>
-                    <th style="width: 35%">付款金额(元)</th>
-                    <th style="width: 15%">付款比例(选填)</th>
-                    <th style="width: 25%">备注</th>
-                    <th style="width: 10%">操作</th>
-                  </tr>
-                  <tr v-for="(item, idx) in rebatesDetailsList" :key="item.key">
-                    <td>{{ idx + 1 }}</td>
-                    <td>
-                      <a-form-item>
-                        <a-input-number
-                          v-if="!isDisabled"
-                          style="width: 100%"
-                          :min="0"
-                          :step="1"
-                          :precision="2"
-                          v-decorator="[
-                            `rebatesDetailsList.${idx}.paymentAmount`,
-                            {
-                              initialValue: item.paymentAmount,
-                              rules: [{ required: true, message: '请输入付款金额' }],
-                            },
-                          ]"
-                          @change="(e) => itemChange(item.key, 'paymentAmount', e)"
-                        />
-                        <span v-else>{{ item.paymentAmount | moneyFormatNumber }}</span>
-                      </a-form-item>
-                    </td>
-                    <td>
-                      <a-form-item>
-                        <a-input-number
-                          v-if="!isDisabled"
-                          style="width: 100%"
-                          :min="0"
-                          :max="100"
-                          :step="1"
-                          :precision="0"
-                          v-decorator="[
-                            `rebatesDetailsList.${idx}.paymentProportion`,
-                            {
-                              initialValue: item.paymentProportion,
-                              rules: [{ required: false, message: '请输入付款比例' }],
-                            },
-                          ]"
-                          @change="(e) => itemChange(item.key, 'paymentProportion', e)"
-                        />
-                        <span v-else>{{ item.paymentProportion + '%' }}</span>
-                      </a-form-item>
-                    </td>
-                    <td>
-                      <a-form-item>
-                        <a-input
-                          v-if="!isDisabled"
-                          placeholder="备注"
-                          v-decorator="[
-                            `rebatesDetailsList.${idx}.remark`,
-                            {
-                              initialValue: item.remark,
-                              rules: [{ required: false, message: '请输入备注' }],
-                            },
-                          ]"
-                          @change="(e) => itemChange(item.key, 'remark', e)"
-                        />
-                        <span v-else>{{ item.remark }}</span>
-                      </a-form-item>
-                    </td>
-                    <td>
-                      <a href="javascript:void();" @click="removeItem(item.key)">删除</a>
-                    </td>
-                  </tr>
-                </table>
-                <a-button v-if="!isView" style="width: 100%" type="dashed" icon="plus" @click="addItem"
-                  >添加付款项</a-button
-                >
+                <div style="margin: 20px -1px;">
+                  <table class="custom-table custom-table-border">
+                    <tr>
+                      <th style="width: 15%">已付情况</th>
+                      <th style="width: 35%">付款金额(元)</th>
+                      <th style="width: 15%">付款比例(选填)</th>
+                      <th style="width: 25%">备注</th>
+                      <th style="width: 10%">操作</th>
+                    </tr>
+                    <tr v-for="(item, idx) in rebatesDetailsList" :key="item.key">
+                      <td>{{ idx + 1 }}</td>
+                      <td>
+                        <a-form-item>
+                          <a-input-number
+                            v-if="!isDisabled"
+                            style="width: 100%"
+                            :min="0"
+                            :step="1"
+                            :precision="2"
+                            v-decorator="[
+                              `rebatesDetailsList.${idx}.paymentAmount`,
+                              {
+                                initialValue: item.paymentAmount,
+                                rules: [{ required: true, message: '请输入付款金额' }],
+                              },
+                            ]"
+                            @change="(e) => itemChange(item.key, 'paymentAmount', e)"
+                          />
+                          <span v-else>{{ item.paymentAmount | moneyFormatNumber }}</span>
+                        </a-form-item>
+                      </td>
+                      <td>
+                        <a-form-item>
+                          <a-input-number
+                            v-if="!isDisabled"
+                            style="width: 100%"
+                            :min="0"
+                            :max="100"
+                            :step="1"
+                            :precision="0"
+                            v-decorator="[
+                              `rebatesDetailsList.${idx}.paymentProportion`,
+                              {
+                                initialValue: item.paymentProportion,
+                                rules: [{ required: false, message: '请输入付款比例' }],
+                              },
+                            ]"
+                            @change="(e) => itemChange(item.key, 'paymentProportion', e)"
+                          />
+                          <span v-else>{{ item.paymentProportion + '%' }}</span>
+                        </a-form-item>
+                      </td>
+                      <td>
+                        <a-form-item>
+                          <a-input
+                            v-if="!isDisabled"
+                            placeholder="备注"
+                            v-decorator="[
+                              `rebatesDetailsList.${idx}.remark`,
+                              {
+                                initialValue: item.remark,
+                                rules: [{ required: false, message: '请输入备注' }],
+                              },
+                            ]"
+                            @change="(e) => itemChange(item.key, 'remark', e)"
+                          />
+                          <span v-else>{{ item.remark }}</span>
+                        </a-form-item>
+                      </td>
+                      <td>
+                        <a href="javascript:void();" @click="removeItem(item.key)">删除</a>
+                      </td>
+                    </tr>
+                  </table>
+                  <a-button v-if="!isView" style="width: 100%" type="dashed" icon="plus" @click="addItem"
+                    >添加付款项</a-button
+                  >
+                </div>
               </td>
             </tr>
           </template>
@@ -629,6 +631,9 @@ export default {
       }
       //填充数据
       const _detail = await qualificationBorrowRebatesDetail({ id: that.record.id }).then((res) => res.data)
+      if(_detail.amountCapital === "0"){
+        _detail.amountCapital = "零"
+      }
       that.needOptions = { userId: _detail.userId }
       that.detail = _detail
       that.rebatesDetailsList = (that.detail.rebatesDetailsList || []).map(item =>{

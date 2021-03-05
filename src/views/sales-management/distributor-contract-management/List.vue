@@ -85,6 +85,12 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
+
+            <template v-if="!record.pdfUrl">
+              <a-divider type="vertical" />
+              <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
+            </template>
+
             <template v-if="record.status === 3">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('upload', record)">附件</a>
@@ -117,9 +123,10 @@ import {
   dealerContractDelete,
   dealerContractRevocation,
   dealerContractPageList,
+  dealerContractGenerateFDF
 } from '@/api/qualificationsBorrowManagement'
 
-import { getListSaleContractUser } from '@/api/contractListManagement'
+import { getListSalesman } from '@/api/contractListManagement'
 import AddForm from './module/AddForm'
 import PreView from './module/View'
 import UploadFile from './module/UploadFile'
@@ -218,7 +225,7 @@ export default {
   methods: {
     init() {
       let that = this
-      getListSaleContractUser().then((res) => (that.saleUser = res.data))
+      getListSalesman().then((res) => (that.saleUser = res.data))
       that.searchAction()
     },
     searchAction(opt) {
@@ -293,6 +300,15 @@ export default {
       }
       if (type === 'upload') {
         that.$refs.uploadFile.query(type, record)
+        return
+      }
+      if(type === 'pdf'){
+        dealerContractGenerateFDF(`id=${record.id}`).then(res =>{
+          that.$message.info(res.msg)
+            if (+res.code === 200) {
+              that.searchAction()
+            }
+        }).catch((err) => that.$message.error(err.message))
         return
       }
       that.$refs.addForm.query(type, record)

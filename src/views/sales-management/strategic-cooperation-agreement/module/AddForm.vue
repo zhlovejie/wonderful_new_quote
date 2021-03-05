@@ -163,7 +163,7 @@ import {
 } from '@/api/qualificationsBorrowManagement'
 
 //销售人员接口
-import { getListSaleContractUser } from '@/api/contractListManagement'
+import { getListSalesman } from '@/api/contractListManagement'
 import moment from 'moment'
 import Approval from './Approval'
 //客户列表选择
@@ -248,7 +248,7 @@ export default {
     moment: moment,
     init() {
       let that = this
-      let task1 = getListSaleContractUser().then((res) => (that.saleUsers = res.data))
+      let task1 = getListSalesman().then((res) => (that.saleUsers = res.data))
       return Promise.all([task1])
     },
     async handleOk(saveType) {

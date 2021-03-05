@@ -76,6 +76,11 @@
             <a type="primary" @click="doAction('view', record)">查看</a>
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('preview', record)">预览</a>
+
+            <template v-if="!record.pdfUrl">
+              <a-divider type="vertical" />
+              <a type="primary" href="javascript:;" @click="doAction('pdf', record)">生成PDF</a>
+            </template>
             <template v-if="record.status === 2 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
@@ -117,9 +122,10 @@ import {
   cooperationProtocolDelete,
   cooperationProtocolRevocation,
   cooperationProtocolPageList,
+  cooperationProtocolGenerateFDF
 } from '@/api/qualificationsBorrowManagement'
 
-import { getListSaleContractUser } from '@/api/contractListManagement'
+import { getListSalesman } from '@/api/contractListManagement'
 import AddForm from './module/AddForm'
 import PreView from './module/View'
 import UploadFile from './module/UploadFile'
@@ -218,7 +224,7 @@ export default {
   methods: {
     init() {
       let that = this
-      getListSaleContractUser().then((res) => (that.saleUser = res.data))
+      getListSalesman().then((res) => (that.saleUser = res.data))
       that.searchAction()
     },
     searchAction(opt) {
@@ -293,6 +299,15 @@ export default {
       }
       if (type === 'upload') {
         that.$refs.uploadFile.query(type, record)
+        return
+      }
+      if(type === 'pdf'){
+        cooperationProtocolGenerateFDF(`id=${record.id}`).then(res =>{
+          that.$message.info(res.msg)
+            if (+res.code === 200) {
+              that.searchAction()
+            }
+        }).catch((err) => that.$message.error(err.message))
         return
       }
       that.$refs.addForm.query(type, record)

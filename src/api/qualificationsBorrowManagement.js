@@ -80,6 +80,26 @@ export function dealerContractAddAccessoryn (parameter) {
   })
 }
 
+/**经销商合同 生成PDF */
+export function dealerContractGenerateFDF (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/dealerContract/generateFDF',
+    method: 'post',
+    data:parameter
+  })
+}
+
+
+/**战略合作协议 生成PDF */
+export function cooperationProtocolGenerateFDF (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/cooperationProtocol/generateFDF',
+    method: 'post',
+    data:parameter
+  })
+}
 
 /**战略合作协议 新增或修改 */
 export function cooperationProtocolAddOrUpdate (parameter) {
