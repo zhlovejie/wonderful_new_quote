@@ -227,7 +227,7 @@
                     { initialValue: detail['yearCost'], rules: [{ required: true, message: '请输入年服务费' }] },
                   ]"
                 /> -->
-                <span>{{ detail.yearCost }}</span>
+                <span>{{yearCost }}</span>
                 <span>元</span>
               </a-form-item>
             </td>
