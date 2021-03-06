@@ -19,20 +19,20 @@
       :loading="loading"
       @change="handleTableChange"
     >
-        <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
-        </div>
-        
-        <div slot="customerName" slot-scope="text, record, index">
-          <a href="javascript:void(0);" @click="clickVue(record)">{{text}}</a>
-        </div>
+      <div slot="order" slot-scope="text, record, index">
+        <span>{{ index + 1 }}</span>
+      </div>
+
+      <div slot="customerName" slot-scope="text, record, index">
+        <a href="javascript:void(0);" @click="clickVue(record)">{{ text }}</a>
+      </div>
     </a-table>
   </a-modal>
 </template>
 
 <script>
-import { businessList,bidList } from '@/api/agencyContract'
-const __API__ = { 1:businessList, 2:bidList }
+import { businessList, bidList } from '@/api/agencyContract'
+const __API__ = { 1: businessList, 2: bidList }
 const columns = [
   {
     align: 'center',
@@ -43,7 +43,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '合同编号',
+    title: '协议编号',
     dataIndex: 'contractNum',
   },
   {
@@ -55,7 +55,7 @@ const columns = [
     align: 'center',
     title: '客户名称',
     dataIndex: 'customerName',
-    scopedSlots: { customRender: 'customerName' }
+    scopedSlots: { customRender: 'customerName' },
   },
   {
     align: 'center',
@@ -71,23 +71,23 @@ const columns = [
     align: 'center',
     title: '提交时间',
     dataIndex: 'createdTime',
-  }
+  },
 ]
 export default {
   name: 'BusinessAndBidBorrowContractSelect',
-  data () {
+  data() {
     return {
       visible: false,
-      dataSource:[],
+      dataSource: [],
       // 表头
       columns: columns,
-      loading:false,
-      queryParam:{
-        queryType:1, //我的
-        status:3, //已通过
-        customerName:undefined //客户名称
+      loading: false,
+      queryParam: {
+        queryType: 1, //我的
+        status: 3, //已通过
+        customerName: undefined, //客户名称
       },
-      activeKey:1,
+      activeKey: 1,
       pagination: {
         current: 1,
         pageSize: 10,
@@ -95,7 +95,7 @@ export default {
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
-      }
+      },
     }
   },
   methods: {
@@ -106,7 +106,7 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
       }
-      let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam,params)
+      let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       __API__[that.activeKey](_searchParam)
         .then((res) => {
           that.loading = false
@@ -130,21 +130,21 @@ export default {
         })
         .catch((err) => (that.loading = false))
     },
-    query(queryParam={}){
+    query(queryParam = {}) {
       this.visible = true
-      this.queryParam = {...this.queryParam,...queryParam}
+      this.queryParam = { ...this.queryParam, ...queryParam }
       this.$nextTick(() => this.search())
     },
-    handleCancel(){
+    handleCancel() {
       this.visible = false
     },
-    clickVue (data) {
-      this.$emit('change', {...data,__borrowProtocol:this.activeKey})
+    clickVue(data) {
+      this.$emit('change', { ...data, __borrowProtocol: this.activeKey })
       this.handleCancel()
     },
-    tabChange(key){
+    tabChange(key) {
       this.activeKey = +key
-      this.pagination = {...this.pagination,current:1}
+      this.pagination = { ...this.pagination, current: 1 }
       this.search()
     },
     handleTableChange(pagination, filters, sorter) {
@@ -153,7 +153,7 @@ export default {
     },
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
-    }
-  }
+    },
+  },
 }
 </script>

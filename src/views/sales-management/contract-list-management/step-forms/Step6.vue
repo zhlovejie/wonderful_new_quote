@@ -177,7 +177,7 @@
             <h3>签订合同类别</h3>
             <a-form-item label="签订类别" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
               <a-select
-                placeholder="请选择签订合同类别" 
+                placeholder="请选择签订合同类别"
                 :disabled="this.$parent.routeParams.action === 'see'"
                 v-decorator="['signingClass', { rules: [{ required: true, message: '请选择签订合同类别' }] }]"
                 @change="signTypeChange"
@@ -186,6 +186,26 @@
                 <a-select-option :value="2">资质借用第三方代签合同</a-select-option>
                 <a-select-option :value="3">资质借用方提前购货合同</a-select-option>
               </a-select>
+            </a-form-item>
+            <a-form-item
+              v-if="isshow"
+              label="借用协议类型"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
+            >
+              <a-input read-only="read-only" type="text" v-decorator="['Protocol', { rules: [{ required: false }] }]" />
+            </a-form-item>
+            <a-form-item
+              v-if="isshow"
+              label="协议编号"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
+            >
+              <a-input
+                type="text"
+                read-only="read-only"
+                v-decorator="['protocolCode', { rules: [{ required: false }] }]"
+              />
             </a-form-item>
             <a-form-item hidden>
               <a-input type="text" v-decorator="['borrowProtocol', { rules: [{ required: false }] }]" />
@@ -202,8 +222,8 @@
         </a-form>
         <TecArgsList ref="tecArgsList" @selected="handlerSelected" />
 
-        <BusinessAndBidBorrowContractSelect 
-          ref="businessAndBidBorrowContractSelect" 
+        <BusinessAndBidBorrowContractSelect
+          ref="businessAndBidBorrowContractSelect"
           @change="businessAndBidBorrowContractChangeHandler"
         />
       </div>
@@ -222,7 +242,7 @@ export default {
   name: 'Step6',
   components: {
     TecArgsList,
-    BusinessAndBidBorrowContractSelect
+    BusinessAndBidBorrowContractSelect,
   },
   props: {
     queryonedata: {
@@ -232,10 +252,12 @@ export default {
   data() {
     return {
       // form
+      queryOneData: {},
       form: this.$form.createForm(this),
       contractAttribute: this.queryonedata.contractAttribute, // 0使用我方合同 1反之
       isTax: this.queryonedata.isTax, // 0含税 1不含税
       loading: false,
+      isshow: false,
       timer: 0,
       id: 0,
       formItemLayout: {
@@ -307,20 +329,26 @@ export default {
               //that.tecArgsUrl = otherInfo.tecArgsUrl
               that.tecArgsUrl = ''
               that.tecArgsUploadUrl = otherInfo.tecArgsUrl
+              if ([2, 3].includes(+otherInfo.signingClass)) {
+                this.isshow = true
+              }
+              this.$nextTick(() => {
+                that.form.setFieldsValue({
+                  requirementSpecification: otherInfo.requirementSpecification || '',
+                  contractDispute: otherInfo.contractDispute || 1,
+                  signForm: otherInfo.signForm || 0,
+                  emailA: otherInfo.emailA || '',
+                  emailB: otherInfo.emailB || '',
+                  wxA: otherInfo.wxA || '',
+                  isNeedFreshChaper: otherInfo.isNeedFreshChaper,
+                  isNeedTecArgs: otherInfo.isNeedTecArgs,
 
-              that.form.setFieldsValue({
-                requirementSpecification: otherInfo.requirementSpecification || '',
-                contractDispute: otherInfo.contractDispute || 1,
-                signForm: otherInfo.signForm || 0,
-                emailA: otherInfo.emailA || '',
-                emailB: otherInfo.emailB || '',
-                wxA: otherInfo.wxA || '',
-                isNeedFreshChaper: otherInfo.isNeedFreshChaper,
-                isNeedTecArgs: otherInfo.isNeedTecArgs,
-
-                signingClass:otherInfo.signingClass,
-                borrowProtocol:otherInfo.borrowProtocol,
-                protocolId:otherInfo.protocolId
+                  signingClass: otherInfo.signingClass,
+                  borrowProtocol: otherInfo.borrowProtocol,
+                  protocolId: otherInfo.protocolId,
+                  protocolCode: otherInfo.protocolCode,
+                  Protocol: otherInfo.borrowProtocol === 1 ? '经营借用协议' : '投标借用协议',
+                })
               })
 
               try {
@@ -476,16 +504,12 @@ export default {
         }
       }
 
-      
-
-
       // 先校验，通过表单校验后，才进入下一步
       validateFields((err, values) => {
         console.log('先校验，通过表单校验后，才进入下一步', values)
         if (!err) {
-          
-          let {signingClass,borrowProtocol} = values
-          if(signingClass && signingClass > 1 && !borrowProtocol){
+          let { signingClass, borrowProtocol } = values
+          if (signingClass && signingClass > 1 && !borrowProtocol) {
             that.$message.info('资质借用合同必须选择对应的协议')
             that.signTypeChange(signingClass)
             return
@@ -507,11 +531,11 @@ export default {
             tecArgsUrl: that.tecArgsUrl || that.tecArgsUploadUrl,
 
             //资质借用专用
-            signingClass:values.signingClass,
-            borrowProtocol:values.borrowProtocol,
-            protocolId:values.protocolId
+            signingClass: values.signingClass,
+            borrowProtocol: values.borrowProtocol,
+            protocolId: values.protocolId,
+            protocolCode: values.protocolCode,
           }
-
 
           if (that.$parent.routeParams.action === 'add') {
             console.log('新增模式 添加参数 contractModifyFlag：0')
@@ -711,28 +735,34 @@ export default {
       }
       return isDocType && isLt10M
     },
-    signTypeChange(val){
+    signTypeChange(val) {
       const that = this
-      let {customerName} =  that.queryonedata
-      if([2,3].includes(+val)){
+
+      let customerId = that.queryOneData.customerInfo.id
+      if ([2, 3].includes(+val)) {
+        this.isshow = true
         that.$refs.businessAndBidBorrowContractSelect.query({
-          customerName
+          customerId: customerId,
         })
-      }else{
+      } else {
+        this.isshow = false
         this.form.setFieldsValue({
-          borrowProtocol:undefined,
-          protocolId:undefined
+          borrowProtocol: undefined,
+          protocolId: undefined,
         })
       }
     },
-    businessAndBidBorrowContractChangeHandler(data){
-      let {id,__borrowProtocol} = data
+    businessAndBidBorrowContractChangeHandler(data) {
+      console.log(data)
+      let { id, __borrowProtocol, contractNum } = data
       this.form.setFieldsValue({
-        borrowProtocol:__borrowProtocol,
-        protocolId:id
+        borrowProtocol: __borrowProtocol,
+        protocolId: id,
+        protocolCode: contractNum,
+        Protocol: __borrowProtocol === 1 ? '经营借用协议' : '投标借用协议',
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
