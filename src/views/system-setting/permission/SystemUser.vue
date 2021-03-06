@@ -13,7 +13,7 @@
       <a-form-item label="部门">
         <a-select style="width: 150px" v-model="selectedDepartment">
           <a-select-option :value="0">请选择</a-select-option>
-          <a-select-option v-for="val in department" :value="val.id">{{ val.departmentName }}</a-select-option>
+          <a-select-option v-for="val in department" :key="val.id" :value="val.id">{{ val.departmentName }}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item>

@@ -14,21 +14,14 @@
   },
   "dependencies": {
     "@antv/data-set": "^0.10.1",
-    "@tinymce/tinymce-vue": "^2.0.0",
     "accounting": "^0.4.1",
-    "ant-design-vue": "^1.4.11",
+    "ant-design-vue": "^1.7.2",
     "axios": "^0.19.0",
-    "braft-editor": "^2.3.2",
     "core-js": "^2.6.9",
     "cross-env": "^5.2.0",
     "enquire.js": "^2.1.6",
     "ezuikit-js": "^0.2.3",
-    "file-save": "^0.2.0",
     "file-saver": "^2.0.2",
-    "html2canvas": "^1.0.0-rc.3",
-    "js-cookie": "^2.2.0",
-    "jspdf": "^1.5.3",
-    "jszip": "^3.2.2",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",
     "md5": "^2.2.1",
@@ -40,7 +33,6 @@
     "vue-clipboard2": "^0.2.1",
     "vue-cropper": "0.4.4",
     "vue-ls": "^3.2.0",
-    "vue-print-nb": "^1.4.0",
     "vue-qr": "^2.2.1",
     "vue-router": "^2.2.0",
     "vue-svg-component-runtime": "^1.0.1",
@@ -61,6 +53,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.8.0",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-import": "^1.11.0",
     "css-loader": "^3.0.0",
     "eslint": "^5.8.0",
@@ -137,7 +130,10 @@
         {
           "ignoreReadBeforeAssign": false
         }
-      ]
+      ],
+      "comma-dangle":0,
+      "space-before-function-paren":0,
+      "spaced-comment":0
     }
   },
   "postcss": {

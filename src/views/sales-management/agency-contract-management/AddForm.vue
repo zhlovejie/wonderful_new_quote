@@ -21,7 +21,9 @@
           <tr>
             <td style="width: 15%">合同编号</td>
             <td style="width: 35%">
-              <span>{{ detail.contractNum }}</span>
+              <!-- <span>{{ detail.contractNum }}</span> -->
+              <span v-if="!isDisabled" style="color: #999">系统自动生成</span>
+              <span v-else>{{ detail.contractNum }}</span>
             </td>
             <td style="width: 15%">签订日期</td>
             <td style="width: 35%">
@@ -63,7 +65,7 @@
                     item.salesmanName
                   }}</a-select-option>
                 </a-select>
-                <span v-else>{{ detail.salemanName }}</span>
+                <span v-else>{{ detail.salesmanName }}</span>
               </a-form-item>
             </td>
             <td>客户名称</td>
@@ -482,7 +484,7 @@
             <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
             <a-button
               key="submit"
-              style="margin-left: 10px"
+              style="margin: 0 10px"
               type="primary"
               icon="check"
               :loading="spinning"
@@ -495,7 +497,7 @@
         <template v-else>
           <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
           <div style="text-align: center">
-            <a-button v-if="isDisabled" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
+            <a-button v-if="isDisabled" style="margin-left: 10px" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
             <a-button
               v-if="!isDisabled"
               style="margin-left: 10px"
@@ -615,13 +617,13 @@ export default {
         that.saleUsers = res.data
       })
       queue.push(task2)
-      if (that.isAdd) {
-        let task3 = agencyContractGenerateContractNum().then((res) => {
-          let detail = { ...that.detail, contractNum: res.data }
-          that.detail = detail
-        })
-        queue.push(task3)
-      }
+      // if (that.isAdd) {
+      //   let task3 = agencyContractGenerateContractNum().then((res) => {
+      //     let detail = { ...that.detail, contractNum: res.data }
+      //     that.detail = detail
+      //   })
+      //   queue.push(task3)
+      // }
 
       //let task4 = that.loadAreaAction(100000).then(res => that.birthplaceOptions = res)
       //queue.push(task4)
@@ -713,9 +715,9 @@ export default {
           res.data.productsVal = _arr.length >= 1 ? _arr[0].split(',').map((v) => +v) : []
           res.data.productsTxt = _arr.length === 2 ? _arr[1] : undefined
         }
-        if (res.data.salesmanId) {
-          res.data.salemanName = that.getSaleManName(res.data.salesmanId)
-        }
+        // if (res.data.salesmanId) {
+        //   res.data.salemanName = that.getSaleManName(res.data.salesmanId)
+        // }
         that.detail = res.data
 
         //是否显示保证金
@@ -745,7 +747,7 @@ export default {
             return
           }
 
-          values.contractNum = that.detail.contractNum
+          //values.contractNum = that.detail.contractNum
           if (that.isEdit) {
             values.id = that.record.id
           }

@@ -80,12 +80,8 @@
 
 <script>
 import { STable } from '@/components'
-import { getFileManagementList, downloadFile, delFileManagement } from '@/api/OperationalScheme'
 import {
-  uploadAndroidApk,
   deleteAndroidVersion,
-  editAndroidVersion,
-  addAndroidVersion,
   listAndroidVersion,
 } from '@/api/workBox'
 
@@ -192,59 +188,10 @@ export default {
         },
         onCancel() {
           console.log('Cancel')
-        },
+        }
       })
-    },
-
-    /* handleBatchDownload () {
-      const data = [] // 需要下载打包的路径, 可以是本地相对路径, 也可以是跨域的全路径
-      const selectedRows = this.selectedRows
-      if (selectedRows.length < 1) {
-        this.$message.error('请选择下载信息')
-        return
-      }
-      for (let j = 0; j < selectedRows.length; j++) {
-        const url = selectedRows[j].fileUrl
-        downloadFile(url)
-      }
-    },
-*/
-    // handleBatchDownload() {
-    //   const data = [] // 需要下载打包的路径, 可以是本地相对路径, 也可以是跨域的全路径
-    //   let selectedRows= this.selectedRows;
-    //   if (selectedRows.length<1){
-    //     this.$message.error('请选择下载信息')
-    //     return
-    //   }
-    //   for (let j=0;j<selectedRows.length;j++){
-    //     data.push(selectedRows[j].fileUrl)
-    //   }
-    //   const zip = new JSZip()
-    //   const cache = {}
-    //   const promises = []
-    //   data.forEach(item => {
-    //     const parms={ 'fileUrl': item }
-    //     const promise = getFile(parms).then(data => { // 下载文件, 并存成ArrayBuffer对象
-    //       const arr_name = item.split("/")
-    //       const file_name = arr_name[arr_name.length - 1] // 获取文件名
-    //       zip.file(file_name, data, { binary: true }) // 逐个添加文件
-    //       cache[file_name] = data
-    //     })
-    //     promises.push(promise)
-    //   })
-    //
-    //   Promise.all(promises).then(() => {
-    //     zip.generateAsync({type:"blob"}).then(content => { // 生成二进制流
-    //       FileSaver.saveAs(content, "打包下载.zip") // 利用file-saver保存文件
-    //     })
-    //   })
-    // },
-    // onSelectChange(selectedRowKeys, selectedRows) {
-    //   console.log('onSelectChange 点击了', selectedRows)
-    //   this.selectedRowKeys = selectedRowKeys
-    //   this.selectedRows = selectedRows
-    // },
-  },
+    }
+  }
 }
 </script>
 

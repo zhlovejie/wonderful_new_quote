@@ -95,7 +95,7 @@
                 placeholder="请选择"
                 v-decorator="['departmentId', {rules: [{required: true, message: '请选择部门'}]}]"
                 :disabled="disable">
-                <a-select-option v-for="item in departmentList" :value="item.id">{{ item.departmentName }}
+                <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{ item.departmentName }}
                 </a-select-option>
               </a-select>
             </a-form-item>

@@ -4,13 +4,19 @@ module.exports = {
     [
       '@babel/preset-env',
       {
-        'useBuiltIns': 'entry'
+        'useBuiltIns': 'entry',
+        'corejs':2
       }
     ]
   ],
   "plugins": [
     ["@babel/plugin-transform-runtime",{}]
-  ]
+  ],
+  env: {
+      development: {
+        plugins: ['dynamic-import-node']
+      }
+  }
   // if your use import on Demand, Use this code
   // ,
   // plugins: [

@@ -14,7 +14,6 @@
 <script>
 import { carIllegalUpload } from '@/api/vehicleManagement'
 import UploadFile from './UploadFile'
-import { file } from 'jszip/lib/object'
 
 let uuid = () =>Math.random().toString(32).slice(-10)
 

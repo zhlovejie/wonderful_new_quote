@@ -35,7 +35,6 @@
 </template>
 <script>
 import { getUploadPath2 } from '@/api/common'
-import { array } from 'jszip/lib/support'
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()

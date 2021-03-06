@@ -544,12 +544,60 @@ export function receiptGetSumAmountByList(parameter) {
     params: parameter
   })
 }
+//----------------------返款申请----------------------
+/**返款申请  新增或者修改 */
+export function qualificationBorrowRebatesAddAndUpdate(data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/addAndUpdateRebates',
+    method: 'post',
+    data: data
+  })
+}
+
+/**返款申请  审批 */
+export function qualificationBorrowRebatesApprove(data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/approveRebates',
+    method: 'post',
+    data: data
+  })
+}
+/**返款申请  删除 */
+export function qualificationBorrowRebatesDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/delRebates',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**返款申请  详情 */
+export function qualificationBorrowRebatesDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/getRebatesDetail',
+    method: 'get',
+    params: parameter
+  })
+}
 
 /**开票单列表金额汇总 */
 export function openpaperGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/openpaper/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**返款申请  列表 */
+export function qualificationBorrowRebatesPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/getRebatesPageList',
     method: 'get',
     params: parameter
   })
@@ -564,12 +612,30 @@ export function saleIncomeGetSumAmountByList(parameter) {
     params: parameter
   })
 }
+/**返款申请  列表 */
+export function qualificationBorrowRebatesRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
 
 /**退款单列表金额汇总 */
 export function saleRefundGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/saleRefund/refund/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**返款申请  上传附件 */
+export function qualificationBorrowRebatesUploadAttachment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/rebates/uploadAttachment',
     method: 'get',
     params: parameter
   })
@@ -581,6 +647,38 @@ export function advancesGetSumAmountByList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/advances/getSumAmountByList',
+    method: 'get',
+    params: parameter
+  })
+}
+//----------------------返款申请-END------------------
+
+//----------------------业绩扣除单----------------------
+/**业绩扣除单  新增或者修改 */
+export function qualificationBorrowPerformanceDeductionAddAndUpdate(data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/addAndUpdatePerformanceDeduction',
+    method: 'post',
+    data: data
+  })
+}
+
+/**业绩扣除单  审批 */
+export function qualificationBorrowPerformanceDeductionApprove(data) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/approvePerformanceDeduction',
+    method: 'post',
+    data: data
+  })
+}
+
+/**业绩扣除单  删除 */
+export function qualificationBorrowPerformanceDeductionDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/delPerformanceDeduction',
     method: 'get',
     params: parameter
   })
@@ -692,3 +790,44 @@ export function exprotAction(type, param, fileName = 'download.xls') {
       }
     })
 }
+/**业绩扣除单  详情 */
+export function qualificationBorrowPerformanceDeductionDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/getPerformanceDeductionDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**业绩扣除单  列表 */
+export function qualificationBorrowPerformanceDeductionPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/getPerformanceDeductionPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**业绩扣除单  撤回 */
+export function qualificationBorrowPerformanceDeductionRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**业绩扣除单  上传附件 */
+export function qualificationBorrowPerformanceDeductionUploadAttachment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/performance-deduction/uploadAttachment',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//----------------------业绩扣除单-END------------------

@@ -30,7 +30,6 @@ Vue.prototype.$message.config({
 })
 
 Vue.prototype.$_ = _
-// import vuePrint from 'vue-print-nb'
 require('video.js/dist/video-js.css')
 require('vue-video-player/src/custom-theme.css')
 

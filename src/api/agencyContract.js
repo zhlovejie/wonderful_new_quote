@@ -1,11 +1,310 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
+
+//代签合同列表接口 
+export function purchaseList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/pageList',
+    method: 'get',
+    params: params
+  })
+}
+
+// 代签合同提交审核 
+
+export function purchaseProcess(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/startPurchaseContractProcess',
+    method: 'post',
+    data: params
+  })
+}
+
+//代签合同撤回 
+export function purchaseWithdra(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/withdrawPurchaseContract',
+    method: 'post',
+    data: params
+  })
+}
+
+
+//代签合同删除 
+export function purchaseDel(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase-contract/removePurchaseContractProcess',
+    method: 'post',
+    data: params
+  })
+}
+
+
+
+
+
+
+
+//产品售后服务外包协议列表
+export function afterList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/pageList',
+    method: 'get',
+    params: params
+  })
+}
+//产品售后服务流水号
+export function afterProtocolNum(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/generateProtocolNum',
+    method: 'get',
+    params: params
+  })
+}
+
+// 产品售后服务外包协议撤回
+export function afterrevocation(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/revocation',
+    method: 'post',
+    data: params
+  })
+}
+// 产品售后服务外包协议删除
+export function afterdelete(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/delete',
+    method: 'post',
+    data: params
+  })
+}
+// 产品售后服务外包协议详情
+export function afterdetail(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/detail',
+    method: 'get',
+    params: params
+  })
+}
+
+// 产品售后服务外包协议修改 新增
+export function afteraddOrUpdate(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/addOrUpdate',
+    method: 'post',
+    data: params
+  })
+}
+// 产品售后服务外包协议审批
+export function afteraddOrapprove(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/approve',
+    method: 'post',
+    data: params
+  })
+}
+
+// 根据资质借用id查询产品售后服务外包协议详情
+export function afterDetailBorrowId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/after-outsource-protocol/getDetailBorrowId',
+    method: 'get',
+    params: params
+  })
+}
+
+
+
+
+
+
+
+
+// 投标借用列表 
+export function bidList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/pageList',
+    method: 'get',
+    params: params
+  })
+}
+// 投标借用撤回
+export function bidrevocation(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/revocation',
+    method: 'post',
+    data: params
+  })
+}
+// 投标借用删除
+export function biddelete(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/delete',
+    method: 'post',
+    data: params
+  })
+}
+// 投标借用列表详情 
+export function biddetail(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/detail',
+    method: 'get',
+    params: params
+  })
+}
+
+export function bidDetailBorrowId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/getDetailBorrowId',
+    method: 'get',
+    params: params
+  })
+}
+
+
+// 投标借用修改
+export function bidaddOrUpdat(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/addOrUpdate',
+    method: 'post',
+    data: params
+  })
+}
+// 投标流水
+export function bidProtocolNum(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/generateProtocolNum',
+    method: 'get',
+    params: params
+  })
+}
+
+// 投标借用审批
+export function bidapprove(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bid-borrow-protocol/approve',
+    method: 'post',
+    data: params
+  })
+}
+
+
+
+
+
+
+
+
+
+// 经营借用列表
+export function businessList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/pageList',
+    method: 'get',
+    params: params
+  })
+}
+
+// 经营借用列表详情 
+export function businessdetail(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/detail',
+    method: 'get',
+    params: params
+  })
+}
+
+export function businessDetailBorrowId(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/getDetailBorrowId',
+    method: 'get',
+    params: params
+  })
+}
+
+// 经营借用列表撤回
+export function businessrevocation(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/revocation',
+    method: 'post',
+    data: params
+  })
+}
+// 经营借用列表修改
+export function businessaddOrUpdate(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/addOrUpdate',
+    method: 'post',
+    data: params
+  })
+}
+// 经营流水号 
+export function generateProtocolNum(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/generateProtocolNum',
+    method: 'get',
+    params: params
+  })
+}
+
+// 经营借用列表审批
+export function businessapprove(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/approve',
+    method: 'post',
+    data: params
+  })
+}
+// 经营借用删除
+export function businessdelete(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/business-borrow-protocol/delete',
+    method: 'post',
+    data: params
+  })
+}
+
+
+
+
+
+
 //代理合同接口
 
 /**新增或修改 */
-export function agencyContractAddOrUpdate (params) {
+export function agencyContractAddOrUpdate(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/addOrUpdate',
@@ -14,7 +313,7 @@ export function agencyContractAddOrUpdate (params) {
   })
 }
 
-export function agencyContractApprove (params) {
+export function agencyContractApprove(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/approve',
@@ -23,7 +322,7 @@ export function agencyContractApprove (params) {
   })
 }
 
-export function agencyContractDel (params) {
+export function agencyContractDel(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/delete',
@@ -32,7 +331,7 @@ export function agencyContractDel (params) {
   })
 }
 
-export function agencyContractDetail (params) {
+export function agencyContractDetail(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/detail',
@@ -42,7 +341,7 @@ export function agencyContractDetail (params) {
 }
 
 /**获取合同流水号 */
-export function agencyContractGenerateContractNum (params) {
+export function agencyContractGenerateContractNum(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/generateContractNum',
@@ -51,7 +350,7 @@ export function agencyContractGenerateContractNum (params) {
   })
 }
 
-export function agencyContractPageList (params) {
+export function agencyContractPageList(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/pageList',
@@ -60,7 +359,7 @@ export function agencyContractPageList (params) {
   })
 }
 
-export function agencyContractGenerateFDF (params) {
+export function agencyContractGenerateFDF(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/generateFDF',
@@ -69,7 +368,7 @@ export function agencyContractGenerateFDF (params) {
   })
 }
 
-export function agencyContractRevocation (params) {
+export function agencyContractRevocation(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContract/revocation',
@@ -79,7 +378,7 @@ export function agencyContractRevocation (params) {
 }
 
 
-export function agencyContractAttachmentAddOrUpdate (params) {
+export function agencyContractAttachmentAddOrUpdate(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContractAttachment/addOrUpdate',
@@ -88,7 +387,7 @@ export function agencyContractAttachmentAddOrUpdate (params) {
   })
 }
 
-export function agencyContractAttachmentDel (params) {
+export function agencyContractAttachmentDel(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContractAttachment/delete',
@@ -97,7 +396,7 @@ export function agencyContractAttachmentDel (params) {
   })
 }
 
-export function agencyContractAttachmentList (params) {
+export function agencyContractAttachmentList(params) {
   return axios({
     baseURL: system.baseURL,
     url: '/agencyContractAttachment/list',

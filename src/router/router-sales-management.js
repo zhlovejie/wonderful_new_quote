@@ -618,8 +618,39 @@ export default {
             title: '进款单',
             permission: ['permission']
           }
+        },
+        {
+          path: '/sale/refund-apply/List',
+          name: 'sale-refund-apply-list',
+          hidden: true,
+          component: () => import('@/views/sale/refund-apply/List'),
+          meta: {
+            title: '返款申请',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sale/record-deducted/List',
+          name: 'sale-record-deducted-list',
+          hidden: true,
+          component: () => import('@/views/sale/record-deducted/List'),
+          meta: {
+            title: '业绩扣除单',
+            permission: ['permission']
+          }
         }
       ]
+    },
+    {
+      path: '/sale/qualifications-borrow-management-list',
+      name: 'qualifications-borrow-management-list',
+      component: () => import('@/views/sale/qualifications-borrow-management/List'),
+      meta: {
+        title: '资质借用管理',
+        icon: 'team',
+        keepAlive: false,
+        permission: ['permission']
+      }
     },
     {
       path: '/sales-management/contract-list-management',
@@ -646,6 +677,17 @@ export default {
           component: () => import('@/views/sales-management/contract-list-management/step-forms/basicInformation1'),
           meta: {
             title: '申请合同',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/contractBehalf/step-forms/basicInformation1',
+          name: 'basicInformation2',
+          hidden: true,
+          component: () => import('@/views/sales-management/contractBehalf/step-forms/basicInformation1'),
+          meta: {
+            title: '代签购货合同',
             keepAlive: false,
             permission: ['permission']
           }
@@ -746,6 +788,99 @@ export default {
             permission: ['permission']
           }
         },
+        {
+          path: '/sales-management/distributor-contract-management/list',
+          name: 'distributor-contract-management-list',
+          component: () => import('@/views/sales-management/distributor-contract-management/List'),
+          meta: {
+            title: '经销商合同',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/strategic-cooperation-agreement/list',
+          name: 'strategic-cooperation-agreement-list',
+          component: () => import('@/views/sales-management/strategic-cooperation-agreement/List'),
+          meta: {
+            title: '战略合作协议',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/businessBorrowing/Business_borrowingList',
+          name: 'Business_borrowingList',
+          component: () => import('@/views/sales-management/businessBorrowing/Business_borrowingList'),
+          meta: {
+            title: '经营借用协议',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },{
+          path: '/sales-management/businessBorrowing/agencyContractView',
+          name: 'Business_borrowingView',
+          component: () => import('@/views/sales-management/businessBorrowing/agencyContractView'),
+          meta: {
+            title: '经营借用协议预览',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/bidBorrowing/Bid_borrowingList',
+          name: 'Bid_borrowingList',
+          component: () => import('@/views/sales-management/bidBorrowing/Bid_borrowingList'),
+          meta: {
+            title: '投标借用协议',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/bidBorrowing/agencyContractView',
+          name: 'Bid_borrowingView',
+          component: () => import('@/views/sales-management/bidBorrowing/agencyContractView'),
+          meta: {
+            title: '投标借用协议预览',
+            permission: ['permission']
+          }
+        }, {
+          path: '/sales-management/afterSales',
+          name: 'afterSalesList',
+          component: () => import('@/views/sales-management/afterSales/afterSalesList'),
+          meta: {
+            title: '产品售后服务外包协议',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/afterSales/agencyContractView',
+          name: 'afterSalesView',
+          component: () => import('@/views/sales-management/afterSales/agencyContractView'),
+          meta: {
+            title: '产品售后服务外包协议预览',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/contractBehalf/List',
+          name: 'contractBehalfList',
+          component: () => import('@/views/sales-management/contractBehalf/List'),
+          meta: {
+            title: '代签购货合同',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/contractBehalf/preview/previewTripartiteContract',
+          name: 'previewTripartiteContracts', //三方合同
+          hidden: true,
+          component: () => import('@/views/sales-management/contractBehalf/preview/previewTripartiteContract'),
+          meta: {
+            title: '代签购货合同',
+            permission: ['permission']
+          }
+        }
       ]
     },
     {
