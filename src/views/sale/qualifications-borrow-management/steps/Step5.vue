@@ -487,7 +487,7 @@ export default {
       let that = this
       await that.form.resetFields()
       that.detail = {}
-      this.yearCosts()
+
       await that.init()
       //debugger
       if (that.isAdd) {
@@ -510,6 +510,9 @@ export default {
           that.getCity(1, arr[0], react[0])
           that.getCity(2, arr[1], react[1])
           that.getCity(3, null, react[2])
+          this.details.paymentCount = res.data.paymentCount
+          this.details.paymentAmount = res.data.paymentAmount
+          this.yearCosts()
         })
       } catch (err) {
         that.spinning = false
