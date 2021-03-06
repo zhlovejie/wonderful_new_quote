@@ -202,14 +202,16 @@
             <div class="content-p">
               十二、合同争议的解决方式：本合同在履行过程中发生的争执，由双方当事人协商解决，也可由当地工商行政管理部门调解；协商或调解不成，按下列第
               <span class="span-underline" v-if="contractDispute === 1">一</span
-              ><span class="span-underline" v-else>二</span>种方式解决。
+              ><span class="span-underline" v-else-if="contractDispute === 2">二</span>
+              <span class="span-underline" v-else>三</span>
+              种方式解决。
             </div>
             <div class="content-p p-text-index">（一）、提交仲裁委员会仲裁；</div>
             <div class="content-p p-text-index">
               （二）、向 <span style="margin: 0 12px; text-decoration: underline">甲</span> 方所在地人民法院提起诉讼
             </div>
             <div class="content-p p-text-index">
-              （二）、向<span style="margin: 0 12px; text-decoration: underline">乙</span>方所在地人民法院提起诉讼
+              （三）、向<span style="margin: 0 12px; text-decoration: underline">乙</span>方所在地人民法院提起诉讼
             </div>
             <!-- <div class="content-p">
               十二、合同争议的解决方式：本合同在履行过程中发生的争执，由双方当事人协商解决，也可由当地工商行政管理部门调解；协商或调解不成，按下列第
@@ -379,7 +381,7 @@ export default {
       demandUnit: '', // 需方（乙方）
       chineseTotalAmount: '零',
       totalAmount: 0,
-      requirementSpecification: '无', // 需方产品特殊要求说明
+      reauirementSpecification: '无', // 需方产品特殊要求说明
       qualityFrame: 3, // 主框架质保期
       qualityElectronics: 1, // 电器件质保期
       qualityLayer: 3, // 表面涂层质保期
@@ -698,7 +700,7 @@ export default {
           this.instanceId = react.instanceId
           this.contractNum = react.contractNum
           this.demandUnit = react.customerName
-          this.createTime = react.signingDate
+          this.createTime = react.signingDate.substr(0, 10)
           this.data = res.data.purchaseContractProductDetailVoList
           this.chineseTotalAmount = res.data.chineseTotalAmount
           this.totalAmount = parseFloat(res.data.totalAmount)
@@ -778,7 +780,7 @@ export default {
       that.$nextTick(() => {
         let _from = that.$route.params.from || 'contractBehalfList'
         //that.$router.push({ name: _from })
-        that.$router.push({ name: _from ,params:{...(that.$route.params || {})}})
+        that.$router.push({ name: _from, params: { ...(that.$route.params || {}) } })
       })
     },
     // 通过

@@ -1,5 +1,5 @@
 <template>
-<!--投标借用协议预览 -->
+  <!--投标借用协议预览 -->
   <a-spin :spinning="spinning">
     <div>
       <div class="contract-wrap" id="pdfDom">
@@ -42,100 +42,90 @@
           </div>
           <div class="main-content-wrap">
             <div class="content-p">
-             甲、乙双方本着公平公正、互惠互利的原则，在平等自愿、公平公正的基础上，协商一致，达成如下协议，双方共同遵守。
+              甲、乙双方本着公平公正、互惠互利的原则，在平等自愿、公平公正的基础上，协商一致，达成如下协议，双方共同遵守。
             </div>
 
             <div class="content-p">第一条：</div>
             <div class="content-p p-text-index">
-              乙方因经营所需借用甲方资质，以甲方名义进行项目名称：<span class="span-underline">{{ detail.fullName }}</span>
-              项目编号：<span class="span-underline">{{ detail.fullName }}</span> 的项目投标。
+              乙方因经营所需借用甲方资质，以甲方名义进行项目名称：<span class="span-underline">{{
+                detail.projectName
+              }}</span>
+              项目编号：<span class="span-underline">{{ detail.projectNum }}</span> 的项目投标。
               乙方承诺在此投标过程中，甲方代替乙方所签订的所有与本投标项目相关的合同、协议均为乙方的意愿，属于乙方独立经营行为与甲方
               无关；且项目经营过程中所产生的一切法律后果以及违约责任均由乙方承担。乙方承诺在借用甲方资质以甲方的名义进行产品销售或项
               目投标过程中，遵守中华人民共和国法律法规，无违规违法行为。
             </div>
-               <div class="content-p">第二条：</div>
+            <div class="content-p">第二条：</div>
             <div class="content-p p-text-index">
               项目投标保证金由乙方负责，乙方在项目投标前将全额保证金打入甲方公户，通过甲方公户汇入招标单位账户。招标结束待保证金退还甲方账户后，由甲方退还给乙方。
             </div>
-               <div class="content-p">第三条：</div>
+            <div class="content-p">第三条：</div>
             <div class="content-p p-text-index">
-           此协议一经签订，乙方应向甲方交纳<span class="span-underline">{{ detail.earnestMoney }}</span>万元信誉保证金，
-           保证诚信公正的形式投标。若无中标保证金在三个工作日内无息退还。
-           若投标过程中招标单位发现乙方用甲方资质以陪标形式进行投标，保证金不予以退还。
-           如项目中标后此保证金将作为乙方支付甲方的货款使用。
+              此协议一经签订，乙方应向甲方交纳<span class="span-underline">{{ detail.earnestMoney }}</span
+              >万元信誉保证金， 保证诚信公正的形式投标。若无中标保证金在三个工作日内无息退还。
+              若投标过程中招标单位发现乙方用甲方资质以陪标形式进行投标，保证金不予以退还。
+              如项目中标后此保证金将作为乙方支付甲方的货款使用。
             </div>
-               <div class="content-p">第四条：</div>
+            <div class="content-p">第四条：</div>
             <div class="content-p p-text-index">
               项目中标后，甲方将代替乙方与招标单位签订《供货合同》。此合同签订后，甲乙双方也应签订《供货合同》，甲方在收到乙方全额货款后，方可发货。
             </div>
-               <div class="content-p">第五条：</div>
+            <div class="content-p">第五条：</div>
+            <div class="content-p p-text-index">乙方不得透漏双方合作的机密，不得对甲方的形象和利益带来损害。</div>
+
+            <div class="content-p">第六条：</div>
             <div class="content-p p-text-index">
- 乙方不得透漏双方合作的机密，不得对甲方的形象和利益带来损害。
+              协议未尽事宜另行协商确定。若发生合同纠纷应协商解决，协商不成，可依法向甲方辖区内人民法院起诉。
             </div>
 
-   <div class="content-p">第六条：</div>
+            <div class="content-p">第七条：</div>
             <div class="content-p p-text-index">
-             协议未尽事宜另行协商确定。若发生合同纠纷应协商解决，协商不成，可依法向甲方辖区内人民法院起诉。
+              乙方在本项目经营过程中与任何第三方所产生的一切债权债务关系与甲方无关。
             </div>
-
-   <div class="content-p">第七条：</div>
+            <div class="content-p">第八条：</div>
             <div class="content-p p-text-index">
-            乙方在本项目经营过程中与任何第三方所产生的一切债权债务关系与甲方无关。
+              在项目交付过程中如发生安全伤亡事故，均由乙方独立承担一切责任和全部后果。甲方特提出免责声明。
             </div>
-               <div class="content-p">第八条：</div>
-            <div class="content-p p-text-index">
-         在项目交付过程中如发生安全伤亡事故，均由乙方独立承担一切责任和全部后果。甲方特提出免责声明。
-            </div>
-               <div class="content-p">第九条：</div>
-            <div class="content-p p-text-index">
-           本合同签字盖章后生效，一式两份，甲、乙双方各执一份。
-            </div>
+            <div class="content-p">第九条：</div>
+            <div class="content-p p-text-index">本合同签字盖章后生效，一式两份，甲、乙双方各执一份。</div>
 
-
-
-           
-              <div class="card-wrap" style="overflow: hidden">
-                <div class="card">
-                  <p class="card-tit">甲方</p>
-                   <p style="position: relative">
-                    甲方（盖章）：
-                    <img
-                      v-if="detail.commonSeal"
-                      style="position: absolute; width: 140px; left: 35%; top: -50%"
-                      :src="detail.commonSeal"
-                      alt="公章"
-                    />
-                  </p>
-                      <p>
-                    代理人：
-                    <img
-                      v-if="detail.saleUserSeal"
-                      style="height: 50px; width: auto; vertical-align: middle"
-                      :src="detail.saleUserSeal"
-                      alt="销售人员章"
-                    />
-                  </p>
-                   <p>
-                    日期<span class="span-paddings">{{ detail.signingDate }}</span>
-                  </p>
-                </div>
-                <div class="card">
-                  <p class="card-tit">乙方</p>
-                  <p>
-                      甲方（盖章）：<span class="span-paddings">{{ detail.customerName }}</span>
-                  </p>
-                  <p>
-                   代理人：
-                  </p>
-                  <p>
-                    日期：
-                  </p>
-                  
-                </div>
+            <div class="card-wrap" style="overflow: hidden">
+              <div class="card">
+                <p class="card-tit">甲方</p>
+                <p style="position: relative">
+                  甲方（盖章）：
+                  <img
+                    v-if="detail.setCommonSeal"
+                    style="position: absolute; width: 140px; left: 35%; top: -50%"
+                    :src="detail.setCommonSeal"
+                    alt="公章"
+                  />
+                </p>
+                <p>
+                  代理人：
+                  <img
+                    v-if="detail.saleUserSeal"
+                    style="height: 50px; width: auto; vertical-align: middle"
+                    :src="detail.saleUserSeal"
+                    alt="销售人员章"
+                  />
+                </p>
+                <p>
+                  日期<span class="span-paddings">{{ detail.signingDate }}</span>
+                </p>
+              </div>
+              <div class="card">
+                <p class="card-tit">乙方</p>
+                <p>
+                  甲方（盖章）：<span class="span-paddings">{{ detail.customerName }}</span>
+                </p>
+                <p>代理人：</p>
+                <p>日期：</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </div>
   </a-spin>
 </template>
@@ -147,7 +137,7 @@ import moment from 'moment'
 export default {
   name: 'previewBidBorrowing-contractView',
   props: {
-    contractId:[Number,String]
+    contractId: [Number, String],
   },
   data() {
     return {
@@ -169,9 +159,9 @@ export default {
   },
   computed: {},
   watch: {
-    contractId(){
+    contractId() {
       this.init()
-    }
+    },
   },
   mounted() {
     this.init()
@@ -180,7 +170,7 @@ export default {
     moment,
     async init() {
       let that = this
-      if(!that.contractId){
+      if (!that.contractId) {
         that.detail = {}
         //that.$message.info('参数【contractId】缺失。')
         return
@@ -198,8 +188,8 @@ export default {
         .finally(() => {
           that.spinning = false
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

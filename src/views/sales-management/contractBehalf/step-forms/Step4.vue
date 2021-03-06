@@ -227,20 +227,27 @@ export default {
           //   return
           // }
           //let contactResult = that.unMakeContact(contact.values.contact)
-          if (!(Array.isArray(values.areaPlace) && values.areaPlace.length === 3)) {
-            that.$message.info('请选择交货地点的省市区')
-            return
-          }
+          //   if (!(Array.isArray(values.areaPlace) && values.areaPlace.length === 3)) {
+          //  params. deliveryAreaId=values.areaPlace[values.areaPlace.length - 1],
+          //   }
           // var deliveryAreaId
           // if (Array.isArray(values.areaPlace) && values.areaPlace.length === 3) {
           //   /*that.$message.info('请选择交货地点的省市区')
           //   return*/
           // }
+          var deliveryAreaId
+          var detailDeliveryAreaIds
+          if (Array.isArray(values.areaPlace) && values.areaPlace.length === 3) {
+            /*that.$message.info('请选择交货地点的省市区')
+            return*/
+            deliveryAreaId = values.areaPlace[values.areaPlace.length - 1]
+            detailDeliveryAreaIds = values.areaPlace.toString()
+          }
 
           const params = {
-            detailDeliveryAreaIds: values.areaPlace.toString(),
+            detailDeliveryAreaIds: detailDeliveryAreaIds,
+            deliveryAreaId: deliveryAreaId,
             deliveryPlace: values.deliveryPlace,
-            deliveryAreaId: values.areaPlace[values.areaPlace.length - 1],
             freightType: values.freightType,
             transportMode: values.transportMode,
             deliveryOther: values.deliveryOther ? values.deliveryOther : '无',

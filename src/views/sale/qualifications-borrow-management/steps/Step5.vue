@@ -1,6 +1,6 @@
 <template>
   <a-spin :spinning="spinning">
-    <div style="margin-top:10px;">
+    <div style="margin-top: 10px">
       <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
         <a-form-item hidden>
           <a-input v-decorator="['id', { initialValue: detail.id }]" />
@@ -15,10 +15,10 @@
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width:15%;">销售人员</td>
-            <td style="width:35%;">{{ baseInfo.salesmanName }}</td>
-            <td style="width:15%;">客户名称</td>
-            <td style="width:35%;">{{ baseInfo.customerName }}</td>
+            <td style="width: 15%">销售人员</td>
+            <td style="width: 35%">{{ baseInfo.salesmanName }}</td>
+            <td style="width: 15%">客户名称</td>
+            <td style="width: 35%">{{ baseInfo.customerName }}</td>
           </tr>
           <tr>
             <td>微信号</td>
@@ -26,7 +26,7 @@
             <td>邮箱</td>
             <td>{{ baseInfo.email }}</td>
           </tr>
-          
+
           <tr>
             <td>协议</td>
             <td colspan="3">
@@ -49,12 +49,10 @@
               </a-form-item>
             </td>
           </tr>
-
-          
         </table>
         <h3 style="margin-top: 10px">
           <span>合同信息</span>
-          <a v-if="isView" href="javascript:void(0);" style="float:right;" @click="viewContract">预览合同</a>
+          <a v-if="isView" href="javascript:void(0);" style="float: right" @click="viewContract">预览合同</a>
         </h3>
         <table class="custom-table custom-table-border">
           <tr>
@@ -85,7 +83,7 @@
           </tr>
           <tr>
             <td>区域</td>
-            <td style="padding:0;">
+            <td style="padding: 0">
               <a-form-item>
                 <a-select
                   style="width: 100px"
@@ -95,7 +93,7 @@
                   v-decorator="['province', { initialValue: prov, rules: [{ required: true, message: '请选择省！' }] }]"
                 >
                   <a-select-option
-                    @click="getCity(1, province.id)"
+                    @click="getCity(1, province.id, province.area)"
                     v-for="province in this.provinces"
                     :key="province.index"
                     :value="province.id"
@@ -103,14 +101,14 @@
                   >
                 </a-select>
                 <a-select
-                  style="width: 100px;margin:0 10px;"
+                  style="width: 100px; margin: 0 10px"
                   :disabled="isDisabled"
                   placeholder="市"
                   :precision="0"
                   v-decorator="['city', { initialValue: prov1, rules: [{ required: true, message: '请选择区！' }] }]"
                 >
                   <a-select-option
-                    @click="getCity(2, city.id)"
+                    @click="getCity(2, city.id, city.area)"
                     v-for="city in this.citys"
                     :key="city.index"
                     :value="city.id"
@@ -125,7 +123,7 @@
                   v-decorator="['arealse', { initialValue: prov2, rules: [{ required: true, message: '请选择区！' }] }]"
                 >
                   <a-select-option
-                    @click="getCity(3, null)"
+                    @click="getCity(3, null, area.area)"
                     v-for="area in this.arealse"
                     :key="area.index"
                     :value="area.id"
@@ -183,7 +181,7 @@
                 <a-input-number
                   v-if="!isDisabled"
                   :precision="0"
-                  style="width: 100px;margin:0 10px;"
+                  style="width: 100px; margin: 0 10px"
                   v-decorator="[
                     'startPayment',
                     { initialValue: detail['startPayment'], rules: [{ required: true, message: '请输入几日内' }] },
@@ -194,7 +192,8 @@
                 <a-input-number
                   :precision="0"
                   v-if="!isDisabled"
-                  style="width: 100px;margin:0 10px;"
+                  @change="paymentCountChange"
+                  style="width: 100px; margin: 0 10px"
                   v-decorator="[
                     'paymentCount',
                     { initialValue: detail['paymentCount'], rules: [{ required: true, message: '请输入分几次' }] },
@@ -207,7 +206,8 @@
                 <a-input-number
                   :precision="2"
                   v-if="!isDisabled"
-                  style="width: 100px;margin:0 10px;"
+                  @change="paymentAmountChange"
+                  style="width: 100px; margin: 0 10px"
                   v-decorator="[
                     'paymentAmount',
                     {
@@ -218,7 +218,7 @@
                 />
                 <span v-else>{{ detail.paymentAmount }}</span>
                 <span> 元,合计年服务费人民币 </span>
-                <a-input-number
+                <!-- <a-input-number
                   :precision="2"
                   v-if="!isDisabled"
                   style="width: 100px;margin:0 10px;"
@@ -226,8 +226,8 @@
                     'yearCost',
                     { initialValue: detail['yearCost'], rules: [{ required: true, message: '请输入年服务费' }] },
                   ]"
-                />
-                <span v-else>{{ detail.yearCost }}</span>
+                /> -->
+                <span>{{ detail.yearCost }}</span>
                 <span>元</span>
               </a-form-item>
             </td>
@@ -235,34 +235,28 @@
         </table>
       </a-form>
       <div style="margin: 20px 0">
-          <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
-          <div style="text-align: center">
-            <a-button
-              v-if="!isDisabled"
-              style="margin-left: 10px"
-              key="submit2"
-              type="primary"
-              @click="() => handleSubmit(2)"
-              >保存</a-button
-            >
-            <a-button
-              v-if="!isDisabled"
-              style="margin-left: 10px"
-              key="submit3"
-              type="primary"
-              @click="() => handleSubmit(3)"
-              >提交审批</a-button
-            >
-          </div>
+        <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
+        <div style="text-align: center">
+          <a-button
+            v-if="!isDisabled"
+            style="margin-left: 10px"
+            key="submit2"
+            type="primary"
+            @click="() => handleSubmit(2)"
+            >保存</a-button
+          >
+          <a-button
+            v-if="!isDisabled"
+            style="margin-left: 10px"
+            key="submit3"
+            type="primary"
+            @click="() => handleSubmit(3)"
+            >提交审批</a-button
+          >
+        </div>
       </div>
-      <a-modal
-        title="预览合同"
-        :width="1200"
-        :visible="visible"
-        :footer="null"
-        @cancel="handleCancel"
-      >
-        <PreviewAfterSales :contractId="detail.id"/>
+      <a-modal title="预览合同" :width="1200" :visible="visible" :footer="null" @cancel="handleCancel">
+        <PreviewAfterSales :contractId="detail.id" />
       </a-modal>
     </div>
   </a-spin>
@@ -280,20 +274,23 @@ let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { ProvinceTreeCascade, CustomerSelect ,PreviewAfterSales},
+  components: { ProvinceTreeCascade, CustomerSelect, PreviewAfterSales },
   props: {
     actionType: String,
     record: Object,
   },
   data() {
     return {
-      form: this.$form.createForm(this,{name:'qualifications-borrow-management-step5'}),
+      form: this.$form.createForm(this, { name: 'qualifications-borrow-management-step5' }),
       visible: false,
       spinning: false,
       detail: {},
       provinces: [], // 省下拉框数据
       citys: [], // 城市下拉框数据
       arealse: [], // 区下拉框数据
+      provincesl: undefined,
+      citysl: undefined,
+      areassl: undefined,
       prov: undefined,
       prov1: undefined,
       prov2: undefined,
@@ -320,6 +317,9 @@ export default {
     }
   },
   computed: {
+    yearCost() {
+      return this.detail.paymentCount * this.detail.paymentAmount
+    },
     modalTitle() {
       let obj = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
       return `${obj[this.actionType]}`
@@ -340,7 +340,7 @@ export default {
       //此状态下表单元素被禁用
       return this.isView || this.isApproval
     },
-    baseInfo(){
+    baseInfo() {
       const that = this
       return {
         salesmanName: that.record.salesmanName,
@@ -350,16 +350,16 @@ export default {
         wxNum: that.record.wxNum,
         email: that.record.email,
       }
-    }
+    },
   },
   watch: {
-    actionType(){
-      this.query(this.actionType === 'view' ? 'view' : 'add',this.record)
-    }
+    actionType() {
+      this.query(this.actionType === 'view' ? 'view' : 'add', this.record)
+    },
   },
-  created(){
-    this.$nextTick(() =>{
-      this.query(this.actionType === 'view' ? 'view' : 'add',this.record)
+  created() {
+    this.$nextTick(() => {
+      this.query(this.actionType === 'view' ? 'view' : 'add', this.record)
     })
   },
   methods: {
@@ -470,26 +470,27 @@ export default {
       await that.init()
       //debugger
       if (that.isAdd) {
-        that.form.setFieldsValue({borrowId:record.id})
+        that.form.setFieldsValue({ borrowId: record.id })
         return
       }
 
       that.spinning = true
-      try{
+      try {
         await afterDetailBorrowId({ id: record.id }).then((res) => {
           that.spinning = false
           that.detail = res.data
+          let react = that.detail.areaName.slice(',')
           let arrs = that.detail.area.split(',')
           that.prov = Number(arrs[0])
           that.prov1 = Number(arrs[1])
           that.prov2 = Number(arrs[2])
           // that.form.setFieldsValue({ ...that.detail })
           let arr = (res.data.area || '').split(',')
-          that.getCity(1, arr[0])
-          that.getCity(2, arr[1])
-          that.getCity(3, null)
+          that.getCity(1, arr[0], react[0])
+          that.getCity(2, arr[1], react[1])
+          that.getCity(3, null, react[2])
         })
-      }catch(err){
+      } catch (err) {
         that.spinning = false
         that.$message.error(err.message)
       }
@@ -508,9 +509,13 @@ export default {
             })
             return
           }
-          
+
           values.contractNum = that.detail.contractNum
-          
+          if (that.yearCost !== values.maintenanceCost) {
+            return that.$message.error('合计费用要等于维修费用')
+          }
+          values.yearCost = this.yearCost
+          values.areaName = this.provincesl + ',' + this.citysl + ',' + this.areassl
           values.signingDate = values.signingDate.format('YYYY-MM-DD')
           values.effectiveStart = values.validityDate[0].format('YYYY-MM-DD')
           values.effectiveEnd = values.validityDate[1].format('YYYY-MM-DD')
@@ -520,7 +525,7 @@ export default {
           delete values.city
           delete values.arealse
 
-          values = {...values,...that.baseInfo}
+          values = { ...values, ...that.baseInfo }
 
           //productCategoryList
           console.log('Received values of form: ', values)
@@ -532,7 +537,7 @@ export default {
               if (res.code === 200) {
                 that.visible = false
                 that.$message.success('操作成功')
-                that.$emit('end',5)
+                that.$emit('end', 5)
                 // if (+type === 1) {
                 //   that.$router.push({
                 //     name: 'afterSalesView',
@@ -553,10 +558,10 @@ export default {
     handleCancel() {
       this.visible = false
     },
-    viewContract(){
+    viewContract() {
       this.visible = true
-    }
-  }
+    },
+  },
 }
 </script>
 <style>

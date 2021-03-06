@@ -136,8 +136,8 @@ const columns = [
   },
   {
     align: 'center',
-    title: '信誉保证金(元)',
-    dataIndex: 'earnestMoney',
+    title: '维修费用(元)',
+    dataIndex: 'maintenanceCost',
   },
   {
     align: 'center',

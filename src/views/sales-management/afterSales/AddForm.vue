@@ -209,7 +209,6 @@
                   :min="0"
                   :step="1"
                   :precision="2"
-                  @change="maintenanceCostChange"
                   v-decorator="[
                     'maintenanceCost',
                     { initialValue: detail['maintenanceCost'], rules: [{ required: true, message: '请输入维修费用' }] },
@@ -261,6 +260,7 @@
                 <a-input-number
                   :precision="0"
                   v-if="!isDisabled"
+                  @change="paymentCountChange"
                   style="width: 100px"
                   v-decorator="[
                     'paymentCount',
@@ -275,6 +275,7 @@
                   :precision="2"
                   v-if="!isDisabled"
                   style="width: 100px"
+                  @change="paymentAmountChange"
                   v-decorator="[
                     'paymentAmount',
                     {
@@ -294,7 +295,7 @@
                     { initialValue: detail['yearCost'], rules: [{ required: true, message: '请输入年服务费' }] },
                   ]"
                 /> -->
-                <span>{{ detail.maintenanceCost }}</span>
+                <span>{{ yearCost }}</span>
                 <span>元</span>
               </a-form-item>
             </td>
@@ -401,6 +402,9 @@ export default {
     }
   },
   computed: {
+    yearCost() {
+      return this.detail.paymentCount * this.detail.paymentAmount
+    },
     modalTitle() {
       let obj = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
       return `${obj[this.actionType]}`
@@ -480,8 +484,13 @@ export default {
         customerName: item.name,
       })
     },
-    maintenanceCostChange(arrSelected) {
-      this.detail.maintenanceCost = arrSelected
+    //获取分几次付款
+    paymentCountChange(arrSelected) {
+      this.detail.paymentCount = arrSelected
+    },
+    //获取1次付款多少钱
+    paymentAmountChange(arrSelected) {
+      this.detail.paymentAmount = arrSelected
     },
     saleUserChange(saleUserId) {
       //选择销售人员 填充对应的 微信和邮箱
@@ -579,6 +588,10 @@ export default {
             values.wxNum = that.detail.wxNum
             values.email = that.detail.email
           }
+          if (that.yearCost !== values.maintenanceCost) {
+            return that.$message.error('合计费用要等于维修费用')
+          }
+          values.yearCost = this.yearCost
           values.areaName = this.provincesl + ',' + this.citysl + ',' + this.areassl
           values.signingDate = values.signingDate.format('YYYY-MM-DD')
           values.effectiveStart = values.validityDate[0].format('YYYY-MM-DD')

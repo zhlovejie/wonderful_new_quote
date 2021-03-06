@@ -47,87 +47,76 @@
 
             <div class="content-p">第一条：</div>
             <div class="content-p p-text-index">
-              乙方因经营所需借用甲方资质，以甲方的名义进行项目经营，最终用户单位全称为：<span class="span-underline">{{ detail.fullName }}</span>
+              乙方因经营所需借用甲方资质，以甲方的名义进行项目经营，最终用户单位全称为：<span class="span-underline">{{
+                detail.fullName
+              }}</span>
               。乙方承诺在此项目经营过程中，甲方代替乙方与最终签订的所有与本项目相关的合同、
               协议均为乙方的意愿，属于乙方独立经营行为与甲方无关；且项目经营过程中所产生的一
               切法律后果以及违约责任均由乙方承担。乙方承诺在借用甲方资质以甲方的名义进行产品销
               售或项目经营过程中，遵守中华人民共和国法律法规，无违规违法行为。
-    
             </div>
-               <div class="content-p">第二条：</div>
+            <div class="content-p">第二条：</div>
             <div class="content-p p-text-index">
               此协议一经签订，乙方应向甲方交纳<span class="span-underline">{{ detail.earnestMoney }}</span>
               万元信誉保证金，保证乙方在此项目经营过程中不损害甲方的信誉。若此项目无法正常进行，
-              保证金在三个工作日内无息退还。若项目正常进行，此保证金将作为乙方支付甲方的货款使用。 
+              保证金在三个工作日内无息退还。若项目正常进行，此保证金将作为乙方支付甲方的货款使用。
               若项目经营过程中发现乙方损害甲方的信誉等情形，此保证金不予以退还。
             </div>
-               <div class="content-p">第三条：</div>
-            <div class="content-p p-text-index">
-            乙方不得透漏双方合作的机密，不得对甲方的形象和利益带来损害。
-            </div>
-               <div class="content-p">第四条：</div>
+            <div class="content-p">第三条：</div>
+            <div class="content-p p-text-index">乙方不得透漏双方合作的机密，不得对甲方的形象和利益带来损害。</div>
+            <div class="content-p">第四条：</div>
             <div class="content-p p-text-index">
               协议未尽事宜另行协商确定。若发生合同纠纷应协商解决，协商不成，可依法向甲方辖区内人民法院起诉。
             </div>
-               <div class="content-p">第五条：</div>
+            <div class="content-p">第五条：</div>
             <div class="content-p p-text-index">
-   乙方在本项目经营过程中与任何第三方所产生的一切债权债务关系与甲方无关
+              乙方在本项目经营过程中与任何第三方所产生的一切债权债务关系与甲方无关
             </div>
 
-   <div class="content-p">第六条：</div>
+            <div class="content-p">第六条：</div>
             <div class="content-p p-text-index">
-             在项目交付过程中如发生安全伤亡事故，均由乙方独立承担一切责任和全部后果。甲方特提出免责声明。
+              在项目交付过程中如发生安全伤亡事故，均由乙方独立承担一切责任和全部后果。甲方特提出免责声明。
             </div>
 
-   <div class="content-p">第七条：</div>
-            <div class="content-p p-text-index">
-              本合同签字盖章后生效，一式两份，甲、乙双方各执一份。
-            </div>
+            <div class="content-p">第七条：</div>
+            <div class="content-p p-text-index">本合同签字盖章后生效，一式两份，甲、乙双方各执一份。</div>
 
-
-
-           
-              <div class="card-wrap" style="overflow: hidden">
-                <div class="card">
-                  <p class="card-tit">甲方</p>
-                   <p style="position: relative">
-                    甲方（盖章）：
-                    <img
-                      v-if="detail.commonSeal"
-                      style="position: absolute; width: 140px; left: 35%; top: -50%"
-                      :src="detail.commonSeal"
-                      alt="公章"
-                    />
-                  </p>
-                      <p>
-                    代理人：
-                    <img
-                      v-if="detail.saleUserSeal"
-                      style="height: 50px; width: auto; vertical-align: middle"
-                      :src="detail.saleUserSeal"
-                      alt="销售人员章"
-                    />
-                  </p>
-                   <p>
-                    日期<span class="span-paddings">{{ detail.signingDate }}</span>
-                  </p>
-                </div>
-                <div class="card">
-                  <p class="card-tit">乙方</p>
-                  <p>
-                      乙方（盖章）：<span class="span-paddings">{{ detail.customerName }}</span>
-                  </p>
-                  <p>
-                   代理人：
-                  </p>
-                  <p>
-                    日期：
-                  </p>
-                  
-                </div>
+            <div class="card-wrap" style="overflow: hidden">
+              <div class="card">
+                <p class="card-tit">甲方</p>
+                <p style="position: relative">
+                  甲方（盖章）：
+                  <img
+                    v-if="detail.setCommonSeal"
+                    style="position: absolute; width: 140px; left: 35%; top: -50%"
+                    :src="detail.setCommonSeal"
+                    alt="公章"
+                  />
+                </p>
+                <p>
+                  代理人：
+                  <img
+                    v-if="detail.saleUserSeal"
+                    style="height: 50px; width: auto; vertical-align: middle"
+                    :src="detail.saleUserSeal"
+                    alt="销售人员章"
+                  />
+                </p>
+                <p>
+                  日期<span class="span-paddings">{{ detail.signingDate }}</span>
+                </p>
+              </div>
+              <div class="card">
+                <p class="card-tit">乙方</p>
+                <p>
+                  乙方（盖章）：<span class="span-paddings">{{ detail.customerName }}</span>
+                </p>
+                <p>代理人：</p>
+                <p>日期：</p>
               </div>
             </div>
           </div>
+        </div>
       </div>
     </div>
   </a-spin>
@@ -140,7 +129,7 @@ import moment from 'moment'
 export default {
   name: 'previewBusinessBorrowing-contractView',
   props: {
-    contractId:[Number,String]
+    contractId: [Number, String],
   },
   data() {
     return {
@@ -162,9 +151,9 @@ export default {
   },
   computed: {},
   watch: {
-    contractId(){
-       this.init()
-    }
+    contractId() {
+      this.init()
+    },
   },
   mounted() {
     this.init()
@@ -173,8 +162,8 @@ export default {
     moment,
     async init() {
       let that = this
-      
-      if(!that.contractId){
+
+      if (!that.contractId) {
         that.detail = {}
         //that.$message.info('参数【contractId】缺失。')
         return
@@ -187,10 +176,11 @@ export default {
         })
         .catch((err) => {
           that.spinning = false
-          that.$message.error();(err.message)
+          that.$message.error()
+          err.message
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -111,9 +111,9 @@
                    <p style="position: relative">
                     甲方（盖章）：
                     <img
-                      v-if="detail.commonSeal"
-                      style="position: absolute; width: 140px; left: 35%; top: -50%"
-                      :src="detail.commonSeal"
+                      v-if="detail.setCommonSeal"
+                      style="position: absolute; width: 140px; left: 8%; top: -136%"
+                      :src="detail.setCommonSeal"
                       alt="公章"
                     />
                   </p>
