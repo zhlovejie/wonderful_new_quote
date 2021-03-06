@@ -500,7 +500,7 @@ export default {
         await afterDetailBorrowId({ id: record.id }).then((res) => {
           that.spinning = false
           that.detail = res.data
-          let react = that.detail.areaName.slice(',')
+          let react = that.detail.areaName.split(',')
           let arrs = that.detail.area.split(',')
           that.prov = Number(arrs[0])
           that.prov1 = Number(arrs[1])

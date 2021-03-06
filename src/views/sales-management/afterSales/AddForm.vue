@@ -554,8 +554,9 @@ export default {
 
       await afterdetail({ id: record.id }).then((res) => {
         that.detail = res.data
+        debugger
         let arrs = that.detail.area.split(',')
-        let react = that.detail.areaName.slice(',')
+        let react = that.detail.areaName.split(',')
         that.prov = Number(arrs[0])
         that.prov1 = Number(arrs[1])
         that.prov2 = Number(arrs[2])
