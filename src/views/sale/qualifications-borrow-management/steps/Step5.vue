@@ -227,7 +227,7 @@
                     { initialValue: detail['yearCost'], rules: [{ required: true, message: '请输入年服务费' }] },
                   ]"
                 /> -->
-                <span>{{yearCost }}</span>
+                <span>{{ yearCost }}</span>
                 <span>元</span>
               </a-form-item>
             </td>
@@ -284,7 +284,12 @@ export default {
       form: this.$form.createForm(this, { name: 'qualifications-borrow-management-step5' }),
       visible: false,
       spinning: false,
+      yearCost: 0,
       detail: {},
+      details: {
+        paymentCount: 0,
+        paymentAmount: 0,
+      },
       provinces: [], // 省下拉框数据
       citys: [], // 城市下拉框数据
       arealse: [], // 区下拉框数据
@@ -317,13 +322,11 @@ export default {
     }
   },
   computed: {
-    yearCost() {
-      return this.detail.paymentCount * this.detail.paymentAmount
-    },
     modalTitle() {
       let obj = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
       return `${obj[this.actionType]}`
     },
+
     isView() {
       return this.actionType === 'view'
     },
@@ -395,20 +398,37 @@ export default {
 
       return Promise.all(queue)
     },
-    getCity(type, pId) {
+    yearCosts() {
+      this.yearCost = Number(this.details.paymentCount) * Number(this.details.paymentAmount)
+    },
+    getCity(type, pId, name) {
       if (type != 3) {
         getAreaByParent({ pId: pId })
           .then((res) => {
             if (type === 1) {
+              this.provincesl = name
               this.citys = res.data
             } else if (type === 2) {
+              this.citysl = name
               this.arealse = res.data
             }
           })
           .catch(function (err) {
             console.log(err)
           })
+      } else {
+        this.areassl = name
       }
+    },
+    //获取分几次付款
+    paymentCountChange(arrSelected) {
+      this.details.paymentCount = arrSelected
+      this.yearCosts()
+    },
+    //获取1次付款多少钱
+    paymentAmountChange(arrSelected) {
+      this.details.paymentAmount = arrSelected
+      this.yearCosts()
     },
     handleCustomerSelected(item) {
       this.form.setFieldsValue({
@@ -467,6 +487,7 @@ export default {
       let that = this
       await that.form.resetFields()
       that.detail = {}
+      this.yearCosts()
       await that.init()
       //debugger
       if (that.isAdd) {
