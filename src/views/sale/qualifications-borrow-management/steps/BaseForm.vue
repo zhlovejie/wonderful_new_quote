@@ -305,8 +305,11 @@ export default {
         customerId: undefined,
         customerName: undefined,
       })
+    },
+    async getValues(){
+      return await this.form.getFieldsValue()
     }
-  },
+  }
 }
 </script>
 

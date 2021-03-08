@@ -39,14 +39,21 @@
             <td style="width: 35%">
               <template v-if="!isDisabled">
                 <a-form-item>
-                  <a-button @click="qualificationsBorrowContractClickHandler">选择资质借用管理合同</a-button>
+                  <!-- <a-button @click="qualificationsBorrowContractClickHandler">选择资质借用管理合同</a-button> -->
+                  <a-input 
+                    placeholder="选择资质借用管理合同"  
+                    read-only="read-only" 
+                    :disabled="isEdit"
+                    @click="qualificationsBorrowContractClickHandler" 
+                    v-decorator="['borrowNum',{initialValue: detail.borrowNum}]" 
+                  />
                 </a-form-item>
                 <a-form-item hidden>
-                  <a-input v-decorator="['infoId']" />
+                  <a-input v-decorator="['infoId',{initialValue: detail.infoId}]" />
                 </a-form-item>
-                <a-form-item hidden>
+                <!-- <a-form-item hidden>
                   <a-input v-decorator="['borrowNum']" />
-                </a-form-item>
+                </a-form-item> -->
               </template>
               <template v-else>
                 {{detail.borrowNum}}
@@ -58,8 +65,8 @@
             <td style="width: 15%">协议</td>
             <td style="width: 35%">
               <a-form-item>
-                <a-input v-if="!isDisabled" read-only="read-only" v-decorator="['protocol']" />
-                <span>{{detail.protocol}}</span>
+                <a-input v-if="!isDisabled" :disabled="true" placeholder="自动带入"   v-decorator="['protocol',{initialValue: detail.protocol}]" />
+                <span v-else>{{detail.protocol}}</span>
               </a-form-item>
             </td>
 
@@ -622,11 +629,15 @@ export default {
       that.actionType = type
       that.record = record || {}
       that.detail = {}
+      
       that.form.resetFields()
       await that.init()
       that.visible = true
       if (that.isAdd) {
         that.$refs.customerSelect && that.$refs.customerSelect.handleClear()
+        that.$refs.uploadFile && that.$refs.uploadFile.setFiles([])
+        that.rebatesDetailsList = []
+        that.needOptions = { userId: undefined }
         return
       }
       //填充数据

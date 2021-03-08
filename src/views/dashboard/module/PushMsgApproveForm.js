@@ -47,6 +47,12 @@ export default {
   91: ApproveRecordDeducted, //业绩扣除单
   92: ApproveBusinessBorrowing, //经营借用协议
   93: ApproveBidBorrowing, //资质借用投标借用协议
-  //94: 'contractBehalfList', //代签购货合同
+  94: { //代签购货合同
+    name:'previewTripartiteContracts',
+    _customRoute:true,
+    props:function(id,action,from){
+      return { queryOneData: { id }, action ,from}
+    }
+  }, 
   95: ApproveAfterSales, //产品售后服务外包协议
 }

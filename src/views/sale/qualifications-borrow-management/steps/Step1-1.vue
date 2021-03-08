@@ -234,8 +234,20 @@ export default {
       that.form.resetFields()
       await that.init()
       that.visible = true
+      //debugger
       if (that.isAdd) {
-        that.form.setFieldsValue({effective:[moment(),moment()] })
+        if(record){
+          let delAttrs = ['id','borrowId','instanceId','accessory','pdfUrl','status']
+          let _values = {...record}
+          delAttrs.map(key => delete _values[key])
+          that.form.setFieldsValue({
+            ..._values,
+            effective:[moment(_values.effectiveStart),moment(_values.effectiveEnd)],
+            signingDate:moment(_values.signingDate)
+          })
+        }else{
+          that.form.setFieldsValue({effective:[moment(),moment()] })
+        }
         return
       }
       //填充数据

@@ -513,6 +513,18 @@ export default {
       await that.init()
 
       if (that.isAdd) {
+        if(record){
+          let delAttrs = ['id','borrowId','instanceId','accessory','pdfUrl','status']
+          let _values = {...record}
+          delAttrs.map(key => delete _values[key])
+          that.form.setFieldsValue({
+            ..._values,
+            effective:[moment(_values.validityDateStart),moment(_values.validityDateEnd)],
+            signingDate:moment(_values.signingDate)
+          })
+        }else{
+          that.form.setFieldsValue({validityDate:[moment(),moment()] })
+        }
         return
       }
 

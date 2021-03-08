@@ -104,8 +104,8 @@
         </div>
       </a-table>
     </div>
-    <ApproveInfo ref="approveInfoCard" />
-    <AddForm ref="addForm" @finish="searchAction()" />
+    <ApproveInfo ref="approveInfoCard" key="approveInfoCard" />
+    <AddForm ref="addForm" key="addForm" @finish="searchAction()" />
     <UploadFile ref="uploadFile" @finish="searchAction()" />
   </div>
 </template>

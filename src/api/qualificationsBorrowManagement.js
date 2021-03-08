@@ -231,3 +231,14 @@ export function borrowPageList (parameter) {
   })
 }
 
+/**资质借用合同 第一步绑定合同 */
+export function borrowBindingContract (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/borrow/bindingContract',
+    method: 'post',
+    data:parameter
+  })
+}
+
+

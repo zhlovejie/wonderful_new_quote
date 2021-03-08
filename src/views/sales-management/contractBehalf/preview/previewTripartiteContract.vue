@@ -364,7 +364,7 @@ const renderContent = (value, row, index) => {
   return obj
 }
 export default {
-  name: 'PreviewTripartiteContract',
+  name: 'previewTripartiteContracts',
   components: {},
   props: {},
   data() {
@@ -644,13 +644,11 @@ export default {
   },
   watch: {
     $route(to, from) {
-      console.log(to)
-      if (to.name === 'previewTripartiteContract') {
+      if (to.name === 'previewTripartiteContracts') {
         this.init()
       }
-    },
+    }
   },
-  cerated() {},
   mounted() {
     this.init()
     // 获取当前时间
@@ -669,17 +667,16 @@ export default {
   methods: {
     async init() {
       let that = this
-      const queryOneData = this.$router.currentRoute.params.queryOneData
+      const queryOneData = that.$router.currentRoute.params.queryOneData
       if (!queryOneData) return
       const id = queryOneData.id
       console.log('预览合同的查询queryOneData', queryOneData)
-      if (this.$router.currentRoute.params.action === 'approval') {
-        this.isPassBtn = true
+      if (that.$router.currentRoute.params.action === 'approval') {
+        that.isPassBtn = true
+      }else{
+        that.isPassBtn = false
       }
-      if (this.$router.currentRoute.params.action === 'edit') {
-        this.isPassBtn = false
-      }
-      this.getInfor()
+      that.getInfor()
     },
 
     // 获取合同的详细信息
@@ -776,8 +773,10 @@ export default {
     // 返回
     goBackConstractList() {
       let that = this
-      that.$destroy('previewTripartiteContract')
+      //that.$destroy('previewTripartiteContracts')
       that.$nextTick(() => {
+
+        //debugger
         let _from = that.$route.params.from || 'contractBehalfList'
         //that.$router.push({ name: _from })
         that.$router.push({ name: _from, params: { ...(that.$route.params || {}) } })

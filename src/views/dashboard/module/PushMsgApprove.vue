@@ -21,15 +21,20 @@ export default {
         that.$message.info('该类型的消息暂不支持处理，后面会陆续开放。')
         return 
       }
-      //ROUTE:
-      if(typeof res === 'string'){
+      if(res && res._customRoute){ //自定义跳转 传参
+        let params = res.props(businessId,type,'Workplace')
+        that.$nextTick(() =>{
+          that.$router.push({name: res.name,params })
+        })
+        return
+      }else if(typeof res === 'string'){//ROUTE: 直接跳转
         if(res.startsWith("ROUTE:")){
-          that.$router.push({name:res.slice(6)})
+          that.$router.push({name:res.slice(6),params:{from:'Workplace'}})
         }
-      }else{
+      }else{ //对应组件处理
         that.currentComponent = res
-        this.$nextTick(() =>{
-          this.$refs.currentComponent.query(type,{id:businessId})
+        that.$nextTick(() =>{
+          that.$refs.currentComponent.query(type,{id:businessId})
         })
       }
     },
