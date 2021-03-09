@@ -290,12 +290,13 @@ export default {
       }
     },
     endHandler(step){
-      if(step === 4){
-        this.currentStep = this.currentStep + 1
+      const that = this
+       if(step === 4){
+        that.currentStep = that.currentStep + 1
       }else{
-        this.visible = false
+        that.visible = false
       }
-      this.$emit('finish')
+      that.$emit('finish')
     }
   }
 }

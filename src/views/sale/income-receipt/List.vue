@@ -81,6 +81,11 @@
           <span v-else>无</span>
         </div>
 
+        <div slot="dicId" slot-scope="text, record">
+          <span>{{ getMoneyCategorys(text) }}</span>
+        </div>
+        
+
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary"  @click="doAction('view', record)">查看</a>
           <a
@@ -96,6 +101,24 @@
       </a-table>
     </div>
     <AddForm ref="addForm" @finish="searchAction()" />
+
+    <a-modal
+      v-model="moneyCategoryVisible"
+      title="选择款项类别"
+      :ok-button-props="{ props: { disabled: !moneyCategory } }"
+      @ok="moneyCategoryHandleOk" 
+      @cancel="moneyCategoryHandleCancel"
+      :maskClosable="false"
+      :destroyOnClose="true"
+    >
+      <p>请先选择款项类别后，进行认领操作。</p>
+      <div>
+        <a-radio-group v-model="moneyCategory" >
+          <a-radio v-for="item in moneyCategorys" :key="item.id" :value="item.id"> {{item.text}} </a-radio>
+        </a-radio-group>
+      </div>
+    </a-modal>
+
   </div>
 </template>
 <script>
@@ -104,6 +127,7 @@ import AddForm from './module/AddForm'
 import moment from 'moment'
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import { exprotAction } from '@/api/receipt'
+import { getListByText } from '@/api/workBox'
 const columns = [
   {
     align: 'center',
@@ -160,6 +184,14 @@ const columns = [
     key: 'remark',
     scopedSlots: { customRender: 'remark' },
   },
+  {
+    align: 'center',
+    title: '分类',
+    dataIndex: 'dicId',
+    scopedSlots: { customRender: 'dicId' },
+  },
+
+  
   // {
   //   align: 'center',
   //   title: '单据状态',
@@ -217,7 +249,11 @@ export default {
       loading: false,
       activeKey:0,
       saleUser:[],
-      searchTotalMoney:''
+      searchTotalMoney:'',
+      moneyCategorys:[],
+      moneyCategory:undefined,
+      moneyCategoryVisible:false,
+      record:{}
     }
   },
   computed: {
@@ -257,6 +293,11 @@ export default {
       let that = this
       getAccountBankList().then((res) => (that.moneyTypes = res.data))
       getListSaleContractUser().then((res) => (that.saleUser = res.data))
+
+      getListByText({ text: '认领金额类型' }).then((res) => {
+        that.moneyCategorys = res.data.records
+      })
+
       that.searchAction()
     },
     searchAction(opt) {
@@ -308,26 +349,30 @@ export default {
        }
       this.searchAction()
     },
+    moneyCategoryHandleOk(){
+      const that = this
+      incomeClaim({ incomeId: that.record.id,amountType:that.moneyCategory }).then((res) => {
+        console.log(res)
+        that.$message.info(res.msg)
+        if (res.code === 200) {
+          that.searchAction()
+        }
+        that.moneyCategoryVisible = false
+        that.moneyCategory = undefined
+      })
+    },
+    moneyCategoryHandleCancel(){
+      this.moneyCategoryVisible = false
+      this.moneyCategory = undefined
+    },
     doAction(type, record) {
       let that = this
       console.log(type)
+      that.record = {...record}
       if (type === 'get') {
-        this.$confirm({
-          title: '提示信息',
-          content: '确定认领此进款单吗？',
-          onOk() {
-            incomeClaim({ incomeId: record.id }).then((res) => {
-              console.log(res)
-              if (res.code === 200) {
-                that.$message.info(res.msg)
-                that.searchAction()
-              } else {
-                that.$message.info(res.msg)
-              }
-            })
-          },
-          onCancel() {},
-        })
+        //that.moneyTypeHandleOk(record)
+        that.moneyCategoryVisible = true
+        return
       } else {
         that.$refs.addForm.query(type, record)
       }
@@ -345,6 +390,10 @@ export default {
       let res = await exprotAction(9,{...that.searchParam},'进款单')
       console.log(res)
       that.$message.info(res.msg)
+    },
+    getMoneyCategorys(type){
+      let target = this.moneyCategorys.find(item => +item.id === +type)
+      return target ? target.text : '-'
     }
   }
 }

@@ -14,7 +14,7 @@
       <tr>
         <td style="width: 15%">合同编号</td>
         <td style="width: 35%">
-          <span v-if="!isDisabled" style="color: #999">系统自动生成</span>
+          <span v-if="!isDisabled" style="color: #999">{{ detail.contractNum || '系统自动生成'}}</span>
           <span v-else>{{ detail.contractNum }}</span>
         </td>
         <td style="width: 15%">签订日期</td>
@@ -237,14 +237,7 @@ export default {
       //debugger
       if (that.isAdd) {
         if(record){
-          let delAttrs = ['id','borrowId','instanceId','accessory','pdfUrl','status']
-          let _values = {...record}
-          delAttrs.map(key => delete _values[key])
-          that.form.setFieldsValue({
-            ..._values,
-            effective:[moment(_values.effectiveStart),moment(_values.effectiveEnd)],
-            signingDate:moment(_values.signingDate)
-          })
+          that.detail = {...record}
         }else{
           that.form.setFieldsValue({effective:[moment(),moment()] })
         }

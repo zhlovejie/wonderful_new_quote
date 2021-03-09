@@ -52,7 +52,8 @@ export default {
       steps:{ 1:Step11,2:Step13,3:Step12 },
       spinning:false,
       isBinding:false,
-      type:undefined
+      type:undefined,
+      bindingRecord:{}
     }
   },
   watch:{
@@ -98,13 +99,13 @@ export default {
         return
       }
       that.currentComponent = that.steps[type]
-      const record =  await that.fetchTarget(type)
+      that.bindingRecord =  await that.fetchTarget(type)
       
-      that.isBinding = !!(record && record.id)
+      that.isBinding = !!(that.bindingRecord && that.bindingRecord.id)
 
       that.$nextTick(() =>{
         //选择对应的协议后，检测对应协议列表是否存在 已经审批通过，客户名称和销售经理都匹配的合同，存在则填充数据
-        that.$refs.currentComponent.query('add',record || {})
+        that.$refs.currentComponent.query('add',that.bindingRecord || {})
       })
       that.currentComponentTitle = { 1: '经销商', 2: '代理', 3: '战略合作协议' }[type]
     },
@@ -144,7 +145,7 @@ export default {
       let case2 = async function(){
         that.spinning = true
         let customValues = {
-          agencyContractId:_values.id,
+          contractId:that.bindingRecord.id,
           customerId:_values.customerId,
           customerName:_values.customerName,
           email:_values.email,
@@ -156,8 +157,8 @@ export default {
         }
         let result = await borrowBindingContract(customValues)
         that.spinning = false
+        that.$message.info(result.msg)
         if(result.code !== 200){
-          that.$message.info(result.msg)
           return
         }else{
           const h = that.$createElement;
@@ -172,22 +173,22 @@ export default {
           });
         }
       }
-      // if(that.isBinding){
-      //   const h = that.$createElement;
-      //   that.$info({
-      //     title: '提示',
-      //     content: h('div', {}, [
-      //       h('p', `系统检测到符合条件的【${that.currentComponentTitle}合同】，确认执行绑定操作吗？`)
-      //     ]),
-      //     onOk() {
-      //       case2()
-      //     },
-      //   });
-      // }else{
-      //   case1()
-      // }
+      if(that.isBinding){
+        const h = that.$createElement;
+        that.$info({
+          title: '提示',
+          content: h('div', {}, [
+            h('p', `系统检测到符合条件的【${that.currentComponentTitle}合同】，确认执行绑定操作吗？`)
+          ]),
+          onOk() {
+            case2()
+          },
+        });
+      }else{
+        case1()
+      }
 
-      case1()
+      //case1()
     },
     async fetchTarget(type){
       const that = this

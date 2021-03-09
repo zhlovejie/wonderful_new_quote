@@ -16,7 +16,7 @@
         <tr>
           <td style="width: 15%">合同编号</td>
           <td style="width: 35%">
-            <span v-if="!isDisabled" style="color: #999">系统自动生成</span>
+            <span v-if="!isDisabled" style="color: #999">{{ detail.contractNum || '系统自动生成'}}</span>
             <span v-else>{{ detail.contractNum }}</span>
           </td>
           <td style="width: 15%">签订日期</td>
@@ -514,14 +514,29 @@ export default {
 
       if (that.isAdd) {
         if(record){
-          let delAttrs = ['id','borrowId','instanceId','accessory','pdfUrl','status']
-          let _values = {...record}
-          delAttrs.map(key => delete _values[key])
-          that.form.setFieldsValue({
-            ..._values,
-            effective:[moment(_values.validityDateStart),moment(_values.validityDateEnd)],
-            signingDate:moment(_values.signingDate)
-          })
+          if (record.salesArea) {
+            let _arr = record.salesArea.split(';')
+            record.salesAreaVal = _arr.length >= 1 ? _arr[0].split(',') : []
+            record.salesAreaTxt = _arr.length === 2 ? _arr[1] : ''
+          }
+          if (record.products) {
+            let _arr = record.products.split(';')
+            record.productsVal = _arr.length >= 1 ? _arr[0].split(',').map((v) => +v) : []
+            record.productsTxt = _arr.length === 2 ? _arr[1] : undefined
+          }
+          if (record.salesmanId) {
+            record.salemanName = that.getSaleManName(record.salesmanId)
+          }
+          //是否显示保证金
+          that.haveDeposit = +that.detail.haveDeposit === 1
+
+          that.$refs.customerSelect &&
+            that.$refs.customerSelect.fill({
+              id: that.detail.customerId,
+              name: that.detail.customerName,
+            })
+
+          that.detail = record
         }else{
           that.form.setFieldsValue({validityDate:[moment(),moment()] })
         }
