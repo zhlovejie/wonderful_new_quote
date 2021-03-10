@@ -58,7 +58,6 @@
             :multiple="true"
             :action="this.uploadPath"
             :fileList="fileList"
-            :beforeUpload="beforeUpload"
             @change="handleChange"
           >
             <a-button> <a-icon type="upload" /> 上传（.pdf、.png类型） </a-button>

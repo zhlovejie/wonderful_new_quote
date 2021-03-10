@@ -402,7 +402,7 @@ export default {
       vehicleList: [], //交通工具
       carList: [], //公司车辆
       beginAreaId: [], //出发城市
-      beginAreaName:'',
+      beginAreaName:undefined,
       routesList: [], //出差行程
       isSalesman: false,
 
@@ -476,6 +476,7 @@ export default {
       ;(that.actionType = type), (that.record = Object.assign({}, record))
       that.detail = {}
       that.routesList = []
+      that.beginAreaName = undefined
       that.form.resetFields()
       await that.init()
       that.visible = true
@@ -554,14 +555,16 @@ export default {
     },
 
     areaCascadeChange(type, key, arrArea, arrAreaItems) {
-      //debugger
+      // debugger
       let that = this
+      let _beginAreaName = arrAreaItems.map(item =>item.label).join('') 
       if (type === 'beginAreaId') {
         this.beginAreaId = arrArea.join(',')
         that.detail = Object.assign({}, that.detail, {
           beginAreaId: arrArea.join(','),
-          beginAreaName: arrAreaItems.map(item =>item.label).join('')
+          beginAreaName: _beginAreaName
         })
+        that.beginAreaName = _beginAreaName
         return
       }
       if (type === 'endAreaId') {
@@ -569,9 +572,10 @@ export default {
         let target = _routesList.find(item => item._key === key)
         if (target) {
           target.endAreaId = arrArea.join(',')
-          target.endAreaName = arrAreaItems.map(item =>item.label).join('')
+          target.endAreaName = _beginAreaName
           that.routesList = [..._routesList]
         }
+        return
       }
     },
     dateTimePickerChange(type, key, timeStr) {
@@ -742,8 +746,8 @@ export default {
             return item
           })
 
-
-
+          //console.log(values)
+          //return
 
           that.spinning = true
           // 判断开始日期 1.早于当前时间，给出提示

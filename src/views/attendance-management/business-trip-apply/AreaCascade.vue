@@ -91,8 +91,9 @@ export default {
       }
     },
     areaCascaderChange(arrArea, arrAreaItems) {
+      //debugger
       this.fillValue = [...arrArea]
-      this.$emit('change', [...arrArea], [...arrAreaItems])
+      this.$emit('change', [...arrArea], [...(arrAreaItems || [])])
     },
     areaCascaderLoadData(selectedOptions) {
       let that = this
