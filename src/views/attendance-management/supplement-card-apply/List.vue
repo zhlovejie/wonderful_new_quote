@@ -110,7 +110,7 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="+record.status === 2">
+            <template v-if="[3,4].includes(+record.status)">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>

@@ -280,7 +280,8 @@
                   :min="0"
                   :max="2000"
                   :step="1"
-                  v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount}]"
+                  v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount}]" 
+                  @change="overdraftAmountChange"
                 />
                 <span v-else>
                   {{detail.overdraftAmount | moneyFormatNumber}}
@@ -296,10 +297,26 @@
                   v-if="!isDisabled"
                   style="width:100%;"
                   placeholder="银行卡号"
-                  v-decorator="['bankAccount', {initialValue:detail.bankAccount,rules: [{pattern: /^\d{15,20}$/, message: '请输入正确银行账号' }]}]"
+                  v-decorator="['bankAccount', {initialValue:detail.bankAccount,rules: [{required:isBankRequired,pattern: /^\d{15,20}$/, message: '请输入正确银行账号' }]}]"
                 />
                 <span v-else>
                   {{detail.bankAccount}}
+                </span>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:120px;">银行名称</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-input
+                  v-if="!isDisabled"
+                  style="width:100%;"
+                  placeholder="输入银行名称具体至开户行"
+                  v-decorator="['bankName', {initialValue:detail.bankName,rules: [{required:isBankRequired, message: '请输入银行名称具体至开户行' }]}]"
+                />
+                <span v-else>
+                  {{detail.bankName}}
                 </span>
               </a-form-item>
             </td>
@@ -390,7 +407,8 @@ export default {
       isSalesman: false,
 
       isCompanyCar: false, //交通工具为公车时，下面的选项才可以选择车牌号
-      lastApprovedNode:{} //取最后一个审批节点信息
+      lastApprovedNode:{}, //取最后一个审批节点信息
+      isBankRequired:false
     }
   },
   computed: {
@@ -486,6 +504,8 @@ export default {
         data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
         //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
         that.detail = { ...data }
+
+        that.isBankRequired = that.detail.overdraftAmount && +that.detail.overdraftAmount > 0
 
         that.isCompanyCar = !!that.carList.find(item => String(item.label) === '公车')
 
@@ -809,6 +829,9 @@ export default {
 
       console.log(arr)
       return arr.join('/')
+    },
+    overdraftAmountChange(val){
+      this.isBankRequired = val && val > 0
     }
   }
 }

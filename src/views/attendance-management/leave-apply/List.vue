@@ -91,7 +91,8 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="+record.status === 2 && +record.createdId === +userInfo.id">
+            <!--fix 1138 不通过的、作废的请假单才可以删除 -->
+            <template v-if="(+record.status === 3 || +record.status === 4) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
