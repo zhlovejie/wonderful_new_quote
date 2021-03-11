@@ -405,7 +405,6 @@ export default {
         that.$message.error('请添加产品后，再提交信息')
         return
       }
-      //debugger
       //增加产品信息验证
       for (let i = 0, len = that.data.length; i < len; i++) {
         let item = that.data[i]
@@ -439,6 +438,8 @@ export default {
 
           values.valencyProducts = that.data.map((item) => Object.assign({}, item))
 
+          // console.log(values)
+          // return
           that.spinning = true
           saleValencySaveAndUpdate(values)
             .then((res) => {
@@ -505,12 +506,14 @@ export default {
       this.$refs.productModel.query({ productType: 0, seriesFlag: '1' })
     },
     productChange(data) {
+      // debugger
       console.log('JSON 页面传值事件:' + JSON.stringify(data))
       let selectItem = Object.assign({}, data.selectItem)
       let target = this.data.find((item) => item.key === this.openKey)
       if (target) {
         target.productId = selectItem.id
-        target.basisModel = selectItem.basisModel
+        //target.basisModel = selectItem.basisModel
+        target.basisModel = selectItem.id
         target.productModel = selectItem.productModel
         target.specs = selectItem.productStandard //规格
         target.referencePic = selectItem.productPic // 参考图片   ------
