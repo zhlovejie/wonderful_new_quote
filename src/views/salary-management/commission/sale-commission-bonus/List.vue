@@ -226,7 +226,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'sale-commission-bonus') {
+        if (to.name === 'sale-commission') {
           this.init()
         }
       },

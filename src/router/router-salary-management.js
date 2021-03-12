@@ -65,28 +65,28 @@ export default {
             permission: ['permission']
           },
         },
-        {
-          path: '/salary-management/salary-base-sale-rules',
-          name: 'salary-base-sale-rules',
-          component: () => import('@/views/salary-management/salary-base-sale-rules/List'),
-          meta: {
-            title: '销售基本工资规则',
-            icon: 'select',
-            keepAlive: false,
-            permission: ['permission']
-          },
-        }, {
-          path: '/salary-management/salary-base-sale-rules/module',
-          name: 'salary-base-sale-module',
-          component: () => import('@/views/salary-management/salary-base-sale-rules/module/See'),
-          meta: {
-            title: '销售基本工资规则明细',
-            icon: 'select',
-            hidden: true,
-            keepAlive: false,
-            permission: ['permission']
-          },
-        }
+        // {
+        //   path: '/salary-management/salary-base-sale-rules',
+        //   name: 'salary-base-sale-rules',
+        //   component: () => import('@/views/salary-management/salary-base-sale-rules/List'),
+        //   meta: {
+        //     title: '销售基本工资规则',
+        //     icon: 'select',
+        //     keepAlive: false,
+        //     permission: ['permission']
+        //   },
+        // }, {
+        //   path: '/salary-management/salary-base-sale-rules/module',
+        //   name: 'salary-base-sale-module',
+        //   component: () => import('@/views/salary-management/salary-base-sale-rules/module/See'),
+        //   meta: {
+        //     title: '销售基本工资规则明细',
+        //     icon: 'select',
+        //     hidden: true,
+        //     keepAlive: false,
+        //     permission: ['permission']
+        //   },
+        // }
       ]
     },
     { //工资
@@ -111,10 +111,102 @@ export default {
             permission: ['permission']
           },
         },
+
+      ]
+    },
+
+    { //提成
+      path: '/salary-management/commission',
+      name: 'commission',
+      component: RouteView,
+      meta: {
+        title: '提成',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: [{
+          path: '/salary-management/commission/rule',
+          name: 'commission-rules',
+          component: RouteView,
+          meta: {
+            title: '规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          children: [{
+              path: '/salary-management/commission/rule/salary-base-sale-rules',
+              name: 'salary-base-sale-rules',
+              component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/List'),
+              meta: {
+                title: '销售基本工资规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }, {
+              path: '/salary-management/commission/rule/salary-base-sale-rules/module',
+              name: 'salary-base-sale-module',
+              component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/module/See'),
+              meta: {
+                title: '销售基本工资规则明细',
+                icon: 'select',
+                hidden: true,
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+            {
+              path: '/salary-management/commission/rule/research',
+              name: 'salary-research',
+              component: () => import('@/views/salary-management/commission/rule/research/List'),
+              meta: {
+                title: '研发提成规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+            {
+              path: '/salary-management/commission/rule/Hardware',
+              name: 'salary-Hardware',
+              component: () => import('@/views/salary-management/commission/rule/Hardware/List'),
+              meta: {
+                title: '软件/硬件提成规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+          ]
+        },
         {
-          path: '/salary-management/sale-commission-bonus',
-          name: 'sale-commission-bonus',
-          component: () => import('@/views/salary-management/sale-commission-bonus/List'),
+          path: '/salary-management/commission/collection',
+          name: 'collection',
+          component: () => import('@/views/salary-management/commission/collection/List'),
+          meta: {
+            title: '销售部收款分析表',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/commission/order',
+          name: 'commission-order',
+          component: () => import('@/views/salary-management/commission/order/List'),
+          meta: {
+            title: '销售部订单提成分析表',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/commission/sale-commission-bonus',
+          name: 'sale-commission',
+          component: () => import('@/views/salary-management/commission/sale-commission-bonus/List'),
           meta: {
             title: '销售提成奖金',
             icon: 'select',
@@ -123,16 +215,31 @@ export default {
           },
         },
         {
-          path: '/salary-management/research-commission-bonus',
-          name: 'research-commission-bonus',
-          component: () => import('@/views/salary-management/research-commission-bonus/List'),
+          path: '/salary-management/commission/research-commission-bonus',
+          name: 'research-commission',
+          component: () => import('@/views/salary-management/commission/research-commission-bonus/List'),
           meta: {
             title: '研发提成奖金',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
           },
+        },
+
+        {
+          path: '/salary-management/commission/softwareAndHardware',
+          name: 'softwareAndHardware',
+          component: () => import('@/views/salary-management/commission/softwareAndHardware/List'),
+          meta: {
+            title: '软件/硬件提成奖金',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
         }
+
+
+
       ]
     },
     { //补贴
@@ -172,6 +279,17 @@ export default {
               component: () => import('@/views/salary-management/salary-subsidy-rules-record/List'),
               meta: {
                 title: '多类补贴',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+            {
+              path: '/salary-management/engineer_subsidy',
+              name: 'engineer_subsidy',
+              component: () => import('@/views/salary-management/engineer_subsidy/List'),
+              meta: {
+                title: '高级工程师补贴规则',
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']

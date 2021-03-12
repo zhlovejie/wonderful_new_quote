@@ -110,6 +110,7 @@ export default {
       bonusList: [], //奖金项目
       subsidyList: [], //补贴项目
       deductionList: [], //扣款项目
+      royaltyList: [], //提成项目
       fromSalary: [],
       fromSalaryDetail: {},
       form: this.$form.createForm(this),
@@ -150,6 +151,7 @@ export default {
         getDictionary({ text: '奖金项' }).then((res) => (that.bonusList = res.data)),
         getDictionary({ text: '补贴项' }).then((res) => (that.subsidyList = res.data)),
         getDictionary({ text: '扣款项' }).then((res) => (that.deductionList = res.data)),
+        getDictionary({ text: '提成金' }).then((res) => (that.royaltyList = res.data)),
       ]).then((res) => {
         let fromSalary = [
           {
@@ -182,6 +184,14 @@ export default {
             showkey: 'fineDicText',
             name: '扣款',
             options: that.deductionList,
+            val: [],
+          },
+          {
+            key: 'percentage',
+            skey: 'percentageDicIds',
+            showkey: 'percentageDicText',
+            name: '提成',
+            options: that.royaltyList,
             val: [],
           },
         ]

@@ -222,7 +222,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'research-commission-bonus') {
+        if (to.name === 'research-commission') {
           this.init()
         }
       },

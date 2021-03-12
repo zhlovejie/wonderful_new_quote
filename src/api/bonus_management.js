@@ -2,6 +2,130 @@ import {
   axios
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
+
+
+// 软件/硬件提成规则列表
+export function softHard_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageRule/soft-hard-percentage-rule/getListPage',
+    method: 'get',
+    params: parameter
+  })
+}
+// 软件/硬件提成规则新增修改
+export function softHard_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageRule/soft-hard-percentage-rule/addAndUpdateSoftHardPercentageRule',
+    method: 'post',
+    data: parameter
+  })
+}
+// 软件/硬件提成规则列表
+export function softHard_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageRule/soft-hard-percentage-rule/delSoftHardPercentageRule',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
+// 高级工程师补贴列表
+export function engineer_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-senior-engineer-subsidy/page',
+    method: 'get',
+    params: parameter
+  })
+}
+//高级工程师补贴修改
+export function enginee_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-senior-engineer-subsidy/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//高级工程是补贴删除
+export function engineer_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-senior-engineer-subsidy/del',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+// 提成规则模块
+export function researchs_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-percentage-rule/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//提成规则模块新增
+export function researchs_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-percentage-rule/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//提成规则模块删除
+export function researchs_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-percentage-rule/del',
+    method: 'get',
+    params: parameter
+  })
+}
+//查询智能产品提成
+export function getSalaryIntelligent(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-intelligent-products-commission/getSalaryIntelligentProductsCommission',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 新增修改智能产品提成
+export function getSalaryIntelligent_addAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-intelligent-products-commission/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //---------------------奖金模块-----------------------
 /**研发列表接口 */
 export function oaSalaryInfo_list(parameter) {

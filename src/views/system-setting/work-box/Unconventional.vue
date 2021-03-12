@@ -22,6 +22,16 @@
         :allowClear="true"
       />
       <a-select
+        placeholder="选择产品类别"
+        v-model="queryParam.productCategory"
+        :allowClear="true"
+        style="width: 200px; margin-left: 10px"
+      >
+        <a-select-option v-for="item in products" :key="item.id" :value="item.id">
+          {{ item.text }}
+        </a-select-option>
+      </a-select>
+      <a-select
         placeholder="状态"
         v-model="queryParam.status"
         :allowClear="true"
@@ -55,7 +65,7 @@
 <script>
 import { STable } from '@/components'
 
-import { saleValencyProductList } from '@/api/workBox'
+import { saleValencyProductList, getDictionaryList } from '@/api/workBox'
 
 export default {
   name: 'ProductPrice',
@@ -67,6 +77,7 @@ export default {
     return {
       // 查询参数
       queryParam: {},
+      products: [],
       // 表头
       columns: [
         {
@@ -81,6 +92,10 @@ export default {
         {
           title: '产品代码',
           dataIndex: 'newBasisModel',
+        },
+        {
+          title: '产品类别',
+          dataIndex: 'productCategoryText',
         },
         {
           title: '规格型号',
@@ -134,6 +149,7 @@ export default {
     }
   },
   created() {
+    getDictionaryList({ parentId: 655 }).then((res) => (this.products = res.data))
     // 初始化钩子,获取所有产品类型
     // getDictionary({ text: '产品类型' }).then((res) => {
     //   this.productTypes = res.data
