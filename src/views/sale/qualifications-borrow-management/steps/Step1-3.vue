@@ -513,6 +513,7 @@ export default {
       await that.init()
 
       if (that.isAdd) {
+        debugger
         if(record){
           if (record.salesArea) {
             let _arr = record.salesArea.split(';')
@@ -528,8 +529,12 @@ export default {
             record.salemanName = that.getSaleManName(record.salesmanId)
           }
           //是否显示保证金
-          that.haveDeposit = +that.detail.haveDeposit === 1
-
+          if(that.detail.haveDeposit){
+            that.haveDeposit = +that.detail.haveDeposit === 1
+          }else{
+            that.haveDeposit = true
+          }
+          
           that.$refs.customerSelect &&
             that.$refs.customerSelect.fill({
               id: that.detail.customerId,
@@ -538,6 +543,7 @@ export default {
 
           that.detail = record
         }else{
+          that.haveDeposit = true
           that.form.setFieldsValue({validityDate:[moment(),moment()] })
         }
         return
