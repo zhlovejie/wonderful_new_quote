@@ -1,7 +1,20 @@
 <template>
   <a-card :bordered="false">
     <a-row :gutter="24">
-      <a-col :span="24">
+      <a-col :span="4">
+        <div
+          class="menu-tree-list-wrapper"
+          style="width: 100%; overflow: auto; box-shadow: 7px 0px 7px -7px #ddd; height: 600px"
+        >
+          <a-tree
+            :treeData="orgTree"
+            :selectedKeys="treeSelectedKeys"
+            :defaultExpandAll="true"
+            @select="handleClick"
+          ></a-tree>
+        </div>
+      </a-col>
+      <a-col :span="20">
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
@@ -17,49 +30,37 @@
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="doAction('edit', null)">修改</a-button>
+              <a-button :disabled="!canEdit" type="primary" @click="doAction('edit', null)">修改</a-button>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="doAction('disable', null)">禁用</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('disable', null)">禁用</a-button>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="doAction('enable', null)">启用</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('enable', null)">启用</a-button>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="doAction('del', null)">删除</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('del', null)">删除</a-button>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="doAction('approval', null)">审核</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('approval', null)">审核</a-button>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="doAction('unapproval', null)">反审核</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('unapproval', null)">反审核</a-button>
             </a-form-item>
           </a-form>
         </div>
-      </a-col>
-    </a-row>
-    <a-row :gutter="24">
-      <a-col :span="4">
-        <div
-          class="menu-tree-list-wrapper"
-          style="width: 100%; overflow: auto; box-shadow: 7px 0px 7px -7px #ddd; height: 600px"
-        >
-          <a-tree :treeData="orgTree" :defaultExpandAll="true" @select="handleClick"></a-tree>
-        </div>
-      </a-col>
-      <a-col :span="20">
         <a-table
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
           :loading="loading"
-          @change="handleTableChange" 
-          :rowSelection="rowSelection"
+          @change="handleTableChange"
+          :customRow="customRowFunction"
+          :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-
           <div slot="customerName" slot-scope="text, record, index">
             <a href="javascript:void(0);" @click="clickVue(record)">{{ text }}</a>
           </div>
@@ -72,8 +73,6 @@
 
 <script>
 import {
-  routineMaterialRuleAdd,
-  routineMaterialRuleUpdate,
   routineMaterialRuleDelete,
   routineMaterialRuleAnnulAudit,
   routineMaterialRuleAudit,
@@ -91,54 +90,24 @@ const columns = [
   {
     align: 'center',
     title: '代码',
-    dataIndex: 'code'
+    dataIndex: 'code',
   },
   {
     align: 'center',
     title: '名称',
     dataIndex: 'ruleName',
   },
-  
   {
     align: 'center',
     title: '创建人',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
     title: '创建时间',
-    dataIndex: 'createdTime'
-  },
-  // {
-  //   align: 'center',
-  //   title: '更新人',
-  //   dataIndex: 'modifierName',
-  // },
-  // {
-  //   align: 'center',
-  //   title: '更新时间',
-  //   dataIndex: 'modifyTime',
-  // },
-  // {
-  //   align: 'center',
-  //   title: '操作',
-  //   dataIndex: 'id',
-  //   width: '150px',
-  //   scopedSlots: { customRender: 'action' },
-  // },
+    dataIndex: 'createdTime',
+  }
 ]
-
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  onSelect: (record, selected, selectedRows) => {
-    console.log(record, selected, selectedRows);
-  },
-  onSelectAll: (selected, selectedRows, changeRows) => {
-    console.log(selected, selectedRows, changeRows);
-  },
-};
 
 export default {
   name: 'material-management-rule-RoutineList',
@@ -147,8 +116,8 @@ export default {
   },
   data() {
     return {
-      parentId: 0, // 父id
-      parentItem:{},
+      parentId: 1, // 父id
+      parentItem: {},
       // 表头
       columns,
       orgTree: [],
@@ -157,9 +126,7 @@ export default {
       selectedRows: [],
 
       loading: false,
-      queryParam: {
-        parentId: 1,
-      },
+      queryParam: {},
       pagination: {
         current: 1,
         pageSize: 10,
@@ -167,8 +134,7 @@ export default {
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
-      },
-      rowSelection
+      }
     }
   },
   watch: {
@@ -179,17 +145,38 @@ export default {
         }
       },
       immediate: true,
+    }
+  },
+  computed: {
+    canEdit() {
+      return this.selectedRows.length === 1
     },
+    canUse() {
+      return this.selectedRows.length > 0
+    },
+    treeSelectedKeys() {
+      return [String(this.parentId)]
+    }
   },
   methods: {
+    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
     init() {
-      this.fetchTree()
+      this.parentId = 1
+      ;(this.queryParam = {
+        ...this.queryParam,
+        parentId: this.parentId,
+      }),
+        this.fetchTree()
       this.search()
     },
     fetchTree() {
       const that = this
       routineMaterialRulePageTreeList().then((res) => {
         that.orgTree = res.data.map((item) => that.formatTreeData(item))
+        that.parentItem = that.orgTree.find((item) => item.key === '1')
       })
     },
     search(params = {}) {
@@ -243,7 +230,7 @@ export default {
       }
       return obj
     },
-    handleClick(selectedKeys,e) {
+    handleClick(selectedKeys, e) {
       const that = this
       let dataRef = e.node.dataRef
       // 点击树结构菜单
@@ -253,46 +240,94 @@ export default {
       }
       that.queryParam = { ...that.queryParam, parentId }
       that.parentId = parentId
-      that.parentItem = {...dataRef}
-      if(dataRef.isLeaf){
-        that.search()
-      }
+      that.parentItem = { ...dataRef }
+      // if(dataRef.isLeaf){
+
+      // }
+      that.search()
     },
     doAction(type, record) {
       const that = this
-      console.log(arguments)
       if (type === 'add') {
-        that.$refs.routineAddForm.query(type, { ...record, __selectItem:that.parentItem,__treeData: [...that.orgTree] })
+        that.$refs.routineAddForm.query(type, {
+          ...record,
+          __selectItem: that.parentItem,
+          __treeData: [...that.orgTree],
+        })
         return
+      } else if (type === 'edit') {
+        that.$refs.routineAddForm.query(type, {
+          ...that.selectedRows[0],
+          __selectItem: that.parentItem,
+          __treeData: [...that.orgTree],
+        })
+        return
+      } else {
+        let m = {
+          disable: {
+            api: routineMaterialRuleForbidden,
+            title: '禁用',
+          },
+          enable: {
+            api: routineMaterialRuleStartUsing,
+            title: '启用',
+          },
+          del: {
+            api: routineMaterialRuleDelete,
+            title: '删除',
+          },
+          approval: {
+            api: routineMaterialRuleAudit,
+            title: '审核',
+          },
+          unapproval: {
+            api: routineMaterialRuleAnnulAudit,
+            title: '反审核',
+          },
+        }
+        let target = m[type]
+        if (!target) {
+          that.$message.error(`不支持的操作类型:${type}`)
+          return
+        }
+        let itemNames = `【${that.selectedRows.map((item) => item.ruleName).join('，')}】`
+        let ids = that.selectedRows.map((item) => item.id).join(',')
+        that.$confirm({
+          title: '提示',
+          content: `确定要${target.title}${itemNames}吗？`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            target
+              .api(`ids=${ids}`)
+              .then((res) => {
+                that.$message.info(res.msg)
+                if (res.code === 200) {
+                  that.finishHandler()
+                }
+              })
+              .catch((err) => {
+                that.$message.error(err.message)
+              })
+          },
+        })
       }
     },
     finishHandler() {
+      this.selectedRowKeys = []
+      this.selectedRows = []
       this.fetchTree()
+      this.search()
     },
-    del(row) {
-      const _this = this
-      this.$confirm({
-        title: '警告',
-        content: `真的要删除 ${row.title} 吗?`,
-        okText: '删除',
-        okType: 'danger',
-        cancelText: '取消',
-        onOk() {
-          // 在这里调用删除接口
-          deleteRoute({ id: row.id }).then((res) => {
-            if (res.code === 200) {
-              _this.$refs.table.refresh(true)
-              _this.$nextTick(() => {
-                routeTreeList().then((res) => {
-                  _this.orgTree = res.data
-                })
-              })
-            } else {
-              _this.$message.error(res.msg)
-            }
-          })
+    customRowFunction(record) {
+      // auditStatus审核状态：1未审核，2审批中，3已审核
+      // forbidden  是否禁用：1禁用，2启用
+      let { auditStatus, forbidden } = record
+      return {
+        style: {
+          color: +auditStatus === 3 ? 'blue' : +forbidden === 1 ? 'red' : '',
         },
-      })
+      }
     }
   }
 }
