@@ -116,7 +116,7 @@ export default {
   },
   data() {
     return {
-      parentId: 1, // 父id
+      parentId: 0, // 父id
       parentItem: {},
       // 表头
       columns,
@@ -149,7 +149,7 @@ export default {
   },
   computed: {
     canEdit() {
-      return this.selectedRows.length === 1
+      return this.selectedRows.length === 1 && +this.selectedRows[0].auditStatus !== 3
     },
     canUse() {
       return this.selectedRows.length > 0
@@ -164,7 +164,7 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
-      this.parentId = 1
+      this.parentId = 0
       ;(this.queryParam = {
         ...this.queryParam,
         parentId: this.parentId,
@@ -175,8 +175,19 @@ export default {
     fetchTree() {
       const that = this
       productMaterialRulePageTreeList().then((res) => {
-        that.orgTree = res.data.map((item) => that.formatTreeData(item))
-        that.parentItem = that.orgTree.find((item) => item.key === '1')
+        const root = {
+          key:'0',
+          value:'0',
+          title:'成品物料规则',
+          isLeaf:false,
+          children:res.data.map((item) => that.formatTreeData(item))
+        }
+        that.orgTree = [root]
+        if(String(that.parentId) === '0'){
+          that.parentItem = root
+        }
+      }).catch(err =>{
+        that.$message.error(`调用接口[productMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
       })
     },
     search(params = {}) {
@@ -189,6 +200,9 @@ export default {
       productMaterialRulePageList(_searchParam)
         .then((res) => {
           that.loading = false
+          if(!(res && res.data && res.data.records && Array.isArray(res.data.records))){
+            return
+          }
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             return item
@@ -207,7 +221,10 @@ export default {
             that.search()
           }
         })
-        .catch((err) => (that.loading = false))
+        .catch((err) => {
+          console.error(err)
+          that.loading = false
+        })
     },
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
@@ -244,6 +261,8 @@ export default {
       // if(dataRef.isLeaf){
 
       // }
+      that.selectedRowKeys = []
+      that.selectedRows = []
       that.search()
     },
     doAction(type, record) {
@@ -253,6 +272,7 @@ export default {
           ...record,
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
+          __from:'product'
         })
         return
       } else if (type === 'edit') {
@@ -260,6 +280,7 @@ export default {
           ...that.selectedRows[0],
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
+          __from:'product'
         })
         return
       } else {
@@ -267,22 +288,27 @@ export default {
           disable: {
             api: productMaterialRuleForbidden,
             title: '禁用',
+            tpl:names => `确定要禁用${names}吗？`
           },
           enable: {
             api: productMaterialRuleStartUsing,
             title: '启用',
+            tpl:names => `确定要启用${names}吗？`
           },
           del: {
             api: productMaterialRuleDelete,
             title: '删除',
+            tpl:names => `确定要删除${names}吗？`
           },
           approval: {
             api: productMaterialRuleAudit,
             title: '审核',
+            tpl:names => `审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`
           },
           unapproval: {
             api: productMaterialRuleAnnulAudit,
             title: '反审核',
+            tpl:names => `反审核项目${names}后，数据标记为未审核，是否继续？`
           },
         }
         let target = m[type]
@@ -294,7 +320,7 @@ export default {
         let ids = that.selectedRows.map((item) => item.id).join(',')
         that.$confirm({
           title: '提示',
-          content: `确定要${target.title}${itemNames}吗？`,
+          content: target.tpl(itemNames),
           okText: '确定',
           cancelText: '取消',
           onOk() {

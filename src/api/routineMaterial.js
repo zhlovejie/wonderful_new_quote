@@ -96,27 +96,6 @@ export function routineMaterialRulePageTreeList(parameter) {
 }
 
 
-/**审核 物料规则审核接口 */
-export function materialRuleAuditAudit(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/materialRuleAudit/audit',
-    method: 'POST',
-    data: parameter
-  })
-}
-
-/**审核列表 物料规则审核接口 */
-export function materialRuleAuditPageList(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/materialRuleAudit/pageList',
-    method: 'get',
-    params: parameter
-  })
-}
-
-
 // 成品物料规则--------------------------
 
 
@@ -210,24 +189,33 @@ export function productMaterialRulePageTreeList(parameter) {
   })
 }
 
-
 /**审核 物料规则审核接口 */
-// export function materialRuleAuditAudit(parameter) {
-//   return axios({
-//     baseURL: system.baseURL,
-//     url: '/materialRuleAudit/audit',
-//     method: 'POST',
-//     data: parameter
-//   })
-// }
+export function materialRuleAudit(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/materialRuleAudit/audit',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+/**批量审核为通过 物料规则审核接口 */
+export function materialRuleAuditBatch(parameter) {
+  let url = parameter.split('=')[1].split(',').map(s => `ids=${s}`).join('&')
+  return axios({
+    baseURL: system.baseURL,
+    url: `/materialRuleAudit/auditBatch?${url}`,
+    method: 'POST'
+  })
+}
 
 /**审核列表 物料规则审核接口 */
-// export function materialRuleAuditPageList(parameter) {
-//   return axios({
-//     baseURL: system.baseURL,
-//     url: '/materialRuleAudit/pageList',
-//     method: 'get',
-//     params: parameter
-//   })
-// }
+export function materialRuleAuditPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/materialRuleAudit/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
 

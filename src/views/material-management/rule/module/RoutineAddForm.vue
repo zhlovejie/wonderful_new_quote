@@ -60,7 +60,23 @@
   </a-modal>
 </template>
 <script>
-import { routineMaterialRuleAdd, routineMaterialRuleUpdate } from '@/api/routineMaterial'
+import { 
+  routineMaterialRuleAdd, 
+  routineMaterialRuleUpdate ,
+  productMaterialRuleAdd,
+  productMaterialRuleUpdate
+} from '@/api/routineMaterial'
+
+const __API__ ={
+  'normal':{
+    'add':routineMaterialRuleAdd,
+    'edit':routineMaterialRuleUpdate
+  },
+  'product':{
+    'add':productMaterialRuleAdd,
+    'edit':productMaterialRuleUpdate
+  }
+}
 
 export default {
   name: 'RoutineAddForm',
@@ -74,6 +90,7 @@ export default {
       selectList: [],
       form: this.$form.createForm(this, { name: 'material-management-RoutineAddForm' }),
       detail: {},
+      from:'normal' // normal常规 product成品
     }
   },
   created() {},
@@ -98,9 +115,11 @@ export default {
       that.detail = {}
       that.visible = true
 
-      let { __selectItem, __treeData } = record
+      let { __selectItem, __treeData ,__from} = record
       that.detail = { ...record }
       that.treeData = __treeData
+
+      that._api = __API__[__from][type]
 
       that.$nextTick(() => {
         that.form.setFieldsValue({ parentId: __selectItem.key })
@@ -131,8 +150,7 @@ export default {
             //param.codeLength = that.detail.codeLength
             //param.ruleName = that.detail.ruleName
           }
-          let api = that.isAdd ? routineMaterialRuleAdd : routineMaterialRuleUpdate
-          api(param)
+          that._api(param)
             .then((res) => {
               that.spinning = false
               console.log(res)
