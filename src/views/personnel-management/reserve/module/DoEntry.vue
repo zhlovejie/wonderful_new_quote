@@ -622,7 +622,7 @@
 
               <tr>
                 <td class="requiredMark">员工状态</td>
-                <td colspan="3">
+                <td>
                   <a-form-item>
                     <a-select
                       :disabled="isView"
@@ -639,7 +639,84 @@
                     </a-select>
                   </a-form-item>
                 </td>
+                <td class="requiredMark">薪资制度</td>
+                <td colspan="3">
+                  <a-form-item>
+                    <a-select
+                      :disabled="isView"
+                      @change="salaryTypeChange"
+                      v-decorator="[
+                        'salaryType',
+                        { initialValue: 0, rules: [{ required: true, message: '选择薪资制度' }] },
+                      ]"
+                      placeholder="选择薪资制度"
+                    >
+                      <a-select-option :value="0">月薪制</a-select-option>
+                      <a-select-option :value="1">年薪制</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </td>
               </tr>
+              <template v-if="monthlyCycle">
+                <tr>
+                  <td class="requiredMark">周期</td>
+                  <td>
+                    <a-form-item>
+                      <a-input disabled v-decorator="['cycle', { initialValue: 1 }]" />
+                    </a-form-item>
+                  </td>
+                </tr>
+              </template>
+              <template v-else>
+                <tr>
+                  <td class="requiredMark">年薪类型</td>
+                  <td>
+                    <a-form-item>
+                      <a-select
+                        :disabled="isView"
+                        @change="yearSalaryIdChange"
+                        v-decorator="['yearSalaryId', { rules: [{ required: true, message: '选择年薪类型' }] }]"
+                        placeholder="选择年薪类型"
+                      >
+                        <a-select-option v-for="(item, index) in annual" :key="index" :value="item.id">{{
+                          item.ruleName
+                        }}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </td>
+                  <td class="requiredMark">年/周期薪资(万元)</td>
+                  <td colspan="3">
+                    <a-form-item>
+                      <a-input-number
+                        style="width: 100%"
+                        :disabled="isView"
+                        :precision="2"
+                        v-decorator="[
+                          'cycleSalary',
+                          {
+                            rules: [{ required: true, message: '输入年/周期薪资(万元)' }],
+                          },
+                        ]"
+                        placeholder="输入年/周期薪资(万元)"
+                      />
+                    </a-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="requiredMark">周期</td>
+                  <td colspan="3">
+                    <a-form-item>
+                      <a-select
+                        :disabled="isView"
+                        v-decorator="['cycle', { rules: [{ required: true, message: '选择周期' }] }]"
+                        placeholder="选择周期"
+                      >
+                        <a-select-option v-for="item in cycle" :key="item" :value="item">{{ item }}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </td>
+                </tr>
+              </template>
 
               <tr>
                 <td>个人印章</td>
@@ -740,7 +817,7 @@ import {
   getStationList, //获取所有岗位
 } from '@/api/systemSetting'
 import { comManageSettingsGetSettingsByStationId } from '@/api/communicationManagement'
-import { Personnel_Reserve } from '@/api/humanResources'
+import { Personnel_Reserve, annual_ruleList, annual_rulegetId } from '@/api/humanResources'
 import { getReserveCondition } from '@/api/reserveApi'
 
 //高拍仪组件
@@ -784,6 +861,8 @@ export default {
   },
   data() {
     return {
+      cycle: [], //年薪周期
+      annual: [], //年薪制规则
       visible: false,
       activeKey: 1,
       form: this.$form.createForm(this, { name: 'do_entry' }),
@@ -822,6 +901,7 @@ export default {
       fileTypes: undefined,
       arrNum: [],
       fileUrlType: [],
+      monthlyCycle: true,
       stationInfoRequire: {
         email: false,
         mobile: false,
@@ -848,6 +928,7 @@ export default {
   },
   mounted() {
     //this.init()
+    annual_ruleList().then((res) => (this.annual = res.data))
   },
   methods: {
     moment: moment,
@@ -978,6 +1059,7 @@ export default {
     async query(type, record) {
       let that = this
       that.visible = true
+      that.monthlyCycle = true
       that.type = type
       that.certificateList = []
       that.specialList = []
@@ -1037,10 +1119,10 @@ export default {
     async fillData(type, resultData) {
       let that = this
       await this.init()
-
+      annual_rulegetId({ id: resultData.yearSalaryId }).then((res) => (this.cycle = res.data.accountCycle.split(',')))
       //before 入职前填充 after 入职后填充
       //if(type === 'before'){
-
+      that.monthlyCycle = resultData.salaryType === 0 ? true : false
       let isDoEntryBefore = that.record.status === 0 ? true : false
       // if(isDoEntryBefore){
       //   //人脸识别码
@@ -1367,6 +1449,19 @@ export default {
         inspectMoth: '',
       })
     },
+    salaryTypeChange(e) {
+      if (e === 0) {
+        this.monthlyCycle = true
+        this.cycle = []
+      } else {
+        this.monthlyCycle = false
+      }
+    },
+    yearSalaryIdChange(e) {
+      let react = this.annual.find((item) => item.id === e)
+      this.cycle = react.accountCycle.split(',')
+    },
+
     validateIdentityCard(e) {
       console.log(e.target.value)
       let s = this.getBirthDay(e.target.value.trim())

@@ -1,17 +1,7 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px" v-model="queryParam.month" />
-      <a-select
-        style="width: 200px; margin-left: 10px; margin-right: 10px"
-        placeholder="选择部门"
-        :allowClear="true"
-        v-model="queryParam.departmentId"
-      >
-        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
-          item.departmentName
-        }}</a-select-option>
-      </a-select>
+      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.month" />
       <a-select
         placeholder="审核状态"
         v-if="activeKey === 0"
@@ -20,9 +10,8 @@
         style="width: 200px; margin-right: 10px"
       >
         <a-select-option :value="1">待审批</a-select-option>
-        <a-select-option :value="2">审批通过</a-select-option>
-        <a-select-option :value="3">审批不通过</a-select-option>
-        <a-select-option :value="4">已撤回</a-select-option>
+        <a-select-option :value="2">通过</a-select-option>
+        <a-select-option :value="3">不通过</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -32,11 +21,6 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
-      <template v-if="$auth('research:add')">
-        <a-dropdown style="float: right">
-          <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
-        </a-dropdown>
-      </template>
 
       <div style="float: right"></div>
     </div>
@@ -68,34 +52,9 @@
             <template v-if="$auth('research:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 2 && $auth('research:download')">
-              <a-divider type="vertical" />
-              <a type="primary" @click="outPort(record)">下载</a>
-            </template>
-            <template v-if="$auth('research:Withdraw') && record.status === 1 && +record.createdId === +userInfo.id">
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
-                <a type="primary">撤回</a>
-              </a-popconfirm>
-            </template>
-            <template
-              v-if="
-                $auth('research:edit-salary') &&
-                (record.status === 3 || record.status === 4) &&
-                +record.createdId === +userInfo.id
-              "
-            >
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('edit-salary', record)">修改</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
-                <a type="primary">删除</a>
-              </a-popconfirm>
-            </template>
           </template>
-
           <template v-if="activeKey === 1 && record.status === 1">
-            <a type="primary" @click="doAction('edit', record)">审核</a>
+            <a type="primary" @click="doAction('Approval', record)">审核</a>
           </template>
 
           <template v-if="activeKey === 2">
@@ -104,32 +63,13 @@
         </div>
       </a-table>
     </div>
-    <a-modal v-model="visible" title="新增研发提成奖金" @ok="handleOk">
-      <a-month-picker :disabled-date="disabledDate" style="width: 300px; margin-left: 90px" v-model="Dates" />
-      <a-select
-        style="width: 300px; margin-top: 30px; margin-left: 90px"
-        placeholder="选择部门"
-        :allowClear="true"
-        v-model="Sector"
-      >
-        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
-          item.departmentName
-        }}</a-select-option>
-      </a-select>
-    </a-modal>
+
     <AddForm ref="addForm" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
 <script>
-import {
-  bonus_pageList,
-  bonus_getDepartmentByType,
-  bonus_checkDeveloperPercentApply,
-  bonus_withdrawDeveloper,
-  bonus_removeDeveloper,
-  getPercentageExcel,
-} from '@/api/bonus_management'
+import { bonus_pageList } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -145,20 +85,20 @@ const columns = [
   {
     align: 'center',
     title: '日期',
-    dataIndex: 'month',
-    key: 'month',
+    dataIndex: 'staticsDate',
+    key: 'staticsDate',
   },
 
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    title: '总提成(元)',
+    dataIndex: 'percentageRetio',
+    key: 'percentageRetio',
   },
 
   {
     align: 'center',
-    title: '审核状态',
+    title: '状态',
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
@@ -167,8 +107,8 @@ const columns = [
   {
     align: 'center',
     title: '提交人',
-    key: 'createdUserName',
-    dataIndex: 'createdUserName',
+    key: 'createdName',
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
@@ -193,7 +133,6 @@ export default {
   data() {
     return {
       visible: false,
-      Dates: undefined,
       Sector: undefined,
       depList: [],
       queryParam: {},
@@ -204,7 +143,6 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
-      status: '',
       depId: '',
       activeKey: 0,
       departmentList: [],
@@ -234,69 +172,16 @@ export default {
     disabledDate(current) {
       return current && current > moment().subtract(30, 'days')
     },
-    // 下载
-    outPort(record) {
-      getPercentageExcel({ applyId: record.id })
-        .then((res) => {
-          // debugger
-          let blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-          let objectUrl = URL.createObjectURL(blob)
-          let link = document.createElement('a')
-          link.style = 'display: none'
-          link.target = '_blank'
-          link.href = objectUrl
-          link.download = record.month + '研发提成表' // 自定义文件名
-          link.click() // 下载文件
-          URL.revokeObjectURL(objectUrl) // 释放内存
-        })
-        .catch((err) => this.$message.error(err.msg))
-    },
     init() {
       let that = this
       that.searchAction()
-      bonus_getDepartmentByType({ type: 2 }).then((res) => (this.depList = res.data))
     },
-    showModal() {
-      this.date = undefined
-      this.Sector = undefined
-      this.visible = true
-    },
-    handleOk() {
-      let _that = this
-      let date = moment(_that.Dates).format('YYYY-MM')
-      // this.$message.info(date)
-      if (_that.Dates && _that.Sector) {
-        bonus_checkDeveloperPercentApply({ month: date, departmentId: _that.Sector }).then((res) => {
-          if (res.code === 200) {
-            _that.visible = false
-            _that.doAction('add', { month: date, departmentId: _that.Sector })
-          } else {
-            _that.$message.error(res.msg)
-          }
-        })
-      } else {
-        _that.$message.error('请选择月份或部门')
-      }
-    },
-    // 删除
-    confirmDelete(record) {
-      let that = this
-      bonus_removeDeveloper(`id=${record.id}`).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          _this.$message.error(res.msg)
-        }
-      })
-    },
+
     getStateText(state) {
       let stateMap = {
         1: '待审批',
-        2: '审核通过',
-        3: '审核未通过',
-        4: '已撤回',
-        5: '已完结',
+        2: '通过',
+        3: '未通过',
       }
       return stateMap[state] || `未知状态:${state}`
     },
@@ -306,13 +191,13 @@ export default {
     },
 
     // 撤回
-    confirmWithdraw(record) {
-      let that = this
-      bonus_withdrawDeveloper(`id=${record.id}`).then((res) => {
-        this.searchAction()
-        that.$message.info(res.msg)
-      })
-    },
+    // confirmWithdraw(record) {
+    //   let that = this
+    //   bonus_withdrawDeveloper(`id=${record.id}`).then((res) => {
+    //     this.searchAction()
+    //     that.$message.info(res.msg)
+    //   })
+    // },
     searchAction(opt) {
       let that = this
       if (that.queryParam.month) {

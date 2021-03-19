@@ -173,7 +173,7 @@ export default {
   },
   created() {
     bonus_getDepartmentByType({ type: 4 }).then((res) => (this.departmentList = res.data))
-    getDictionaryList({ parentId: 655 }).then((res) => (this.products = res.data))
+    getDictionaryList({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
   },
   methods: {
     moment,

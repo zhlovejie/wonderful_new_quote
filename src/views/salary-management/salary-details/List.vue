@@ -35,6 +35,7 @@
       <a-table
         v-if="$auth('salaryDetails:lists')"
         :columns="columns"
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :dataSource="dataSource"
         :pagination="pagination"
         :loading="loading"
@@ -126,6 +127,7 @@ export default {
       status: '',
       depId: '',
       activeKey: 0,
+      selectedRowKeys: [],
       departmentList: [],
       rule_List: [],
       approval_status: undefined,
@@ -153,6 +155,10 @@ export default {
     init() {
       let that = this
       that.searchAction()
+    },
+    onSelectChange(selectedRowKeys, selectedRows) {
+      console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRows)
+      this.selectedRowKeys = selectedRowKeys
     },
 
     // 下载

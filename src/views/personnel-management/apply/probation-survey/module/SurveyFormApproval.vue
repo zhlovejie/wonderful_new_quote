@@ -368,9 +368,28 @@
             <td>试用期工资</td>
             <td colspan="3">
               <a-form-item>
+                <a-select
+                  placeholder="试用期基本工资"
+                  style="width: 50%"
+                  :disabled="isDisabled"
+                  v-decorator="['probationBasicSalary', { rules: [{ required: true, message: '选择试用期基本工资' }] }]"
+                >
+                  <a-select-option :value="2500">2500</a-select-option>
+                  <a-select-option :value="2600">2600</a-select-option>
+                  <a-select-option :value="2700">2700</a-select-option>
+                  <a-select-option :value="2800">2800</a-select-option>
+                  <a-select-option :value="3000">3000</a-select-option>
+                  <a-select-option :value="3300">3300</a-select-option>
+                  <a-select-option :value="3500">3500</a-select-option>
+                </a-select>
                 <a-input
                   :disabled="isView"
-                  v-decorator="['wage', { rules: [{ required: true, message: '请输入试用期工资' }] }]"
+                  placeholder="试用期岗位工资"
+                  style="width: 50%"
+                  v-decorator="[
+                    'probationPostSalary',
+                    { rules: [{ required: true, message: '请输入试用期岗位工资' }] },
+                  ]"
                 />
               </a-form-item>
             </td>

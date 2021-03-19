@@ -51,12 +51,16 @@
       <a-table
         v-if="$auth('baseSalaryCommon:list')"
         :columns="columns"
+        bordered
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
+        </div>
+        <div slot="salaryType" slot-scope="text, record, index">
+          <span>{{ record.salaryType === 0 ? '月薪制' : `年薪制-${record.yearSalaryText}` }}</span>
         </div>
       </a-table>
     </a-layout>
@@ -95,24 +99,59 @@ const columns = [
     align: 'center',
   },
   {
-    title: '试用期工资(元)',
-    dataIndex: 'realityProbationSalary',
-    key: 'realityProbationSalary',
+    dataIndex: 'salaryType',
+    title: '薪资制度',
+    key: '  salaryType',
+    align: 'center',
+    scopedSlots: { customRender: 'salaryType' },
+  },
+  {
+    title: '核算周期（月）',
+    dataIndex: 'cycle',
+    key: 'cycle',
+    align: 'center',
+  },
+  {
+    title: '年/周期薪资',
+    dataIndex: 'cycleSalary',
+    key: 'cycleSalary',
     align: 'center',
   },
 
   {
-    title: '转正工资(元)',
-    dataIndex: 'realitySalary',
-    key: 'realitySalary',
-    align: 'center',
+    title: '试用期工资（元）',
+    children: [
+      {
+        align: 'center',
+        title: '基本工资',
+        dataIndex: 'realityProbationBasicSalary',
+        key: 'realityProbationBasicSalary',
+      },
+      {
+        align: 'center',
+        title: '岗位工资',
+        dataIndex: 'realityProbationPostSalary',
+        key: 'realityProbationPostSalary',
+      },
+    ],
   },
-  // {
-  //   title: '操作',
-  //   key: 'action',
-  //   scopedSlots: { customRender: 'action' },
-  //   align: 'center',
-  // },
+  {
+    title: '转正工资(元)',
+    children: [
+      {
+        align: 'center',
+        title: '基本工资',
+        dataIndex: 'realityBasicSalary',
+        key: 'realityBasicSalary',
+      },
+      {
+        align: 'center',
+        title: '岗位工资',
+        dataIndex: 'realityPostSalary',
+        key: 'realityPostSalary',
+      },
+    ],
+  },
 ]
 export default {
   name: 'RoleManagement',
@@ -191,13 +230,54 @@ export default {
       salary_base_record_ImportExcel(formData)
         .then((res) => {
           this.uploading = false
-          let that = this
-          if (res.code === 200) {
-            that.$message.info(res.msg || '操作成功')
-            this.searchAction()
+          console.log(res.type)
+          if (res instanceof Blob) {
+            let action = {
+              isFile: res.type === 'application/x-download',
+              isJson: res.type === 'application/json',
+            }
+
+            if (action.isFile) {
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = 'error.xlsx'
+              a.click()
+              document.body.removeChild(a)
+
+              this.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
+              return
+            } else if (action.isJson) {
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                  console.log('JSON.parse error...', e.target.result)
+                }
+                if (_res !== null) {
+                  this.$message.success(_res.msg || '操作成功')
+                  this.fileList = []
+                }
+              }
+              reader.readAsText(res)
+            }
           } else {
-            that.$message.error(res.msg)
+            console.log('未知错误：')
+            console.log('类型：' + typeof res)
+            console.log(res)
           }
+          // let that = this
+          // if (res.code === 200) {
+          //   that.$message.info(res.msg || '操作成功')
+          //   this.searchAction()
+          // } else {
+          //   that.$message.error(res.msg)
+          // }
         })
         .catch((err) => {
           this.uploading = false

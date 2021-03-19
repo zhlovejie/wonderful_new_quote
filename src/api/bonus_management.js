@@ -168,16 +168,6 @@ export function getSalerPercentageExcel(parameter) {
     params: parameter
   })
 }
-//研发提成下载 
-export function getPercentageExcel(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/exportDeveloperPercentageExcel',
-    method: 'get',
-    responseType: 'blob',
-    params: parameter
-  })
-}
 
 
 
@@ -525,6 +515,7 @@ export function salary_base_record_ImportExcel(parameter) {
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-base-common/importExcel',
     method: 'post',
+    responseType: 'blob',
     data: parameter
   })
 }
@@ -615,57 +606,19 @@ export function bonus_getDepartmentByType(parameter) {
 export function bonus_pageList(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/pageList',
+    url: '/bounsRules/salary-development-percentage-rule-apply/pageList',
     method: 'get',
     params: parameter
   })
 }
 
 
-//验证接口是否能新增 
-export function bonus_checkDeveloperPercentApply(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/checkDeveloperPercentApply',
-    method: 'post',
-    data: parameter
-  })
-}
 
-//研发提成新增
-
-export function bonus_PercentageApply(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/SaveOrUpdateOaSalaryDeveloperPercentageApply',
-    method: 'post',
-    data: parameter
-  })
-}
-//研发提成撤回
-export function bonus_withdrawDeveloper(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/withdrawDeveloperSalerPercentageApply',
-    method: 'post',
-    data: parameter
-  })
-}
-
-//研发提成撤回
-export function bonus_removeDeveloper(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/removeDeveloperSalerPercentageApply',
-    method: 'post',
-    data: parameter
-  })
-}
 //研发提成审批
 export function bonus_DeveloperPercentageApply(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/approvalOaSalaryDeveloperPercentageApply',
+    url: '/bounsRules/salary-development-percentage-rule-apply/approve',
     method: 'post',
     data: parameter
   })
@@ -674,7 +627,7 @@ export function bonus_DeveloperPercentageApply(parameter) {
 export function bonus_PercentageDetailt(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-developert-percentage-apply/getDeveloperSalerPercentageDetail',
+    url: '/bounsRules/salary-development-percentage-rule-apply/getId',
     method: 'get',
     params: parameter
   })
