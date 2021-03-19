@@ -481,7 +481,7 @@ export default {
     },
     submitAction(opt) {
       let that = this
-      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
+      let values = Object.assign({}, opt || {})
       that.spinning = true
       resignApplyApproval(values)
         .then((res) => {
@@ -543,10 +543,12 @@ export default {
     },
     opinionChange(opinion) {
       // 审批意见
-      this.submitAction({
+      let arr = {
         isAdopt: 1,
         opinion: opinion,
-      })
+        approveId: this.record.id,
+      }
+      this.submitAction({ commonApprovalVO: arr })
     },
   },
 }
