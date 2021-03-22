@@ -23,19 +23,27 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <a-row>
           <a-col :span="24" class="basic-tit" justify="center" align="middle"
-            >{{ record.staticsDate }}研发提成奖金统计表</a-col
+            >{{ record.staticsDate }}软件提成奖金统计表</a-col
           >
         </a-row>
         <a-alert :message="percentageRetio" type="info" style="float: left; width: 200px; margin: 20px 0" />
-        <a-alert :message="developmentAmount" type="info" style="float: left; width: 200px; margin: 20px 10px" />
         <a-table :columns="columns" :pagination="false" rowKey="id" :dataSource="saleCustomers"> </a-table>
+      </a-form>
+      <a-form :form="form" class="becoming-form-wrapper" style="margin: 30px 0">
+        <a-row>
+          <a-col :span="24" class="basic-tit" justify="center" align="middle"
+            >{{ record.staticsDate }}硬件提成奖金统计表</a-col
+          >
+        </a-row>
+        <a-alert :message="developmentAmount" type="info" style="float: left; width: 200px; margin: 20px 0" />
+        <a-table :columns="columns" :pagination="false" rowKey="id" :dataSource="saleCustomers1"> </a-table>
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { bonus_DeveloperPercentageApply, bonus_PercentageDetailt } from '@/api/bonus_management'
+import { softHardPercentageBonus_Apply, softHardPercentageBonus_Detail } from '@/api/bonus_management'
 import Approval from './Approval'
 export default {
   name: 'BecomingForm',
@@ -54,6 +62,7 @@ export default {
       developmentAmount: '',
       departmentId: undefined,
       saleCustomers: [],
+      saleCustomers1: [],
       columns: [
         {
           align: 'center',
@@ -75,15 +84,9 @@ export default {
         },
         {
           align: 'center',
-          title: '合计',
-          dataIndex: 'amount',
-          key: 'amount',
-        },
-        {
-          align: 'center',
-          title: '管理总提成奖金(元)',
-          dataIndex: 'percentageRetioAmount',
-          key: 'percentageRetioAmount',
+          title: '提成金额',
+          dataIndex: 'percentageAmount',
+          key: 'percentageAmount',
         },
       ],
 
@@ -127,10 +130,11 @@ export default {
     fillData() {
       let that = this
       that.$nextTick(() => {
-        bonus_PercentageDetailt({ id: that.record.id }).then((res) => {
-          this.saleCustomers = res.data.oaSalaryDevelopmentPercentageRuleDetailVos
-          this.percentageRetio = `管理总提成（元）: ${res.data.percentageRetio}`
-          this.developmentAmount = `单品总提成（元）: ${res.data.developmentAmount}`
+        softHardPercentageBonus_Detail({ id: that.record.id }).then((res) => {
+          this.saleCustomers = res.data[0].softHardPercentageBonusDetailVo
+          this.percentageRetio = `软件总提成（元）: ${res.data[0].percentageRetio}`
+          this.saleCustomers1 = res.data[1].softHardPercentageBonusDetailVo
+          this.developmentAmount = `硬件总提成（元）: ${res.data[1].percentageRetio}`
         })
       })
     },
@@ -152,7 +156,7 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      bonus_DeveloperPercentageApply(values)
+      softHardPercentageBonus_Apply(values)
         .then((res) => {
           that.spinning = false
           that.form.resetFields() // 清空表

@@ -2,6 +2,31 @@ import {
   axios
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
+
+//销售部收款分析表
+export function receiptAnalyse_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receiptAnalyse/sale-receipt-analyse/getListPage',
+    method: 'get',
+    params: parameter
+  })
+}
+//根据搜索条件获取汇总金额
+export function receiptAnalyse_getSumAmount(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receiptAnalyse/sale-receipt-analyse/getSumAmount',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
+
+
 //软硬件提成奖金列表 
 export function softHardPercentageBonus_list(parameter) {
   return axios({
@@ -11,6 +36,25 @@ export function softHardPercentageBonus_list(parameter) {
     params: parameter
   })
 }
+//软硬件提成奖金详情 
+export function softHardPercentageBonus_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageBonus/soft-hard-percentage-bonus/softHardPercentageBonusDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//软硬件提成奖金审批 
+export function softHardPercentageBonus_Apply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageBonus/soft-hard-percentage-bonus/approveSoftHardPercentageBonus',
+    method: 'post',
+    data: parameter
+  })
+}
+
 
 
 
