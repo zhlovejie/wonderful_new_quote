@@ -238,7 +238,7 @@ export default {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = item.ruleName
+      obj.title = item.newRuleName || item.ruleName
       obj.value = String(item.id)
       obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       //obj.__selectable = obj.isLeaf

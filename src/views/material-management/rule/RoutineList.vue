@@ -32,7 +32,7 @@
             <a-form-item v-if="$auth('routineMaterialRule:edit')">
               <a-button :disabled="!canEdit" type="primary" @click="doAction('edit', null)">修改</a-button>
             </a-form-item>
-            
+
             <a-form-item v-if="$auth('routineMaterialRule:disable')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('disable', null)">禁用</a-button>
             </a-form-item>
@@ -241,7 +241,7 @@ export default {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = item.ruleName
+      obj.title = item.newRuleName || item.ruleName
       obj.value = String(item.id)
       obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       //obj.__selectable = obj.isLeaf
@@ -289,7 +289,7 @@ export default {
           disable: {
             api: routineMaterialRuleForbidden,
             title: '禁用',
-            tpl:names => `确定要禁用${names}吗？`
+            tpl:names => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`
           },
           enable: {
             api: routineMaterialRuleStartUsing,

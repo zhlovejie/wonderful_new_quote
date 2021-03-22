@@ -54,7 +54,7 @@ export default {
       name: 'material-rule-management-audit-routine',
       component: () => import('@/views/material-management/audit/RoutineList'),
       meta: {
-        title: '物料规则审核',
+        title: '常规物料规则审核',
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
