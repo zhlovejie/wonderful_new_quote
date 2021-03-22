@@ -14,12 +14,7 @@
           <a-input style="width: 150px" v-model="searchParam.userName" placeholder="姓名模糊查询" :allowClear="true" />
         </a-form-item>
         <a-form-item>
-          <a-select 
-            placeholder="申请事项"
-            :allowClear="true" 
-            style="width: 150px" 
-            v-model="searchParam.itemType"
-          >
+          <a-select placeholder="申请事项" :allowClear="true" style="width: 150px" v-model="searchParam.itemType">
             <a-select-option :value="1">初次申请</a-select-option>
             <a-select-option :value="2">调整申请</a-select-option>
             <a-select-option :value="3">其他申请</a-select-option>
@@ -49,10 +44,10 @@
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('salary-subsidy-communication:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -207,7 +202,7 @@ export default {
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -290,11 +285,12 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
     doAction(actionType, record) {
@@ -302,7 +298,7 @@ export default {
       if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
-        ComApplyDel({id:record.id})
+        ComApplyDel({ id: record.id })
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -311,7 +307,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        ComApplyRevocation({id:record.id})
+        ComApplyRevocation({ id: record.id })
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()

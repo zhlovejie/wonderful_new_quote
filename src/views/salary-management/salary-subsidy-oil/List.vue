@@ -40,10 +40,10 @@
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('salary-subsidy-oil:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -203,7 +203,7 @@ export default {
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -286,20 +286,21 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    
+
     doAction(actionType, record) {
       let that = this
       if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
-        oilApplyDel({id:record.id})
+        oilApplyDel({ id: record.id })
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -308,7 +309,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        oilApplyRevocation({id:record.id})
+        oilApplyRevocation({ id: record.id })
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()

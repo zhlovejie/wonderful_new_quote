@@ -2,6 +2,18 @@ import {
   axios
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
+//软硬件提成奖金列表 
+export function softHardPercentageBonus_list(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageBonus/soft-hard-percentage-bonus/softHardPercentageBonusPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
 
 
 // 软件/硬件提成规则列表
