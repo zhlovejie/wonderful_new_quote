@@ -47,12 +47,9 @@
             <td>{{ item.stationName }}</td>
             <td>
               <a-form-item :key="item.key">
-                <a-input-number
+                <a-input
                   v-if="!isDisabled"
                   style="width: 120px"
-                  :min="0"
-                  :step="1"
-                  :precision="2"
                   v-decorator="[
                     `investAmountList.${idx}.basicSalary`,
                     {
@@ -65,12 +62,9 @@
             </td>
             <td>
               <a-form-item :key="item.key">
-                <a-input-number
+                <a-input
                   v-if="!isDisabled"
                   style="width: 120px"
-                  :min="0"
-                  :step="1"
-                  :precision="2"
                   v-decorator="[
                     `investAmountList.${idx}.postSalary`,
                     {
