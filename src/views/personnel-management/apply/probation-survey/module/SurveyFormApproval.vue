@@ -371,7 +371,7 @@
                 <a-select
                   placeholder="试用期基本工资"
                   style="width: 50%"
-                  :disabled="isDisabled"
+                  :disabled="isView"
                   v-decorator="['probationBasicSalary', { rules: [{ required: true, message: '选择试用期基本工资' }] }]"
                 >
                   <a-select-option :value="2500">2500</a-select-option>

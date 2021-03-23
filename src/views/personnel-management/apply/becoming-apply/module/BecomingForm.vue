@@ -240,7 +240,7 @@
                       <a-select
                         placeholder="转正基本工资"
                         style="width: 50%"
-                        :disabled="isDisabled"
+                        :disabled="disabled"
                         v-decorator="[
                           'fullMemberBasicSalary',
                           { rules: [{ required: true, message: '选择转正基本工资' }] },
@@ -286,7 +286,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr v-if="isEditSalary || isModified">
+          <!-- <tr v-if="isEditSalary || isModified">
             <td>工资分配</td>
             <td colspan="5">
               <div class="bank-card-list-wrapper">
@@ -325,7 +325,7 @@
                 </a-form-item>
               </div>
             </td>
-          </tr>
+          </tr> -->
 
           <!-- <tr>
             <td >分管总经理审批意见</td>

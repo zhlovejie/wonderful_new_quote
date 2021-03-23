@@ -121,6 +121,10 @@ export default {
     query(type, record) {
       let _that = this
       _that.dataSource = []
+      _that.saleCustomers = []
+      _that.saleCustomers1 = []
+      _that.percentageRetio = ''
+      _that.developmentAmount = ''
       _that.visible = true
       _that.type = type
       _that.record = record

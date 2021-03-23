@@ -41,7 +41,7 @@
           target="_blank"
           style="margin-left: 10px"
           class="a-button ant-btn ant-btn-primary"
-          href="https://www.delanshi.cn/images/cloud/20201027/salaryc931dda2-1bfc-4562-87af-86cc9c77e169.xlsx"
+          href="http://192.168.13.251/images/cloud/20210323/基本工资模板733a880c-90a7-48f8-8fd6-feadfd284240.xlsx"
           >下载模板</a
         >
       </template>

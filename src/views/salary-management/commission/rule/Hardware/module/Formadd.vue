@@ -117,7 +117,7 @@
 </template>
 <script>
 import { bonus_getDepartmentByType } from '@/api/bonus_management'
-import { getDictionaryList } from '@/api/workBox'
+import { queryCode } from '@/api/workBox'
 import {
   getStationList, //获取部门下面的岗位
   getUserByStation, //获取人员
@@ -173,7 +173,7 @@ export default {
   },
   created() {
     bonus_getDepartmentByType({ type: 4 }).then((res) => (this.departmentList = res.data))
-    getDictionaryList({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
+    queryCode({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
   },
   methods: {
     moment,
@@ -182,6 +182,10 @@ export default {
       let that = this
       that.depart = dep_id
       that.postSelectDataSource = []
+      that.form.setFieldsValue({
+        stationId: '',
+        userId: '',
+      })
       return getStationList({ id: dep_id }).then((res) => {
         that.postSelectDataSource = res.data
       })
@@ -189,6 +193,9 @@ export default {
     //选择人员
     postChangeHandler(stationId) {
       this.personSelectDataSource = []
+      this.form.setFieldsValue({
+        userId: '',
+      })
       getUserByStation({ stationId: stationId, showLeaveFlag: 1 }).then(
         (res) => (this.personSelectDataSource = res.data)
       )
