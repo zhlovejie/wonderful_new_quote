@@ -774,8 +774,10 @@ export default {
         getSalaryBaseCommonByUserId({ userId: record.id }).then((res) => {
           debugger
           if (res && res.data) {
-            let salary = res.data.realitySalary || undefined
-            that.form.setFieldsValue({ oldSalary: salary })
+            that.form.setFieldsValue({
+              oldBasicSalary: res.data.realityBasicSalary,
+              oldPostSalary: res.data.realityPostSalary,
+            })
           }
         })
       }
