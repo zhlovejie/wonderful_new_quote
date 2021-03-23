@@ -57,7 +57,7 @@
                     },
                   ]"
                 />
-                <span v-else>{{ item.basicSalary | moneyFormatNumber }}</span>
+                <span v-else>{{ item.basicSalary }}</span>
               </a-form-item>
             </td>
             <td>
@@ -72,7 +72,7 @@
                     },
                   ]"
                 />
-                <span v-else>{{ item.postSalary | moneyFormatNumber }}</span>
+                <span v-else>{{ item.postSalary }}</span>
               </a-form-item>
             </td>
           </tr>

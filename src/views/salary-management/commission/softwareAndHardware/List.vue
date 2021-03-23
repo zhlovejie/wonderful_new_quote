@@ -27,13 +27,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
-        <template v-if="$auth('research:list')">
+        <template v-if="$auth('softwareAndHardware:list')">
           <a-tab-pane tab="待我审批" key="1" />
           <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('research:lists')"
+        v-if="$auth('softwareAndHardware:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -49,7 +49,7 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
           <template v-if="activeKey === 0">
-            <template v-if="$auth('research:view')">
+            <template v-if="$auth('softwareAndHardware:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
           </template>
