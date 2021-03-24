@@ -97,7 +97,7 @@ export default {
                 _this.$emit('ok')
               } else {
                 _this.$message.error(data.msg)
-                _this.confirmLoading = true
+                _this.confirmLoading = false
               }
             })
             .catch((err) => (that.visible = false))
