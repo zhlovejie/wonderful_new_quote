@@ -345,6 +345,15 @@ export function queryRoleMenu(parameter) {
     params: parameter
   })
 }
+export function queryRoleTitle(parameter) {
+  // 发送 get 请求
+  return axios({
+    baseURL: system.baseURL,
+    url: '/Role/queryRoleMenuTitle',
+    method: 'get',
+    params: parameter
+  })
+}
 
 /**
  * 修改权限

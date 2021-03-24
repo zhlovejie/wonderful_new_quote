@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { getDevisionList, queryRoleMenu, saveRole } from '@/api/systemSetting'
+import { getDevisionList, queryRoleMenu, saveRole, queryRoleTitle } from '@/api/systemSetting'
 
 export default {
   name: 'CopyModal',
@@ -52,6 +52,7 @@ export default {
       options: [],
       confirmLoading: false,
       queryRole: [],
+      queryTitle: [],
     }
   },
   created() {
@@ -65,6 +66,9 @@ export default {
       this.visible = true
       queryRoleMenu({ id: record.id }).then((res) => {
         this.queryRole = res.data
+      })
+      queryRoleTitle({ id: record.id }).then((res) => {
+        this.queryTitle = res.data
       })
     },
 
@@ -80,7 +84,7 @@ export default {
           }
           values.saveTreeVo = {
             menuIdList: _this.queryRole,
-            notAllMenuIdList: [],
+            notAllMenuIdList: _this.queryTitle,
           }
           _this.confirmLoading = true
           saveRole(values)
@@ -89,7 +93,7 @@ export default {
                 this.form.resetFields() // 清空表
                 _this.$message.success('复制成功')
                 _this.confirmLoading = false
-                 this.visible = false
+                this.visible = false
                 _this.$emit('ok')
               } else {
                 _this.$message.error(data.msg)
@@ -102,6 +106,7 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.confirmLoading = false
       this.form.resetFields() // 清空表
     },
   },
