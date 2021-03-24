@@ -3,12 +3,13 @@ import {
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
 
+const materialBaseUrl = system.materialBaseUrl
 
 // 常规物料规则----------------------------------------
 /**新增常规物料规则接口 */
 export function routineMaterialRuleAdd(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule',
     method: 'POST',
     data: parameter
@@ -18,7 +19,7 @@ export function routineMaterialRuleAdd(parameter) {
 /**修改常规物料规则接口 */
 export function routineMaterialRuleUpdate(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule',
     method: 'PUT',
     data: parameter
@@ -29,7 +30,7 @@ export function routineMaterialRuleUpdate(parameter) {
 export function routineMaterialRuleDelete(parameter) {
   let url = parameter.split('=')[1].split(',').map(s => `ids=${s}`).join('&')
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: `/routineMaterialRule?${url}`,
     method: 'DELETE'
   })
@@ -38,7 +39,7 @@ export function routineMaterialRuleDelete(parameter) {
 /**反审核常规物料规则接口 ，权限码：routineMaterialRule:annulAudit*/
 export function routineMaterialRuleAnnulAudit(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule/annulAudit',
     method: 'PUT',
     data: parameter
@@ -48,7 +49,7 @@ export function routineMaterialRuleAnnulAudit(parameter) {
 /**审核常规物料规则接口 */
 export function routineMaterialRuleAudit(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule/audit',
     method: 'PUT',
     data: parameter
@@ -58,7 +59,7 @@ export function routineMaterialRuleAudit(parameter) {
 /**禁用常规物料规则接口 */
 export function routineMaterialRuleForbidden(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule/forbidden',
     method: 'PUT',
     data: parameter
@@ -68,7 +69,7 @@ export function routineMaterialRuleForbidden(parameter) {
 /**启用 常规物料规则接口 */
 export function routineMaterialRuleStartUsing(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule/startUsing',
     method: 'PUT',
     data: parameter
@@ -78,7 +79,7 @@ export function routineMaterialRuleStartUsing(parameter) {
 /**列表 常规物料规则接口 */
  export function routineMaterialRulePageList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule/list',
     method: 'get',
     params: parameter
@@ -88,7 +89,7 @@ export function routineMaterialRuleStartUsing(parameter) {
 /**树形列表 常规物料规则接口 */
 export function routineMaterialRulePageTreeList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/routineMaterialRule/treeList',
     method: 'get',
     params: parameter
@@ -102,7 +103,7 @@ export function routineMaterialRulePageTreeList(parameter) {
 /**新增成品物料规则接口 */
 export function productMaterialRuleAdd(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule',
     method: 'POST',
     data: parameter
@@ -112,7 +113,7 @@ export function productMaterialRuleAdd(parameter) {
 /**修改成品物料规则接口 */
 export function productMaterialRuleUpdate(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule',
     method: 'PUT',
     data: parameter
@@ -123,7 +124,7 @@ export function productMaterialRuleUpdate(parameter) {
 export function productMaterialRuleDelete(parameter) {
   let url = parameter.split('=')[1].split(',').map(s => `ids=${s}`).join('&')
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: `/productMaterialRule?${url}`,
     method: 'DELETE'
   })
@@ -132,7 +133,7 @@ export function productMaterialRuleDelete(parameter) {
 /**反审核成品物料规则接口 ，权限码：routineMaterialRule:annulAudit*/
 export function productMaterialRuleAnnulAudit(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule/annulAudit',
     method: 'PUT',
     data: parameter
@@ -142,7 +143,7 @@ export function productMaterialRuleAnnulAudit(parameter) {
 /**审核成品物料规则接口 */
 export function productMaterialRuleAudit(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule/audit',
     method: 'PUT',
     data: parameter
@@ -152,7 +153,7 @@ export function productMaterialRuleAudit(parameter) {
 /**禁用成品物料规则接口 */
 export function productMaterialRuleForbidden(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule/forbidden',
     method: 'PUT',
     data: parameter
@@ -162,7 +163,7 @@ export function productMaterialRuleForbidden(parameter) {
 /**启用 成品物料规则接口 */
 export function productMaterialRuleStartUsing(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule/startUsing',
     method: 'PUT',
     data: parameter
@@ -172,7 +173,7 @@ export function productMaterialRuleStartUsing(parameter) {
 /**列表 成品物料规则接口 */
  export function productMaterialRulePageList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule/list',
     method: 'GET',
     params: parameter
@@ -182,7 +183,7 @@ export function productMaterialRuleStartUsing(parameter) {
 /**树形列表 成品物料规则接口 */
 export function productMaterialRulePageTreeList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/productMaterialRule/treeList',
     method: 'GET',
     params: parameter
@@ -192,7 +193,7 @@ export function productMaterialRulePageTreeList(parameter) {
 /**审核 物料规则审核接口 */
 export function materialRuleAudit(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/materialRuleAudit/audit',
     method: 'POST',
     data: parameter
@@ -203,7 +204,7 @@ export function materialRuleAudit(parameter) {
 export function materialRuleAuditBatch(parameter) {
   let url = parameter.split('=')[1].split(',').map(s => `ids=${s}`).join('&')
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: `/materialRuleAudit/auditBatch?${url}`,
     method: 'POST'
   })
@@ -212,7 +213,7 @@ export function materialRuleAuditBatch(parameter) {
 /**审核列表 物料规则审核接口 */
 export function materialRuleAuditPageList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/materialRuleAudit/pageList',
     method: 'GET',
     params: parameter
