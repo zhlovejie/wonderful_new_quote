@@ -79,7 +79,7 @@ export default {
           }
         },
         {
-          path: '/system-setting/permission/产品代码-process',
+          path: '/system-setting/permission/approval-process',
           name: 'ApprovalProcess',
           component: () => import('@/views/system-setting/permission/ApprovalProcess'),
           meta: {
