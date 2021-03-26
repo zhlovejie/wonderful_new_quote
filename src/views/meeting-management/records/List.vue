@@ -106,6 +106,7 @@
               <a type="primary" @click="doAction('start',record)">发起会议</a>
             </template>
           </template>
+          <a type="primary" @click="doAction('start',record)">发起会议</a>
 
           <template v-if="record.status === 1 || record.status === 2">
             <a type="primary" @click="doAction('view',record)">查看</a>

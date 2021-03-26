@@ -56,7 +56,10 @@
         {{ index + 1 }}
       </span>
       <span slot="productPic" slot-scope="text">
-        <img style="height: 70px; lenght: 70px" :src="text" />
+        <template v-if="text">
+          <img style="width:96px;height:auto;"  :src="text.split(',')[0]" />
+        </template>
+        <template v-else>暂无图片</template>
       </span>
       <div slot="isSale" slot-scope="text, record, index">
         {{ +text === 0 ? '在售' : '停产' }}

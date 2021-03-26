@@ -50,15 +50,15 @@
         </a-form-item>
         <a-form-item label="图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <div class="clearfix">
-            <a-upload accept="multiple" name="files" 
-              :action="uploadPath" 
-              listType="picture-card" 
-              :fileList="fileList" 
-              @preview="handlePreview" 
-              @change="handleChange" 
+            <a-upload accept="multiple" name="files"
+              :action="uploadPath"
+              listType="picture-card"
+              :fileList="fileList"
+              @preview="handlePreview"
+              @change="handleChange"
               :beforeUpload="handleBeforeUpload"
             >
-              <div v-if="fileList.length < 1">
+              <div v-if="fileList.length < 10">
                 <a-icon type="plus" /><div class="ant-upload-text">选择图片</div>
               </div>
             </a-upload>
@@ -118,6 +118,8 @@ import { addProduct, editProduct, checkName ,queryTreeByArea} from '@/api/workBo
 import { getUploadPath, getDictionary, getUeditorUploadPath } from '@/api/common'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
+
+let uuid = () => `${Math.random().toString(32).slice(-6)}-${Math.random().toString(32).slice(-6)}`
 
 export default {
   name: 'CreateForm',
@@ -186,14 +188,14 @@ export default {
       this.title = '新增产品信息'
       this.visible = true
       this.subType = 'add'
-
+      this.fileList = []
       this.initArea()
     },
     async edit (record) { // 父页面点击修改调用
       this.title = '修改产品信息'
       this.visible = true
       this.subType = 'edit'
-
+      this.fileList = []
       await this.initArea()
 
 
@@ -218,13 +220,18 @@ export default {
         })
       })
       if (record.productPic != null && record.productPic.length > 0) {
-        const picList = record.productPic.split('/')
-        this.fileList[0] = {
-          uid: '-1',
-          name: picList[picList.length - 1],
-          status: 'done',
-          'url': record.productPic
-        } // 图片预览缩略图
+        let _arr = []
+        record.productPic.split(',').map(url =>{
+          const picList = url.split('/')
+          _arr.push( {
+            uid: uuid(),
+            name: picList[picList.length - 1],
+            status: 'done',
+            'url': url
+          })
+        })
+
+        this.fileList = _arr
       }
       if (record.installExplain != null && record.installExplain.length > 0) {
         const spl = record.installExplain.split('/')
@@ -251,13 +258,13 @@ export default {
       const { form: { validateFields } } = this
       this.confirmLoading = true
 
-      
+
       // 通过validateFields的方法，能够校验必填项是否有值，若无，则页面会给出警告！
       // 执行this.form.resetFields()，则会将表单清空。
       validateFields((errors, values) => {
         if (!errors) {
           //values.area = 143
-          
+
           if (this.subType === 'add') { // 新增
             addProduct(values).then(res => {
               if (res.code === 200) {
@@ -302,23 +309,38 @@ export default {
       this.previewVisible = true
     },
     handleChange ({ file, fileList }) { // 上传中、完成、失败都会调用这个函数。
-      if (file != null && file.status === 'done') { // 状态有：uploading done error removed
-        if (file.response.code === 200) { // 成功
-          this.form.setFieldsValue({ productPic: file.response.data[0].url })
-        }
-      } 
-      
-      if (file.status === 'removed') { // 删除清空
-        this.form.setFieldsValue({ productPic: '' })
-      }
+      // if (file != null && file.status === 'done') { // 状态有：uploading done error removed
+      //   if (file.response.code === 200) { // 成功
+      //     this.form.setFieldsValue({ productPic: file.response.data[0].url })
+      //   }
+      // }
+
+      // if (file.status === 'removed') { // 删除清空
+      //   this.form.setFieldsValue({ productPic: '' })
+      // }
 
       this.fileList = fileList.map(item =>{
         let _uid = -Date.now()
         item.uid = item.uid || _uid
-        item.originFileObj.uid = item.originFileObj.uid || _uid
+        if(item.originFileObj){
+          item.originFileObj.uid = item.originFileObj.uid || _uid
+        }
         return item
       }) // 展示照片墙
-      
+
+      // debugger
+      let case1 =this.fileList
+        .map(f => {
+          let _case = f.response && f.response.code && f.response.code === 200 && Array.isArray(f.response.data) && f.response.data.length > 0
+          return _case ? {...f.response.data[0]} : null
+        })
+        .filter(item => item !== null)
+        .map(item => item.url)
+        .join(',')
+      let case2 = this.fileList.map(item => item && item.url ? item.url : '').join(',')
+      // console.log(`case1:${case1}`)
+      // console.log(`case2:${case2}`)
+      this.form.setFieldsValue({ productPic: case1 || case2 })
     },
     installChange (info) {
       if (info.file.status === 'uploading' && this.installList.length >= 1) {
@@ -394,7 +416,7 @@ export default {
       }
 
       return new Promise((resolve,reject) =>{
-        let fileType = file.type 
+        let fileType = file.type
         let reader = new FileReader(),img = new Image();
         reader.readAsDataURL(file);
         reader.onload = e =>{img.src = e.target.result}
@@ -439,9 +461,9 @@ export default {
     formatTreeData(item,level = 1){
       let that = this
       let obj = {}
-      obj.key = String(item.key)  
-      obj.title = item.title 
-      obj.value = String(item.key)  
+      obj.key = String(item.key)
+      obj.title = item.title
+      obj.value = String(item.key)
       obj.icon = item.icon
       obj.parentId = item.parentId
       obj.level = level

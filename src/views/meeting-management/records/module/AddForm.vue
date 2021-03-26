@@ -146,6 +146,7 @@
                     <a-select
                       style="width: 150px; margin-right: 10px"
                       placeholder="选择部门"
+                      :defaultValue="+record.departmentId"
                       @change="depChangeHandler1"
                     >
                       <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
@@ -154,7 +155,13 @@
                     </a-select>
                   </a-form-item>
                   <a-form-item>
-                    <a-select style="width: 150px; margin-right: 10px" placeholder="选择人员" @change="personChange">
+                    <a-select
+                      style="width: 150px; margin-right: 10px" placeholder="选择人员"
+                      mode="multiple"
+                      :allowClear="true"
+                      @change="personChange"
+                      :value="currentPerson"
+                    >
                       <a-select-option v-for="item in personJoinList" :key="item.id" :value="item.id">{{
                         item.trueName
                       }}</a-select-option>
@@ -245,7 +252,7 @@ export default {
       personList: [],
       personJoinList: [],
       oaMeetingJoinList: [],
-      currentPerson: null,
+      currentPerson: [],
       form: this.$form.createForm(this, { name: 'meeting-management_AddForm' }),
       visible: false,
       actionType: 'view',
@@ -283,6 +290,7 @@ export default {
       return getUserByDep({ departmentId: depId }).then((res) => (this.personList = res.data))
     },
     depChangeHandler1(depId) {
+      this.currentPerson = []
       return getUserByDep({ departmentId: depId }).then((res) => (this.personJoinList = res.data))
     },
     async handleOk() {
@@ -338,6 +346,8 @@ export default {
       //填充数据
       if (that.isStart) {
         await that.depChangeHandler(that.record.departmentId)
+        await that.depChangeHandler1(that.record.departmentId)
+
         let obj = {
           eventId: that.record.eventId,
           meetingNum: that.record.meetingNum,
@@ -416,24 +426,27 @@ export default {
     removeTag(item) {
       this.oaMeetingJoinList = this.oaMeetingJoinList.filter((p) => p._key !== item._key)
     },
-    personChange(val) {
-      let target = this.personJoinList.find((item) => +item.id === +val)
-      if (target) {
-        this.currentPerson = Object.assign({}, target)
-      }
+    personChange(vals) {
+      this.currentPerson = vals
     },
     joinPersonAction(type) {
       let that = this
       if (type === 'add') {
-        if (!that.currentPerson) {
+        if (that.currentPerson.length === 0) {
           that.$message.info('请选择会议参与人员')
           return
         }
-        if (that.oaMeetingJoinList.find((item) => item.id === that.currentPerson.id)) {
-          that.$message.info(`会议参与人员已包括【${that.currentPerson.trueName}】,不能重复添加`)
-          return
-        }
-        that.oaMeetingJoinList.push(Object.assign({}, that.currentPerson, { _key: makeUUID() }))
+
+        let oaMeetingJoinList = [...that.oaMeetingJoinList]
+        that.currentPerson.map(id =>{
+          let _u = oaMeetingJoinList.find(usr => +usr.id === +id)
+          if(!_u){
+            let target = that.personJoinList.find((usr) => +usr.id === +id)
+            oaMeetingJoinList.push({ ...target,_key: makeUUID() })
+          }
+        })
+
+        that.oaMeetingJoinList = oaMeetingJoinList
       } else if (type === 'reset') {
         that.oaMeetingJoinList = that.oaMeetingJoinList.filter((item) => item.__root)
       }
