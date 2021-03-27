@@ -27,9 +27,32 @@
             :tree-data="treeData"
           />
         </a-form-item>
-        <a-form-item label="代码">
-          <a-input :disabled="true" placeholder="代码自动生成" v-decorator="['code', { initialValue: detail.code }]" />
-        </a-form-item>
+        <template v-if="isNormal">
+          <a-form-item label="代码">
+            <a-input
+              :disabled="true"
+              placeholder="代码自动生成"
+              v-decorator="['code', { initialValue: detail.code }]"
+            />
+          </a-form-item>
+        </template>
+        <template v-if="isProduct">
+          <a-form-item label="代码">
+            <a-input
+              placeholder="请输入代码"
+              v-decorator="[
+                'code',
+                {
+                  initialValue: detail.code,
+                  rules: [
+                    { required: true, message: '请输入代码' },
+                    { max:+detail.__selectItem.codeLength,message:`代码超过最大长度`}
+                  ]
+                }
+              ]"
+            />
+          </a-form-item>
+        </template>
         <a-form-item label="下级代码位数">
           <a-input-number
             style="width: 100%"
@@ -60,22 +83,22 @@
   </a-modal>
 </template>
 <script>
-import { 
-  routineMaterialRuleAdd, 
-  routineMaterialRuleUpdate ,
+import {
+  routineMaterialRuleAdd,
+  routineMaterialRuleUpdate,
   productMaterialRuleAdd,
-  productMaterialRuleUpdate
+  productMaterialRuleUpdate,
 } from '@/api/routineMaterial'
 
-const __API__ ={
-  'normal':{
-    'add':routineMaterialRuleAdd,
-    'edit':routineMaterialRuleUpdate
+const __API__ = {
+  normal: {
+    add: routineMaterialRuleAdd,
+    edit: routineMaterialRuleUpdate,
   },
-  'product':{
-    'add':productMaterialRuleAdd,
-    'edit':productMaterialRuleUpdate
-  }
+  product: {
+    add: productMaterialRuleAdd,
+    edit: productMaterialRuleUpdate,
+  },
 }
 
 export default {
@@ -90,7 +113,7 @@ export default {
       selectList: [],
       form: this.$form.createForm(this, { name: 'material-management-RoutineAddForm' }),
       detail: {},
-      from:'normal' // normal常规 product成品
+      from: 'normal', // normal常规 product成品
     }
   },
   created() {},
@@ -107,6 +130,12 @@ export default {
     isEdit() {
       return this.type === 'edit'
     },
+    isNormal() {
+      return this.from === 'normal'
+    },
+    isProduct() {
+      return this.from === 'product'
+    },
   },
   methods: {
     query(type, record) {
@@ -115,7 +144,8 @@ export default {
       that.detail = {}
       that.visible = true
 
-      let { __selectItem, __treeData ,__from} = record
+      let { __selectItem, __treeData, __from } = record
+      that.from = __from
       that.detail = { ...record }
       that.treeData = __treeData
 
@@ -150,7 +180,8 @@ export default {
             //param.codeLength = that.detail.codeLength
             //param.ruleName = that.detail.ruleName
           }
-          that._api(param)
+          that
+            ._api(param)
             .then((res) => {
               that.spinning = false
               console.log(res)

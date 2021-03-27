@@ -1,6 +1,6 @@
 <template>
   <!-- 成品物料规则审核 -->
-  <BaseList key="BaseList-2" :type="type" />
+  <BaseList key="BaseList-2" :type="type" :tabKey="tabKey" />
 </template>
 
 <script>
@@ -12,9 +12,14 @@ export default {
   components: {
     BaseList
   },
-  data() {
-    return {
-      type:2
+  props:{
+    type:{
+      type:[Number,String],
+      default:() => 2
+    },
+    tabKey:{
+      type:[Number,String],
+      default:() => 1
     }
   }
 }

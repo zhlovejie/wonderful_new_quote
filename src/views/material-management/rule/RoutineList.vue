@@ -1,16 +1,17 @@
 <template>
   <a-card :bordered="false">
     <a-row :gutter="24">
-      <a-col :span="4">
-        <div
-          class="menu-tree-list-wrapper"
-          style="width: 100%; overflow: auto; box-shadow: 7px 0px 7px -7px #ddd; height: 600px"
-        >
+      <a-col :span="4" style="box-shadow: 7px 0px 7px -7px #ddd">
+        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: 600px">
+          <a-input-search style="margin-bottom: 8px" placeholder="模糊搜索" @change="onChange" />
           <a-tree
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             :defaultExpandAll="true"
             @select="handleClick"
+            :expandedKeys="expandedKeys"
+            :autoExpandParent="autoExpandParent"
+            @expand="onExpand"
           ></a-tree>
         </div>
       </a-col>
@@ -50,6 +51,13 @@
             </a-form-item>
           </a-form>
         </div>
+        <a-alert message="字体颜色说明" type="info" show-icon style="margin-top: 10px">
+          <div slot="description">
+            <span style="color: blue">蓝色已审核</span>
+            <span style="color: red; margin: 0 10px">红色禁用</span>
+            <span>黑色未审核</span>
+          </div>
+        </a-alert>
         <a-table
           :columns="columns"
           :dataSource="dataSource"
@@ -91,7 +99,7 @@ const columns = [
   {
     align: 'center',
     title: '代码',
-    dataIndex: 'code',
+    dataIndex: 'fullCode',
   },
   {
     align: 'center',
@@ -107,8 +115,23 @@ const columns = [
     align: 'center',
     title: '创建时间',
     dataIndex: 'createdTime',
-  }
+  },
 ]
+
+const getParentKey = (key, tree) => {
+  let parentKey
+  for (let i = 0; i < tree.length; i++) {
+    const node = tree[i]
+    if (node.children) {
+      if (node.children.some((item) => item.key === key)) {
+        parentKey = node.key
+      } else if (getParentKey(key, node.children)) {
+        parentKey = getParentKey(key, node.children)
+      }
+    }
+  }
+  return parentKey
+}
 
 export default {
   name: 'material-management-rule-RoutineList',
@@ -126,6 +149,11 @@ export default {
       selectedRowKeys: [],
       selectedRows: [],
 
+      dataList: [],
+      expandedKeys: [],
+      searchValue: '',
+      autoExpandParent: true,
+
       loading: false,
       queryParam: {},
       pagination: {
@@ -135,7 +163,7 @@ export default {
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
-      }
+      },
     }
   },
   watch: {
@@ -146,7 +174,7 @@ export default {
         }
       },
       immediate: true,
-    }
+    },
   },
   computed: {
     canEdit() {
@@ -157,9 +185,58 @@ export default {
     },
     treeSelectedKeys() {
       return [String(this.parentId)]
-    }
+    },
+    parentCodes() {
+      let arr = []
+      let parentId = this.parentId
+      while (parentId) {
+        let target = this.dataList.find((item) => +item.key === +parentId)
+        arr.push({ ...target })
+        parentId = target.parentId
+      }
+      return arr
+        .reverse()
+        .map((item) => item.code)
+        .join('.')
+    },
   },
   methods: {
+    onExpand(expandedKeys) {
+      this.expandedKeys = expandedKeys
+      this.autoExpandParent = false
+    },
+    onChange(e) {
+      const that = this
+      const value = e.target.value
+
+      const expandedKeys = that.dataList
+        .map((item) => {
+          if (item.title.indexOf(value) > -1) {
+            return getParentKey(item.key, that.orgTree)
+          }
+          return null
+        })
+        .filter((item, i, self) => item && self.indexOf(item) === i)
+
+      Object.assign(that, {
+        expandedKeys,
+        searchValue: value,
+        autoExpandParent: true,
+      })
+    },
+
+    generateList(data) {
+      let arr = []
+      for (let i = 0; i < data.length; i++) {
+        const node = data[i]
+        arr.push({ ...node })
+        if (node.children) {
+          arr.push(...this.generateList(node.children))
+        }
+      }
+      return arr
+    },
+
     rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
@@ -175,23 +252,28 @@ export default {
     },
     fetchTree() {
       const that = this
-      routineMaterialRulePageTreeList().then((res) => {
-        const root = {
-          key:'0',
-          value:'0',
-          title:'常规物料规则',
-          isLeaf:false,
-          children:res.data.map((item) => that.formatTreeData(item))
-        }
-        that.orgTree = [root]
+      routineMaterialRulePageTreeList()
+        .then((res) => {
+          const root = {
+            key: '0',
+            value: '0',
+            title: '常规物料规则',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map((item) => that.formatTreeData(item)),
+          }
+          that.orgTree = [root]
+          that.dataList = that.generateList(that.orgTree)
 
-        if(String(that.parentId) === '0'){
-          that.parentItem = root
-        }
-
-      }).catch(err =>{
-        that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
-      })
+          if (String(that.parentId) === '0') {
+            that.parentItem = root
+          }
+        })
+        .catch((err) => {
+          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+        })
     },
     search(params = {}) {
       const that = this
@@ -203,11 +285,12 @@ export default {
       routineMaterialRulePageList(_searchParam)
         .then((res) => {
           that.loading = false
-          if(!(res && res.data && res.data.records && Array.isArray(res.data.records))){
+          if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
             return
           }
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.fullCode = that.parentCodes ? `${that.parentCodes}.${item.code}` : item.code
             return item
           })
           //设置数据总条数
@@ -241,9 +324,12 @@ export default {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = item.newRuleName || item.ruleName
+      obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
       obj.value = String(item.id)
       obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
+      obj.parentId = item.parentId
+      obj.codeLength = +item.codeLength
+      obj.code = item.code
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {
         obj.children = item.subList.map((v) => that.formatTreeData(v))
@@ -273,7 +359,7 @@ export default {
           ...record,
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
-          __from:'normal'
+          __from: 'normal',
         })
         return
       } else if (type === 'edit') {
@@ -281,7 +367,7 @@ export default {
           ...that.selectedRows[0],
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
-          __from:'normal'
+          __from: 'normal',
         })
         return
       } else {
@@ -289,27 +375,28 @@ export default {
           disable: {
             api: routineMaterialRuleForbidden,
             title: '禁用',
-            tpl:names => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`
+            tpl: (names) => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`,
           },
           enable: {
             api: routineMaterialRuleStartUsing,
             title: '启用',
-            tpl:names => `确定要启用${names}吗？`
+            tpl: (names) => `确定要启用${names}吗？`,
           },
           del: {
             api: routineMaterialRuleDelete,
             title: '删除',
-            tpl:names => `确定要删除${names}吗？`
+            tpl: (names) => `确定要删除${names}吗？`,
           },
           approval: {
             api: routineMaterialRuleAudit,
             title: '审核',
-            tpl:names => `审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`
+            tpl: (names) =>
+              `审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`,
           },
           unapproval: {
             api: routineMaterialRuleAnnulAudit,
             title: '反审核',
-            tpl:names => `反审核项目${names}后，数据标记为未审核，是否继续？`
+            tpl: (names) => `反审核项目${names}后，数据标记为未审核，是否继续？`,
           },
         }
         let target = m[type]
@@ -355,7 +442,7 @@ export default {
           color: +auditStatus === 3 ? 'blue' : +forbidden === 1 ? 'red' : '',
         },
       }
-    }
-  }
+    },
+  },
 }
 </script>

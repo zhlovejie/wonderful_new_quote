@@ -104,10 +104,14 @@ export default {
     ApproveInfo,
   },
   props: {
-    type: {
-      type: [String, Number],
-      default: () => 1,
+    type:{
+      type:[Number,String],
+      default:() => 1
     },
+    tabKey:{
+      type:[Number,String],
+      default:() => 1
+    }
   },
   data() {
     return {
@@ -133,10 +137,20 @@ export default {
   watch: {
     type: {
       handler: function (type) {
-        type && this.init()
+        if(type){
+          this.$nextTick(() => this.init())
+        }
       },
       immediate: true,
     },
+    tabKey:{
+      handler: function (tabKey) {
+        this.activeKey = +tabKey
+        this.$nextTick(() => this.init())
+      },
+      immediate: true,
+    }
+
   },
   methods: {
     init() {
@@ -208,7 +222,7 @@ export default {
       materialRuleAudit(values)
         .then((res) => {
           that.spinning = false
-          that.$message.info(res.msg) 
+          that.$message.info(res.msg)
           if(+ res.code === 200){
             that.search()
           }

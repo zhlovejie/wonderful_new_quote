@@ -58,7 +58,8 @@ export default {
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      }
+      },
+      props:true
     },
     {
       path: '/material-rule-management/audit/finished-product',
@@ -69,7 +70,8 @@ export default {
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      }
+      },
+      props:true
     }
   ]
 }

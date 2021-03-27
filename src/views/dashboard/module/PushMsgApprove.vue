@@ -14,12 +14,13 @@ export default {
   },
   methods:{
     query(type,record){
+      // type 'view' 查看  'approval' 审批
       let {msgType,businessType,businessId} = record
       let that = this
       let res = that.forms[businessType]
       if(!res){
         that.$message.info('该类型的消息暂不支持处理，后面会陆续开放。')
-        return 
+        return
       }
       if(res && res._customRoute){ //自定义跳转 传参
         let params = res.props(businessId,type,'Workplace')

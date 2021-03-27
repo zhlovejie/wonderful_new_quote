@@ -53,6 +53,21 @@ export default {
     props:function(id,action,from){
       return { queryOneData: { id }, action ,from}
     }
-  }, 
+  },
   95: ApproveAfterSales, //产品售后服务外包协议
+  98:{ //常规物料规则
+    name:'material-rule-management-audit-routine',
+    _customRoute:true,
+    props:function(id,action,from){
+      // action 'view' 查看  'approval' 审批
+      return { type:1,tabKey:action === 'view' ? 1 : 2}
+    }
+  },
+  99:{ //成品物料规则
+    name:'material-rule-management-audit-finished-product',
+    _customRoute:true,
+    props:function(id,action,from){
+      return { type:2,tabKey:action === 'view' ? 1 : 2}
+    }
+  }
 }
