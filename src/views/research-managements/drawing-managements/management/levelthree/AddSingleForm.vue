@@ -188,7 +188,7 @@ export default {
   },
   watch: {
     fileList(val) {
-      debugger
+      // debugger
       let file = val.find(f => f.url)
       if(file){
         let pictureNum = ''

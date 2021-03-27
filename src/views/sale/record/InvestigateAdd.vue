@@ -176,7 +176,7 @@ export default {
           console.log(this.projectRecord)
 
           if (this.templateType === 2 && this.projectRecord.wordUrl) {
-            debugger
+            // debugger
             //填充指定上传文件
             this.form.setFieldsValue({ wordUrl: this.projectRecord.wordUrl })
             let _arr = this.projectRecord.wordUrl.split('/')

@@ -307,7 +307,7 @@ export default {
       // 根据合同id获取合同信息
       const parameter = { 'id': this.value.contractId }
       getSoftContractById(parameter).then((res) => {
-        debugger
+        // debugger
         this.record = res.data
 
         let {totalAmount , returnedMoney} = this.record

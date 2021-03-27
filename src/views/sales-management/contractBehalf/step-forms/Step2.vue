@@ -138,7 +138,7 @@ export default {
       if (this.freightType === 1) {
         _totalAmount += Number(this.freightMoneyWithRate)
       }
-      debugger
+      // debugger
       if (_totalAmount <= 0) {
         this.chineseTotalAmount = '零'
       } else {

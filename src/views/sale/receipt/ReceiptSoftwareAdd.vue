@@ -73,8 +73,8 @@
       </a-form>
       <!--软件合同-->
         <a-table
-          :columns="softColumn" 
-          :scroll="{ x: 2000 }"  
+          :columns="softColumn"
+          :scroll="{ x: 2000 }"
           :dataSource="dataSourceSoftContract"
           :pagination="false"
           :loading="memberLoading"
@@ -251,7 +251,7 @@ export default {
     moment:moment,
     // 编辑表格
     onCellChange (key, dataIndex, value) {
-      debugger
+      // debugger
       this.visibleBoolean = false
       const dataSource = [...this.dataSourceSoftContract]
       const target = dataSource.find(item => item.id === key)
@@ -395,7 +395,7 @@ export default {
           let dataSource=this.dataSourceSoftContract;
           let money = Number(0)
           for (const key in dataSource) {
-            debugger
+            // debugger
             // 需要数据转换
             dataSource[key].currency = dataSource[key].currencyNew
             money += Number(dataSource[key].paidMoney)
@@ -441,8 +441,8 @@ export default {
 
     },
     saveRow (record) {
-      console.log(record)
-      debugger
+      // console.log(record)
+      // debugger
       this.visibleBoolean = false
       if (record.paidMoney == undefined || record.paidMoney == 0) {
         this.$message.error('请输入本次收款金额')

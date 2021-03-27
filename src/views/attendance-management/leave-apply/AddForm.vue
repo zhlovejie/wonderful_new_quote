@@ -5,7 +5,7 @@
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
     :class="{'ant-modal_no_footer':isView}"
   >
     <template slot="footer">
@@ -145,7 +145,7 @@
       </a-form>
     </a-spin>
 
-    
+
     <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
 </template>
@@ -228,7 +228,7 @@ export default {
         if(+this.holidayTarget.holidayCaculatorType === 2){
           return false
         }else if(+this.holidayTarget.holidayCaculatorType === 1){
-          return { 
+          return {
             defaultValue: moment('00:00:00', 'HH:mm:ss'),
             minuteStep:30,
             secondStep:60
@@ -239,7 +239,7 @@ export default {
     },
     dateFormat(){
       if(this.holidayTarget){
-        debugger
+        // debugger
         if(+this.holidayTarget.holidayCaculatorType === 2){
           return 'YYYY-MM-DD'
         }else if(+this.holidayTarget.holidayCaculatorType === 1){
@@ -270,9 +270,9 @@ export default {
       let that = this
       let beginTime = that.form.getFieldValue('beginTime')
       if(
-        beginTime instanceof moment && 
-        this.holidayTarget !== null && 
-        this.holidayTarget.legalDuration > 0 
+        beginTime instanceof moment &&
+        this.holidayTarget !== null &&
+        this.holidayTarget.legalDuration > 0
       ){
 
         return current <= beginTime || current >= beginTime.clone().add(+this.holidayTarget.legalDuration,'days')
@@ -370,7 +370,7 @@ export default {
         that.detail = {}
         return
       }
-      
+
       that.spinning = true
       await attenceLeaveApplyDetail({ id: record.id }).then(res => {
         that.spinning = false
@@ -389,7 +389,7 @@ export default {
         if(holidayTarget){
           that.holidayTarget = Object.assign({},holidayTarget)
         }
-        
+
         that.isYearHolidayOrLeaveHoliday = ['年假', '调休'].includes(that.detail.holidayName)
 
         that.leaveTime = that.detail.leaveTime
@@ -436,7 +436,7 @@ export default {
       //   that.$message.info('请假时长大于可以调休时长，禁止操作')
       //   return
       // }
-      
+
 
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -445,7 +445,7 @@ export default {
 
           let target = that.holidayList.find(item => +item.id === +values.holidayId)
           if (target) {
-            debugger
+            // debugger
             console.log('请假类型 =>', target)
             values.holidayName = target.holidayName
             values.holidayType = target.holidayType

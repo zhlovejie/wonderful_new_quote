@@ -731,7 +731,7 @@ export default {
     },
     // 合计总金额
     totalMmountChange() {
-      debugger
+      // debugger
       let that = this
       let hasTax = this.isTax
       let totalAmount = this.dataSource.reduce((calc, item) => {

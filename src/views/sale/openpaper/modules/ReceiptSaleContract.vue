@@ -133,7 +133,7 @@ export default {
   methods: {
     query (record) {
       // this.mdl = Object.assign({}, record)
-      debugger
+      // debugger
       if (record != undefined) {
         this.$set(this.queryParam, 'type', record.type)
       }

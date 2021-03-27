@@ -19,7 +19,7 @@
             <td style="width:150px;">假期名称</td>
             <td>
               <a-form-item>
-                <a-input 
+                <a-input
                   :disabled="isDisabled"
                   placeholder="请输入假期名称"
                   v-decorator="['holidayName',{initialValue:detail.holidayName,rules: [{required: true,message: '输入假期名称'}]}]"
@@ -32,7 +32,7 @@
             <td style="width:150px;">假期类型</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   :disabled="isDisabled"
                   placeholder="选择假期类型"
                   v-decorator="['holidayType',{initialValue:detail.holidayType,rules: [{required: true,message: '请选择假期类型'}]}]"
@@ -54,7 +54,7 @@
             <td style="width:150px;">最小请假单位</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   :disabled="isDisabled"
                   placeholder="选择请假单位"
                   v-decorator="['holidayUnitType',{initialValue:detail.holidayUnitType,rules: [{required: true,message: '请选择请假单位'}]}]"
@@ -71,12 +71,12 @@
             <td style="width:150px;">计算请假时长方式</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   :disabled="isDisabled"
                   placeholder="选择假时长方式"
                   v-decorator="['holidayCaculatorType',{initialValue:detail.holidayCaculatorType,rules: [{required: true,message: '请选择假时长方式'}]}]"
                   :allowClear="true"
-                  style="width:100%;" 
+                  style="width:100%;"
                   @change="holidayCaculatorTypeChange"
                 >
                   <a-select-option :value="1">按工作日计算时长</a-select-option>
@@ -89,7 +89,7 @@
             <td style="width:150px;">法定时长(天)</td>
             <td>
               <a-form-item>
-                <a-input-number 
+                <a-input-number
                   :disabled="isDisabled"
                   style="width:100%;"
                   :min="0"
@@ -103,7 +103,7 @@
             <td style="width:150px;">启用假期余额</td>
             <td>
               <a-form-item>
-                <a-switch 
+                <a-switch
                   :disabled="isDisabled"
                   checked-children="启用"
                   un-checked-children="不启用"
@@ -117,7 +117,7 @@
             <td style="width:150px;">余额发放方式</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   :disabled="isDisabled"
                   placeholder="选择假时长方式"
                   v-decorator="['balanceIssuingMethod',{initialValue:detail.balanceIssuingMethod,rules: [{required: true,message: '请选择假时长方式'}]}]"
@@ -139,7 +139,7 @@
                 <a-col :span="24" style="display:flex;">
                   <a-form-item>
                     <span>入职年限：大于等于</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -151,7 +151,7 @@
                   </a-form-item>
                   <a-form-item>
                     <span>小于</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -163,7 +163,7 @@
                   </a-form-item>
                   <a-form-item>
                     <span>年假(天)：</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -178,7 +178,7 @@
                 <a-col :span="24" style="display:flex;">
                   <a-form-item>
                     <span>入职年限：大于等于</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -190,7 +190,7 @@
                   </a-form-item>
                   <a-form-item>
                     <span>小于</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -202,7 +202,7 @@
                   </a-form-item>
                   <a-form-item>
                     <span>年假(天)：</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -217,7 +217,7 @@
                 <a-col :span="24" style="display:flex;">
                   <a-form-item>
                     <span>入职年限：大于等于</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -229,7 +229,7 @@
                   </a-form-item>
                   <a-form-item>
                     <span>小于</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -241,7 +241,7 @@
                   </a-form-item>
                   <a-form-item>
                     <span>年假(天)：</span>
-                    <a-input-number 
+                    <a-input-number
                       :disabled="isDisabled"
                       style="width:80px;margin:0 10px;"
                       :min="0"
@@ -259,7 +259,7 @@
             <td style="width:150px;">有效期规则</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   :disabled="isDisabled"
                   placeholder="选择有效期规则"
                   v-decorator="['effectRuleType',{initialValue:detail.effectRuleType,rules: [{required: true,message: '请选择有效期规则'}]}]"
@@ -358,7 +358,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          
+
 
           values.userRemain = that.userRemain ? 1 : 0
 
@@ -397,13 +397,13 @@ export default {
       this.holidayCaculatorType = val
     },
     checkWorkYears(){
-      
+
       //检测输入年假入职年限
       //规则如下：右侧的必须大于左侧值，下面值必须大于上面的值
       let that = this
       return new Promise((resovle,reject) =>{
         that.$nextTick(() =>{
-          debugger
+          // debugger
           let status = true
           let res = that.form.getFieldsValue(['holidayProvideRuleList'])
           if(res && res.holidayProvideRuleList){
@@ -412,8 +412,8 @@ export default {
             for(let i=0,len = list.length;i<len;i++){
               let current = list[i]
               if(
-                current.workYearsBegin !== null && 
-                current.workYearsEnd !== null &&  
+                current.workYearsBegin !== null &&
+                current.workYearsEnd !== null &&
                 +current.workYearsBegin >= +current.workYearsEnd
               ){
                 status = false
@@ -422,7 +422,7 @@ export default {
               if(i > 0){
                 let prev = list[i - 1]
                 if(
-                    current.workYearsBegin !== null && 
+                    current.workYearsBegin !== null &&
                     prev.workYearsEnd !== null &&
                     current.workYearsBegin < prev.workYearsEnd
                 ){
