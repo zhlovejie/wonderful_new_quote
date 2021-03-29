@@ -336,6 +336,55 @@
                   </a-form-item>
                 </td>
               </tr>
+              <tr>
+                <td class="requiredMark">是否有关联用户</td>
+                <td colspan="5">
+                  <a-form-item>
+                    <a-radio-group
+                      :disabled="isView"
+                      @change="relationChange"
+                      name="haveSecurity"
+                      v-decorator="[
+                        'relationFlag',
+                        { initialValue: 0, rules: [{ required: true, message: '选择是否有关联用户' }] },
+                      ]"
+                    >
+                      <a-radio :value="0">否</a-radio>
+                      <a-radio :value="1">是</a-radio>
+                    </a-radio-group>
+                  </a-form-item>
+                </td>
+              </tr>
+              <tr v-if="isrelation">
+                <td class="requiredMark">关联用户类型</td>
+                <td colspan="2">
+                  <a-form-item>
+                    <a-select
+                      :disabled="isView"
+                      v-decorator="[
+                        'relationType',
+                        { initialValue: 1, rules: [{ required: true, message: '选择用户类型' }] },
+                      ]"
+                      placeholder="选择用户类型"
+                    >
+                      <a-select-option :value="1">公号</a-select-option>
+                      <a-select-option :value="2">私号</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </td>
+                <td>关联用户</td>
+                <td colspan="2">
+                  <a-form-item>
+                    <a-input
+                      :disabled="isView"
+                      placeholder="关联用户"
+                      read-only
+                      @click="openSystemUsers()"
+                      v-decorator="['relationUserId', { rules: [{ required: true, message: '关联用户' }] }]"
+                    />
+                  </a-form-item>
+                </td>
+              </tr>
             </table>
           </a-tab-pane>
           <a-tab-pane key="2" tab="职工信息" force-render>
@@ -704,7 +753,7 @@
                 </tr>
                 <tr>
                   <td class="requiredMark">周期</td>
-                  <td colspan="3">
+                  <td>
                     <a-form-item>
                       <a-select
                         :disabled="isView"
@@ -713,6 +762,24 @@
                       >
                         <a-select-option v-for="item in cycle" :key="item" :value="item">{{ item }}</a-select-option>
                       </a-select>
+                    </a-form-item>
+                  </td>
+                  <td class="requiredMark">核算开始日期</td>
+                  <td colspan="3">
+                    <a-form-item>
+                      <a-date-picker
+                        placeholder="核算开始日期"
+                        v-decorator="['cycleTime', { rules: [{ required: true, message: '请选择开始日期' }] }]"
+                        style="width: 100%"
+                      />
+
+                      <!-- <a-select
+                        :disabled="isView"
+                        v-decorator="['cycle', { rules: [{ required: true, message: '选择周期' }] }]"
+                        placeholder="选择周期"
+                      >
+                        <a-select-option v-for="item in cycle" :key="item" :value="item">{{ item }}</a-select-option>
+                      </a-select> -->
                     </a-form-item>
                   </td>
                 </tr>
@@ -804,6 +871,7 @@
             <!-- <a-button @click="gaoPaiYiDevicesClickZhuanye">拍照上传</a-button>  -->
           </a-tab-pane>
         </a-tabs>
+        <SystemUserSelect ref="systemUserSelect" @selectSystemUsers="selectSystemUsers" />
       </a-form>
     </a-spin>
   </a-modal>
@@ -836,7 +904,7 @@ import {
   reserveUpdateEntity,
   reserveAddOrUpdate,
 } from '@/api/reserveApi'
-
+import SystemUserSelect from '@/components/CustomerList/SystemUserSelect'
 import BankChoice from './BankChoice'
 import Mdeol from './Model'
 import UploadP from './UploadP'
@@ -858,9 +926,13 @@ export default {
     UploadZ,
     XdocView,
     GaoPaiYiDevices,
+    SystemUserSelect,
   },
   data() {
     return {
+      selectSystem: {}, //关联用户信息
+      selectSystemId: '',
+      isrelation: false, // 是否显示管理用户
       cycle: [], //年薪周期
       annual: [], //年薪制规则
       visible: false,
@@ -932,6 +1004,24 @@ export default {
   },
   methods: {
     moment: moment,
+    //弹出用户列表
+    openSystemUsers() {
+      this.$refs.systemUserSelect.query(null)
+    },
+    //接受用户列表数据
+    selectSystemUsers({ decoratorKey, record }) {
+      console.log(decoratorKey, record)
+      this.selectSystem = record
+      this.selectSystemId = record.id
+      this.form.setFieldsValue({
+        relationUserId: record.trueName,
+      })
+    },
+    //是否选择关联用户
+    relationChange(e) {
+      console.log(e.target.value)
+      this.isrelation = e.target.value === 0 ? false : true
+    },
     handlePreview(file) {
       // 点击文件链接或预览图标时的回调
       this.previewImage = file.url || file.thumbUrl
@@ -1074,6 +1164,9 @@ export default {
         qqNum: false,
         wxNum: false,
       }
+      if (type === 'ruzhi') {
+        this.isrelation = false
+      }
       if (type === 'view' || type === 'ruzhi' || type === 'edit') {
         //人员状态：默认为0浏览，1试用期，2试用期不通过，3在职，4离职
         //0为入职前，其他的都为入职后
@@ -1122,8 +1215,19 @@ export default {
       annual_rulegetId({ id: resultData.yearSalaryId }).then((res) => (this.cycle = res.data.accountCycle.split(',')))
       //before 入职前填充 after 入职后填充
       //if(type === 'before'){
+      if (that.type === 'view' || that.type === 'edit') {
+        if (resultData.relationFlag === 1) {
+          that.selectSystemId = resultData.relationUserId || null
+        }
+        that.isrelation = resultData.relationFlag === 0 ? false : true
+        resultData.relationUserId = resultData.relationUserName
+      }
+
       that.monthlyCycle = resultData.salaryType === 0 ? true : false
       let isDoEntryBefore = that.record.status === 0 ? true : false
+      if (that.monthlyCycle ){
+       resultData.cycleTime= resultData.cycleTime ? moment( resultData.cycleTime) : moment()
+      }
       // if(isDoEntryBefore){
       //   //人脸识别码
       //   getFaceNo().then(res =>{
@@ -1262,6 +1366,9 @@ export default {
           if (_bankChoiceResult.err) {
             return
           }
+          if ((this.type === 'ruzhi' || this.type === 'edit') && this.isrelation) {
+            values.relationUserId = this.selectSystemId
+          }
           if (this.type === 'edit' || this.type === 'ruzhi') {
             let arr1 = that.$refs.normalCard
               ? that.$refs.normalCard.getFiles().map((file) => {
@@ -1329,7 +1436,9 @@ export default {
             values.birthDate = values.birthDate.format('YYYY-MM-DD')
             values.birthDate = values.birthDate.slice(0, 10)
           }
-
+          if(values.cycleTime){
+            values.cycleTime = values.cycleTime.format('YYYY-MM-DD')
+          }
           if (that.faceCode) {
             values.faceCode = that.faceCode
           }
