@@ -52,7 +52,9 @@
         <a-row v-if="showPic" :gutter="24">
           <a-col :md="24" :sm="24">
             <a-form-item label="图片">
-              <img style="width: 80%;" :src="product.productPic" />
+              <template v-if="product.productPicOriginal">
+                <img v-for="url in __productPicOriginal" :key="url.thumb" :style="imgStyle" :src="url.thumb" />
+              </template>
             </a-form-item>
           </a-col>
         </a-row>
@@ -87,13 +89,38 @@ export default {
       showStandard: false,
       showPic: false,
       showDescription: false,
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      imgStyle:{}
     }
   },
   methods: {
     show (record) {
       this.visible = true
       this.product = record
+      if(this.product.productPicOriginal){
+
+        let productPicOriginal = []
+        try{
+          productPicOriginal = JSON.parse(this.product.productPicOriginal)
+        }catch(err){
+          productPicOriginal = []
+        }
+        this.__productPicOriginal = productPicOriginal
+        let len = productPicOriginal.length
+        let finalWidth = '0'
+        if(len === 1){
+          finalWidth = '80%'
+        }else if(len === 2){
+          finalWidth = '40%'
+        }else if(len > 2){
+          finalWidth = '25%'
+        }
+        this.imgStyle = {
+          width:'auto',
+          maxWidth: finalWidth,
+          margin:'5px'
+        }
+      }
     },
     toView () {
       if (this.checkedList.length === 0) {

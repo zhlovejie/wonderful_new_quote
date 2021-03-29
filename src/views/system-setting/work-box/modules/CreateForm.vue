@@ -49,21 +49,28 @@
           <a-textarea placeholder="请输入规格尺寸" v-decorator="['productStandard',{rules: [{required: true, message: '请输入规格尺寸！'}]}]"/>
         </a-form-item>
         <a-form-item label="图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-alert message="提示" type="warning" show-icon style="margin-bottom:5px;">
+            <div slot="description">
+              <div>上传的第一张图片将作为产品封面图片来展示</div>
+            </div>
+          </a-alert>
           <div class="clearfix">
-            <a-upload accept="multiple" name="files" 
-              :action="uploadPath" 
-              listType="picture-card" 
-              :fileList="fileList" 
-              @preview="handlePreview" 
-              @change="handleChange" 
+            <a-upload accept="multiple" name="file"
+              :action="uploadPath"
+              listType="picture-card"
+              :fileList="fileList"
+              @preview="handlePreview"
+              @change="handleChange"
               :beforeUpload="handleBeforeUpload"
             >
-              <div v-if="fileList.length < 1">
+              <div v-if="fileList.length < 10">
                 <a-icon type="plus" /><div class="ant-upload-text">选择图片</div>
               </div>
             </a-upload>
-            <a-modal :visible="previewVisible" :footer="null" @cancel="previewCancel">
-              <img alt="图片" style="width: 100%" :src="previewImage" />
+            <a-modal :visible="previewVisible" :width="1000" :footer="null" @cancel="previewCancel">
+              <div style="overflow:auto;">
+                <img alt="图片" style="width: auto;height:auto;max-height:1000px;" :src="previewImage" />
+              </div>
             </a-modal>
           </div>
           <a-input type="hidden" v-decorator="['productPic', {}]"/>
@@ -115,9 +122,11 @@
 
 <script>
 import { addProduct, editProduct, checkName ,queryTreeByArea} from '@/api/workBox'
-import { getUploadPath, getDictionary, getUeditorUploadPath } from '@/api/common'
+import { getUploadPath2, getDictionary, getUeditorUploadPath ,customUpload} from '@/api/common'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
+
+let uuid = () => `${Math.random().toString(32).slice(-6)}-${Math.random().toString(32).slice(-6)}`
 
 export default {
   name: 'CreateForm',
@@ -166,7 +175,7 @@ export default {
       installList: [], // 已上传的功能描述文件
       operateList: [], // 已上传的操作说明文件
       pId: 0,
-      uploadPath: getUploadPath(),
+      uploadPath: getUploadPath2(),
       areaValue:undefined, //区域绑定值
       treeData:[] //区域数据源
     }
@@ -186,14 +195,14 @@ export default {
       this.title = '新增产品信息'
       this.visible = true
       this.subType = 'add'
-
+      this.fileList = []
       this.initArea()
     },
     async edit (record) { // 父页面点击修改调用
       this.title = '修改产品信息'
       this.visible = true
       this.subType = 'edit'
-
+      this.fileList = []
       await this.initArea()
 
 
@@ -217,14 +226,37 @@ export default {
           area:String(record.area)
         })
       })
-      if (record.productPic != null && record.productPic.length > 0) {
-        const picList = record.productPic.split('/')
-        this.fileList[0] = {
-          uid: '-1',
-          name: picList[picList.length - 1],
-          status: 'done',
-          'url': record.productPic
-        } // 图片预览缩略图
+      if(record.productPicOriginal === null && record.productPic !== null){
+        record.productPicOriginal = JSON.stringify([{
+          origin:record.productPic,
+          thumb:record.productPic
+        }])
+      }
+
+
+      if (record.productPicOriginal != null && record.productPicOriginal.length > 0) {
+        let _arr = []
+        let imgInfo = []
+        try{
+          imgInfo = JSON.parse(record.productPicOriginal)
+        }catch(err){
+          imgInfo = []
+        }
+
+
+        imgInfo.map(item =>{
+          const picList = item.thumb.split('/')
+          _arr.push( {
+            uid: uuid(),
+            name: picList[picList.length - 1],
+            status: 'done',
+            'url': item.thumb,
+            __thumbURL:item.thumb,
+            __originURL :item.origin
+          })
+        })
+
+        this.fileList = _arr
       }
       if (record.installExplain != null && record.installExplain.length > 0) {
         const spl = record.installExplain.split('/')
@@ -247,17 +279,42 @@ export default {
       this.content = record.description
     },
     handleSubmit () {
-      this.form.setFieldsValue({ description: this.content })
-      const { form: { validateFields } } = this
-      this.confirmLoading = true
+      const that = this
+      that.form.setFieldsValue({ description: that.content })
+      const { form: { validateFields } } = that
+      that.confirmLoading = true
 
-      
+
       // 通过validateFields的方法，能够校验必填项是否有值，若无，则页面会给出警告！
       // 执行this.form.resetFields()，则会将表单清空。
-      validateFields((errors, values) => {
+      validateFields(async (errors, values) => {
         if (!errors) {
           //values.area = 143
-          
+
+          console.log(values)
+          let ArrFilesInfo = []
+          for(let file of that.fileList){
+            if(file.__thumbURL && file.__originURL){
+              ArrFilesInfo.push({
+                origin:file.__originURL,
+                thumb:file.__thumbURL
+              })
+            }else if(file.response && file.originFileObj){
+              file.__thumbURL = await that.customUploadAction(file.originFileObj)
+              file.__originURL = file.response.data
+              ArrFilesInfo.push({
+                origin:file.__originURL,
+                thumb:file.__thumbURL
+              })
+            }
+          }
+
+          values.productPic = ArrFilesInfo.length > 0 ? ArrFilesInfo[0].thumb : ''
+          values.productPicOriginal = JSON.stringify(ArrFilesInfo)
+
+          console.log(values)
+          // return
+
           if (this.subType === 'add') { // 新增
             addProduct(values).then(res => {
               if (res.code === 200) {
@@ -298,27 +355,51 @@ export default {
       this.previewVisible = false
     },
     handlePreview (file) { // 点击文件链接或预览图标时的回调
-      this.previewImage = file.url || file.thumbUrl
+      let url = ''
+      if(file.response){
+        url = file.response.data
+      }else{
+        url = file.__originURL ? file.__originURL : file.thumbUrl
+      }
+      this.previewImage = ''
       this.previewVisible = true
+      this.$nextTick(() =>{
+        this.previewImage = url
+      })
     },
     handleChange ({ file, fileList }) { // 上传中、完成、失败都会调用这个函数。
-      if (file != null && file.status === 'done') { // 状态有：uploading done error removed
-        if (file.response.code === 200) { // 成功
-          this.form.setFieldsValue({ productPic: file.response.data[0].url })
-        }
-      } 
-      
-      if (file.status === 'removed') { // 删除清空
-        this.form.setFieldsValue({ productPic: '' })
-      }
+      // if (file != null && file.status === 'done') { // 状态有：uploading done error removed
+      //   if (file.response.code === 200) { // 成功
+      //     this.form.setFieldsValue({ productPic: file.response.data[0].url })
+      //   }
+      // }
+
+      // if (file.status === 'removed') { // 删除清空
+      //   this.form.setFieldsValue({ productPic: '' })
+      // }
 
       this.fileList = fileList.map(item =>{
         let _uid = -Date.now()
         item.uid = item.uid || _uid
-        item.originFileObj.uid = item.originFileObj.uid || _uid
+        if(item.originFileObj){
+          item.originFileObj.uid = item.originFileObj.uid || _uid
+        }
         return item
       }) // 展示照片墙
-      
+
+      // debugger
+      let case1 =this.fileList
+        .map(f => {
+          let _case = f.response && f.response.code && f.response.code === 200 && Array.isArray(f.response.data) && f.response.data.length > 0
+          return _case ? {...f.response.data[0]} : null
+        })
+        .filter(item => item !== null)
+        .map(item => item.url)
+        .join(',')
+      let case2 = this.fileList.map(item => item && item.url ? item.url : '').join(',')
+      // console.log(`case1:${case1}`)
+      // console.log(`case2:${case2}`)
+      this.form.setFieldsValue({ productPic: case1 || case2 })
     },
     installChange (info) {
       if (info.file.status === 'uploading' && this.installList.length >= 1) {
@@ -385,8 +466,8 @@ export default {
       })
     },
     handleBeforeUpload(file,fileList){
-      //return true
-      return this.compressPictures(file)
+      return true
+      // return this.compressPictures(file)
     },
     compressPictures(file){
       if(file.type.indexOf("image") !== 0){
@@ -394,7 +475,7 @@ export default {
       }
 
       return new Promise((resolve,reject) =>{
-        let fileType = file.type 
+        let fileType = file.type
         let reader = new FileReader(),img = new Image();
         reader.readAsDataURL(file);
         reader.onload = e =>{img.src = e.target.result}
@@ -403,7 +484,7 @@ export default {
           let context = canvas.getContext('2d');
           let originWidth = this.width;
           let originHeight = this.height;
-          let maxWidth = 300,maxHeight = 300;
+          let maxWidth = 500,maxHeight = 500;
           let targetWidth = originWidth,targetHeight = originHeight;
           if(originWidth > maxWidth || originHeight > maxHeight) {
               if(originWidth / originHeight > maxWidth / maxHeight) {
@@ -439,9 +520,9 @@ export default {
     formatTreeData(item,level = 1){
       let that = this
       let obj = {}
-      obj.key = String(item.key)  
-      obj.title = item.title 
-      obj.value = String(item.key)  
+      obj.key = String(item.key)
+      obj.title = item.title
+      obj.value = String(item.key)
       obj.icon = item.icon
       obj.parentId = item.parentId
       obj.level = level
@@ -468,6 +549,15 @@ export default {
         }
       }
       return item
+    },
+    async customUploadAction(file) {
+      //上传 压缩过的图片
+      let that = this
+      let compressFile = await that.compressPictures(file)
+      const formData = new FormData()
+      formData.append('file', compressFile)
+      let url = await customUpload(formData).then((res) => res.data)
+      return url
     }
   }
 }
