@@ -106,7 +106,7 @@ const columns = [
     dataIndex: 'orderNum',
   },
   {
-    title: '日期',
+    title: '订单日期',
     dataIndex: 'orderCreatedTime',
   },
   {
