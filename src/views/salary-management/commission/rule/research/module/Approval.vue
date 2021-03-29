@@ -10,14 +10,14 @@
     <a-form :form="form" class="becoming-form-wrapper">
       <table class="custom-table custom-table-border">
         <tr>
-          <td>智能产品提成</td>
+          <td>智能产品提成系数</td>
           <td>
             <a-form-item>
               <a-input-number
                 :precision="6"
                 style="width: 100%"
-                placeholder="输入智能产品提成"
-                v-decorator="['percentageRetio', { rules: [{ required: true, message: '请输入智能产品提成!' }] }]"
+                placeholder="输入智能产品提成系数"
+                v-decorator="['percentageRetio', { rules: [{ required: true, message: '请输入智能产品提成系数!' }] }]"
               />
             </a-form-item>
           </td>
@@ -73,6 +73,9 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
+          if (values.percentageRetio > 1 || values.percentageRetio === 1) {
+            return this.$message.error('管理总提成系数不能大于1')
+          }
           if (this.type === 'edit-salary') {
             values.id = this.record.id
           }

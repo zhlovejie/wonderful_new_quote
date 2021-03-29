@@ -36,6 +36,16 @@ export function softHardPercentageBonus_list(parameter) {
     params: parameter
   })
 }
+//软硬件提成奖金下载
+export function softHardPercentageBonus_exportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageBonus/soft-hard-percentage-bonus/exportExcel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 export function softHardPercentageBonus_del(parameter) {
   return axios({
     baseURL: system.baseURL,

@@ -66,15 +66,15 @@
                 </a-select>
               </a-form-item>
             </td>
-            <td>管理总提成</td>
+            <td>管理总提成系数</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
                   :precision="6"
                   :disabled="isDisabled"
                   style="width: 200px"
-                  placeholder="输入管理总提成"
-                  v-decorator="['percentageRetio', { rules: [{ required: true, message: '请输入管理总提成!' }] }]"
+                  placeholder="输入管理总提成系数"
+                  v-decorator="['percentageRetio', { rules: [{ required: true, message: '请输入管理总提成系数!' }] }]"
                 />
               </a-form-item>
             </td>
@@ -218,6 +218,9 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
+            if (values.percentageRetio > 1 || values.percentageRetio === 1) {
+              return this.$message.error('管理总提成系数不能大于1')
+            }
             if (that.type === 'edit-salary') {
               values.id = that.record.id
             }
