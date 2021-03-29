@@ -74,9 +74,9 @@
         <a-form-item label="产品类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             placeholder="请选择产品类别"
-            v-decorator="['productCategory', { rules: [{ required: true, message: '请选择产品类别！' }] }]"
+            v-decorator="['productCategoryCode', { rules: [{ required: true, message: '请选择产品类别！' }] }]"
           >
-            <a-select-option v-for="ptype in products" :key="ptype.id" :value="ptype.id">{{
+            <a-select-option v-for="ptype in products" :key="ptype.id" :value="ptype.code">{{
               ptype.text
             }}</a-select-option>
           </a-select>
@@ -248,7 +248,7 @@ export default {
       this.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
         setFieldsValue({
-          productCategory: record.productCategory,
+          productCategoryCode: record.productCategoryCode,
           productName: record.productName,
           productModel: record.productModel,
           productStandard: record.productStandard,
