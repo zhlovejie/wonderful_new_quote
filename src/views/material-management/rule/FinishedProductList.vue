@@ -177,7 +177,14 @@ export default {
   },
   computed: {
     canEdit() {
-      return this.selectedRows.length === 1 && +this.selectedRows[0].auditStatus !== 3
+      // auditStatus 审核状态：1未审核，2审批中，3已审核
+      // forbidden  是否禁用：1禁用，2启用
+      let selectedRows = this.selectedRows
+      if(selectedRows.length === 1){
+        let {auditStatus,forbidden} = selectedRows[0]
+        return !(+forbidden === 1 || +auditStatus === 3)
+      }
+      return false
     },
     canUse() {
       return this.selectedRows.length > 0
@@ -440,7 +447,7 @@ export default {
       let { auditStatus, forbidden } = record
       return {
         style: {
-          color: +auditStatus === 3 ? 'blue' : +forbidden === 1 ? 'red' : '',
+          color: +forbidden === 1 ? 'red' : (+auditStatus === 3 ? 'blue' : '')
         },
       }
     },
