@@ -3,7 +3,7 @@
     <a-row :gutter="24">
       <a-col :span="4" style="box-shadow: 7px 0px 7px -7px #ddd">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: 600px">
-          <a-input-search style="margin-bottom: 8px" placeholder="模糊搜索" @change="onChange" />
+          <a-input-search style="margin-bottom: 8px" placeholder="代码/名称模糊查询" @change="onChange" />
           <a-tree
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
@@ -88,9 +88,7 @@ import {
   routineMaterialRuleForbidden,
   routineMaterialRuleStartUsing,
   routineMaterialRulePageList,
-  routineMaterialRulePageTreeList,
-  materialRuleAuditAudit,
-  materialRuleAuditPageList,
+  routineMaterialRulePageTreeList
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
