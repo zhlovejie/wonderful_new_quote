@@ -36,6 +36,15 @@ export function softHardPercentageBonus_list(parameter) {
     params: parameter
   })
 }
+export function softHardPercentageBonus_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/softHardPercentageBonus/soft-hard-percentage-bonus/delSoftHardPercentageBonus',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //软硬件提成奖金详情 
 export function softHardPercentageBonus_Detail(parameter) {
   return axios({

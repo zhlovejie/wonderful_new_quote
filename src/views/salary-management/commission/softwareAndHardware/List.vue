@@ -52,6 +52,12 @@
             <template v-if="$auth('softwareAndHardware:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="$auth('softwareAndHardware:del') && record.status === 3">
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
+                <a href="javascript:void(0);">删除</a>
+              </a-popconfirm>
+            </template>
           </template>
           <template v-if="activeKey === 1 && record.status === 1">
             <a type="primary" @click="doAction('Approval', record)">审核</a>
@@ -69,7 +75,7 @@
   </div>
 </template>
 <script>
-import { softHardPercentageBonus_list } from '@/api/bonus_management'
+import { softHardPercentageBonus_list, softHardPercentageBonus_del } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -221,7 +227,17 @@ export default {
     },
 
     doAction(type, record) {
-      this.$refs.addForm.query(type, record)
+      if (type === 'del') {
+        softHardPercentageBonus_del({ id: record.id }).then((res) => {
+          this.$message.info(res.msg)
+          if (+res.code === 200) {
+            this.searchAction()
+          }
+        })
+      } else {
+        this.$refs.addForm.query(type, record)
+      }
+
       //this.$message.info('功能尚未实现...')
     },
     tabChange(tagKey) {
