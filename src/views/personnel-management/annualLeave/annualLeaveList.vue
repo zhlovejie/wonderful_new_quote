@@ -7,10 +7,10 @@
           {{ item.departmentName }}
         </a-select-option>
       </a-select>
-      <!-- <a-select placeholder="假期类型" v-model="hoursType" :allowClear="true" style="width: 250px">
-        <a-select-option :value="1">调休</a-select-option>
-        <a-select-option :value="2">年假</a-select-option>
-      </a-select> -->
+      <a-select placeholder="人员状在职离职状态" v-model="status" :allowClear="true" style="width: 250px">
+        <a-select-option :value="0">在职</a-select-option>
+        <a-select-option :value="1">离职</a-select-option>
+      </a-select>
       <a-input style="width: 250px" v-model="userName" placeholder="姓名模糊查询" :allowClear="true" />
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
@@ -98,6 +98,7 @@ export default {
     return {
       depId: undefined,
       hoursType: undefined,
+      status:0,
       userName: undefined,
       meetingTypesList: [],
       depList: [],
@@ -120,6 +121,7 @@ export default {
         depId: this.depId,
         // hoursType: this.hoursType,
         userName: this.userName,
+        status:this.status
       }
     },
   },

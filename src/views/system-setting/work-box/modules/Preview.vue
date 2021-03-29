@@ -52,8 +52,8 @@
         <a-row v-if="showPic" :gutter="24">
           <a-col :md="24" :sm="24">
             <a-form-item label="图片">
-              <template v-if="product.productPic">
-                <img v-for="url in product.productPic.split(',')" :key="url" :style="imgStyle" :src="url" />
+              <template v-if="product.productPicOriginal">
+                <img v-for="url in __productPicOriginal" :key="url.thumb" :style="imgStyle" :src="url.thumb" />
               </template>
             </a-form-item>
           </a-col>
@@ -97,8 +97,16 @@ export default {
     show (record) {
       this.visible = true
       this.product = record
-      if(this.product.productPic){
-        let len = this.product.productPic.split(',').length
+      if(this.product.productPicOriginal){
+
+        let productPicOriginal = []
+        try{
+          productPicOriginal = JSON.parse(this.product.productPicOriginal)
+        }catch(err){
+          productPicOriginal = []
+        }
+        this.__productPicOriginal = productPicOriginal
+        let len = productPicOriginal.length
         let finalWidth = '0'
         if(len === 1){
           finalWidth = '80%'

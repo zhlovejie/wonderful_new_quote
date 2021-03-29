@@ -49,8 +49,13 @@
           <a-textarea placeholder="请输入规格尺寸" v-decorator="['productStandard',{rules: [{required: true, message: '请输入规格尺寸！'}]}]"/>
         </a-form-item>
         <a-form-item label="图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-alert message="提示" type="warning" show-icon style="margin-bottom:5px;">
+            <div slot="description">
+              <div>上传的第一张图片将作为产品封面图片来展示</div>
+            </div>
+          </a-alert>
           <div class="clearfix">
-            <a-upload accept="multiple" name="files"
+            <a-upload accept="multiple" name="file"
               :action="uploadPath"
               listType="picture-card"
               :fileList="fileList"
@@ -62,8 +67,10 @@
                 <a-icon type="plus" /><div class="ant-upload-text">选择图片</div>
               </div>
             </a-upload>
-            <a-modal :visible="previewVisible" :footer="null" @cancel="previewCancel">
-              <img alt="图片" style="width: 100%" :src="previewImage" />
+            <a-modal :visible="previewVisible" :width="1000" :footer="null" @cancel="previewCancel">
+              <div style="overflow:auto;">
+                <img alt="图片" style="width: auto;height:auto;max-height:1000px;" :src="previewImage" />
+              </div>
             </a-modal>
           </div>
           <a-input type="hidden" v-decorator="['productPic', {}]"/>
@@ -115,7 +122,7 @@
 
 <script>
 import { addProduct, editProduct, checkName ,queryTreeByArea} from '@/api/workBox'
-import { getUploadPath, getDictionary, getUeditorUploadPath } from '@/api/common'
+import { getUploadPath2, getDictionary, getUeditorUploadPath ,customUpload} from '@/api/common'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 
@@ -168,7 +175,7 @@ export default {
       installList: [], // 已上传的功能描述文件
       operateList: [], // 已上传的操作说明文件
       pId: 0,
-      uploadPath: getUploadPath(),
+      uploadPath: getUploadPath2(),
       areaValue:undefined, //区域绑定值
       treeData:[] //区域数据源
     }
@@ -219,15 +226,33 @@ export default {
           area:String(record.area)
         })
       })
-      if (record.productPic != null && record.productPic.length > 0) {
+      if(record.productPicOriginal === null && record.productPic !== null){
+        record.productPicOriginal = JSON.stringify([{
+          origin:record.productPic,
+          thumb:record.productPic
+        }])
+      }
+
+
+      if (record.productPicOriginal != null && record.productPicOriginal.length > 0) {
         let _arr = []
-        record.productPic.split(',').map(url =>{
-          const picList = url.split('/')
+        let imgInfo = []
+        try{
+          imgInfo = JSON.parse(record.productPicOriginal)
+        }catch(err){
+          imgInfo = []
+        }
+
+
+        imgInfo.map(item =>{
+          const picList = item.thumb.split('/')
           _arr.push( {
             uid: uuid(),
             name: picList[picList.length - 1],
             status: 'done',
-            'url': url
+            'url': item.thumb,
+            __thumbURL:item.thumb,
+            __originURL :item.origin
           })
         })
 
@@ -254,16 +279,41 @@ export default {
       this.content = record.description
     },
     handleSubmit () {
-      this.form.setFieldsValue({ description: this.content })
-      const { form: { validateFields } } = this
-      this.confirmLoading = true
+      const that = this
+      that.form.setFieldsValue({ description: that.content })
+      const { form: { validateFields } } = that
+      that.confirmLoading = true
 
 
       // 通过validateFields的方法，能够校验必填项是否有值，若无，则页面会给出警告！
       // 执行this.form.resetFields()，则会将表单清空。
-      validateFields((errors, values) => {
+      validateFields(async (errors, values) => {
         if (!errors) {
           //values.area = 143
+
+          console.log(values)
+          let ArrFilesInfo = []
+          for(let file of that.fileList){
+            if(file.__thumbURL && file.__originURL){
+              ArrFilesInfo.push({
+                origin:file.__originURL,
+                thumb:file.__thumbURL
+              })
+            }else if(file.response && file.originFileObj){
+              file.__thumbURL = await that.customUploadAction(file.originFileObj)
+              file.__originURL = file.response.data
+              ArrFilesInfo.push({
+                origin:file.__originURL,
+                thumb:file.__thumbURL
+              })
+            }
+          }
+
+          values.productPic = ArrFilesInfo.length > 0 ? ArrFilesInfo[0].thumb : ''
+          values.productPicOriginal = JSON.stringify(ArrFilesInfo)
+
+          console.log(values)
+          // return
 
           if (this.subType === 'add') { // 新增
             addProduct(values).then(res => {
@@ -305,8 +355,17 @@ export default {
       this.previewVisible = false
     },
     handlePreview (file) { // 点击文件链接或预览图标时的回调
-      this.previewImage = file.url || file.thumbUrl
+      let url = ''
+      if(file.response){
+        url = file.response.data
+      }else{
+        url = file.__originURL ? file.__originURL : file.thumbUrl
+      }
+      this.previewImage = ''
       this.previewVisible = true
+      this.$nextTick(() =>{
+        this.previewImage = url
+      })
     },
     handleChange ({ file, fileList }) { // 上传中、完成、失败都会调用这个函数。
       // if (file != null && file.status === 'done') { // 状态有：uploading done error removed
@@ -407,8 +466,8 @@ export default {
       })
     },
     handleBeforeUpload(file,fileList){
-      //return true
-      return this.compressPictures(file)
+      return true
+      // return this.compressPictures(file)
     },
     compressPictures(file){
       if(file.type.indexOf("image") !== 0){
@@ -425,7 +484,7 @@ export default {
           let context = canvas.getContext('2d');
           let originWidth = this.width;
           let originHeight = this.height;
-          let maxWidth = 300,maxHeight = 300;
+          let maxWidth = 500,maxHeight = 500;
           let targetWidth = originWidth,targetHeight = originHeight;
           if(originWidth > maxWidth || originHeight > maxHeight) {
               if(originWidth / originHeight > maxWidth / maxHeight) {
@@ -490,6 +549,15 @@ export default {
         }
       }
       return item
+    },
+    async customUploadAction(file) {
+      //上传 压缩过的图片
+      let that = this
+      let compressFile = await that.compressPictures(file)
+      const formData = new FormData()
+      formData.append('file', compressFile)
+      let url = await customUpload(formData).then((res) => res.data)
+      return url
     }
   }
 }

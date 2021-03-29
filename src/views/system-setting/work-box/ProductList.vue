@@ -57,7 +57,7 @@
       </span>
       <span slot="productPic" slot-scope="text">
         <template v-if="text">
-          <img style="width:96px;height:auto;"  :src="text.split(',')[0]" />
+          <img style="width:96px;height:auto;"  :src="text" />
         </template>
         <template v-else>暂无图片</template>
       </span>
