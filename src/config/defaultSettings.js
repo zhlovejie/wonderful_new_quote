@@ -20,9 +20,9 @@ export default {
   //baseURL: 'http://192.168.13.197:8999/oa',
   // baseURL: 'http://192.168.13.158:8997/oa',
   //baseURL: 'http://106.14.194.64/cloud_new',
-  // baseURL: 'http://192.168.13.253/oa',
+  baseURL: 'http://192.168.13.253/oa',
   //baseURL: 'http://192.168.13.138:8998',
-  baseURL: 'http://192.168.13.158:8999/oa',
+  // baseURL: 'http://192.168.13.158:8999/oa',
   // baseURL:'http://192.168.13.146:8995',
 
   //baseURL:'http://192.168.13.158:8997/oa',
@@ -30,7 +30,16 @@ export default {
   attendanceMonitoringConfig: { //考勤监控 摄像头信息
     appKey: 'd39b58df3a9b437cac8a0c6a120ef1eb',
     appSecret: 'bbe8423572c73f7ef47002d28852c26b',
-    deviceSerial: 'E54619002'
+    deviceList:[
+      {
+        key:1,
+        deviceSerial: 'E54619002' // 监控设备-公司大门口
+      },
+      {
+        key:2,
+        deviceSerial: 'E94761575' // 监控设备-105会议室
+      }
+    ]
   },
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
