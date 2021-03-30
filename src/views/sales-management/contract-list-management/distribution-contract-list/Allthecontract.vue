@@ -36,7 +36,7 @@
           }}</span>
         </div>
         <span slot="isDisabled" slot-scope="text, record">
-          <template v-if="$auth('distributionContract:edit') && record.createdId === user.id">
+          <template v-if="$auth('distributionContract:edit') && userInfo.id !== 1">
             <!-- :checked="record.isDisabled === 0" -->
             <!-- :disabled="record.isDisabled === 1" -->
             <!-- :defaultChecked="text === 0 ? true : false" -->
@@ -72,7 +72,7 @@
                     $auth('distributionContract:change') &&
                     record.operatorStatus !== 0 &&
                     record.approvalStatus !== 0 &&
-                    record.createdId === user.id
+                    userInfo.id !== 1
                   "
                 >
                   <a type="primary" @click="editSaleContract(record)">修改</a></a-menu-item
@@ -285,7 +285,7 @@ export default {
     UploadPhoto,
     PhotoView,
   },
-  props: ['contractNum','customerId','customerName','contractStatus','approveStatus'],
+  props: ['contractNum', 'customerId', 'customerName', 'contractStatus', 'approveStatus'],
   data() {
     return {
       userInfo: this.$store.getters.userInfo,
@@ -310,7 +310,6 @@ export default {
       linkManWeChat: '', // 联系人微信号
       selectedRowKeys: [],
       selectedRows: [],
-      user: this.$store.getters.userInfo, // 当前登录人,
       status: 0,
       spinning: false, //加载中状态
     }
@@ -405,6 +404,7 @@ export default {
     init() {
       // 获取销售合同列表数据
       this.getList()
+      console.log(this.userInfo)
     },
     // 获取列表
     getList(params = {}) {
@@ -415,7 +415,7 @@ export default {
         contractNum: this.contractNum || '', // 不传入合同编号模糊获取到的是所有的信息
         customerId: this.customerId || '', // 不传入客户id获取到的是所有的信息
         approveStatus: this.approveStatus,
-        customerName:this.customerName || '',
+        customerName: this.customerName || '',
       }
       let _searchParam = Object.assign({}, { ...params }, { ...this.pagination1 } || {})
       this.loading = true
