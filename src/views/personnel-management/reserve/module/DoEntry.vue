@@ -1262,10 +1262,10 @@ export default {
           values.reserveId = that.record.id
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit' || that.type === 'add') {
-            // if (that.todauuplate.length !== that.todayList.length) {
-            //   that.$message.error('请上传所有模板')
-            //   return
-            // }
+            if (that.todauuplate.length !== that.todayList.length) {
+               return that.$message.error('请上传所有模板')
+            
+            }
             let __api__ = isDoEntryBefore ? reserveAddOrUpdate : reserveUpdateEntity
             that.spinning = true
             __api__(values)
@@ -1289,13 +1289,13 @@ export default {
               .catch((err) => (that.spinning = false))
           } else if (that.type === 'ruzhi') {
             if (!isDoEntryBefore) {
-              that.$message.info('该人员已经办理入职了')
-              return
+             return  that.$message.info('该人员已经办理入职了')
+             
             }
-            // if (that.todauuplate.length !== that.todayList.length) {
-            //   that.$message.error('请上传所有模板')
-            //   return
-            // }
+            if (that.todauuplate.length !== that.todayList.length) {
+              return  that.$message.error('请上传所有模板')
+            
+            }
             that.spinning = true
             reserveDoEntry(values)
               .then((res) => {
