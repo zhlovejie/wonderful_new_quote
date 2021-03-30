@@ -115,23 +115,31 @@
               <a-popconfirm title="是否要取消此会议？" @confirm="doAction('cancel',record)">
                 <a>取消会议</a>
               </a-popconfirm>
-              <a-divider type="vertical" />
-              <a type="primary" :href="record.templateUrl" target="_blank">下载会议模板</a>
+              <template v-if="$auth('meetingManagement:downloadTemplate')">
+                <a-divider type="vertical" />
+                <a type="primary" :href="record.templateUrl" target="_blank">下载会议模板</a>
+              </template>
             </template>
           </template>
 
           <template v-if="record.status === 3">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a type="primary" :href="record.templateUrl" target="_blank">下载会议模板</a>
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('uploadRecords',record)">上传会议记录</a>
+            <template v-if="$auth('meetingManagement:downloadTemplate')">
+              <a-divider type="vertical" />
+              <a type="primary" :href="record.templateUrl" target="_blank">下载会议模板</a>
+            </template>
+            <template v-if="$auth('meetingManagement:uploadRecord')">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('uploadRecords',record)">上传会议记录</a>
+            </template>
           </template>
 
           <template v-if="record.status === 4">
             <a type="primary" @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('viewRecords',record)">预览会议记录</a>
+            <template v-if="$auth('meetingManagement:viewRecords')">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('viewRecords',record)">预览会议记录</a>
+            </template>
           </template>
         </div>
       </a-table>
