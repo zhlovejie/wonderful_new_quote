@@ -101,12 +101,15 @@
           <a-divider type="vertical" />
           <a type="primary" :href="record.recordUrl" target="_blank">预览会议记录</a>-->
 
+
           <template v-if="record.status === 0">
+            <a type="primary" @click="doAction('view',record)">查看</a>
             <template v-if="record.authorationFlag === 1">
+              <a-divider type="vertical" />
               <a type="primary" @click="doAction('start',record)">发起会议</a>
             </template>
           </template>
-          <a type="primary" @click="doAction('start',record)">发起会议</a>
+          <!-- <a type="primary" @click="doAction('start',record)">发起会议</a> -->
 
           <template v-if="record.status === 1 || record.status === 2">
             <a type="primary" @click="doAction('view',record)">查看</a>
@@ -141,6 +144,9 @@
               <a type="primary" @click="doAction('viewRecords',record)">预览会议记录</a>
             </template>
           </template>
+
+
+
         </div>
       </a-table>
     </div>
