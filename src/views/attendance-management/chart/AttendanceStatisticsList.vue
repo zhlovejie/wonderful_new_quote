@@ -1,5 +1,5 @@
 <template>
-  <!-- 人脸打卡记录 -->
+  <!-- 考勤统计 -->
   <div class="wdf-custom-wrapper" id="attendance-over-time-apply">
     <div class="search-wrapper">
       <a-form layout="inline">
@@ -36,13 +36,17 @@
           />
         </a-form-item>
 
-
         <a-form-item v-if="$auth('attendanceStatistics:personStatus')">
-            <a-select placeholder="人员状态" v-model="searchParam.userPositionStatus" :allowClear="true" style="width: 160px">
-              <a-select-option :value="1">在职</a-select-option>
-              <a-select-option :value="0">离职</a-select-option>
-            </a-select>
-          </a-form-item>
+          <a-select
+            placeholder="人员状态"
+            v-model="searchParam.userPositionStatus"
+            :allowClear="true"
+            style="width: 160px"
+          >
+            <a-select-option :value="1">在职</a-select-option>
+            <a-select-option :value="0">离职</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction()">查询</a-button>
         </a-form-item>
@@ -182,17 +186,15 @@ export default {
       disabled: false,
       columns: columns,
       dataSource: [],
-      pagination:{
-        current:1,
-        _prePageSize: 10,
-        pageSize:10,
+      pagination1: {},
+      pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading: false,
       searchParam: {
-        userPositionStatus:1
+        userPositionStatus: 1,
       }, //查询参数
       downParam: {}, //下载参数
       depList: [],
@@ -250,12 +252,7 @@ export default {
     searchAction(opt = {}) {
       this.disabled = false
       let that = this
-
-      let paginationParam = {
-        current: that.pagination.current || 1,
-        size: that.pagination.pageSize || 10,
-      }
-      let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getStatisticsList(_searchParam)
@@ -271,18 +268,6 @@ export default {
           pagination.total = res.data.total || 0
           pagination.current = res.data.current || 1
           that.pagination = pagination
-
-          try{
-            //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
-            //刷新也不显示数据
-            let {current,pages} = res.data
-            if(+pages > 0 && +current > +pages){
-              that.pagination = {...pagination,current:pages}
-              that.searchAction()
-            }
-          }catch(err){
-            console.log(err)
-          }
         })
         .catch((err) => (that.loading = false))
       this.downParam.userName = _searchParam.userName
@@ -291,14 +276,9 @@ export default {
       this.getList(_searchParam)
     },
     // 分页
-    handleTableChange (pagination, filters, sorter) {
-      const pager = pagination
-      pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
-        pager.current = 1 //重置为第一页
-        pager._prePageSize = +pager.pageSize //同步两者的值
-      }
-      this.pagination = {...this.pagination,...pager}
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
       this.searchAction()
     },
 
@@ -332,7 +312,7 @@ export default {
         // 上月
         this.disabled = true
         this.dayWeekMonth = 1
-        let lastMonth = moment().add(-1,'months').format('YYYY-MM')
+        let lastMonth = moment().add(-1, 'months').format('YYYY-MM')
         this.getList({ current: 1, statiticsMonthDate: lastMonth })
         // 存储上月参数
         this.downParam.userName = ''

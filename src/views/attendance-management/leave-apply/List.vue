@@ -28,6 +28,7 @@
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
+
         <div class="action-wrapper" style="float: right" v-if="$auth('attenceLeaveApply:add')">
           <a-form-item>
             <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
@@ -43,6 +44,7 @@
           <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
+
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -106,6 +108,7 @@
         </div>
       </a-table>
     </div>
+
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
   </div>
@@ -115,7 +118,12 @@
 import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
-import { attenceLeaveApplyDel, attenceLeaveApplyList, attenceLeaveApplyWithdraw } from '@/api/attendanceManagement'
+import {
+  attenceLeaveApplyDel,
+  attenceLeaveApplyList,
+  attenceLeaveApplyWithdraw,
+  attenceLeaveApplyTime,
+} from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
 import moment from 'moment'
@@ -183,10 +191,16 @@ export default {
   },
   data() {
     return {
+      msg: '21321',
+      duration: undefined,
       columns: columns,
       dataSource: [],
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `时长合计：${this.duration}小时   `, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       searchParam: {},
@@ -233,9 +247,12 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
+      attenceLeaveApplyTime(_searchParam).then((res) => {
+        this.duration = res.data
+      })
       attenceLeaveApplyList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -254,11 +271,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     doAction(actionType, record) {
       let that = this

@@ -36,7 +36,7 @@
       </a-form>
     </div>
 
-    <a-alert message="出差规则" type="warning" show-icon style="margin-top:10px;">
+    <a-alert message="出差规则" type="warning" show-icon style="margin-top: 10px">
       <div slot="description">
         <div>1、提前提交出差申请，审批通过后方可离开工作岗位。</div>
         <div>2、预支金额：单次最多可预支2000元，可预支3次费用，超过3次，需财务完结出差申请后，方可再次预支费用。</div>
@@ -108,7 +108,7 @@
               </a-popconfirm>
             </template>
 
-            <template v-if="[0,3,4].includes(+record.status) && +record.createdId === +userInfo.id">
+            <template v-if="[0, 3, 4].includes(+record.status) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
@@ -129,7 +129,6 @@
               </a-popconfirm>
             </template>
 
-            
             <!--查看 修改:只添加行程 -->
             <template v-if="+record.status === 2">
               <a-divider type="vertical" />
@@ -157,7 +156,7 @@ import {
   attenceTravelApplyWithdraw,
   attenceTravelUserCheckUserTravel,
   attenceTravelApplySubmit,
-  attenceTravelApplyFinishTravel
+  attenceTravelApplyFinishTravel,
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 import FinanceForm from './FinanceForm'
@@ -179,8 +178,12 @@ export default {
   data() {
     return {
       dataSource: [],
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       searchParam: {},
@@ -297,7 +300,7 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       attenceTravelApplyList(_searchParam)
@@ -318,11 +321,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     doAction(actionType, record) {
       let that = this
@@ -394,10 +395,11 @@ export default {
       } else if (actionType === 'routeAdd') {
         //添加行程
         that.$refs.addRoute.query(actionType, record)
-      } else if(actionType === 'routeEnd'){
-        attenceTravelApplyFinishTravel(`id=${record.id}`).then((res) => {
+      } else if (actionType === 'routeEnd') {
+        attenceTravelApplyFinishTravel(`id=${record.id}`)
+          .then((res) => {
             that.$message.info(res.msg)
-            if(+res.code === 200){
+            if (+res.code === 200) {
               that.searchAction()
             }
           })
@@ -439,22 +441,21 @@ export default {
       console.log(arguments)
     },
     //是否完结行程
-    isFinished(record){
+    isFinished(record) {
       let that = this
-      //出差人员和随性人员都点击结束行程后，，会生成 endTime 
-      let case1 = record.endTime ? true : false 
-      let user = (record.users || []).find(u => u.userId === that.userInfo.id)
+      //出差人员和随性人员都点击结束行程后，，会生成 endTime
+      let case1 = record.endTime ? true : false
+      let user = (record.users || []).find((u) => u.userId === that.userInfo.id)
       //人员的 isFinished 标志 0未结束，1已经结束
       let case2 = user && +user.isFinished === 1
       return case1 || case2
-    }
+    },
   },
   beforeDestroy() {
     let that = this
     let ele = document.querySelector('#attendance-over-time-apply')
     ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
-  }
-  
+  },
 }
 </script>
 

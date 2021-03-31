@@ -97,10 +97,7 @@
 </template>
 
 <script>
-import {
-  departmentList, //所有部门
-} from '@/api/systemSetting'
-import { going_list, going_delete, going_cancel } from '@/api/attendanceManagement'
+import { going_list, going_delete, going_cancel, going_Tiem } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
 import moment from 'moment'
@@ -155,10 +152,15 @@ export default {
   },
   data() {
     return {
+      duration: undefined,
       columns: columns,
       dataSource: [],
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `时长合计：${this.duration}小时 `, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       searchParam: {},
@@ -202,8 +204,11 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
+      going_Tiem(_searchParam).then((res) => {
+        this.duration = res.data
+      })
       that.loading = true
       going_list(_searchParam)
         .then((res) => {
@@ -223,11 +228,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     doAction(actionType, record) {
       let that = this
