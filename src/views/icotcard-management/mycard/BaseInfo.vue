@@ -175,13 +175,16 @@ export default {
       this.iccid = record.iccid
       this.spinning = true
       let that = this
+      that.crrcardmsg = {}
       basicInformation({ iccid: this.iccid }).then((res) => {
         that.spinning = false
         if (res.code == 200) {
           // 判断cardmsg packagemsg是否为null
           const packagemsg = res.data.packagemsg
           const cardmsg = res.data.cardmsg
-          that.crrcardmsg = res.data.crrcardmsg
+          if(res.data.crrcardmsg){
+            that.crrcardmsg = res.data.crrcardmsg
+          }
           if (!cardmsg && typeof cardmsg != 'undefined' && cardmsg != 0) {
             return
           } else {
@@ -214,6 +217,9 @@ export default {
         } else {
           this.$message.warning(res.msg)
         }
+      }).catch(err =>{
+        console.error(err)
+        that.spinning = false
       })
     },
     startDateChange(data, dataStr) {
