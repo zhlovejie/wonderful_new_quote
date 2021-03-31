@@ -103,9 +103,9 @@
 
 
           <template v-if="record.status === 0">
-            <a type="primary" @click="doAction('view',record)">查看</a>
+            <!-- <a type="primary" @click="doAction('view',record)">查看</a> -->
             <template v-if="record.authorationFlag === 1">
-              <a-divider type="vertical" />
+              <!-- <a-divider type="vertical" /> -->
               <a type="primary" @click="doAction('start',record)">发起会议</a>
             </template>
           </template>
