@@ -58,6 +58,24 @@ export default {
           }
         },
         {
+          path: '/sales-management/customer/curtomer-learn-not-maintain',
+          name: 'curtomer-learn-not-maintain',
+          component: () => import('@/views/sales-management/customer/curtomerLearn/List'),
+          meta: {
+            title: '未维护获知渠道列表',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/customer/curtomer-learn-statistics',
+          name: 'curtomer-learn-statistics',
+          component: () => import('@/views/sales-management/customer/curtomerLearn/Statistics'),
+          meta: {
+            title: '客户获知渠道分析',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/sales-management/customer/salesman',
           name: 'Salesman',
           component: () => import('@/views/sales-management/customer/salesman/SalesmanList'),

@@ -297,6 +297,7 @@ export function exportExcelDatas(key,params) {
     8:'/reportPerpareMoney/exportReportRateMoneyData', //预收账款分析
     9:'/reportPerpareMoney/exportReportRateMoneyCustomer', //客户预收款单
     10:'/reportPerpareMoney/exportReportRateMoneyContract' , //客户预收款单 合同列表
+    11:'/customer/downloadLearnList', // 下载客户获知渠道统计表
   }
   return axios({
     baseURL: system.baseURL,
@@ -388,3 +389,14 @@ export function pageListReportPrepareMoneyContractRecieve (parameter) {
     params: parameter
   })
 }
+
+/**客户获知渠道统计列表 */
+export function pageListReportStatisticsForLearn (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/customer/statisticsForLearn',
+    method: 'get',
+    params: parameter
+  })
+}
+
