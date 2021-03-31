@@ -12,20 +12,25 @@
               placeholder="选择月份"
             />
           </a-form-item>
-          <a-form-item >
+          <a-form-item>
             <a-select placeholder="选择部门" v-model="searchParam.departmentId" :allowClear="true" style="width: 160px">
               <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
                 item.departmentName
               }}</a-select-option>
             </a-select>
           </a-form-item>
-          
+
           <a-form-item>
             <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width: 160px" />
           </a-form-item>
 
           <a-form-item v-if="$auth('months:personStatus')">
-            <a-select placeholder="人员状态" v-model="searchParam.userPositionStatus" :allowClear="true" style="width: 160px">
+            <a-select
+              placeholder="人员状态"
+              v-model="searchParam.userPositionStatus"
+              :allowClear="true"
+              style="width: 160px"
+            >
               <a-select-option :value="1">在职</a-select-option>
               <a-select-option :value="0">离职</a-select-option>
             </a-select>
@@ -54,30 +59,30 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <template v-for="item in extColumns"  :slot="'title' + item.dataIndex" style="color: #096dd9">
+          <template v-for="item in extColumns" :slot="'title' + item.dataIndex" style="color: #096dd9">
             <div :key="item.dataIndex">
               <div>{{ item._date }}</div>
               <div>{{ item._week }}</div>
             </div>
           </template>
-          <template v-for="item in extColumns"  :slot="item.dataIndex" slot-scope="text, record, index">
+          <template v-for="item in extColumns" :slot="item.dataIndex" slot-scope="text, record, index">
             <div :key="item.dataIndex">
-            <template v-if="$auth('months:edit')">
-              <a-popover title="操作" trigger="hover">
-                <div slot="content">
-                  <!-- <template v-if="!['正常','休息'].includes(text)"> -->
-                  <template v-if="hasException(item.dataIndex, record.dayStatiticsList)">
-                    <a @click="doAction('edit', record, item.dataIndex)">修改</a>
-                    <a-divider type="vertical" />
-                  </template>
-                  <a @click="doAction('view', record, item.dataIndex)">记录</a>
-                </div>
-                <div style="cursor: pointer" v-html="formatHTML(text)" />
-              </a-popover>
-            </template>
-            <template v-else>
-              <div v-html="formatHTML(text)" />
-            </template>
+              <template v-if="$auth('months:edit')">
+                <a-popover title="操作" trigger="hover">
+                  <div slot="content">
+                    <!-- <template v-if="!['正常','休息'].includes(text)"> -->
+                    <template v-if="hasException(item.dataIndex, record.dayStatiticsList)">
+                      <a @click="doAction('edit', record, item.dataIndex)">修改</a>
+                      <a-divider type="vertical" />
+                    </template>
+                    <a @click="doAction('view', record, item.dataIndex)">记录</a>
+                  </div>
+                  <div style="cursor: pointer" v-html="formatHTML(text)" />
+                </a-popover>
+              </template>
+              <template v-else>
+                <div v-html="formatHTML(text)" />
+              </template>
             </div>
           </template>
         </a-table>
@@ -106,13 +111,16 @@ export default {
   data() {
     return {
       dataSource: [],
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
       },
       loading: false,
       searchParam: {
         statiticsMonthDate: moment(),
-        userPositionStatus:1
+        userPositionStatus: 1,
       },
       depList: [],
       bindEnterFn: null,
@@ -217,7 +225,7 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       if (_searchParam.statiticsMonthDate instanceof moment) {
         _searchParam.statiticsMonthDate = _searchParam.statiticsMonthDate.format('YYYY-MM')
       }
@@ -249,11 +257,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     doAction(actionType, record, dataIndex) {
       let that = this

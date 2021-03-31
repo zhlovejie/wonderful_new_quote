@@ -14,32 +14,54 @@
         <a-form-item label="资产类别">
           <a-select
             placeholder="选择资产类型"
-            v-decorator="['typeDicId',{initialValue:record.typeDicId,rules: [{required: true,message: '选择资产类型'}]}]"
+            v-decorator="[
+              'typeDicId',
+              { initialValue: record.typeDicId, rules: [{ required: true, message: '选择资产类型' }] },
+            ]"
             :allowClear="true"
-            style="width:100%;"
+            style="width: 100%"
           >
-            <a-select-option v-for="item in assetTypeList" :key="item.id" :value="item.id">{{item.text}}</a-select-option>
+            <a-select-option v-for="item in assetTypeList" :key="item.id" :value="item.id">{{
+              item.text
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="资产编码">
           <a-input
-            style="width:100%;"
-            v-decorator="['code', {initialValue:record.code, rules: [{ required: true, message: '请输入资产编码' }]}]"
+            style="width: 100%"
+            v-decorator="[
+              'code',
+              {
+                initialValue: record.code,
+                rules: [
+                  { required: true, message: '请输入资产编码' },
+                  {
+                    validator: changeKey,
+                  },
+                ],
+              },
+            ]"
           />
         </a-form-item>
         <a-form-item label="资产名称">
           <a-input
-            style="width:100%;"
-            v-decorator="['name', {initialValue:record.name, rules: [{ required: true, message: '请输入资产名称' }]}]"
+            style="width: 100%"
+            v-decorator="[
+              'name',
+              { initialValue: record.name, rules: [{ required: true, message: '请输入资产名称' }] },
+            ]"
           />
         </a-form-item>
 
         <a-form-item label="资产归属">
           <a-select
             placeholder="选择资产归属"
-            v-decorator="['beyondType', {initialValue:record.beyondType || 3, rules: [{ required: true, message: '选择资产归属' }]}]"
+            v-decorator="[
+              'beyondType',
+              { initialValue: record.beyondType || 3, rules: [{ required: true, message: '选择资产归属' }] },
+            ]"
             :allowClear="true"
-            style="width:100%;"
+            style="width: 100%"
           >
             <a-select-option :value="1">个人</a-select-option>
             <a-select-option :value="2">部门</a-select-option>
@@ -49,8 +71,14 @@
 
         <a-form-item label="购买时间">
           <a-date-picker
-            v-decorator="['buyTime',{initialValue:record.buyTime ? moment(record.buyTime) : undefined,rules: [{required: true,message: '请选择购买时间'}]}]"
-            style="width:100%;"
+            v-decorator="[
+              'buyTime',
+              {
+                initialValue: record.buyTime ? moment(record.buyTime) : undefined,
+                rules: [{ required: true, message: '请选择购买时间' }],
+              },
+            ]"
+            style="width: 100%"
           />
         </a-form-item>
       </a-form>
@@ -73,7 +101,7 @@ export default {
       visible: false,
       spinning: false,
       type: 'view',
-      assetTypeList:[],
+      assetTypeList: [],
       record: {},
       isManagerCheck: false,
     }
@@ -103,6 +131,16 @@ export default {
         })
       }
     },
+    changeKey(rule, value, callback) {
+      //定义你需要的正则
+      let rgx = /[\u4E00-\u9FA5]/g //
+      if (!rgx.test(value)) {
+        //验证通过调用回调函数
+        callback()
+      } else {
+        callback(new Error('禁止填写中文'))
+      }
+    },
     initData() {
       let that = this
       let queue = []
@@ -118,7 +156,7 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          if(values.buyTime && values.buyTime instanceof moment){
+          if (values.buyTime && values.buyTime instanceof moment) {
             values.buyTime = values.buyTime.format('YYYY-MM-DD')
           }
           that.spinning = true
@@ -148,5 +186,4 @@ export default {
 }
 </script>
 <style scoped>
-
 </style>

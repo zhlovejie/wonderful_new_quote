@@ -110,7 +110,7 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="[3,4].includes(+record.status)">
+            <template v-if="[3, 4].includes(+record.status)">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
@@ -136,12 +136,8 @@ import {
 
 import {
   attenceRecardRuleDetail,
-  resignApplyAddAndUpdate,
-  resignApplyApproval,
   resignApplyDel,
-  resignApplyDetail,
   resignApplyList,
-  resignApplySubmittedCount,
   resignApplyWithdraw,
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
@@ -214,8 +210,12 @@ export default {
       columns: columns,
       detail: {},
       dataSource: [],
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       searchParam: {},
@@ -263,7 +263,7 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       resignApplyList(_searchParam)
@@ -284,11 +284,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     doAction(actionType, record) {
       let that = this

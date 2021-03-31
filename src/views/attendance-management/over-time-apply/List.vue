@@ -27,6 +27,7 @@
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
+
         <div class="action-wrapper" style="float: right" v-if="$auth('overworkApply:add')">
           <a-form-item>
             <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
@@ -89,7 +90,7 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="[3,4].includes(+record.status)">
+            <template v-if="[3, 4].includes(+record.status)">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
@@ -113,14 +114,11 @@ import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
 import {
-  overworkApplyAddAndUpdate,
-  overworkApplyApproval,
   overworkApplyDel,
-  overworkApplyDetail,
   overworkApplyList,
-  overworkApplyHours,
   overworkApplyWithdraw,
   overworkRuleList,
+  overworkApplyTime,
 } from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
@@ -196,11 +194,16 @@ export default {
   },
   data() {
     return {
+      duration: undefined,
       columns: columns,
       dataSource: [],
       ovwework: {},
+      pagination1: {},
       pagination: {
-        current: 1,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: (total) => `时长合计：${this.duration}小时`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
       searchParam: {},
@@ -251,8 +254,11 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
+      overworkApplyTime(_searchParam).then((res) => {
+        this.duration = res.data
+      })
       that.loading = true
       overworkApplyList(_searchParam)
         .then((res) => {
@@ -272,11 +278,9 @@ export default {
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
-      console.log(pagination, filters, sorter)
-      const pager = { ...this.pagination }
-      pager.current = pagination.current
-      this.pagination = pager
-      this.searchAction({ current: pagination.current })
+      this.pagination1.size = pagination.pageSize
+      this.pagination1.current = pagination.current
+      this.searchAction()
     },
     doAction(actionType, record) {
       let that = this
