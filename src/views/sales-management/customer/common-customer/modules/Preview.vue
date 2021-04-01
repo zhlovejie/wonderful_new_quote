@@ -41,6 +41,11 @@
             <a-input read-only="read-only" v-model="customer.learnName"/>
           </a-form-item>
         </a-col>
+        <a-col :lg="12" :md="12" :sm="24" v-if="customer.otherLearn">
+          <a-form-item label="其他获知渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input read-only="read-only" v-model="customer.otherLearn"/>
+          </a-form-item>
+        </a-col>
         <a-col :lg="12" :md="12" :sm="24">
           <a-form-item label="客户维护周期(天)" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input read-only="read-only" v-model="customer.contactCycle"/>

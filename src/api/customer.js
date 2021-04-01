@@ -238,3 +238,13 @@ export function checkName (param) {
     params: param
   })
 }
+
+/** 未维护获知渠道列表 */
+export function customerListForLearn (param) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/customer/listForLearn',
+    method: 'get',
+    params: param
+  })
+}

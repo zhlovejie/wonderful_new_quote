@@ -53,7 +53,7 @@
                   :allowClear="true"
                   v-decorator="['saleUserId',{rules: [{ required: true, message: '请选销售经理'}]} ]"
                   placeholder="请选销售经理"
-                  style="width: 100%;" 
+                  style="width: 100%;"
                   @change="saleUserChange"
                 >
                   <a-select-option
@@ -70,8 +70,8 @@
             <a-col :span="9" :offset="4">
               <CustomerSelect
                 ref="customerSelect"
-                :options="customerSelectOptions" 
-                :needOptions="needOptions" 
+                :options="customerSelectOptions"
+                :needOptions="needOptions"
                 @selected="handleCustomerSelected"
               />
               <a-form-item hidden>
@@ -156,7 +156,7 @@
                   <a-row>
                     <template v-if="!isView">
                     <a-col :span="24">
-                      <a-select 
+                      <a-select
                         style="width:80px;"
                         placeholder="价格"
                         @change="unitPriceSelectChange"
@@ -192,10 +192,10 @@
               <td style="width:100px;">
                 <a-form-item>
                   <template v-if="!isView">
-                  <a-switch 
-                    checked-children="含税" 
-                    un-checked-children="不含税" 
-                    default-checked 
+                  <a-switch
+                    checked-children="含税"
+                    un-checked-children="不含税"
+                    default-checked
                     v-decorator="['remark', { initialValue:true}]"
                     @change="taxChange"
                   />
@@ -333,7 +333,7 @@ export default {
       if (customerSelectResult.err) {
         return
       }
-      
+
       this.form.validateFields((err, values) => {
         if (!err) {
           if (that.isEdit) {
@@ -349,13 +349,14 @@ export default {
           values.quoteTime = values.quoteTime.format('YYYY-MM-DD')
           values.productQuoteChooses = [
             ...that.record._viewDataSource.optStand.map(p => {
-              return { itemName: p.itemName, type: 1 }
+              return { itemName: p.itemName, type: 1 ,introduction:p.introduction}
             }),
             ...that.record._viewDataSource.optSelect.map(p => {
-              return { itemName: p.itemName, type: 2 }
+              return { itemName: p.itemName, type: 2 ,introduction:p.introduction}
             })
           ]
           console.log('Received values of form: ', values)
+
           that.spinning = true
           priceAdjustProductQuoteAddOrUpdate(values)
             .then(res => {
@@ -407,7 +408,7 @@ export default {
     editAction(){
       let that = this
       priceAdjustProductQuoteDetail({id:this.record.id}).then(res =>{
-        //res.data.remark = 
+        //res.data.remark =
         that.form.setFieldsValue({...res.data})
 
         if(res.data.quoteTime){
@@ -426,7 +427,7 @@ export default {
         that.productPic = res.data.productPic
         that.unitPrice = +res.data.unitPrice
         that.qty = +res.data.productNum
-        that.unitPriceEdit = false 
+        that.unitPriceEdit = false
         that.viewDataSourceHTMLWithoutTitle = {
           __config: {
             showTitle: false
@@ -434,12 +435,12 @@ export default {
           optStand:[...res.data.productQuoteChooses.filter(p => +p.type === 1)],
           optSelect:[...res.data.productQuoteChooses.filter(p => +p.type === 2)],
         }
-          
+
         console.log(res)
       })
     },
     handleCustomerSelected(item) {
-      
+
       //this.queryParam.customerId = item.id
       this.form.setFieldsValue({ customerId: item && item.id ? item.id : undefined })
     },
