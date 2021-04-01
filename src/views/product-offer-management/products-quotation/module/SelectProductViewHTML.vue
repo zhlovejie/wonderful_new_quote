@@ -5,10 +5,10 @@
       <caption>产品参数</caption>
       <tr>
         <td rowspan="3" style="width:150px;">
-          <img 
+          <img
             v-if="productInfo.optInfo.productPic"
-            style="width:100%;height:auto;overflow:hidden;" 
-            :src="productInfo.optInfo.productPic" 
+            style="width:100%;height:auto;overflow:hidden;"
+            :src="productInfo.optInfo.productPic"
             alt="产品图片"
           />
           <span v-else>暂未配置图片</span>
@@ -27,19 +27,19 @@
             <a-col :span="24" v-if="!isPriceViewCost">
               <a-select
                 style="width:140px;"
-                placeholder="选择产品价格" 
+                placeholder="选择产品价格"
                 v-model="priceSelect"
                 @change="priceChange"
               >
                 <a-select-option v-for="(v,idx) in priceList" :value="v" :key="idx">{{v | moneyFormatNumber}}</a-select-option>
                 <a-select-option value="-1">其他</a-select-option>
               </a-select>
-              <a-input-number 
+              <a-input-number
                 v-if="isOtherPrice"
                 placeholder="手动输入价格"
                 style="width:140px;margin-left:10px;"
                 :min="1"
-                :step="1" 
+                :step="1"
                 v-model="otherPrice"
                 @change="otherPriceChange"
               />
@@ -153,8 +153,8 @@ export default {
       this.productInfo.optStand.map((p,idx) =>{
         html += `
           <tr>
-            <td style="padding:5px 0;width:50%;">${p.itemName}</td>
-            <td style="padding:5px 0;width:50%;">${p.introduction || ''}</td>
+            <td style="padding:5px 0;width:35%;">${p.itemName}</td>
+            <td style="padding:15px;width:65%;text-align:left;">${p.introduction || ''}</td>
           </tr>
         `
       })
@@ -178,8 +178,8 @@ export default {
       this.productInfo.optSelect.map((p,idx) =>{
         html += `
         <tr>
-          <td style="padding:5px 0;width:50%;">${p.itemName}</td>
-          <td style="padding:5px 0;width:50%;">${p.introduction || ''}</td>
+          <td style="padding:5px 0;width:35%;">${p.itemName}</td>
+          <td style="padding:15px;width:65%;text-align:left;">${p.introduction || ''}</td>
         </tr>
         `
       })
@@ -205,7 +205,7 @@ export default {
 </script>
 
 <style scoped>
-  
+
   .products-quotation-view-wrapper .custom-table{
     margin: -1px 0 0 0;
   }

@@ -105,7 +105,7 @@ function handleWindowPrint (ele, title) {
       text-align:center;
     }
 
-    
+
 
     .ant-table{padding:10pt 0;}
     .ant-table table{width: 100%;border-collapse: collapse;}
@@ -134,7 +134,7 @@ function handleWindowPrint (ele, title) {
     .p-text-index{padding-left:2em;}
 
     /* 合同打印 END */
-    
+
 
     /* 核价单信息导出PDF */
     .table-page-search-wrapper{
@@ -163,7 +163,7 @@ function handleWindowPrint (ele, title) {
         -webkit-box-direction: normal;
         -ms-flex-flow: row wrap;
         flex-flow: row wrap;
-        
+
         align-items: center;
     }
     .sales-task-wrapper .invoice-code-list-wrapper{
@@ -186,12 +186,12 @@ function handleWindowPrint (ele, title) {
         -webkit-box-direction: normal;
         -ms-flex-flow: row wrap;
         flex-flow: row wrap;
-        
+
         align-items: center;
     }
 
-    
-    
+
+
     input,textarea{
       font-family: Arial;
       font-size: 10pt;
@@ -211,7 +211,7 @@ function handleWindowPrint (ele, title) {
       width:35%;
       text-align: left;
     }
-    
+
     .sales-task-wrapper .ant-row-flex > .col-header{
       width:15%;
     }
@@ -313,7 +313,7 @@ function handleWindowPrint (ele, title) {
       border: 1px solid #d8d8d8;
       text-align: center;
     }
-  
+
     .products-quotation-view-wrapper .custom-table .bottom-line{
       /*position: absolute;
       height: 1px;
@@ -397,6 +397,11 @@ function handleWindowPrint (ele, title) {
 #price-print-form-wrapper .custom_info .__ele-english i {
   color: #fff !important;
 }
+
+#price-print-form-wrapper .custom-table-border{
+  background-color: #fff;
+}
+
 #price-print-form-wrapper .custom-table-border th,
 #price-print-form-wrapper .custom-table-border td {
   padding: 5px 10px;
@@ -410,11 +415,15 @@ function handleWindowPrint (ele, title) {
   padding: 15px 0;
 }
 
+#price-print-form-wrapper .quotation-html-wrapper{
+  border:none;
+}
+
     </style>
   `
   oIframe.contentDocument.body.innerHTML = document.querySelector(ele).outerHTML
-  
-  
+
+
   //console.log(document.querySelector(ele).outerHTML)
   oScript.innerHTML = '(function(){setTimeout(function(){window.print()},500)})()'
   oIframe.contentDocument.body.appendChild(oScript)
