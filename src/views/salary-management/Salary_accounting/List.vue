@@ -128,7 +128,12 @@
 </template>
 <script>
 import { getDevisionList } from '@/api/systemSetting'
-import { wages_List, getExportList, wages_approcal, wages_del, wages_ImportExcel } from '@/api/bonus_management'
+import {
+  floorsAnnual_List,
+  floorsAnnual_approcal,
+  floorsAnnual_del,
+  floorsAnnual_ImportExcel,
+} from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import Approval from './module/Approval'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -235,7 +240,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'salary-details') {
+        if (to.name === 'Salary_accounting') {
           this.init()
         }
       },
@@ -259,11 +264,11 @@ export default {
     downAction() {
       const downListParams = Object.assign({}, { ...this.queryParam }, { ...this.searchParam })
       this.loading = true
-      wages_ImportExcel(downListParams)
+      floorsAnnual_ImportExcel(downListParams)
         .then((res) => {
           this.loading = false
           if (res instanceof Blob) {
-            const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            const isFile = res.type === 'application/vnd.ms-excel'
             //const isFile = res.type === 'application/msword'
             const isJson = res.type === 'application/json'
             if (isFile) {
@@ -273,7 +278,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download = '工资条下载.xls'
+              a.download = '人脸打卡记录.xls'
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
@@ -335,7 +340,7 @@ export default {
         }
       )
       that.loading = true
-      wages_List(_searchParam)
+      floorsAnnual_List(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -379,7 +384,7 @@ export default {
         }
       })
       // this.submitAction({ commonApprovalVOS: ids })
-      wages_del({ commonApprovalVOS: ids })
+      floorsAnnual_del({ commonApprovalVOS: ids })
         .then((res) => {
           that.spinning = false
           that.$message.info(res.msg)
@@ -392,7 +397,7 @@ export default {
     submitAction(opt) {
       let that = this
       that.spinning = true
-      wages_approcal(opt)
+      floorsAnnual_approcal(opt)
         .then((res) => {
           that.spinning = false
           that.$message.info(res.msg)

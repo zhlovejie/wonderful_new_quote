@@ -820,20 +820,32 @@ export function wages_List(parameter) {
   })
 }
 
-//工资条字典数据 
-export function wages_ListDic(parameter) {
+//工资条批量审批 
+
+export function wages_approcal(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-month-bouns-detail/listDic',
-    method: 'get',
-    params: parameter
+    url: '/oaSalaryMonthInstance/oa-salary-month-instance/approvalList',
+    method: 'post',
+    data: parameter
   })
 }
+// 工资条批量删除
+
+export function wages_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryMonthInstance/oa-salary-month-instance/delList',
+    method: 'post',
+    data: parameter
+  })
+}
+
 //工资条详情数据 
 export function wages_Detail(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-month-detail/pageList',
+    url: '/oaSalaryInfo/oa-salary-month-detail/getOaSalaryMonthDetai',
     method: 'get',
     params: parameter
   })
@@ -846,6 +858,54 @@ export function wages_instance(parameter) {
     baseURL: system.baseURL,
     url: '/oaSalaryMonthInstance/oa-salary-month-instance/approvalSalaryMonthInstanceApply',
     method: 'post',
+    data: parameter
+  })
+}
+//工资条导出
+export function wages_ImportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
+    method: 'get',
+    responseType: 'blob',
+    data: parameter
+  })
+}
+//薪资核算列表
+export function floorsAnnual_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/floors-annual-account/page',
+    method: 'get',
+    params: parameter
+  })
+}
+//薪资核算批量审批 
+
+export function floorsAnnual_approcal(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/floors-annual-account/approveList',
+    method: 'post',
+    data: parameter
+  })
+}
+// 薪资核算批量删除
+export function floorsAnnual_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/floors-annual-account/delList',
+    method: 'post',
+    data: parameter
+  })
+}
+//薪资核算导出
+export function floorsAnnual_ImportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/floors-annual-account/exportSalaryExcel',
+    method: 'get',
+    responseType: 'blob',
     data: parameter
   })
 }

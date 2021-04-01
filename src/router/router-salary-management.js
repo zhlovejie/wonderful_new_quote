@@ -531,6 +531,16 @@ export default {
           keepAlive: false,
           permission: ['permission']
         },
+      }, {
+        path: '/salary-management/Salary_accounting',
+        name: 'Salary_accounting',
+        component: () => import('@/views/salary-management/Salary_accounting/List'),
+        meta: {
+          title: '薪资核算',
+          icon: 'select',
+          keepAlive: false,
+          permission: ['permission']
+        },
       }]
     }
   ]
