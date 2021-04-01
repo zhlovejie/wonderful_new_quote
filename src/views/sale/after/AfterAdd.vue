@@ -362,8 +362,8 @@ export default {
         that.invoiceList = res.data
       })
       presentOrderDetail({ presentId: data.id }).then(res => {
-        console.log(res)
-        debugger
+        // console.log(res)
+        // debugger
         let _data = res.data
         that.form.setFieldsValue({ contractNum: _data.presentNum })
         that.form.setFieldsValue({ customerName: _data.customerName })

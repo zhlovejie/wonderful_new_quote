@@ -547,7 +547,7 @@ export default {
     },
     //填充合同
     fillContract(data){
-      debugger
+      // debugger
       console.log('data', data)
       this.form.setFieldsValue({ contractNum: data.contractNum })
       this.form.setFieldsValue({ customerName: data.customerName })
@@ -589,7 +589,7 @@ export default {
         that.form.setFieldsValue({ customerName: _data.customerName })
         that.form.setFieldsValue({ presentId: _data.id })
         that.form.setFieldsValue({ invoiceType: 1 })
-        
+
         that.dataSource = _data.productList.map(item =>{
           return {
             id:item.id,

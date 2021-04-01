@@ -327,7 +327,7 @@ export default {
           // 在这里调用删除接口
           const params = { 'id': row.id }
           initializePassword(params).then(res => {
-            debugger
+            // debugger
             if (res.code == 200) {
               _this.$message.success('重置成功')
               _this.$refs.table.refresh(false)

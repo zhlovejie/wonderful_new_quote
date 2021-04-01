@@ -356,7 +356,7 @@ export default {
     changeStatus(record) {
       let that = this
       updateIsEnd({ id: record.id }).then((res) => {
-        debugger
+        // debugger
         that.$message.info(res.msg)
         if (+res.code === 200) {
           that.searchAction()

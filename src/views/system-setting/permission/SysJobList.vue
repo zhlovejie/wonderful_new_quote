@@ -55,7 +55,7 @@
           <div slot="remarks" slot-scope="text, record, index">
             <p style="width:180px;text-align: left;word-break: break-all;">{{text}}</p>
           </div>
-          
+
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('sysJob:one')">
               <a @click="query(record)">查看详情</a>
@@ -250,7 +250,7 @@ export default {
     },
     // 修改详情
     doOneJob (actionType, record) {
-      debugger
+      // debugger
       const _this = this
       // 在这里调用暂停接口
       if (actionType === 'pause') {

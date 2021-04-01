@@ -208,10 +208,10 @@
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <!--fix 0543 欠款金额不能大于总金额 -->
               <a-form-item>
-                <a-input-number 
-                  :min="0" 
-                  :max="maxArrearsMoney" 
-                  @change="arrearsMoneyChange" 
+                <a-input-number
+                  :min="0"
+                  :max="maxArrearsMoney"
+                  @change="arrearsMoneyChange"
                   class="wdf-xyk"
                   placeholder="请输入欠款金额"
                   v-decorator="[ 'arrearsMoney', {rules: [{ required: true, message: '请输入欠款金额'}]} ]"/>
@@ -231,7 +231,7 @@
               </a-form-item>
             </a-col>
           </a-row>
-          
+
 
       </a-form>
       <all-software-contract ref="allSoftwareContract" @custom-change="contractChange"></all-software-contract>
@@ -271,16 +271,16 @@ export default {
           title: '单位',
           dataIndex: 'company',
           scopedSlots: { customRender: 'company' }
-        }, 
+        },
         {
           title: '数量',
           dataIndex: 'count'
-        }, 
+        },
         {
           title: '含税单价',
           dataIndex: 'unitPrice',
           scopedSlots: { customRender: 'unitPrice' }
-        }, 
+        },
         {
           title: '含税金额(元)',
           dataIndex: 'receivable'
@@ -392,7 +392,7 @@ export default {
     },
     // 开票单产品数量变化
     quantityChange(record, e) {
-      debugger
+      // debugger
       const v = e.currentTarget.value
       let dataSource = [...this.dataSource]
       let target = dataSource.find(item => item.key === record.key)

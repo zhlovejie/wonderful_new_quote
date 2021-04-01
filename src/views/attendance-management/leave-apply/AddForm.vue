@@ -239,7 +239,7 @@ export default {
     },
     dateFormat(){
       if(this.holidayTarget){
-        debugger
+        // debugger
         if(+this.holidayTarget.holidayCaculatorType === 2){
           return 'YYYY-MM-DD'
         }else if(+this.holidayTarget.holidayCaculatorType === 1){
@@ -445,7 +445,7 @@ export default {
 
           let target = that.holidayList.find(item => +item.id === +values.holidayId)
           if (target) {
-            debugger
+            // debugger
             console.log('请假类型 =>', target)
             values.holidayName = target.holidayName
             values.holidayType = target.holidayType

@@ -744,7 +744,7 @@ export default {
     getInfor() {
       let that = this
       let queryOneData = this.$router.currentRoute.params.queryOneData
-      debugger
+      // debugger
       // 获取合同预览信息
       mobileTerminal({
         id: this.$router.currentRoute.params.queryOneData.id,

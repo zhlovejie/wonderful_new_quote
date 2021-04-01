@@ -144,7 +144,7 @@ export default {
       }
     },
     otherPriceChange(v){
-      debugger
+      // debugger
       this.$emit('priceChange',v)
     },
     optStandHTML(){ //增加简介

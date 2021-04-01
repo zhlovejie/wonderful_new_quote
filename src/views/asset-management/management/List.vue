@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import { 
+import {
   oaAssertsInfoMyAssertsAllList ,
   oaAssertsInfoAssertsReturn,
 
@@ -218,7 +218,7 @@ export default {
     }
   },
   computed: {
-    
+
   },
   watch: {
     $route: {
@@ -294,9 +294,9 @@ export default {
         that.$refs.fixForm.query('add',record)
         return
       }
-      
+
       if(['accept','over','del','put'].includes(type)){
-        debugger
+        // debugger
         let api = {
           'accept':oaAssertsInfoConfirmRecieve,
           'over':oaAssertsInfoGiveUpAssert,

@@ -367,7 +367,7 @@ export default {
       }
     },
     selectedAction({decoratorKey,record}){
-      debugger
+      // debugger
       let that = this
       console.log(decoratorKey,record)
       if(record){

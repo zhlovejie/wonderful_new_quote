@@ -521,7 +521,7 @@ export default {
         return
       }else if(that.isView || that.isApproval){
         that.handleCancel()
-        return 
+        return
       }
       let apiMap = {
         0: saveOrUpdatePositionChangeApply,
@@ -688,7 +688,7 @@ export default {
         that.salary_entryDate = _date.isValid() ? that.moment(record.entryDate).format('YYYY-MM-DD') : ''
 
         getSalaryBaseCommonByUserId({ userId: record.id }).then((res) => {
-          debugger
+          // debugger
           if (res && res.data) {
             let salary = res.data.realitySalary || undefined
             that.form.setFieldsValue({ oldSalary: salary })

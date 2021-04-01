@@ -159,8 +159,8 @@ export default {
       let that = this
       this.form.validateFields((err, values) => {
 
-        debugger
-        console.log(values)
+        // debugger
+        // console.log(values)
         //
         if (that.beforeValueBoolean) {
           if (values.rejected == undefined || values.rejected == null || values.rejected == '') {

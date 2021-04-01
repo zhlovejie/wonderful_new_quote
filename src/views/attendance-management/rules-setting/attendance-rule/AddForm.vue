@@ -37,11 +37,11 @@
             <td style="width:120px;">班次</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="isAdd || isEdit"
                   placeholder="班次"
                   v-decorator="['classId',{initialValue:detail.classId || (banciList.length ? banciList[0].id : undefined),rules: [{required: true,message: '请选择班次'}]}]"
-                  :allowClear="true" 
+                  :allowClear="true"
                   style="width:150px;"
                 >
                   <a-select-option v-for="item in banciList" :key="item.id" :value="item.id">{{item.className}}</a-select-option>
@@ -56,12 +56,12 @@
             <td>
               <a-form-item>
                 <span>按</span>
-                <a-select 
+                <a-select
                   v-if="isAdd || isEdit"
                   placeholder="考勤类型"
                   v-decorator="['attanceType',{initialValue:detail.attanceType,rules: [{required: true,message: '请考勤类型'}]}]"
-                  :allowClear="true" 
-                  style="width:120px;margin:0 10px;" 
+                  :allowClear="true"
+                  style="width:120px;margin:0 10px;"
                   @change="attanceTypeChange"
                 >
                   <a-select-option :value="1">固定班制</a-select-option>
@@ -79,11 +79,11 @@
             <td style="width:120px;">工作日设置</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="isAdd || isEdit"
                   placeholder="选择工作日"
                   v-decorator="['workDays',{initialValue:detail.workDays,rules: [{required: true,message: '请选择工作日'}]}]"
-                  :allowClear="true" 
+                  :allowClear="true"
                   mode="multiple"
                 >
                   <a-select-option :value="1">周一</a-select-option>
@@ -102,12 +102,12 @@
             <td style="width:120px;">加班时长处理</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="isAdd || isEdit"
-                  style="width: 150px" 
-                  placeholder="时长处理" 
+                  style="width: 150px"
+                  placeholder="时长处理"
                   v-decorator="['isFreeType',{initialValue:detail.isFreeType,rules: [{required: true,message: '请选择加班时长处理'}]}]"
-                  :allowClear="true" 
+                  :allowClear="true"
                 >
                   <a-select-option :value="0">不计入调休</a-select-option>
                   <a-select-option :value="1">计入调休</a-select-option>
@@ -121,12 +121,12 @@
             <td>
               <div style="display:flex;">
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="isAdd || isEdit"
-                  style="width: 150px" 
-                  placeholder="规则类型" 
+                  style="width: 150px"
+                  placeholder="规则类型"
                   v-decorator="['caculatorHousType',{initialValue:detail.caculatorHousType,rules: [{required: isFreeClass,message: '请选择规则类型'}]}]"
-                  :allowClear="true" 
+                  :allowClear="true"
                 >
                   <a-select-option :value="1">按月</a-select-option>
                   <a-select-option :value="2">按周</a-select-option>
@@ -135,11 +135,11 @@
                 <span v-else>
                   {{detail.caculatorHousType ? {1:'按月',2:'按周',3:'按日'}[detail.caculatorHousType] : ''}}
                 </span>
-                
+
               </a-form-item>
               <a-form-item >
                 <span style="margin:0 10px;">低于</span>
-                <a-input-number 
+                <a-input-number
                   v-if="isAdd || isEdit"
                   style="width:100px;margin:0 10px;"
                   :min="0"
@@ -156,7 +156,7 @@
             <td style="width:120px;">考勤组人员</td>
             <td>
               <a-form-item>
-                <a-tree-select 
+                <a-tree-select
                   v-if="isAdd || isEdit"
                   v-model="authoritySaveBoList"
                   style="width: 100%"
@@ -164,7 +164,7 @@
                   :tree-data="treeData"
                   tree-checkable
                   :show-checked-strategy="SHOW_PARENT"
-                  :load-data="onLoadData" 
+                  :load-data="onLoadData"
                   @change="treeSelectChange"
                 />
                 <span v-else>{{detail.attanceUsers}}</span>
@@ -185,7 +185,7 @@ import {
 } from '@/api/systemSetting'
 import {
   classRuleList,
-  attenceDutyRuleDetail , 
+  attenceDutyRuleDetail ,
   attenceDutyRuleAddAndUpdate ,
   attenceChangeApproveApprove,
   attenceDutyRuleHaveRule
@@ -208,7 +208,7 @@ export default {
       detail:{},
       record:{},
       spinning:false,
-      
+
       authoritySaveBoList: [],
       SHOW_PARENT,
       treeData: [],
@@ -283,7 +283,7 @@ export default {
     async query(type,record){
       //debugger
       let that = this
-      
+
       that.actionType = type,
       that.record = Object.assign({},record)
       that.detail = Object.assign({},record)
@@ -309,7 +309,7 @@ export default {
             if(that.detail.workDays){
               that.detail.workDays = that.detail.workDays.split(',').map(v =>+v)
             }else{
-              that.detail.workDays = []  
+              that.detail.workDays = []
             }
             //回显出勤人员
               let queue = []
@@ -370,7 +370,7 @@ export default {
           values.workDays = Array.isArray(values.workDays) ? values.workDays.join(',') : ''
 
           console.log('Received values of form: ', values)
-          that.spinning = true 
+          that.spinning = true
 
           attenceDutyRuleAddAndUpdate(values).then(res =>{
             that.$message.info(res.msg)
@@ -437,7 +437,7 @@ export default {
       //let leafs = this.treeData.map(item => item.children || []).flat(3)
       let leafs = this.flatten(this.treeData.map(item => item.children || []))
       authoritySaveBoList.map(v => {
-        debugger
+        // debugger
         let target = leafs.find(n => n.value === v)
         if (target) {
           selectLeafs.push(Object.assign({}, target))
@@ -526,7 +526,7 @@ export default {
       }else{
         //console.log(that.authoritySaveBoList)
       }
-      
+
     }
   }
 }
