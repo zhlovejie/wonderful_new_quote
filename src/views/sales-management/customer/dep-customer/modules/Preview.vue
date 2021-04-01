@@ -41,6 +41,11 @@
             <a-input read-only="read-only" v-model="customer.learnName"/>
           </a-form-item>
         </a-col>
+        <a-col :lg="12" :md="12" :sm="24" v-if="customer.otherLearn">
+          <a-form-item label="其他获知渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input read-only="read-only" v-model="customer.otherLearn"/>
+          </a-form-item>
+        </a-col>
         <a-col :lg="12" :md="12" :sm="24">
           <a-form-item label="客户意向" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input read-only="read-only" v-if="customer.intention == 1" value="有效客户"/>
@@ -156,20 +161,20 @@ export default {
       customer: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 6 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 20 }
+        sm: { span: 18 }
       },
 
       labelColOne: {
         xs: { span: 24 },
-        sm: { span: 2 }
+        sm: { span: 3 }
       },
       wrapperOne: {
         xs: { span: 24 },
-        sm: { span: 22 }
+        sm: { span: 21 }
       },
       form: this.$form.createForm(this),
       columns: [
@@ -250,3 +255,4 @@ export default {
 <style >
 .ant-form-item-label{text-align: left;}
 </style>
+

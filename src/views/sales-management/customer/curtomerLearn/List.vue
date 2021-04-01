@@ -70,10 +70,7 @@ export default {
           title: '客户意向度',
           dataIndex: 'intentionTxt',
         },
-        {
-          title: '最初获知渠道',
-          dataIndex: 'learn',
-        },
+
         {
           title: '所属客户池',
           dataIndex: 'poolTxt',
@@ -88,7 +85,7 @@ export default {
         },
         {
           title: '录入时间',
-          dataIndex: 'createTime',
+          dataIndex: 'createdTime',
         },
       ],
       pagination: {

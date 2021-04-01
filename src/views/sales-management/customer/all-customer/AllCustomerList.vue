@@ -304,7 +304,7 @@ export default {
     },
     learnChange(id){
       let target = this.getSources.find(item => +item.id === +id)
-      this.isOtherLearn = target && target.text === '未知'
+      this.isOtherLearn = target && target.text === '其它'
       this.queryParam = {...this.queryParam,otherLearn:undefined}
 
 
