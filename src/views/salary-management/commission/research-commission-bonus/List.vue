@@ -51,6 +51,17 @@
           <template v-if="activeKey === 0">
             <template v-if="$auth('research-commission-bonus:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
+
+              <template v-if="$auth('research-commission-bonus:del') && record.status === 3">
+                <a-divider type="vertical" />
+                <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
+                  <a href="javascript:void(0);">删除</a>
+                </a-popconfirm>
+              </template>
+            </template>
+            <template v-if="$auth('research-commission-bonus:download')">
+              <a-divider type="vertical" />
+              <a type="primary" @click="downloadAction(record.id)">下载</a>
             </template>
           </template>
           <template v-if="activeKey === 1 && record.status === 1">
@@ -69,7 +80,7 @@
   </div>
 </template>
 <script>
-import { bonus_pageList } from '@/api/bonus_management'
+import { bonus_pageList, bounsRules_exportExcel, bounsRules_del } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -228,10 +239,69 @@ export default {
       this.pagination1.current = pagination.current
       this.searchAction()
     },
-
+    //下载
+    downloadAction(downloadId) {
+      let that = this
+      that.spinning = true
+      bounsRules_exportExcel({ id: downloadId })
+        .then((res) => {
+          that.spinning = false
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `软硬件奖金信息.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => (that.spinning = true))
+    },
     doAction(type, record) {
-      this.$refs.addForm.query(type, record)
-      //this.$message.info('功能尚未实现...')
+      if (type === 'del') {
+        bounsRules_del({ id: record.id }).then((res) => {
+          this.$message.info(res.msg)
+          if (+res.code === 200) {
+            this.searchAction()
+          }
+        })
+      } else {
+        this.$refs.addForm.query(type, record)
+      }
     },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)

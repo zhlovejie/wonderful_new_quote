@@ -686,7 +686,25 @@ export function bonus_pageList(parameter) {
     params: parameter
   })
 }
+//研发提成奖金下载
+export function bounsRules_exportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-percentage-rule-apply/excel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 
+export function bounsRules_del(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-development-percentage-rule-apply/del',
+    method: 'get',
+    params: parameter
+  })
+}
 
 
 //研发提成审批
