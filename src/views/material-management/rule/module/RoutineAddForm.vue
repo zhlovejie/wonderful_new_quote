@@ -46,7 +46,7 @@
                   initialValue: detail.code,
                   rules: [
                     { required: true, message: '请输入代码' },
-                    { max:+detail.__selectItem.codeLength,message:`代码超过最大长度`}
+                    { max:+detail.__selectItem.newCodeLength,message:`代码超过最大长度`}
                   ]
                 }
               ]"

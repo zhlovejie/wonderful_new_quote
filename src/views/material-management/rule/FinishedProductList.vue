@@ -265,7 +265,7 @@ export default {
             isLeaf: false,
             codeLength: 10,
             code: '0',
-            codeLength: 10,
+            newCodeLength: 10,
             parentId: 0,
             children: res.data.map((item) => that.formatTreeData(item)),
           }
@@ -332,6 +332,7 @@ export default {
       obj.value = String(item.id)
       obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.codeLength = +item.codeLength
+      obj.newCodeLength = +item.newCodeLength
       obj.parentId = item.parentId
       obj.code = item.code
       //obj.__selectable = obj.isLeaf
