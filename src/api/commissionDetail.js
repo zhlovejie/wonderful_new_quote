@@ -118,3 +118,94 @@ export function realityPercentageHisDetail(params) {
     params: params
   })
 }
+
+/**
+ * 销售部订单提成分析表-详情
+ * @param {object} params
+ * @returns
+ */
+ export function saleOrderPercentageAnalysysDetail(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/percentageBouns/saleOrderPercentageAnalysys/getOrderDetail',
+    method: 'GET',
+    params: params
+  })
+}
+
+/**
+ * 销售部订单提成分析表-列表
+ * @param {object} params
+ * @returns
+ */
+ export function saleOrderPercentageAnalysysList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/percentageBouns/saleOrderPercentageAnalysys/pageList',
+    method: 'GET',
+    params: params
+  })
+}
+
+
+
+//销售提成奖金
+/** 销售提成的审批 */
+export function approvalSalaryMonthInstanceApply (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-saler-bouns-apply/approvalSalaryMonthInstanceApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 销售提成数据的导出下载 */
+export function exportSalaryExcel(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-saler-bouns-apply/exportSalaryExcel',
+    method: 'GET',
+    params: params
+  })
+}
+
+/** 销售提成业绩详情查询 */
+export function getOaSalarySalerBounsApplyDetail(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-saler-bouns-apply/getOaSalarySalerBounsApplyDetail',
+    method: 'GET',
+    params: params
+  })
+}
+
+/** 销售提成业绩分页列表 */
+export function getOaSalarySalerBounsApplyPageList(params) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-saler-bouns-apply/pageList',
+    method: 'GET',
+    params: params
+  })
+}
+
+/** 销售提成业绩申请的删除 */
+export function removeSalarySalerBounsApply (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-saler-bouns-apply/removeSalarySalerBounsApply',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 销售提成业绩申请的撤回 */
+export function withdrawSalarySalerBounsApply (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-saler-bouns-apply/withdrawSalarySalerBounsApply',
+    method: 'post',
+    data: parameter
+  })
+}
