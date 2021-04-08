@@ -927,3 +927,21 @@ export function floorsAnnual_ImportExcel(parameter) {
     data: parameter
   })
 }
+// 核算详情
+export function floorsAnnual_Detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/floors-annual-account/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//工资条审核
+export function floorsAnnual_instance(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/floors-annual-account/approve',
+    method: 'post',
+    data: parameter
+  })
+}

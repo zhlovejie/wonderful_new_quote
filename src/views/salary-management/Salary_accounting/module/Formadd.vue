@@ -20,11 +20,20 @@
     </template>
     <a-spin :spinning="spinning">
       <a-row style="margin-top: 30px; margin-bottom: 30px" v-if="isDisabled">
-        <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}工资条</a-col>
+        <a-col :span="6" class="basic-tit" justify="left" align="middle">实发工资：{{ realSalaryBigDecimal }}</a-col>
+        <a-col :span="6" class="basic-tit" justify="left" align="middle"
+          >核算工资：{{ calculateSalaryBigDecimal }}</a-col
+        >
+        <a-col :span="6" class="basic-tit" justify="left" align="middle"
+          >年薪资(万元)：{{ annualPeriodicSalaryBigDecimal }}</a-col
+        >
+        <a-col :span="6" class="basic-tit" justify="left" align="middle"
+          >保底差额：{{ guaranteedBalanceBigDecimal }}</a-col
+        >
       </a-row>
       <a-table :scroll="{ x: 4000 }" bordered :columns="baseColumns" :data-source="dataSource">
-        <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
+        <div slot="month" slot-scope="text, record, index">
+          <span>{{ record.month ? record.month : '合计' }}</span>
         </div>
       </a-table>
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -32,7 +41,7 @@
   </a-modal>
 </template>
 <script>
-import { wages_Detail, wages_instance } from '@/api/bonus_management'
+import { floorsAnnual_Detail, floorsAnnual_instance } from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -41,29 +50,12 @@ import moment from 'moment'
 const columns = [
   {
     dataIndex: 'name',
-    title: '序号',
-    key: 'order',
-    align: 'center',
-    scopedSlots: { customRender: 'order' },
-  },
-  {
-    title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    title: '月份',
+    key: 'month',
+    scopedSlots: { customRender: 'month' },
     align: 'center',
   },
-  {
-    title: '职位',
-    dataIndex: 'stationName',
-    key: 'stationName',
-    align: 'center',
-  },
-  {
-    title: '姓名',
-    dataIndex: 'userName',
-    key: 'userName',
-    align: 'center',
-  },
+
   {
     title: '工资',
     align: 'center',
@@ -92,9 +84,27 @@ const columns = [
   {
     title: '公司发放(元)',
     align: 'center',
-    children: [],
+    children: [
+      {
+        title: '公户',
+        dataIndex: 'householdPrivateBigDecimal',
+        key: 'householdPrivateBigDecimal',
+        align: 'center',
+      },
+      {
+        title: '私户',
+        dataIndex: 'householdPubliceBigDecimal',
+        key: 'householdPubliceBigDecimal',
+        align: 'center',
+      },
+      {
+        title: '代发工资',
+        dataIndex: 'issuedBehalfSalaryBigDecimal',
+        key: 'issuedBehalfSalaryBigDecimal',
+        align: 'center',
+      },
+    ],
   },
-
   {
     title: '应发基本工资(元)',
     dataIndex: 'shouldSalaryBigDecimal',
@@ -128,6 +138,10 @@ export default {
   },
   data() {
     return {
+      realSalaryBigDecimal: '', //实发工资
+      calculateSalaryBigDecimal: '', //核算工资
+      annualPeriodicSalaryBigDecimal: '', //年薪资（万元）
+      guaranteedBalanceBigDecimal: '', //保底差额
       month: '',
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
@@ -190,9 +204,6 @@ export default {
         if (item.title === '提成') {
           item.children = this.percentageItemBase
         }
-        if (item.title === '公司发放(元)') {
-          item.children = this.company
-        }
       })
       let __columns = [...this.columns]
       let _columns = []
@@ -230,18 +241,22 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      this.month = record.month
-      this.queryParam.applyId = record.id
-      this.searchAction({ applyId: record.id })
+      this.month = record.monthid
+      this.queryParam.id = record.id
+      this.searchAction({ id: record.id })
     },
     searchAction(opt) {
       let that = this
       that.loading = true
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
-      wages_Detail(_searchParam)
+      floorsAnnual_Detail(_searchParam)
         .then((res) => {
           that.loading = false
-          this.salaryItemBase = res.data.headDicList.salaryItemBase.map((item) => {
+          this.realSalaryBigDecimal = res.data.realSalaryBigDecimal
+          this.calculateSalaryBigDecimal = res.data.calculateSalaryBigDecimal
+          this.annualPeriodicSalaryBigDecimal = res.data.annualPeriodicSalaryBigDecimal
+          this.guaranteedBalanceBigDecimal = res.data.guaranteedBalanceBigDecimal
+          this.salaryItemBase = res.data.salaryTab.salaryItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -249,7 +264,7 @@ export default {
               align: 'center',
             }
           })
-          this.bounsItemBase = res.data.headDicList.bounsItemBase.map((item) => {
+          this.bounsItemBase = res.data.salaryTab.bounsItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -257,7 +272,7 @@ export default {
               align: 'center',
             }
           })
-          this.allowanceItemBase = res.data.headDicList.allowanceItemBase.map((item) => {
+          this.allowanceItemBase = res.data.salaryTab.allowanceItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -265,7 +280,7 @@ export default {
               align: 'center',
             }
           })
-          this.fineItemBase = res.data.headDicList.fineItemBase.map((item) => {
+          this.fineItemBase = res.data.salaryTab.fineItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -273,7 +288,7 @@ export default {
               align: 'center',
             }
           })
-          this.percentageItemBase = res.data.headDicList.percentageItemBase.map((item) => {
+          this.percentageItemBase = res.data.salaryTab.percentageItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -281,38 +296,7 @@ export default {
               align: 'center',
             }
           })
-          if (res.data.oaSalaryMonthDetailVo.type === 1) {
-            this.company = [
-              {
-                title: '公户',
-                dataIndex: 'householdPubliceBigDecimal',
-                key: 'householdPubliceBigDecimal',
-                align: 'center',
-              },
-            ]
-          } else if (res.data.oaSalaryMonthDetailVo.type === 2) {
-            this.company = [
-              {
-                title: '私户',
-                dataIndex: 'householdPrivateBigDecimal',
-                key: 'householdPrivateBigDecimal',
-                align: 'center',
-              },
-            ]
-          } else {
-            this.company = [
-              {
-                title: '代发工资',
-                dataIndex: 'issuedBehalfSalaryBigDecimal',
-                key: 'issuedBehalfSalaryBigDecimal',
-                align: 'center',
-              },
-            ]
-          }
-
-          let arr = []
-          arr[0] = res.data.oaSalaryMonthDetailVo
-          that.dataSource = arr.map((item, index) => {
+          that.dataSource = res.data.oaSalaryMonthDetailVos.map((item, index) => {
             item.key = index + 1
             let _item = { ...item }
             let salaryList = [..._item.salaryList]
@@ -351,7 +335,6 @@ export default {
             _item.allowanceList = allowanceList
             _item.fineList = fineList
             _item.percentageList = percentageList
-
             return _item
           })
         })
@@ -377,7 +360,7 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      wages_instance(values)
+      floorsAnnual_instance(values)
         .then((res) => {
           that.spinning = false
           that.visible = false

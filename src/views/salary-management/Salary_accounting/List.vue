@@ -18,8 +18,8 @@
         allowClear
         style="width: 200px; margin-right: 10px"
       />
-      <a-month-picker style="width: 200px; margin-right: 10px" placeholder="开始月份" v-model="startMonth" />
-      <a-month-picker style="width: 200px; margin-right: 10px" placeholder="结束月份" v-model="endMonth" />
+      <a-month-picker style="width: 200px; margin-right: 10px" placeholder="开始月份" v-model="startDate" />
+      <a-month-picker style="width: 200px; margin-right: 10px" placeholder="结束月份" v-model="staticsDate" />
       <a-select
         placeholder="审核状态"
         v-if="activeKey === 0"
@@ -149,8 +149,8 @@ const columns = [
   {
     align: 'center',
     title: '日期',
-    key: 'month',
-    dataIndex: 'month',
+    key: 'staticsDate',
+    dataIndex: 'staticsDate',
   },
   {
     align: 'center',
@@ -216,8 +216,8 @@ export default {
       activeKey: 0,
       selectedRowKeys: [],
       selectedRows: [],
-      startMonth: undefined,
-      endMonth: undefined,
+      startDate: undefined,
+      staticsDate: undefined,
       departmentList: [],
       rule_List: [],
       approval_status: undefined,
@@ -232,8 +232,8 @@ export default {
   computed: {
     searchParam() {
       return {
-        startMonth: this.startMonth instanceof moment ? this.startMonth.format('YYYY-MM') : undefined,
-        endMonth: this.endMonth instanceof moment ? this.endMonth.format('YYYY-MM') : undefined,
+        startDate: this.startDate instanceof moment ? this.startDate.format('YYYY-MM') : undefined,
+        staticsDate: this.staticsDate instanceof moment ? this.staticsDate.format('YYYY-MM') : undefined,
       }
     },
   },
