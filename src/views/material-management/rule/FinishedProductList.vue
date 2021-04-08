@@ -1,7 +1,7 @@
 <template>
-  <a-card :bordered="false">
-    <a-row :gutter="24">
-      <a-col :span="4" style="box-shadow: 7px 0px 7px -7px #ddd">
+  <a-card :bordered="false" class="material-management-rule-FinishedProductList">
+    <div class="resize-column-wrapper">
+      <div class="resize-column-left">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: 600px">
           <a-input-search style="margin-bottom: 8px" placeholder="代码/名称模糊查询" @change="onChange" />
           <a-tree
@@ -14,8 +14,9 @@
             @expand="onExpand"
           ></a-tree>
         </div>
-      </a-col>
-      <a-col :span="20">
+      </div>
+      <div class="resize-column-control-bar"></div>
+      <div class="resize-column-right">
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
@@ -73,8 +74,8 @@
             <a href="javascript:void(0);" @click="clickVue(record)">{{ text }}</a>
           </div>
         </a-table>
-      </a-col>
-    </a-row>
+      </div>
+    </div>
     <RoutineAddForm ref="routineAddForm" @finish="finishHandler" />
   </a-card>
 </template>
@@ -91,6 +92,8 @@ import {
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
+
+import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 
 const columns = [
   {
@@ -251,7 +254,11 @@ export default {
         ...this.queryParam,
         parentId: this.parentId,
       }),
-        this.fetchTree()
+
+      this._ResizeColumnInstance = new ResizeColumn({
+
+      })
+      this.fetchTree()
       this.search()
     },
     fetchTree() {
@@ -453,3 +460,22 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+  .material-management-rule-FinishedProductList >>> .resize-column-wrapper{
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+  }
+
+  .resize-column-wrapper .resize-column-control-bar{
+    width: 10px;
+    background-color: #f5f5f5;
+    cursor: col-resize;
+    box-shadow: 7px 0px 7px -7px #ddd;
+  }
+
+  .resize-column-wrapper .resize-column-right{
+    flex: 1;
+  }
+</style>
