@@ -343,7 +343,7 @@ export default {
     // 下载
     downAction() {
       let that = this
-      const downListParams = Object.assign({}, { ...that.downParam })
+      const downListParams = Object.assign({}, { ...that.downParam ,userPositionStatus:that.searchParam.userPositionStatus})
       console.log(downListParams)
       that.loading = true
       downStatisticsList(downListParams)
@@ -378,7 +378,7 @@ export default {
                 }
                 if (_res !== null) {
                   if (_res.code !== 0) {
-                    that.$message.info(_res.message)
+                    that.$message.info(_res.msg)
                   } else {
                     that.$message.info('下载成功')
                   }
