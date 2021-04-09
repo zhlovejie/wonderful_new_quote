@@ -65,9 +65,16 @@
               <a type="primary" @click="doAction('reback', record)">撤回</a>
             </template>
 
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('download', record)">下载</a>
+            </template>
+
             <template v-if="record.status === 3 || record.status === 4">
               <a-divider type="vertical" />
-              <a type="primary" @click="doAction('del', record)">删除</a>
+              <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
+                <a>删除</a>
+              </a-popconfirm>
             </template>
           </template>
 
@@ -81,6 +88,7 @@
         </div>
       </a-table>
     </div>
+    <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="finishedHandler" />
   </div>
 </template>
@@ -97,8 +105,9 @@ import {
   removeSalarySalerBounsApply,
   withdrawSalarySalerBounsApply
 } from '@/api/commissionDetail'
-
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import AddForm from './module/AddForm'
+import moment from 'moment'
 const columns = [
   {
     title: '序号',
@@ -139,7 +148,8 @@ const columns = [
 export default {
   name: 'sale-commission',
   components: {
-    AddForm
+    AddForm,
+    ApproveInfo
   },
   data() {
     return {
@@ -232,19 +242,27 @@ export default {
       const that = this
       if(type === 'view'){
         that.$refs.addForm.query(type,record)
+        return
       }else if(type === 'del'){
         removeSalarySalerBounsApply(`id=${record.id}`).then(res =>{
           res.code === 200 && that.searchAction()
           that.$message.info(res.msg)
         }).catch(err => that.$message.error(err.message))
+        return
       }else if(type === 'reback'){
         withdrawSalarySalerBounsApply(`id=${record.id}`).then(res =>{
           res.code === 200 && that.searchAction()
           that.$message.info(res.msg)
         }).catch(err => that.$message.error(err.message))
+        return
       }else if(type === 'approval'){
         that.$refs.addForm.query(type,record)
-      }else{
+        return
+      }else if(type === 'download'){
+        that.downAction(record)
+        return
+      }
+      else{
         return
       }
     },
@@ -254,7 +272,63 @@ export default {
     },
     finishedHandler(){
       this.searchAction()
-    }
+    },
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    // 下载
+    downAction(record) {
+      let that = this
+      let fname = `${moment(record.month).format('YYYY年MM月')}销售提成数据.xlsx`
+      that.loading = true
+      exportSalaryExcel({applyId:record.id})
+        .then((res) => {
+          console.log(res)
+          this.loading = false
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = fname
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.msg)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => (this.loading = false))
+    },
   }
 }
 </script>

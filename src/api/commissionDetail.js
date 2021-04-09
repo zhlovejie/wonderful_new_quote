@@ -166,6 +166,7 @@ export function exportSalaryExcel(params) {
     baseURL: system.baseURL,
     url: '/qualificationBorrow/oa-salary-saler-bouns-apply/exportSalaryExcel',
     method: 'GET',
+    responseType: 'blob',
     params: params
   })
 }

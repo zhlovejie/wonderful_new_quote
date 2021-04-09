@@ -12,7 +12,7 @@
       <h3 v-html="headerTotalTitle" />
       <a-table
         v-for="item in salerBounsDetailVoList"
-        :key="item.departmentId"
+        :key="item.key"
         :title="() => item.departmentName"
         :columns="columns"
         :dataSource="item.salerBounsDetailListVoList"
@@ -194,6 +194,7 @@ export default {
                 return detail
               })
             }
+            item.key = uuid()
             return item
           })
         })
