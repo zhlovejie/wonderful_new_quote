@@ -39,7 +39,7 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
-      <template>
+      <template v-if="$auth('salaryDetails:download')">
         <a-button
           class="a-button"
           type="primary"
@@ -49,7 +49,7 @@
         >
       </template>
 
-      <template v-if="activeKey === 0">
+      <template v-if="activeKey === 0 && $auth('salaryDetails:del')">
         <a-button
           :disabled="selectedRows.length === 0"
           style="position: relative; top: -1px; margin-left: 10px"
@@ -58,7 +58,7 @@
           >批量删出</a-button
         >
       </template>
-      <template v-if="activeKey === 1">
+      <template v-if="activeKey === 1 && $auth('salaryDetails:PassAction')">
         <a-button
           :disabled="selectedRows.length === 0"
           style="position: relative; top: -1px; margin-left: 10px"

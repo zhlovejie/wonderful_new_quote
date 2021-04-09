@@ -39,7 +39,7 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
-      <template>
+      <template v-if="$auth('salaryAccounting:downAction')">
         <a-button
           class="a-button"
           type="primary"
@@ -49,7 +49,7 @@
         >
       </template>
 
-      <template v-if="activeKey === 0">
+      <template v-if="activeKey === 0 && $auth('salaryAccounting:del')">
         <a-button
           :disabled="selectedRows.length === 0"
           style="position: relative; top: -1px; margin-left: 10px"
@@ -58,7 +58,7 @@
           >批量删出</a-button
         >
       </template>
-      <template v-if="activeKey === 1">
+      <template v-if="activeKey === 1 && $auth('salaryAccounting:passAction')">
         <a-button
           :disabled="selectedRows.length === 0"
           style="position: relative; top: -1px; margin-left: 10px"
@@ -79,13 +79,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="全部" key="0" />
-        <template v-if="$auth('salaryDetails:approve')">
+        <template v-if="$auth('salaryAccounting:approve')">
           <a-tab-pane tab="待我审批" key="1" />
           <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('salaryDetails:lists')"
+        v-if="$auth('salaryAccounting:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -106,10 +106,6 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="activeKey === 0">
             <a type="primary" @click="doAction('view', record)">查看</a>
-            <!-- <template v-if="$auth('salaryDetails:download') && record.status === 2"> -->
-            <!-- <a-divider type="vertical" /> -->
-            <!-- <a type="primary" @click="outPort(record)">下载</a> -->
-            <!-- </template> -->
           </template>
           <template v-if="activeKey === 1 && record.status === 1">
             <a type="primary" @click="doAction('edit', record)">审核</a>
