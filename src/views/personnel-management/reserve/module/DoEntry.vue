@@ -768,6 +768,7 @@
                   <td colspan="3">
                     <a-form-item>
                       <a-date-picker
+                        :disabled="isView"
                         placeholder="核算开始日期"
                         v-decorator="['cycleTime', { rules: [{ required: true, message: '请选择开始日期' }] }]"
                         style="width: 100%"
@@ -1225,8 +1226,8 @@ export default {
 
       that.monthlyCycle = resultData.salaryType === 0 ? true : false
       let isDoEntryBefore = that.record.status === 0 ? true : false
-      if (that.monthlyCycle ){
-       resultData.cycleTime= resultData.cycleTime ? moment( resultData.cycleTime) : moment()
+      if (resultData.salaryType === 1) {
+        resultData.cycleTime = resultData.cycleTime ? moment(resultData.cycleTime) : moment()
       }
       // if(isDoEntryBefore){
       //   //人脸识别码
@@ -1436,7 +1437,7 @@ export default {
             values.birthDate = values.birthDate.format('YYYY-MM-DD')
             values.birthDate = values.birthDate.slice(0, 10)
           }
-          if(values.cycleTime){
+          if (values.cycleTime) {
             values.cycleTime = values.cycleTime.format('YYYY-MM-DD')
           }
           if (that.faceCode) {
