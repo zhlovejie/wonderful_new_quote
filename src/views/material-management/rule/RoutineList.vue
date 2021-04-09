@@ -2,8 +2,12 @@
   <a-card :bordered="false" class="material-management-rule-RoutineList">
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
-        <div class="menu-tree-list-wrapper" style="min-width:250px;max-width: 100%; overflow: auto; height:auto;min-height: 600px">
-          <a-input-search style="margin-bottom: 8px;width:100%;" placeholder="代码/名称模糊查询" @change="treeInputSearchDebounce" />
+        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
+          <a-input-search
+            style="line-height: 40px; width: 100%"
+            placeholder="代码/名称模糊查询"
+            @change="treeInputSearchDebounce"
+          />
           <a-tree
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
@@ -15,13 +19,13 @@
             :showLine="true"
           >
             <template slot="title" slot-scope="{ title }">
-            <span v-if="title.indexOf(searchValue) > -1">
-              {{ title.substr(0, title.indexOf(searchValue)) }}
-              <span style="color: #f50">{{ searchValue }}</span>
-              {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
-            </span>
-            <span v-else>{{ title }}</span>
-          </template>
+              <span v-if="title.indexOf(searchValue) > -1">
+                {{ title.substr(0, title.indexOf(searchValue)) }}
+                <span style="color: #f50">{{ searchValue }}</span>
+                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
+              </span>
+              <span v-else>{{ title }}</span>
+            </template>
           </a-tree>
         </div>
       </div>
@@ -99,7 +103,7 @@ import {
   routineMaterialRuleForbidden,
   routineMaterialRuleStartUsing,
   routineMaterialRulePageList,
-  routineMaterialRulePageTreeList
+  routineMaterialRulePageTreeList,
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -174,7 +178,7 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
-      treeInputSearchDebounce:null
+      treeInputSearchDebounce: null,
     }
   },
   watch: {
@@ -192,8 +196,8 @@ export default {
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
       let selectedRows = this.selectedRows
-      if(selectedRows.length === 1){
-        let {auditStatus,forbidden} = selectedRows[0]
+      if (selectedRows.length === 1) {
+        let { auditStatus, forbidden } = selectedRows[0]
         return !(+forbidden === 1 || +auditStatus === 3)
       }
       return false
@@ -224,8 +228,6 @@ export default {
       this.autoExpandParent = false
     },
     onChange(e) {
-      const label = 'treeInputSearch'
-      console.time(label)
       const that = this
       const value = e.target.value.trim()
 
@@ -243,8 +245,6 @@ export default {
         searchValue: value,
         autoExpandParent: true,
       })
-
-      console.timeEnd(label)
     },
 
     generateList(data) {
@@ -264,8 +264,8 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
-      if(this.treeInputSearchDebounce === null){
-        this.treeInputSearchDebounce = this.$_.debounce(this.onChange,2000)
+      if (this.treeInputSearchDebounce === null) {
+        this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
       }
 
       this.parentId = 0
@@ -273,7 +273,7 @@ export default {
         ...this.queryParam,
         parentId: this.parentId,
       }),
-      this.fetchTree()
+        this.fetchTree()
       this.search()
 
       this.$nextTick(() => {
@@ -293,7 +293,7 @@ export default {
             codeLength: 10,
             parentId: 0,
             children: res.data.map((item) => that.formatTreeData(item)),
-            scopedSlots: { title: 'title' }
+            scopedSlots: { title: 'title' },
           }
           that.orgTree = [root]
           that.dataList = that.generateList(that.orgTree)
@@ -471,40 +471,43 @@ export default {
       let { auditStatus, forbidden } = record
       return {
         style: {
-          color: +forbidden === 1 ? 'red' : (+auditStatus === 3 ? 'blue' : '')
+          color: +forbidden === 1 ? 'red' : +auditStatus === 3 ? 'blue' : '',
         },
       }
     },
   },
-  beforeDestroy(){
-    if(this._ResizeColumnInstance){
+  beforeDestroy() {
+    if (this._ResizeColumnInstance) {
       this._ResizeColumnInstance.destory()
+      this._ResizeColumnInstance = null
     }
-    this._ResizeColumnInstance = null
-  }
+  },
 }
 </script>
 
 <style scoped>
-  .material-management-rule-RoutineList >>> .resize-column-wrapper{
-    height: 100%;
-    background-color: #fff;
-    display: flex;
-  }
+.material-management-rule-RoutineList >>> .resize-column-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  display: flex;
+  overflow: hidden;
+}
 
-  .material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-control-bar{
-    width: 10px;
-    background-color: #f5f5f5;
-    cursor: col-resize;
-    box-shadow: 0 0px 3px 1px #ddd;
-    border-radius: 6px;
-  }
+.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-control-bar {
+  width: 10px;
+  background-color: #f5f5f5;
+  cursor: col-resize;
+  box-shadow: 0 0px 3px 1px #ddd;
+  border-radius: 6px;
+  margin: 0 10px;
+}
 
-.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-left{
-    overflow: auto;
-  }
-  .material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-right{
-    flex: 1;
-  }
+.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-left {
+  overflow: auto;
+}
+.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-right {
+  flex: 1;
+}
 </style>
 

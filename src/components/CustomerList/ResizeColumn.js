@@ -1,77 +1,68 @@
-function ResizeColumn(opt = {}) {
+function ResizeColumn(opt) {
   this._opt = Object.assign({
     container: '.resize-column-wrapper',
     controlBar: '.resize-column-control-bar',
     left: '.resize-column-left',
-    right: '.resize-column-right'
+    initValue: 250
   }, opt)
 
-  this.controlBarInfo = {
-    isLocked: false,
-    pos: 0
+  this.ele_container = document.querySelector(this._opt.container)
+  this.ele_controlBar = this.ele_container.querySelector(this._opt.controlBar)
+  this.ele_left = this.ele_container.querySelector(this._opt.left)
+
+  this.maxVal = 0
+  this.startX = 0
+  this.left = 0
+  this.isDragging = false
+
+  const containerWidth = this.ele_container.offsetWidth
+  this.maxVal = containerWidth - this.ele_controlBar.offsetWidth - 20
+  this.w = Math.round(containerWidth / 100 * 100) / 100
+
+  this._dragStart = this.dragStart.bind(this)
+  this._dragMove = this.dragMove.bind(this)
+  this._dragEnd = this.dragEnd.bind(this)
+
+  this.ele_controlBar.addEventListener('mousedown', this._dragStart, false)
+
+  if (this._opt.initValue) {
+    this.initValue(this._opt.initValue)
   }
-
-  this.container = document.querySelector(this._opt.container)
-  this.controlBar = document.querySelector(this._opt.controlBar)
-  this.left = document.querySelector(this._opt.left)
-  this.right = document.querySelector(this._opt.right)
-
-  this._downHandler = this.downHandler.bind(this)
-  this._moveHandler = this.moveHandler.bind(this)
-  this._upHandler = this.upHandler.bind(this)
-
-  this.w = (this.container.offsetWidth) / 100
-  this.init()
-  this.bindEvent()
 }
 
-ResizeColumn.prototype.init = function (e) {
-  this.left.style.width = '25%'
-  this.controlBarInfo.isLocked = false
-  this.w = (this.container.offsetWidth) / 100
-  this.controlBarInfo.pos = this.controlBar.offsetLeft
+ResizeColumn.prototype.initValue = function (val) {
+  this.ele_left.style.width = `${Math.round(val / this.w * 100) / 100}%`
+  this.left = val
 }
 
-ResizeColumn.prototype.bindEvent = function () {
-  this.container.addEventListener('mousedown', this._downHandler, false)
-  this.container.addEventListener('mousemove', this._moveHandler, false)
-  this.container.addEventListener('mouseup', this._upHandler, false)
-  window.addEventListener('resize', this.init, false)
+ResizeColumn.prototype.dragStart = function (e) {
+  e.preventDefault();
+  this.isDragging = true
+  this.startX = e.clientX
+  this.left = this.ele_left.offsetWidth
+  document.addEventListener('mousemove', this._dragMove, false)
+  document.addEventListener('mouseup', this._dragEnd, false)
 }
 
-ResizeColumn.prototype.downHandler = function (e) {
-  if (e.target !== this.controlBar) {
-    return
+ResizeColumn.prototype.dragMove = function (e) {
+  e.preventDefault();
+  if (!this.isDragging) {
+    return false
   }
-  this.controlBarInfo.isLocked = true
-  this.controlBarInfo.pageX = e.pageX
-  this.controlBarInfo.pos = e.pageX
-  console.log('downHandler  pageX:',e.pageX,'controlBarInfo:',this.controlBarInfo)
+  let dragValue = (e.clientX - this.startX) + this.left
+  dragValue = dragValue > this.maxVal ? this.maxVal : (dragValue < 0 ? 0 : dragValue)
+  let dragRatio = Math.round((dragValue / this.w) * 100) / 100
+  this.ele_left.style.width = `${dragRatio}%`
 }
 
-ResizeColumn.prototype.moveHandler = function (e) {
-  if (!this.controlBarInfo.isLocked) {
-    return
-  }
-  let { pageX } = e
-  let offsetLeft = pageX - this.controlBarInfo.pageX + this.controlBarInfo.pos
-  let leftWidth = offsetLeft / this.w
-
-  console.log('moveHandler  pageX:',pageX,'controlBarInfo:',this.controlBarInfo)
-  this.left.style.width = `${leftWidth > 100 ? 100 : leftWidth}%`
+ResizeColumn.prototype.dragEnd = function (e) {
+  e.preventDefault();
+  this.isDragging = false
+  document.removeEventListener('mousemove', this._dragMove, false)
+  document.removeEventListener('mouseup', this._dragEnd, false)
 }
 
-ResizeColumn.prototype.upHandler = function (e) {
-  this.controlBarInfo.isLocked = false
-  this.controlBarInfo.pos = e.pageX
-  console.log('upHandler:',this.controlBarInfo)
+ResizeColumn.prototype.destory = function(){
+  this.ele_controlBar.removeEventListener('mousedown', this._dragStart, false)
 }
-
-ResizeColumn.prototype.destory = function () {
-  this.container.removeEventListener('mousedown', this._downHandler)
-  this.container.removeEventListener('mousemove', this._moveHandler)
-  this.container.removeEventListener('mouseup', this._upHandler)
-  window.removeEventListener('resize', this.init)
-}
-
 export default ResizeColumn
