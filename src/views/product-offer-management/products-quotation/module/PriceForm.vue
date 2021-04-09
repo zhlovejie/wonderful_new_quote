@@ -340,6 +340,10 @@ export default {
             values.id = that.record.id
           }
 
+          if(!that.unitPriceEdit){
+            values.unitPrice = that.unitPrice
+          }
+
           values.saleCustomerId = customerSelectResult.values.customerId
           values.customerName = customerSelectResult.values.customerName
           //values.productNum = that.qty
