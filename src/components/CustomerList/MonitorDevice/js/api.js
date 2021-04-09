@@ -49,7 +49,7 @@ CAMERA_API.ls = {
     return window.localStorage.setItem(key,val)
   }
 }
-//获取AccessToken 
+//获取AccessToken
 //参数 appKey , appSecret
 CAMERA_API.getAccessToken = function(opt,callback){
   return CAMERA_API.request({url:CAMERA_API.urls.getAccessToken,data:opt})
@@ -127,8 +127,13 @@ CAMERA_API.util.makeMonitorUrl = function(opt){
   throw new Error(`不支持的类型:${opt.type || ''}`)
 }
 
-CAMERA_API.util.getTokenAndUrl = async function(opt){
-  let {appKey,appSecret,deviceSerial} = system.attendanceMonitoringConfig
+CAMERA_API.util.getTokenAndUrl = async function(deviceKey){
+  const {appKey,appSecret,deviceList} = system.attendanceMonitoringConfig
+  let deviceItem = deviceList.find(item => +item.key === +deviceKey)
+  if(!deviceItem){
+    return {code:500,msg:`未找到 key=${deviceKey} 设备，请检查配置文件【defaultSettings.js】` }
+  }
+  const deviceSerial = deviceItem.deviceSerial
   let t = null
   try{t = JSON.parse(CAMERA_API.ls.get('_m_token'))}catch(err){}
   if(!(t && t.accessToken && t.expireTime && +t.expireTime > Date.now())){
@@ -144,7 +149,7 @@ CAMERA_API.util.getTokenAndUrl = async function(opt){
     }
   }
   let accessToken  = t.accessToken
-  let monitorUrl = CAMERA_API.util.makeMonitorUrl(Object.assign({},opt,{deviceSerial}))
+  let monitorUrl = CAMERA_API.util.makeMonitorUrl({deviceSerial})
   return {code:200,accessToken,monitorUrl}
 }
 

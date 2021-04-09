@@ -1,13 +1,13 @@
 <template>
   <div class="wdf-custom-wrapper">
-    <MonitorDevice :deviceKey="1" />
+    <MonitorDevice :deviceKey="2" />
   </div>
 </template>
 
 <script>
 import MonitorDevice from '@/components/CustomerList/MonitorDevice'
 export default {
-  name: 'attendance-monitoring',
+  name: 'meetingManagementMonitor',
   components:{MonitorDevice},
   data() {
     return {}
