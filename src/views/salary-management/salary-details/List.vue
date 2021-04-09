@@ -257,7 +257,14 @@ export default {
     },
     // 下载
     downAction() {
-      const downListParams = Object.assign({}, { ...this.queryParam }, { ...this.searchParam })
+      const downListParams = Object.assign(
+        {
+          searchStatus: this.activeKey,
+        },
+        { ...this.queryParam },
+        { ...this.searchParam }
+      )
+      console.log(downListParams)
       this.loading = true
       wages_ImportExcel(downListParams)
         .then((res) => {
@@ -276,7 +283,7 @@ export default {
               a.download = '工资条下载.xls'
               a.click()
               document.body.removeChild(a)
-              that.$message.info('下载成功')
+              this.$message.info('下载成功')
               return
             } else if (isJson) {
               //返回json处理
@@ -290,18 +297,18 @@ export default {
                 }
                 if (_res !== null) {
                   if (_res.code !== 0) {
-                    that.$message.info(_res.message)
+                    this.$message.info(_res.msg)
                   } else {
-                    that.$message.info('下载成功')
+                    this.$message.info('下载成功')
                   }
                 } else {
-                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  this.$message.info('json解析出错 e.target.result：' + e.target.result)
                   return
                 }
               }
               reader.readAsText(res)
             } else {
-              that.$message.info('不支持的类型:' + res)
+              this.$message.info('不支持的类型:' + res)
             }
           }
         })
@@ -368,7 +375,7 @@ export default {
       this.selectedRowKeys = []
       this.selectedRows = []
       //this.$message.info('全部，待审批，审批尚未实现')
-      this.searchAction({ current: 1, searchStatus: this.activeKey })
+      this.searchAction({ current: 1 })
     },
     //批量删除
     batchDelete() {

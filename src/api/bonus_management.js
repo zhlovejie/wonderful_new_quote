@@ -886,7 +886,7 @@ export function wages_ImportExcel(parameter) {
     url: '/oaSalaryInfo/oa-salary-month-detail/exportSalaryExcel',
     method: 'get',
     responseType: 'blob',
-    data: parameter
+    params: parameter
   })
 }
 //薪资核算列表
@@ -924,7 +924,7 @@ export function floorsAnnual_ImportExcel(parameter) {
     url: '/floorsAnnual/floors-annual-account/exportSalaryExcel',
     method: 'get',
     responseType: 'blob',
-    data: parameter
+    params: parameter
   })
 }
 // 核算详情
