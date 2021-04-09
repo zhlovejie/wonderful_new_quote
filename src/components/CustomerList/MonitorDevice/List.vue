@@ -6,7 +6,7 @@
         <a-spin :spinning="spinning" tip="监控设备正在初始化，请稍后...">
           <div id="playWind"></div>
           <div v-show="hasError">
-            <a-button @click="() => init()">重新加载监控</a-button>
+            <a-button @click="initCamera">重新加载监控</a-button>
           </div>
         </a-spin>
       </div>
