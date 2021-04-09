@@ -1,9 +1,13 @@
 <template>
-  <a-card :bordered="false">
-    <a-row :gutter="24">
-      <a-col :span="4" style="box-shadow: 7px 0px 7px -7px #ddd">
+  <a-card :bordered="false" class="material-management-rule-FinishedProductList">
+    <div class="resize-column-wrapper">
+      <div class="resize-column-left">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: 600px">
-          <a-input-search style="margin-bottom: 8px" placeholder="代码/名称模糊查询" @change="onChange" />
+          <a-input-search
+            style="line-height: 40px; margin-bottom: 8px"
+            placeholder="代码/名称模糊查询"
+            @change="treeInputSearchDebounce"
+          />
           <a-tree
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
@@ -12,10 +16,20 @@
             :expandedKeys="expandedKeys"
             :autoExpandParent="autoExpandParent"
             @expand="onExpand"
-          ></a-tree>
+          >
+            <template slot="title" slot-scope="{ title }">
+              <span v-if="title.indexOf(searchValue) > -1">
+                {{ title.substr(0, title.indexOf(searchValue)) }}
+                <span style="color: #f50">{{ searchValue }}</span>
+                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
+              </span>
+              <span v-else>{{ title }}</span>
+            </template>
+          </a-tree>
         </div>
-      </a-col>
-      <a-col :span="20">
+      </div>
+      <div class="resize-column-control-bar"></div>
+      <div class="resize-column-right">
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
@@ -73,8 +87,8 @@
             <a href="javascript:void(0);" @click="clickVue(record)">{{ text }}</a>
           </div>
         </a-table>
-      </a-col>
-    </a-row>
+      </div>
+    </div>
     <RoutineAddForm ref="routineAddForm" @finish="finishHandler" />
   </a-card>
 </template>
@@ -87,10 +101,12 @@ import {
   productMaterialRuleForbidden,
   productMaterialRuleStartUsing,
   productMaterialRulePageList,
-  productMaterialRulePageTreeList
+  productMaterialRulePageTreeList,
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
+
+import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 
 const columns = [
   {
@@ -161,6 +177,7 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
+      treeInputSearchDebounce: null,
     }
   },
   watch: {
@@ -178,8 +195,8 @@ export default {
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
       let selectedRows = this.selectedRows
-      if(selectedRows.length === 1){
-        let {auditStatus,forbidden} = selectedRows[0]
+      if (selectedRows.length === 1) {
+        let { auditStatus, forbidden } = selectedRows[0]
         return !(+forbidden === 1 || +auditStatus === 3)
       }
       return false
@@ -215,7 +232,7 @@ export default {
 
       const expandedKeys = that.dataList
         .map((item) => {
-          if (item.title.indexOf(value) > -1) {
+          if (value && item.title.indexOf(value) > -1) {
             return getParentKey(item.key, that.orgTree)
           }
           return null
@@ -246,6 +263,10 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
+      if (this.treeInputSearchDebounce === null) {
+        this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
+      }
+
       this.parentId = 0
       ;(this.queryParam = {
         ...this.queryParam,
@@ -253,6 +274,10 @@ export default {
       }),
         this.fetchTree()
       this.search()
+
+      this.$nextTick(() => {
+        this._ResizeColumnInstance = new ResizeColumn()
+      })
     },
     fetchTree() {
       const that = this
@@ -335,6 +360,7 @@ export default {
       obj.newCodeLength = +item.newCodeLength
       obj.parentId = item.parentId
       obj.code = item.code
+      obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {
         obj.children = item.subList.map((v) => that.formatTreeData(v))
@@ -446,10 +472,42 @@ export default {
       let { auditStatus, forbidden } = record
       return {
         style: {
-          color: +forbidden === 1 ? 'red' : (+auditStatus === 3 ? 'blue' : '')
+          color: +forbidden === 1 ? 'red' : +auditStatus === 3 ? 'blue' : '',
         },
       }
     },
   },
+  beforeDestroy() {
+    if (this._ResizeColumnInstance) {
+      this._ResizeColumnInstance.destory()
+      this._ResizeColumnInstance = null
+    }
+  },
 }
 </script>
+
+<style scoped>
+.material-management-rule-FinishedProductList >>> .resize-column-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  display: flex;
+  overflow: hidden;
+}
+
+.material-management-rule-FinishedProductList >>> .resize-column-wrapper .resize-column-control-bar {
+  width: 10px;
+  background-color: #f5f5f5;
+  cursor: col-resize;
+  box-shadow: 0 0px 3px 1px #ddd;
+  border-radius: 6px;
+  margin: 0 10px;
+}
+
+.material-management-rule-FinishedProductList >>> .resize-column-wrapper .resize-column-left {
+  overflow: auto;
+}
+.material-management-rule-FinishedProductList >>> .resize-column-wrapper .resize-column-right {
+  flex: 1;
+}
+</style>
