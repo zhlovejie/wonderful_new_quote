@@ -59,31 +59,43 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="activeKey === 0">
-            <a type="primary" @click="doAction('view', record)">查看</a>
+            <template v-if="$auth('salerBouns:detail')">
+              <a type="primary" @click="doAction('view', record)">查看</a>
+            </template>
             <template v-if="record.status === 1">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('reback', record)">撤回</a>
+              <template v-if="$auth('salerBouns:withdraw')">
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('reback', record)">撤回</a>
+              </template>
             </template>
 
             <template v-if="record.status === 2">
+              <template v-if="$auth('salerBouns:download')">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('download', record)">下载</a>
+              </template>
             </template>
 
             <template v-if="record.status === 3 || record.status === 4">
+              <template v-if="$auth('salerBouns:remove')">
               <a-divider type="vertical" />
               <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
                 <a>删除</a>
               </a-popconfirm>
+              </template>
             </template>
           </template>
 
           <template v-if="activeKey === 1">
+            <template v-if="$auth('salerBouns:approve')">
             <a type="primary" @click="doAction('approval', record)">审核</a>
+            </template>
           </template>
 
           <template v-if="activeKey === 2">
+            <template v-if="$auth('salerBouns:detail')">
             <a type="primary" @click="doAction('view', record)">查看</a>
+            </template>
           </template>
         </div>
       </a-table>
@@ -199,6 +211,11 @@ export default {
     },
     searchAction(opt) {
       let that = this
+
+      if(!that.$auth('salerBouns:list')){
+        that.$message.info('无权限查看此列表数据')
+        return
+      }
       let month = undefined
       if (that.queryParam.month) {
         month = moment(that.queryParam.month).format('YYYY-MM')

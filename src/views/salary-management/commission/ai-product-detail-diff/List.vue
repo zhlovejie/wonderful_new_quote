@@ -48,7 +48,9 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
+          <template v-if="$auth('salaryDevelopmentDifPercentageHis:detail')">
           <a type="primary" @click="doAction('view', record)">查看</a>
+          </template>
         </div>
       </a-table>
       <AddForm ref="addForm" />
@@ -144,6 +146,11 @@ export default {
     },
     searchAction(opt) {
       let that = this
+
+      if(!that.$auth('salaryDevelopmentDifPercentageHis:list')){
+        that.$message.info('无权限查看此列表数据')
+        return
+      }
       let paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
