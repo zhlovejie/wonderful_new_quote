@@ -6,6 +6,7 @@
     @ok="handleOk"
     @cancel="handleCancel"
     :maskClosable="false"
+    :destroyOnClose="true"
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper">

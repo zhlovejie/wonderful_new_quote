@@ -68,6 +68,14 @@
         </div>
       </a-form>
     </div>
+    <a-alert message="会议罚款规则" type="warning" show-icon style="margin-top: 10px">
+      <div slot="description">
+        <div>1.各部门未在规定时间召开部门周例会或者超时，部门负责人罚款100元/次。</div>
+        <div>2.部门单次周例会开会时长小于20分钟，部门负责人罚款100元/次。</div>
+        <div>3.参会人员无故旷会且未请假，参会人员罚款50元/次。</div>
+        <div>备注：所有罚款线上生成，通过微信支付，当月支付罚款的仅需80%,超出当月未缴纳的,次月将从员工工资中予以扣除！</div>
+      </div>
+    </a-alert>
     <div class="main-wrapper">
       <a-table
         :columns="columns"
@@ -123,6 +131,11 @@
                 <a type="primary" :href="record.templateUrl" target="_blank">下载会议模板</a>
               </template>
             </template>
+
+            <template v-if="record.status === 1 && +userInfo.id !== +record.chargePersonId">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('leave',record)">请假</a>
+            </template>
           </template>
 
           <template v-if="record.status === 3">
@@ -144,15 +157,13 @@
               <a type="primary" @click="doAction('viewRecords',record)">预览会议记录</a>
             </template>
           </template>
-
-
-
         </div>
       </a-table>
     </div>
-    <AddForm ref="addForm" @finish="searchAction" />
+    <AddForm key="k1" ref="addForm" @finish="searchAction" />
     <UploadRecords ref="uploadRecords" @finish="searchAction" />
     <XdocView ref="xdocView" />
+    <LeaveAddForm key="k2" ref="leaveAddForm" @finish="searchAction" />
   </div>
 </template>
 
@@ -172,6 +183,9 @@ import {
 import AddForm from './module/AddForm'
 import UploadRecords from './module/UploadRecords'
 import XdocView from '@/views/personnel-management/apply/severance-apply/module/XdocView'
+
+import LeaveAddForm from '../meeting-leave/AddForm'
+
 import moment from 'moment'
 const columns = [
   {
@@ -241,7 +255,8 @@ export default {
   components: {
     AddForm,
     UploadRecords,
-    XdocView
+    XdocView,
+    LeaveAddForm
   },
   data() {
     return {
@@ -258,7 +273,8 @@ export default {
       },
       loading: false,
 
-      dayWeekMonth: 1 //本周、本月、全部
+      dayWeekMonth: 1, //本周、本月、全部
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
@@ -348,7 +364,11 @@ export default {
           that.searchAction()
         })
         return
-      } else {
+      } else if(actionType === 'leave') {
+        that.$refs.leaveAddForm.query('add',record)
+        return
+      }
+      else {
         that.$message.info(`未知指令：${actionType}`)
       }
     },
