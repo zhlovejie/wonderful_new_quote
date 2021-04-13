@@ -236,10 +236,77 @@ export default {
             keepAlive: false,
             permission: ['permission']
           },
+        },
+        {
+          path: '/salary-management/commission/commissionDetail',
+          name: 'commission-detail',
+          component: RouteView,
+          meta: {
+            title: '产品提成明细',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          redirect:'/salary-management/commission/commissionDetailByPerson',
+          children: [{
+              path: '/salary-management/commission/commissionDetailByPerson',
+              name: 'commission-detail-by-person',
+              component: () => import('@/views/salary-management/commission/commission-detail-by-person/List'),
+              meta: {
+                title: '人员提成明细',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }, {
+              path: '/salary-management/commission/commissionDetailDiffRecord',
+              name: 'commission-detail-diff-record',
+              component: () => import('@/views/salary-management/commission/commission-detail-diff-record/List'),
+              meta: {
+                title: '差额记录',
+                icon: 'select',
+                hidden: true,
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }
+          ]
+        },
+        {
+          path: '/salary-management/commission/AIProductDetail',
+          name: 'commission-ai-product-detail',
+          component: RouteView,
+          meta: {
+            title: '研发智能产品明细',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          redirect:'/salary-management/commission/ai-product-detail/development',
+          children: [{
+              path: '/salary-management/commission/ai-product-detail/development',
+              name: 'ai-product-detail-development',
+              component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
+              meta: {
+                title: '部门提成明细',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }, {
+              path: '/salary-management/commission/ai-product-detail/diff',
+              name: 'ai-product-detail-diff',
+              component: () => import('@/views/salary-management/commission/ai-product-detail-diff/List'),
+              meta: {
+                title: '差额记录',
+                icon: 'select',
+                hidden: true,
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }
+          ]
         }
-
-
-
       ]
     },
     { //补贴

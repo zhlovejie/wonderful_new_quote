@@ -1,5 +1,5 @@
 <template>
-  <!-- 销售部订单提成分析表 -->
+  <!-- 部门提成明细 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
       <a-month-picker
@@ -20,19 +20,12 @@
         >{{item.departmentName}}</a-select-option>
       </a-select>
 
-      <a-input
-        placeholder="销售经理模糊查询"
+      <!-- <a-input
+        placeholder="姓名模糊查询"
         :allowClear="true"
         v-model="searchParam.userName"
         style="width: 160px"
-      />
-
-      <a-input
-        placeholder="合同编号模糊查询"
-        :allowClear="true"
-        v-model="searchParam.contractNum"
-        style="width: 160px"
-      />
+      /> -->
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
@@ -55,12 +48,12 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template v-if="$auth('salarySaleOrderPercentageAnalysys:detail')">
+          <template v-if="$auth('salaryDevelopmentRealityPercentageHis:detail')">
           <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
-      <AddForm key="k1" ref="addForm" />
+      <AddForm ref="addForm" />
     </div>
   </div>
 </template>
@@ -71,7 +64,7 @@ import {
 } from '@/api/systemSetting'
 import moment from 'moment'
 import {
-  saleOrderPercentageAnalysysList
+  developmentRealityPercentageHisList,
 } from '@/api/commissionDetail'
 
 import AddForm from './AddForm'
@@ -92,23 +85,14 @@ const columns = [
   },
   {
     align: 'center',
-    title: '合同编号',
-    dataIndex: 'contractNum'
-  },
-  {
-    align: 'center',
     title: '部门',
     dataIndex: 'departmentName',
   },
   {
     align: 'center',
-    title: '岗位',
-    dataIndex: 'stationName',
-  },
-  {
-    align: 'center',
-    title: '姓名',
-    dataIndex: 'salerUserName'
+    title: '产品提成金',
+    dataIndex: 'percentageAmount',
+    scopedSlots: { customRender: 'percentageAmount' }
   },
   {
     align: 'center',
@@ -118,7 +102,7 @@ const columns = [
   },
 ]
 export default {
-  name: 'commission-order',
+  name: 'ai-product-detail-development',
   components: {
     AddForm
   },
@@ -128,6 +112,7 @@ export default {
       columns: columns,
       dataSource: [],
       depSelectDataSource: [],
+      pagination1: {},
       pagination: {
         current: 1,
         pageSize: 10,
@@ -144,7 +129,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'commission-order') {
+        if (to.name === 'ai-product-detail-development') {
           this.init()
         }
       },
@@ -162,7 +147,7 @@ export default {
     searchAction(opt) {
       let that = this
 
-      if(!that.$auth('salarySaleOrderPercentageAnalysys:list')){
+      if(!that.$auth('salaryDevelopmentRealityPercentageHis:list')){
         that.$message.info('无权限查看此列表数据')
         return
       }
@@ -176,7 +161,7 @@ export default {
         staticsDate : staticsDate instanceof moment ? staticsDate.format('YYYY-MM') : undefined
       })
       that.loading = true
-      saleOrderPercentageAnalysysList(_searchParam)
+      developmentRealityPercentageHisList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

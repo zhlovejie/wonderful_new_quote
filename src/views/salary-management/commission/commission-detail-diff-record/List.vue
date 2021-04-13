@@ -1,5 +1,5 @@
 <template>
-  <!-- 销售部订单提成分析表 -->
+  <!-- 差额记录 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
       <a-month-picker
@@ -21,16 +21,9 @@
       </a-select>
 
       <a-input
-        placeholder="销售经理模糊查询"
+        placeholder="姓名模糊查询"
         :allowClear="true"
         v-model="searchParam.userName"
-        style="width: 160px"
-      />
-
-      <a-input
-        placeholder="合同编号模糊查询"
-        :allowClear="true"
-        v-model="searchParam.contractNum"
         style="width: 160px"
       />
 
@@ -47,7 +40,7 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="percentageAmount" slot-scope="text, record, index">
+        <div slot="difAmount" slot-scope="text, record, index">
           <span>{{ text | moneyFormatNumber }}</span>
         </div>
         <div slot="staticsDate" slot-scope="text, record, index">
@@ -55,12 +48,12 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template v-if="$auth('salarySaleOrderPercentageAnalysys:detail')">
+          <template v-if="$auth('salaryPercentageDifHis:detail')">
           <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
-      <AddForm key="k1" ref="addForm" />
+      <AddForm ref="addForm" />
     </div>
   </div>
 </template>
@@ -71,7 +64,7 @@ import {
 } from '@/api/systemSetting'
 import moment from 'moment'
 import {
-  saleOrderPercentageAnalysysList
+  percentageDifHisList
 } from '@/api/commissionDetail'
 
 import AddForm from './AddForm'
@@ -92,11 +85,6 @@ const columns = [
   },
   {
     align: 'center',
-    title: '合同编号',
-    dataIndex: 'contractNum'
-  },
-  {
-    align: 'center',
     title: '部门',
     dataIndex: 'departmentName',
   },
@@ -108,7 +96,13 @@ const columns = [
   {
     align: 'center',
     title: '姓名',
-    dataIndex: 'salerUserName'
+    dataIndex: 'userName',
+  },
+  {
+    align: 'center',
+    title: '差额（元）',
+    dataIndex: 'difAmount',
+    scopedSlots: { customRender: 'difAmount' }
   },
   {
     align: 'center',
@@ -118,7 +112,7 @@ const columns = [
   },
 ]
 export default {
-  name: 'commission-order',
+  name: 'commission-detail-diff-record',
   components: {
     AddForm
   },
@@ -128,6 +122,7 @@ export default {
       columns: columns,
       dataSource: [],
       depSelectDataSource: [],
+      pagination1: {},
       pagination: {
         current: 1,
         pageSize: 10,
@@ -144,7 +139,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'commission-order') {
+        if (to.name === 'commission-detail-diff-record') {
           this.init()
         }
       },
@@ -161,8 +156,7 @@ export default {
     },
     searchAction(opt) {
       let that = this
-
-      if(!that.$auth('salarySaleOrderPercentageAnalysys:list')){
+      if(!that.$auth('salaryPercentageDifHis:list')){
         that.$message.info('无权限查看此列表数据')
         return
       }
@@ -176,7 +170,7 @@ export default {
         staticsDate : staticsDate instanceof moment ? staticsDate.format('YYYY-MM') : undefined
       })
       that.loading = true
-      saleOrderPercentageAnalysysList(_searchParam)
+      percentageDifHisList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
