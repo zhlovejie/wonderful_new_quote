@@ -60,7 +60,7 @@
           </template>
         </div>
       </a-table>
-      <AddForm ref="addForm" />
+      <AddForm key="k1" ref="addForm" />
     </div>
   </div>
 </template>

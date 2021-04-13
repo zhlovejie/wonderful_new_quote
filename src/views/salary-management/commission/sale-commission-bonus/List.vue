@@ -1,8 +1,8 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px" v-model="queryParam.month" />
-      <a-select
+      <a-month-picker style="width: 200px;margin-right: 10px;" v-model="queryParam.month" />
+      <!-- <a-select
         style="width: 200px; margin-left: 10px; margin-right: 10px"
         placeholder="选择部门"
         :allowClear="true"
@@ -11,7 +11,7 @@
         <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
           item.departmentName
         }}</a-select-option>
-      </a-select>
+      </a-select> -->
       <a-select
         placeholder="审核状态"
         v-if="activeKey === 0"

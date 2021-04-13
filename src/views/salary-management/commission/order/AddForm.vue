@@ -1,15 +1,18 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1150"
+    :width="850"
     :visible="visible"
     @cancel="handleCancel"
     :footer="null"
     :maskClosable="false"
+    :destroyOnClose="true"
+    :forceRender="true"
+    key="m1"
   >
     <a-spin :spinning="spinning">
       <h3>{{ title }}</h3>
-      <template v-if="normalRecord.length > 0">
+      <div v-if="normalRecord.length > 0">
         <table class="custom-table custom-table-border" v-for="(item, itemIdx) in normalRecord" :key="item.key">
           <thead>
             <tr>
@@ -19,10 +22,11 @@
               <th>利润值</th>
               <th>提成比率系数</th>
 
-              <th>销售提成</th>
+              <th colspan="4">提成</th>
+              <!-- <th>销售提成</th>
               <th>研发提成-管理总提成</th>
               <th>研发提成-单品总提成</th>
-              <th>软件/硬件提成</th>
+              <th>软件/硬件提成</th> -->
             </tr>
           </thead>
           <tbody>
@@ -36,13 +40,16 @@
                 <td>{{ idx + 1 }}</td>
                 <td>{{ product.productName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
-                <td>{{ product.profitValue | moneyFormatNumber}}</td>
+                <td>{{ product.profitValue }}</td>
                 <td>{{ product.percentageRatio }}</td>
 
-                <td><a href="javascript:void(0);" @click="viewAction(1,{money:product.salerDivAmount,data:product.salerDivList})">查看</a></td>
+                <td colspan="4">
+                  <a href="javascript:void(0);" @click="viewAllAction(product)">查看</a>
+                </td>
+                <!-- <td><a href="javascript:void(0);" @click="viewAction(1,{money:product.salerDivAmount,data:product.salerDivList})">查看</a></td>
                 <td><a href="javascript:void(0);" @click="viewAction(2,{money:product.developmentDivAmount,data:product.developmentDivList})">查看</a></td>
                 <td><a href="javascript:void(0);" @click="viewAction(3,{money:product.developmentIntellectDivAmount,data:product.developmentIntellectDivList})">查看</a></td>
-                <td><a href="javascript:void(0);" @click="viewAction(4,{money:product.softHardDivAmount,data:product.softHardDivList})">查看</a></td>
+                <td><a href="javascript:void(0);" @click="viewAction(4,{money:product.softHardDivAmount,data:product.softHardDivList})">查看</a></td> -->
               </tr>
             </template>
             <template v-else>
@@ -58,9 +65,9 @@
             </tr>
           </tfoot>
         </table>
-      </template>
+      </div>
 
-      <template v-if="changeRecord.length > 0">
+      <div v-if="changeRecord.length > 0">
         <h3>变更记录：</h3>
         <table class="custom-table custom-table-border" v-for="(item, itemIdx) in changeRecord" :key="item.key">
           <thead>
@@ -70,11 +77,11 @@
               <th>产品销售额(去税去运费)</th>
               <th>利润值</th>
               <th>提成比率系数</th>
-
-              <th>销售提成</th>
+              <th colspan="4">提成</th>
+              <!-- <th>销售提成</th>
               <th>研发提成-管理总提成</th>
               <th>研发提成-单品总提成</th>
-              <th>软件/硬件提成</th>
+              <th>软件/硬件提成</th> -->
             </tr>
           </thead>
           <tbody>
@@ -88,13 +95,15 @@
                 <td>{{ idx + 1 }}</td>
                 <td>{{ product.productName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
-                <td>{{ product.profitValue | moneyFormatNumber}}</td>
+                <td>{{ product.profitValue }}</td>
                 <td>{{ product.percentageRatio }}</td>
-
-                <td><a href="javascript:void(0);" @click="viewAction(1,{money:product.salerDivAmount,data:product.salerDivList})">查看</a></td>
+                <td colspan="4">
+                  <a href="javascript:void(0);" @click="viewAllAction(product)">查看</a>
+                </td>
+                <!-- <td><a href="javascript:void(0);" @click="viewAction(1,{money:product.salerDivAmount,data:product.salerDivList})">查看</a></td>
                 <td><a href="javascript:void(0);" @click="viewAction(2,{money:product.developmentDivAmount,data:product.developmentDivList})">查看</a></td>
                 <td><a href="javascript:void(0);" @click="viewAction(3,{money:product.developmentIntellectDivAmount,data:product.developmentIntellectDivList})">查看</a></td>
-                <td><a href="javascript:void(0);" @click="viewAction(4,{money:product.softHardDivAmount,data:product.softHardDivList})">查看</a></td>
+                <td><a href="javascript:void(0);" @click="viewAction(4,{money:product.softHardDivAmount,data:product.softHardDivList})">查看</a></td> -->
               </tr>
             </template>
             <template v-else>
@@ -110,54 +119,55 @@
             </tr>
           </tfoot>
         </table>
-      </template>
-
+      </div>
 
       <a-modal
-        :title="detail.title"
-        :width="500"
-        :visible="detail.visible"
+        title="查看提成"
+        :width="850"
+        :visible="subHandleVisible"
         @cancel="subHandleCancel"
         :footer="null"
         :maskClosable="false"
       >
-        <table class="custom-table custom-table-border" >
-          <thead>
-            <tr>
-              <th v-if="detail.__type !== 3">姓名</th>
-              <th>提成系数</th>
-              <th>提出金额</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template
-              v-if="
-                detail.data &&
-                Array.isArray(detail.data.data) &&
-                detail.data.data.length > 0
-              "
-            >
-            <tr v-for="(item, itemIdx) in detail.data.data" :key="itemIdx">
-              <td v-if="detail.__type !== 3">{{item.userName}}</td>
-              <td>{{item.percentageRetio}}</td>
-              <td>{{item.percentageAmountBigDecimal | moneyFormatNumber}}</td>
-            </tr>
-            </template>
-            <template v-else>
+        <div class="commission-render-wrapper">
+          <table class="custom-table custom-table-border" v-for="commission in commissionSet" :key="commission.key">
+            <caption>
+              {{
+                commission.title
+              }}
+            </caption>
+            <thead>
               <tr>
-                <td :colspan="detail.__type !== 3 ? 3 : 2">暂无数据</td>
+                <th v-if="commission.__type !== 3">姓名</th>
+                <th>提成系数</th>
+                <th>提出金额</th>
               </tr>
-            </template>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="1">合计</td>
-              <td :colspan="detail.__type !== 3 ? 2 : 1">{{ detail.data.money | moneyFormatNumber }}</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody>
+              <template
+                v-if="commission.data && Array.isArray(commission.data.data) && commission.data.data.length > 0"
+              >
+                <tr v-for="(item, itemIdx) in commission.data.data" :key="itemIdx">
+                  <td v-if="commission.__type !== 3">{{ item.userName }}</td>
+                  <td>{{ item.percentageRetio }}</td>
+                  <td>{{ item.percentageAmountBigDecimal | moneyFormatNumber }}</td>
+                </tr>
+              </template>
+              <template v-else>
+                <tr>
+                  <td :colspan="commission.__type !== 3 ? 3 : 2">暂无数据</td>
+                </tr>
+              </template>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="1">合计</td>
+                <td :colspan="commission.__type !== 3 ? 2 : 1">{{ commission.data.money | moneyFormatNumber }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </a-modal>
-
     </a-spin>
   </a-modal>
 </template>
@@ -174,15 +184,8 @@ export default {
       spinning: false,
       dataSource: [],
       title: '',
-      detail:{
-        title:'',
-        visible:false,
-        data:{
-          money:0,
-          data:[]
-        },
-        __type:0
-      }
+      subHandleVisible: false,
+      commissionSet: [],
     }
   },
   computed: {
@@ -196,70 +199,114 @@ export default {
   methods: {
     init(opt) {
       const that = this
-      that.dataSource = []
-      that.detail = {...that.detail,visible:false}
       that.spinning = true
       saleOrderPercentageAnalysysDetail(opt)
         .then((res) => {
           that.spinning = false
-          that.dataSource = res.data.map(item => {
+          that.dataSource = res.data.map((item) => {
             item.key = uuid()
             return item
           })
         })
         .catch((err) => {
           that.spinning = false
+          that.dataSource = []
           that.$message.error(err.message)
         })
     },
     query(type, record) {
-      this.visible = true
-
+      const that = this
+      that.dataSource = []
+      that.visible = true
       let { id, staticsDate } = record
-
-      this.title = `${staticsDate.slice(0, 7)}月【${record.departmentName} ${record.stationName} ${
+      that.title = `${staticsDate.slice(0, 7)}月【${record.departmentName} ${record.stationName} ${
         record.salerUserName
       }】`
-      this.$nextTick(() => {
-        this.init({ orderId: id })
-      })
+      that.init({ orderId: id })
     },
     handleCancel() {
       this.visible = false
     },
-    subHandleCancel(){
+    subHandleCancel() {
+      this.subHandleVisible = false
+    },
+    viewAction(type, item) {
+      const m = {
+        1: '销售提成',
+        2: '研发提成-管理总提成',
+        3: '研发提成-单品总提成',
+        4: '软件/硬件提成',
+      }
       this.detail = {
         ...this.detail,
-        visible:false
+        data: item,
+        visible: true,
+        title: m[type],
+        __type: type,
       }
     },
-    viewAction(type,item){
+    viewAllAction(product) {
       const m = {
-        1:'销售提成',
-        2:'研发提成-管理总提成',
-        3:'研发提成-单品总提成',
-        4:'软件/硬件提成',
+        1: '销售提成',
+        2: '研发提成-管理总提成',
+        3: '研发提成-单品总提成',
+        4: '软件/硬件提成',
       }
-      this.detail = {
-        ...this.detail,
-        data:item,
-        visible:true,
-        title:m[type],
-        __type:type,
-      }
-    }
+      let arr = []
+
+      arr.push({
+        data: { money: product.salerDivAmount, data: product.salerDivList },
+        title: m[1],
+        __type: 1,
+        key: uuid(),
+      })
+
+      arr.push({
+        data: { money: product.developmentDivAmount, data: product.developmentDivList },
+        title: m[2],
+        __type: 2,
+        key: uuid(),
+      })
+
+      arr.push({
+        data: { money: product.developmentIntellectDivAmount, data: product.developmentIntellectDivList },
+        title: m[3],
+        __type: 3,
+        key: uuid(),
+      })
+
+      arr.push({
+        data: { money: product.softHardDivAmount, data: product.softHardDivList },
+        title: m[4],
+        __type: 4,
+        key: uuid(),
+      })
+      this.subHandleVisible = true
+      this.$nextTick(() => (this.commissionSet = arr))
+    },
   },
 }
 </script>
 <style scoped>
 .custom-table-border th,
 .custom-table-border td {
-  padding: 5px 10px;
+  padding: 10px;
   text-align: left;
-  line-height: 40px;
 }
 .custom-table-border tfoot {
   font-weight: bold;
   color: red;
+}
+
+.commission-render-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.commission-render-wrapper .custom-table-border {
+  margin-bottom: 10px;
+}
+
+.commission-render-wrapper .custom-table-border caption {
+  text-align: left;
 }
 </style>
