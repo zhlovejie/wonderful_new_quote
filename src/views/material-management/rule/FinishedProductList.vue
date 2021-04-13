@@ -2,7 +2,7 @@
   <a-card :bordered="false" class="material-management-rule-FinishedProductList">
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
-        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: 600px">
+        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
           <a-input-search
             style="line-height: 40px; margin-bottom: 8px"
             placeholder="代码/名称模糊查询"
@@ -210,7 +210,7 @@ export default {
     parentCodes() {
       let arr = []
       let parentId = this.parentId
-      while (parentId) {
+      while (+parentId) {
         let target = this.dataList.find((item) => +item.key === +parentId)
         arr.push({ ...target })
         parentId = target.parentId
