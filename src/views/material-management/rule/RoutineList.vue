@@ -211,7 +211,7 @@ export default {
     parentCodes() {
       let arr = []
       let parentId = this.parentId
-      while (parentId) {
+      while (+parentId) {
         let target = this.dataList.find((item) => +item.key === +parentId)
         arr.push({ ...target })
         parentId = target.parentId
