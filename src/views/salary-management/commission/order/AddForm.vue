@@ -138,6 +138,8 @@
             </caption>
             <thead>
               <tr>
+                <th>部门</th>
+                <th v-if="commission.__type !== 3">岗位</th>
                 <th v-if="commission.__type !== 3">姓名</th>
                 <th>提成系数</th>
                 <th>提出金额</th>
@@ -148,6 +150,8 @@
                 v-if="commission.data && Array.isArray(commission.data.data) && commission.data.data.length > 0"
               >
                 <tr v-for="(item, itemIdx) in commission.data.data" :key="itemIdx">
+                  <td>{{ item.departmentName }}</td>
+                  <td v-if="commission.__type !== 3">{{ item.stationName }}</td>
                   <td v-if="commission.__type !== 3">{{ item.userName }}</td>
                   <td>{{ item.percentageRetio }}</td>
                   <td>{{ item.percentageAmountBigDecimal | moneyFormatNumber }}</td>
@@ -162,7 +166,7 @@
             <tfoot>
               <tr>
                 <td colspan="1">合计</td>
-                <td :colspan="commission.__type !== 3 ? 2 : 1">{{ commission.data.money | moneyFormatNumber }}</td>
+                <td :colspan="commission.__type !== 3 ? 4 : 2">{{ commission.data.money | moneyFormatNumber }}</td>
               </tr>
             </tfoot>
           </table>
