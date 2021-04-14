@@ -248,7 +248,7 @@ export default {
           that.spinning = false
           console.log(res)
           if (res instanceof Blob) {
-            const isFile = res.type === 'application/vnd.ms-excel'
+            const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             const isJson = res.type === 'application/json'
             if (isFile) {
               //返回文件 则下载
