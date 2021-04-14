@@ -91,8 +91,8 @@ const columns = [
   {
     align: 'center',
     title: '差额（元）',
-    dataIndex: 'percentageAmount',
-    scopedSlots: { customRender: 'percentageAmount' }
+    dataIndex: 'difAmount',
+    scopedSlots: { customRender: 'difAmount' }
   },
   {
     align: 'center',
