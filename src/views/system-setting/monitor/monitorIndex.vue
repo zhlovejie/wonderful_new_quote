@@ -30,8 +30,8 @@
               <v-coord type="theta" />
             </v-chart>
             <p class="pie-desc">
-              <span>总内存：{{memSum}}</span>
-              <span>已使用内存：{{memUse}}</span>
+              <span>总计内存：{{memSum}}</span>
+              <span>运行内存：{{memUse}}</span>
             </p>
           </template>
           <template v-else>
@@ -77,7 +77,7 @@
               <v-line position="time*persons" color="onlineNumber" />
               <!-- <v-point position="time*persons" shape="circle" /> -->
               <v-guide
-                type="dataMarker" 
+                type="dataMarker"
                 :position="markerPosition"
                 :content="markerContent"
                 :style="style"
@@ -85,7 +85,7 @@
               </v-guide>
 
               <v-guide
-                type="dataMarker" 
+                type="dataMarker"
                 :position="markerMinPosition"
                 :content="markerMinContent"
                 :style="style"
@@ -93,14 +93,14 @@
               </v-guide>
 
               <!-- <v-guide
-                type="line" 
+                type="line"
                 :top="true"
                 :start="lineAvgOpt.startPosition"
                 :end="lineAvgOpt.endPosition"
                 :lineStyle="lineAvgOpt.lineStyle"
                 :text="lineAvgOpt.text"
               ></v-guide> -->
-              
+
             </v-chart>
           </template>
           <template v-else>
@@ -212,8 +212,8 @@ export default {
       }
       if(MEM){
         let sourceMemData = [
-          { item: '运行内存', count: parseFloat(MEM['memCa']) || 0},
-          { item: '已用内存', count: parseFloat(MEM['memUs']) || 0},
+          { item: '缓存', count: parseFloat(MEM['memCa']) || 0},
+          { item: '运行内存', count: parseFloat(MEM['memUs']) || 0},
           { item: '剩余内存', count: parseFloat(MEM['memSp']) || 0}
         ]
 
@@ -309,7 +309,7 @@ export default {
       {"code":200,"msg":"操作成功","data":[{"date":"2019-12-04 01:17:34","onlineNumberPhone":10,"onlineNumberPc":20},{"date":"2019-12-04 02:18:00","onlineNumberPhone":5,"onlineNumberPc":10},{"date":"2019-12-04 03:19:54","onlineNumberPhone":5,"onlineNumberPc":10},{"date":"2019-12-04 04:20:09","onlineNumberPhone":6,"onlineNumberPc":8},{"date":"2019-12-04 05:20:23","onlineNumberPhone":7,"onlineNumberPc":9}]}
       */
       //onlineDate = [{"date":"2019-12-04 01:17:34","onlineNumberPhone":10,"onlineNumberPc":20},{"date":"2019-12-04 02:18:00","onlineNumberPhone":5,"onlineNumberPc":10},{"date":"2019-12-04 03:19:54","onlineNumberPhone":5,"onlineNumberPc":10},{"date":"2019-12-04 04:20:09","onlineNumberPhone":6,"onlineNumberPc":8},{"date":"2019-12-04 05:20:23","onlineNumberPhone":7,"onlineNumberPc":9}]
-      
+
       //生成测试数据
       // onlineDate = _testData()
       // function _testData(){
@@ -451,7 +451,7 @@ export default {
   .monitor-index-wrapper .title-tag.first-tag {
     left: 30px;
   }
-  
+
   .monitor-index-wrapper .search-wrapper{
     margin-left: 50px;
     margin-bottom: 30px;

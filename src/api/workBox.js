@@ -44,13 +44,13 @@ const api = {
   messagePushaddInfo: '/message/message-push/info',
   messagePushDel: '/message/message-push/del',
 
-  //数据字典接口 
+  //数据字典接口
   getListByCode: 'dictionary/getListByCode',
   //非常规产品信息列表
   saleValencyProduct: '/api/saleValencyProduct'
 }
 
-//数据字典 
+//数据字典
 export function queryCode(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -72,7 +72,7 @@ export function saleValencyProductList(parameter) {
 }
 
 
-//消息推送列表  
+//消息推送列表
 export function messagePushList(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -461,7 +461,7 @@ export function editPrice(parameter) {
   })
 }
 
-//产品修改记录 
+//产品修改记录
 export function getChangeRecordPageList(parameter) {
   return axios({
     baseURL: system.baseURL, // 服务器ip和端口
@@ -630,3 +630,41 @@ export function WorkBoxBatchDownload(url) {
     responseType: 'blob'
   })
 }
+
+//---------------------项目专利------------------
+export function addAndUpdateProjectPatent(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/projectPatent/project-patent/addAndUpdateProjectPatent',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function delProjectPatent(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/projectPatent/project-patent/delProjectPatent',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getProjectPatentDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/projectPatent/project-patent/getProjectPatentDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getProjectPatentPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/projectPatent/project-patent/getProjectPatentPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+//---------------------项目专利------------------
