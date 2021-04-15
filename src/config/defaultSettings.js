@@ -33,11 +33,15 @@ export default {
     deviceList:[
       {
         key:1,
-        deviceSerial: 'E54619002' // 监控设备-公司大门口
+        deviceSerial: 'E54619002' // 监控设备-大门口门卫室上方
       },
       {
         key:2,
         deviceSerial: 'E94761575' // 监控设备-105会议室
+      },
+      {
+        key:3,
+        deviceSerial: 'E83611047' // 监控设备-大门口监控杆
       }
     ]
   },
