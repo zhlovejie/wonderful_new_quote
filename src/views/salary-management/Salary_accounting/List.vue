@@ -73,6 +73,9 @@
           @click="noPassAction"
           >不通过</a-button
         >
+        <span style="position: relative; top: -1px; margin-left: 10px; width: 300px; color: red">
+          提示： 批量审批20条10秒~50条30秒~100条5分钟后请手动点击搜索查询</span
+        >
       </template>
       <div style="float: right"></div>
     </div>
@@ -401,8 +404,9 @@ export default {
       floorsAnnual_approcal(opt)
         .then((res) => {
           that.spinning = false
-          that.$message.info(res.msg)
-          that.searchAction()
+          that.$message.info('提示： 批量审批请手动点击搜索查询')
+          // that.$message.info(res.msg)
+          // that.searchAction()
           // that.$emit('finish')
         })
         .catch((err) => (that.spinning = false))
