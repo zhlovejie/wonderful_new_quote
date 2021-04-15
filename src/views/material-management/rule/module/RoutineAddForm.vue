@@ -83,7 +83,7 @@
             ]"
           />
         </a-form-item>
-        <template v-if="isNormal">
+        <template v-if="isNormalAdd">
           <a-form-item label="是否存在循环">
             <a-switch
               checked-children="是"
@@ -124,7 +124,7 @@
                 },
               ]"
             >
-              <a-select-option v-for="item in differenceList" :key="item.id" :value="item.id">{{
+              <a-select-option v-for="item in differenceList" :key="item.id" :value="item.text">{{
                 item.text
               }}</a-select-option>
             </a-select>
@@ -143,7 +143,7 @@
                 },
               ]"
             >
-              <a-select-option v-for="item in unitList" :key="item.id" :value="item.id">{{
+              <a-select-option v-for="item in unitList" :key="item.id" :value="item.text">{{
                 item.text
               }}</a-select-option>
             </a-select>
@@ -174,8 +174,8 @@
               show-search
               allow-clear
               v-decorator="[
-                'parentId',
-                { initialValue: detail.parentId, rules: [{ required: true, message: '请选择上级菜单' }] },
+                'copySourceParentId',
+                { rules: [{ required: true, message: '请选择复制数据节点' }] },
               ]"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :tree-data="treeData"
@@ -188,13 +188,19 @@
               show-search
               allow-clear
               v-decorator="[
-                'parentId',
-                { initialValue: detail.parentId, rules: [{ required: true, message: '请选择上级菜单' }] },
+                'copyToParentId',
+                { rules: [{ required: true, message: '请选择上级菜单(现位置)' }] },
               ]"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :tree-data="treeData"
             />
           </a-form-item>
+          <a-alert type="warning" >
+            <span slot="message">
+              <!-- 若选择复制数据菜单存在下级，则菜单所有的【第一层下级】会被复制！ -->
+              注意：复制数据节点的直接子节点会被复制！！！
+            </span>
+          </a-alert>
         </template>
 
       </a-form>
@@ -207,6 +213,7 @@ import {
   routineMaterialRuleUpdate,
   productMaterialRuleAdd,
   productMaterialRuleUpdate,
+  routineMaterialRuleCopy
 } from '@/api/routineMaterial'
 import { getDictionary } from '@/api/common'
 const __API__ = {
@@ -309,8 +316,19 @@ export default {
             delete param.codeLength
             delete param.ruleName
           }
-          that
-            ._api(param)
+
+          let isCopyAction = that.isNormalAdd && that.activeKey === 2
+          if(isCopyAction){
+            // param.id = param.copySourceParentId
+            // param.targetId = param.copyToParentId
+            // delete param.copySourceParentId
+            // delete param.copyToParentId
+
+            param = `id=${param.copySourceParentId}&targetId=${param.copyToParentId}`
+          }
+          let _api = isCopyAction ? routineMaterialRuleCopy : that._api
+
+          _api(param)
             .then((res) => {
               that.spinning = false
               console.log(res)
@@ -384,7 +402,14 @@ export default {
       this.isInBatch = b
     },
     tabChange(key){
-      this.activeKey = +key
+      const that = this
+      that.activeKey = +key
+
+      if(that.activeKey === 1){
+        that.$nextTick(() =>{
+          that.form.setFieldsValue({inBatch:that.isInBatch})
+        })
+      }
     }
   },
 }
@@ -395,7 +420,7 @@ export default {
   display: flex;
 }
 .routine-addform-wrapper >>> .ant-form-item .ant-form-item-label{
-  width: 120px;
+  width: 140px;
 }
 .routine-addform-wrapper >>> .ant-form-item .ant-form-item-control-wrapper{
   flex: 1;

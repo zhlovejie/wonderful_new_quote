@@ -247,7 +247,6 @@ export default {
         autoExpandParent: true,
       })
     },
-
     generateList(data) {
       let arr = []
       for (let i = 0; i < data.length; i++) {
@@ -286,7 +285,7 @@ export default {
       // routineMaterialRulePageTwoTierTreeList({parentId:that.parentId}).then(res =>{
       //   console.log(res)
       // })
-      routineMaterialRulePageTreeList({parentId:that.parentId})
+      routineMaterialRulePageTreeList({parentId:0})
         .then((res) => {
           const root = {
             key: '0',

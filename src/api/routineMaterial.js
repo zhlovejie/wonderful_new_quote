@@ -229,3 +229,13 @@ export function materialRuleAuditPageList(parameter) {
   })
 }
 
+/** 常规物料规则 复制接口 */
+export function routineMaterialRuleCopy(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/copy',
+    method: 'PUT',
+    data: parameter
+  })
+}
+
