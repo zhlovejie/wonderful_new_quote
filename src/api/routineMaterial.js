@@ -96,6 +96,15 @@ export function routineMaterialRulePageTreeList(parameter) {
   })
 }
 
+export function routineMaterialRulePageTwoTierTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/twoTierTreeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 // 成品物料规则--------------------------
 

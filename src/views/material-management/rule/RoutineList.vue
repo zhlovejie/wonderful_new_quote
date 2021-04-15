@@ -104,6 +104,7 @@ import {
   routineMaterialRuleStartUsing,
   routineMaterialRulePageList,
   routineMaterialRulePageTreeList,
+  routineMaterialRulePageTwoTierTreeList
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -282,7 +283,10 @@ export default {
     },
     fetchTree() {
       const that = this
-      routineMaterialRulePageTreeList()
+      // routineMaterialRulePageTwoTierTreeList({parentId:that.parentId}).then(res =>{
+      //   console.log(res)
+      // })
+      routineMaterialRulePageTreeList({parentId:that.parentId})
         .then((res) => {
           const root = {
             key: '0',
