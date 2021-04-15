@@ -9,10 +9,15 @@
     :maskClosable="false"
   >
     <a-spin :spinning="spinning">
-      <a-form :form="form">
+      <a-tabs v-if="isNormalAdd" :activeKey="activeKey" :defaultActiveKey="0" @change="tabChange">
+        <a-tab-pane tab="新增" :key="1" />
+        <a-tab-pane tab="复制" :key="2" />
+      </a-tabs>
+      <a-form :form="form" class="routine-addform-wrapper">
         <a-form-item hidden>
           <a-input v-decorator="['id', { initialValue: detail.id }]" />
         </a-form-item>
+        <template v-if="activeKey === 1">
         <a-form-item label="上级菜单">
           <a-tree-select
             style="width: 100%"
@@ -46,9 +51,9 @@
                   initialValue: detail.code,
                   rules: [
                     { required: true, message: '请输入代码' },
-                    { max:+detail.__selectItem.newCodeLength,message:`代码超过最大长度`}
-                  ]
-                }
+                    { max: +detail.__selectItem.newCodeLength, message: `代码超过最大长度` },
+                  ],
+                },
               ]"
             />
           </a-form-item>
@@ -78,11 +83,119 @@
             ]"
           />
         </a-form-item>
-
         <template v-if="isNormal">
+          <a-form-item label="是否存在循环">
+            <a-switch
+              checked-children="是"
+              un-checked-children="否"
+              @change="inBatchChange"
+              v-decorator="[
+                'inBatch',
+                { initialValue: !!detail.inBatch,valuePropName:'checked', rules: [{ required: true, message: '请选择是否存在循环' }] },
+              ]"
+            />
+          </a-form-item>
 
+          <template v-if="isInBatch">
+          <a-form-item label="最小值">
+            <a-input-number
+              style="width: 100%"
+              :precision="2"
+              v-decorator="[
+                'miniNum',
+                {
+                  initialValue: detail.miniNum,
+                  rules: [{ required: true, message: '请输入最小值' }],
+                },
+              ]"
+            />
+          </a-form-item>
+
+          <a-form-item label="等差">
+            <a-select
+              placeholder="选择等差"
+              :allowClear="true"
+              style="width: 100%"
+              v-decorator="[
+                'differenceValue',
+                {
+                  initialValue: detail.differenceValue,
+                  rules: [{ required: true, message: '请选择等差' }],
+                },
+              ]"
+            >
+              <a-select-option v-for="item in differenceList" :key="item.id" :value="item.id">{{
+                item.text
+              }}</a-select-option>
+            </a-select>
+          </a-form-item>
+
+          <a-form-item label="单位">
+            <a-select
+              placeholder="选择单位"
+              :allowClear="true"
+              style="width: 100%"
+              v-decorator="[
+                'unit',
+                {
+                  initialValue: detail.unit,
+                  rules: [{ required: true, message: '请选择单位' }],
+                },
+              ]"
+            >
+              <a-select-option v-for="item in unitList" :key="item.id" :value="item.id">{{
+                item.text
+              }}</a-select-option>
+            </a-select>
+          </a-form-item>
+
+          <a-form-item label="最大值">
+            <a-input-number
+              style="width: 100%"
+              :precision="2"
+              v-decorator="[
+                'maximum',
+                {
+                  initialValue: detail.maximum,
+                  rules: [{ required: true, message: '请输入最大值' }],
+                },
+              ]"
+            />
+          </a-form-item>
+          </template>
+        </template>
         </template>
 
+        <template v-if="isNormalAdd && activeKey === 2">
+          <a-form-item label="复制数据">
+            <a-tree-select
+              style="width: 100%"
+              :disabled="treeDisable"
+              show-search
+              allow-clear
+              v-decorator="[
+                'parentId',
+                { initialValue: detail.parentId, rules: [{ required: true, message: '请选择上级菜单' }] },
+              ]"
+              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+              :tree-data="treeData"
+            />
+          </a-form-item>
+          <a-form-item label="上级菜单(现位置)">
+            <a-tree-select
+              style="width: 100%"
+              :disabled="treeDisable"
+              show-search
+              allow-clear
+              v-decorator="[
+                'parentId',
+                { initialValue: detail.parentId, rules: [{ required: true, message: '请选择上级菜单' }] },
+              ]"
+              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+              :tree-data="treeData"
+            />
+          </a-form-item>
+        </template>
 
       </a-form>
     </a-spin>
@@ -95,7 +208,7 @@ import {
   productMaterialRuleAdd,
   productMaterialRuleUpdate,
 } from '@/api/routineMaterial'
-
+import { getDictionary } from '@/api/common'
 const __API__ = {
   normal: {
     add: routineMaterialRuleAdd,
@@ -116,10 +229,13 @@ export default {
       spinning: false,
       treeData: [],
       value: [],
-      selectList: [],
       form: this.$form.createForm(this, { name: 'material-management-RoutineAddForm' }),
       detail: {},
       from: 'normal', // normal常规 product成品
+      differenceList: [],
+      unitList: [],
+      isInBatch:false,
+      activeKey:1
     }
   },
   created() {},
@@ -142,30 +258,37 @@ export default {
     isProduct() {
       return this.from === 'product'
     },
+    isNormalAdd(){
+      return this.isNormal && this.isAdd
+    },
+    isProductAdd(){
+      return this.isProduct && this.isAdd
+    }
   },
   methods: {
-    query(type, record) {
+    async query(type, record) {
       const that = this
       that.type = type
       that.detail = {}
+      that.isInBatch = false
       that.visible = true
 
       let { __selectItem, __treeData, __from } = record
       that.from = __from
-      that.detail = { ...record }
       that.treeData = __treeData
-
       that._api = __API__[__from][type]
 
+      if(that.isNormal){
+        await Promise.all([
+          getDictionary({ text: '物料等差' }).then((res) => (that.differenceList = res.data)),
+          getDictionary({ text: '物料单位' }).then((res) => (that.unitList = res.data))
+        ])
+      }
+
+      that.detail = { ...record }
       that.$nextTick(() => {
         that.form.setFieldsValue({ parentId: __selectItem.key })
       })
-
-      // if(type === 'add'){
-
-      // }else if(type === 'edit'){
-      //   debugger
-      // }
     },
     handleSubmit() {
       const that = this
@@ -174,6 +297,9 @@ export default {
           console.log(values)
           that.spinning = true
           let param = { ...values }
+          if('inBatch' in param){
+            param.inBatch = param.inBatch ? 1 : 2
+          }
           if (that.isEdit) {
             param.newCode = param.code
             param.newCodeLength = param.codeLength
@@ -182,9 +308,6 @@ export default {
             delete param.code
             delete param.codeLength
             delete param.ruleName
-            //param.code = that.detail.code
-            //param.codeLength = that.detail.codeLength
-            //param.ruleName = that.detail.ruleName
           }
           that
             ._api(param)
@@ -257,7 +380,25 @@ export default {
 
       return null
     },
+    inBatchChange(b){
+      this.isInBatch = b
+    },
+    tabChange(key){
+      this.activeKey = +key
+    }
   },
 }
 </script>
+
+<style scoped>
+.routine-addform-wrapper >>> .ant-form-item{
+  display: flex;
+}
+.routine-addform-wrapper >>> .ant-form-item .ant-form-item-label{
+  width: 120px;
+}
+.routine-addform-wrapper >>> .ant-form-item .ant-form-item-control-wrapper{
+  flex: 1;
+}
+</style>
 
