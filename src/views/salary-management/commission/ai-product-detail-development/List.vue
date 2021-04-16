@@ -2,22 +2,11 @@
   <!-- 部门提成明细 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker
-        placeholder="选择年月"
-        style="width:160px;"
-        v-model="searchParam.staticsDate"
-      />
-      <a-select
-        placeholder="选择部门"
-        v-model="searchParam.departmentId"
-        :allowClear="true"
-        style="width: 160px"
-      >
-        <a-select-option
-          v-for="item in depSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.departmentName}}</a-select-option>
+      <a-month-picker placeholder="选择年月" style="width: 160px" v-model="searchParam.staticsDate" />
+      <a-select placeholder="选择部门" v-model="searchParam.departmentId" :allowClear="true" style="width: 160px">
+        <a-select-option v-for="item in depSelectDataSource" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
 
       <!-- <a-input
@@ -44,12 +33,12 @@
           <span>{{ text | moneyFormatNumber }}</span>
         </div>
         <div slot="staticsDate" slot-scope="text, record, index">
-          <span>{{ text ? String(text).slice(0,10) : text }}</span>
+          <span>{{ text ? String(text).slice(0, 10) : text }}</span>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="$auth('salaryDevelopmentRealityPercentageHis:detail')">
-          <a type="primary" @click="doAction('view', record)">查看</a>
+            <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
@@ -58,14 +47,9 @@
   </div>
 </template>
 <script>
-
-import {
-  departmentList //所有部门
-} from '@/api/systemSetting'
+import { bonus_getDepartmentByType } from '@/api/bonus_management'
 import moment from 'moment'
-import {
-  developmentRealityPercentageHisList,
-} from '@/api/commissionDetail'
+import { developmentRealityPercentageHisList } from '@/api/commissionDetail'
 
 import AddForm from './AddForm'
 
@@ -81,7 +65,7 @@ const columns = [
     align: 'center',
     title: '月份',
     dataIndex: 'staticsDate',
-    scopedSlots: { customRender: 'staticsDate' }
+    scopedSlots: { customRender: 'staticsDate' },
   },
   {
     align: 'center',
@@ -92,7 +76,7 @@ const columns = [
     align: 'center',
     title: '产品提成金',
     dataIndex: 'percentageAmount',
-    scopedSlots: { customRender: 'percentageAmount' }
+    scopedSlots: { customRender: 'percentageAmount' },
   },
   {
     align: 'center',
@@ -104,7 +88,7 @@ const columns = [
 export default {
   name: 'ai-product-detail-development',
   components: {
-    AddForm
+    AddForm,
   },
   data() {
     return {
@@ -139,15 +123,14 @@ export default {
   methods: {
     init() {
       let that = this
-      departmentList().then(res => {
-        that.depSelectDataSource = res.data
-      })
+      bonus_getDepartmentByType({ type: 2 }).then((res) => (that.depSelectDataSource = res.data))
+
       that.searchAction()
     },
     searchAction(opt) {
       let that = this
 
-      if(!that.$auth('salaryDevelopmentRealityPercentageHis:list')){
+      if (!that.$auth('salaryDevelopmentRealityPercentageHis:list')) {
         that.$message.info('无权限查看此列表数据')
         return
       }
@@ -157,8 +140,8 @@ export default {
       }
 
       let staticsDate = that.searchParam.staticsDate
-      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam,{
-        staticsDate : staticsDate instanceof moment ? staticsDate.format('YYYY-MM') : undefined
+      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam, {
+        staticsDate: staticsDate instanceof moment ? staticsDate.format('YYYY-MM') : undefined,
       })
       that.loading = true
       developmentRealityPercentageHisList(_searchParam)
@@ -195,8 +178,8 @@ export default {
     doAction(type, record) {
       let that = this
       that.$refs.addForm.query(type, record)
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
