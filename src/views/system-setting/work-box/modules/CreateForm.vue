@@ -155,8 +155,9 @@
 </template>
 
 <script>
-import { addProduct, editProduct, checkName, queryTreeByArea, getDictionaryList } from '@/api/workBox'
-import { getUploadPath, getDictionary, getUeditorUploadPath } from '@/api/common'
+import { addProduct, editProduct, checkName, queryTreeByArea } from '@/api/workBox'
+import { getDictionaryList } from '@/api/accessControl'
+import { getUploadPath, getUeditorUploadPath } from '@/api/common'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 
@@ -219,10 +220,10 @@ export default {
   },
   created(record) {
     // 初始化钩子,获取所有产品类型
-    getDictionary({ text: '产品类型' }).then((res) => {
+    getDictionaryList({ code: 'tool_product_type' }).then((res) => {
       this.productTypes = res.data
     })
-    getDictionaryList({ parentId: 655 }).then((res) => (this.products = res.data))
+    getDictionaryList({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
   },
   methods: {
     add() {
