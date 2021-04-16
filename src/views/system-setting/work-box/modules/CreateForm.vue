@@ -74,6 +74,7 @@
         <a-form-item label="产品类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             placeholder="请选择产品类别"
+            @change="handletype"
             v-decorator="['productCategoryCode', { rules: [{ required: true, message: '请选择产品类别！' }] }]"
           >
             <a-select-option v-for="ptype in products" :key="ptype.id" :value="ptype.code">{{
@@ -197,6 +198,7 @@ export default {
         xs: { span: 24 },
         sm: { span: 12 },
       },
+      productCategoryCode: '', //数据字典ID
       form: this.$form.createForm(this), // 只有这样注册后，才能通过表单拉取数据
       visible: false, // 表单对话框是否可见
       confirmLoading: false, // 确定按钮后是否显示加载图 loading
@@ -248,6 +250,7 @@ export default {
       } = this
       this.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
+        this.productCategoryCode = record.productCategory
         setFieldsValue({
           productCategoryCode: record.productCategoryCode,
           productName: record.productName,
@@ -294,6 +297,10 @@ export default {
       }
       this.content = record.description
     },
+    handletype(value) {
+      let react = this.products.find((item) => item.code === value)
+      this.productCategoryCode = react.id
+    },
     handleSubmit() {
       this.form.setFieldsValue({ description: this.content })
       const {
@@ -306,7 +313,7 @@ export default {
       validateFields((errors, values) => {
         if (!errors) {
           //values.area = 143
-
+          values.productCategory = this.productCategoryCode
           if (this.subType === 'add') {
             // 新增
             addProduct(values)
