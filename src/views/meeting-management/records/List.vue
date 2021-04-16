@@ -68,11 +68,11 @@
         </div>
       </a-form>
     </div>
-    <a-alert message="会议罚款规则" type="warning" show-icon style="margin-top: 10px">
+    <a-alert v-if="'headPenaltyAmount' in penaltyRules" message="会议罚款规则" type="warning" show-icon style="margin-top: 10px">
       <div slot="description">
-        <div>1.各部门未在规定时间召开部门周例会或者超时，部门负责人罚款100元/次。</div>
-        <div>2.部门单次周例会开会时长小于20分钟，部门负责人罚款100元/次。</div>
-        <div>3.参会人员无故旷会且未请假，参会人员罚款50元/次。</div>
+        <div>1.各部门未在规定时间召开部门周例会或者超时，部门负责人罚款{{penaltyRules.headPenaltyAmount}}元/次。</div>
+        <div>2.部门单次周例会开会时长小于{{penaltyRules.meetingTime}}分钟，部门负责人罚款{{penaltyRules.headPenaltyAmount}}元/次。</div>
+        <div>3.参会人员无故旷会且未请假，参会人员罚款{{penaltyRules.participantPenaltyAmount}}元/次。</div>
         <div>备注：所有罚款线上生成，通过微信支付，当月支付罚款的仅需80%,超出当月未缴纳的,次月将从员工工资中予以扣除！</div>
       </div>
     </a-alert>
@@ -132,7 +132,7 @@
               </template>
             </template>
 
-            <template v-if="record.status === 1 && +userInfo.id !== +record.chargePersonId">
+            <template v-if="(record.status === 1 || record.status === 2) && +userInfo.id !== +record.chargePersonId">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('leave',record)">请假</a>
             </template>
@@ -178,7 +178,8 @@ import {
   meetingRecordDetail,
   meetingRecordCancel,
   meetingRecordSaveOrUpdate,
-  meetingRecordUpload
+  meetingRecordUpload,
+  getMeetingPenaltyRulesPageList
 } from '@/api/meetingManagement'
 import AddForm from './module/AddForm'
 import UploadRecords from './module/UploadRecords'
@@ -187,6 +188,7 @@ import XdocView from '@/views/personnel-management/apply/severance-apply/module/
 import LeaveAddForm from '../meeting-leave/AddForm'
 
 import moment from 'moment'
+
 const columns = [
   {
     align: 'center',
@@ -275,6 +277,7 @@ export default {
 
       dayWeekMonth: 1, //本周、本月、全部
       userInfo: this.$store.getters.userInfo, // 当前登录人
+      penaltyRules:{}
     }
   },
   computed: {
@@ -314,6 +317,19 @@ export default {
       getDictionaryList({ parentId: 498 }).then(res => (that.meetingTypesList = res.data))
       departmentList().then(res => (that.depList = res.data))
       this.searchAction()
+      this.fetchPenaltyRules()
+    },
+    fetchPenaltyRules(){
+      const that = this
+      getMeetingPenaltyRulesPageList({current:1}).then(res => {
+        let records = res.data.records
+         if(Array.isArray(records) && records.length > 0){
+           that.penaltyRules = records[0]
+         }else{
+           that.penaltyRules = {}
+           that.$message.info('会议罚款规则加载失败，请检查是否配置了会议罚款规则。')
+         }
+      })
     },
     searchAction(opt = {}) {
       let that = this

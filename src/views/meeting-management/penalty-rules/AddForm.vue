@@ -25,7 +25,7 @@
             <td class="wdf-column">会议时长(分钟)</td>
             <td>
               <a-form-item>
-                <!-- <a-input-number
+                <a-input-number
                   v-if="!isView"
                   style="width: 100%"
                   :min="0"
@@ -36,8 +36,8 @@
                     { initialValue: detail.meetingTime, rules: [{ required: true, message: '请输入会议时长' }] },
                   ]"
                 />
-                <span v-else>{{ detail.meetingTime }}</span> -->
-                <span>{{ detail.meetingTime }}</span>
+                <span v-else>{{ detail.meetingTime }}</span>
+                <!-- <span>{{ detail.meetingTime }}</span> -->
               </a-form-item>
             </td>
           </tr>
