@@ -26,8 +26,8 @@
             >{{ record.staticsDate }}研发提成奖金统计表</a-col
           >
         </a-row>
-        <a-alert :message="percentageRetio" type="info" style="float: left; width: 200px; margin: 20px 0" />
-        <a-alert :message="developmentAmount" type="info" style="float: left; width: 200px; margin: 20px 10px" />
+        <a-alert :message="percentageRetio" type="info" style="float: left; width: 300px; margin: 20px 0" />
+        <a-alert :message="developmentAmount" type="info" style="float: left; width: 300px; margin: 20px 10px" />
         <a-table :columns="columns" :pagination="false" rowKey="id" :dataSource="saleCustomers"> </a-table>
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />

@@ -257,7 +257,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download = `软硬件奖金信息.xls`
+              a.download = `研发提成奖金信息.xls`
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
