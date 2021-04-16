@@ -199,6 +199,17 @@ export function productMaterialRulePageTreeList(parameter) {
   })
 }
 
+/**树形列表 成品物料规则接口 */
+export function productMaterialRulePageTwoTierTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialRule/twoTierTreeList',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+
 /**审核 物料规则审核接口 */
 export function materialRuleAudit(parameter) {
   return axios({

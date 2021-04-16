@@ -22,13 +22,12 @@
           <a-tree-select
             style="width: 100%"
             :disabled="treeDisable"
-            show-search
-            allow-clear
             v-decorator="[
               'parentId',
               { initialValue: detail.parentId, rules: [{ required: true, message: '请选择上级菜单' }] },
             ]"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :loadData="onLoadData"
             :tree-data="treeData"
           />
         </a-form-item>
@@ -171,13 +170,12 @@
             <a-tree-select
               style="width: 100%"
               :disabled="treeDisable"
-              show-search
-              allow-clear
               v-decorator="[
                 'copySourceParentId',
                 { rules: [{ required: true, message: '请选择复制数据节点' }] },
               ]"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+              :loadData="onLoadData"
               :tree-data="treeData"
             />
           </a-form-item>
@@ -185,21 +183,47 @@
             <a-tree-select
               style="width: 100%"
               :disabled="treeDisable"
-              show-search
-              allow-clear
               v-decorator="[
                 'copyToParentId',
                 { rules: [{ required: true, message: '请选择上级菜单(现位置)' }] },
               ]"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+              :loadData="onLoadData"
               :tree-data="treeData"
             />
           </a-form-item>
           <a-alert type="warning" >
-            <span slot="message">
+            <div slot="message">
               <!-- 若选择复制数据菜单存在下级，则菜单所有的【第一层下级】会被复制！ -->
-              注意：复制数据节点的直接子节点会被复制！！！
-            </span>
+              <p>注意：复制数据节点的直接子节点会被复制，子孙节点则不复制！！！</p>
+              <div class="tree-copy-example-wrapper">
+              <div class="tree-item">
+                <div>0</div>
+                <div>&nbsp;&nbsp;-1</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;-11</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-111</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;-12</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-121</div>
+                <div>&nbsp;&nbsp;-2</div>
+              </div>
+              <div class="tree-trnaslate-info">
+                <p>示例:把节点1复制到节点2</p>
+                <p>节点1的直接子节点11,12被复制了</p>
+                <p>11,12的子节点111,121没被复制</p>
+              </div>
+              <div class="tree-item">
+                <div>0</div>
+                <div>&nbsp;&nbsp;-1</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;-11</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-111</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;-12</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-121</div>
+                <div>&nbsp;&nbsp;-2</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;-11</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;-12</div>
+              </div>
+              </div>
+            </div>
           </a-alert>
         </template>
 
@@ -213,7 +237,9 @@ import {
   routineMaterialRuleUpdate,
   productMaterialRuleAdd,
   productMaterialRuleUpdate,
-  routineMaterialRuleCopy
+  routineMaterialRuleCopy,
+  routineMaterialRulePageTwoTierTreeList,
+  productMaterialRulePageTwoTierTreeList
 } from '@/api/routineMaterial'
 import { getDictionary } from '@/api/common'
 const __API__ = {
@@ -242,7 +268,8 @@ export default {
       differenceList: [],
       unitList: [],
       isInBatch:false,
-      activeKey:1
+      activeKey:1,
+
     }
   },
   created() {},
@@ -409,7 +436,50 @@ export default {
         that.$nextTick(() =>{
           that.form.setFieldsValue({inBatch:that.isInBatch})
         })
+      }else if(that.activeKey === 2){
+        let __selectItem = that.detail.__selectItem
+        that.$nextTick(() => {
+          that.form.setFieldsValue({ copyToParentId: __selectItem.key })
+        })
       }
+
+    },
+    onLoadData(treeNode) {
+      const that = this
+      return new Promise(resolve => {
+        if (treeNode.dataRef.children) {
+          resolve();
+          return;
+        }
+        let api = that.isNormal ? routineMaterialRulePageTwoTierTreeList : productMaterialRulePageTwoTierTreeList
+        api({parentId:treeNode.dataRef.value})
+        .then((res) => {
+          treeNode.dataRef.children = res.data.map((item) => that.formatTreeData(item))
+          that.treeData = [...that.treeData]
+          resolve();
+        })
+        .catch((err) => {
+          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+        })
+      });
+    },
+        //格式化接口数据 key,title,value
+    formatTreeData(item) {
+      let that = this
+      let obj = {}
+      obj.key = String(item.id)
+      obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      obj.value = String(item.id)
+      // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
+      obj.parentId = item.parentId
+      obj.codeLength = +item.codeLength
+      obj.code = item.code
+      obj.scopedSlots = { title: 'title' }
+      //obj.__selectable = obj.isLeaf
+      if (Array.isArray(item.subList) && item.subList.length > 0) {
+        obj.children = item.subList.map((v) => that.formatTreeData(v))
+      }
+      return obj
     }
   },
 }
@@ -425,5 +495,25 @@ export default {
 .routine-addform-wrapper >>> .ant-form-item .ant-form-item-control-wrapper{
   flex: 1;
 }
+
+.routine-addform-wrapper .tree-copy-example-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+.routine-addform-wrapper .tree-copy-example-wrapper .tree-item{
+  background-color: #ddd;
+  width: 150px;
+  padding: 20px;
+  border-radius: 3px;
+  font-family: Menlo,Monaco,Consolas,"Andale Mono","lucida console","Courier New",monospace;
+}
+.routine-addform-wrapper .tree-copy-example-wrapper .tree-trnaslate-info{
+  width: 220px;
+  margin: 0 10px;
+  font-weight: bold;
+}
+
 </style>
 

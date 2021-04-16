@@ -3,12 +3,13 @@
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
-          <a-input-search
+          <!-- <a-input-search
             style="line-height: 40px; margin-bottom: 8px"
             placeholder="代码/名称模糊查询"
             @change="treeInputSearchDebounce"
-          />
+          /> -->
           <a-tree
+            :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             :defaultExpandAll="true"
@@ -16,6 +17,7 @@
             :expandedKeys="expandedKeys"
             :autoExpandParent="autoExpandParent"
             @expand="onExpand"
+            :showLine="true"
           >
             <template slot="title" slot-scope="{ title }">
               <span v-if="title.indexOf(searchValue) > -1">
@@ -101,7 +103,7 @@ import {
   productMaterialRuleForbidden,
   productMaterialRuleStartUsing,
   productMaterialRulePageList,
-  productMaterialRulePageTreeList,
+  productMaterialRulePageTwoTierTreeList
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -279,9 +281,28 @@ export default {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
+    onLoadData(treeNode) {
+      const that = this
+      return new Promise(resolve => {
+        if (treeNode.dataRef.children) {
+          resolve();
+          return;
+        }
+        productMaterialRulePageTwoTierTreeList({parentId:treeNode.dataRef.value})
+        .then((res) => {
+          treeNode.dataRef.children = res.data.map((item) => that.formatTreeData(item))
+          that.orgTree = [...that.orgTree]
+          that.dataList = that.generateList(that.orgTree)
+          resolve();
+        })
+        .catch((err) => {
+          that.$message.error(`调用接口[productMaterialRulePageTwoTierTreeList]时发生错误，错误信息:${err}`)
+        })
+      });
+    },
     fetchTree() {
       const that = this
-      productMaterialRulePageTreeList()
+      productMaterialRulePageTwoTierTreeList({parentId:0})
         .then((res) => {
           const root = {
             key: '0',
@@ -295,13 +316,13 @@ export default {
             children: res.data.map((item) => that.formatTreeData(item)),
           }
           that.orgTree = [root]
-          that.dataList = that.generateList(that.orgTree)
+          // that.dataList = that.generateList(that.orgTree)
           if (String(that.parentId) === '0') {
             that.parentItem = root
           }
         })
         .catch((err) => {
-          that.$message.error(`调用接口[productMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+          that.$message.error(`调用接口[productMaterialRulePageTwoTierTreeList]时发生错误，错误信息:${err}`)
         })
     },
     search(params = {}) {
@@ -355,7 +376,7 @@ export default {
       obj.key = String(item.id)
       obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
       obj.value = String(item.id)
-      obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
+      // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.codeLength = +item.codeLength
       obj.newCodeLength = +item.newCodeLength
       obj.parentId = item.parentId

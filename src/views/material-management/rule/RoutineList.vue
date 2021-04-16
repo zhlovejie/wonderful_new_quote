@@ -3,12 +3,13 @@
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
-          <a-input-search
+          <!-- <a-input-search
             style="line-height: 40px; width: 100%"
             placeholder="代码/名称模糊查询"
             @change="treeInputSearchDebounce"
-          />
+          /> -->
           <a-tree
+            :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             :defaultExpandAll="true"
@@ -280,12 +281,31 @@ export default {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
+    onLoadData(treeNode) {
+      const that = this
+      return new Promise(resolve => {
+        if (treeNode.dataRef.children) {
+          resolve();
+          return;
+        }
+        routineMaterialRulePageTwoTierTreeList({parentId:treeNode.dataRef.value})
+        .then((res) => {
+          treeNode.dataRef.children = res.data.map((item) => that.formatTreeData(item))
+          that.orgTree = [...that.orgTree]
+          that.dataList = that.generateList(that.orgTree)
+          resolve();
+        })
+        .catch((err) => {
+          that.$message.error(`调用接口[routineMaterialRulePageTwoTierTreeList]时发生错误，错误信息:${err}`)
+        })
+      });
+    },
     fetchTree() {
       const that = this
       // routineMaterialRulePageTwoTierTreeList({parentId:that.parentId}).then(res =>{
       //   console.log(res)
       // })
-      routineMaterialRulePageTreeList({parentId:0})
+      routineMaterialRulePageTwoTierTreeList({parentId:0})
         .then((res) => {
           const root = {
             key: '0',
@@ -299,7 +319,7 @@ export default {
             scopedSlots: { title: 'title' },
           }
           that.orgTree = [root]
-          that.dataList = that.generateList(that.orgTree)
+          // that.dataList = that.generateList(that.orgTree)
 
           if (String(that.parentId) === '0') {
             that.parentItem = root
@@ -360,7 +380,7 @@ export default {
       obj.key = String(item.id)
       obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
       obj.value = String(item.id)
-      obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
+      // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
       obj.code = item.code
