@@ -101,8 +101,8 @@ const columns = [
   {
     align: 'center',
     title: '提成产品',
-    dataIndex: 'productCode',
-    key: 'productCode',
+    dataIndex: 'productText',
+    key: 'productText',
   },
   {
     align: 'center',

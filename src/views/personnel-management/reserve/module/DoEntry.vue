@@ -1222,9 +1222,8 @@ export default {
         }
         that.isrelation = resultData.relationFlag === 0 ? false : true
         resultData.relationUserId = resultData.relationUserName
+        that.monthlyCycle = resultData.salaryType === 0 ? true : false
       }
-
-      that.monthlyCycle = resultData.salaryType === 0 ? true : false
       let isDoEntryBefore = that.record.status === 0 ? true : false
       if (resultData.salaryType === 1) {
         resultData.cycleTime = resultData.cycleTime ? moment(resultData.cycleTime) : moment()
