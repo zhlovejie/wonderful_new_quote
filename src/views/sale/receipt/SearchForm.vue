@@ -63,7 +63,7 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="12" v-if="isShowApproveStatus">
           <a-form-item label="单据状态">
             <a-select v-decorator="['approveStatus', { initialValue: 0 }]" placeholder="单据状态">
               <a-select-option :value="0">全部</a-select-option>
@@ -110,10 +110,12 @@ export default {
       visible: false,
       form: this.$form.createForm(this),
       saleUser: [],
+      isShowApproveStatus:false
     }
   },
   methods: {
-    query() {
+    query(tabKey) {
+      this.isShowApproveStatus = +tabKey === 0
       this.visible = true
       getListSaleContractUser().then((res) => (this.saleUser = res.data))
     },
