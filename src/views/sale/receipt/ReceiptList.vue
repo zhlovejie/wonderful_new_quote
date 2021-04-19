@@ -252,6 +252,7 @@ export default {
       // 查询参数
       queryParam: {
         dayWeekMonth: 1,
+        statue:0
       },
       recordResult: {},
       queryRecord: {},
@@ -374,7 +375,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'receiptList') {
-          this.queryParam.dayWeekMonth = 1
+          this.queryParam = {...this.queryParam,dayWeekMonth:1}
           this.searchAction()
         }
       },
@@ -534,7 +535,7 @@ export default {
         this.audit = false
       }
 
-      this.queryParam.statue = key
+      this.queryParam = {...this.queryParam,statue:key}
       this.searchAction()
       console.log(key)
     },
@@ -585,11 +586,11 @@ export default {
       return m[type] || '未知'
     },
     openSearchModel() {
-      this.$refs.searchForm.query()
+      this.$refs.searchForm.query(this.contractState)
     },
     paramChangeHandler(params) {
       this.isExpanded = true
-      this.queryParam = { ...params, dayWeekMonth: this.dayWeekMonth }
+      this.queryParam = {...this.queryParam, ...params, dayWeekMonth: this.dayWeekMonth }
       this.searchAction()
     },
     simpleSearch(type) {
