@@ -9,6 +9,7 @@
             @change="treeInputSearchDebounce"
           /> -->
           <a-tree
+            ref="treeRef"
             :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
@@ -281,16 +282,20 @@ export default {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
-    onLoadData(treeNode) {
+    onLoadData(treeNode, isForceRefresh = false) {
       const that = this
       return new Promise(resolve => {
-        if (treeNode.dataRef.children) {
+        if (!isForceRefresh && treeNode.dataRef.children) {
           resolve();
           return;
         }
         productMaterialRulePageTwoTierTreeList({parentId:treeNode.dataRef.value})
         .then((res) => {
-          treeNode.dataRef.children = res.data.map((item) => that.formatTreeData(item))
+          let oldChildren = [...(treeNode.dataRef.children || [])]
+          let newChildren = res.data.map((item) => that.formatTreeData(item))
+          let children = that.margeNode(oldChildren, newChildren)
+
+          treeNode.dataRef.children = children
           that.orgTree = [...that.orgTree]
           that.dataList = that.generateList(that.orgTree)
           resolve();
@@ -299,6 +304,24 @@ export default {
           that.$message.error(`调用接口[productMaterialRulePageTwoTierTreeList]时发生错误，错误信息:${err}`)
         })
       });
+    },
+    margeNode(oldChildren, newChildren) {
+      let arr = []
+      for (let i = 0; i < newChildren.length; i++) {
+        let newNode = newChildren[i]
+        let oldNode = oldChildren.find((node) => node.value === newNode.value)
+        if (oldNode) {
+          for (let key in newNode) {
+            if (newNode.hasOwnProperty(key) && key !== 'children') {
+              oldNode[key] = newNode[key]
+            }
+          }
+          arr.push(oldNode)
+        } else {
+          arr.push(newNode)
+        }
+      }
+      return arr
     },
     fetchTree() {
       const that = this
@@ -316,7 +339,7 @@ export default {
             children: res.data.map((item) => that.formatTreeData(item)),
           }
           that.orgTree = [root]
-          // that.dataList = that.generateList(that.orgTree)
+          that.dataList = that.generateList(that.orgTree)
           if (String(that.parentId) === '0') {
             that.parentItem = root
           }
@@ -471,7 +494,7 @@ export default {
               .then((res) => {
                 that.$message.info(res.msg)
                 if (res.code === 200) {
-                  that.finishHandler()
+                  that.finishHandler({ key: that.parentItem.value })
                 }
               })
               .catch((err) => {
@@ -481,11 +504,27 @@ export default {
         })
       }
     },
-    finishHandler() {
+    finishHandler(param) {
       this.selectedRowKeys = []
       this.selectedRows = []
-      this.fetchTree()
+      let target = this.findTreeNode(this.$refs.treeRef, param.key)
+      if (target) {
+        this.onLoadData(target, true)
+      }
       this.search()
+    },
+    findTreeNode(rootNode, key) {
+      if (rootNode.dataRef && rootNode.dataRef.value === key) {
+        return rootNode
+      }
+      if (Array.isArray(rootNode.$children)) {
+        for (let i = 0; i < rootNode.$children.length; i++) {
+          let node = this.findTreeNode(rootNode.$children[i], key)
+          if (node) {
+            return node
+          }
+        }
+      }
     },
     customRowFunction(record) {
       // auditStatus审核状态：1未审核，2审批中，3已审核

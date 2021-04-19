@@ -7,6 +7,7 @@
     @ok="handleSubmit"
     @cancel="handleCancel"
     :maskClosable="false"
+    :confirmLoading="spinning"
   >
     <a-spin :spinning="spinning">
       <a-tabs v-if="isNormalAdd" :activeKey="activeKey" :defaultActiveKey="0" @change="tabChange">
@@ -82,7 +83,18 @@
             ]"
           />
         </a-form-item>
+
         <template v-if="isNormalAdd">
+          <a-form-item label="是否为规格型号">
+            <a-switch
+              checked-children="是"
+              un-checked-children="否"
+              v-decorator="[
+                'isSpecification',
+                { initialValue: +detail.isSpecification === 1,valuePropName:'checked', rules: [{ required: true, message: '请选择是否为规格型号' }] },
+              ]"
+            />
+          </a-form-item>
           <a-form-item label="是否存在循环">
             <a-switch
               checked-children="是"
@@ -330,6 +342,10 @@ export default {
         if (!err) {
           console.log(values)
           that.spinning = true
+
+          if(that.isAdd && 'isSpecification' in values){
+            values.isSpecification = values.isSpecification === true ? 1 : 2
+          }
           let param = { ...values }
           if('inBatch' in param){
             param.inBatch = param.inBatch ? 1 : 2
@@ -343,7 +359,6 @@ export default {
             delete param.codeLength
             delete param.ruleName
           }
-
           let isCopyAction = that.isNormalAdd && that.activeKey === 2
           if(isCopyAction){
             // param.id = param.copySourceParentId
@@ -355,6 +370,10 @@ export default {
           }
           let _api = isCopyAction ? routineMaterialRuleCopy : that._api
 
+          let emitParam = {
+            key:isCopyAction ? param.copyToParentId : param.parentId
+          }
+
           _api(param)
             .then((res) => {
               that.spinning = false
@@ -362,7 +381,7 @@ export default {
               that.form.resetFields() // 清空表
               that.visible = false
               that.$message.info(res.msg)
-              that.$emit('finish')
+              that.$emit('finish',emitParam)
             })
             .catch((err) => (that.spinning = false))
         }
@@ -431,18 +450,16 @@ export default {
     tabChange(key){
       const that = this
       that.activeKey = +key
-
+      let __selectItem = that.detail.__selectItem
       if(that.activeKey === 1){
         that.$nextTick(() =>{
-          that.form.setFieldsValue({inBatch:that.isInBatch})
+          that.form.setFieldsValue({inBatch:that.isInBatch,parentId: __selectItem.key})
         })
       }else if(that.activeKey === 2){
-        let __selectItem = that.detail.__selectItem
         that.$nextTick(() => {
           that.form.setFieldsValue({ copyToParentId: __selectItem.key })
         })
       }
-
     },
     onLoadData(treeNode) {
       const that = this
