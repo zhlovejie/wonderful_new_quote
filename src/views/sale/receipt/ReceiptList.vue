@@ -104,7 +104,12 @@
               <a @click="handleEdit(record)">修改</a>
             </template>
             <template
-              v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && record.receiptStatus === 2"
+              v-if="
+                $auth('receipt:del') &&
+                !audit &&
+                userInfo.id === record.createdId &&
+                (+record.receiptStatus === 3 || +record.receiptStatus === 9)
+              "
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
@@ -283,13 +288,13 @@ export default {
       ],
       // 表头
       columns: [
-        {
-          align: 'center',
-          title: '序号',
-          key: 'order',
-          width: '70px',
-          scopedSlots: { customRender: 'order' },
-        },
+        // {
+        //   align: 'center',
+        //   title: '序号',
+        //   key: 'order',
+        //   width: '70px',
+        //   scopedSlots: { customRender: 'order' },
+        // },
         {
           title: '收款编号',
           dataIndex: 'receiptCode',
