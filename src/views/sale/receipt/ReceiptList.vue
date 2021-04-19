@@ -104,7 +104,7 @@
               <a @click="handleEdit(record)">修改</a>
             </template>
             <template
-              v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && record.receiptStatus === 2"
+              v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && (+record.receiptStatus === 3 || +record.receiptStatus === 9)"
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>

@@ -247,30 +247,29 @@ export default {
             keepAlive: false,
             permission: ['permission']
           },
-          redirect:'/salary-management/commission/commissionDetailByPerson',
+          redirect: '/salary-management/commission/commissionDetailByPerson',
           children: [{
-              path: '/salary-management/commission/commissionDetailByPerson',
-              name: 'commission-detail-by-person',
-              component: () => import('@/views/salary-management/commission/commission-detail-by-person/List'),
-              meta: {
-                title: '人员提成明细',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }, {
-              path: '/salary-management/commission/commissionDetailDiffRecord',
-              name: 'commission-detail-diff-record',
-              component: () => import('@/views/salary-management/commission/commission-detail-diff-record/List'),
-              meta: {
-                title: '差额记录',
-                icon: 'select',
-                hidden: true,
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }
-          ]
+            path: '/salary-management/commission/commissionDetailByPerson',
+            name: 'commission-detail-by-person',
+            component: () => import('@/views/salary-management/commission/commission-detail-by-person/List'),
+            meta: {
+              title: '人员提成明细',
+              icon: 'select',
+              keepAlive: false,
+              permission: ['permission']
+            },
+          }, {
+            path: '/salary-management/commission/commissionDetailDiffRecord',
+            name: 'commission-detail-diff-record',
+            component: () => import('@/views/salary-management/commission/commission-detail-diff-record/List'),
+            meta: {
+              title: '差额记录',
+              icon: 'select',
+              hidden: true,
+              keepAlive: false,
+              permission: ['permission']
+            },
+          }]
         },
         {
           path: '/salary-management/commission/AIProductDetail',
@@ -282,30 +281,29 @@ export default {
             keepAlive: false,
             permission: ['permission']
           },
-          redirect:'/salary-management/commission/ai-product-detail/development',
+          redirect: '/salary-management/commission/ai-product-detail/development',
           children: [{
-              path: '/salary-management/commission/ai-product-detail/development',
-              name: 'ai-product-detail-development',
-              component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
-              meta: {
-                title: '部门提成明细',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }, {
-              path: '/salary-management/commission/ai-product-detail/diff',
-              name: 'ai-product-detail-diff',
-              component: () => import('@/views/salary-management/commission/ai-product-detail-diff/List'),
-              meta: {
-                title: '差额记录',
-                icon: 'select',
-                hidden: true,
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }
-          ]
+            path: '/salary-management/commission/ai-product-detail/development',
+            name: 'ai-product-detail-development',
+            component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
+            meta: {
+              title: '部门提成明细',
+              icon: 'select',
+              keepAlive: false,
+              permission: ['permission']
+            },
+          }, {
+            path: '/salary-management/commission/ai-product-detail/diff',
+            name: 'ai-product-detail-diff',
+            component: () => import('@/views/salary-management/commission/ai-product-detail-diff/List'),
+            meta: {
+              title: '差额记录',
+              icon: 'select',
+              hidden: true,
+              keepAlive: false,
+              permission: ['permission']
+            },
+          }]
         }
       ]
     },
@@ -334,7 +332,7 @@ export default {
               name: 'salary-subsidy-engineer-rules',
               component: () => import('@/views/salary-management/salary-subsidy-engineer-rules/List'),
               meta: {
-                title: '油补/通讯/高级工程师规则',
+                title: '油补/通讯',
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']

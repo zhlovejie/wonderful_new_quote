@@ -13,6 +13,13 @@
             }}</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item>
+          <a-select placeholder="选择请假类型" v-model="searchParam.holidayId" :allowClear="true" style="width: 200px">
+            <a-select-option v-for="item in holidayList" :key="item.id" :value="item.id">{{
+              item.holidayName
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
 
         <a-form-item>
           <a-select placeholder="选择审批状态" v-model="searchParam.status" :allowClear="true" style="width: 200px">
@@ -114,7 +121,12 @@
 import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
-import { attenceLeaveApplyDel, attenceLeaveApplyList, attenceLeaveApplyWithdraw } from '@/api/attendanceManagement'
+import {
+  attenceLeaveApplyDel,
+  attenceLeaveApplyList,
+  attenceLeaveApplyWithdraw,
+  attenceLeaveApplyAllHoliday,
+} from '@/api/attendanceManagement'
 import AddForm from './AddForm'
 
 import moment from 'moment'
@@ -182,6 +194,7 @@ export default {
   },
   data() {
     return {
+      holidayList: [],
       columns: columns,
       dataSource: [],
       pagination: {
@@ -225,8 +238,11 @@ export default {
       let that = this
       that.searchParam.searchStatus = that.activeKey
       let queue = []
+
       let task1 = departmentList().then((res) => (that.depList = res.data))
+      let task2 = attenceLeaveApplyAllHoliday().then((res) => (that.holidayList = res.data))
       queue.push(task1)
+      queue.push(task2)
       that.searchAction()
       return Promise.all(queue)
     },
