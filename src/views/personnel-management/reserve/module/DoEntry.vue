@@ -680,8 +680,8 @@
               <XdocView ref="xdocView" />
             </table>
           </a-tab-pane>
-          <a-tab-pane key="3" >
-               <span slot="tab" class="requiredMark">合同信息</span>
+          <a-tab-pane key="3">
+            <span slot="tab" class="requiredMark">合同信息</span>
             <h3>合同模板</h3>
             <table class="custom-table custom-table-border">
               <tr v-for="(item, index) in todayList" :key="index">
@@ -1007,6 +1007,13 @@ export default {
           if (res.data.contractDatalist) {
             that.todauuplate = res.data.contractDatalist
           }
+          Personnel_Reserve({ departmentId: that.department.departmentId, stationId: that.department.stationId }).then(
+            (res) => {
+              if (res.code === 200 && res.data.length === 0) {
+                this.$message.error('此岗位还没配置合同模板，请配置模板')
+              }
+            }
+          )
           if (res.data.commonCertificateList) {
             that.certificateList = res.data.commonCertificateList.map((item) => {
               return {
@@ -1031,7 +1038,6 @@ export default {
               }
             })
           }
-
           that.fillData(isDoEntryBefore ? 'before' : 'after', res.data)
         })
       } else {
@@ -1265,7 +1271,7 @@ export default {
           values.reserveId = that.record.id
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit' || that.type === 'add') {
-            if (that.todauuplate.length  >= that.todayList.length ) {
+            if (!that.todauuplate.length >= that.todayList.length) {
               return that.$message.error('请上传所有模板')
             }
             let __api__ = isDoEntryBefore ? reserveAddOrUpdate : reserveUpdateEntity
@@ -1293,7 +1299,7 @@ export default {
             if (!isDoEntryBefore) {
               return that.$message.info('该人员已经办理入职了')
             }
-            if (that.todauuplate.length >= that.todayList.length ) {
+            if (!that.todauuplate.length >= that.todayList.length) {
               return that.$message.error('请上传所有模板')
             }
             that.spinning = true
