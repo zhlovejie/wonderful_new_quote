@@ -116,17 +116,27 @@
             </template>
 
             <!--查看 修改:只添加行程 -->
-            <template v-if="+record.status === 2 && !record.endTime">
+            <template
+              v-if="
+                [2, 1].includes(+record.status) &&
+                record.users.some((item) => item.userName === userInfo.trueName && item.isFinished === 0)
+              "
+            >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('routeAdd', record)">添加行程</a>
             </template>
 
             <!-- 行程审批通过，尚未完结状态，，显示结束行程按钮 -->
-            <template v-if="+record.status === 2 && record.createdId === userInfo.id && !isFinished(record)">
+            <template
+              v-if="
+                +record.status === 2 &&
+                (record.createdId === userInfo.id ||
+                  record.users.some((item) => item.userName === userInfo.trueName)) &&
+                !isFinished(record)
+              "
+            >
               <a-divider type="vertical" />
-              <a-popconfirm title="确认结束行程吗?" @confirm="() => doAction('routeEnd', record)">
-                <a type="primary" href="javascript:;">结束行程</a>
-              </a-popconfirm>
+              <a type="primary" href="javascript:;" @click="doAction('routeEnd', record)">结束行程</a>
             </template>
 
             <!--查看 修改:只添加行程 -->
@@ -143,6 +153,7 @@
     <AddRoute ref="addRoute" />
 
     <FinanceForm ref="financeForm" @finish="searchAction({ current: 1 })" />
+    <UploadFace ref="uploadFace" @finish="searchAction({ current: 1 })" />
   </div>
 </template>
 
@@ -165,6 +176,7 @@ import AddRoute from './AddRoute'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { getDictionaryList } from '@/api/workBox'
+import UploadFace from './UploadFace'
 import action from '@/core/directives/action'
 
 export default {
@@ -174,6 +186,7 @@ export default {
     ApproveInfo,
     FinanceForm,
     AddRoute,
+    UploadFace,
   },
   data() {
     return {
@@ -396,16 +409,20 @@ export default {
         //添加行程
         that.$refs.addRoute.query(actionType, record)
       } else if (actionType === 'routeEnd') {
-        attenceTravelApplyFinishTravel(`id=${record.id}`)
-          .then((res) => {
-            that.$message.info(res.msg)
-            if (+res.code === 200) {
-              that.searchAction()
-            }
-          })
-          .catch((err) => {
-            that.$message.info(`错误：${err.message}`)
-          })
+        if (record.carDicNum) {
+          attenceTravelApplyFinishTravel(`id=${record.id}`)
+            .then((res) => {
+              that.$message.info(res.msg)
+              if (+res.code === 200) {
+                that.searchAction()
+              }
+            })
+            .catch((err) => {
+              that.$message.info(`错误：${err.message}`)
+            })
+        } else {
+          this.$refs.uploadFace.query(record)
+        }
       }
     },
     tabChange(tagKey) {

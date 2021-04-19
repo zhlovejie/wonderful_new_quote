@@ -242,6 +242,8 @@ export default {
       })
     },
     changeDstb(checked) {
+      console.log(checked)
+      this.cdsc = checked
       if (checked) {
         this.form.setFieldsValue({ canDistribute: 1 })
       } else {
@@ -249,6 +251,7 @@ export default {
       }
     },
     changeExtc(checked) {
+      this.cesc = checked
       if (checked) {
         this.form.setFieldsValue({ canExtract: 1 })
       } else {
@@ -256,6 +259,7 @@ export default {
       }
     },
     changeEtdp(checked) {
+      this.cedsc = checked
       if (checked) {
         this.form.setFieldsValue({ canEnterDep: 1 })
       } else {
@@ -263,6 +267,7 @@ export default {
       }
     },
     changeEtoh(checked) {
+      this.ceosc = checked
       if (checked) {
         this.form.setFieldsValue({ canEnterOther: 1 })
       } else {
@@ -270,6 +275,7 @@ export default {
       }
     },
     changeEtcm(checked) {
+      this.cecsc = checked
       if (checked) {
         this.form.setFieldsValue({ canEnterCommon: 1 })
       } else {
@@ -277,6 +283,7 @@ export default {
       }
     },
     changeOP(checked) {
+      this.op = checked
       if (checked) {
         this.form.setFieldsValue({ overduePunish: 1 })
       } else {

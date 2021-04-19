@@ -1265,7 +1265,7 @@ export default {
           values.reserveId = that.record.id
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit' || that.type === 'add') {
-            if (that.todauuplate.length !== that.todayList.length || that.todayList == []) {
+            if (that.todauuplate.length  >= that.todayList.length ) {
               return that.$message.error('请上传所有模板')
             }
             let __api__ = isDoEntryBefore ? reserveAddOrUpdate : reserveUpdateEntity
@@ -1293,7 +1293,7 @@ export default {
             if (!isDoEntryBefore) {
               return that.$message.info('该人员已经办理入职了')
             }
-            if (that.todauuplate.length !== that.todayList.length || that.todayList == []) {
+            if (that.todauuplate.length >= that.todayList.length ) {
               return that.$message.error('请上传所有模板')
             }
             that.spinning = true
