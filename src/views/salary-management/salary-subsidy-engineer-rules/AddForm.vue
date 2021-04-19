@@ -79,7 +79,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>高级工程师补贴(元)</td>
             <td>
               <a-form-item>
@@ -100,7 +100,7 @@
                 <span v-else>{{ detail.highEngAmount | moneyFormatNumber }}</span>
               </a-form-item>
             </td>
-          </tr>
+          </tr> -->
           <tr>
             <td>备注</td>
             <td>
