@@ -64,7 +64,7 @@
         </div>
       </a-table>
       <a-modal title="错误数据" :visible="visible" @ok="handleOk" @cancel="handleCancel">
-        <h3>总错误{{ iserror.failNum || 0 }}数据</h3>
+        <h3>{{ iserror.failNum || 0 }}条错误数据</h3>
         <div v-for="item in iserror.errorList" :key="item.failNum">
           <p>第{{ item.rowNum }}行 {{ item.msg }}</p>
         </div>
