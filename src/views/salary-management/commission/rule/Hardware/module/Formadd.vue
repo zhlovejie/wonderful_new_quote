@@ -146,10 +146,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改研发提成规则'
+        return '修改软件/硬件提成规则'
       }
       let txt = this.isView ? '查看' : this.isView5 ? '查看' : '新增'
-      return `${txt}研发提成规则`
+      return `${txt}软件/硬件提成规则`
     },
     isView() {
       //查看
