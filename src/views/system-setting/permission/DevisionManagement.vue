@@ -72,6 +72,7 @@
             <a-select-option :value="1">销售部</a-select-option>
             <a-select-option :value="2">研发部</a-select-option>
             <a-select-option :value="3">车间部门</a-select-option>
+            <a-select-option :value="4">软硬件</a-select-option>
           </a-select>
         </a-form-item>
 

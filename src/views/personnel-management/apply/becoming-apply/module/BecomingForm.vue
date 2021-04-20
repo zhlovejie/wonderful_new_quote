@@ -238,12 +238,12 @@
                   <td colspan="2">
                     <a-form-item>
                       <a-select
-                        placeholder="转正基本工资"
-                        style="width: 50%"
+                        placeholder="选择转正基本工资"
+                        style="width: 100%"
                         :disabled="disabled"
                         v-decorator="[
                           'fullMemberBasicSalary',
-                          { rules: [{ required: true, message: '选择转正基本工资' }] },
+                          { rules: [{ required: true, message: '请选择转正基本工资' }] },
                         ]"
                       >
                         <a-select-option :value="2500">2500</a-select-option>
@@ -254,8 +254,10 @@
                         <a-select-option :value="3300">3300</a-select-option>
                         <a-select-option :value="3500">3500</a-select-option>
                       </a-select>
+                    </a-form-item>
+                    <a-form-item>
                       <a-input-number
-                        style="width: 50%"
+                        style="width: 100%"
                         placeholder="转正岗位工资"
                         :disabled="disabled"
                         :min="0"

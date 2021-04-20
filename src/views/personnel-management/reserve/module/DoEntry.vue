@@ -1564,6 +1564,7 @@ export default {
         this.cycle = []
       } else {
         this.monthlyCycle = false
+        this.form.setFieldsValue({ cycle: '' })
       }
     },
     yearSalaryIdChange(e) {
