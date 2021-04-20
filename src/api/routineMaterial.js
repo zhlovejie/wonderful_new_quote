@@ -96,6 +96,15 @@ export function routineMaterialRulePageTreeList(parameter) {
   })
 }
 
+export function routineMaterialRulePageTwoTierTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/twoTierTreeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 // 成品物料规则--------------------------
 
@@ -190,6 +199,17 @@ export function productMaterialRulePageTreeList(parameter) {
   })
 }
 
+/**树形列表 成品物料规则接口 */
+export function productMaterialRulePageTwoTierTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialRule/twoTierTreeList',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+
 /**审核 物料规则审核接口 */
 export function materialRuleAudit(parameter) {
   return axios({
@@ -217,6 +237,16 @@ export function materialRuleAuditPageList(parameter) {
     url: '/materialRuleAudit/pageList',
     method: 'GET',
     params: parameter
+  })
+}
+
+/** 常规物料规则 复制接口 */
+export function routineMaterialRuleCopy(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/copy',
+    method: 'PUT',
+    data: parameter
   })
 }
 

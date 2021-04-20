@@ -19,25 +19,20 @@ export default {
   //baseURL: 'http://192.168.13.2:8999/oa',
   //baseURL: 'http://192.168.13.197:8999/oa',
   // baseURL: 'http://192.168.13.158:8997/oa',
-  baseURL: 'http://106.14.194.64/cloud_new',
+  //baseURL: 'http://106.14.194.64/cloud_new',
   // baseURL: 'http://192.168.13.253/oa',
-  materialBaseUrl:'http://192.168.13.146:8995',//物料规则专用地址
+  baseURL: 'http://192.168.13.151:8998',
+  //baseURL: 'http://192.168.13.158:8995/oa',
+  //baseURL:'http://192.168.13.250/cloud',
+
+  materialBaseUrl:'http://192.168.13.151:8998',//物料规则专用地址
 
   //baseURL:'http://192.168.13.158:8997/oa',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息
     appKey: 'd39b58df3a9b437cac8a0c6a120ef1eb',
     appSecret: 'bbe8423572c73f7ef47002d28852c26b',
-    deviceList:[
-      {
-        key:1,
-        deviceSerial: 'E54619002' // 监控设备-公司大门口
-      },
-      {
-        key:2,
-        deviceSerial: 'E94761575' // 监控设备-105会议室
-      }
-    ]
+    deviceSerial: 'E54619002'
   },
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu

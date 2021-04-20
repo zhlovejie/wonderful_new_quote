@@ -3,12 +3,14 @@
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
-          <a-input-search
+          <!-- <a-input-search
             style="line-height: 40px; width: 100%"
             placeholder="代码/名称模糊查询"
             @change="treeInputSearchDebounce"
-          />
+          /> -->
           <a-tree
+            ref="treeRef"
+            :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             :defaultExpandAll="true"
@@ -104,6 +106,7 @@ import {
   routineMaterialRuleStartUsing,
   routineMaterialRulePageList,
   routineMaterialRulePageTreeList,
+  routineMaterialRulePageTwoTierTreeList,
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -156,6 +159,7 @@ export default {
     return {
       parentId: 0, // 父id
       parentItem: {},
+      selectedTreeNode: null, //新增修改后刷新节点用
       // 表头
       columns,
       orgTree: [],
@@ -246,7 +250,6 @@ export default {
         autoExpandParent: true,
       })
     },
-
     generateList(data) {
       let arr = []
       for (let i = 0; i < data.length; i++) {
@@ -269,20 +272,67 @@ export default {
       }
 
       this.parentId = 0
-      ;(this.queryParam = {
+      this.selectedTreeNode = null
+      this.queryParam = {
         ...this.queryParam,
         parentId: this.parentId,
-      }),
-        this.fetchTree()
+      }
+      this.fetchTree()
       this.search()
 
       this.$nextTick(() => {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
+    onLoadData(treeNode, isForceRefresh = false) {
+      const that = this
+      that.selectedTreeNode = treeNode
+      return new Promise((resolve) => {
+        if (!isForceRefresh && treeNode.dataRef.children) {
+          resolve()
+          return
+        }
+        routineMaterialRulePageTwoTierTreeList({ parentId: treeNode.dataRef.value })
+          .then((res) => {
+            let oldChildren = [...(treeNode.dataRef.children || [])]
+            let newChildren = res.data.map((item) => that.formatTreeData(item))
+            let children = that.margeNode(oldChildren, newChildren)
+
+            treeNode.dataRef.children = children
+            that.orgTree = [...that.orgTree]
+            that.dataList = that.generateList(that.orgTree)
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            that.$message.error(`调用接口[routineMaterialRulePageTwoTierTreeList]时发生错误，错误信息:${err}`)
+          })
+      })
+    },
+    margeNode(oldChildren, newChildren) {
+      let arr = []
+      for (let i = 0; i < newChildren.length; i++) {
+        let newNode = newChildren[i]
+        let oldNode = oldChildren.find((node) => node.value === newNode.value)
+        if (oldNode) {
+          for (let key in newNode) {
+            if (newNode.hasOwnProperty(key) && key !== 'children') {
+              oldNode[key] = newNode[key]
+            }
+          }
+          arr.push(oldNode)
+        } else {
+          arr.push(newNode)
+        }
+      }
+      return arr
+    },
     fetchTree() {
       const that = this
-      routineMaterialRulePageTreeList()
+      // routineMaterialRulePageTwoTierTreeList({parentId:that.parentId}).then(res =>{
+      //   console.log(res)
+      // })
+      routineMaterialRulePageTwoTierTreeList({ parentId: 0 })
         .then((res) => {
           const root = {
             key: '0',
@@ -312,6 +362,7 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
       }
+      that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       routineMaterialRulePageList(_searchParam)
         .then((res) => {
@@ -355,9 +406,13 @@ export default {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+
+      let ruleName = item.newRuleName || item.ruleName
+      let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
+      obj.title = `${ruleName}${showCode}`
+
       obj.value = String(item.id)
-      obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
+      // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
       obj.code = item.code
@@ -370,6 +425,7 @@ export default {
     },
     handleClick(selectedKeys, e) {
       const that = this
+      that.selectedTreeNode = e.node
       let dataRef = e.node.dataRef
       // 点击树结构菜单
       var parentId = this.parentId
@@ -449,7 +505,7 @@ export default {
               .then((res) => {
                 that.$message.info(res.msg)
                 if (res.code === 200) {
-                  that.finishHandler()
+                  that.finishHandler({ key: that.parentItem.value })
                 }
               })
               .catch((err) => {
@@ -459,11 +515,27 @@ export default {
         })
       }
     },
-    finishHandler() {
+    finishHandler(param) {
       this.selectedRowKeys = []
       this.selectedRows = []
-      this.fetchTree()
+      let target = this.findTreeNode(this.$refs.treeRef, param.key)
+      if (target) {
+        this.onLoadData(target, true)
+      }
       this.search()
+    },
+    findTreeNode(rootNode, key) {
+      if (rootNode.dataRef && rootNode.dataRef.value === key) {
+        return rootNode
+      }
+      if (Array.isArray(rootNode.$children)) {
+        for (let i = 0; i < rootNode.$children.length; i++) {
+          let node = this.findTreeNode(rootNode.$children[i], key)
+          if (node) {
+            return node
+          }
+        }
+      }
     },
     customRowFunction(record) {
       // auditStatus审核状态：1未审核，2审批中，3已审核
