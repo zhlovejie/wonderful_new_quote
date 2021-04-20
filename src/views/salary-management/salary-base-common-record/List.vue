@@ -59,10 +59,16 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="salaryType" slot-scope="text, record, index">
+        <div slot="salaryType" slot-scope="text, record">
           <span>{{ record.salaryType === 0 ? '月薪制' : `年薪制-${record.yearSalaryText}` }}</span>
         </div>
       </a-table>
+      <a-modal title="错误数据" :visible="visible" @ok="handleOk" @cancel="handleCancel">
+        <h3>总错误{{ iserror.failNum || 0 }}数据</h3>
+        <div v-for="item in iserror.errorList" :key="item.failNum">
+          <p>第{{ item.rowNum }}行 {{ item.msg }}</p>
+        </div>
+      </a-modal>
     </a-layout>
   </a-card>
 </template>
@@ -157,6 +163,7 @@ export default {
   name: 'RoleManagement',
   data() {
     return {
+      visible: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
@@ -179,6 +186,7 @@ export default {
       departmentList: [],
       // 角色列表
       roleList: {},
+      iserror: {},
       uploading: false,
       fileList: [],
       aceptFileTypes: [
@@ -204,6 +212,12 @@ export default {
   },
   methods: {
     moment: moment,
+    handleOk() {
+      this.visible = false
+    },
+    handleCancel() {
+      this.visible = false
+    },
     beforeUpload(file) {
       let _aceptFileTypes = this.aceptFileTypes
       const isDocType = _aceptFileTypes.includes(file.type)
@@ -221,15 +235,16 @@ export default {
       return false
     },
     handleUpload() {
-      const { fileList } = this
+      const that = this
+      const { fileList } = that
       const formData = new FormData()
       fileList.forEach((file) => {
         formData.append('file', file)
       })
-      this.uploading = true
+      that.uploading = true
       salary_base_record_ImportExcel(formData)
         .then((res) => {
-          this.uploading = false
+          that.uploading = false
           console.log(res.type)
           if (res instanceof Blob) {
             let action = {
@@ -247,7 +262,7 @@ export default {
               a.click()
               document.body.removeChild(a)
 
-              this.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
+              that.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
               return
             } else if (action.isJson) {
               var reader = new FileReader()
@@ -260,8 +275,15 @@ export default {
                   console.log('JSON.parse error...', e.target.result)
                 }
                 if (_res !== null) {
-                  this.$message.success(_res.msg || '操作成功')
-                  this.fileList = []
+                  that.fileList = []
+                  console.log(_res.msg)
+                  try {
+                    that.iserror = JSON.parse(_res.msg)
+                  } catch (err) {
+                    console.log(err)
+                  }
+
+                  that.visible = true
                 }
               }
               reader.readAsText(res)
@@ -271,16 +293,18 @@ export default {
             console.log('类型：' + typeof res)
             console.log(res)
           }
-          // let that = this
+          // let that = that
           // if (res.code === 200) {
           //   that.$message.info(res.msg || '操作成功')
-          //   this.searchAction()
+          //   that.searchAction()
           // } else {
-          //   that.$message.error(res.msg)
+          //   console.log(res)
+          //   that.iserror = JSON.stringify(res.msg)
+          //   that.visible = true
           // }
         })
         .catch((err) => {
-          this.uploading = false
+          that.uploading = false
           that.$message.error(res.msg)
           console.log(err)
         })
