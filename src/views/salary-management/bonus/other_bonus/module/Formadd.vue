@@ -140,7 +140,7 @@ import {
   getStationList, //获取部门下面的岗位
   getUserByStation, //获取人员
 } from '@/api/systemSetting'
-import { other_addAndUpdate, other_approval } from '@/api/bonus_management'
+import { other_addAndUpdate, other_approval ,other_detail} from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -222,34 +222,38 @@ export default {
       )
     },
     //接受数据
-    query(type, record) {
-      console.log(this.record)
-      this.form.resetFields() // 清空表
-      this.visible = true
-      this.type = type
-      this.record = record
+    async query(type, record) {
+      const that = this
+      await that.form.resetFields() // 清空表
+      that.visible = true
+      that.type = type
+      that.record = record
       if (type !== 'add') {
-        getStationList({ id: record.departmentId }).then((res) => {
-          this.postSelectDataSource = res.data
-        })
-        getUserByStation({ stationId: record.stationId, showLeaveFlag: 1 }).then(
-          (res) => (this.personSelectDataSource = res.data)
-        )
-        this.fillData()
+        let detail = await other_detail({id:record.id}).then(res =>res.data)
+        await Promise.all([
+          getStationList({ id: detail.departmentId }).then((res) => {
+            that.postSelectDataSource = res.data
+          }),
+          getUserByStation({ stationId: detail.stationId, showLeaveFlag: 1 }).then(
+            (res) => (that.personSelectDataSource = res.data)
+          )
+        ])
+        // that.form.setFieldsValue(detail)
+        that.fillData(detail)
       }
     },
     // 详情
-    fillData() {
-      let that = this
-      this.$nextTick(() => {
-        this.form.setFieldsValue({
-          amount: this.record.amount,
-          departmentId: this.record.departmentId,
-          itemType: this.record.itemType,
-          reason: this.record.reason,
-          stationId: this.record.stationId,
-          userId: this.record.userId,
-          remark: this.record.remark,
+    fillData(detail) {
+      const that = this
+      that.$nextTick(() => {
+        that.form.setFieldsValue({
+          amount: detail.amount,
+          departmentId: detail.departmentId,
+          itemType: detail.itemType,
+          reason: detail.reason,
+          stationId: detail.stationId,
+          userId: detail.userId,
+          remark: detail.remark,
         })
       })
     },
