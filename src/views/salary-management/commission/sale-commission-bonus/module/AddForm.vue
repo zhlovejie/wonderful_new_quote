@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1150"
+    :width="1450"
     :visible="visible"
     @cancel="handleCancel"
     :footer="footer"
@@ -11,6 +11,7 @@
       <h2 style="text-align: center" v-html="headerTitle" />
       <h3 v-html="headerTotalTitle" />
       <a-table
+        bordered
         v-for="item in salerBounsDetailVoList"
         :key="item.key"
         :title="() => item.departmentName"
@@ -188,7 +189,10 @@ export default {
                 // 格式化数字
                 that.columns.map((col) => {
                   if (col.moneyFormat) {
-                    detail[col.dataIndex] = that.$root._f('moneyFormatNumber')(detail[col.dataIndex])
+                    // detail[col.dataIndex] = that.$root._f('moneyFormatNumber')(detail[col.dataIndex])
+                    detail[col.dataIndex] = detail[col.dataIndex]
+                      ? that.$root._f('moneyFormatNumber')(detail[col.dataIndex])
+                      : '-'
                   }
                 })
                 return detail
