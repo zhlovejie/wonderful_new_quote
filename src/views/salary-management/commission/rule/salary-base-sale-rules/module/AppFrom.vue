@@ -23,14 +23,14 @@
             <td colspan="2">
               <a-form-item>
                 <a-input-number
-                  :precision="2"
+                  :precision="6"
                   style="width: 190px"
                   placeholder="输入销售额起始值"
                   v-decorator="['salerAmountBegin', { rules: [{ required: true, message: '请输入销售额起始值' }] }]"
                 />
                 <span> 至 </span>
                 <a-input-number
-                  :precision="2"
+                  :precision="6"
                   style="width: 190px"
                   placeholder="输入销售额结束值"
                   v-decorator="['salerAmountEnd', { rules: [{ required: true, message: '请输入销售额结束值' }] }]"
