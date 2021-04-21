@@ -27,7 +27,7 @@ export function receiptAnalyse_getSumAmount(parameter) {
 
 
 
-//软硬件提成奖金列表 
+//软硬件提成奖金列表
 export function softHardPercentageBonus_list(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -55,7 +55,7 @@ export function softHardPercentageBonus_del(parameter) {
   })
 }
 
-//软硬件提成奖金详情 
+//软硬件提成奖金详情
 export function softHardPercentageBonus_Detail(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -64,7 +64,7 @@ export function softHardPercentageBonus_Detail(parameter) {
     params: parameter
   })
 }
-//软硬件提成奖金审批 
+//软硬件提成奖金审批
 export function softHardPercentageBonus_Apply(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -221,7 +221,7 @@ export function oaSalaryIsSalary(parameter) {
   })
 }
 
-// 工资条下载 
+// 工资条下载
 
 export function getExportList(parameter) {
   return axios({
@@ -233,7 +233,7 @@ export function getExportList(parameter) {
   })
 }
 
-//销售提成下载 
+//销售提成下载
 export function getSalerPercentageExcel(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -343,7 +343,7 @@ export function year_List(parameter) {
   })
 }
 
-//查询本年数据 
+//查询本年数据
 export function year_bonus_annua(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -394,7 +394,7 @@ export function year_send_getId(parameter) {
   })
 }
 
-//年终撤回 
+//年终撤回
 export function year_send_annual(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -431,7 +431,17 @@ export function other_add(parameter) {
     params: parameter
   })
 }
-//其他奖金新增 
+
+export function other_detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-bouns-other/getId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//其他奖金新增
 export function other_addAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -458,7 +468,7 @@ export function other_del(parameter) {
     data: parameter
   })
 }
-//其他奖金审批 
+//其他奖金审批
 export function other_approval(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -506,6 +516,14 @@ export function capital_bill_List(parameter) {
   })
 }
 
+export function capital_bill_detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-fine-apply/getId',
+    method: 'get',
+    params: parameter
+  })
+}
 //罚款单销毁
 
 export function capital_destruction(parameter) {
@@ -551,7 +569,7 @@ export function capital_bill_withdraw(parameter) {
   })
 }
 
-//罚款单删除 
+//罚款单删除
 export function capital_bill_del(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -571,7 +589,7 @@ export function capital_bill_approval(parameter) {
   })
 }
 
-// 基本工资表 
+// 基本工资表
 
 
 export function salary_base_record_List(parameter) {
@@ -716,7 +734,7 @@ export function bonus_DeveloperPercentageApply(parameter) {
     data: parameter
   })
 }
-// 研发提成详情 
+// 研发提成详情
 export function bonus_PercentageDetailt(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -727,7 +745,7 @@ export function bonus_PercentageDetailt(parameter) {
 }
 
 
-//销售提成列表 
+//销售提成列表
 export function sale_PercentageList(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -779,7 +797,7 @@ export function sale_ApprovalSalary(parameter) {
 }
 
 
-//销售提成删除 
+//销售提成删除
 export function sale_Remove(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -789,7 +807,7 @@ export function sale_Remove(parameter) {
   })
 }
 
-//销售提成经理人员 
+//销售提成经理人员
 export function sale_ByDepId(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -799,7 +817,7 @@ export function sale_ByDepId(parameter) {
   })
 }
 
-//销售提成新增修改 
+//销售提成新增修改
 
 export function sale_add(parameter) {
   return axios({
@@ -809,7 +827,7 @@ export function sale_add(parameter) {
     data: parameter
   })
 }
-// 销售岗位 
+// 销售岗位
 
 export function getSaleStation(parameter) {
   return axios({
@@ -819,7 +837,7 @@ export function getSaleStation(parameter) {
     params: parameter
   })
 }
-//销汇总查询 
+//销汇总查询
 export function sale_SalerMonthCollectDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -838,7 +856,7 @@ export function wages_List(parameter) {
   })
 }
 
-//工资条批量审批 
+//工资条批量审批
 
 export function wages_approcal(parameter) {
   return axios({
@@ -859,7 +877,7 @@ export function wages_del(parameter) {
   })
 }
 
-//工资条详情数据 
+//工资条详情数据
 export function wages_Detail(parameter) {
   return axios({
     baseURL: system.baseURL,
@@ -898,7 +916,7 @@ export function floorsAnnual_List(parameter) {
     params: parameter
   })
 }
-//薪资核算批量审批 
+//薪资核算批量审批
 
 export function floorsAnnual_approcal(parameter) {
   return axios({

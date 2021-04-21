@@ -241,22 +241,25 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      this.month = record.monthid
+      // this.month = record.monthid
       this.queryParam.id = record.id
       this.searchAction({ id: record.id })
     },
     searchAction(opt) {
-      let that = this
+      const that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
+      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})
       floorsAnnual_Detail(_searchParam)
         .then((res) => {
           that.loading = false
-          this.realSalaryBigDecimal = res.data.realSalaryBigDecimal
-          this.calculateSalaryBigDecimal = res.data.calculateSalaryBigDecimal
-          this.annualPeriodicSalaryBigDecimal = res.data.annualPeriodicSalaryBigDecimal
-          this.guaranteedBalanceBigDecimal = res.data.guaranteedBalanceBigDecimal
-          this.salaryItemBase = res.data.salaryTab.salaryItemBase.map((item) => {
+          try{
+            that.month = res.data.staticsDate
+          }catch(e){}
+          that.realSalaryBigDecimal = res.data.realSalaryBigDecimal
+          that.calculateSalaryBigDecimal = res.data.calculateSalaryBigDecimal
+          that.annualPeriodicSalaryBigDecimal = res.data.annualPeriodicSalaryBigDecimal
+          that.guaranteedBalanceBigDecimal = res.data.guaranteedBalanceBigDecimal
+          that.salaryItemBase = res.data.salaryTab.salaryItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -264,7 +267,7 @@ export default {
               align: 'center',
             }
           })
-          this.bounsItemBase = res.data.salaryTab.bounsItemBase.map((item) => {
+          that.bounsItemBase = res.data.salaryTab.bounsItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -272,7 +275,7 @@ export default {
               align: 'center',
             }
           })
-          this.allowanceItemBase = res.data.salaryTab.allowanceItemBase.map((item) => {
+          that.allowanceItemBase = res.data.salaryTab.allowanceItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -280,7 +283,7 @@ export default {
               align: 'center',
             }
           })
-          this.fineItemBase = res.data.salaryTab.fineItemBase.map((item) => {
+          that.fineItemBase = res.data.salaryTab.fineItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -288,7 +291,7 @@ export default {
               align: 'center',
             }
           })
-          this.percentageItemBase = res.data.salaryTab.percentageItemBase.map((item) => {
+          that.percentageItemBase = res.data.salaryTab.percentageItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,

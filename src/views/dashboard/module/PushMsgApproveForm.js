@@ -18,6 +18,13 @@ import ApproveBusinessBorrowing from '@views/sales-management/businessBorrowing/
 import ApproveBidBorrowing from '@views/sales-management/bidBorrowing/AddForm.vue'
 import ApproveAfterSales from '@views/sales-management/afterSales/AddForm.vue'
 
+import ApproveYearEndBonus from '@views/salary-management/bonus/year_end_bonus/module/Formadd.vue'
+import ApproveOtherBonus from '@/views/salary-management/bonus/other_bonus/module/Formadd.vue'
+import ApproveSeniorWorker from '@/views/Human-resource-management/senior_worker/module/Formadd.vue'
+
+import ApproveCapitalBill from '@/views/salary-management/capital/bill/module/Formadd.vue'
+import ApproveSalaryDetails from '@/views/salary-management/salary-details/module/Formadd.vue'
+import ApproveSalaryAccounting from '@/views/salary-management/Salary_accounting/module/Formadd.vue'
 export default {
   //考勤模块
   42: ApproveBusinessTrip, //出差申请
@@ -40,7 +47,11 @@ export default {
   32: ViewMeetingManagement, //会议启动消息，提示进入会议列表
 
   62: ApproveVehicleManagement, //用车申请
-
+  69: ApproveYearEndBonus, //年终奖金
+  70: ApproveOtherBonus, // 其他奖金
+  71: ApproveCapitalBill, //罚款单
+  72: ApproveSeniorWorker, // 高级工程师
+  80: ApproveSalaryDetails, // 工资条
   88: ApproveDistributorContractManagement, //经销商合同
   89: ApproveStrategicCooperationAgreement, //战略合作协议
   90: ApproveRefundApply, //返款申请
@@ -49,4 +60,5 @@ export default {
   93: ApproveBidBorrowing, //资质借用投标借用协议
   //94: 'contractBehalfList', //代签购货合同
   95: ApproveAfterSales, //产品售后服务外包协议
+  103: ApproveSalaryAccounting , // 薪资核算
 }

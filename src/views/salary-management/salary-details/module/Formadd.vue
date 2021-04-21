@@ -230,18 +230,23 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      this.month = record.month
+      // this.month = record.month
       this.queryParam.applyId = record.id
       this.searchAction({ applyId: record.id })
     },
     searchAction(opt) {
-      let that = this
+      const that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
+      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})
       wages_Detail(_searchParam)
         .then((res) => {
           that.loading = false
-          this.salaryItemBase = res.data.headDicList.salaryItemBase.map((item) => {
+          try{
+            that.month = res.data.oaSalaryMonthDetailVo.month
+          }catch(e){
+            console.error(`month 获取失败...`)
+          }
+          that.salaryItemBase = res.data.headDicList.salaryItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -249,7 +254,7 @@ export default {
               align: 'center',
             }
           })
-          this.bounsItemBase = res.data.headDicList.bounsItemBase.map((item) => {
+          that.bounsItemBase = res.data.headDicList.bounsItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -257,7 +262,7 @@ export default {
               align: 'center',
             }
           })
-          this.allowanceItemBase = res.data.headDicList.allowanceItemBase.map((item) => {
+          that.allowanceItemBase = res.data.headDicList.allowanceItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -265,7 +270,7 @@ export default {
               align: 'center',
             }
           })
-          this.fineItemBase = res.data.headDicList.fineItemBase.map((item) => {
+          that.fineItemBase = res.data.headDicList.fineItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -273,7 +278,7 @@ export default {
               align: 'center',
             }
           })
-          this.percentageItemBase = res.data.headDicList.percentageItemBase.map((item) => {
+          that.percentageItemBase = res.data.headDicList.percentageItemBase.map((item) => {
             return {
               title: item.text,
               dataIndex: item.code,
@@ -282,7 +287,7 @@ export default {
             }
           })
           if (res.data.oaSalaryMonthDetailVo.type === 1) {
-            this.company = [
+            that.company = [
               {
                 title: '公户',
                 dataIndex: 'householdPubliceBigDecimal',
@@ -291,7 +296,7 @@ export default {
               },
             ]
           } else if (res.data.oaSalaryMonthDetailVo.type === 2) {
-            this.company = [
+            that.company = [
               {
                 title: '私户',
                 dataIndex: 'householdPrivateBigDecimal',
@@ -300,7 +305,7 @@ export default {
               },
             ]
           } else {
-            this.company = [
+            that.company = [
               {
                 title: '代发工资',
                 dataIndex: 'issuedBehalfSalaryBigDecimal',
