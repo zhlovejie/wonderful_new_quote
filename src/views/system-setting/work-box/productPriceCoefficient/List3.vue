@@ -1,0 +1,33 @@
+<template>
+  <!-- 5.0产品价格系数 -->
+  <BaseList ref="baseList" :type="2" />
+</template>
+<script>
+import BaseList from './List'
+
+export default {
+  name: 'productPriceCoefficient5d0',
+  components: {
+    BaseList,
+  },
+  data() {
+    return {}
+  },
+  watch: {
+    $route: {
+      handler: function (to, from) {
+        if (to.name === 'productPriceCoefficient5d0') {
+          this.init()
+        }
+      },
+      immediate: true,
+    },
+  },
+  methods: {
+    init() {
+      let that = this
+      that.$nextTick(() => that.$refs.baseList && that.$refs.baseList.searchAction())
+    },
+  },
+}
+</script>
