@@ -44,7 +44,7 @@
           <span>{{ text | moneyFormatNumber }}</span>
         </div>
         <div slot="staticsDate" slot-scope="text, record, index">
-          <span>{{ text ? String(text).slice(0,10) : text }}</span>
+          <span>{{ text ? String(text).slice(0,7) : text }}</span>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">

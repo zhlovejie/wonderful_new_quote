@@ -33,7 +33,7 @@
           <span>{{ text | moneyFormatNumber }}</span>
         </div>
         <div slot="staticsDate" slot-scope="text, record, index">
-          <span>{{ text ? String(text).slice(0, 10) : text }}</span>
+          <span>{{ text ? String(text).slice(0, 7) : text }}</span>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -149,6 +149,7 @@ export default {
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             item.effective = `${item.effectiveStart} ~ ${item.effectiveEnd}`
+
             return item
           })
           //设置数据总条数

@@ -229,6 +229,7 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.month = item.month ? item.month.slice(0,7) : item.month
             return item
           })
           //设置数据总条数
