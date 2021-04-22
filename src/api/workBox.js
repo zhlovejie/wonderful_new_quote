@@ -47,7 +47,14 @@ const api = {
   //数据字典接口 
   getListByCode: 'dictionary/getListByCode',
   //非常规产品信息列表
-  saleValencyProduct: '/api/saleValencyProduct'
+  saleValencyProduct: '/api/saleValencyProduct',
+
+  // 
+  //消息推送共享设置
+  pushMsgList: '/pushMsg/push-msg-user/page',
+  pushMsgDel: '/pushMsg/push-msg-user/del',
+  pushMsgAdd: '/pushMsg/push-msg-user/addAndUpdate',
+
 }
 
 //数据字典 
@@ -68,6 +75,33 @@ export function saleValencyProductList(parameter) {
     url: api.saleValencyProduct,
     method: 'get',
     params: parameter
+  })
+}
+//消息推送共享设置  
+export function pushMsgList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pushMsgList,
+    method: 'get',
+    params: parameter
+  })
+}
+//消息推送共享设置删除
+export function pushMsgDel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pushMsgDel,
+    method: 'get',
+    params: parameter
+  })
+}
+//消息推送共享设置新增修改
+export function pushMsgAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pushMsgAdd,
+    method: 'post',
+    data: parameter
   })
 }
 

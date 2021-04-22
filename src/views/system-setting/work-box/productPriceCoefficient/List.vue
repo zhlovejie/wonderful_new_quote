@@ -2,13 +2,9 @@
   <!-- 产品价格系数 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-button
-        class="a-button"
-        style="float:right;"
-        type="primary"
-        icon="plus"
-        @click="doAction('add',null)"
-      >新增</a-button>
+      <a-button class="a-button" style="float: right" type="primary" icon="plus" @click="doAction('add', null)"
+        >新增</a-button
+      >
     </div>
     <div class="main-wrapper">
       <a-table
@@ -22,9 +18,9 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <a type="primary" @click="doAction('edit', record)">修改</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
             <a type="primary" href="javascript:;">删除</a>
           </a-popconfirm>
         </div>
@@ -39,7 +35,7 @@ import {
   productPriceCoefficientDelete,
   productPriceCoefficientDetail,
   productPriceCoefficientListWithoutPage,
-  productPriceCoefficientList
+  productPriceCoefficientList,
 } from '@/api/workBox'
 
 import AddForm from './AddForm'
@@ -49,93 +45,94 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'name'
+    dataIndex: 'name',
   },
   {
     align: 'center',
     title: '系数',
-    dataIndex: 'coefficient'
+    dataIndex: 'coefficient',
   },
   {
     align: 'center',
     title: '税率',
-    dataIndex: 'tax'
+    dataIndex: 'tax',
   },
   {
     align: 'center',
     title: 'A类价格系数',
-    dataIndex: 'apriceCoefficient'
+    dataIndex: 'apriceCoefficient',
   },
   {
     align: 'center',
     title: 'B类价格系数',
-    dataIndex: 'bpriceCoefficient'
+    dataIndex: 'bpriceCoefficient',
   },
   {
     align: 'center',
     title: 'C类价格系数',
-    dataIndex: 'cpriceCoefficient'
+    dataIndex: 'cpriceCoefficient',
   },
   {
     align: 'center',
     title: '提交人',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
     title: '提交时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'productPriceCoefficient',
   components: {
-    AddForm: AddForm
+    AddForm: AddForm,
   },
-  props:{
-    type:{ // 0是 4.0报价系数 1是 2.0报价系数
-      type:Number,
-      default:0
-    }
+  props: {
+    type: {
+      // 0是 4.0报价系数 1是 2.0报价系数  2是5.0报价系数
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
       columns: columns,
       dataSource: [],
       pagination: {
-        current: 1
+        current: 1,
       },
-      loading: false
+      loading: false,
     }
   },
   computed: {
     searchParam() {
       return {
-        type:this.type
+        type: this.type,
       }
-    }
+    },
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'productPriceCoefficient4d0') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     init() {
@@ -145,12 +142,12 @@ export default {
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt || {}, {
-        searchStatus: that.activeKey
+        searchStatus: that.activeKey,
       })
       console.log('执行搜索...', _searchParam)
       that.loading = true
       productPriceCoefficientList(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -161,7 +158,7 @@ export default {
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -175,18 +172,18 @@ export default {
       let that = this
       if (type === 'del') {
         productPriceCoefficientDelete({ id: record.id })
-          .then(res => {
+          .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch(err => {
+          .catch((err) => {
             that.$message.info(`错误：${err.message}`)
           })
         return
       }
-      this.$refs.addForm.query(type, Object.assign({},record || {},{type:that.type}))
-    }
-  }
+      this.$refs.addForm.query(type, Object.assign({}, record || {}, { type: that.type }))
+    },
+  },
 }
 </script>
 <style scoped>

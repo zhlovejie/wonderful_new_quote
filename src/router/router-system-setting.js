@@ -134,6 +134,15 @@ export default {
           }
         },
         {
+          path: '/system-setting/sharingSettings',
+          name: 'sharing_settings',
+          component: () => import('@/views/system-setting/sharingSettings/list'),
+          meta: {
+            title: '推送共享设置',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/system-setting/work-box/CommonSeal',
           name: 'CommonSeal',
           component: () => import('@/views/system-setting/work-box/CommonSeal'),
