@@ -337,18 +337,18 @@
                   v-decorator="[
                     'carDicNum',
                     {
-                      initialValue: detail.carDicNum ? +detail.carDicNum : undefined,
+                      initialValue: detail.carDicNum,
                       rules: [{ required: isCompanyCar, message: '选择公车' }],
                     },
                   ]"
                   :allowClear="true"
                   style="width: 334px"
                 >
-                  <a-select-option v-for="item in carList" :key="item.id" :value="item.id">{{
+                  <a-select-option v-for="item in carList" :key="item.id" :value="item.text">{{
                     item.text
                   }}</a-select-option>
                 </a-select>
-                <span v-else>{{ detail.carDicNumTxt }}</span>
+                <span v-else>{{ detail.carDicNum }}</span>
               </a-form-item>
             </td>
             <td style="width: 120px">预支金额(元)</td>
@@ -661,7 +661,8 @@ export default {
             }, 500)
             return
           }
-          data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
+          // debugger
+          // data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
           //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
           that.detail = { ...data }
 
