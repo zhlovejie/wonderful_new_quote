@@ -60,8 +60,11 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="isEnd" slot-scope="text, record">
+          <span>{{ record.isEnd === 0 ? '未完结' : '已完结' }}</span>
+        </div>
 
-        <div slot="status" slot-scope="text, record, index">
+        <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStatusText(text) }}</a>
         </div>
 
@@ -76,6 +79,10 @@
             <template v-if="$auth('refund:edit') && (+record.status === 2 || +record.status === 9)">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
+            </template>
+            <template v-if="record.status === 1 && record.isEnd === 0">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('refund', record)">新增退款</a>
             </template>
             <template v-if="record.status === 0">
               <a-divider type="vertical" />
@@ -104,13 +111,15 @@
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
+    <FromAdd ref="fromAdd" />
     <AddForm ref="addForm" @finish="searchAction()" />
   </div>
 </template>
 <script>
 import { getListSaleContractUser } from '@/api/contractListManagement'
-import { refundPageList, refundRevocation, refundDel ,saleRefundGetSumAmountByList} from '@/api/receipt'
+import { refundPageList, refundRevocation, refundDel, saleRefundGetSumAmountByList } from '@/api/receipt'
 import AddForm from './module/AddForm'
+import FromAdd from './module/FromAdd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { exprotAction } from '@/api/receipt'
 const columns = [
@@ -160,9 +169,21 @@ const columns = [
   },
   {
     align: 'center',
-    title: '退款总金额',
+    title: '预退款总金额',
     key: 'refundAmountMoney',
     dataIndex: 'refundAmountMoney',
+  },
+  {
+    align: 'center',
+    title: '实际退款总金额',
+    key: 'realityAmount',
+    dataIndex: 'realityAmount',
+  },
+  {
+    align: 'center',
+    title: '状态',
+    dataIndex: 'isEnd',
+    scopedSlots: { customRender: 'isEnd' },
   },
   {
     align: 'center',
@@ -194,8 +215,9 @@ const columns = [
 export default {
   name: 'refundReceipt',
   components: {
-    AddForm: AddForm,
-    ApproveInfo: ApproveInfo,
+    AddForm,
+    ApproveInfo,
+    FromAdd,
   },
   data() {
     return {
@@ -216,7 +238,7 @@ export default {
         onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
-      searchTotalMoney:''
+      searchTotalMoney: '',
     }
   },
   computed: {
@@ -268,9 +290,10 @@ export default {
         })
         .catch((err) => (that.loading = false))
 
-        saleRefundGetSumAmountByList(_searchParam).then(res =>{
-          console.log(that,res)
-          if(+res.code !== 200){
+      saleRefundGetSumAmountByList(_searchParam)
+        .then((res) => {
+          console.log(that, res)
+          if (+res.code !== 200) {
             let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
             msg += `查询参数:${_searchParam}，`
             msg += '请与管理员联系，谢谢合作。'
@@ -279,7 +302,8 @@ export default {
             return
           }
           that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
-        }).catch(err =>{
+        })
+        .catch((err) => {
           that.$message.error(err.message)
         })
     },
@@ -291,7 +315,6 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      console.log(type)
 
       if (type === 'reback') {
         refundRevocation({ id: record.id }).then((res) => {
@@ -308,7 +331,11 @@ export default {
         })
         return
       }
-      that.$refs.addForm.query(type, record)
+      if (type === 'refund') {
+        that.$refs.fromAdd.query(type, record)
+      } else {
+        that.$refs.addForm.query(type, record)
+      }
     },
     getStatusText(state) {
       let stateMap = {
@@ -341,13 +368,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(10,{...that.searchParam,searchStatus: that.activeKey},'退款单')
+      let res = await exprotAction(10, { ...that.searchParam, searchStatus: that.activeKey }, '退款单')
       console.log(res)
       that.$message.info(res.msg)
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>

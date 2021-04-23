@@ -1,21 +1,9 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :width="1000"
-    :visible="visible"
-    @cancel="handleCancel"
-    :maskClosable="false"
-  >
+  <a-modal :title="modalTitle" :width="1000" :visible="visible" @cancel="handleCancel" :maskClosable="false">
     <template slot="footer">
       <template v-if="isApproval">
         <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
-        <a-button
-          key="submit"
-          type="primary"
-          icon="check"
-          :loading="spinning"
-          @click="passAction"
-        >通过</a-button>
+        <a-button key="submit" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
       </template>
       <template v-else>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -25,6 +13,7 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper">
+        <h3 v-if="programme.length > 0">预退款详情</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <td>单据编号</td>
@@ -45,7 +34,7 @@
                 <a-select
                   placeholder="选择退款类型"
                   :disabled="isDisabled"
-                  v-decorator="['refundType',{rules: [{required: true,message: '选择退款类型'}]}]"
+                  v-decorator="['refundType', { rules: [{ required: true, message: '选择退款类型' }] }]"
                 >
                   <a-select-option :value="1">代理保证金</a-select-option>
                   <a-select-option :value="2">投标保证金</a-select-option>
@@ -59,7 +48,15 @@
             <td>合同编号</td>
             <td colspan="2">
               <a-form-item>
-                <a-input read-only :disabled="isDisabled"  :allowClear="true" @change="handlerChange('contract',$event)" placeholder="单击选择合同" @click="openModel" v-decorator="['contractNum',{rules: [{required: false,message: '请选择合同'}]}]" />
+                <a-input
+                  read-only
+                  :disabled="isDisabled"
+                  :allowClear="true"
+                  @change="handlerChange('contract', $event)"
+                  placeholder="单击选择合同"
+                  @click="openModel"
+                  v-decorator="['contractNum', { rules: [{ required: false, message: '请选择合同' }] }]"
+                />
               </a-form-item>
               <a-form-item hidden>
                 <!-- <a-input v-decorator="['contractNum']" /> -->
@@ -72,8 +69,8 @@
                 <a-input
                   placeholder="客户名称"
                   :allowClear="true"
-                  @change="handlerChange('saleCustomerName',$event)"
-                  v-decorator="['saleCustomerName',{rules: [{required: true,message: '输入客户名称'}]}]"
+                  @change="handlerChange('saleCustomerName', $event)"
+                  v-decorator="['saleCustomerName', { rules: [{ required: true, message: '输入客户名称' }] }]"
                   read-only
                   :disabled="selectContract || isDisabled"
                   @click="openSystemUsers('saleCustomerName')"
@@ -89,7 +86,7 @@
                   placeholder="客户姓名"
                   :allowClear="true"
                   :disabled="isDisabled"
-                  v-decorator="['customerName',{rules: [{required: true,message: '输入客户姓名'}]}]"
+                  v-decorator="['customerName', { rules: [{ required: true, message: '输入客户姓名' }] }]"
                 />
               </a-form-item>
             </td>
@@ -100,7 +97,7 @@
                   placeholder="联系方式"
                   :allowClear="true"
                   :disabled="isDisabled"
-                  v-decorator="['customerTel',{rules: [{required: true,message: '输入联系方式'}]}]"
+                  v-decorator="['customerTel', { rules: [{ required: true, message: '输入联系方式' }] }]"
                 />
               </a-form-item>
             </td>
@@ -114,13 +111,14 @@
                   placeholder="选择收款单"
                   :allowClear="true"
                   :disabled="isDisabled"
-                  v-decorator="['receiptNum',{rules: [{required: selectContract,message: '选择收款单'}]}]"
+                  v-decorator="['receiptNum', { rules: [{ required: selectContract, message: '选择收款单' }] }]"
                 >
                   <a-select-option
                     v-for="item in contractReceiptList"
                     :value="item.receiptCode"
                     :key="item.receiptCode"
-                  >{{item.receiptCode}}</a-select-option>
+                    >{{ item.receiptCode }}</a-select-option
+                  >
                 </a-select>
               </a-form-item>
             </td>
@@ -130,7 +128,10 @@
                 <a-select
                   placeholder="选择退款方式"
                   :disabled="isDisabled"
-                  v-decorator="['refundMethod',{ initialValue:1,rules: [{required: true,message: '选择退款方式'}]}]"
+                  v-decorator="[
+                    'refundMethod',
+                    { initialValue: 1, rules: [{ required: true, message: '选择退款方式' }] },
+                  ]"
                 >
                   <a-select-option :value="1">公户退款</a-select-option>
                   <a-select-option :value="2">私户退款</a-select-option>
@@ -143,18 +144,18 @@
             <td colspan="2">
               <a-form-item>
                 <a-input-number
-                  style="width:100%;"
+                  style="width: 100%"
                   :disabled="isDisabled"
                   :min="0"
                   :step="1"
                   :precision="2"
-                  v-decorator="['refundAmountMoney', { rules: [{ required: true, message: '请输入退款总金额' }]}]"
+                  v-decorator="['refundAmountMoney', { rules: [{ required: true, message: '请输入退款总金额' }] }]"
                   @change="refundAmountMoneyChange"
                 />
               </a-form-item>
             </td>
             <td>大写</td>
-            <td colspan="2">{{refundAmountMoneyChinese}}</td>
+            <td colspan="2">{{ refundAmountMoneyChinese }}</td>
           </tr>
           <tr>
             <td>币种</td>
@@ -163,7 +164,7 @@
                 <a-select
                   placeholder="选择币种"
                   :disabled="isDisabled"
-                  v-decorator="['moneyType',{initialValue:1,rules: [{required: true,message: '选择币种'}]}]"
+                  v-decorator="['moneyType', { initialValue: 1, rules: [{ required: true, message: '选择币种' }] }]"
                 >
                   <a-select-option :value="1">人民币</a-select-option>
                 </a-select>
@@ -175,7 +176,7 @@
                 <a-input
                   placeholder="开户行及账号"
                   :disabled="isDisabled"
-                  v-decorator="['account',{rules: [{required: true,message: '输入开户行及账号'}]}]"
+                  v-decorator="['account', { rules: [{ required: true, message: '输入开户行及账号' }] }]"
                 />
               </a-form-item>
             </td>
@@ -191,13 +192,11 @@
                   :disabled="isDisabled"
                   :filterOption="filterSalersOption"
                   placeholder="请选择销售人员"
-                  v-decorator="['saleUserId',{rules: [{required: true,message: '请选择销售人员'}]}]"
+                  v-decorator="['saleUserId', { rules: [{ required: true, message: '请选择销售人员' }] }]"
                 >
-                  <a-select-option
-                    v-for="item in saleUser"
-                    :value="item.userId"
-                    :key="item.userId"
-                  >{{ item.salesmanName }}</a-select-option>
+                  <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
+                    item.salesmanName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -207,7 +206,7 @@
                 <a-select
                   placeholder="选择退款原因"
                   :disabled="isDisabled"
-                  v-decorator="['refundReason',{rules: [{required: true,message: '选择退款原因'}]}]"
+                  v-decorator="['refundReason', { rules: [{ required: true, message: '选择退款原因' }] }]"
                 >
                   <a-select-option :value="1">代理保证金</a-select-option>
                   <a-select-option :value="2">投标保证金</a-select-option>
@@ -230,17 +229,20 @@
               </a-form-item>
             </td>
           </tr>
-          <tr >
+          <tr>
             <td>预收款金额</td>
             <td>
               <a-form-item>
                 <a-input-number
-                  style="width:100%;"
+                  style="width: 100%"
                   :disabled="!(isApproval && taskFlag === 1)"
                   :min="0"
                   :step="1"
                   :precision="2"
-                  v-decorator="['advanceReceiptAmount', { rules: [{ required: isApproval && taskFlag === 1, message: '请输入预收款金额' }]}]"
+                  v-decorator="[
+                    'advanceReceiptAmount',
+                    { rules: [{ required: isApproval && taskFlag === 1, message: '请输入预收款金额' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -248,12 +250,15 @@
             <td>
               <a-form-item>
                 <a-input-number
-                  style="width:100%;"
+                  style="width: 100%"
                   :disabled="!(isApproval && taskFlag === 1)"
                   :min="0"
                   :step="1"
                   :precision="2"
-                  v-decorator="['alreadyPaperAmount', { rules: [{ required: isApproval && taskFlag === 1, message: '请输入已开票金额' }]}]"
+                  v-decorator="[
+                    'alreadyPaperAmount',
+                    { rules: [{ required: isApproval && taskFlag === 1, message: '请输入已开票金额' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
@@ -261,17 +266,68 @@
             <td>
               <a-form-item>
                 <a-input-number
-                  style="width:100%;"
+                  style="width: 100%"
                   :disabled="!(isApproval && taskFlag === 1)"
                   :min="0"
                   :step="1"
                   :precision="2"
-                  v-decorator="['alreadyTaxAmount', { rules: [{ required: isApproval && taskFlag === 1, message: '请输入已收税金金额' }]}]"
+                  v-decorator="[
+                    'alreadyTaxAmount',
+                    { rules: [{ required: isApproval && taskFlag === 1, message: '请输入已收税金金额' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
           </tr>
         </table>
+
+        <h3 v-if="programme.length > 0" style="margin-top: 30px">实际退款详情</h3>
+        <table class="custom-table custom-table-border" v-if="programme.length > 0">
+          <tr>
+            <th>序号</th>
+            <th>退款金额(元)</th>
+            <th>退款日期</th>
+          </tr>
+          <tr v-for="(items, index) in programme" :key="items.key">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <a-form-item>
+                <a-input-number
+                  placeholderindex
+                  :precision="2"
+                  disabled
+                  v-decorator="[
+                    `programme.${index}.refundAmount`,
+                    { initialValue: items.refundAmount, rules: [{ required: true, message: '请输入退款金额' }] },
+                  ]"
+                />
+              </a-form-item>
+            </td>
+            <td>
+              <a-form-item>
+                <a-date-picker
+                  disabled
+                  v-decorator="[
+                    `programme.${index}.refundDate`,
+                    {
+                      initialValue: items.refundDate ? moment(items.refundDate) : undefined,
+                      rules: [{ required: true, message: '请选择退款时间' }],
+                    },
+                  ]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>合计(元)</td>
+            <td colspan="2">
+              {{ totalPrice }}
+            </td>
+          </tr>
+        </table>
+        <!-- <div class="totals">
+          <span>合计退款(元)：{{ totalPrice }}</span>
+        </div> -->
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
       <CustomerList ref="customerList" @selected="customerSelected" />
@@ -287,7 +343,7 @@ import {
   refundSaveOrUpdate,
   refundApproval,
   refundGetApprovedSaleContract,
-  refundGetSaleContractReceipt
+  refundGetSaleContractReceipt,
 } from '@/api/receipt'
 //销售人员接口
 import { getListSaleContractUser } from '@/api/contractListManagement'
@@ -299,16 +355,17 @@ import Approval from './Approval'
 import CustomerList from '@/components/CustomerList/CustomerList'
 //合同列表选择
 import ReceiptSaleContract from './ContractSelect'
-
+let uuid = () => Math.random().toString(32).slice(-10)
 export default {
   name: 'AddForm',
   components: {
     Approval,
     CustomerList,
-    ReceiptSaleContract
+    ReceiptSaleContract,
   },
   data() {
     return {
+      programme: [],
       form: this.$form.createForm(this, { name: 'add_refund-receipt_form' }),
       visible: false,
       actionType: 'add',
@@ -317,8 +374,8 @@ export default {
       refundAmountMoneyChinese: '零',
       saleUser: [],
       contractReceiptList: [], //合同关联的收款单
-      contractId:undefined, //合同编号 单独处理 控制依赖
-      taskFlag:0 //1为财务总账会计
+      contractId: undefined, //合同编号 单独处理 控制依赖
+      taskFlag: 0, //1为财务总账会计
     }
   },
   computed: {
@@ -342,15 +399,21 @@ export default {
       //此状态下表单元素被禁用
       return this.isView || this.isApproval
     },
-    selectContract(){
+    selectContract() {
       return this.contractId ? true : false
-    }
+    },
+    totalPrice() {
+      return this.programme.reduce((addr, item) => {
+        addr = Number(addr) + Number(item.refundAmount)
+        return parseFloat(addr).toFixed(2)
+      }, 0)
+    },
   },
   methods: {
     moment: moment,
     init() {
       let that = this
-      let task1 = getListSaleContractUser().then(res => (that.saleUser = res.data))
+      let task1 = getListSaleContractUser().then((res) => (that.saleUser = res.data))
       return Promise.all([task1])
     },
     async handleOk() {
@@ -367,26 +430,26 @@ export default {
           }
           values.contractId = that.contractId
           //values.contractNum = that.contractNum || undefined
-          if(values.receiptNum){
+          if (values.receiptNum) {
             values.receiptNum = values.receiptNum.join(',')
           }
 
           //提交
           that.spinning = true
           refundSaveOrUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               console.log(res)
-              if(res.code === 200){
+              if (res.code === 200) {
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
                 that.$emit('finish')
-              }else{
+              } else {
                 that.$message.info(res.msg)
               }
             })
-            .catch(err => (that.spinning = false))
+            .catch((err) => (that.spinning = false))
         }
       })
     },
@@ -413,17 +476,26 @@ export default {
 
       //填充数据
       let _param = {
-        refundId: that.record.id
+        refundId: that.record.id,
       }
-      const _detail = await refundDetail(_param).then(res => res.data)
+      const _detail = await refundDetail(_param).then((res) => res.data)
       that.taskFlag = _detail.taskFlag || 0
       let taskQueue = []
+      that.programme =
+        _detail.realityList.map((item) => {
+          return {
+            key: uuid(),
+            id: item.id,
+            refundDate: moment(item.refundDate),
+            refundAmount: item.refundAmount,
+          }
+        }) || []
       taskQueue.push(that.refundAmountMoneyChange(_detail.refundAmountMoney || 0))
-      if(_detail.contractId){
+      if (_detail.contractId) {
         taskQueue.push(that.fillSaleContractReceipt(_detail.contractId))
       }
       await Promise.all(taskQueue)
-      if(_detail.receiptNum){
+      if (_detail.receiptNum) {
         _detail.receiptNum = _detail.receiptNum.split(',')
       }
       that.form.setFieldsValue(_detail)
@@ -433,7 +505,7 @@ export default {
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
       refundApproval(values)
-        .then(res => {
+        .then((res) => {
           that.spinning = false
           console.log(res)
           that.form.resetFields() // 清空表
@@ -441,22 +513,23 @@ export default {
           that.$message.info(res.msg)
           that.$emit('finish')
         })
-        .catch(err => (that.spinning = false))
+        .catch((err) => (that.spinning = false))
     },
     passAction(opt = {}) {
-      if(this.taskFlag === 1){ //总账会计角色需要输入  预收款金额,已开票金额,已收税金金额
-        let validateFields = ['advanceReceiptAmount','alreadyPaperAmount','alreadyTaxAmount']
-        this.form.validateFields(validateFields,(err, values) => {
+      if (this.taskFlag === 1) {
+        //总账会计角色需要输入  预收款金额,已开票金额,已收税金金额
+        let validateFields = ['advanceReceiptAmount', 'alreadyPaperAmount', 'alreadyTaxAmount']
+        this.form.validateFields(validateFields, (err, values) => {
           if (!err) {
             opt.attachInfo = JSON.stringify({
-              advanceReceiptAmount:this.form.getFieldValue('advanceReceiptAmount') || 0,
-              alreadyPaperAmount:this.form.getFieldValue('alreadyPaperAmount') || 0,
-              alreadyTaxAmount:this.form.getFieldValue('alreadyTaxAmount') || 0
+              advanceReceiptAmount: this.form.getFieldValue('advanceReceiptAmount') || 0,
+              alreadyPaperAmount: this.form.getFieldValue('alreadyPaperAmount') || 0,
+              alreadyTaxAmount: this.form.getFieldValue('alreadyTaxAmount') || 0,
             })
             this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
           }
         })
-      }else{
+      } else {
         this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
       }
     },
@@ -469,19 +542,18 @@ export default {
       //审批意见
       this.submitAction({
         isAdopt: 1,
-        opinion: opinion
+        opinion: opinion,
       })
     },
     openSystemUsers(decoratorKey) {
       //this.$refs.customerList.init()
       let saleUserId = this.form.getFieldValue('saleUserId')
-      if(saleUserId && !this.selectContract){
-        this.$refs.customerList.init({userId:saleUserId})
-      }else if(!saleUserId && !this.selectContract){
+      if (saleUserId && !this.selectContract) {
+        this.$refs.customerList.init({ userId: saleUserId })
+      } else if (!saleUserId && !this.selectContract) {
         this.$message.info('请选择对应销售后，再选择客户')
         return
-      }else{
-
+      } else {
       }
     },
     customerSelected(record) {
@@ -489,7 +561,7 @@ export default {
       console.log(record)
       if (record) {
         that.form.setFieldsValue({
-          saleCustomerName: record.name
+          saleCustomerName: record.name,
         })
       }
     },
@@ -510,42 +582,43 @@ export default {
       that.contractId = data.id
       that.form.setFieldsValue({
         contractNum: data.contractNum,
-        saleCustomerName:data.customerName
+        saleCustomerName: data.customerName,
       })
       that.fillSaleContractReceipt(data.id)
     },
-    fillSaleContractReceipt(id){
+    fillSaleContractReceipt(id) {
       const that = this
       that.contractReceiptList = []
-      return refundGetSaleContractReceipt({ contractId: id }).then(res => {
+      return refundGetSaleContractReceipt({ contractId: id }).then((res) => {
         that.contractReceiptList = res.data
       })
     },
     refundAmountMoneyChange(e) {
       console.log(e)
-      return turnTheCapital({ money: e }).then(res => (this.refundAmountMoneyChinese = res.data))
+      return turnTheCapital({ money: e }).then((res) => (this.refundAmountMoneyChinese = res.data))
     },
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    handlerChange(key,event){
+    handlerChange(key, event) {
       console.log(arguments)
       const that = this
-      if(key === 'contract'){ //清空合同操作
+      if (key === 'contract') {
+        //清空合同操作
         that.contractReceiptList = [] //清空合同关联的收款单
         that.contractId = undefined
         that.form.setFieldsValue({
           contractNum: undefined,
-          saleCustomerName:undefined,
-          receiptNum:undefined
+          saleCustomerName: undefined,
+          receiptNum: undefined,
         })
-      }else{
+      } else {
         let obj = {}
         obj[key] = undefined
         that.form.setFieldsValue(obj)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
