@@ -401,6 +401,15 @@ export default {
             permission: ['permission']
           }
         },
+        {
+          path: '/system-setting/work-box/project-patent',
+          name: 'work-box-project-patent',
+          component: () => import('@/views/system-setting/work-box/project-patent/List'),
+          meta: {
+            title: '项目专利',
+            permission: ['permission']
+          }
+        },
       ]
     },
     {

@@ -99,3 +99,92 @@ export function meetingRecordUpload (parameter) {
 }
 
 //---------------------会议记录-END-------------------
+
+
+//---------------------会议处罚规则-------------------
+export function addAndUpdateMeetingPenaltyRules (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-penalty-rules/addAndUpdateMeetingPenaltyRules',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function delMeetingPenaltyRules (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-penalty-rules/delMeetingPenaltyRules',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getMeetingPenaltyRulesPageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-penalty-rules/getMeetingPenaltyRulesPageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------会议处罚规则-END-------------------
+
+//---------------------会议请假记录-----------------------
+export function addAndUpdateMeetingLeave (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-leave/addAndUpdateMeetingLeave',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function approvalMeetingLeave (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-leave/approvalMeetingLeave',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+export function delMeetingLeave (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-leave/delMeetingLeave',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getMeetingLeaveDetail (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-leave/getMeetingLeaveDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getMeetingLeavePageList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-leave/getMeetingLeavePageList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function revocationMeetingLeave (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/meetting/oa-meeting-leave/revocationMeetingLeave',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------会议请假记录-END-------------------

@@ -6,6 +6,7 @@
     @ok="handleOk"
     @cancel="handleCancel"
     :maskClosable="false"
+    :destroyOnClose="true"
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper">
@@ -216,7 +217,7 @@
                   <td>{{ item.userName }}</td>
                   <td>
                     <span v-if="item.signStatus === 1">{{ item.signTime }}</span>
-                    <span style="color: red" v-else>{{ item.signStatus === 2 ? '未签到' : '其他' }}</span>
+                    <span style="color: red" v-else>{{ {1:'已签到',2:'未签到',3:'考勤请假',4:'会议请假',5:'其它'}[item.signStatus] }}</span>
                   </td>
                 </tr>
               </table>
