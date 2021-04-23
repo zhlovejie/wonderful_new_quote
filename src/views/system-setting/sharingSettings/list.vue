@@ -39,10 +39,8 @@
       </span>
       <span slot="type" slot-scope="text, record, index">
         {{ record.type.indexOf('1') !== -1 ? '系统消息' : '' }}
-        {{ record.type.indexOf('2') !== -1 ? '待办消息' : '' }}
-        {{ record.type.indexOf('3') !== -1 ? '备案消息' : '' }}
-        {{ record.type.indexOf('4') !== -1 ? '合同/单据消息' : '' }}
-        {{ record.type.indexOf('5') !== -1 ? '已办消息' : '' }}
+        {{ record.type.indexOf('2') !== -1 ? '待办事项' : '' }}
+        {{ record.type.indexOf('5') !== -1 ? '已办事项' : '' }}
       </span>
 
       <span slot="action" slot-scope="text, record">

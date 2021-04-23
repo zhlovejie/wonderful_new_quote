@@ -121,9 +121,7 @@
                 >
                   <a-select-option :value="1">系统消息</a-select-option>
                   <a-select-option :value="2">待办消息</a-select-option>
-                  <a-select-option :value="3">备案消息</a-select-option>
-                  <a-select-option :value="4">合同/单据消息</a-select-option>
-                  <a-select-option :value="5">已办消息</a-select-option>
+                  <a-select-option :value="5">备案消息</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
