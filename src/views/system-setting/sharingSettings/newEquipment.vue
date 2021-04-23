@@ -119,9 +119,9 @@
                     },
                   ]"
                 >
-                  <a-select-option :value="1">系统消息</a-select-option>
-                  <a-select-option :value="2">待办消息</a-select-option>
-                  <a-select-option :value="5">备案消息</a-select-option>
+                  <a-select-option :value="1">共享系统消息</a-select-option>
+                  <a-select-option :value="2">共享待办消息</a-select-option>
+                  <a-select-option :value="5">共享已办消息</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
