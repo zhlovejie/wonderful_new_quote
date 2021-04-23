@@ -95,7 +95,7 @@
             <a-divider type="vertical" />
             <a type="primary" @click="uploadFaceAction(record)">上传人脸</a>
           </template>
-          <template v-if="!(record.status == 1 || record.status == 3 || record.status == 4)">
+          <template v-if="!(record.status == 1 || record.status == 3)">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('ruzhi', record)">入职</a>
             <a-divider type="vertical" />
