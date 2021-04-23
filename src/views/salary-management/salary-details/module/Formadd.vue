@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1300"
+    :width="1600"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -22,7 +22,7 @@
       <a-row style="margin-top: 30px; margin-bottom: 30px" v-if="isDisabled">
         <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}工资条</a-col>
       </a-row>
-      <a-table :scroll="{ x: 4000 }" bordered :columns="baseColumns" :data-source="dataSource">
+      <a-table :scroll="{ x: 2300 }" bordered :columns="baseColumns" :data-source="dataSource">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -43,23 +43,27 @@ const columns = [
     dataIndex: 'name',
     title: '序号',
     key: 'order',
+    width: 80,
     align: 'center',
     scopedSlots: { customRender: 'order' },
   },
   {
     title: '部门',
+    width: 90,
     dataIndex: 'departmentName',
     key: 'departmentName',
     align: 'center',
   },
   {
     title: '职位',
+    width: 90,
     dataIndex: 'stationName',
     key: 'stationName',
     align: 'center',
   },
   {
     title: '姓名',
+    width: 90,
     dataIndex: 'userName',
     key: 'userName',
     align: 'center',
@@ -100,8 +104,8 @@ const columns = [
     dataIndex: 'shouldSalaryBigDecimal',
     key: 'shouldSalaryBigDecimal',
     align: 'center',
-    fixed: 'right',
-    width: 120,
+    // fixed: 'right',
+    width: 130,
   },
 
   {
@@ -109,7 +113,7 @@ const columns = [
     dataIndex: 'socinsAmountBigDecimal',
     key: 'socinsAmountBigDecimal',
     align: 'center',
-    fixed: 'right',
+    // fixed: 'right',
     width: 120,
   },
   {
@@ -117,7 +121,7 @@ const columns = [
     dataIndex: 'realSalaryBigDecimal',
     key: 'realSalaryBigDecimal',
     align: 'center',
-    fixed: 'right',
+    // fixed: 'right',
     width: 120,
   },
 ]
@@ -241,9 +245,9 @@ export default {
       wages_Detail(_searchParam)
         .then((res) => {
           that.loading = false
-          try{
+          try {
             that.month = res.data.oaSalaryMonthDetailVo.month
-          }catch(e){
+          } catch (e) {
             console.error(`month 获取失败...`)
           }
           that.salaryItemBase = res.data.headDicList.salaryItemBase.map((item) => {
@@ -251,6 +255,7 @@ export default {
               title: item.text,
               dataIndex: item.code,
               key: item.code,
+              width: 90,
               align: 'center',
             }
           })
@@ -258,6 +263,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -265,6 +271,7 @@ export default {
           that.allowanceItemBase = res.data.headDicList.allowanceItemBase.map((item) => {
             return {
               title: item.text,
+              width: 90,
               dataIndex: item.code,
               key: item.code,
               align: 'center',
@@ -274,6 +281,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -282,6 +290,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -290,6 +299,7 @@ export default {
             that.company = [
               {
                 title: '公户',
+                width: 90,
                 dataIndex: 'householdPubliceBigDecimal',
                 key: 'householdPubliceBigDecimal',
                 align: 'center',
@@ -299,6 +309,7 @@ export default {
             that.company = [
               {
                 title: '私户',
+                width: 90,
                 dataIndex: 'householdPrivateBigDecimal',
                 key: 'householdPrivateBigDecimal',
                 align: 'center',
@@ -308,6 +319,7 @@ export default {
             that.company = [
               {
                 title: '代发工资',
+                width: 90,
                 dataIndex: 'issuedBehalfSalaryBigDecimal',
                 key: 'issuedBehalfSalaryBigDecimal',
                 align: 'center',

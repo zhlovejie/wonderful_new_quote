@@ -125,7 +125,12 @@ import {
   // getStationList, //获取部门下面的岗位
   // getUserByStation, //获取人员
 } from '@/api/systemSetting'
-import { capital_bill_logisticsNum, capital_bill_addAndUpdate, capital_bill_approval ,capital_bill_detail} from '@/api/bonus_management'
+import {
+  capital_bill_logisticsNum,
+  capital_bill_addAndUpdate,
+  capital_bill_approval,
+  capital_bill_detail,
+} from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -145,7 +150,7 @@ export default {
       departmentList: [], //部门
       postSelectDataSource: [], //职位
       spinning: false,
-      form: this.$form.createForm(this, { name: 'do_becoming' }),
+      form: this.$form.createForm(this, { name: 'BecomingForm' }),
       type: 'view',
       record: {},
     }
@@ -211,9 +216,8 @@ export default {
         await capital_bill_logisticsNum().then((res) => {
           that.logisCode = res.data
         })
-      }
-      if (type !== 'add') {
-        let detail = await capital_bill_detail({id:record.id}).then(res => red.data)
+      } else {
+        const detail = await capital_bill_detail({ id: record.id }).then((res) => res.data)
         getUserByDep({ departmentId: detail.departmentId }).then((res) => {
           that.postSelectDataSource = res.data
         })
@@ -223,6 +227,7 @@ export default {
     // 详情
     fillData(detail) {
       const that = this
+
       that.$nextTick(() => {
         that.logisCode = detail.fkNum
         that.form.setFieldsValue({
