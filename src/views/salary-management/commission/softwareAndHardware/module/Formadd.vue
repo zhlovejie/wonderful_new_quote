@@ -84,6 +84,13 @@ export default {
         },
         {
           align: 'center',
+          title: '差额',
+          dataIndex: 'subAmount',
+          key: 'subAmount',
+        },
+
+        {
+          align: 'center',
           title: '提成金额',
           dataIndex: 'percentageAmount',
           key: 'percentageAmount',
