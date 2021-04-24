@@ -111,7 +111,7 @@
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
-    <FromAdd ref="fromAdd" />
+    <FromAdd ref="fromAdd" @finish="searchAction()" />
     <AddForm ref="addForm" @finish="searchAction()" />
   </div>
 </template>
