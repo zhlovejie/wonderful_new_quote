@@ -73,11 +73,10 @@
           @click="noPassAction"
           >不通过</a-button
         >
-        <span style="position: relative; top: -1px; margin-left: 10px; width: 300px; color: red">
-          提示： 批量审批20条10秒~50条30秒~100条5分钟后请手动点击搜索查询</span
-        >
       </template>
-      <div style="float: right"></div>
+      <div style="margin-top: 15px">
+        <span style="color: red"> 提示： 批量审批20条10秒~50条30秒~100条5分钟后请手动点击搜索查询</span>
+      </div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1300"
+    :width="1600"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -31,7 +31,7 @@
           >保底差额：{{ guaranteedBalanceBigDecimal }}</a-col
         >
       </a-row>
-      <a-table :scroll="{ x: 4000 }" bordered :columns="baseColumns" :data-source="dataSource">
+      <a-table :scroll="{ x: 2300 }" bordered :columns="baseColumns" :data-source="dataSource">
         <div slot="month" slot-scope="text, record, index">
           <span>{{ record.month ? record.month : '合计' }}</span>
         </div>
@@ -52,6 +52,7 @@ const columns = [
     dataIndex: 'name',
     title: '月份',
     key: 'month',
+    width: 80,
     scopedSlots: { customRender: 'month' },
     align: 'center',
   },
@@ -89,16 +90,19 @@ const columns = [
         title: '公户',
         dataIndex: 'householdPrivateBigDecimal',
         key: 'householdPrivateBigDecimal',
+        width: 90,
         align: 'center',
       },
       {
         title: '私户',
+        width: 90,
         dataIndex: 'householdPubliceBigDecimal',
         key: 'householdPubliceBigDecimal',
         align: 'center',
       },
       {
         title: '代发工资',
+        width: 90,
         dataIndex: 'issuedBehalfSalaryBigDecimal',
         key: 'issuedBehalfSalaryBigDecimal',
         align: 'center',
@@ -107,11 +111,12 @@ const columns = [
   },
   {
     title: '应发基本工资(元)',
+    width: 90,
     dataIndex: 'shouldSalaryBigDecimal',
     key: 'shouldSalaryBigDecimal',
     align: 'center',
-    fixed: 'right',
-    width: 120,
+    // fixed: 'right',
+    width: 130,
   },
 
   {
@@ -119,7 +124,7 @@ const columns = [
     dataIndex: 'socinsAmountBigDecimal',
     key: 'socinsAmountBigDecimal',
     align: 'center',
-    fixed: 'right',
+    // fixed: 'right',
     width: 120,
   },
   {
@@ -127,7 +132,7 @@ const columns = [
     dataIndex: 'realSalaryBigDecimal',
     key: 'realSalaryBigDecimal',
     align: 'center',
-    fixed: 'right',
+    // fixed: 'right',
     width: 120,
   },
 ]
@@ -166,7 +171,7 @@ export default {
   computed: {
     modalTitle() {
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : '新增'
-      return `${txt}工资条`
+      return `${txt}薪资核算`
     },
     isView() {
       //查看
@@ -252,9 +257,9 @@ export default {
       floorsAnnual_Detail(_searchParam)
         .then((res) => {
           that.loading = false
-          try{
+          try {
             that.month = res.data.staticsDate
-          }catch(e){}
+          } catch (e) {}
           that.realSalaryBigDecimal = res.data.realSalaryBigDecimal
           that.calculateSalaryBigDecimal = res.data.calculateSalaryBigDecimal
           that.annualPeriodicSalaryBigDecimal = res.data.annualPeriodicSalaryBigDecimal
@@ -263,6 +268,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -271,6 +277,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -279,6 +286,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -287,6 +295,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }
@@ -295,6 +304,7 @@ export default {
             return {
               title: item.text,
               dataIndex: item.code,
+              width: 90,
               key: item.code,
               align: 'center',
             }

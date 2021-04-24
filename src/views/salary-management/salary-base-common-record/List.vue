@@ -275,15 +275,21 @@ export default {
                   console.log('JSON.parse error...', e.target.result)
                 }
                 if (_res !== null) {
+                  debugger
                   that.fileList = []
                   console.log(_res.msg)
-                  try {
-                    that.iserror = JSON.parse(_res.msg)
-                  } catch (err) {
-                    console.log(err)
-                  }
+                  if (_res.msg === '操作成功') {
+                    that.$message.info(res.msg || '操作成功')
+                  } else {
+                    try {
+                      that.iserror = JSON.parse(_res.msg)
+                    } catch (err) {
+                      console.log(err)
+                    }
 
-                  that.visible = true
+                    that.visible = true
+                  }
+                  that.searchAction()
                 }
               }
               reader.readAsText(res)
