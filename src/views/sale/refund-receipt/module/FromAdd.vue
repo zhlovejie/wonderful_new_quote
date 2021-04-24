@@ -159,6 +159,9 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
+            if (that.record.refundAmountMoney < this.totalPrice) {
+              return that.$message.error('实际退款总金额不能大于预退款总金额')
+            }
             values.refundId = this.record.id
             values.refundRealityList = values.programme || []
             delete values.programme
@@ -176,6 +179,7 @@ export default {
                 this.visible = false
                 that.spinning = false
                 that.$message.info(res.msg)
+                that.$emit('finish')
               })
               .catch((err) => (that.spinning = false))
           }
