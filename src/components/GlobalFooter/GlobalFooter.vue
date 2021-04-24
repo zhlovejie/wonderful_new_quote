@@ -5,18 +5,10 @@
         href="https://pro.loacg.com/"
         target="_blank"
       >万德福官网 首页</a>
-      <a
-        href="http://www.xzwonderful.com"
-        target="_blank"
-      >
-        <a-icon type="github" />
-      </a>
-      <a href="http://www.xzwonderful.com">Zwm Design</a>
-      <a href="http://www.xzwonderful.com">Vue Zhangwenming</a>
     </div> -->
     <div class="copyright">
       Copyright
-      <a-icon type="copyright" /> 2019 <span>万德福-前端团队-技术组出品</span>
+      <a-icon type="copyright" /> 2019 ~ 2021 <span>万德福云项目组出品</span>
     </div>
   </div>
 </template>

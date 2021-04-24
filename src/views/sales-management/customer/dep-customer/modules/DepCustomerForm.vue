@@ -28,11 +28,24 @@
     <a-row class="form-row" :gutter="24">
       <a-col :lg="12" :md="12" :sm="24">
         <a-form-item label="最初获知渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-select placeholder="请选择最初获知渠道" v-decorator="['learn',{rules: [{required: true, message: '请选择最初获知渠道！'}]}]">
+          <a-select
+            placeholder="请选择最初获知渠道"
+            v-decorator="['learn',{rules: [{required: true, message: '请选择最初获知渠道！'}]}]"
+            @change="learnChange"
+          >
             <a-select-option v-for="learn in this.learns" :key="learn.index" :value="learn.id">{{ learn.text }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
+
+      <a-col :lg="12" :md="12" :sm="24" v-if="isOtherLearn">
+        <a-form-item label="其他获知渠道" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="['otherLearn',{rules: [{required: true, message: '请输入其他获知渠道'}]}]"/>
+        </a-form-item>
+      </a-col>
+    </a-row>
+
+    <a-row class="form-row" :gutter="24">
       <a-col :lg="12" :md="12" :sm="24">
         <a-form-item label="客户意向" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select placeholder="请选择客户意向度" v-decorator="['intention',{rules: [{required: true, message: '请选择客户意向度！'}]}]">
@@ -54,12 +67,12 @@
       </a-col>
       <a-col :lg="12" :md="12" :sm="24">
         <a-form-item label="客户维护周期(天)" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number 
+          <a-input-number
             style="width:100%;"
             :min="5"
             :max="maxContactCycle"
             :step="1"
-            v-decorator="['contactCycle', {initialValue:90,rules: [{ required: true, message: '客户维护周期' }]}]" 
+            v-decorator="['contactCycle', {initialValue:90,rules: [{ required: true, message: '客户维护周期' }]}]"
             @change="contactCycleChange"
           />
         </a-form-item>
@@ -246,91 +259,77 @@ export default {
       cId: 0, // 当前修改客户id，新增为0
       uploadPath: getUploadPath(), // 上传图片的url
       sources:[],
-      maxContactCycle:90
+      maxContactCycle:90,
+      isOtherLearn:false //其他获知渠道
     }
   },
   mounted (record) { // 初始化
-    getDictionary({ text: '客户录入渠道' }).then(res => {
-      this.sources = res.data
-    }).catch(function (err) {
-      console.log(err)
-    })
-
-    getDictionary({ text: '产品类型' }).then(res => {
-      this.productTypes = res.data
-    }).catch(function (err) {
-      console.log(err)
-    })
-    getDictionary({ text: '客户类型' }).then(res => {
-      this.customerTypes = res.data
-    }).catch(function (err) {
-      console.log(err)
-    })
-    getDictionary({ text: '客户获知渠道' }).then(res => {
-      this.learns = res.data
-    }).catch(function (err) {
-      console.log(err)
-    })
-    getAreaByParent({ pId: 100000 }).then(res => { // 所有省
-      this.provinces = res.data
-    }).catch(function (err) {
-      console.log(err)
-    })
-    // 新增的时候不需要改变页面数据，且不能修改cId，否则页面有些关于cId去判断是新增还是修改会出错
-    if (this.customer.id !== undefined && this.customer.id !== '') {
-      this.cId = this.customer.id
-      const { form: { setFieldsValue } } = this
-      this.$nextTick(() => {
-        // setFieldsValue只有通过这种方式给表单赋值
-        setFieldsValue({
-          name: this.customer.name,
-          alias: this.customer.alias,
-          tel: this.customer.tel,
-          fax: this.customer.fax,
-          learn: this.customer.learn,
-          type: this.customer.type,
-          intention: this.customer.intention,
-          userId: this.customer.userId,
-          province: this.customer.province,
-          city: this.customer.city,
-          area: this.customer.area,
-          address: this.customer.address,
-          businessDescription: this.customer.businessDescription,
-          licenseImg: this.customer.licenseImg
-        })
-      })
-      if (this.customer.province != null && this.customer.province > 0) { // 渲染市
-        this.getCity(1, this.customer.province)
-      }
-      if (this.customer.city != null && this.customer.city > 0) { // 渲染区
-        this.getCity(2, this.customer.city)
-      }
-      if (this.customer.interestProduct != null && this.customer.interestProduct.length > 0) { // 感兴趣产品
-        var iProduct = this.customer.interestProduct.split(',')
-        setFieldsValue({ products: iProduct })
-      }
-      if (this.customer.superiorId != null && this.customer.superiorId > 0) { // 渲染所属代理商
-        this.isSecond = true
-        allAgency().then(res => {
-          this.allAgency = res.data
-        })
-        setFieldsValue({ superiorId: this.customer.superiorId })
-      }
-      if (this.customer.controlArea && this.customer.controlArea !== 'null') { // 代理区域
-        this.isAgency = true
-        setFieldsValue({ controlArea: this.customer.controlArea })
-      }
-      if (this.customer.licenseImg != null && this.customer.licenseImg.length > 0) {
-        this.fileList[0] = {
-          uid: '-1',
-          name: 'xxx.png',
-          status: 'done',
-          'url': this.customer.licenseImg
-        } // 图片预览缩略图
-      }
-    }
+    this.init()
   },
   methods: {
+    async init(){
+      const that = this
+
+      that.sources = await getDictionary({ text: '客户录入渠道' }).then(res => res.data)
+      that.productTypes = await getDictionary({ text: '产品类型' }).then(res => res.data)
+      that.customerTypes = await getDictionary({ text: '客户类型' }).then(res => res.data)
+      that.learns = await getDictionary({ text: '客户获知渠道' }).then(res => res.data)
+      that.provinces = await getAreaByParent({ pId: 100000 }).then(res => res.data)
+
+      // 新增的时候不需要改变页面数据，且不能修改cId，否则页面有些关于cId去判断是新增还是修改会出错
+      if (that.customer.id !== undefined && that.customer.id !== '') {
+        that.cId = that.customer.id
+        const { form: { setFieldsValue } } = that
+        that.$nextTick(() => {
+          // setFieldsValue只有通过这种方式给表单赋值
+          setFieldsValue({
+            name: that.customer.name,
+            alias: that.customer.alias,
+            tel: that.customer.tel,
+            fax: that.customer.fax,
+            learn: that.customer.learn,
+            type: that.customer.type,
+            intention: that.customer.intention,
+            userId: that.customer.userId,
+            province: that.customer.province,
+            city: that.customer.city,
+            area: that.customer.area,
+            address: that.customer.address,
+            businessDescription: that.customer.businessDescription,
+            licenseImg: that.customer.licenseImg
+          })
+        })
+        if (that.customer.province != null && that.customer.province > 0) { // 渲染市
+          that.getCity(1, that.customer.province)
+        }
+        if (that.customer.city != null && that.customer.city > 0) { // 渲染区
+          that.getCity(2, that.customer.city)
+        }
+        if (that.customer.interestProduct != null && that.customer.interestProduct.length > 0) { // 感兴趣产品
+          var iProduct = that.customer.interestProduct.split(',')
+          setFieldsValue({ products: iProduct })
+        }
+        if (that.customer.superiorId != null && that.customer.superiorId > 0) { // 渲染所属代理商
+          that.isSecond = true
+          allAgency().then(res => {
+            that.allAgency = res.data
+          })
+          setFieldsValue({ superiorId: that.customer.superiorId })
+        }
+        if (that.customer.controlArea && that.customer.controlArea !== 'null') { // 代理区域
+          that.isAgency = true
+          setFieldsValue({ controlArea: that.customer.controlArea })
+        }
+        if (that.customer.licenseImg != null && that.customer.licenseImg.length > 0) {
+          that.fileList[0] = {
+            uid: '-1',
+            name: 'xxx.png',
+            status: 'done',
+            'url': that.customer.licenseImg
+          } // 图片预览缩略图
+        }
+      }
+    },
     addProvince () {
       var agencyProvince = this.form.getFieldValue('agencyProvince')
       if (agencyProvince !== undefined) {
@@ -388,11 +387,16 @@ export default {
         this.form.setFieldsValue({ superiorId: null })
       }
     },
-    edit (record) { // 父页面点击修改调用
-      this.visible = true
-      this.cId = record.id
-      const { form: { setFieldsValue } } = this
-      this.$nextTick(() => {
+    async edit (record) { // 父页面点击修改调用
+      const that = this
+      await that.init()
+      that.visible = true
+      that.cId = record.id
+      const { form: { setFieldsValue } } = that
+
+      that.learnChange(record.learn)
+
+      that.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
         setFieldsValue({
           name: record.name,
@@ -400,6 +404,7 @@ export default {
           tel: record.tel,
           fax: record.fax,
           learn: record.learn,
+          otherLearn:record.otherLearn,
           intention: record.intention,
           type: record.type,
           userId: record.userId,
@@ -412,28 +417,28 @@ export default {
         })
       })
       if (record.province != null && record.province > 0) { // 渲染市
-        this.getCity(1, record.province)
+        that.getCity(1, record.province)
       }
       if (record.city != null && record.city > 0) { // 渲染区
-        this.getCity(2, record.city)
+        that.getCity(2, record.city)
       }
       if (record.interestProduct != null && record.interestProduct.length > 0) { // 感兴趣产品
         var iProduct = record.interestProduct.split(',')
         setFieldsValue({ products: iProduct })
       }
       if (record.superiorId != null && record.superiorId > 0) { // 渲染所属代理商
-        this.isSecond = true
+        that.isSecond = true
         allAgency().then(res => {
-          this.allAgency = res.data
+          that.allAgency = res.data
         })
         setFieldsValue({ superiorId: parseInt(record.superiorId) })
       }
       if (record.controlArea != null && record.controlArea.length > 0) { // 代理区域
-        this.isAgency = true
+        that.isAgency = true
         setFieldsValue({ controlArea: record.controlArea })
       }
       if (record.licenseImg != null && record.licenseImg.length > 0) {
-        this.fileList[0] = {
+        that.fileList[0] = {
           uid: '-1',
           name: 'xxx.png',
           status: 'done',
@@ -515,6 +520,10 @@ export default {
         this.$message.info(`客户维护周期 最小为【5】天`)
         return
       }
+    },
+    learnChange(id){
+      let target = this.learns.find(item => +item.id === +id)
+      this.isOtherLearn = target && target.text === '其它'
     }
   }
 }

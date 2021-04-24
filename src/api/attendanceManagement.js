@@ -119,6 +119,16 @@ export function going_list(parameter) {
   })
 }
 
+//外出合计 
+export function going_Tiem(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceEgressApply/getTotalTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /** 外出申请新增  */
 export function going_add(parameter) {
   return axios({
@@ -589,6 +599,16 @@ export function overworkApplyList(parameter) {
     params: parameter
   })
 }
+export function overworkApplyTime(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/overworkApply/overwork-apply/getTotalTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 
 export function overworkApplyHours(parameter) {
   return axios({
@@ -892,6 +912,16 @@ export function attenceLeaveApplyList(parameter) {
     params: parameter
   })
 }
+//请假总时长
+export function attenceLeaveApplyTime(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attenceLeaveApply/getTotalTime',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 export function attenceLeaveApplyWithdraw(parameter) {
   return axios({

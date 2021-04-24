@@ -100,7 +100,7 @@ export default {
       that.visible = true
     },
     initData() {
-      debugger
+      // debugger
       let that = this
       let queue = []
 

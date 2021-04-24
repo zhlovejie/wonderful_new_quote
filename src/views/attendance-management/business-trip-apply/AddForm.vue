@@ -2,7 +2,7 @@
   <a-modal
     :title="modalTitle"
     :width="1000"
-    :visible="visible"
+    :visible="visibles"
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
@@ -10,13 +10,7 @@
     <template slot="footer">
       <template v-if="isApproval">
         <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
-        <a-button
-          key="submit"
-          type="primary"
-          icon="check"
-          :loading="spinning"
-          @click="passAction"
-        >通过</a-button>
+        <a-button key="submit" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
       </template>
       <template v-else>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -26,14 +20,14 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
         <a-form-item hidden>
-          <a-input v-decorator="['id',{initialValue:detail.id}]" />
+          <a-input v-decorator="['id', { initialValue: detail.id }]" />
         </a-form-item>
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width:120px;">出差人</td>
+            <td style="width: 120px">出差人</td>
             <td colspan="3">
               <a-form-item>
-                {{detail.createdUserName || userInfo.trueName}}
+                {{ detail.createdUserName || userInfo.trueName }}
               </a-form-item>
             </td>
           </tr>
@@ -57,94 +51,104 @@
                 </span>
               </a-form-item>
             </td> -->
-            <td style="width:120px;" >客户名称</td>
+            <td style="width: 120px">客户名称</td>
             <td colspan="3">
               <a-form-item>
                 <a-input
                   v-if="!isDisabled"
                   class="a-input"
-                  style="width:100%;"
+                  style="width: 100%"
                   title="选择客户名称"
                   read-only
                   placeholder="选择客户名称"
                   @click="handleCustomerClick"
-                  v-decorator="['customerName',{initialValue:detail.customerName,rules: [{ required: true, message: '选择客户名称'}]}]"
+                  v-decorator="[
+                    'customerName',
+                    { initialValue: detail.customerName, rules: [{ required: true, message: '选择客户名称' }] },
+                  ]"
                 />
-                <span v-else>{{detail.customerName }}</span>
+                <span v-else>{{ detail.customerName }}</span>
               </a-form-item>
               <a-form-item hidden>
-                <a-input v-decorator="['customerId',{initialValue:detail.customerId}]" />
+                <a-input v-decorator="['customerId', { initialValue: detail.customerId }]" />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">出发城市</td>
-            <td style="width:355px;">
+            <td style="width: 120px">出发城市</td>
+            <td style="width: 355px">
               <a-form-item>
                 <AreaCascade
                   v-if="!isDisabled"
                   :fill="detail && detail.beginAreaId ? detail.beginAreaId.split(',') : []"
-                  @change="(...args) => {areaCascadeChange('beginAreaId',null,...args)}"
-                  style="width:100%;"
+                  @change="
+                    (...args) => {
+                      areaCascadeChange('beginAreaId', null, ...args)
+                    }
+                  "
+                  style="width: 100%"
                 />
-                <span v-else>{{detail.beginAreaName}}</span>
+                <span v-else>{{ detail.beginAreaName }}</span>
               </a-form-item>
             </td>
-            <td style="width:120px;">时长</td>
+            <td style="width: 120px">时长</td>
             <td>
               <a-form-item>
-                <span>{{calcRouteTimeDiff}}</span>
+                <span>{{ calcRouteTimeDiff }}</span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">出差备注</td>
+            <td style="width: 120px">出差备注</td>
             <td colspan="3">
               <a-form-item>
                 <a-textarea
                   v-if="!isDisabled"
-                  style="width:100%;"
+                  style="width: 100%"
                   placeholder="出差备注"
                   :rows="2"
-                  v-decorator="['remark', { initialValue:detail.remark,rules: [{ required: false, message: '请输入出差备注' }] }]"
+                  v-decorator="[
+                    'remark',
+                    { initialValue: detail.remark, rules: [{ required: false, message: '请输入出差备注' }] },
+                  ]"
                 />
-                <span v-else>{{detail.remark}}</span>
+                <span v-else>{{ detail.remark }}</span>
               </a-form-item>
             </td>
           </tr>
         </table>
 
-        <table
-          class="custom-table custom-table-border"
-          v-for="(item,idx) in routesList"
-          :key="item._key"
-        >
+        <table class="custom-table custom-table-border" v-for="(item, idx) in routesList" :key="item._key">
           <caption>
-            <div style="display:flex;">
-              <div style="flex:1;text-align:left;">行程{{idx + 1}}</div>
+            <div style="display: flex">
+              <div style="flex: 1; text-align: left">行程{{ idx + 1 }}</div>
               <a-popconfirm
                 v-if="!isDisabled && routesList.length > 1"
                 title="确认删除该行程吗?"
-                @confirm="() => routeAction('remove',item._key)"
+                @confirm="() => routeAction('remove', item._key)"
               >
                 <a type="primary" href="javascript:;">删除</a>
               </a-popconfirm>
             </div>
           </caption>
           <tr>
-            <td style="width:120px;">目的城市</td>
+            <td style="width: 120px">目的城市</td>
             <td>
               <a-form-item>
                 <AreaCascade
                   v-if="!isDisabled"
                   :fill="item.endAreaId ? item.endAreaId.split(',') : []"
-                  @change="(...args) => {areaCascadeChange('endAreaId',item._key,...args)}"
-                  style="width:100%;"
+                  @change="
+                    (...args) => {
+                      areaCascadeChange('endAreaId', item._key, ...args)
+                    }
+                  "
+                  style="width: 100%"
                 />
-                <span v-else>{{item.endAreaName}}</span>
+                <span v-else>{{ item.endAreaName }}</span>
               </a-form-item>
             </td>
-            <td style="width:120px;">交通工具</td>
+            <td style="width: 120px">交通工具</td>
             <td>
               <a-form-item>
                 <a-select
@@ -152,196 +156,328 @@
                   placeholder="选择交通工具"
                   :value="item.vehicleId"
                   :allowClear="true"
-                  style="width:100%;"
-                  @change="(val) => { vehicleChange('vehicleId',item._key,val) }"
+                  style="width: 100%"
+                  @change="
+                    (val) => {
+                      vehicleChange('vehicleId', item._key, val)
+                    }
+                  "
                 >
-                  <a-select-option
-                    v-for="item in vehicleList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option v-for="item in vehicleList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
                 <span v-else>
-                  {{item.vehicle}}
+                  {{ item.vehicle }}
                 </span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">开始日期</td>
+            <td style="width: 120px">开始日期</td>
             <td>
               <a-form-item>
                 <DateTimePicker
                   v-if="!isDisabled"
                   :fill="item.startTime"
-                  @change="(...args) => {dateTimePickerChange('startTime',item._key,...args)}"
-                  style="width:100%;"
+                  @change="
+                    (...args) => {
+                      dateTimePickerChange('startTime', item._key, ...args)
+                    }
+                  "
+                  style="width: 100%"
                 />
-                <span v-else>{{item.startTime}}</span>
+                <span v-else>{{ item.startTime }}</span>
               </a-form-item>
             </td>
-            <td style="width:120px;">结束日期</td>
+            <td style="width: 120px">结束日期</td>
             <td>
               <a-form-item>
                 <DateTimePicker
                   v-if="!isDisabled"
                   :fill="item.endTime"
-                  @change="(...args) => {dateTimePickerChange('endTime',item._key,...args)}"
-                  style="width:100%;"
+                  @change="
+                    (...args) => {
+                      dateTimePickerChange('endTime', item._key, ...args)
+                    }
+                  "
+                  style="width: 100%"
                 />
-                <span v-else>{{item.endTime}}</span>
+                <span v-else>{{ item.endTime }}</span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">出差事由</td>
+            <td style="width: 120px">出差事由</td>
             <td colspan="3">
               <a-form-item>
                 <a-textarea
                   v-if="!isDisabled"
-                  style="width:100%;"
+                  style="width: 100%"
                   placeholder="出差事由"
                   :rows="2"
                   :value="item.reason"
-                  @change="reasonChange('reason',item._key,$event)"
+                  @change="reasonChange('reason', item._key, $event)"
                 />
-                <span v-else>{{item.reason}}</span>
+                <span v-else>{{ item.reason }}</span>
               </a-form-item>
             </td>
           </tr>
 
           <tr>
-            <td style="width:120px;">出差同行人</td>
+            <td style="width: 120px">出差同行人</td>
             <td colspan="3">
               <a-form-item>
                 <DepUserMulSelect
                   v-if="!isDisabled"
                   :users="item.users"
-                  @change="(...args) => {depUserMulChange('users',item._key,...args)}"
-                  style="width:100%;"
+                  @change="
+                    (...args) => {
+                      depUserMulChange('users', item._key, ...args)
+                    }
+                  "
+                  style="width: 100%"
                 />
-                <span>{{ item.users.map(u =>u.trueName).join(',') }}</span>
+                <span v-else>{{ item.users.map((u) => u.trueName).join(',') }}</span>
               </a-form-item>
             </td>
           </tr>
           <tr v-show="item.users && item.users.length > 0">
-            <td style="width:120px;">出差负责人</td>
+            <td style="width: 120px">出差负责人</td>
             <td colspan="3">
               <a-form-item>
                 <DepUserSelect
                   v-if="!isDisabled"
                   :depId="item.chargeUserDepId || userInfo.departmentId"
                   :userId="item.chargeUserId || userInfo.id"
-                  @change="(...args) => {depUserChange('chargeUserId',item._key,...args)}"
-                  style="width:100%;"
+                  @change="
+                    (...args) => {
+                      depUserChange('chargeUserId', item._key, ...args)
+                    }
+                  "
+                  style="width: 100%"
                 />
-                <span v-else>{{item.chargeUserName}}</span>
+                <span v-else>{{ item.chargeUserName }}</span>
               </a-form-item>
             </td>
           </tr>
+          <tr>
+            <td colspan="4">
+              <div style="width: 50%; float: left" v-for="(i, index) in item.users" :key="i.keys">
+                <div style="width: 27%; float: left">
+                  {{ i.trueName }} <br />
+                  出发车票
+                </div>
+                <div style="width: 30%; float: left">
+                  <a-form-item>
+                    <a-upload
+                      style="margin-top: 10px"
+                      :disabled="isDisabled"
+                      :action="uploadUrl"
+                      list-type="picture-card"
+                      :file-list="i.ticketUrl"
+                      @preview="handlePreview"
+                      @change="(...args) => handleChange(item._key, i.keys, ...args)"
+                    >
+                      <div v-if="!i.ticketUrl || (i.ticketUrl && i.ticketUrl.length < 1)">
+                        <a-icon type="plus" />
+                        <div class="ant-upload-text">上传车票</div>
+                      </div>
+                    </a-upload>
+                    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancels">
+                      <img alt="example" style="width: 100%" :src="previewImage" />
+                    </a-modal>
+                  </a-form-item>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!-- v-if="item.ticket" -->
+          <!-- <tr v-for="(i, index) in item.users" :key="i.keys">
+            <td style="width: 120px">
+              {{ i.trueName }} <br />
+              出发车票
+            </td>
+            <td>
+              <a-form-item>
+                <a-upload
+                  :disabled="isDisabled"
+                  :action="uploadUrl"
+                  list-type="picture-card"
+                  :file-list="i.ticketUrl"
+                  @preview="handlePreview"
+                  @change="(...args) => handleChange(item._key, i.keys, ...args)"
+                >
+                  <div v-if="!i.ticketUrl || (i.ticketUrl && i.ticketUrl.length < 1)">
+                    <a-icon type="plus" />
+                    <div class="ant-upload-text">上传车票</div>
+                  </div>
+                </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancels">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </a-form-item>
+            </td>
+          </tr> -->
         </table>
 
-        <a-button
-          v-if="!isDisabled"
-          style="width: 100%;"
-          type="dashed"
-          icon="plus"
-          @click="routeAction('add')"
-        >新增行</a-button>
+        <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="routeAction('add')"
+          >新增行</a-button
+        >
 
-        <table class="custom-table custom-table-border" style="margin-top:20px;">
+        <table class="custom-table custom-table-border" style="margin-top: 20px">
           <tr>
-            <td style="width:120px;">使用公车</td>
-            <td style="width:355px;">
+            <td style="width: 120px">使用公车</td>
+            <td style="width: 355px">
               <a-form-item>
                 <a-select
                   v-if="!isDisabled"
                   :disabled="!isCompanyCar"
                   placeholder="选择公车"
-                  v-decorator="['carDicNum',{initialValue:detail.carDicNum ? +detail.carDicNum : undefined,rules: [{required: isCompanyCar,message: '选择公车'}]}]"
+                  v-decorator="[
+                    'carDicNum',
+                    {
+                      initialValue: detail.carDicNum,
+                      rules: [{ required: isCompanyCar, message: '选择公车' }],
+                    },
+                  ]"
                   :allowClear="true"
-                  style="width:334px;"
+                  style="width: 334px"
                 >
-                  <a-select-option
-                    v-for="item in carList"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option v-for="item in carList" :key="item.id" :value="item.text">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
-                <span v-else>{{detail.carDicNumTxt}}</span>
+                <span v-else>{{ detail.carDicNum }}</span>
               </a-form-item>
             </td>
-            <td style="width:120px;">预支金额(元)</td>
-            <td style="width:355px;">
+            <td style="width: 120px">预支金额(元)</td>
+            <td style="width: 355px">
               <a-form-item>
                 <a-input-number
                   v-if="!isDisabled"
-                  style="width:334px;"
+                  style="width: 334px"
                   :min="0"
                   :max="2000"
                   :step="1"
-                  v-decorator="['overdraftAmount', {initialValue:detail.overdraftAmount}]" 
+                  v-decorator="['overdraftAmount', { initialValue: detail.overdraftAmount }]"
                   @change="overdraftAmountChange"
                 />
                 <span v-else>
-                  {{detail.overdraftAmount | moneyFormatNumber}}
+                  {{ detail.overdraftAmount | moneyFormatNumber }}
                 </span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">银行卡号</td>
+            <td style="width: 120px">银行卡号</td>
             <td colspan="3">
               <a-form-item>
                 <a-input
                   v-if="!isDisabled"
-                  style="width:100%;"
+                  style="width: 100%"
                   placeholder="银行卡号"
-                  v-decorator="['bankAccount', {initialValue:detail.bankAccount,rules: [{required:isBankRequired,pattern: /^\d{15,20}$/, message: '请输入正确银行账号' }]}]"
+                  v-decorator="[
+                    'bankAccount',
+                    {
+                      initialValue: detail.bankAccount,
+                      rules: [{ required: isBankRequired, pattern: /^\d{15,20}$/, message: '请输入正确银行账号' }],
+                    },
+                  ]"
                 />
                 <span v-else>
-                  {{detail.bankAccount}}
+                  {{ detail.bankAccount }}
                 </span>
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width:120px;">银行名称</td>
+            <td style="width: 120px">银行名称</td>
             <td colspan="3">
               <a-form-item>
                 <a-input
                   v-if="!isDisabled"
-                  style="width:100%;"
+                  style="width: 100%"
                   placeholder="输入银行名称具体至开户行"
-                  v-decorator="['bankName', {initialValue:detail.bankName,rules: [{required:isBankRequired, message: '请输入银行名称具体至开户行' }]}]"
+                  v-decorator="[
+                    'bankName',
+                    {
+                      initialValue: detail.bankName,
+                      rules: [{ required: isBankRequired, message: '请输入银行名称具体至开户行' }],
+                    },
+                  ]"
                 />
                 <span v-else>
-                  {{detail.bankName}}
+                  {{ detail.bankName }}
                 </span>
               </a-form-item>
             </td>
           </tr>
-
-
         </table>
 
-        <table class="custom-table custom-table-border" style="margin-top:20px;" v-if="+detail.status === 2">
+        <table class="custom-table custom-table-border" style="margin-top: 20px" v-if="+detail.status === 2">
           <tr>
-            <td style="width:120px;">提交人</td>
-            <td style="width:355px;">{{detail.createdUserName}}</td>
-            <td style="width:120px;">提交时间</td>
-            <td style="width:355px;">{{detail.createdTime}}</td>
+            <td colspan="4">
+              <div style="width: 50%; float: left" v-for="(i, index) in fileList" :key="i.keys">
+                <div style="width: 30%; float: left">
+                  {{ i.trueName }} <br />
+                  回程车票
+                </div>
+                <div style="width: 30%; float: left">
+                  <a-form-item>
+                    <a-upload
+                      :disabled="isDisabled"
+                      :action="uploadUrl"
+                      list-type="picture-card"
+                      :file-list="i.ticketUrl"
+                      @preview="handlePreview"
+                      @change="handleChanges"
+                    >
+                    </a-upload>
+                    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancels">
+                      <img alt="example" style="width: 100%" :src="previewImage" />
+                    </a-modal>
+                  </a-form-item>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 120px">提交人</td>
+            <td style="width: 355px">{{ detail.createdUserName }}</td>
+            <td style="width: 120px">提交时间</td>
+            <td style="width: 355px">{{ detail.createdTime }}</td>
           </tr>
           <tr>
             <td>审批人</td>
-            <td>{{lastApprovedNode.userName}}</td>
+            <td>{{ lastApprovedNode.userName }}</td>
             <td>审批结果</td>
-            <td>{{lastApprovedNode.code}}</td>
+            <td>{{ lastApprovedNode.code }}</td>
           </tr>
           <tr>
             <td>审批时间</td>
-            <td colspan="3">{{lastApprovedNode.createTime}}</td>
+            <td colspan="3">{{ lastApprovedNode.createTime }}</td>
           </tr>
+
+          <!-- <tr v-if="detail.backTickets">
+            <td style="width: 120px">回程车票</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-upload
+                  disabled
+                  :action="uploadUrl"
+                  list-type="picture-card"
+                  :file-list="fileList"
+                  @preview="handlePreview"
+                  @change="handleChanges"
+                >
+                </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancels">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </a-form-item>
+            </td>
+          </tr> -->
         </table>
       </a-form>
     </a-spin>
@@ -353,18 +489,19 @@
 import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
-  getUserByDep //获取人员
+  getUserByDep, //获取人员
 } from '@/api/systemSetting'
 import { getDictionaryList } from '@/api/workBox'
 import { getAreaByParent } from '@/api/common'
 import { getOneSalesman } from '@/api/customer/salesman'
+import { getUploadPath2 } from '@/api/common'
 import {
   attenceTravelApplyDetail,
   attenceTravelApplyAddAndUpdate,
   attenceTravelApplyApprove,
-  attenceTravelApplyGetNewstAccount
+  attenceTravelApplyGetNewstAccount,
 } from '@/api/attendanceManagement'
-import {findApprovedNodeList} from '@/api/common'
+import { findApprovedNodeList } from '@/api/common'
 import Approval from './Approval'
 import CustomerList from '@/components/CustomerList/CustomerList'
 import AreaCascade from './AreaCascade'
@@ -373,11 +510,15 @@ import DepUserSelect from './DepUserSelect'
 import DepUserMulSelect from './DepUserMulSelect'
 import moment from 'moment'
 
-let uuid = () =>
-  Math.random()
-    .toString(32)
-    .slice(-10)
-
+let uuid = () => Math.random().toString(32).slice(-10)
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'business-trip-apply-add',
   components: {
@@ -386,29 +527,32 @@ export default {
     AreaCascade,
     DateTimePicker,
     DepUserSelect,
-    DepUserMulSelect
+    DepUserMulSelect,
   },
   data() {
     return {
+      uploadUrl: getUploadPath2(),
       form: this.$form.createForm(this),
-      visible: false,
-      spinning: false,
+      visibles: false,
       actionType: 'view',
       detail: {},
       record: {},
+      fileList: [],
       spinning: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-
+      previewVisible: false,
+      previewImage: '',
+      ticket: true,
       vehicleList: [], //交通工具
       carList: [], //公司车辆
       beginAreaId: [], //出发城市
-      beginAreaName:undefined,
+      beginAreaName: undefined,
       routesList: [], //出差行程
       isSalesman: false,
 
       isCompanyCar: false, //交通工具为公车时，下面的选项才可以选择车牌号
-      lastApprovedNode:{}, //取最后一个审批节点信息
-      isBankRequired:false
+      lastApprovedNode: {}, //取最后一个审批节点信息
+      isBankRequired: false,
     }
   },
   computed: {
@@ -448,17 +592,31 @@ export default {
       let hours = parseInt(total / 60 - days * 24, 10)
       let minutes = parseInt(total - days * 24 * 60 - hours * 60, 10)
       return `${days ? days + ' 天 ' : ''}${hours ? hours + ' 小时 ' : ''}${minutes > 0 ? minutes + ' 分钟 ' : ''}`
-    }
+    },
   },
   watch: {},
   methods: {
     moment,
+    //图片弹窗
+    handleCancels() {
+      this.previewVisible = false
+    },
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    handleChanges({ fileList }) {
+      this.fileList = fileList
+    },
     init() {
       let that = this
       let queue = []
-      let task1 = getDictionaryList({ parentId: 509 }).then(res => (that.vehicleList = res.data))
+      let task1 = getDictionaryList({ parentId: 509 }).then((res) => (that.vehicleList = res.data))
       queue.push(task1)
-      let task2 = getDictionaryList({ parentId: 515 }).then(res => (that.carList = res.data))
+      let task2 = getDictionaryList({ parentId: 515 }).then((res) => (that.carList = res.data))
       queue.push(task2)
       let task3 = that.checkSalesman()
       queue.push(task3)
@@ -467,7 +625,7 @@ export default {
     checkSalesman() {
       let that = this
       let userId = this.userInfo.id || this.record.createdId
-      return getOneSalesman({ userId }).then(res => {
+      return getOneSalesman({ userId }).then((res) => {
         that.isSalesman = res.data.length > 0
       })
     },
@@ -479,97 +637,125 @@ export default {
       that.beginAreaName = undefined
       that.form.resetFields()
       await that.init()
-      that.visible = true
+      that.visibles = true
 
       if (that.isAdd) {
         that.detail = {}
-        attenceTravelApplyGetNewstAccount().then(res =>{
-          if(res && res.data && res.data.bankAccount){
-            that.detail = Object.assign({},that.detail,{bankAccount:res.data.bankAccount})
+        attenceTravelApplyGetNewstAccount().then((res) => {
+          if (res && res.data && res.data.bankAccount) {
+            that.detail = Object.assign({}, that.detail, { bankAccount: res.data.bankAccount })
           }
         })
         that.routeAction('add')
         return
       }
       that.spinning = true
-      attenceTravelApplyDetail({ id: record.id }).then(res => {
-        that.spinning = false
-        let data = res.data
-        if(!data){
-          setTimeout(function(){
-            that.visible = false
-            that.$message.info('获取信息失败。')
-          },500)
-          return
-        }
-        data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
-        //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
-        that.detail = { ...data }
+      attenceTravelApplyDetail({ id: record.id })
+        .then((res) => {
+          that.spinning = false
+          let data = res.data
+          if (!data) {
+            setTimeout(function () {
+              that.visibles = false
+              that.$message.info('获取信息失败。')
+            }, 500)
+            return
+          }
+          // debugger
+          // data.carDicNumTxt = that.getCarDicNumTxt(data.carDicNum)
+          //data.beginAreaName = await that.getAreaTextByIds(data.beginAreaId)
+          that.detail = { ...data }
 
-        that.isBankRequired = that.detail.overdraftAmount && +that.detail.overdraftAmount > 0
+          that.isBankRequired = that.detail.overdraftAmount && +that.detail.overdraftAmount > 0
 
-        that.isCompanyCar = !!that.carList.find(item => String(item.label) === '公车')
+          that.isCompanyCar = !!that.carList.find((item) => String(item.label) === '公车')
+          if (that.detail.backTickets) {
+            that.fileList = that.detail.backTickets.map((item) => {
+              return {
+                trueName: item.userName,
+                ticketUrl: item.ticketUrl
+                  ? [
+                      {
+                        uid: uuid(),
+                        name: 'image.png',
+                        status: 'done',
+                        url: item.ticketUrl,
+                      },
+                    ]
+                  : [],
+              }
+            })
+          }
+          that.beginAreaId = data.beginAreaId
+          that.beginAreaName = data.beginAreaName
+          that.routesList = that.detail.routes.map((route) => {
+            return {
+              _key: uuid(),
+              ticket: route.ticketUrl ? true : false,
+              endAreaId: route.endAreaId,
+              endAreaName: route.endAreaName || '',
+              vehicleId: route.vehicleId,
+              vehicle: route.vehicle,
+              startTime: route.startTime,
+              endTime: route.endTime,
+              reason: route.reason,
+              chargeUserDepId: route.chargeUserDepId,
+              chargeUserId: route.chargeUserId,
+              chargeUserName: route.chargeUserName,
+              users: route.users
+                ? route.users.map((u) => {
+                    return {
+                      ticketUrl: u.ticketUrl
+                        ? [
+                            {
+                              uid: uuid(),
+                              name: 'image.png',
+                              status: 'done',
+                              url: u.ticketUrl,
+                            },
+                          ]
+                        : [],
+                      _key: uuid(),
+                      id: u.userId,
+                      trueName: u.userName,
+                    }
+                  })
+                : [],
+            }
+          })
 
-        that.beginAreaId = data.beginAreaId
-        that.beginAreaName = data.beginAreaName
-        that.routesList = that.detail.routes.map(route => {
-          return {
-            _key: uuid(),
-            endAreaId: route.endAreaId,
-            endAreaName: route.endAreaName || '',
-            vehicleId: route.vehicleId,
-            vehicle:route.vehicle,
-            startTime: route.startTime,
-            endTime: route.endTime,
-            reason: route.reason,
-            chargeUserDepId: route.chargeUserDepId,
-            chargeUserId: route.chargeUserId,
-            chargeUserName:route.chargeUserName,
-            users: route.users
-              ? route.users.map(u => {
-                  return {
-                    _key: uuid(),
-                    id: u.userId,
-                    trueName: u.userName
-                  }
-                })
-              : []
+          if (+data.status === 2) {
+            that.fetchApprovedNode(data.instanceId)
           }
         })
-
-        if(+data.status === 2){
-          that.fetchApprovedNode(data.instanceId)
-        }
-      }).catch(err =>{
-        that.spinning = false
-        that.$message.info(err.message)
-      })
+        .catch((err) => {
+          that.spinning = false
+          that.$message.info(err.message)
+        })
     },
-    fetchApprovedNode(instanceId){
+    fetchApprovedNode(instanceId) {
       let that = this
-      findApprovedNodeList({instanceId: instanceId})
-      .then(res => {
-        if(Array.isArray(res.data) && res.data.length > 0)
-        that.lastApprovedNode = res.data[res.data.length - 1]
+      findApprovedNodeList({ instanceId: instanceId }).then((res) => {
+        if (Array.isArray(res.data) && res.data.length > 0) that.lastApprovedNode = res.data[res.data.length - 1]
       })
     },
 
     areaCascadeChange(type, key, arrArea, arrAreaItems) {
       // debugger
       let that = this
-      let _beginAreaName = arrAreaItems.map(item =>item.label).join('') 
+      let _beginAreaName = arrAreaItems.map((item) => item.label).join('')
       if (type === 'beginAreaId') {
         this.beginAreaId = arrArea.join(',')
         that.detail = Object.assign({}, that.detail, {
           beginAreaId: arrArea.join(','),
-          beginAreaName: _beginAreaName
+          beginAreaName: _beginAreaName,
         })
         that.beginAreaName = _beginAreaName
         return
       }
       if (type === 'endAreaId') {
         let _routesList = [...that.routesList]
-        let target = _routesList.find(item => item._key === key)
+        let target = _routesList.find((item) => item._key === key)
         if (target) {
           target.endAreaId = arrArea.join(',')
           target.endAreaName = _beginAreaName
@@ -580,7 +766,7 @@ export default {
     },
     dateTimePickerChange(type, key, timeStr) {
       let _routesList = [...this.routesList]
-      let target = _routesList.find(item => item._key === key)
+      let target = _routesList.find((item) => item._key === key)
       if (target) {
         target[type] = timeStr
         target['__dateStatus'] = target['endTime'] > target['startTime']
@@ -591,7 +777,7 @@ export default {
     },
     reasonChange(type, key, event) {
       let _routesList = [...this.routesList]
-      let target = _routesList.find(item => item._key === key)
+      let target = _routesList.find((item) => item._key === key)
       if (target) {
         target[type] = event.target.value
         this.routesList = [..._routesList]
@@ -600,34 +786,50 @@ export default {
     depUserChange(type, key, depId, userId) {
       //chargeUserId
       let _routesList = [...this.routesList]
-      let target = _routesList.find(item => item._key === key)
+      let target = _routesList.find((item) => item._key === key)
       if (target) {
         target[type] = userId
         this.routesList = [..._routesList]
       }
     },
     depUserMulChange(type, key, users) {
+      console.log(type, key, users)
       let _routesList = [...this.routesList]
-      let target = _routesList.find(item => item._key === key)
+      let target = _routesList.find((item) => item._key === key)
       if (target) {
-        target[type] = users.map(id => {
-          return { userId: id }
+        target[type] = users.map((id) => {
+          return id
         })
+        this.routesList = [..._routesList]
+      }
+    },
+    handleChange(type, key, obj) {
+      let { file, fileList } = obj
+      //debugger
+      let _routesList = [...this.routesList]
+      let target = _routesList.find((item) => item._key === type)
+      let react = target.users.find((item) => item.keys === key)
+      if (react) {
+        react.ticketUrl = fileList
+        target = [...target.users]
         this.routesList = [..._routesList]
       }
     },
     vehicleChange(type, key, val) {
       let _routesList = [...this.routesList]
-      let target = _routesList.find(item => item._key === key)
+      let target = _routesList.find((item) => item._key === key)
       if (target) {
         target[type] = val
+        let car = this.vehicleList.find((car) => +car.id === +val)
+        target['ticket'] = car && String(car.text).trim() !== '公车'
         this.routesList = [..._routesList]
       }
 
-      let car = this.vehicleList.find(car => +car.id === +val)
+      let car = this.vehicleList.find((car) => +car.id === +val)
       this.isCompanyCar = car && String(car.text).trim() === '公车'
+
       if (!this.isCompanyCar) {
-        this.form.setFieldsValue({ carDicNum: undefined })
+        this.form.setFieldsValue({ carDicNum: '' })
       }
     },
     routeAction(type, key) {
@@ -640,19 +842,19 @@ export default {
           startTime: undefined,
           endTime: undefined,
           reason: '',
-          users: []
+          users: [{ id: this.userInfo.id, ticketUrl: [], trueName: this.userInfo.trueName }],
         })
       } else if (type === 'remove') {
-        that.routesList = that.routesList.filter(item => item._key !== key)
+        that.routesList = that.routesList.filter((item) => item._key !== key)
       }
     },
     handleCustomerClick() {
-      this.$refs.customerList.init({userId:this.userInfo.id})
+      this.$refs.customerList.init({ userId: this.userInfo.id })
     },
     handlerCustomerSelected(record) {
       this.form.setFieldsValue({
         customerName: record.name,
-        customerId: record.id
+        customerId: record.id,
       })
     },
     birthplaceCascaderChange(arrSelected) {
@@ -664,36 +866,36 @@ export default {
       const targetOption = selectedOptions[selectedOptions.length - 1]
       targetOption.loading = true
       getAreaByParent({ pId: targetOption.value })
-        .then(res => {
+        .then((res) => {
           //城市
           targetOption.loading = false
-          targetOption.children = res.data.map(item => {
+          targetOption.children = res.data.map((item) => {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false
+              isLeaf: item.level === 3 ? true : false,
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log(err)
         })
     },
     loadAreaAction(pId) {
       const that = this
       return getAreaByParent({ pId: pId })
-        .then(res => {
+        .then((res) => {
           //城市
-          return res.data.map(item => {
+          return res.data.map((item) => {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false
+              isLeaf: item.level === 3 ? true : false,
             }
           })
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log(err)
           return []
         })
@@ -708,30 +910,30 @@ export default {
         if (!err) {
           console.log('Received values of form: ', values)
           console.log(that.routesList)
-          if(!that.beginAreaId || (Array.isArray(that.beginAreaId) && that.beginAreaId.length === 0)){
+          if (!that.beginAreaId || (Array.isArray(that.beginAreaId) && that.beginAreaId.length === 0)) {
             that.$message.info('请选择出发城市')
             return
           }
 
-          for(let i =0,len = that.routesList.length;i<len;i++){
+          for (let i = 0, len = that.routesList.length; i < len; i++) {
             let route = that.routesList[i]
-            if(!route.endAreaId){
+            if (!route.endAreaId) {
               that.$message.info(`请选择行程${i + 1}内的 目的城市`)
               return
             }
-            if(!route.vehicleId){
+            if (!route.vehicleId) {
               that.$message.info(`请选择行程${i + 1}内的 交通工具`)
               return
             }
-            if(!route.startTime){
+            if (!route.startTime) {
               that.$message.info(`请选择行程${i + 1}内的 开始日期`)
               return
             }
-            if(!route.endTime){
+            if (!route.endTime) {
               that.$message.info(`请选择行程${i + 1}内的 结束日期`)
               return
             }
-            if(!route.__dateStatus){
+            if (!route.__dateStatus) {
               that.$message.info(`行程${i + 1}内的 结束日期 必须大于 开始时间`)
               return
             }
@@ -741,13 +943,43 @@ export default {
           values.status = that.record.status || 0 //状态待审批
           values.beginAreaId = that.beginAreaId || that.detail.beginAreaId //外层出发城市
           values.beginAreaName = that.beginAreaName || that.detail.beginAreaName
-          values.routes = that.$_.cloneDeep(that.routesList).map(item => {
+          values.routes = that.$_.cloneDeep(that.routesList).map((item) => {
             delete item._key
             return item
           })
-
-          //console.log(values)
-          //return
+          const react = values.routes.every((i) => {
+            return i.users.every((item) => item.ticketUrl&&item.ticketUrl.length !== 0)
+          })
+          const reacts = values.routes.every((item) => item.vehicleId === 513)
+          if (react || reacts) {
+            values.routes = values.routes.map((item) => {
+              let arr = item.users.map((i) => {
+                if (item.vehicleId === 513 || i.ticketUrl[0].url !== undefined) {
+                  return {
+                    ticketUrl: item.vehicleId === 513 ? '' : i.ticketUrl[0].url,
+                    userId: i.id,
+                  }
+                } else {
+                  return {
+                    ticketUrl: i.ticketUrl[0].response.data || '',
+                    userId: i.id,
+                  }
+                }
+              })
+              return {
+                chargeUserId: item.chargeUserId,
+                vehicleId: item.vehicleId,
+                endAreaId: item.endAreaId,
+                endAreaName: item.endAreaName,
+                endTime: item.endTime,
+                reason: item.reason,
+                startTime: item.startTime,
+                users: arr || [],
+              }
+            })
+          } else {
+            return this.$message.error('请上传车票')
+          }
 
           that.spinning = true
           // 判断开始日期 1.早于当前时间，给出提示
@@ -760,14 +992,19 @@ export default {
           } else {
             values.travelType = 1 //默认都是出差
             attenceTravelApplyAddAndUpdate(values)
-              .then(res => {
-                that.$message.info(res.msg)
-                that.spinning = false
-                that.handleCancel()
-                that.$emit('finish')
+              .then((res) => {
+                if (res.code === 200) {
+                  that.$message.info(res.msg)
+                  that.spinning = false
+                  that.handleCancel()
+                  that.$emit('finish')
+                } else {
+                  that.$message.error(res.msg)
+                  that.spinning = false
+                }
               })
-              .catch(err => {
-                that.spinning = false
+              .catch((err) => {
+                // that.spinning = false
               })
           }
         }
@@ -775,22 +1012,22 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
-      this.$nextTick(() => (this.visible = false))
+      this.$nextTick(() => (this.visibles = false))
     },
     submitAction(opt) {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
       attenceTravelApplyApprove(values)
-        .then(res => {
+        .then((res) => {
           that.spinning = false
           console.log(res)
           that.form.resetFields() // 清空表
-          that.visible = false
+          that.visibles = false
           that.$message.info(res.msg)
           that.$emit('finish')
         })
-        .catch(err => (that.spinning = false))
+        .catch((err) => (that.spinning = false))
     },
     passAction(opt = {}) {
       this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
@@ -803,30 +1040,31 @@ export default {
       //审批意见
       this.submitAction({
         isAdopt: 1,
-        opinion: opinion
+        opinion: opinion,
       })
     },
-    getCarDicNumTxt(id){
-      let target = this.carList.find(item => +item.id === +id)
-      if(target){
+    getCarDicNumTxt(id) {
+      let target = this.carList.find((item) => +item.id === +id)
+      if (target) {
         return target.text
       }
       return ''
     },
-    async getAreaTextByIds(ids){
+    async getAreaTextByIds(ids) {
       let _ids = ids.split(',')
       let arr = []
 
-      let getAreaText = async (pId,key) => {
-        let res = await getAreaByParent({pId:pId})
-        let target = res.data.find(item => String(item.id) === String(key))
+      let getAreaText = async (pId, key) => {
+        let res = await getAreaByParent({ pId: pId })
+        let target = res.data.find((item) => String(item.id) === String(key))
         return target ? target.area : ''
       }
 
-      let initKey = '100000',findKey = ''
-      for(let i=0,len = _ids.length;i<len;i++){
+      let initKey = '100000',
+        findKey = ''
+      for (let i = 0, len = _ids.length; i < len; i++) {
         findKey = _ids[i]
-        let res = await getAreaText(initKey,findKey)
+        let res = await getAreaText(initKey, findKey)
         arr.push(res)
         initKey = findKey
       }
@@ -834,13 +1072,22 @@ export default {
       console.log(arr)
       return arr.join('/')
     },
-    overdraftAmountChange(val){
+    overdraftAmountChange(val) {
       this.isBankRequired = val && val > 0
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+}
 .wdf-custom-add-form-wrapper >>> .ant-form-item {
   display: flex;
   margin: 0;
@@ -858,12 +1105,10 @@ export default {
   text-align: left;
   line-height: 40px;
 }
-.custom-table-border tr:nth-child(odd)
-{
-  background:#f5f5f5;
+.custom-table-border tr:nth-child(odd) {
+  background: #f5f5f5;
 }
-.custom-table-border tr:nth-child(even)
-{
-  background:#fff;
+.custom-table-border tr:nth-child(even) {
+  background: #fff;
 }
 </style>

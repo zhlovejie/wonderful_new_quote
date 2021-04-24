@@ -164,7 +164,7 @@ export default {
         // 验证表单没错误
         if (!err) {
           _this.confirmLoading = true
-          debugger
+          // debugger
           if (_this.addOredit == 'save') {
             addAndroidVersion(values).then((data) => {
               if (data.code == 200) {

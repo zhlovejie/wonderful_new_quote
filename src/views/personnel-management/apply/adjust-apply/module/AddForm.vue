@@ -119,7 +119,7 @@
                     :disabled="isDisabled"
                     placeholder="调岗原因"
                     :rows="3"
-                    v-decorator="['changeReason', { rules: [{ required: isSelfApproval, message: '调岗原因' }] }]"
+                    v-decorator="['changeReason', { rules: [{ required: true, message: '调岗原因' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -320,7 +320,7 @@
                     :disabled="isDisabled"
                     placeholder="调岗调薪原因"
                     :rows="3"
-                    v-decorator="['changeReason', { rules: [{ required: false, message: '调岗调薪原因' }] }]"
+                    v-decorator="['changeReason', { rules: [{ required: true, message: '调岗调薪原因' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -521,7 +521,7 @@ export default {
         return
       }else if(that.isView || that.isApproval){
         that.handleCancel()
-        return 
+        return
       }
       let apiMap = {
         0: saveOrUpdatePositionChangeApply,
@@ -688,7 +688,7 @@ export default {
         that.salary_entryDate = _date.isValid() ? that.moment(record.entryDate).format('YYYY-MM-DD') : ''
 
         getSalaryBaseCommonByUserId({ userId: record.id }).then((res) => {
-          debugger
+          // debugger
           if (res && res.data) {
             let salary = res.data.realitySalary || undefined
             that.form.setFieldsValue({ oldSalary: salary })

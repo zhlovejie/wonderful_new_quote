@@ -93,7 +93,7 @@ export default {
        * type - idcard -身份证信息  idcardcopy -身份证复印件base64
        * data - {
             //0x19:'身份证功能启动成功',0x1a:'身份证功能启动失败',
-            ICStartStatus: null, 
+            ICStartStatus: null,
             //0x1b:'身份证读卡成功',0x1c:'身份证读卡失败',
             ICGetOneStatus: null,
             ICName: null, //姓名
@@ -146,7 +146,7 @@ export default {
     },
     //上传
     normFile(e) {
-      debugger
+      // debugger
       console.log('Upload event:', e)
       if (Array.isArray(e)) {
         return e

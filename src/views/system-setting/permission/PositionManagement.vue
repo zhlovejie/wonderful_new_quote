@@ -124,6 +124,7 @@
             <a-select-option :value="1">销售助理</a-select-option>
             <a-select-option :value="2">销售经理</a-select-option>
             <a-select-option :value="3">销售总经理</a-select-option>
+            <a-select-option :value="4">车间操作工</a-select-option>
           </a-select>
         </a-form-item>
 

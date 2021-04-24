@@ -79,7 +79,7 @@ export default {
           }
         },
         {
-          path: '/system-setting/permission/产品代码-process',
+          path: '/system-setting/permission/approval-process',
           name: 'ApprovalProcess',
           component: () => import('@/views/system-setting/permission/ApprovalProcess'),
           meta: {
@@ -130,6 +130,15 @@ export default {
           component: () => import('@/views/system-setting/messagePush/list'),
           meta: {
             title: '消息推送',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/system-setting/sharingSettings',
+          name: 'sharing_settings',
+          component: () => import('@/views/system-setting/sharingSettings/list'),
+          meta: {
+            title: '推送共享设置',
             permission: ['permission']
           }
         },
@@ -389,6 +398,15 @@ export default {
           component: () => import('@/views/system-setting/work-box/companyInformation/EnterpriseQualification'),
           meta: {
             title: '企业资质',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/system-setting/work-box/project-patent',
+          name: 'work-box-project-patent',
+          component: () => import('@/views/system-setting/work-box/project-patent/List'),
+          meta: {
+            title: '项目专利',
             permission: ['permission']
           }
         },

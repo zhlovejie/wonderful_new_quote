@@ -33,7 +33,7 @@
         <template v-else>
           <a-tab-pane tab="全部" key="0" />
         </template>
-        
+
         <a-tab-pane tab="待审批" key="1" />
         <a-tab-pane tab="已审批" key="2" />
       </a-tabs>
@@ -96,7 +96,7 @@ import {
   customerAppealAdd
 } from '@/api/customerReleaseRule'
 import AddForm from './AddForm'
-import ApproveInfo from '@/components/CustomerList/ApproveInfo' 
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
 const columns = [
   {
@@ -221,7 +221,7 @@ export default {
       that.loading = true
       customerAppealList(_searchParam)
         .then(res => {
-          debugger
+          // debugger
           that.loading = false
           that.dataSource = res.data.records && res.data.records.map((item, index) => {
             item.key = index + 1
@@ -259,7 +259,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
         return
-      } 
+      }
       this.$refs.addForm.query(actionType, record)
     },
     tabChange(tagKey) {

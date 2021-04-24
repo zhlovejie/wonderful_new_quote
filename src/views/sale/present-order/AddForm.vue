@@ -46,7 +46,7 @@
           </div>
           <template slot="deliveryDate" slot-scope="text, record">
             <a-date-picker
-              :disabled="!isCreatedUser" 
+              :disabled="!isCreatedUser"
               placeholder=""
               format="YYYY-MM-DD"
               :value="record.deliveryDate"
@@ -290,7 +290,7 @@ export default {
     },
     // 交货日期的改变
     onChangeDate(record, e) {
-      debugger
+      // debugger
       const dataSource = [...this.dataSource]
       const target = dataSource.find(item => item.key === record.key)
       if (target) {

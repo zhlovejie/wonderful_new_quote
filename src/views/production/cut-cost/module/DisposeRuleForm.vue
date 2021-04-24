@@ -256,7 +256,7 @@ export default {
       that.spinning = true
       depreciateRecordDetail({ id: record.id })
         .then(res => {
-          debugger
+          // debugger
           that.spinning = false
           if (res.data.recordDate) {
             res.data.recordDate = that.moment(res.data.recordDate).format('YYYY-MM-DD')
@@ -264,8 +264,8 @@ export default {
 
           let usersQueue = []
           res.data.detailList.map(item => {
-            debugger
-            let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0 
+            // debugger
+            let _api = (that.record.withdrawState || 0) === 0 && (that.record.approveState || 0) === 0
             ? depreciateUserListByApply({ applyId: item.applyId })
             : depreciateRecordUserListByDetail({detailId:item.id})
             usersQueue.push(

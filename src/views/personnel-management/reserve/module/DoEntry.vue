@@ -11,7 +11,8 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" class="do_entry_form-wrapper">
         <a-tabs :activeKey="String(activeKey)" default-active-key="1" @change="callback">
-          <a-tab-pane key="1" tab="基本信息">
+          <a-tab-pane key="1">
+            <span slot="tab" class="requiredMark">基本信息</span>
             <table class="custom-table custom-table-border">
               <tr>
                 <td class="requiredMark">姓名</td>
@@ -338,7 +339,8 @@
               </tr>
             </table>
           </a-tab-pane>
-          <a-tab-pane key="2" tab="职工信息" force-render>
+          <a-tab-pane key="2" force-render>
+            <span slot="tab" class="requiredMark">职工信息</span>
             <table class="custom-table custom-table-border">
               <tr>
                 <td>工号</td>
@@ -582,7 +584,7 @@
                       name="haveSecurity"
                       v-decorator="[
                         'haveSecurity',
-                        { initialValue: 2, rules: [{ required: true, message: '选择是否缴纳社保' }] },
+                        { initialValue: 1, rules: [{ required: true, message: '选择是否缴纳社保' }] },
                       ]"
                     >
                       <a-radio :value="2">否</a-radio>
@@ -678,7 +680,8 @@
               <XdocView ref="xdocView" />
             </table>
           </a-tab-pane>
-          <a-tab-pane key="3" tab="合同信息">
+          <a-tab-pane key="3">
+            <span slot="tab" class="requiredMark">合同信息</span>
             <h3>合同模板</h3>
             <table class="custom-table custom-table-border">
               <tr v-for="(item, index) in todayList" :key="index">
@@ -1004,6 +1007,13 @@ export default {
           if (res.data.contractDatalist) {
             that.todauuplate = res.data.contractDatalist
           }
+          Personnel_Reserve({ departmentId: that.department.departmentId, stationId: that.department.stationId }).then(
+            (res) => {
+              if (res.code === 200 && res.data.length === 0) {
+                this.$message.error('此岗位还没配置合同模板，请配置模板')
+              }
+            }
+          )
           if (res.data.commonCertificateList) {
             that.certificateList = res.data.commonCertificateList.map((item) => {
               return {
@@ -1028,7 +1038,6 @@ export default {
               }
             })
           }
-
           that.fillData(isDoEntryBefore ? 'before' : 'after', res.data)
         })
       } else {
@@ -1262,9 +1271,8 @@ export default {
           values.reserveId = that.record.id
           let isDoEntryBefore = that.record.status === 0 ? true : false
           if (that.type === 'edit' || that.type === 'add') {
-            if (that.todauuplate.length !== that.todayList.length) {
-               return that.$message.error('请上传所有模板')
-            
+            if (!that.todauuplate.length >= that.todayList.length) {
+              return that.$message.error('请上传所有模板')
             }
             let __api__ = isDoEntryBefore ? reserveAddOrUpdate : reserveUpdateEntity
             that.spinning = true
@@ -1289,12 +1297,10 @@ export default {
               .catch((err) => (that.spinning = false))
           } else if (that.type === 'ruzhi') {
             if (!isDoEntryBefore) {
-             return  that.$message.info('该人员已经办理入职了')
-             
+              return that.$message.info('该人员已经办理入职了')
             }
-            if (that.todauuplate.length !== that.todayList.length) {
-              return  that.$message.error('请上传所有模板')
-            
+            if (!that.todauuplate.length >= that.todayList.length) {
+              return that.$message.error('请上传所有模板')
             }
             that.spinning = true
             reserveDoEntry(values)

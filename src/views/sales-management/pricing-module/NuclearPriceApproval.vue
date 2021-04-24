@@ -54,7 +54,7 @@
             :dataSource="data"
             :scroll="{ x: 2500 }"
             :pagination="false"
-            :loading="memberLoading" 
+            :loading="memberLoading"
             size="middle"
             bordered
             rowKey="id"
@@ -135,7 +135,7 @@
 
             <template slot="valencySpecs" slot-scope="text, record">
               <a-form-item>
-                <a-textarea 
+                <a-textarea
                   rows="5"
                   style="width:100%;"
                   v-decorator="[`record.${record.__index}.valencySpecs`,{initialValue:record.valencySpecs}]"
@@ -204,16 +204,16 @@
 
             <template slot="status" slot-scope="text, record">
               <a-form-item>
-                <a-switch 
+                <a-switch
                   v-decorator="[`record.${record.__index}.status`,{initialValue:+record.status === 0 ? true : false,valuePropName:'checked'}]"
-                  @change="changeHandler(record,'status', $event)" 
-                  checked-children="启用" 
-                  un-checked-children="禁用" 
+                  @change="changeHandler(record,'status', $event)"
+                  checked-children="启用"
+                  un-checked-children="禁用"
                 />
               </a-form-item>
             </template>
 
-            
+
           </a-table>
         </a-form>
       </a-card>
@@ -521,7 +521,7 @@ export default {
       console.log('最终全页面保存', this)
       // 拼接核价集合
       const bodys = []
-      debugger
+      // debugger
       console.log('data======', this.data)
       that.valencyProducts = that.data.map(item => {
         let _obj = {
@@ -695,7 +695,7 @@ export default {
             return item
           })
 
-          
+
 
           console.log('调取接口返回值的valencyProducts塞给表格的data', this.data)
           this.instanceId = res.data.instanceId

@@ -44,6 +44,28 @@ export default {//会议管理
         keepAlive: false,
         permission: ['permission']
       },
-    }
+    },
+    {
+      path: '/meeting-management/penalty-rules',
+      name: 'meeting-penalty-rules',
+      component: () => import('@/views/meeting-management/penalty-rules/List'),
+      meta: {
+        title: '会议罚款规则',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/meeting-management/meeting-leave-record',
+      name: 'meeting-leave-record',
+      component: () => import('@/views/meeting-management/meeting-leave/List'),
+      meta: {
+        title: '会议请假记录',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
   ]
 }
