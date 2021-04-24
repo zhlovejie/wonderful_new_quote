@@ -29,6 +29,7 @@ import contingencyManagement from '@/router/router-contingency-management'
 import trainingManagement from '@/router/router-training-management'
 import salaryManagemen from '@/router/router-salary-management'
 import accessControl from '@/router/router-access_control'
+import monitorDevice from '@/router/router-monitor-device'
 
 
 
@@ -51,6 +52,7 @@ const __ROUTER_MAP__ = [
   trainingManagement, //培训管理
   salaryManagemen, // 薪酬管理
   accessControl, //门禁管理
+  monitorDevice, // 监控管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
