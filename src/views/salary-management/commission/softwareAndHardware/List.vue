@@ -1,7 +1,7 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.month" />
+      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.staticsDate" />
       <a-select
         placeholder="审核状态"
         v-if="activeKey === 0"
@@ -257,9 +257,9 @@ export default {
     },
     searchAction(opt) {
       let that = this
-      if (that.queryParam.month) {
-        let date = moment(that.queryParam.month).format('YYYY-MM')
-        that.queryParam.month = date
+      if (that.queryParam.staticsDate) {
+        let date = moment(that.queryParam.staticsDate).format('YYYY-MM')
+        that.queryParam.staticsDate = date
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
