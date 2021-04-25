@@ -2,34 +2,21 @@
   <!-- 退款单 -->
   <div class="refund-receipt-list-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="退款编号模糊查询" v-model="refundNum" style="width: 150px" />
-      <a-select
-        optionFilterProp="children"
-        showSearch
-        :allowClear="true"
-        :filterOption="filterSalersOption"
-        placeholder="请选择销售人员"
-        style="width: 200px"
-        v-model="saleUserId"
-      >
-        <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
-          item.salesmanName
-        }}</a-select-option>
-      </a-select>
-      <a-select placeholder="选择退款类型" :allowClear="true" v-model="refundType" style="width: 200px">
-        <a-select-option :value="1">代理保证金</a-select-option>
-        <a-select-option :value="2">投标保证金</a-select-option>
-        <a-select-option :value="3">退货款</a-select-option>
-        <a-select-option :value="4">其他</a-select-option>
-      </a-select>
-
-      <a-select v-if="activeKey === 0" placeholder="处理状态" :allowClear="true" v-model="status" style="width: 120px">
-        <a-select-option :value="0">待审批</a-select-option>
-        <a-select-option :value="1">通过</a-select-option>
-        <a-select-option :value="2">不通过</a-select-option>
-      </a-select>
-
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+      <a-button-group>
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+          >今天</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+          >本周</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+          >本月</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+          >全部</a-button
+        >
+      </a-button-group>
+      <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
       <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
       <a-button
         class="a-button"
@@ -113,6 +100,7 @@
     <ApproveInfo ref="approveInfoCard" />
     <FromAdd ref="fromAdd" @finish="searchAction()" />
     <AddForm ref="addForm" @finish="searchAction()" />
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </div>
 </template>
 <script>
@@ -120,6 +108,7 @@ import { getListSaleContractUser } from '@/api/contractListManagement'
 import { refundPageList, refundRevocation, refundDel, saleRefundGetSumAmountByList } from '@/api/receipt'
 import AddForm from './module/AddForm'
 import FromAdd from './module/FromAdd'
+import SearchForm from './module/SearchForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { exprotAction } from '@/api/receipt'
 const columns = [
@@ -218,6 +207,7 @@ export default {
     AddForm,
     ApproveInfo,
     FromAdd,
+    SearchForm,
   },
   data() {
     return {
@@ -226,6 +216,10 @@ export default {
       refundType: undefined,
       status: undefined,
       saleUser: [],
+      searchParam: {
+        dayWeekMonth: 1,
+      },
+      dayWeekMonth: 1,
       approval_status: undefined,
       activeKey: 0,
       columns: columns,
@@ -242,16 +236,16 @@ export default {
     }
   },
   computed: {
-    searchParam() {
-      return {
-        refundNum: this.refundNum,
-        saleUserId: this.saleUserId,
-        refundType: this.refundType,
-        status: this.status,
-        searchStatus: this.approval_status,
-        current: 1,
-      }
-    },
+    // searchParam() {
+    //   return {
+    //     refundNum: this.refundNum,
+    //     saleUserId: this.saleUserId,
+    //     refundType: this.refundType,
+    //     status: this.status,
+    //     searchStatus: this.approval_status,
+    //     current: 1,
+    //   }
+    // },
   },
   watch: {
     $route: {
@@ -264,6 +258,27 @@ export default {
     },
   },
   methods: {
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.activeKey)
+    },
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.searchParam = { ...this.searchParam, ...params, dayWeekMonth: this.dayWeekMonth }
+      this.searchAction()
+    },
+    simpleSearch(type) {
+      if (type === 4) {
+        this.searchParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.searchParam = { ...this.searchParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.searchParam = { ...this.searchParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      }
+    },
     init() {
       let that = this
       getListSaleContractUser().then((res) => (that.saleUser = res.data))
@@ -389,5 +404,8 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>
