@@ -13,7 +13,7 @@
         <a-form-item>
           <a-input style="width: 150px" v-model="searchParam.userName" placeholder="姓名模糊查询" :allowClear="true" />
         </a-form-item>
-        
+
         <a-form-item v-if="+activeKey === 0">
           <a-select placeholder="审批状态" v-model="searchParam.status" :allowClear="true" style="width: 150px">
             <a-select-option :value="1">待审批</a-select-option>
@@ -38,10 +38,10 @@
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="全部" key="0" />
+        <a-tab-pane tab="我的" key="0" />
         <template v-if="$auth('salary-subsidy-other:approval')">
-          <a-tab-pane tab="待审批" key="1" />
-          <a-tab-pane tab="已审批" key="2" />
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
@@ -112,11 +112,7 @@
 import {
   departmentList, //所有部门
 } from '@/api/systemSetting'
-import {
-  OtherApplyDel,
-  OtherApplyPageList,
-  OtherApplyRevocation,
-} from '@/api/salaryManagement'
+import { OtherApplyDel, OtherApplyPageList, OtherApplyRevocation } from '@/api/salaryManagement'
 import AddForm from './AddForm'
 
 import moment from 'moment'
@@ -134,7 +130,7 @@ const columns = [
     title: '编号',
     dataIndex: 'otNum',
   },
-  
+
   {
     align: 'center',
     title: '部门',
@@ -195,7 +191,7 @@ export default {
       pagination: {
         current: 1,
         _prePageSize: 10,
-        pageSize:10,
+        pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
@@ -278,20 +274,21 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       const pager = pagination
       pager.current = pagination.current
-      if(+pager.pageSize !== +pager._prePageSize){ //pageSize 变化
+      if (+pager.pageSize !== +pager._prePageSize) {
+        //pageSize 变化
         pager.current = 1 //重置为第一页
         pager._prePageSize = +pager.pageSize //同步两者的值
       }
-      this.pagination = {...this.pagination,...pager}
+      this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    
+
     doAction(actionType, record) {
       let that = this
       if (['view', 'add', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
-        OtherApplyDel({id:record.id})
+        OtherApplyDel({ id: record.id })
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -300,7 +297,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        OtherApplyRevocation({id:record.id})
+        OtherApplyRevocation({ id: record.id })
           .then((res) => {
             that.$message.info(res.msg)
             that.searchAction()

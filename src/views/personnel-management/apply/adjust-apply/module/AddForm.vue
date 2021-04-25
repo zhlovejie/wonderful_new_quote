@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="850"
+    :width="900"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -147,28 +147,65 @@
               <td>原薪资</td>
               <td>
                 <a-form-item>
-                  <!-- <a-input :disabled="isDisabled"  placeholder="原薪资"  v-decorator="['oldSalary', { rules: [{ required: true, message: '原薪资' }] }]"/> -->
+                  <a-select
+                    placeholder="基本工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
+                  >
+                    <a-select-option :value="2500">2500</a-select-option>
+                    <a-select-option :value="2600">2600</a-select-option>
+                    <a-select-option :value="2700">2700</a-select-option>
+                    <a-select-option :value="2800">2800</a-select-option>
+                    <a-select-option :value="3000">3000</a-select-option>
+                    <a-select-option :value="3300">3300</a-select-option>
+                    <a-select-option :value="3500">3500</a-select-option>
+                  </a-select>
                   <a-input-number
-                    style="width: 100%"
+                    placeholder="岗位工资"
+                    style="width: 50%"
                     :disabled="isDisabled"
                     :min="0"
                     :step="1"
                     :precision="2"
-                    v-decorator="['oldSalary', { rules: [{ required: true, message: '请输入原薪资' }] }]"
+                    v-decorator="['oldPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
               <td>期望薪资(元)</td>
               <td>
                 <a-form-item>
-                  <!-- <a-input :disabled="isDisabled"  placeholder="期望薪资(元)"  v-decorator="['expectSalary', { rules: [{ required: true, message: '期望薪资(元)' }] }]"/> -->
-                  <a-input-number
-                    style="width: 100%"
+                  <a-select
+                    placeholder="基本工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
+                  >
+                    <a-select-option :value="2500">2500</a-select-option>
+                    <a-select-option :value="2600">2600</a-select-option>
+                    <a-select-option :value="2700">2700</a-select-option>
+                    <a-select-option :value="2800">2800</a-select-option>
+                    <a-select-option :value="3000">3000</a-select-option>
+                    <a-select-option :value="3300">3300</a-select-option>
+                    <a-select-option :value="3500">3500</a-select-option>
+                  </a-select>
+                  <!-- <a-input-number
+                    placeholder="基本工资"
+                    style="width: 50%"
                     :disabled="isDisabled"
                     :min="0"
                     :step="1"
                     :precision="2"
-                    v-decorator="['expectSalary', { rules: [{ required: true, message: '期望薪资(元)' }] }]"
+                    v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '请输入基本工资(元)' }] }]"
+                  /> -->
+                  <a-input-number
+                    placeholder="岗位工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['expectPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -286,30 +323,77 @@
               <td>原薪资</td>
               <td>
                 <a-form-item>
-                  <!-- <a-input :disabled="isDisabled" placeholder="原薪资"  v-decorator="['oldSalary', { rules: [{ required: true, message: '原薪资' }] }]"/> -->
-                  <a-input-number
-                    style="width: 100%"
+                  <a-select
+                    placeholder="基本工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
+                  >
+                    <a-select-option :value="2500">2500</a-select-option>
+                    <a-select-option :value="2600">2600</a-select-option>
+                    <a-select-option :value="2700">2700</a-select-option>
+                    <a-select-option :value="2800">2800</a-select-option>
+                    <a-select-option :value="3000">3000</a-select-option>
+                    <a-select-option :value="3300">3300</a-select-option>
+                    <a-select-option :value="3500">3500</a-select-option>
+                  </a-select>
+                  <!-- <a-input-number
+                    placeholder="基本工资"
+                    style="width: 50%"
                     :disabled="isDisabled"
                     :min="0"
                     :step="1"
                     :precision="2"
-                    v-decorator="['oldSalary', { rules: [{ required: true, message: '原薪资(元)' }] }]"
+                    v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '请输入基本工资(元)' }] }]"
+                  /> -->
+                  <a-input-number
+                    placeholder="岗位工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['oldPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
               <td>期望薪资(元)</td>
               <td>
                 <a-form-item>
-                  <!-- <a-input :disabled="isDisabled" placeholder="期望薪资(元)"  v-decorator="['expectSalary', { rules: [{ required: true, message: '期望薪资(元)' }] }]"/> -->
-                  <a-input-number
-                    style="width: 100%"
+                  <a-select
+                    placeholder="基本工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
+                  >
+                    <a-select-option :value="2500">2500</a-select-option>
+                    <a-select-option :value="2600">2600</a-select-option>
+                    <a-select-option :value="2700">2700</a-select-option>
+                    <a-select-option :value="2800">2800</a-select-option>
+                    <a-select-option :value="3000">3000</a-select-option>
+                    <a-select-option :value="3300">3300</a-select-option>
+                    <a-select-option :value="3500">3500</a-select-option>
+                  </a-select>
+                  <!-- <a-input-number
+                    placeholder="基本工资"
+                    style="width: 50%"
                     :disabled="isDisabled"
                     :min="0"
                     :step="1"
                     :precision="2"
-                    v-decorator="['expectSalary', { rules: [{ required: true, message: '期望薪资(元)' }] }]"
+                    v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '请输入基本工资(元)' }] }]"
+                  /> -->
+                  <a-input-number
+                    placeholder="岗位工资"
+                    style="width: 50%"
+                    :disabled="isDisabled"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['expectPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
                 </a-form-item>
+                <!-- <a-form-item> </a-form-item> -->
               </td>
             </tr>
             <tr>
@@ -512,14 +596,14 @@ export default {
       //debugger
       let that = this
       //员工审批调薪填写业绩的特别处理
-      if(that.isApproval && that.isSelfApproval){
+      if (that.isApproval && that.isSelfApproval) {
         this.form.validateFields((err, values) => {
           if (!err) {
-            that.passAction({attachInfo:values.attachInfo})
+            that.passAction({ attachInfo: values.attachInfo })
           }
         })
         return
-      }else if(that.isView || that.isApproval){
+      } else if (that.isView || that.isApproval) {
         that.handleCancel()
         return
       }
@@ -690,8 +774,10 @@ export default {
         getSalaryBaseCommonByUserId({ userId: record.id }).then((res) => {
           // debugger
           if (res && res.data) {
-            let salary = res.data.realitySalary || undefined
-            that.form.setFieldsValue({ oldSalary: salary })
+            that.form.setFieldsValue({
+              oldBasicSalary: res.data.realityBasicSalary,
+              oldPostSalary: res.data.realityPostSalary,
+            })
           }
         })
       }

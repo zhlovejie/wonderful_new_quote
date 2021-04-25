@@ -4,6 +4,28 @@ import {
 import system from '@/config/defaultSettings'
 
 //---------------------人力资源管理模块-----------------------
+// 获取全部薪资制度规则
+export function annual_ruleList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-floors-annual-rule/list',
+    method: 'get',
+    params: parameter
+  })
+}
+//详情
+export function annual_rulegetId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-floors-annual-rule/getId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+
 /**公告管理列表接口 */
 export function NoticeList(parameter) {
   return axios({

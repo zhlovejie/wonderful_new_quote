@@ -18,6 +18,13 @@ import ApproveBusinessBorrowing from '@views/sales-management/businessBorrowing/
 import ApproveBidBorrowing from '@views/sales-management/bidBorrowing/AddForm.vue'
 import ApproveAfterSales from '@views/sales-management/afterSales/AddForm.vue'
 
+import ApproveYearEndBonus from '@views/salary-management/bonus/year_end_bonus/module/Formadd.vue'
+import ApproveOtherBonus from '@/views/salary-management/bonus/other_bonus/module/Formadd.vue'
+import ApproveSeniorWorker from '@/views/Human-resource-management/senior_worker/module/Formadd.vue'
+
+import ApproveCapitalBill from '@/views/salary-management/capital/bill/module/Formadd.vue'
+import ApproveSalaryDetails from '@/views/salary-management/salary-details/module/Formadd.vue'
+import ApproveSalaryAccounting from '@/views/salary-management/Salary_accounting/module/Formadd.vue'
 export default {
   //考勤模块
   42: ApproveBusinessTrip, //出差申请
@@ -40,7 +47,11 @@ export default {
   32: ViewMeetingManagement, //会议启动消息，提示进入会议列表
 
   62: ApproveVehicleManagement, //用车申请
-
+  69: ApproveYearEndBonus, //年终奖金
+  70: ApproveOtherBonus, // 其他奖金
+  71: ApproveCapitalBill, //罚款单
+  72: ApproveSeniorWorker, // 高级工程师
+  80: ApproveSalaryDetails, // 工资条
   88: ApproveDistributorContractManagement, //经销商合同
   89: ApproveStrategicCooperationAgreement, //战略合作协议
   90: ApproveRefundApply, //返款申请
@@ -48,26 +59,39 @@ export default {
   92: ApproveBusinessBorrowing, //经营借用协议
   93: ApproveBidBorrowing, //资质借用投标借用协议
   94: { //代签购货合同
-    name:'previewTripartiteContracts',
-    _customRoute:true,
-    props:function(id,action,from){
-      return { queryOneData: { id }, action ,from}
+    name: 'previewTripartiteContracts',
+    _customRoute: true,
+    props: function (id, action, from) {
+      return {
+        queryOneData: {
+          id
+        },
+        action,
+        from
+      }
     }
   },
   95: ApproveAfterSales, //产品售后服务外包协议
-  98:{ //常规物料规则
-    name:'material-rule-management-audit-routine',
-    _customRoute:true,
-    props:function(id,action,from){
+  98: { //常规物料规则
+    name: 'material-rule-management-audit-routine',
+    _customRoute: true,
+    props: function (id, action, from) {
       // action 'view' 查看  'approval' 审批
-      return { type:1,tabKey:action === 'view' ? 1 : 2}
+      return {
+        type: 1,
+        tabKey: action === 'view' ? 1 : 2
+      }
     }
   },
-  99:{ //成品物料规则
-    name:'material-rule-management-audit-finished-product',
-    _customRoute:true,
-    props:function(id,action,from){
-      return { type:2,tabKey:action === 'view' ? 1 : 2}
+  99: { //成品物料规则
+    name: 'material-rule-management-audit-finished-product',
+    _customRoute: true,
+    props: function (id, action, from) {
+      return {
+        type: 2,
+        tabKey: action === 'view' ? 1 : 2
+      }
     }
-  }
+  },
+  103: ApproveSalaryAccounting, // 薪资核算
 }

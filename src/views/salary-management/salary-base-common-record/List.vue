@@ -41,7 +41,7 @@
           target="_blank"
           style="margin-left: 10px"
           class="a-button ant-btn ant-btn-primary"
-          href="https://www.delanshi.cn/images/cloud/20201027/salaryc931dda2-1bfc-4562-87af-86cc9c77e169.xlsx"
+          href="http://192.168.13.251/images/cloud/20210323/基本工资模板733a880c-90a7-48f8-8fd6-feadfd284240.xlsx"
           >下载模板</a
         >
       </template>
@@ -51,6 +51,7 @@
       <a-table
         v-if="$auth('baseSalaryCommon:list')"
         :columns="columns"
+        bordered
         :data-source="dataSource"
         :pagination="pagination"
         @change="handleTableChange"
@@ -58,7 +59,16 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="salaryType" slot-scope="text, record">
+          <span>{{ record.salaryType === 0 ? '月薪制' : `年薪制-${record.yearSalaryText}` }}</span>
+        </div>
       </a-table>
+      <a-modal title="错误数据" :visible="visible" @ok="handleOk" @cancel="handleCancel">
+        <h3>{{ iserror.failNum || 0 }}条错误数据</h3>
+        <div v-for="item in iserror.errorList" :key="item.failNum">
+          <p>第{{ item.rowNum }}行 {{ item.msg }}</p>
+        </div>
+      </a-modal>
     </a-layout>
   </a-card>
 </template>
@@ -95,29 +105,65 @@ const columns = [
     align: 'center',
   },
   {
-    title: '试用期工资(元)',
-    dataIndex: 'realityProbationSalary',
-    key: 'realityProbationSalary',
+    dataIndex: 'salaryType',
+    title: '薪资制度',
+    key: '  salaryType',
+    align: 'center',
+    scopedSlots: { customRender: 'salaryType' },
+  },
+  {
+    title: '核算周期（月）',
+    dataIndex: 'cycle',
+    key: 'cycle',
+    align: 'center',
+  },
+  {
+    title: '年/周期薪资',
+    dataIndex: 'cycleSalary',
+    key: 'cycleSalary',
     align: 'center',
   },
 
   {
-    title: '转正工资(元)',
-    dataIndex: 'realitySalary',
-    key: 'realitySalary',
-    align: 'center',
+    title: '试用期工资（元）',
+    children: [
+      {
+        align: 'center',
+        title: '基本工资',
+        dataIndex: 'realityProbationBasicSalary',
+        key: 'realityProbationBasicSalary',
+      },
+      {
+        align: 'center',
+        title: '岗位工资',
+        dataIndex: 'realityProbationPostSalary',
+        key: 'realityProbationPostSalary',
+      },
+    ],
   },
-  // {
-  //   title: '操作',
-  //   key: 'action',
-  //   scopedSlots: { customRender: 'action' },
-  //   align: 'center',
-  // },
+  {
+    title: '转正工资(元)',
+    children: [
+      {
+        align: 'center',
+        title: '基本工资',
+        dataIndex: 'realityBasicSalary',
+        key: 'realityBasicSalary',
+      },
+      {
+        align: 'center',
+        title: '岗位工资',
+        dataIndex: 'realityPostSalary',
+        key: 'realityPostSalary',
+      },
+    ],
+  },
 ]
 export default {
   name: 'RoleManagement',
   data() {
     return {
+      visible: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
@@ -140,6 +186,7 @@ export default {
       departmentList: [],
       // 角色列表
       roleList: {},
+      iserror: {},
       uploading: false,
       fileList: [],
       aceptFileTypes: [
@@ -165,6 +212,12 @@ export default {
   },
   methods: {
     moment: moment,
+    handleOk() {
+      this.visible = false
+    },
+    handleCancel() {
+      this.visible = false
+    },
     beforeUpload(file) {
       let _aceptFileTypes = this.aceptFileTypes
       const isDocType = _aceptFileTypes.includes(file.type)
@@ -182,25 +235,82 @@ export default {
       return false
     },
     handleUpload() {
-      const { fileList } = this
+      const that = this
+      const { fileList } = that
       const formData = new FormData()
       fileList.forEach((file) => {
         formData.append('file', file)
       })
-      this.uploading = true
+      that.uploading = true
       salary_base_record_ImportExcel(formData)
         .then((res) => {
-          this.uploading = false
-          let that = this
-          if (res.code === 200) {
-            that.$message.info(res.msg || '操作成功')
-            this.searchAction()
+          that.uploading = false
+          console.log(res.type)
+          if (res instanceof Blob) {
+            let action = {
+              isFile: res.type === 'application/x-download',
+              isJson: res.type === 'application/json',
+            }
+
+            if (action.isFile) {
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = 'error.xlsx'
+              a.click()
+              document.body.removeChild(a)
+
+              that.$message.error('您提交的信息存在重复数据，请查看下载的 error.xlsx 文件！')
+              return
+            } else if (action.isJson) {
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                  console.log('JSON.parse error...', e.target.result)
+                }
+                if (_res !== null) {
+                  debugger
+                  that.fileList = []
+                  console.log(_res.msg)
+                  if (_res.msg === '操作成功') {
+                    that.$message.info(res.msg || '操作成功')
+                  } else {
+                    try {
+                      that.iserror = JSON.parse(_res.msg)
+                    } catch (err) {
+                      console.log(err)
+                    }
+
+                    that.visible = true
+                  }
+                  that.searchAction()
+                }
+              }
+              reader.readAsText(res)
+            }
           } else {
-            that.$message.error(res.msg)
+            console.log('未知错误：')
+            console.log('类型：' + typeof res)
+            console.log(res)
           }
+          // let that = that
+          // if (res.code === 200) {
+          //   that.$message.info(res.msg || '操作成功')
+          //   that.searchAction()
+          // } else {
+          //   console.log(res)
+          //   that.iserror = JSON.stringify(res.msg)
+          //   that.visible = true
+          // }
         })
         .catch((err) => {
-          this.uploading = false
+          that.uploading = false
           that.$message.error(res.msg)
           console.log(err)
         })

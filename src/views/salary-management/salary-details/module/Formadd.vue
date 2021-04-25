@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1300"
+    :width="1600"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -22,35 +22,7 @@
       <a-row style="margin-top: 30px; margin-bottom: 30px" v-if="isDisabled">
         <a-col :span="24" class="basic-tit" justify="center" align="middle">{{ month }}工资条</a-col>
       </a-row>
-      <div class="table-page-search-wrapper" style="margin-bottom: 20px">
-        <a-select
-          style="width: 200px; margin-right: 10px"
-          v-model="queryParam.departmentId"
-          :allowClear="true"
-          placeholder="请选择部门"
-        >
-          <a-select-option :value="undefined">请选择部门</a-select-option>
-          <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
-            item.departmentName
-          }}</a-select-option>
-        </a-select>
-        <a-input
-          placeholder="员工姓名"
-          v-model="queryParam.userName"
-          allowClear
-          style="width: 200px; margin-right: 10px"
-        />
-
-        <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
-      </div>
-      <a-table
-        :scroll="{ x: 4000 }"
-        bordered
-        :columns="baseColumns"
-        :data-source="dataSource"
-        :pagination="pagination"
-        @change="handleTableChange"
-      >
+      <a-table :scroll="{ x: 2300 }" bordered :columns="baseColumns" :data-source="dataSource">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -60,8 +32,7 @@
   </a-modal>
 </template>
 <script>
-import { getDevisionList, getStationList } from '@/api/systemSetting'
-import { wages_Detail, wages_ListDic, wages_instance } from '@/api/bonus_management'
+import { wages_Detail, wages_instance } from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -72,23 +43,27 @@ const columns = [
     dataIndex: 'name',
     title: '序号',
     key: 'order',
+    width: 80,
     align: 'center',
     scopedSlots: { customRender: 'order' },
   },
   {
     title: '部门',
+    width: 90,
     dataIndex: 'departmentName',
     key: 'departmentName',
     align: 'center',
   },
   {
     title: '职位',
+    width: 90,
     dataIndex: 'stationName',
     key: 'stationName',
     align: 'center',
   },
   {
     title: '姓名',
+    width: 90,
     dataIndex: 'userName',
     key: 'userName',
     align: 'center',
@@ -113,14 +88,24 @@ const columns = [
     align: 'center',
     children: [],
   },
+  {
+    title: '提成',
+    align: 'center',
+    children: [],
+  },
+  {
+    title: '公司发放(元)',
+    align: 'center',
+    children: [],
+  },
 
   {
-    title: '应发工资(元)',
+    title: '应发基本工资(元)',
     dataIndex: 'shouldSalaryBigDecimal',
     key: 'shouldSalaryBigDecimal',
     align: 'center',
-    fixed: 'right',
-    width: 100,
+    // fixed: 'right',
+    width: 130,
   },
 
   {
@@ -128,16 +113,16 @@ const columns = [
     dataIndex: 'socinsAmountBigDecimal',
     key: 'socinsAmountBigDecimal',
     align: 'center',
-    fixed: 'right',
-    width: 100,
+    // fixed: 'right',
+    width: 120,
   },
   {
     title: '实发工资(元)',
     dataIndex: 'realSalaryBigDecimal',
     key: 'realSalaryBigDecimal',
     align: 'center',
-    fixed: 'right',
-    width: 100,
+    // fixed: 'right',
+    width: 120,
   },
 ]
 export default {
@@ -147,20 +132,12 @@ export default {
   },
   data() {
     return {
-      departmentList: [], // 部门列表
       month: '',
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource: [],
       columns,
-      pagination: {
-        showSizeChanger: true,
-        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
-      },
       pagination1: {},
       queryParam: {
-        current: 1,
         applyId: undefined,
       },
       visible: false,
@@ -171,6 +148,8 @@ export default {
       bounsItemBase: [],
       allowanceItemBase: [],
       fineItemBase: [],
+      percentageItemBase: [],
+      company: [],
     }
   },
 
@@ -199,8 +178,6 @@ export default {
       return this.isView || this.isEdit || this.isView5
     },
     baseColumns() {
-      let _columns = []
-
       this.columns.map((item) => {
         if (item.title === '工资') {
           item.children = this.salaryItemBase
@@ -214,50 +191,40 @@ export default {
         if (item.title === '扣款') {
           item.children = this.fineItemBase
         }
+        if (item.title === '提成') {
+          item.children = this.percentageItemBase
+        }
+        if (item.title === '公司发放(元)') {
+          item.children = this.company
+        }
       })
       let __columns = [...this.columns]
-      return __columns
+      let _columns = []
+
+      __columns.map((item, index) => {
+        if (this.salaryItemBase.length == 0 && item.title === '工资') {
+          _columns.push(item.title)
+        }
+        if (this.bounsItemBase.length == 0 && item.title === '奖金') {
+          _columns.push(item.title)
+        }
+        if (this.allowanceItemBase.length == 0 && item.title === '补贴') {
+          _columns.push(item.title)
+        }
+        if (this.fineItemBase.length == 0 && item.title === '扣款') {
+          _columns.push(item.title)
+        }
+        if (this.percentageItemBase.length == 0 && item.title === '提成') {
+          _columns.push(item.title)
+        }
+      })
+      let strin = _columns.toString()
+      let arr = __columns.filter((i) => strin.indexOf(i.title) === -1)
+
+      return arr
     },
   },
-  created() {
-    getDevisionList().then((res) => {
-      this.departmentList = res.data
-    })
-    wages_ListDic().then((res) => {
-      this.salaryItemBase = res.data.salaryItemBase.map((item) => {
-        return {
-          title: item.text,
-          dataIndex: item.code,
-          key: item.code,
-          align: 'center',
-        }
-      })
-      this.bounsItemBase = res.data.bounsItemBase.map((item) => {
-        return {
-          title: item.text,
-          dataIndex: item.code,
-          key: item.code,
-          align: 'center',
-        }
-      })
-      this.allowanceItemBase = res.data.allowanceItemBase.map((item) => {
-        return {
-          title: item.text,
-          dataIndex: item.code,
-          key: item.code,
-          align: 'center',
-        }
-      })
-      this.fineItemBase = res.data.fineItemBase.map((item) => {
-        return {
-          title: item.text,
-          dataIndex: item.code,
-          key: item.code,
-          align: 'center',
-        }
-      })
-    })
-  },
+  created() {},
   methods: {
     moment,
 
@@ -267,24 +234,109 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      this.month = record.month
+      // this.month = record.month
       this.queryParam.applyId = record.id
       this.searchAction({ applyId: record.id })
     },
     searchAction(opt) {
-      let that = this
+      const that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
+      let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})
       wages_Detail(_searchParam)
         .then((res) => {
           that.loading = false
-          that.dataSource = res.data.records.map((item, index) => {
+          try {
+            that.month = res.data.oaSalaryMonthDetailVo.month
+          } catch (e) {
+            console.error(`month 获取失败...`)
+          }
+          that.salaryItemBase = res.data.headDicList.salaryItemBase.map((item) => {
+            return {
+              title: item.text,
+              dataIndex: item.code,
+              key: item.code,
+              width: 90,
+              align: 'center',
+            }
+          })
+          that.bounsItemBase = res.data.headDicList.bounsItemBase.map((item) => {
+            return {
+              title: item.text,
+              dataIndex: item.code,
+              width: 90,
+              key: item.code,
+              align: 'center',
+            }
+          })
+          that.allowanceItemBase = res.data.headDicList.allowanceItemBase.map((item) => {
+            return {
+              title: item.text,
+              width: 90,
+              dataIndex: item.code,
+              key: item.code,
+              align: 'center',
+            }
+          })
+          that.fineItemBase = res.data.headDicList.fineItemBase.map((item) => {
+            return {
+              title: item.text,
+              dataIndex: item.code,
+              width: 90,
+              key: item.code,
+              align: 'center',
+            }
+          })
+          that.percentageItemBase = res.data.headDicList.percentageItemBase.map((item) => {
+            return {
+              title: item.text,
+              dataIndex: item.code,
+              width: 90,
+              key: item.code,
+              align: 'center',
+            }
+          })
+          if (res.data.oaSalaryMonthDetailVo.type === 1) {
+            that.company = [
+              {
+                title: '公户',
+                width: 90,
+                dataIndex: 'householdPubliceBigDecimal',
+                key: 'householdPubliceBigDecimal',
+                align: 'center',
+              },
+            ]
+          } else if (res.data.oaSalaryMonthDetailVo.type === 2) {
+            that.company = [
+              {
+                title: '私户',
+                width: 90,
+                dataIndex: 'householdPrivateBigDecimal',
+                key: 'householdPrivateBigDecimal',
+                align: 'center',
+              },
+            ]
+          } else {
+            that.company = [
+              {
+                title: '代发工资',
+                width: 90,
+                dataIndex: 'issuedBehalfSalaryBigDecimal',
+                key: 'issuedBehalfSalaryBigDecimal',
+                align: 'center',
+              },
+            ]
+          }
+
+          let arr = []
+          arr[0] = res.data.oaSalaryMonthDetailVo
+          that.dataSource = arr.map((item, index) => {
             item.key = index + 1
             let _item = { ...item }
             let salaryList = [..._item.salaryList]
             let bounsList = [..._item.bounsList]
             let allowanceList = [..._item.allowanceList]
             let fineList = [..._item.fineList]
+            let percentageList = [..._item.percentageList]
             salaryList.map((v) => {
               v.key = v.dicCode
               _item[`${v.key}`] = v.amountBigDecimal
@@ -306,26 +358,21 @@ export default {
               _item[`${v.key}`] = v.amountBigDecimal
               return v
             })
-
+            percentageList.map((v) => {
+              v.key = v.dicCode
+              _item[`${v.key}`] = v.amountBigDecimal
+              return v
+            })
             _item.salaryList = salaryList
             _item.bounsList = bounsList
             _item.allowanceList = allowanceList
             _item.fineList = fineList
+            _item.percentageList = percentageList
+
             return _item
           })
-          //设置数据总条数
-          const pagination = { ...that.pagination }
-          pagination.total = res.data.total
-          that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
-    },
-
-    // 分页
-    handleTableChange(pagination, filters, sorter) {
-      this.pagination1.size = pagination.pageSize
-      this.pagination1.current = pagination.current
-      this.searchAction()
     },
 
     //提交
