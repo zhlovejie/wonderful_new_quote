@@ -73,8 +73,6 @@ import {
   monitoringEquipmentTypeDelete,
 } from '@/api/monitorDeviceManagement'
 
-import { getDictionary } from '@/api/common'
-
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 export default {

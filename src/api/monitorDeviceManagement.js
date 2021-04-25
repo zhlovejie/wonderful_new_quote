@@ -84,4 +84,12 @@ export function monitoringEquipmentTypeDelete (parameter) {
   })
 }
 
+export function monitoringEquipmentTreeList (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/monitoringEquipment/treeList',
+    method: 'GET',
+    params: parameter
+  })
+}
 

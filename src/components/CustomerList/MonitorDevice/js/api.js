@@ -127,13 +127,13 @@ CAMERA_API.util.makeMonitorUrl = function(opt){
   throw new Error(`不支持的类型:${opt.type || ''}`)
 }
 
-CAMERA_API.util.getTokenAndUrl = async function(deviceKey){
-  const {appKey,appSecret,deviceList} = system.attendanceMonitoringConfig
-  let deviceItem = deviceList.find(item => +item.key === +deviceKey)
-  if(!deviceItem){
-    return {code:500,msg:`未找到 key=${deviceKey} 设备，请检查配置文件【defaultSettings.js】` }
-  }
-  const deviceSerial = deviceItem.deviceSerial
+CAMERA_API.util.getTokenAndUrl = async function(deviceSerial){
+  const {appKey,appSecret} = system.attendanceMonitoringConfig
+  // let deviceItem = deviceList.find(item => +item.key === +deviceKey)
+  // if(!deviceItem){
+  //   return {code:500,msg:`未找到 key=${deviceKey} 设备，请检查配置文件【defaultSettings.js】` }
+  // }
+  // const deviceSerial = deviceItem.deviceSerial
   let t = null
   try{t = JSON.parse(CAMERA_API.ls.get('_m_token'))}catch(err){}
   if(!(t && t.accessToken && t.expireTime && +t.expireTime > Date.now())){

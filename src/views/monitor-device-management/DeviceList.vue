@@ -60,16 +60,8 @@
 
 <script>
 import {
-  monitoringEquipmentDetail,
-  monitoringEquipmentAdd,
-  monitoringEquipmentUpdate,
   monitoringEquipmentDelete,
   monitoringEquipmentList,
-
-  monitoringEquipmentTypeList,
-  monitoringEquipmentTypeAdd,
-  monitoringEquipmentTypeUpdate,
-  monitoringEquipmentTypeDelete
 } from '@/api/monitorDeviceManagement'
 
 import AddForm from './modules/AddForm'

@@ -1,17 +1,17 @@
 <template>
   <div class="wdf-custom-wrapper">
     <div class="main-wrapper">
-      <h3>不知道如何使用？点击查看<a href="#" @click="showGuid">功能使用说明</a></h3>
-      <div class="paly-wrapper" style="position: relative; width: 800px;height:600px;">
-        <a-spin :spinning="spinning" tip="监控设备正在初始化，请稍后...">
-          <div id="playWind"></div>
-          <div v-show="hasError">
+      <!-- <h3>不知道如何使用？点击查看<a href="#" @click="showGuid">功能使用说明</a></h3> -->
+      <div class="paly-wrapper" style="position: relative;">
+        <!-- <a-spin :spinning="spinning" tip="监控设备正在初始化，请稍后..."> -->
+          <div :id="playWind" ></div>
+          <!-- <div v-show="hasError">
             <a-button @click="initCamera">重新加载监控</a-button>
-          </div>
-        </a-spin>
+          </div> -->
+        <!-- </a-spin> -->
       </div>
     </div>
-    <GuidForm ref="guidForm"/>
+    <!-- <GuidForm ref="guidForm"/> -->
   </div>
 </template>
 
@@ -32,12 +32,14 @@ export default {
   data() {
     return {
       spinning: false,
-      hasError:false
+      hasError:false,
+      playWind:'playwind'
     }
   },
   watch: {
     deviceKey: {
-      handler: function () {
+      handler: function (v) {
+        this.playWind = `playwind-${v}`
         this.initCamera()
       },
       immediate: true
@@ -46,7 +48,7 @@ export default {
   methods: {
     async initCamera() {
       let that = this
-      let ele = document.querySelector('#playWind')
+      let ele = document.querySelector(`#${that.playWind}`)
       if(ele){
         ele.innerHTML = ''
       }
@@ -67,7 +69,7 @@ export default {
       }
       that.$nextTick(() => {
         player = new EZUIKit.EZUIKitPlayer({
-          id: 'playWind',
+          id: that.playWind,
           accessToken: accessToken,
           url: monitorUrl,
           template: 'security', // simple - 极简版;standard-标准版;security - 安防版(预览回放);voice-语音版；
@@ -78,8 +80,8 @@ export default {
           footer: ['hd', 'fullScreen'], // 如果template参数不为simple,该字段将被覆盖
           audio: 1, // 是否默认开启声音 0 - 关闭 1 - 开启
           autoplay: false,
-          width: 800,
-          height: 600,
+          width: 550,
+          height: 400,
           handleSuccess: that.handleCameraSuccess,
           handleError: that.handleCameraError,
         })
@@ -87,6 +89,9 @@ export default {
     },
     handleCameraSuccess() {
       this.spinning = false
+      if(player){
+        player.autoResize()
+      }
       return
     },
     handleCameraError() {
@@ -99,8 +104,16 @@ export default {
     },
   },
   beforeDestroy(){
+    const that = this
     if(player){
-      player = null
+      try{
+        player.stop()
+      }catch(e){
+        console.log(e)
+      }
+      finally{
+        that.$nextTick(() => player = null)
+      }
     }
   }
 }
@@ -108,7 +121,6 @@ export default {
 
 <style scoped>
 .wdf-custom-wrapper {
-  background-color: #fff;
-  padding: 20px;
+  background-color: transparent;
 }
 </style>

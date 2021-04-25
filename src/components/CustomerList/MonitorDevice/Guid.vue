@@ -1,11 +1,11 @@
 <template>
   <a-modal
-    title="考勤监控功能使用介绍"
+    title="监控功能使用介绍"
     :width="800"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
     :footer="footer"
   >
   <div class="guid-wrapper">

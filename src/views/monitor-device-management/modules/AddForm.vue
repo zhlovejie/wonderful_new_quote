@@ -122,7 +122,7 @@
                   :allowClear="true"
                   style="width: 100%"
                 />
-                <span v-else>{{ detail.equipmentAuthCode }}</span>
+                <span v-else>{{ detail.equipmentAuthCode || '-' }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -141,7 +141,7 @@
                   :allowClear="true"
                   style="width: 100%"
                 />
-                <span v-else>{{ detail.equipmentPassword }}</span>
+                <span v-else>{{ detail.equipmentPassword || '-' }}</span>
               </a-form-item>
             </td>
             <td style="width: 120px">WIFI</td>
@@ -157,7 +157,7 @@
                   :allowClear="true"
                   style="width: 100%"
                 />
-                <span v-else>{{ detail.equipmentWifi }}</span>
+                <span v-else>{{ detail.equipmentWifi || '-'}}</span>
               </a-form-item>
             </td>
           </tr>
@@ -176,7 +176,7 @@
                   :allowClear="true"
                   style="width: 100%"
                 />
-                <span v-else>{{ detail.equipmentIp }}</span>
+                <span v-else>{{ detail.equipmentIp || '-'}}</span>
               </a-form-item>
             </td>
             <td style="width: 120px">备注</td>
@@ -193,7 +193,7 @@
                   ]"
                 />
                 <span v-else>
-                  {{ detail.remark }}
+                  {{ detail.remark || '-'}}
                 </span>
               </a-form-item>
             </td>

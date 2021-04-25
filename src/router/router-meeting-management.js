@@ -35,17 +35,6 @@ export default {//会议管理
       },
     },
     {
-      path: '/meeting-management/monitor',
-      name: 'meetingManagementMonitor',
-      component: () => import('@/views/meeting-management/monitor/List'),
-      meta: {
-        title: '会议监控',
-        icon: 'video-camera',
-        keepAlive: false,
-        permission: ['permission']
-      },
-    },
-    {
       path: '/meeting-management/penalty-rules',
       name: 'meeting-penalty-rules',
       component: () => import('@/views/meeting-management/penalty-rules/List'),

@@ -34,25 +34,11 @@ export default {
   materialBaseUrl: 'http://192.168.13.151:8998', //物料规则专用地址
 
 
-  baseURL: 'http://192.168.13.158:8995/oa',
+  // baseURL: 'http://192.168.13.158:8995/oa',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息
     appKey: 'd39b58df3a9b437cac8a0c6a120ef1eb',
-    appSecret: 'bbe8423572c73f7ef47002d28852c26b',
-    deviceList:[
-      {
-        key:1,
-        deviceSerial: 'E54619002' // 监控设备-大门口门卫室上方
-      },
-      {
-        key:2,
-        deviceSerial: 'E94761575' // 监控设备-105会议室
-      },
-      {
-        key:3,
-        deviceSerial: 'E83611047' // 监控设备-大门口监控杆
-      }
-    ]
+    appSecret: 'bbe8423572c73f7ef47002d28852c26b'
   },
   primaryColor: '#1890FF', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
