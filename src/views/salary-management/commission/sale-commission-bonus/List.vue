@@ -1,7 +1,7 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px;margin-right: 10px;" v-model="queryParam.month" />
+      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.month" />
       <!-- <a-select
         style="width: 200px; margin-left: 10px; margin-right: 10px"
         placeholder="选择部门"
@@ -62,39 +62,39 @@
             <template v-if="$auth('salerBouns:detail')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 1">
+            <!-- <template v-if="record.status === 1">
               <template v-if="$auth('salerBouns:withdraw')">
                 <a-divider type="vertical" />
                 <a type="primary" @click="doAction('reback', record)">撤回</a>
               </template>
-            </template>
+            </template> -->
 
             <template v-if="record.status === 2">
               <template v-if="$auth('salerBouns:download')">
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('download', record)">下载</a>
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('download', record)">下载</a>
               </template>
             </template>
 
             <template v-if="record.status === 3 || record.status === 4">
               <template v-if="$auth('salerBouns:remove')">
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
-                <a>删除</a>
-              </a-popconfirm>
+                <a-divider type="vertical" />
+                <a-popconfirm title="是否要删除此行？" @confirm="doAction('del', record)">
+                  <a>删除</a>
+                </a-popconfirm>
               </template>
             </template>
           </template>
 
           <template v-if="activeKey === 1">
             <template v-if="$auth('salerBouns:approve')">
-            <a type="primary" @click="doAction('approval', record)">审核</a>
+              <a type="primary" @click="doAction('approval', record)">审核</a>
             </template>
           </template>
 
           <template v-if="activeKey === 2">
             <template v-if="$auth('salerBouns:detail')">
-            <a type="primary" @click="doAction('view', record)">查看</a>
+              <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
           </template>
         </div>
@@ -105,9 +105,8 @@
   </div>
 </template>
 <script>
-
 import {
-  departmentList //所有部门
+  departmentList, //所有部门
 } from '@/api/systemSetting'
 import {
   approvalSalaryMonthInstanceApply,
@@ -115,7 +114,7 @@ import {
   getOaSalarySalerBounsApplyDetail,
   getOaSalarySalerBounsApplyPageList,
   removeSalarySalerBounsApply,
-  withdrawSalarySalerBounsApply
+  withdrawSalarySalerBounsApply,
 } from '@/api/commissionDetail'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import AddForm from './module/AddForm'
@@ -128,32 +127,32 @@ const columns = [
 
   {
     title: '日期',
-    dataIndex: 'month'
+    dataIndex: 'month',
   },
 
   {
     title: '总提成(元)',
     dataIndex: 'allAmount',
-    scopedSlots: { customRender: 'allAmount' }
+    scopedSlots: { customRender: 'allAmount' },
   },
 
   {
     title: '状态',
     dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
+    scopedSlots: { customRender: 'status' },
   },
 
   {
     title: '提交人',
-    dataIndex: 'createdUserName'
+    dataIndex: 'createdUserName',
   },
   {
     title: '提交人时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
   },
   {
     title: '操作',
-    scopedSlots: { customRender: 'action' }
+    scopedSlots: { customRender: 'action' },
   },
 ]
 
@@ -161,11 +160,11 @@ export default {
   name: 'sale-commission',
   components: {
     AddForm,
-    ApproveInfo
+    ApproveInfo,
   },
   data() {
     return {
-      activeKey:0,
+      activeKey: 0,
       depList: [],
       queryParam: {},
       columns: columns,
@@ -194,9 +193,9 @@ export default {
     },
   },
   methods: {
-    init(){
+    init() {
       const that = this
-      departmentList().then(res => that.depList = res.data)
+      departmentList().then((res) => (that.depList = res.data))
       that.searchAction()
     },
     getStateText(state) {
@@ -212,7 +211,7 @@ export default {
     searchAction(opt) {
       let that = this
 
-      if(!that.$auth('salerBouns:list')){
+      if (!that.$auth('salerBouns:list')) {
         that.$message.info('无权限查看此列表数据')
         return
       }
@@ -220,7 +219,7 @@ export default {
       if (that.queryParam.month) {
         month = moment(that.queryParam.month).format('YYYY-MM')
       }
-      let _searchParam = Object.assign({}, { ...that.queryParam ,month}, opt || {}, {
+      let _searchParam = Object.assign({}, { ...that.queryParam, month }, opt || {}, {
         searchStatus: that.activeKey,
       })
       that.loading = true
@@ -229,7 +228,7 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            item.month = item.month ? item.month.slice(0,7) : item.month
+            item.month = item.month ? item.month.slice(0, 7) : item.month
             return item
           })
           //设置数据总条数
@@ -258,37 +257,40 @@ export default {
 
     doAction(type, record) {
       const that = this
-      if(type === 'view'){
-        that.$refs.addForm.query(type,record)
+      if (type === 'view') {
+        that.$refs.addForm.query(type, record)
         return
-      }else if(type === 'del'){
-        removeSalarySalerBounsApply(`id=${record.id}`).then(res =>{
-          res.code === 200 && that.searchAction()
-          that.$message.info(res.msg)
-        }).catch(err => that.$message.error(err.message))
+      } else if (type === 'del') {
+        removeSalarySalerBounsApply(`id=${record.id}`)
+          .then((res) => {
+            res.code === 200 && that.searchAction()
+            that.$message.info(res.msg)
+          })
+          .catch((err) => that.$message.error(err.message))
         return
-      }else if(type === 'reback'){
-        withdrawSalarySalerBounsApply(`id=${record.id}`).then(res =>{
-          res.code === 200 && that.searchAction()
-          that.$message.info(res.msg)
-        }).catch(err => that.$message.error(err.message))
+      } else if (type === 'reback') {
+        withdrawSalarySalerBounsApply(`id=${record.id}`)
+          .then((res) => {
+            res.code === 200 && that.searchAction()
+            that.$message.info(res.msg)
+          })
+          .catch((err) => that.$message.error(err.message))
         return
-      }else if(type === 'approval'){
-        that.$refs.addForm.query(type,record)
+      } else if (type === 'approval') {
+        that.$refs.addForm.query(type, record)
         return
-      }else if(type === 'download'){
+      } else if (type === 'download') {
         that.downAction(record)
         return
-      }
-      else{
+      } else {
         return
       }
     },
     tabChange(tagKey) {
       this.activeKey = +tagKey
-      this.searchAction({ current: 1})
+      this.searchAction({ current: 1 })
     },
-    finishedHandler(){
+    finishedHandler() {
       this.searchAction()
     },
     approvalPreview(record) {
@@ -299,7 +301,7 @@ export default {
       let that = this
       let fname = `${moment(record.month).format('YYYY年MM月')}销售提成数据.xlsx`
       that.loading = true
-      exportSalaryExcel({applyId:record.id})
+      exportSalaryExcel({ applyId: record.id })
         .then((res) => {
           console.log(res)
           this.loading = false
@@ -347,7 +349,7 @@ export default {
         })
         .catch((err) => (this.loading = false))
     },
-  }
+  },
 }
 </script>
 <style scoped>
