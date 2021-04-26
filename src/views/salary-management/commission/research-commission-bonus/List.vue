@@ -106,7 +106,6 @@ const columns = [
     dataIndex: 'percentageRetio',
     key: 'percentageRetio',
   },
-
   {
     align: 'center',
     title: '状态',
