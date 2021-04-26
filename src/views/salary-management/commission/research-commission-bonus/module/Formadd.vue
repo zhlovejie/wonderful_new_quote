@@ -85,6 +85,12 @@ export default {
           dataIndex: 'percentageRetioAmount',
           key: 'percentageRetioAmount',
         },
+        {
+          align: 'center',
+          title: '差额(元)',
+          dataIndex: 'subAmount',
+          key: 'subAmount',
+        },
       ],
 
       spinning: false,
