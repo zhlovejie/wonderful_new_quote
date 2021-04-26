@@ -210,3 +210,22 @@ export function withdrawSalarySalerBounsApply (parameter) {
     data: parameter
   })
 }
+
+/**下载*/
+export function exportExcelDatas(key,params) {
+  let map = {
+    1:'/percentageBouns/realityPercentageHis/exportPersonPercentageRealityExcel',
+    2:'/percentageBouns/percentageDifHis/exportPercentageDifHisExcel',
+    3:'/percentageBouns/developmentRealityPercentageHis/exportDevelopmentRealityExcel',
+    4:'/percentageBouns/developmentDifPercentageHis/exportDevelopmentDifPercentageHisExcel',
+    5:'/percentageBouns/saleOrderPercentageAnalysys/exportSalarySaleOrderPercentageAnalysysExcel'
+  }
+  return axios({
+    baseURL: system.baseURL,
+    url: map[key],
+    method: 'get',
+    responseType:'blob',
+    params: params
+  })
+}
+

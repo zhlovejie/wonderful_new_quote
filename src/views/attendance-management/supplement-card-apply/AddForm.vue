@@ -254,7 +254,7 @@ import moment from 'moment'
 let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
-  name: 'over-time-apply-add',
+  name: 'supplement-card-apply-add',
   components: { Approval },
   data() {
     return {

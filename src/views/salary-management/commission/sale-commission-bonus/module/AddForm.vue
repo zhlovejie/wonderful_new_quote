@@ -106,11 +106,11 @@ export default {
     },
     columns() {
       let baseColumns = [
-        {
-          title: '部门',
-          dataIndex: 'departmentName',
-          moneyFormat: false,
-        },
+        // {
+        //   title: '部门',
+        //   dataIndex: 'departmentName',
+        //   moneyFormat: false,
+        // },
         {
           title: '岗位',
           dataIndex: 'stationName',
@@ -136,6 +136,12 @@ export default {
           dataIndex: 'allPercentageBigDecimal',
           moneyFormat: true,
         },
+        {
+          title: '产品提成差额(元)',
+          dataIndex: 'subAmountBigDecimal',
+          moneyFormat: true,
+        }
+
       ]
 
       if (this.dictionaryList.length > 0) {

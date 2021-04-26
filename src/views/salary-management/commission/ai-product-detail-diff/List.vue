@@ -17,6 +17,7 @@
       /> -->
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+      <a-button class="a-button" :loading="btnDownloadLoading" v-if="$auth('salaryDevelopmentDifPercentageHis:download')" type="primary" icon="download" @click="doAction('download')">下载</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -49,7 +50,7 @@
 <script>
 import { bonus_getDepartmentByType } from '@/api/bonus_management'
 import moment from 'moment'
-import { developmentDifPercentageHisList } from '@/api/commissionDetail'
+import { developmentDifPercentageHisList ,exportExcelDatas} from '@/api/commissionDetail'
 
 import AddForm from './AddForm'
 
@@ -107,6 +108,8 @@ export default {
       },
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
+      pageTitle:'差额记录',
+      btnDownloadLoading:false
     }
   },
   computed: {},
@@ -177,8 +180,77 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      that.$refs.addForm.query(type, record)
+      if(type === 'download'){
+        that.downloadAction()
+        return
+      }else{
+        that.$refs.addForm.query(type, record)
+      }
     },
+    downloadAction() {
+      const that = this
+      that.btnDownloadLoading = true
+      exportExcelDatas(4, that.getSearchParams())
+        .then((res) => {
+          that.btnDownloadLoading = false
+          console.log(res)
+          if (res instanceof Blob) {
+            let files = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel']
+            const isFile = files.includes(res.type)
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `${that.pageTitle}.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.msg)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => {
+          that.btnDownloadLoading = false
+          that.$message.info(`请求出错：${err.message}`)
+        })
+    },
+
+    getSearchParams(){
+      const that = this
+      let staticsDate = that.searchParam.staticsDate
+      let _searchParam = Object.assign({}, { ...that.searchParam },{
+        staticsDate : staticsDate instanceof moment ? staticsDate.format('YYYY-MM') : undefined
+      })
+      return _searchParam
+    }
   },
 }
 </script>
