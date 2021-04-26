@@ -1,4 +1,5 @@
 <template>
+  <!-- 销售部收款分析表 -->
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-month-picker style="width: 200px" v-model="queryParam.receiptDate" />
@@ -87,6 +88,25 @@ const columns = [
     dataIndex: 'contractNum',
     key: 'contractNum',
   },
+  {
+    align: 'center',
+    title: '合同运费',
+    dataIndex: 'freightCharge',
+    key: 'freightCharge',
+  },
+  {
+    align: 'center',
+    title: '合同运费差额',
+    dataIndex: 'freightChargeSub',
+    key: 'freightChargeSub',
+  },
+  {
+    align: 'center',
+    title: '回款额(去税)',
+    dataIndex: 'untaxReceivableAmount',
+    key: 'untaxReceivableAmount',
+  },
+
   {
     align: 'center',
     title: '收款',

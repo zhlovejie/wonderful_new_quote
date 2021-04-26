@@ -428,6 +428,10 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
+
+          if (values.refundType === 3 && values.contractNum === undefined) {
+            return that.$message.error('请选择合同编号')
+          }
           values.contractId = that.contractId
           //values.contractNum = that.contractNum || undefined
           if (values.receiptNum) {
