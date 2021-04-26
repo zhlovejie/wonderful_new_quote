@@ -40,8 +40,8 @@
     </div>
     <div class="main-wrapper">
       <h2>
-        <span>数量(份)：{{ mealInfo.workLunchEatNum || 0 }}</span>
-        <span style="margin-left: 50px">就餐(人)：{{ mealInfo.workLunchNum || 0 }}</span>
+        <span>就餐(份)：{{ mealInfo.workLunchEatNum || 0 }}</span>
+        <span style="margin-left: 50px">未就餐(人)：{{ mealInfo.workLunchNum || 0 }}</span>
       </h2>
       <a-table
         :columns="columns"
