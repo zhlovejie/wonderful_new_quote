@@ -25,6 +25,10 @@ import ApproveSeniorWorker from '@/views/Human-resource-management/senior_worker
 import ApproveCapitalBill from '@/views/salary-management/capital/bill/module/Formadd.vue'
 import ApproveSalaryDetails from '@/views/salary-management/salary-details/module/Formadd.vue'
 import ApproveSalaryAccounting from '@/views/salary-management/Salary_accounting/module/Formadd.vue'
+
+import ApproveResearchCommissionBonus from '@/views/salary-management/commission/research-commission-bonus/module/Formadd.vue'
+
+import ApproveSaleCommissionBonus from '@/views/salary-management/commission/sale-commission-bonus/module/AddForm.vue'
 export default {
   //考勤模块
   42: ApproveBusinessTrip, //出差申请
@@ -42,16 +46,17 @@ export default {
   25: ApproveRefundReceipt, //退款单
   26: ApprovePresentReceipt, //赠送单
   27: ViewIncomeReceipt, //进款单
-
   31: ViewMeetingManagement, //会议管理消息，进入会议详情
   32: ViewMeetingManagement, //会议启动消息，提示进入会议列表
-
   62: ApproveVehicleManagement, //用车申请
   69: ApproveYearEndBonus, //年终奖金
   70: ApproveOtherBonus, // 其他奖金
   71: ApproveCapitalBill, //罚款单
   72: ApproveSeniorWorker, // 高级工程师
-  80: ApproveSalaryDetails, // 工资条
+  74: ApproveSaleCommissionBonus, // 销售提成奖金
+  // 80: ApproveSalaryDetails, // 工资条
+  80: 'ROUTE:salary-details', // 工资条
+
   88: ApproveDistributorContractManagement, //经销商合同
   89: ApproveStrategicCooperationAgreement, //战略合作协议
   90: ApproveRefundApply, //返款申请
@@ -72,6 +77,7 @@ export default {
     }
   },
   95: ApproveAfterSales, //产品售后服务外包协议
+  97: ApproveResearchCommissionBonus, // 研发提成奖金
   98: { //常规物料规则
     name: 'material-rule-management-audit-routine',
     _customRoute: true,
@@ -93,5 +99,8 @@ export default {
       }
     }
   },
-  103: ApproveSalaryAccounting, // 薪资核算
+  102: ApproveSaleCommissionBonus, // 销售提成奖金
+  // 103: ApproveSalaryAccounting, // 薪资核算
+  103: 'ROUTE:Salary_accounting', // 薪资核算
+
 }

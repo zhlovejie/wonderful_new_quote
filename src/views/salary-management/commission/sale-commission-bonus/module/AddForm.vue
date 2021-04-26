@@ -10,6 +10,7 @@
     <a-spin :spinning="spinning" class="commission-order-addForm-wrapper">
       <h2 style="text-align: center" v-html="headerTitle" />
       <h3 v-html="headerTotalTitle" />
+      <template v-if="salerBounsDetailVoList.length > 0">
       <a-table
         bordered
         v-for="item in salerBounsDetailVoList"
@@ -21,6 +22,10 @@
         size="small"
         style="margin-top: 20px"
       />
+      </template>
+      <template v-else>
+        none....
+      </template>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>

@@ -35,12 +35,34 @@ export default {
       }else{ //对应组件处理
         that.currentComponent = res
         that.$nextTick(() =>{
-          that.$refs.currentComponent.query(type,{id:businessId})
+          that.$refs.currentComponent.query(that.formatType(businessType,type),{id:businessId})
         })
       }
     },
     finishAction(){
       this.$emit('finish')
+    },
+    formatType(businessType,type){
+      let m = {
+        69:{
+          'approval':'edit'
+        },
+        70:{
+          'approval':'edit'
+        },
+        71:{
+          'approval':'edit'
+        },
+        97:{
+          'approval':'Approval'
+        },
+      }
+
+      let item = m[businessType]
+      if(item && item[type]){
+        return item[type]
+      }
+      return type
     }
   }
 }
