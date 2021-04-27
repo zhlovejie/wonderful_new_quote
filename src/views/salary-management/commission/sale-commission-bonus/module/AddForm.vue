@@ -127,6 +127,11 @@ export default {
           moneyFormat: false,
         },
         {
+          title:'去税去运费收款(元)',
+          dataIndex: 'unTaxFreightReceiveAmountBigDecmal',
+          moneyFormat: true,
+        },
+        {
           title: '实际收款(元)',
           dataIndex: 'receiveAmountBigDecimal',
           moneyFormat: true,
@@ -264,7 +269,7 @@ export default {
 <style scoped>
 .custom-table-border th,
 .custom-table-border td {
-  padding: 5px 10px;
+  padding: 5px;
   text-align: left;
   line-height: 40px;
 }
