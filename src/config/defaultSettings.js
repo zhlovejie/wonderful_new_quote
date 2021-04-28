@@ -20,7 +20,7 @@ export default {
   //baseURL: 'http://192.168.13.197:8999/oa',
   // baseURL: 'http://192.168.13.158:8995/oa',
   //baseURL: 'http://106.14.194.64/cloud_new',
-  baseURL: 'http://192.168.13.3:8998/oa',
+  baseURL: 'http://192.168.13.101:8999/oa',
   // baseURL: 'http://192.168.13.3:8999/oa',
   // baseURL: 'http://192.168.13.3:8999/oa' ,
 

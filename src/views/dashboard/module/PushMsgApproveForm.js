@@ -23,17 +23,20 @@ import ApproveOtherBonus from '@/views/salary-management/bonus/other_bonus/modul
 import ApproveSeniorWorker from '@/views/Human-resource-management/senior_worker/module/Formadd.vue'
 
 import ApproveCapitalBill from '@/views/salary-management/capital/bill/module/Formadd.vue'
-import ApproveSalaryDetails from '@/views/salary-management/salary-details/module/Formadd.vue'
-import ApproveSalaryAccounting from '@/views/salary-management/Salary_accounting/module/Formadd.vue'
+// import ApproveSalaryDetails from '@/views/salary-management/salary-details/module/Formadd.vue'
+// import ApproveSalaryAccounting from '@/views/salary-management/Salary_accounting/module/Formadd.vue'
 
 import ApproveResearchCommissionBonus from '@/views/salary-management/commission/research-commission-bonus/module/Formadd.vue'
 
 import ApproveSaleCommissionBonus from '@/views/salary-management/commission/sale-commission-bonus/module/AddForm.vue'
+import ApproveSoftwareAndHardware from '@/views/salary-management/commission/softwareAndHardware/module/Formadd.vue'
 export default {
   //考勤模块
   42: ApproveBusinessTrip, //出差申请
   43: ApproveLeave, //请假申请
+  41: ApproveSupplementCard, //补卡申请
   45: ApproveSupplementCard, //补卡申请
+  40: ApproveOverTime, //加班申请
   46: ApproveOverTime, //加班申请
   47: ApproveOverTime,
   84: ApproveGoing, //外出申请
@@ -99,6 +102,7 @@ export default {
       }
     }
   },
+  101: ApproveSoftwareAndHardware, // 软硬件提成奖金
   102: ApproveSaleCommissionBonus, // 销售提成奖金
   // 103: ApproveSalaryAccounting, // 薪资核算
   103: 'ROUTE:Salary_accounting', // 薪资核算
