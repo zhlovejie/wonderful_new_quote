@@ -263,7 +263,7 @@ export default {
       })
       queue.push(task1)
 
-      let task2 = classRuleList().then(res => {
+      let task2 = classRuleList({current:1,size:1000}).then(res => {
         that.banciList = res.data.records.map((item, index) => {
           item.key = index + 1
           return item
