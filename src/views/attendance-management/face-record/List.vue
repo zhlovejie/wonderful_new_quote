@@ -182,6 +182,10 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
+      if(that.loading){
+        that.$message.info('操作太频繁了...')
+        return
+      }
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
@@ -199,7 +203,10 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch((err) => (that.loading = false))
+        .catch((err) => {
+          console.log(err)
+          that.loading = false
+        })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
