@@ -7,7 +7,7 @@
             <a-range-picker v-model="sDate" :allowClear="true" />
           </a-form-item>
           <a-form-item>
-            <a-button class="a-button" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
+            <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
           </a-form-item>
         </a-form>
 
@@ -26,12 +26,6 @@
       <a-col :span="14">
         <div class="chart-wrapper">
           <h3 class="chart-title">工作餐数据分析</h3>
-          <!-- <v-chart :forceFit="true" :height="height" :data="chartData">
-            <v-tooltip />
-            <v-axis />
-            <v-legend />
-            <v-bar position="日期*工作餐" color="name" :adjust="adjust" />
-          </v-chart> -->
           <v-chart :forceFit="true" :height="height" :data="chartData" :scale="scale">
             <v-tooltip />
 
@@ -79,7 +73,7 @@ const columns = [
     width: '120px',
   },
   {
-    title: '预约工作餐人数',
+    title: '预约工作餐(份数)',
     dataIndex: 'workLunchNum',
     width: '70px',
   },
@@ -107,11 +101,11 @@ export default {
       },
       scale: [
         {
-          tickCount: 7,
-          dataKey: 'date',
-          type: 'cat',
+          dataKey: '日期',
+          type: 'timeCat',
         },
       ],
+
       adjust: [
         {
           type: 'dodge',
@@ -133,7 +127,7 @@ export default {
   },
   computed: {
     chartData() {
-      const field = [...new Set(this.dataSource.map((item) => item.lunchDate + ' '))]
+      const field = [...new Set(this.dataSource.map((item) => item.lunchDate))]
 
       let _formatChartData = (records) => {
         if (!Array.isArray(records)) {
@@ -145,8 +139,8 @@ export default {
         let obj = { name: '预约工作餐人数' }
         let arr = { name: '就餐人数' }
         records.map((item) => {
-          obj[`${item.lunchDate} `] = item.workLunchNum
-          arr[`${item.lunchDate} `] = item.workLunchEatNum
+          obj[`${item.lunchDate}`] = item.workLunchNum
+          arr[`${item.lunchDate}`] = item.workLunchEatNum
         })
         return [obj, arr]
       }
