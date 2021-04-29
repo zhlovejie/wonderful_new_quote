@@ -995,6 +995,16 @@ export function getWorkLunchCensus(parameter) {
   })
 }
 
+/**工作餐分页列表 */
+export function getOrderLunchStatisticsList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/attance/order-lunch-statistics/getOrderLunchStatisticsList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /**工作餐统计pc */
 export function getWorkLunchNum(parameter) {
   return axios({

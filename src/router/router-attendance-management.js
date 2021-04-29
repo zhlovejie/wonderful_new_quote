@@ -256,9 +256,9 @@ export default { //考勤管理
           }
         },
         {
-          path: '/attendance-management/chart/work-meals-statistics',
-          name: 'attendance-chart-work-meals-statistics',
-          component: () => import('@/views/attendance-management/chart/WorkMealsStatisticsList'),
+          path: '/attendance-management/chart/WorksummaryLIst',
+          name: 'attendance-chart-SummaryLIst',
+          component: () => import('@/views/attendance-management/chart/SummaryLIst'),
           meta: {
             title: '工作餐统计',
             icon: 'setting',
@@ -267,6 +267,17 @@ export default { //考勤管理
           }
         },
       ]
+    },
+    {
+      path: '/attendance-management/chart/work-meals-statistics',
+      name: 'attendance-chart-work-meals-statistics',
+      component: () => import('@/views/attendance-management/chart/WorkMealsStatisticsList'),
+      meta: {
+        title: '工作餐明细',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
     },
     {
       path: '/attendance-management/attendance-device',
