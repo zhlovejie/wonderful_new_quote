@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="800"
+    :width="1400"
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
@@ -36,6 +36,10 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+          <div slot="beginTime" slot-scope="text, record, index">
+            <span>{{ record.beginTime }} ~ {{ record.endTime }}</span>
+          </div>
+
           <div slot="changeHours" slot-scope="text, record, index">
             <span v-if="record.operationType === 3 || record.operationType === 4">+{{ text }}</span>
             <span v-if="record.operationType === 1 || record.operationType === 2">-{{ text }}</span>
@@ -66,6 +70,12 @@ const columns = [
     key: 'order',
     width: '70px',
     scopedSlots: { customRender: 'order' },
+  },
+  {
+    align: 'center',
+    title: '日期',
+    dataIndex: 'beginTime',
+    scopedSlots: { customRender: 'beginTime' },
   },
   {
     align: 'center',
@@ -136,7 +146,13 @@ export default {
     searchAction(opt) {
       let that = this
       // debugger
-      let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination },{type: that.activeKey}, opt || {})
+      let _searchParam = Object.assign(
+        {},
+        { ...that.searchParam },
+        { ...that.pagination },
+        { type: that.activeKey },
+        opt || {}
+      )
       that.loading = true
       annualLeave(_searchParam)
         .then((res) => {
