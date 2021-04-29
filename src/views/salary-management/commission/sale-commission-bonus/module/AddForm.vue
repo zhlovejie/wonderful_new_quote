@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1450"
+    :width="1200"
     :visible="visible"
     @cancel="handleCancel"
     :footer="footer"
@@ -21,10 +21,11 @@
         :pagination="false"
         size="small"
         style="margin-top: 20px"
+        :scroll="{ x: 1600}"
       />
       </template>
       <template v-else>
-        none....
+        <p>暂无数据</p>
       </template>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
@@ -120,43 +121,58 @@ export default {
           title: '岗位',
           dataIndex: 'stationName',
           moneyFormat: false,
+          width:200,
+          fixed: 'left'
         },
         {
           title: '姓名',
           dataIndex: 'userName',
           moneyFormat: false,
+          width:120,
+          fixed: 'left'
         },
         {
           title:'去税去运费收款(元)',
           dataIndex: 'unTaxFreightReceiveAmountBigDecmal',
           moneyFormat: true,
+          width:150,
         },
         {
           title: '实际收款(元)',
           dataIndex: 'receiveAmountBigDecimal',
           moneyFormat: true,
+          width:130,
+        },
+        {
+          title: '总退款(元)',
+          dataIndex: 'refundAmountBigDecimal',
+          moneyFormat: true,
+          width:130,
         },
         {
           title: '基本工资',
           dataIndex: 'salaryBigDecimal',
           moneyFormat: true,
+          width:130,
         },
         {
           title: '总提成奖金(元)',
           dataIndex: 'allPercentageBigDecimal',
           moneyFormat: true,
+          width:130,
         },
         {
           title: '产品提成差额(元)',
           dataIndex: 'subAmountBigDecimal',
           moneyFormat: true,
+          width:130,
         }
 
       ]
 
       if (this.dictionaryList.length > 0) {
         this.dictionaryList.map((item) => {
-          baseColumns.push({ title: item.text, dataIndex: item.code, moneyFormat: true })
+          baseColumns.push({ title: item.text, dataIndex: item.code, moneyFormat: true,width:180 })
         })
       }
 
