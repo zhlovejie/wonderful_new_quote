@@ -95,6 +95,7 @@
             </tr>
             <tr>
               <td>拟入职日期</td>
+              <!-- :show-time="{ defaultValue: moment('00:00:00', 'HH:mm:ss') }" -->
               <td>
                 <a-form-item>
                   <a-date-picker
@@ -242,6 +243,7 @@
                 <a-form-item>
                   <a-date-picker
                     :disabled="isDisabled"
+                    :disabledDate="disabledDate"
                     style="width: 100%"
                     v-decorator="[
                       'expectDate',
@@ -415,6 +417,7 @@
                 <a-form-item>
                   <a-date-picker
                     :disabled="isDisabled"
+                    :disabledDate="disabledDate"
                     style="width: 100%"
                     v-decorator="[
                       'expectDate',
@@ -566,6 +569,11 @@ export default {
   },
   methods: {
     moment: moment,
+    disabledDate(current) {
+      // Can not select days before today and today
+      let startDate = current.clone().startOf('month')
+      return current.format('YYYY/MM/DD') !== startDate.format('YYYY/MM/DD') || current < moment().endOf('day')
+    },
     init() {
       let that = this
       return Promise.all([
