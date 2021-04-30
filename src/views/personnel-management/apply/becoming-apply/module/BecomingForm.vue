@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1005"
+    :width="1045"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -237,15 +237,37 @@
                   <td>转正后薪资</td>
                   <td colspan="2">
                     <a-form-item>
+                      <a-select
+                        placeholder="选择转正基本工资"
+                        style="width: 100%"
+                        :disabled="disabled"
+                        v-decorator="[
+                          'fullMemberBasicSalary',
+                          { rules: [{ required: true, message: '请选择转正基本工资' }] },
+                        ]"
+                      >
+                        <a-select-option :value="2500">2500</a-select-option>
+                        <a-select-option :value="2600">2600</a-select-option>
+                        <a-select-option :value="2700">2700</a-select-option>
+                        <a-select-option :value="2800">2800</a-select-option>
+                        <a-select-option :value="3000">3000</a-select-option>
+                        <a-select-option :value="3300">3300</a-select-option>
+                        <a-select-option :value="3500">3500</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                    <a-form-item>
                       <a-input-number
-                        style="width: 200px"
+                        style="width: 100%"
+                        placeholder="转正岗位工资"
                         :disabled="disabled"
                         :min="0"
                         :max="100000000"
                         :step="1"
-                        v-decorator="['fullMemberSalary', { rules: [{ required: true, message: '输入转正后薪资' }] }]"
+                        v-decorator="[
+                          'fullMemberPostSalary',
+                          { rules: [{ required: true, message: '输入转正岗位工资' }] },
+                        ]"
                       />
-                      <!-- <a-input  :disabled="disabled"  v-decorator="['fullMemberSalary', { rules: [{ required: false, message: '输入转正后薪资' }] }]"/> -->
                     </a-form-item>
                   </td>
                 </tr>
@@ -266,7 +288,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr v-if="isEditSalary || isModified">
+          <!-- <tr v-if="isEditSalary || isModified">
             <td>工资分配</td>
             <td colspan="5">
               <div class="bank-card-list-wrapper">
@@ -305,7 +327,7 @@
                 </a-form-item>
               </div>
             </td>
-          </tr>
+          </tr> -->
 
           <!-- <tr>
             <td >分管总经理审批意见</td>
@@ -557,7 +579,15 @@ export default {
               _cardInfo[`userBankCardList.${index}.id`] = item.id
               _cardInfo[`userBankCardList.${index}.salary`] = item.salary || 0
             })
-            that.$nextTick(() => that.form.setFieldsValue(_cardInfo))
+            that.$nextTick(() =>
+              that.form.setFieldsValue({
+                ..._cardInfo,
+                ...{
+                  fullMemberBasicSalary: res.data.fullMemberBasicSalary,
+                  fullMemberPostSalary: res.data.fullMemberPostSalary,
+                },
+              })
+            )
           }
         })
         .catch((err) => (that.spinning = false))

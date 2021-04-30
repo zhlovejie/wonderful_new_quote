@@ -275,7 +275,30 @@ export function refundPageList(parameter) {
     params: parameter
   })
 }
-
+/**
+ *  新增退款详情
+ * @param {*} parameter 
+ */
+export function getListByRefundId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/refund/refund-reality/getListByRefundId',
+    method: 'get',
+    params: parameter
+  })
+}
+/**
+ * 
+ * 新增退款
+ */
+export function addRefundReality(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/refund/refund-reality/addRefundReality',
+    method: 'post',
+    data: parameter
+  })
+}
 /**
  * 查询退款单详情
  * @param {*} parameter 

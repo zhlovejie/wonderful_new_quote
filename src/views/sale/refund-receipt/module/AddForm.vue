@@ -13,6 +13,7 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="add-form-wrapper">
+        <h3 v-if="programme.length > 0">预退款详情</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <td>单据编号</td>
@@ -279,6 +280,54 @@
             </td>
           </tr>
         </table>
+
+        <h3 v-if="programme.length > 0" style="margin-top: 30px">实际退款详情</h3>
+        <table class="custom-table custom-table-border" v-if="programme.length > 0">
+          <tr>
+            <th>序号</th>
+            <th>退款金额(元)</th>
+            <th>退款日期</th>
+          </tr>
+          <tr v-for="(items, index) in programme" :key="items.key">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <a-form-item>
+                <a-input-number
+                  placeholderindex
+                  :precision="2"
+                  disabled
+                  v-decorator="[
+                    `programme.${index}.refundAmount`,
+                    { initialValue: items.refundAmount, rules: [{ required: true, message: '请输入退款金额' }] },
+                  ]"
+                />
+              </a-form-item>
+            </td>
+            <td>
+              <a-form-item>
+                <a-date-picker
+                  disabled
+                  v-decorator="[
+                    `programme.${index}.refundDate`,
+                    {
+                      initialValue: items.refundDate ? moment(items.refundDate) : undefined,
+                      rules: [{ required: true, message: '请选择退款时间' }],
+                    },
+                  ]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>合计(元)</td>
+            <td colspan="2">
+              {{ totalPrice }}
+            </td>
+          </tr>
+        </table>
+        <!-- <div class="totals">
+          <span>合计退款(元)：{{ totalPrice }}</span>
+        </div> -->
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
       <CustomerList ref="customerList" @selected="customerSelected" />
@@ -306,7 +355,7 @@ import Approval from './Approval'
 import CustomerList from '@/components/CustomerList/CustomerList'
 //合同列表选择
 import ReceiptSaleContract from './ContractSelect'
-
+let uuid = () => Math.random().toString(32).slice(-10)
 export default {
   name: 'AddForm',
   components: {
@@ -316,6 +365,7 @@ export default {
   },
   data() {
     return {
+      programme: [],
       form: this.$form.createForm(this, { name: 'add_refund-receipt_form' }),
       visible: false,
       actionType: 'add',
@@ -351,6 +401,12 @@ export default {
     },
     selectContract() {
       return this.contractId ? true : false
+    },
+    totalPrice() {
+      return this.programme.reduce((addr, item) => {
+        addr = Number(addr) + Number(item.refundAmount)
+        return parseFloat(addr).toFixed(2)
+      }, 0)
     },
   },
   methods: {
@@ -429,6 +485,15 @@ export default {
       const _detail = await refundDetail(_param).then((res) => res.data)
       that.taskFlag = _detail.taskFlag || 0
       let taskQueue = []
+      that.programme =
+        _detail.realityList.map((item) => {
+          return {
+            key: uuid(),
+            id: item.id,
+            refundDate: moment(item.refundDate),
+            refundAmount: item.refundAmount,
+          }
+        }) || []
       taskQueue.push(that.refundAmountMoneyChange(_detail.refundAmountMoney || 0))
       if (_detail.contractId) {
         taskQueue.push(that.fillSaleContractReceipt(_detail.contractId))

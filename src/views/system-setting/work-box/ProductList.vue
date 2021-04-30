@@ -150,6 +150,10 @@ export default {
           dataIndex: 'productModel',
         },
         {
+          title: '产品类别',
+          dataIndex: 'productCategoryText',
+        },
+        {
           title: '类型',
           dataIndex: 'productTypeText',
         },

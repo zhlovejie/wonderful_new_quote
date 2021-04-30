@@ -125,7 +125,12 @@ import {
   // getStationList, //获取部门下面的岗位
   // getUserByStation, //获取人员
 } from '@/api/systemSetting'
-import { capital_bill_logisticsNum, capital_bill_addAndUpdate, capital_bill_approval } from '@/api/bonus_management'
+import {
+  capital_bill_logisticsNum,
+  capital_bill_addAndUpdate,
+  capital_bill_approval,
+  capital_bill_detail,
+} from '@/api/bonus_management'
 import Approval from './Approval'
 import moment from 'moment'
 
@@ -145,7 +150,7 @@ export default {
       departmentList: [], //部门
       postSelectDataSource: [], //职位
       spinning: false,
-      form: this.$form.createForm(this, { name: 'do_becoming' }),
+      form: this.$form.createForm(this, { name: 'BecomingForm' }),
       type: 'view',
       record: {},
     }
@@ -201,36 +206,37 @@ export default {
     },
 
     //接受数据
-    query(type, record) {
-      console.log(this.record)
-      this.form.resetFields() // 清空表
-      this.visible = true
-      this.type = type
-      this.record = record
+    async query(type, record) {
+      const that = this
+      await that.form.resetFields() // 清空表
+      that.visible = true
+      that.type = type
+      that.record = record
       if (type === 'add') {
-        capital_bill_logisticsNum().then((res) => {
-          this.logisCode = res.data
+        await capital_bill_logisticsNum().then((res) => {
+          that.logisCode = res.data
         })
-      }
-      if (type !== 'add') {
-        getUserByDep({ departmentId: record.departmentId }).then((res) => {
-          this.postSelectDataSource = res.data
+      } else {
+        const detail = await capital_bill_detail({ id: record.id }).then((res) => res.data)
+        getUserByDep({ departmentId: detail.departmentId }).then((res) => {
+          that.postSelectDataSource = res.data
         })
-        this.fillData()
+        that.fillData(detail)
       }
     },
     // 详情
-    fillData() {
-      let that = this
-      this.$nextTick(() => {
-        this.logisCode = this.record.fkNum
-        this.form.setFieldsValue({
-          amount: this.record.amount,
-          departmentId: this.record.departmentId,
-          cutDate: moment(this.record.cutDate),
-          reason: this.record.reason,
-          userId: this.record.userId,
-          remark: this.record.remark,
+    fillData(detail) {
+      const that = this
+
+      that.$nextTick(() => {
+        that.logisCode = detail.fkNum
+        that.form.setFieldsValue({
+          amount: detail.amount,
+          departmentId: detail.departmentId,
+          cutDate: moment(detail.cutDate),
+          reason: detail.reason,
+          userId: detail.userId,
+          remark: detail.remark,
         })
       })
     },

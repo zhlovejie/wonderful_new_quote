@@ -2,34 +2,21 @@
   <!-- 退款单 -->
   <div class="refund-receipt-list-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="退款编号模糊查询" v-model="refundNum" style="width: 150px" />
-      <a-select
-        optionFilterProp="children"
-        showSearch
-        :allowClear="true"
-        :filterOption="filterSalersOption"
-        placeholder="请选择销售人员"
-        style="width: 200px"
-        v-model="saleUserId"
-      >
-        <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
-          item.salesmanName
-        }}</a-select-option>
-      </a-select>
-      <a-select placeholder="选择退款类型" :allowClear="true" v-model="refundType" style="width: 200px">
-        <a-select-option :value="1">代理保证金</a-select-option>
-        <a-select-option :value="2">投标保证金</a-select-option>
-        <a-select-option :value="3">退货款</a-select-option>
-        <a-select-option :value="4">其他</a-select-option>
-      </a-select>
-
-      <a-select v-if="activeKey === 0" placeholder="处理状态" :allowClear="true" v-model="status" style="width: 120px">
-        <a-select-option :value="0">待审批</a-select-option>
-        <a-select-option :value="1">通过</a-select-option>
-        <a-select-option :value="2">不通过</a-select-option>
-      </a-select>
-
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+      <a-button-group>
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+          >今天</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+          >本周</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+          >本月</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+          >全部</a-button
+        >
+      </a-button-group>
+      <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
       <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
       <a-button
         class="a-button"
@@ -60,8 +47,11 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="isEnd" slot-scope="text, record">
+          <span>{{ record.isEnd === 0 ? '未完结' : '已完结' }}</span>
+        </div>
 
-        <div slot="status" slot-scope="text, record, index">
+        <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStatusText(text) }}</a>
         </div>
 
@@ -76,6 +66,10 @@
             <template v-if="$auth('refund:edit') && (+record.status === 2 || +record.status === 9)">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit', record)">修改</a>
+            </template>
+            <template v-if="record.status === 1 && record.isEnd === 0">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('refund', record)">新增退款</a>
             </template>
             <template v-if="record.status === 0">
               <a-divider type="vertical" />
@@ -104,13 +98,17 @@
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
+    <FromAdd ref="fromAdd" @finish="searchAction()" />
     <AddForm ref="addForm" @finish="searchAction()" />
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </div>
 </template>
 <script>
 import { getListSaleContractUser } from '@/api/contractListManagement'
-import { refundPageList, refundRevocation, refundDel ,saleRefundGetSumAmountByList} from '@/api/receipt'
+import { refundPageList, refundRevocation, refundDel, saleRefundGetSumAmountByList } from '@/api/receipt'
 import AddForm from './module/AddForm'
+import FromAdd from './module/FromAdd'
+import SearchForm from './module/SearchForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { exprotAction } from '@/api/receipt'
 const columns = [
@@ -160,9 +158,21 @@ const columns = [
   },
   {
     align: 'center',
-    title: '退款总金额',
+    title: '预退款总金额',
     key: 'refundAmountMoney',
     dataIndex: 'refundAmountMoney',
+  },
+  {
+    align: 'center',
+    title: '实际退款总金额',
+    key: 'realityAmount',
+    dataIndex: 'realityAmount',
+  },
+  {
+    align: 'center',
+    title: '状态',
+    dataIndex: 'isEnd',
+    scopedSlots: { customRender: 'isEnd' },
   },
   {
     align: 'center',
@@ -194,8 +204,10 @@ const columns = [
 export default {
   name: 'refundReceipt',
   components: {
-    AddForm: AddForm,
-    ApproveInfo: ApproveInfo,
+    AddForm,
+    ApproveInfo,
+    FromAdd,
+    SearchForm,
   },
   data() {
     return {
@@ -204,6 +216,10 @@ export default {
       refundType: undefined,
       status: undefined,
       saleUser: [],
+      searchParam: {
+        dayWeekMonth: 1,
+      },
+      dayWeekMonth: 1,
       approval_status: undefined,
       activeKey: 0,
       columns: columns,
@@ -216,20 +232,20 @@ export default {
         onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
       },
       loading: false,
-      searchTotalMoney:''
+      searchTotalMoney: '',
     }
   },
   computed: {
-    searchParam() {
-      return {
-        refundNum: this.refundNum,
-        saleUserId: this.saleUserId,
-        refundType: this.refundType,
-        status: this.status,
-        searchStatus: this.approval_status,
-        current: 1,
-      }
-    },
+    // searchParam() {
+    //   return {
+    //     refundNum: this.refundNum,
+    //     saleUserId: this.saleUserId,
+    //     refundType: this.refundType,
+    //     status: this.status,
+    //     searchStatus: this.approval_status,
+    //     current: 1,
+    //   }
+    // },
   },
   watch: {
     $route: {
@@ -242,6 +258,27 @@ export default {
     },
   },
   methods: {
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.activeKey)
+    },
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.searchParam = { ...this.searchParam, ...params, dayWeekMonth: this.dayWeekMonth }
+      this.searchAction()
+    },
+    simpleSearch(type) {
+      if (type === 4) {
+        this.searchParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.searchParam = { ...this.searchParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.searchParam = { ...this.searchParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      }
+    },
     init() {
       let that = this
       getListSaleContractUser().then((res) => (that.saleUser = res.data))
@@ -268,9 +305,10 @@ export default {
         })
         .catch((err) => (that.loading = false))
 
-        saleRefundGetSumAmountByList(_searchParam).then(res =>{
-          console.log(that,res)
-          if(+res.code !== 200){
+      saleRefundGetSumAmountByList(_searchParam)
+        .then((res) => {
+          console.log(that, res)
+          if (+res.code !== 200) {
             let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
             msg += `查询参数:${_searchParam}，`
             msg += '请与管理员联系，谢谢合作。'
@@ -279,7 +317,8 @@ export default {
             return
           }
           that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
-        }).catch(err =>{
+        })
+        .catch((err) => {
           that.$message.error(err.message)
         })
     },
@@ -291,7 +330,6 @@ export default {
     },
     doAction(type, record) {
       let that = this
-      console.log(type)
 
       if (type === 'reback') {
         refundRevocation({ id: record.id }).then((res) => {
@@ -308,7 +346,11 @@ export default {
         })
         return
       }
-      that.$refs.addForm.query(type, record)
+      if (type === 'refund') {
+        that.$refs.fromAdd.query(type, record)
+      } else {
+        that.$refs.addForm.query(type, record)
+      }
     },
     getStatusText(state) {
       let stateMap = {
@@ -341,13 +383,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(10,{...that.searchParam,searchStatus: that.activeKey},'退款单')
+      let res = await exprotAction(10, { ...that.searchParam, searchStatus: that.activeKey }, '退款单')
       console.log(res)
       that.$message.info(res.msg)
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
@@ -362,5 +404,8 @@ export default {
 
 .main-wrapper {
   margin-top: 20px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>

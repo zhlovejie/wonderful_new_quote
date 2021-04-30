@@ -30,6 +30,16 @@ export function senior_worker_withdraw(parameter) {
     params: parameter
   })
 }
+
+export function senior_worker_detail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/oaSalaryInfo/oa-salary-senior-engineer-apply/getId',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /**高级工程师删除接口 */
 export function senior_worker_del(parameter) {
   return axios({
@@ -70,7 +80,7 @@ export function shuttle_Bus_list(parameter) {
   })
 }
 
-// 班车记录撤销 
+// 班车记录撤销
 export function shuttle_BusRevoke(parameter) {
   return axios({
     baseURL: system.baseURL,

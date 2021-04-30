@@ -65,6 +65,13 @@ const columns = [
   },
   {
     align: 'center',
+    title: '物联网卡卡号',
+    dataIndex: 'cardNetNum',
+    key: 'cardNetNum',
+  },
+
+  {
+    align: 'center',
     title: '设备位置',
     dataIndex: 'address',
   },

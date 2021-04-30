@@ -70,7 +70,8 @@
               v-if="
                 $auth('probationSurvey:edit') &&
                 (record.state === 3 || record.state === 0 || record.state === 4) &&
-                record.showModifyButtonFlag === 1
+                record.showModifyButtonFlag === 1 &&
+                userInfo.id === record.createdId
               "
             >
               <a-divider type="vertical" />

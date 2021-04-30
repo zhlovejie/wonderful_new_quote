@@ -78,6 +78,7 @@ export default {
       let { type, url, data } = result
       //#处理自己的逻辑
       if (type === 'pdf') {
+        //关闭高拍仪
         this.$refs.gaoPaiYiDevices.close()
         let arr = {
           fileUrl: url,
@@ -85,9 +86,10 @@ export default {
           fileType: 1,
         }
         this.$emit('getmsg', arr)
+      } else {
+        this.$message.error('合同只支持pdf上传')
       }
       //#处理自己的逻辑END
-      //关闭高拍仪
     },
     gaoPaiYiDevicesClickHandler() {
       //打开高拍仪

@@ -1,12 +1,45 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 //取消请求
 //import {CancelToken} from 'axios'
 
+// 薪资制规则列表
+
+export function annual_rulePageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-floors-annual-rule/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 薪资制规则新增修改
+export function annual_rulePageAddOrUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-floors-annual-rule/addAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+// 薪资制规则删除
+export function annual_ruleDel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-floors-annual-rule/del',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 
 //---------------------工资参照表-----------------------
 /**工资参照表列表分页条件查询 */
-export function oaSalaryInfoStationStandardPageList (parameter) {
+export function oaSalaryInfoStationStandardPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-station-standard/getStationStandardPageList',
@@ -16,7 +49,7 @@ export function oaSalaryInfoStationStandardPageList (parameter) {
 }
 
 /*工资参照表新增*/
-export function oaSalaryInfoStationStandardAddOrUpdate (parameter) {
+export function oaSalaryInfoStationStandardAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-station-standard/addAndUpdateStationStandard',
@@ -25,7 +58,7 @@ export function oaSalaryInfoStationStandardAddOrUpdate (parameter) {
   })
 }
 /**根据部门id物理删除，直接从数据库中删除以及所关联的修改记录 */
-export function oaSalaryInfoStationStandardDel (parameter) {
+export function oaSalaryInfoStationStandardDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-station-standard/delStationStandard',
@@ -35,7 +68,7 @@ export function oaSalaryInfoStationStandardDel (parameter) {
 }
 
 /**根据部门id获取详情，岗位id不必传 */
-export function oaSalaryInfoStationStandardDetail (parameter) {
+export function oaSalaryInfoStationStandardDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-station-standard/getStationStandardDetail',
@@ -47,7 +80,7 @@ export function oaSalaryInfoStationStandardDetail (parameter) {
  * @desc 根据部门id判断是否可以新增
  * @param {Object} parameter ->depId
  */
-export function oaSalaryInfoStationStandardIsAddByDepId (parameter) {
+export function oaSalaryInfoStationStandardIsAddByDepId(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-station-standard/isAddByDepId',
@@ -57,7 +90,7 @@ export function oaSalaryInfoStationStandardIsAddByDepId (parameter) {
 }
 
 /**根据部门id获取修改记录 */
-export function oaSalaryInfoStationStationStandardChangList (parameter) {
+export function oaSalaryInfoStationStationStandardChangList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-station-standard-change/getStationStandardChangList',
@@ -67,7 +100,7 @@ export function oaSalaryInfoStationStationStandardChangList (parameter) {
 }
 
 //---------------------薪资项设置-----------------------
-export function oaSalaryConsistAddOrUpdate (parameter) {
+export function oaSalaryConsistAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-consist/addAndUpdateConsist',
@@ -76,7 +109,7 @@ export function oaSalaryConsistAddOrUpdate (parameter) {
   })
 }
 
-export function oaSalaryConsistDetail (parameter) {
+export function oaSalaryConsistDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-consist/consistDetail',
@@ -85,7 +118,7 @@ export function oaSalaryConsistDetail (parameter) {
   })
 }
 
-export function oaSalaryConsistDel (parameter) {
+export function oaSalaryConsistDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-consist/delConsist',
@@ -94,7 +127,7 @@ export function oaSalaryConsistDel (parameter) {
   })
 }
 
-export function oaSalaryConsistPageList (parameter) {
+export function oaSalaryConsistPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-consist/getConsistPageList',
@@ -104,7 +137,7 @@ export function oaSalaryConsistPageList (parameter) {
 }
 
 /**岗位验重 */
-export function oaSalaryConsistIsAddByStationId (parameter) {
+export function oaSalaryConsistIsAddByStationId(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-consist/isAddByStationId',
@@ -113,7 +146,7 @@ export function oaSalaryConsistIsAddByStationId (parameter) {
   })
 }
 /**验证 */
-export function oaSalaryConsistValidate (parameter) {
+export function oaSalaryConsistValidate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-consist/validateConsist',
@@ -127,7 +160,7 @@ export function oaSalaryConsistValidate (parameter) {
 
 
 //多类补贴规则（1工伤 2代班 3 大夜班 4中夜班 5延时餐补）   补贴规则
-export function nightRuleAddOrUpdate (parameter) {
+export function nightRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-night-rule/addAndUpdateNightRule',
@@ -136,7 +169,7 @@ export function nightRuleAddOrUpdate (parameter) {
   })
 }
 
-export function nightRuleDel (parameter) {
+export function nightRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-night-rule/delNightRule',
@@ -145,7 +178,7 @@ export function nightRuleDel (parameter) {
   })
 }
 
-export function nightRulePageList (parameter) {
+export function nightRulePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-night-rule/getNightRulePageList',
@@ -156,7 +189,7 @@ export function nightRulePageList (parameter) {
 //多类补贴规则（1工伤 2代班 3 大夜班 4中夜班 5延时餐补）   补贴规则END
 
 //岗位等级补贴规则（1 油补规则 2  通讯补贴 3 高级工程师补贴） 
-export function levelRuleAddOrUpdate (parameter) {
+export function levelRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-level-rule/addAndUpdateLevelRule',
@@ -165,7 +198,7 @@ export function levelRuleAddOrUpdate (parameter) {
   })
 }
 
-export function levelRuleDel (parameter) {
+export function levelRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-level-rule/delLevelRule',
@@ -174,7 +207,7 @@ export function levelRuleDel (parameter) {
   })
 }
 
-export function levelRulePageList (parameter) {
+export function levelRulePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-level-rule/getLevelRulePageList',
@@ -186,7 +219,7 @@ export function levelRulePageList (parameter) {
 
 
 //工龄补贴规则
-export function lengthServiceRuleAddOrUpdate (parameter) {
+export function lengthServiceRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/addAndUpdateLengthServiceRule',
@@ -195,7 +228,7 @@ export function lengthServiceRuleAddOrUpdate (parameter) {
   })
 }
 
-export function lengthServiceRuleDel (parameter) {
+export function lengthServiceRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/delLengthServiceRule',
@@ -204,7 +237,7 @@ export function lengthServiceRuleDel (parameter) {
   })
 }
 
-export function lengthServiceRulePageList (parameter) {
+export function lengthServiceRulePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/getLengthServiceRulePageList',
@@ -213,7 +246,7 @@ export function lengthServiceRulePageList (parameter) {
   })
 }
 
-export function lengthServiceRuleDetail (parameter) {
+export function lengthServiceRuleDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-length-service-rule/lengthServiceRuleDetail',
@@ -224,7 +257,7 @@ export function lengthServiceRuleDetail (parameter) {
 //工龄补贴规则END
 
 //加班补贴规则
-export function overWorkRuleAddOrUpdate (parameter) {
+export function overWorkRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-over-work-rule/addAndUpdateOverWorkRule',
@@ -233,7 +266,7 @@ export function overWorkRuleAddOrUpdate (parameter) {
   })
 }
 
-export function overWorkRuleDel (parameter) {
+export function overWorkRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-over-work-rule/delOverWorkRule',
@@ -242,7 +275,7 @@ export function overWorkRuleDel (parameter) {
   })
 }
 
-export function overWorkRulePageList (parameter) {
+export function overWorkRulePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-over-work-rule/getOverWorkRulePageList',
@@ -254,7 +287,7 @@ export function overWorkRulePageList (parameter) {
 
 
 //交通补贴规则
-export function trafficRuleAddOrUpdate (parameter) {
+export function trafficRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-traffic-rule/addAndUpdateTrafficRule',
@@ -263,7 +296,7 @@ export function trafficRuleAddOrUpdate (parameter) {
   })
 }
 
-export function trafficRuleDel (parameter) {
+export function trafficRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-traffic-rule/delTrafficRule',
@@ -272,7 +305,7 @@ export function trafficRuleDel (parameter) {
   })
 }
 
-export function trafficRulePageList (parameter) {
+export function trafficRulePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-traffic-rule/getTrafficRulePageList',
@@ -283,7 +316,7 @@ export function trafficRulePageList (parameter) {
 //交通补贴规则END
 
 //高温补贴规则
-export function hignTemRuleRuleAddOrUpdate (parameter) {
+export function hignTemRuleRuleAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-hign-tem-rule/addAndUpdateHignTemRule',
@@ -292,7 +325,7 @@ export function hignTemRuleRuleAddOrUpdate (parameter) {
   })
 }
 
-export function hignTemRuleDel (parameter) {
+export function hignTemRuleDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-hign-tem-rule/delHignTemRule',
@@ -301,7 +334,7 @@ export function hignTemRuleDel (parameter) {
   })
 }
 
-export function hignTemRulePageList (parameter) {
+export function hignTemRulePageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-hign-tem-rule/getHignTemRulePageList',
@@ -312,7 +345,7 @@ export function hignTemRulePageList (parameter) {
 //高温补贴规则END
 
 //油补申请
-export function oilApplyAddOrUpdate (parameter) {
+export function oilApplyAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/addAndUpdateOilApply',
@@ -321,7 +354,7 @@ export function oilApplyAddOrUpdate (parameter) {
   })
 }
 
-export function oilApplyApproval (parameter) {
+export function oilApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/approvalOilApply',
@@ -330,7 +363,7 @@ export function oilApplyApproval (parameter) {
   })
 }
 
-export function oilApplyDel (parameter) {
+export function oilApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/delOilApply',
@@ -339,7 +372,7 @@ export function oilApplyDel (parameter) {
   })
 }
 
-export function oilApplyPageList (parameter) {
+export function oilApplyPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/getOilApplyPageList',
@@ -348,7 +381,7 @@ export function oilApplyPageList (parameter) {
   })
 }
 
-export function oilApplyRevocation (parameter) {
+export function oilApplyRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-oil-apply/revocationOilApply',
@@ -359,7 +392,7 @@ export function oilApplyRevocation (parameter) {
 //油补申请END
 
 //通讯申请
-export function ComApplyAddOrUpdate (parameter) {
+export function ComApplyAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-com-apply/addAndUpdateComApply',
@@ -368,7 +401,7 @@ export function ComApplyAddOrUpdate (parameter) {
   })
 }
 
-export function ComApplyApproval (parameter) {
+export function ComApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-com-apply/approvalComApply',
@@ -377,7 +410,7 @@ export function ComApplyApproval (parameter) {
   })
 }
 
-export function ComApplyDel (parameter) {
+export function ComApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-com-apply/delComApply',
@@ -386,7 +419,7 @@ export function ComApplyDel (parameter) {
   })
 }
 
-export function ComApplyPageList (parameter) {
+export function ComApplyPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-com-apply/getComApplyPageList',
@@ -395,7 +428,7 @@ export function ComApplyPageList (parameter) {
   })
 }
 
-export function ComApplyRevocation (parameter) {
+export function ComApplyRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-com-apply/revocationComApply',
@@ -407,7 +440,7 @@ export function ComApplyRevocation (parameter) {
 
 
 //代班补贴申请
-export function SelinaApplyAddOrUpdate (parameter) {
+export function SelinaApplyAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/addAndUpdateSelinaApply',
@@ -416,7 +449,7 @@ export function SelinaApplyAddOrUpdate (parameter) {
   })
 }
 
-export function SelinaApplyApproval (parameter) {
+export function SelinaApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/approvalSelinaApply',
@@ -425,7 +458,7 @@ export function SelinaApplyApproval (parameter) {
   })
 }
 
-export function SelinaApplyDel (parameter) {
+export function SelinaApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/delSelinaApply',
@@ -434,7 +467,7 @@ export function SelinaApplyDel (parameter) {
   })
 }
 /**手动完结 */
-export function SelinaApplyEnd (parameter) {
+export function SelinaApplyEnd(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/endSelinaApply',
@@ -443,7 +476,7 @@ export function SelinaApplyEnd (parameter) {
   })
 }
 
-export function SelinaApplyPageList (parameter) {
+export function SelinaApplyPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/getSelinaApplyPageList',
@@ -452,7 +485,7 @@ export function SelinaApplyPageList (parameter) {
   })
 }
 
-export function SelinaApplyRevocation (parameter) {
+export function SelinaApplyRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-selina-apply/revocationSelinaApply',
@@ -464,7 +497,7 @@ export function SelinaApplyRevocation (parameter) {
 //代班补贴申请 END
 
 //其他补贴申请 
-export function OtherApplyAddOrUpdate (parameter) {
+export function OtherApplyAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-other-apply/addAndUpdateOtherApply',
@@ -473,7 +506,7 @@ export function OtherApplyAddOrUpdate (parameter) {
   })
 }
 
-export function OtherApplyApproval (parameter) {
+export function OtherApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-other-apply/approvalOtherApply',
@@ -482,7 +515,7 @@ export function OtherApplyApproval (parameter) {
   })
 }
 
-export function OtherApplyDel (parameter) {
+export function OtherApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-other-apply/delOtherApply',
@@ -491,7 +524,7 @@ export function OtherApplyDel (parameter) {
   })
 }
 
-export function OtherApplyPageList (parameter) {
+export function OtherApplyPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-other-apply/getOtherApplyPageList',
@@ -500,7 +533,7 @@ export function OtherApplyPageList (parameter) {
   })
 }
 
-export function OtherApplyRevocation (parameter) {
+export function OtherApplyRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-other-apply/revocationOtherApply',
@@ -512,7 +545,7 @@ export function OtherApplyRevocation (parameter) {
 
 
 //工伤补贴申请 
-export function InjuryApplyAddOrUpdate (parameter) {
+export function InjuryApplyAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/addAndUpdateInjuryApply',
@@ -521,7 +554,7 @@ export function InjuryApplyAddOrUpdate (parameter) {
   })
 }
 
-export function InjuryApplyApproval (parameter) {
+export function InjuryApplyApproval(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/approvalInjuryApply',
@@ -530,7 +563,7 @@ export function InjuryApplyApproval (parameter) {
   })
 }
 
-export function InjuryApplyDel (parameter) {
+export function InjuryApplyDel(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/delInjuryApply',
@@ -539,7 +572,7 @@ export function InjuryApplyDel (parameter) {
   })
 }
 
-export function InjuryApplyPageList (parameter) {
+export function InjuryApplyPageList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/getInjuryApplyPageList',
@@ -548,7 +581,7 @@ export function InjuryApplyPageList (parameter) {
   })
 }
 
-export function InjuryApplyRevocation (parameter) {
+export function InjuryApplyRevocation(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/oaSalaryInfo/oa-salary-allowance-injury-apply/revocationInjuryApply',
@@ -559,7 +592,7 @@ export function InjuryApplyRevocation (parameter) {
 //工伤补贴申请 END
 
 /**根据用户编号获取对应车牌号 */
-export function getUserInfoById (parameter) {
+export function getUserInfoById(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/user/getUserInfoById',
