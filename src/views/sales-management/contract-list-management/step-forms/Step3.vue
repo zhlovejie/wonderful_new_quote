@@ -698,11 +698,13 @@ export default {
       let obj = {}
       let _percentage = 0
       items.map((item) => {
-        _percentage += parseFloat(item.percentage)
-        obj[`convention.${item.moneyType}.number`] = item.percentage
-        obj[`convention.${item.moneyType}.selected`] = parseFloat(item.percentage) > 0 ? true : false
-        obj[`convention.${item.moneyType}.date`] = moment(item.paymentDate)
-        obj[`convention.${item.moneyType}.remarks`] = item.remarks
+        if(item){ //items 有时返回 [null]
+          _percentage += parseFloat(item.percentage)
+          obj[`convention.${item.moneyType}.number`] = item.percentage
+          obj[`convention.${item.moneyType}.selected`] = parseFloat(item.percentage) > 0 ? true : false
+          obj[`convention.${item.moneyType}.date`] = moment(item.paymentDate)
+          obj[`convention.${item.moneyType}.remarks`] = item.remarks
+        }
       })
       this.form.setFieldsValue({ ...obj })
       this.percentagesStatus = this.fullAmount === 0 ? true : _percentage === 100

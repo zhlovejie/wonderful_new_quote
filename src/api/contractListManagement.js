@@ -258,6 +258,22 @@ export function getProductType(parameter) {
     params: parameter
   })
 }
+/**
+ * 常规非常规产品 根据不同的产品获取产品代码和产品数据
+ * @param {int} type
+ * @param {int} id
+ * @returns
+ */
+export function getProductInfoBYTypeAndId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/getProductInfoBYTypeAndId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 // 转大写
 export function turnTheCapital(parameter) {
   return axios({
@@ -566,7 +582,7 @@ export function checkCurrentNode(params) {
     params: params
   })
 }
-// 审批代签合同 
+// 审批代签合同
 export function PurchaseContract(params) {
   return axios({
     baseURL: system.baseURL,
