@@ -1,4 +1,5 @@
 <template>
+  <!-- 工作餐统计 -->
   <a-card :bordered="false">
     <a-row :gutter="24">
       <a-col :span="10">
@@ -73,13 +74,23 @@ const columns = [
     width: '120px',
   },
   {
-    title: '预约工作餐(份数)',
+    title: '预约午餐(份)',
     dataIndex: 'workLunchNum',
     width: '70px',
   },
   {
     title: '就餐人数',
     dataIndex: 'workLunchEatNum',
+    width: '70px',
+  },
+  {
+    title: '预约晚餐(份)',
+    dataIndex: 'workDinnerNum',
+    width: '70px',
+  },
+  {
+    title: '就餐人数',
+    dataIndex: 'workDinnerEatNum',
     width: '70px',
   },
 ]
@@ -136,13 +147,17 @@ export default {
         if (records.length === 0) {
           return []
         }
-        let obj = { name: '预约工作餐人数' }
-        let arr = { name: '就餐人数' }
+        let obj = { name: '预约午餐人数' }
+        let arr1 = { name: '午餐就餐人数' }
+        let arr2 = { name: '预约晚餐人数' }
+        let arr3 = { name: '晚餐就餐人数' }
         records.map((item) => {
           obj[`${item.lunchDate}`] = item.workLunchNum
-          arr[`${item.lunchDate}`] = item.workLunchEatNum
+          arr1[`${item.lunchDate}`] = item.workLunchEatNum
+          arr2[`${item.lunchDate}`] = item.workDinnerNum
+          arr3[`${item.lunchDate}`] = item.workDinnerEatNum
         })
-        return [obj, arr]
+        return [obj, arr1, arr2, arr3]
       }
       const dv = new DataSet.View().source(_formatChartData(this.dataSource))
       dv.transform({
