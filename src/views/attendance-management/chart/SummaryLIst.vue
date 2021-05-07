@@ -3,7 +3,7 @@
   <a-card :bordered="false">
     <a-row :gutter="24">
       <a-col :span="10">
-        <a-form layout="inline">
+        <a-form layout="inline" style="margin-bottom: 10px">
           <a-form-item>
             <a-range-picker v-model="sDate" :allowClear="true" />
           </a-form-item>
@@ -104,7 +104,7 @@ export default {
       label,
       labelFormat,
       columns,
-      height: 400,
+      height: 500,
       sDate: [undefined, undefined],
       dataSource: [],
       pagination: {
@@ -198,6 +198,8 @@ export default {
               lunchDate: item.lunchDate,
               workLunchNum: item.workLunchNum,
               workLunchEatNum: item.workLunchEatNum,
+              workDinnerNum: item.workDinnerNum,
+              workDinnerEatNum: item.workDinnerEatNum,
             }
           })
           console.log(that.dataSource)
