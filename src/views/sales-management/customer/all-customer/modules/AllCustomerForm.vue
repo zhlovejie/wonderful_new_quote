@@ -9,7 +9,7 @@
       </a-col>
       <a-col :lg="12" :md="12" :sm="24">
         <a-form-item label="别名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入别名" v-decorator="['alias',{rules: [{required: false, min: 1, message: '别名最少为2个字符！'}]}]"/>
+          <a-input placeholder="请输入别名" read-only="read-only" @click="showAlias" v-decorator="['alias',{rules: [{required: false, min: 1, message: '别名最少为2个字符！'}]}]"/>
         </a-form-item>
       </a-col>
     </a-row>
@@ -160,15 +160,21 @@
     <a-form-item :wrapperCol="{span: 24, offset: 20}">
       <a-button type="primary" @click="nextStep">下一步</a-button>
     </a-form-item>
+    <AliasName
+      ref="aliasName"
+      :aliasName="aliasName"
+      @change="aliasChangeHandler"
+    />
   </a-form>
 </template>
 
 <script>
 import { checkName, allAgency } from '@/api/customer'
 import { getUploadPath, getDictionary, getAreaByParent } from '@/api/common'
-
+import AliasName from '@/components/CustomerList/AliasName'
 export default {
   name: 'AllCustomerForm',
+  components:{AliasName},
   props: {
     customer: { required: true, type: Object }
   },
@@ -206,7 +212,8 @@ export default {
       previewImage: '', //  预览图片的src值
       fileList: [], // 图片文件集合
       cId: 0, // 当前修改客户id，新增为0
-      uploadPath: getUploadPath() // 上传图片的url
+      uploadPath: getUploadPath(), // 上传图片的url
+      aliasName:''
     }
   },
   mounted (record) { // 初始化钩子
@@ -348,6 +355,7 @@ export default {
       const { form: { setFieldsValue } } = this
       this.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
+        this.aliasName = record.alias
         setFieldsValue({
           name: record.name,
           alias: record.alias,
@@ -449,7 +457,14 @@ export default {
     },
     handleCancel () {
       this.form.resetFields() // 清空表
-    }
+    },
+    showAlias() {
+      this.$refs.aliasName.show();
+    },
+    aliasChangeHandler(str) {
+      this.aliasName = str;
+      this.form.setFieldsValue({alias:str})
+    },
   }
 }
 </script>
