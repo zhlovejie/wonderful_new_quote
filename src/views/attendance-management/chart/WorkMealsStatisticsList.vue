@@ -1,5 +1,5 @@
 <template>
-  <!-- 工作餐统计 -->
+  <!-- 工作餐明细 -->
   <div class="wdf-custom-wrapper" id="work-meals-statistics-list">
     <div class="search-wrapper">
       <a-form layout="inline">
@@ -40,8 +40,10 @@
     </div>
     <div class="main-wrapper">
       <h2>
-        <span>预约就餐(份)：{{ mealInfo.workLunchNum || 0 }}</span>
-        <span style="margin-left: 50px">就餐人数：{{ mealInfo.workLunchEatNum || 0 }}</span>
+        <span>预约午餐/客户餐(份)：{{ mealInfo.workLunchNum || 0 }}</span>
+        <span style="margin-left: 50px">午餐数量(份)：{{ mealInfo.workLunchEatNum || 0 }}</span>
+        <span style="margin-left: 50px">预约晚餐数量(份)：{{ mealInfo.workDinnerNum || 0 }}</span>
+        <span style="margin-left: 50px">就餐人数：{{ mealInfo.workDinnerEatNum || 0 }}</span>
       </h2>
       <a-table
         :columns="columns"
@@ -53,13 +55,16 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="unum" slot-scope="text, record">
+        <!-- <div slot="unum" slot-scope="text, record">
           {{ text }}
-        </div>
+        </div> -->
         <div slot="cnum" slot-scope="text, record">
           <a href="javascript:void(0);" @click="doAction('view', record)">{{ text }}</a>
         </div>
         <div slot="isEat" slot-scope="text">
+          {{ +text === 1 ? '是' : '否' }}
+        </div>
+        <div slot="isDinnerEat" slot-scope="text">
           {{ +text === 1 ? '是' : '否' }}
         </div>
       </a-table>
@@ -100,9 +105,9 @@ const columns = [
   },
   {
     align: 'center',
-    title: '员工餐数量(份)',
+    title: '午餐数量(份)',
     dataIndex: 'unum',
-    scopedSlots: { customRender: 'unum' },
+    // scopedSlots: { customRender: 'unum' },
   },
   {
     align: 'center',
@@ -120,6 +125,24 @@ const columns = [
     align: 'center',
     title: '就餐时间',
     dataIndex: 'eatTime',
+  },
+
+  {
+    align: 'center',
+    title: '晚餐数量(份)',
+    dataIndex: 'dnum',
+    // scopedSlots: { customRender: 'dnum' },
+  },
+  {
+    align: 'center',
+    title: '是否就餐',
+    dataIndex: 'isDinnerEat',
+    scopedSlots: { customRender: 'isDinnerEat' },
+  },
+  {
+    align: 'center',
+    title: '就餐时间',
+    dataIndex: 'eatDinnerTime',
   },
 ]
 

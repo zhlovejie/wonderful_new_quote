@@ -1,8 +1,9 @@
 <template>
+  <!-- 工作餐统计 -->
   <a-card :bordered="false">
     <a-row :gutter="24">
       <a-col :span="10">
-        <a-form layout="inline">
+        <a-form layout="inline" style="margin-bottom: 10px">
           <a-form-item>
             <a-range-picker v-model="sDate" :allowClear="true" />
           </a-form-item>
@@ -73,13 +74,23 @@ const columns = [
     width: '120px',
   },
   {
-    title: '预约工作餐(份数)',
+    title: '预约午餐(份)',
     dataIndex: 'workLunchNum',
     width: '70px',
   },
   {
     title: '就餐人数',
     dataIndex: 'workLunchEatNum',
+    width: '70px',
+  },
+  {
+    title: '预约晚餐(份)',
+    dataIndex: 'workDinnerNum',
+    width: '70px',
+  },
+  {
+    title: '就餐人数',
+    dataIndex: 'workDinnerEatNum',
     width: '70px',
   },
 ]
@@ -93,7 +104,7 @@ export default {
       label,
       labelFormat,
       columns,
-      height: 400,
+      height: 500,
       sDate: [undefined, undefined],
       dataSource: [],
       pagination: {
@@ -136,13 +147,17 @@ export default {
         if (records.length === 0) {
           return []
         }
-        let obj = { name: '预约工作餐人数' }
-        let arr = { name: '就餐人数' }
+        let obj = { name: '预约午餐人数' }
+        let arr1 = { name: '午餐就餐人数' }
+        let arr2 = { name: '预约晚餐人数' }
+        let arr3 = { name: '晚餐就餐人数' }
         records.map((item) => {
           obj[`${item.lunchDate}`] = item.workLunchNum
-          arr[`${item.lunchDate}`] = item.workLunchEatNum
+          arr1[`${item.lunchDate}`] = item.workLunchEatNum
+          arr2[`${item.lunchDate}`] = item.workDinnerNum
+          arr3[`${item.lunchDate}`] = item.workDinnerEatNum
         })
-        return [obj, arr]
+        return [obj, arr1, arr2, arr3]
       }
       const dv = new DataSet.View().source(_formatChartData(this.dataSource))
       dv.transform({
@@ -183,6 +198,8 @@ export default {
               lunchDate: item.lunchDate,
               workLunchNum: item.workLunchNum,
               workLunchEatNum: item.workLunchEatNum,
+              workDinnerNum: item.workDinnerNum,
+              workDinnerEatNum: item.workDinnerEatNum,
             }
           })
           console.log(that.dataSource)
