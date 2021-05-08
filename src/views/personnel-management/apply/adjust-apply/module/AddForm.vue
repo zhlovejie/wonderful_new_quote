@@ -245,10 +245,7 @@
                     :disabled="isDisabled"
                     :disabledDate="disabledDate"
                     style="width: 100%"
-                    v-decorator="[
-                      'expectDate',
-                      { initialValue: moment(), rules: [{ required: true, message: '输入期望生效时间' }] },
-                    ]"
+                    v-decorator="['expectDate', { rules: [{ required: true, message: '输入期望生效时间' }] }]"
                     format="YYYY-MM-DD"
                   />
                 </a-form-item>
@@ -419,10 +416,7 @@
                     :disabled="isDisabled"
                     :disabledDate="disabledDate"
                     style="width: 100%"
-                    v-decorator="[
-                      'expectDate',
-                      { initialValue: moment(), rules: [{ required: true, message: '输入期望生效时间' }] },
-                    ]"
+                    v-decorator="['expectDate', { rules: [{ required: true, message: '输入期望生效时间' }] }]"
                     format="YYYY-MM-DD"
                   />
                 </a-form-item>
