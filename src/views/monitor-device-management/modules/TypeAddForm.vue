@@ -98,7 +98,14 @@ export default {
     init() {
       let that = this
       let queue = []
-      queue.push(monitoringEquipmentTypeList().then((res) => (that.deviceList = res.data)))
+      queue.push(monitoringEquipmentTypeList().then((res) => {
+        if(+res.code !== 200){
+          that.$message.info(res.msg)
+          that.deviceList = []
+        }else{
+          that.deviceList = res.data || []
+        }
+      }))
       return Promise.all(queue)
     },
     async query() {

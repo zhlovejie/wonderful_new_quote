@@ -96,6 +96,21 @@ export function approvalProbationSurvey(parameter) {
   })
 }
 
+/**
+ * 根据id修改调查表状态
+ * @param {int} id
+ * @param {int} probationState
+ * @returns
+ */
+export function updateProbationById(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/probationSurveyApp/updateProbationById',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 提交处理结果试用期调查表
 export function saveHandleProbationSurvey(parameter) {
   return axios({

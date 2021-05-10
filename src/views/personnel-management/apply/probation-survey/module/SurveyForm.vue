@@ -5,7 +5,7 @@
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
     :confirmLoading="spinning"
   >
     <a-spin :spinning="spinning">
@@ -36,10 +36,10 @@
           <td >入职日期</td>
           <td >
             <a-form-item>
-              <a-date-picker 
-                disabled 
-                style="width:100%;" 
-                v-decorator="['entryDate',{initialValue:moment(),rules: [{required: false,message: '输入入职日期'}]}]" 
+              <a-date-picker
+                disabled
+                style="width:100%;"
+                v-decorator="['entryDate',{initialValue:moment(),rules: [{required: false,message: '输入入职日期'}]}]"
                 format="YYYY-MM-DD"
               />
             </a-form-item>
@@ -64,16 +64,16 @@
           </td>
           <td colspan="2"></td>
         </tr>
-        
+
 
         <tr>
           <td >试用期工作内容</td>
           <td colspan="3">
             <a-form-item>
-              <a-textarea 
-                placeholder="试用期工作内容" 
-                :rows="5" 
-                :disabled="isView" 
+              <a-textarea
+                placeholder="试用期工作内容"
+                :rows="5"
+                :disabled="isView"
                 v-decorator="['jobContent', { rules: [{ required: true, message: '请输入试用期工作内容' }] }]"
               />
             </a-form-item>
@@ -185,7 +185,7 @@
           </td>
         </tr>
         <!-- <tr>
-          
+
           <td >试用期工资</td>
           <td >
             <a-form-item>
@@ -193,7 +193,7 @@
             </a-form-item>
           </td>
           <td colspan="2"></td>
-          
+
         </tr> -->
 
         <!-- <tr>
@@ -211,7 +211,7 @@
   </a-modal>
 </template>
 <script>
-import moment from 'moment' 
+import moment from 'moment'
 import {
   handleProbationSurvey, //详情
   saveHandleProbationSurvey, //提交
@@ -257,7 +257,7 @@ export default {
       c += parseInt(this.s4,10)
       c += parseInt(this.s5,10)
       c += parseInt(this.s6,10)
-      return isNaN(c) ? 0 : c 
+      return isNaN(c) ? 0 : c
     }
   },
   methods:{
@@ -267,7 +267,7 @@ export default {
     moment:moment,
     query(type,record){
       this.visible = true
-      this.type = type 
+      this.type = type
       this.record = record
       this.fillData()
     },
@@ -343,11 +343,11 @@ export default {
       if(that.isView){
         that.form.resetFields() // 清空表
         that.visible = false
-        return 
+        return
       }else if(that.isEdit){
         that.form.validateFields((err, values) => {
           if (!err) {
-            
+
             values.id = that.record.id
             delete values.entryDate
             //values.entryDate = values.entryDate.format('YYYY-MM-DD')
@@ -360,7 +360,7 @@ export default {
               that.spinning = false
               console.log(res)
               //that.form.resetFields() // 清空表
-              that.visible = false 
+              that.visible = false
               that.$message.info(res.msg)
               that.$emit('finish')
             }).catch(err => that.spinning = false)
@@ -370,7 +370,7 @@ export default {
         that.form.resetFields() // 清空表
         that.visible = false
       }
-      
+
     },
     handleCancel(){
       this.form.resetFields() // 清空表

@@ -34,13 +34,13 @@
           <td style="width:120px;">期望工资</td>
           <td >
             <a-form-item>
-              <a-input :disabled="isDisabled"  v-decorator="['expectedSalary', { rules: [{ required: false, message: '期望工资' }] }]" />
+              <a-input :disabled="isSecondEdit || isDisabled"  v-decorator="['expectedSalary', { rules: [{ required: false, message: '期望工资' }] }]" />
             </a-form-item>
           </td>
           <td>协商后工资</td>
           <td>
             <a-form-item>
-              <a-input :disabled="isDisabled"  v-decorator="['negotiatedSalary', { rules: [{ required: false, message: '协商后工资' }] }]" />
+              <a-input :disabled="isSecondEdit || isDisabled"  v-decorator="['negotiatedSalary', { rules: [{ required: false, message: '协商后工资' }] }]" />
             </a-form-item>
           </td>
         </tr>
@@ -51,7 +51,7 @@
               <a-col :span="24" >
                 <a-form-item label="专业性(最高40分)">
                   <!-- <label>专业性</label>  -->
-                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="40" :step="1" v-decorator="['results.0.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isSecondEdit || isDisabled"   :min="0" :max="40" :step="1" v-decorator="['results.0.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.0.evaluateItem',{initialValue:'专业性'}]" />
                 </a-form-item>
                 <a-form-item></a-form-item>
@@ -60,7 +60,7 @@
                 <a-form-item label="稳定性(最高20分)">
                   <!-- <label>稳定性</label>  -->
                   <!-- <a-input :disabled="isDisabled"  v-decorator="['results.1.evaluateScore']" /> -->
-                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.1.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isSecondEdit || isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.1.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.1.evaluateItem',{initialValue:'稳定性'}]" />
                 </a-form-item>
               </a-col>
@@ -68,7 +68,7 @@
                 <a-form-item label="德行品质(最高20分)">
                   <!-- <label>德行品质</label>  -->
                   <!-- <a-input :disabled="isDisabled"  v-decorator="['results.2.evaluateScore']" /> -->
-                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.2.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isSecondEdit || isDisabled"   :min="0" :max="20" :step="1" v-decorator="['results.2.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.2.evaluateItem',{initialValue:'德行品质'}]" />
                 </a-form-item>
               </a-col>
@@ -76,7 +76,7 @@
                 <a-form-item label="语言表达(最高10分)">
                   <!-- <label>语言表达</label>
                   <a-input :disabled="isDisabled"  v-decorator="['results.3.evaluateScore']" /> -->
-                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.3.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isSecondEdit || isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.3.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.3.evaluateItem',{initialValue:'语言表达'}]" />
                 </a-form-item>
               </a-col>
@@ -84,7 +84,7 @@
                 <a-form-item label="健康情况(最高10分)">
                   <!-- <label>健康情况</label>
                   <a-input :disabled="isDisabled"  v-decorator="['results.4.evaluateScore']" /> -->
-                  <a-input-number style="width:100%;" :disabled="isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.4.evaluateScore']" @change="calcScores" />
+                  <a-input-number style="width:100%;" :disabled="isSecondEdit || isDisabled"   :min="0" :max="10" :step="1" v-decorator="['results.4.evaluateScore']" @change="calcScores" />
                   <a-input hidden v-decorator="['results.4.evaluateItem',{initialValue:'健康情况'}]" />
                 </a-form-item>
               </a-col>
@@ -103,7 +103,7 @@
           <td colspan="3">
             <a-form-item>
               <a-textarea
-                :disabled="isDisabled"
+                :disabled="isSecondEdit || isDisabled"
                 placeholder="综合评价"
                 :rows="3"
                 v-decorator="['firstEvaluate', { rules: [{ required: false, message: '综合评价' }] }]"
@@ -118,7 +118,7 @@
             <a-row>
               <a-col :span="10">
                 <a-form-item>
-                  <a-select :disabled="isView" @change="probationTypeChange" v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]" placeholder="选择试用期">
+                  <a-select :disabled="isSecondEdit || isDisabled" @change="probationTypeChange" v-decorator="['probationType',{initialValue:1,rules: [{required: true,message: '选择试用期'}]}]" placeholder="选择试用期">
                     <a-select-option :value="0">无</a-select-option>
                     <a-select-option :value="5">7天</a-select-option>
                     <a-select-option :value="1">1个月</a-select-option>
@@ -131,7 +131,7 @@
               <a-col :span="10" :offset="1" v-if="!isProbationType4">
                 <a-form-item label="考察期(月)">
                   <!-- <a-input :disabled="isView || isProbationType4" v-decorator="['inspectMoth',{rules: [{required: !isProbationType4,message: '输入考察期限'},{max:10,message:'最多可输入10个字符'}]}]" placeholder="输入考察期限"/> -->
-                  <a-input-number :disabled="isView || isProbationType4" style="width:100%;"  :min="0" :step="1" v-decorator="['inspectMoth', { rules: [{ required: !isProbationType4, message: '输入考察期限(月)' }] }]" placeholder="输入考察期限(月)" />
+                  <a-input-number :disabled="isSecondEdit || isDisabled || isProbationType4" style="width:100%;"  :min="0" :step="1" v-decorator="['inspectMoth', { rules: [{ required: !isProbationType4, message: '输入考察期限(月)' }] }]" placeholder="输入考察期限(月)" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -142,7 +142,7 @@
           <td>初试结果</td>
           <td colspan="3">
             <a-form-item >
-              <a-radio-group :disabled="isDisabled"  v-decorator="['firstResult',{initialValue: 0}]">
+              <a-radio-group :disabled="isSecondEdit || isDisabled"  v-decorator="['firstResult',{initialValue: 0}]">
                 <a-radio :value="1">通过</a-radio>
                 <a-radio :value="0">不通过</a-radio>
               </a-radio-group>
@@ -180,7 +180,7 @@
               <a-col :span="24">
                 <a-form-item label="复试人员">
                   <a-cascader
-                    :disabled="isDisabled"
+                    :disabled="isSecondEdit || isDisabled"
                     v-decorator="['secondPersonInfo',{rules: [{required: false,message: '选择复试人员'}]}]"
                     :options="departmentOptions"
                     @change="departmentCascaderChange"
@@ -191,13 +191,13 @@
               </a-col>
               <a-col :span="24">
                 <a-form-item label="复试地点">
-                  <a-input :disabled="isDisabled"  v-decorator="['secondPlace',{rules: [{required: false,message: '输入复试地点'},{max:50,message:'复试地点最大支持50个字符'}]}]" placeholder="输入复试地点"/>
+                  <a-input :disabled="isSecondEdit || isDisabled"  v-decorator="['secondPlace',{rules: [{required: false,message: '输入复试地点'},{max:50,message:'复试地点最大支持50个字符'}]}]" placeholder="输入复试地点"/>
                 </a-form-item>
               </a-col>
               <a-col :span="24">
                 <a-form-item label="复试时间">
                   <a-date-picker
-                    :disabled="isDisabled"
+                    :disabled="isSecondEdit || isDisabled"
                     style="width:100%;"
                     v-decorator="['secondDatetime',{rules: [{required: false,message: '输入复试时间'}]}]"
                     format="YYYY-MM-DD HH:mm:ss"
@@ -342,6 +342,9 @@ export default {
     },
     isDisabled(){
       return this.isView || this.isApproval
+    },
+    isSecondEdit(){
+      return (this.isEdit && this.hasSecondPass === 2)
     }
   },
   methods:{

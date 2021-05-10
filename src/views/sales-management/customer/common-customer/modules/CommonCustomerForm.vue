@@ -205,6 +205,7 @@
     <AliasName
       ref="aliasName"
       :aliasName="aliasName"
+      :id="cId"
       @change="aliasChangeHandler"
     />
   </a-form>

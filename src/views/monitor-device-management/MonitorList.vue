@@ -5,6 +5,7 @@
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
           <a-tree
             ref="treeRef"
+            :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             :defaultExpandAll="true"
@@ -29,7 +30,7 @@
                 <span>{{item.title}}</span>
                 <a href="javascript:void(0);" style="position: absolute;right:10px;top:0;" @click="doAction('del',item.key)">关闭</a>
               </h3>
-              <MonitorDevice :key="item.key"  :deviceKey="item.equipmentCode" />
+              <MonitorDevice :key="item.key"  :deviceKey="item.equipmentCode" :channelNo="item.equipmentChannelNo" />
             </div>
           </a-col>
           </transition-group>
@@ -47,7 +48,7 @@ import {
 } from '@/api/monitorDeviceManagement'
 
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
-import MonitorDevice from '@/components/CustomerList/MonitorDevice'
+import {MonitorDevice,CAMERA_API} from '@/components/CustomerList/MonitorDevice'
 import GuidForm from '@/components/CustomerList/MonitorDevice/Guid'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
@@ -136,7 +137,7 @@ export default {
     fetchTree() {
       const that = this
       monitoringEquipmentTreeList()
-        .then((res) => {
+        .then(res => {
           const root = {
             key: '0',
             value: '0',
@@ -151,9 +152,11 @@ export default {
           }
           that.expandedKeys = that.generateList(that.orgTree).map(item => item.key)
         })
-        .catch((err) => {
+        .catch(err => {
           that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+          return null
         })
+
     },
     //格式化接口数据 key,title,value
     formatTreeData(item) {
@@ -164,6 +167,16 @@ export default {
       obj.title = item.typeName || item.equipmentName
       obj.equipmentCode = item.equipmentCode
       obj.value = _uuid
+      if(item && 'isLeaf' in item){
+        obj.isLeaf = item.isLeaf
+      }
+
+      if(item && 'equipmentChannelNo' in item){
+        obj.equipmentChannelNo = item.equipmentChannelNo
+      }else{
+        obj.equipmentChannelNo = 1
+      }
+
       if (Array.isArray(item.equipmentList) && item.equipmentList.length > 0) {
         obj.children = item.equipmentList.map((v) => that.formatTreeData(v))
       }
@@ -194,7 +207,7 @@ export default {
       that.selectedRowKeys = []
       that.selectedRows = []
 
-      let {equipmentCode,key,title} = dataRef
+      let {equipmentCode,equipmentChannelNo,key,title} = dataRef
 
       let dataSource = [...that.dataSource]
       let target = dataSource.find(item => item.key === key)
@@ -206,7 +219,7 @@ export default {
           return
         }
         if(equipmentCode){
-          dataSource.push({equipmentCode,key,title})
+          dataSource.push({equipmentCode,equipmentChannelNo,key,title})
           that.dataSource = dataSource
         }
       }
@@ -218,6 +231,38 @@ export default {
     },
     showGuid(){
       this.$refs.guidForm.show()
+    },
+    onLoadData(treeNode) {
+      const that = this
+      let {equipmentCode} = treeNode.dataRef
+
+      return new Promise(async (resolve) => {
+        if(!equipmentCode || !String(equipmentCode).startsWith('F')){
+          resolve()
+          return
+        }
+        let {accessToken} = await CAMERA_API.util.getTokenAndUrl('test')
+        let deviceCameraList = await CAMERA_API.deviceCameraList({
+          accessToken,
+          deviceSerial:equipmentCode
+        })
+        if(+deviceCameraList.code !== 200){
+          resolve()
+        }
+
+        treeNode.dataRef.children = deviceCameraList.data.map(item => {
+          return that.formatTreeData({
+            equipmentName:item.deviceName,
+            equipmentCode:item.deviceSerial,
+            equipmentChannelNo:item.channelNo,
+            equipmentList:[],
+            isLeaf:true,
+            isNvr:false
+          })
+        })
+        that.orgTree = [...that.orgTree]
+        resolve()
+      })
     },
   },
 

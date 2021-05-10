@@ -359,6 +359,7 @@
                 <a-textarea
                   placeholder="不通过原因"
                   :rows="3"
+                  :disabled="isView"
                   v-decorator="['noPassReason', { rules: [{ required: true, message: '请输入不通过原因' }] }]"
                 />
               </a-form-item>
@@ -371,7 +372,7 @@
                 <a-select
                   placeholder="试用期基本工资"
                   style="width: 80%"
-                  :disabled="leaderName === userInfo.trueName ? false : true"
+                  :disabled="isView"
                   v-decorator="['probationBasicSalary', { rules: [{ required: true, message: '选择试用期基本工资' }] }]"
                 >
                   <a-select-option :value="2500">2500</a-select-option>
@@ -386,16 +387,18 @@
             </td>
             <td>试用期岗位工资</td>
             <td>
+              <a-form-item>
               <a-input
-                :disabled="leaderName === userInfo.trueName ? false : true"
+                :disabled="isView"
                 placeholder="试用期岗位工资"
                 style="width: 80%"
                 v-decorator="['probationPostSalary', { rules: [{ required: true, message: '请输入试用期岗位工资' }] }]"
               />
+              </a-form-item>
             </td>
           </tr>
           <!-- <tr>
-       
+
           </tr> -->
           <!-- <tr v-if="wage && wage > 0">
             <td>工资分配</td>
@@ -414,6 +417,7 @@ import moment from 'moment'
 import {
   approvalLookProbationSurvey, //详情
   approvalProbationSurvey, //提交
+  updateProbationById,
 } from '@/api/personnelManagement'
 import Approval from './Approval'
 export default {
@@ -483,6 +487,9 @@ export default {
       c += parseInt(this.d6, 10)
       return isNaN(c) ? 0 : c
     },
+    isPersonLeader(){ //当前登录人是否为  该员工的上级领导
+      return this.leaderName === this.userInfo.trueName
+    }
   },
   methods: {
     onChange(checked) {
@@ -525,6 +532,7 @@ export default {
         this.$nextTick(() => {
           setTimeout(() => {
             this.form.setFieldsValue(fillObj)
+            console.log(fillObj)
           }, 100)
         })
         this.wage = obj.wage
@@ -545,7 +553,7 @@ export default {
     },
     submitAction(opt) {
       let that = this
-      that.form.validateFields((err, values) => {
+      that.form.validateFields(async (err, values) => {
         if (!err) {
           let param = {
             id: that.record.id,
@@ -558,32 +566,48 @@ export default {
           // values.isAdopt = opt.isAdopt
           // values.opinion = opt.opinion
           that.spinning = true
-          approvalProbationSurvey(param)
-            .then((res) => {
-              that.spinning = false
-              console.log(res)
-              that.form.resetFields() // 清空表
-              that.visible = false
-              that.$message.info(res.msg)
-              that.$emit('finish')
-            })
-            .catch((err) => {
-              that.spinning = false
-              console.log(err)
-            })
+
+          let approvalResult = await approvalProbationSurvey(param).then(res => +res.code).catch(err => {
+            console.log(err)
+            return 500
+          })
+          let updateResult = await updateProbationById({id:param.id,probationState:values.probationState}).then(res => +res.code).catch(err => {
+            console.log(err)
+            return 500
+          })
+          that.spinning = false
+          if(approvalResult === 200 && updateResult === 200){
+            that.form.resetFields() // 清空表
+            that.visible = false
+            that.$message.info('操作成功')
+            that.$emit('finish')
+          }else{
+            that.$message.info('操作失败，请稍后再试。')
+          }
         }
       })
     },
     passAction() {
-      this.submitAction({
-        isAdopt: 0,
-        opinion: '通过',
+      const that = this
+      that.validateForm().then(hasError => {
+        if(!hasError){
+          that.submitAction({
+            isAdopt: 0,
+            opinion: '通过',
+          })
+        }
       })
+
     },
     noPassAction() {
-      let that = this
+      const that = this
       //that.opinion = ''
-      that.$refs.approval.query()
+      that.validateForm().then(hasError => {
+        if(!hasError){
+          that.$refs.approval.query()
+        }
+      })
+
     },
     handleOk(isAdopt) {
       this.handleCancel()
@@ -628,6 +652,14 @@ export default {
     },
 
     action(values) {},
+    validateForm(){
+      const that = this
+      return new Promise((resolve) =>{
+        that.form.validateFields((err) => {
+          resolve(!!err)
+        })
+      })
+    }
   },
 }
 </script>

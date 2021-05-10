@@ -17,7 +17,8 @@ CAMERA_API.urls = {
   deleteDevice:`${CAMERA_API.baseUrl}device/delete`,
   updateNameAndChannelNo:`${CAMERA_API.baseUrl}camera/name/update`,
   deviceList:`${CAMERA_API.baseUrl}device/list`,
-  device:`${CAMERA_API.baseUrl}device/info`
+  device:`${CAMERA_API.baseUrl}device/info`,
+  deviceCameraList:`${CAMERA_API.baseUrl}device/camera/list` //获取指定设备的通道信息
 }
 //统一的请求入口
 CAMERA_API.request = function(opt){
@@ -104,6 +105,16 @@ CAMERA_API.device = function(opt,callback){
   return CAMERA_API.request({url:CAMERA_API.urls.device,data:opt})
 }
 
+/**
+ * 获取指定设备的通道信息 （nvr 刻录机专用）
+ * accessToken 授权过程获取的access_token
+ * deviceSerial 设备序列号,存在英文字母的设备序列号，字母需为大写
+ */
+CAMERA_API.deviceCameraList = function(opt,callback){
+  return CAMERA_API.request({url:CAMERA_API.urls.deviceCameraList,data:opt})
+}
+
+
 CAMERA_API.util = {}
 /**
  * 生成监控地址
@@ -114,20 +125,21 @@ CAMERA_API.util.makeMonitorUrl = function(opt){
   if(!opt.deviceSerial){
     throw new Error('设备序列号 deviceSerial 不能为空')
   }
+  let channelNo = opt.channelNo || 1
   let type = opt.type || 'live'
   if(type === 'live'){
-    return `ezopen://open.ys7.com/${opt.deviceSerial}/1.live`
+    return `ezopen://open.ys7.com/${opt.deviceSerial}/${channelNo}.live`
   }
   if(type === 'rec'){
     if(opt.begin){
-      return `ezopen://open.ys7.com/${opt.deviceSerial}/1.rec?begin=${opt.begin}`
+      return `ezopen://open.ys7.com/${opt.deviceSerial}/${channelNo}.rec?begin=${opt.begin}`
     }
-    return `ezopen://XRIRSU@open.ys7.com/${opt.deviceSerial}/1.rec`
+    return `ezopen://open.ys7.com/${opt.deviceSerial}/${channelNo}.rec`
   }
   throw new Error(`不支持的类型:${opt.type || ''}`)
 }
 
-CAMERA_API.util.getTokenAndUrl = async function(deviceSerial){
+CAMERA_API.util.getTokenAndUrl = async function(deviceSerial,channelNo=1){
   const {appKey,appSecret} = system.attendanceMonitoringConfig
   // let deviceItem = deviceList.find(item => +item.key === +deviceKey)
   // if(!deviceItem){
@@ -149,9 +161,11 @@ CAMERA_API.util.getTokenAndUrl = async function(deviceSerial){
     }
   }
   let accessToken  = t.accessToken
-  let monitorUrl = CAMERA_API.util.makeMonitorUrl({deviceSerial})
+  let monitorUrl = CAMERA_API.util.makeMonitorUrl({deviceSerial,channelNo})
   return {code:200,accessToken,monitorUrl}
 }
+
+
 
 export default CAMERA_API
 
