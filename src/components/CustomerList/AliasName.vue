@@ -57,7 +57,7 @@ export default {
     },
     id:{
       type:[String,Number],
-      default:() => null
+      default:() => 0
     }
   },
   data() {
@@ -166,9 +166,9 @@ export default {
     },
     checkName (name) {
       const that = this
-      if(!that.id){
-        return {duplicate:false,msg:''}
-      }
+      // if(!that.id){
+      //   return {duplicate:false,msg:''}
+      // }
       return checkName({ id: that.id, name}).then(res => {
         if (res.code === 200 && res.data.length > 0) {
           return {duplicate:true,msg:`客户【${name}】名称已经存在`}
