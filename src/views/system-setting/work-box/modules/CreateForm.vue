@@ -72,9 +72,9 @@
           />
         </a-form-item>
         <a-form-item label="产品类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <!-- @change="handletype" -->
           <a-select
             placeholder="请选择产品类别"
-            @change="handletype"
             v-decorator="['productCategoryCode', { rules: [{ required: true, message: '请选择产品类别！' }] }]"
           >
             <a-select-option v-for="ptype in products" :key="ptype.id" :value="ptype.code">{{
@@ -163,7 +163,7 @@
 </template>
 
 <script>
-import { addProduct, editProduct, checkName, queryTreeByArea } from '@/api/workBox'
+import { addProduct, editProduct, checkName, queryTreeByArea, queryCode } from '@/api/workBox'
 import { getUploadPath2, getDictionary, getUeditorUploadPath, customUpload } from '@/api/common'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
@@ -230,10 +230,10 @@ export default {
   },
   created(record) {
     // 初始化钩子,获取所有产品类型
-    getDictionaryList({ code: 'tool_product_type' }).then((res) => {
+    queryCode({ code: 'tool_product_type' }).then((res) => {
       this.productTypes = res.data
     })
-    getDictionaryList({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
+    queryCode({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
   },
   methods: {
     add() {
