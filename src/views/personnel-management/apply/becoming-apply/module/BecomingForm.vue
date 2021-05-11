@@ -11,9 +11,6 @@
     <!-- @click="passAction(2, '不通过')" -->
     <template slot="footer">
       <template v-if="isApproval">
-        <span style="color: red"
-          >注： 驳回：单据流程移至提交人，然后重新修改提交； 不通过：单据流程结束，状态为不通过；</span
-        >
         <a-button class="a-button" type="primary" icon="close" @click="noPassAction1">不通过</a-button>
         <a-button class="a-button" type="primary" icon="close" @click="noPassAction">驳回</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction(0, '通过')">通过</a-button>
@@ -409,6 +406,11 @@
           </tr> -->
         </table>
       </a-form>
+      <template v-if="isApproval">
+        <p style="color: red; margin-top: 20px">注： 驳回：单据流程移至提交人，然后重新修改提交</p>
+        <p style="color: red">不通过：单据流程结束，状态为不通过；</p>
+      </template>
+
       <Approval ref="approval" @opinionChange="opinionChange" />
       <Approvalt ref="approval1" @opinionChange1="opinionChange1" />
     </a-spin>
