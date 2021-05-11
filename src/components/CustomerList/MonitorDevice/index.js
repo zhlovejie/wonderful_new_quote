@@ -1,2 +1,6 @@
 import MonitorDevice from './List'
-export default MonitorDevice
+import CAMERA_API from './js/api'
+export {
+  MonitorDevice,
+  CAMERA_API
+}

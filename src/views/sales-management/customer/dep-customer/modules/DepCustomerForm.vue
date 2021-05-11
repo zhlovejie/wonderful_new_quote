@@ -9,7 +9,7 @@
       </a-col>
       <a-col :lg="12" :md="12" :sm="24">
         <a-form-item label="别名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入别名" v-decorator="['alias',{rules: [{required: false, min: 1, message: '别名最少为2个字符！'}]}]"/>
+          <a-input placeholder="请输入别名" read-only="read-only" @click="showAlias" v-decorator="['alias',{rules: [{required: false, min: 1, message: '别名最少为2个字符！'}]}]"/>
         </a-form-item>
       </a-col>
     </a-row>
@@ -209,15 +209,22 @@
     <a-form-item :wrapperCol="{span: 24, offset: 20}">
       <a-button type="primary" @click="nextStep">下一步</a-button>
     </a-form-item>
+    <AliasName
+      ref="aliasName"
+      :aliasName="aliasName"
+      :id="cId"
+      @change="aliasChangeHandler"
+    />
   </a-form>
 </template>
 
 <script>
 import { checkName, allAgency } from '@/api/customer'
 import { getUploadPath, getDictionary, getAreaByParent } from '@/api/common'
-
+import AliasName from '@/components/CustomerList/AliasName'
 export default {
   name: 'DepCustomerForm',
+  components:{AliasName},
   props: {
     customer: { required: true, type: Object },
     salesJurisdiction: { required: true, type: Object },
@@ -260,7 +267,8 @@ export default {
       uploadPath: getUploadPath(), // 上传图片的url
       sources:[],
       maxContactCycle:90,
-      isOtherLearn:false //其他获知渠道
+      isOtherLearn:false, //其他获知渠道
+      aliasName:''
     }
   },
   mounted (record) { // 初始化
@@ -398,6 +406,7 @@ export default {
 
       that.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
+        that.aliasName = record.alias
         setFieldsValue({
           name: record.name,
           alias: record.alias,
@@ -524,7 +533,14 @@ export default {
     learnChange(id){
       let target = this.learns.find(item => +item.id === +id)
       this.isOtherLearn = target && target.text === '其它'
-    }
+    },
+    showAlias() {
+      this.$refs.aliasName.show();
+    },
+    aliasChangeHandler(str) {
+      this.aliasName = str;
+      this.form.setFieldsValue({alias:str})
+    },
   }
 }
 </script>

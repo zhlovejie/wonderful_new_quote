@@ -27,6 +27,10 @@ export default {
     deviceKey:{
       type:[Number,String],
       default:() => 1
+    },
+    channelNo:{
+      type:[Number,String],
+      default:() => 1
     }
   },
   data() {
@@ -39,7 +43,7 @@ export default {
   watch: {
     deviceKey: {
       handler: function (v) {
-        this.playWind = `playwind-${v}`
+        this.playWind = `playwind-${v}-${this.channelNo}`
         this.initCamera()
       },
       immediate: true
@@ -60,13 +64,14 @@ export default {
         return
       }
 
-      let { code, msg, accessToken, monitorUrl } = await CAMERA_API.util.getTokenAndUrl(that.deviceKey)
+      let { code, msg, accessToken, monitorUrl } = await CAMERA_API.util.getTokenAndUrl(that.deviceKey,that.channelNo)
       if (code !== 200) {
         that.spinning = false
         that.$message.error(msg)
         that.hasError = true
         return
       }
+      console.log(`monitorUrl:${monitorUrl}`)
       that.$nextTick(() => {
         player = new EZUIKit.EZUIKitPlayer({
           id: that.playWind,
