@@ -218,76 +218,83 @@ export default {
     }
   },
   mounted (record) { // 初始化钩子
+    const that = this
     getDictionary({ text: '产品类型' }).then(res => {
-      this.productTypes = res.data
+      that.productTypes = res.data
     }).catch(function (err) {
       console.log(err)
     })
     getDictionary({ text: '客户类型' }).then(res => {
-      this.customerTypes = res.data
+      that.customerTypes = res.data
     }).catch(function (err) {
       console.log(err)
     })
     getDictionary({ text: '客户获知渠道' }).then(res => {
-      this.learns = res.data
+      that.learns = res.data
     }).catch(function (err) {
       console.log(err)
     })
     getAreaByParent({ pId: 100000 }).then(res => { // 所有省
-      this.provinces = res.data
+      that.provinces = res.data
     }).catch(function (err) {
       console.log(err)
     })
     // 新增的时候不需要改变页面数据，且不能修改cId，否则页面有些关于cId去判断是新增还是修改会出错
-    if (this.customer.id !== undefined && this.customer.id !== '') {
-      this.cId = this.customer.id
-      const { form: { setFieldsValue } } = this
-      this.$nextTick(() => {
+    if (that.customer.id !== undefined && that.customer.id !== '') {
+      that.cId = that.customer.id
+      const { form: { setFieldsValue } } = that
+      that.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
-        setFieldsValue({
-          name: this.customer.name,
-          alias: this.customer.alias,
-          tel: this.customer.tel,
-          fax: this.customer.fax,
-          learn: this.customer.learn,
-          type: this.customer.type,
-          intention: this.customer.intention,
-          userId: this.customer.userId,
-          province: this.customer.province,
-          city: this.customer.city,
-          area: this.customer.area,
-          address: this.customer.address,
-          businessDescription: this.customer.businessDescription,
-          licenseImg: this.customer.licenseImg
-        })
+        try{
+          setFieldsValue({...that.customer})
+        }catch(err){
+          console.log(err)
+        }
+
+        // setFieldsValue({
+        //   name: this.customer.name,
+        //   alias: this.customer.alias,
+        //   tel: this.customer.tel,
+        //   fax: this.customer.fax,
+        //   learn: this.customer.learn,
+        //   type: this.customer.type,
+        //   intention: this.customer.intention,
+        //   userId: this.customer.userId,
+        //   province: this.customer.province,
+        //   city: this.customer.city,
+        //   area: this.customer.area,
+        //   address: this.customer.address,
+        //   businessDescription: this.customer.businessDescription,
+        //   licenseImg: this.customer.licenseImg
+        // })
       })
-      if (this.customer.province != null && this.customer.province > 0) { // 渲染市
-        this.getCity(1, this.customer.province)
+      if (that.customer.province != null && that.customer.province > 0) { // 渲染市
+        that.getCity(1, that.customer.province)
       }
-      if (this.customer.city != null && this.customer.city > 0) { // 渲染区
-        this.getCity(2, this.customer.city)
+      if (that.customer.city != null && that.customer.city > 0) { // 渲染区
+        that.getCity(2, that.customer.city)
       }
-      if (this.customer.interestProduct != null && this.customer.interestProduct.length > 0) { // 感兴趣产品
-        var iProduct = this.customer.interestProduct.split(',')
+      if (that.customer.interestProduct != null && that.customer.interestProduct.length > 0) { // 感兴趣产品
+        var iProduct = that.customer.interestProduct.split(',')
         setFieldsValue({ products: iProduct })
       }
-      if (this.customer.superiorId != null && this.customer.superiorId > 0) { // 渲染所属代理商
-        this.isSecond = true
+      if (that.customer.superiorId != null && that.customer.superiorId > 0) { // 渲染所属代理商
+        that.isSecond = true
         allAgency().then(res => {
-          this.allAgency = res.data
+          that.allAgency = res.data
         })
-        setFieldsValue({ superiorId: this.customer.superiorId })
+        setFieldsValue({ superiorId: that.customer.superiorId })
       }
-      if (this.customer.controlArea != null && this.customer.controlArea.length > 0) { // 代理区域
-        this.isAgency = true
-        setFieldsValue({ controlArea: this.customer.controlArea })
+      if (that.customer.controlArea != null && that.customer.controlArea.length > 0) { // 代理区域
+        that.isAgency = true
+        setFieldsValue({ controlArea: that.customer.controlArea })
       }
-      if (this.customer.licenseImg != null && this.customer.licenseImg.length > 0) {
-        this.fileList[0] = {
+      if (that.customer.licenseImg != null && that.customer.licenseImg.length > 0) {
+        that.fileList[0] = {
           uid: '-1',
           name: 'xxx.png',
           status: 'done',
-          'url': this.customer.licenseImg
+          'url': that.customer.licenseImg
         } // 图片预览缩略图
       }
     }

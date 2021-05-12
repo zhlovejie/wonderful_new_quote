@@ -289,23 +289,29 @@ export default {
         that.cId = that.customer.id
         const { form: { setFieldsValue } } = that
         that.$nextTick(() => {
+          try{
+            setFieldsValue({...that.customer})
+          }catch(err){
+            console.log(err)
+          }
           // setFieldsValue只有通过这种方式给表单赋值
-          setFieldsValue({
-            name: that.customer.name,
-            alias: that.customer.alias,
-            tel: that.customer.tel,
-            fax: that.customer.fax,
-            learn: that.customer.learn,
-            type: that.customer.type,
-            intention: that.customer.intention,
-            userId: that.customer.userId,
-            province: that.customer.province,
-            city: that.customer.city,
-            area: that.customer.area,
-            address: that.customer.address,
-            businessDescription: that.customer.businessDescription,
-            licenseImg: that.customer.licenseImg
-          })
+          // setFieldsValue({
+          //   name: that.customer.name,
+          //   alias: that.customer.alias,
+          //   tel: that.customer.tel,
+          //   fax: that.customer.fax,
+          //   learn: that.customer.learn,
+          //   type: that.customer.type,
+          //   intention: that.customer.intention,
+          //   userId: that.customer.userId,
+          //   province: that.customer.province,
+          //   city: that.customer.city,
+          //   area: that.customer.area,
+          //   address: that.customer.address,
+          //   businessDescription: that.customer.businessDescription,
+          //   licenseImg: that.customer.licenseImg,
+          //   source:that.customer.source
+          // })
         })
         if (that.customer.province != null && that.customer.province > 0) { // 渲染市
           that.getCity(1, that.customer.province)
