@@ -20,7 +20,7 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
-      <template v-if="$auth('other:add')">
+      <template v-if="$auth('Hardware:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
@@ -30,7 +30,7 @@
     </div>
     <div class="main-wrapper">
       <a-table
-        v-if="$auth('other:lists')"
+        v-if="$auth('Hardware:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -42,10 +42,10 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
-          <template v-if="$auth('other:view')">
+          <template v-if="$auth('Hardware:view')">
             <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
-          <template>
+          <template v-if="$auth('Hardware:edit-salary')">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('edit-salary', record)">修改</a>
             <a-divider type="vertical" />
