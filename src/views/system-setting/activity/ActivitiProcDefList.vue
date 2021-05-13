@@ -150,10 +150,15 @@ export default {
         current: 1,
       },
       loading: false,
-      uploadPath: uploadFile(this.research),
+      // uploadPath: uploadFile(this.research || 0),
     }
   },
   computed: {
+    uploadPath() {
+      return this.research === 0
+        ? system.baseURL + '/activity/uploadBpmn'
+        : system.materialBaseUrl + '/activity/uploadBpmn'
+    },
     searchParam() {
       return {
         key: this.key,
@@ -221,7 +226,6 @@ export default {
     },
     handleChange({ file, fileList }) {
       // 上传中、完成、失败都会调用这个函数。
-      this.loading = true
       fileList = fileList.slice(-1)
       if (file.status !== 'uploading') {
         console.log(file, fileList)
@@ -231,7 +235,7 @@ export default {
         if (file.response.code === 200) {
           // 成功
           this.init()
-          this.loading = false
+          this.searchAction()
           this.$message.success('部署成功')
         }
       }

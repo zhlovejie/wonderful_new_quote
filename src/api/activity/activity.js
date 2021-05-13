@@ -14,7 +14,8 @@ export function getActivitiProcDef(parameter, type) {
 }
 //流程定义，上传文件定义流程
 export function uploadFile(type) {
-  return type === 0 ? system.baseURL : materialBaseUrl + '/activity/uploadBpmn'
+  debugger
+  return type === 0 ? system.baseURL + '/activity/uploadBpmn' : materialBaseUrl + '/activity/uploadBpmn'
 }
 //读取资源文件
 export function resourceRead(parameter) {
