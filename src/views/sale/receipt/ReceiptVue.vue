@@ -452,7 +452,7 @@ export default {
       }
     },
     init() {
-      receiptDetail(this.$route.params).then((res) => {
+      receiptDetail({ id: this.$route.params.id }).then((res) => {
         console.log('res  ' + JSON.stringify(res))
         this.createdName = res.data.createName
         this.createTime = res.data.createTime
@@ -610,7 +610,7 @@ export default {
     // 返回
     goBackPricing() {
       // 点击返回，返回核价单列表页
-      this.$router.push({ name: 'receiptList' })
+      this.$router.push({ name: 'receiptList', params: { queryParam: this.$route.params.queryParam } })
       this.$destroy('ReceiptVue')
     },
     writeAccountNum(record) {

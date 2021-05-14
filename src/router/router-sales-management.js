@@ -363,6 +363,7 @@ export default {
           component: () => import('@/views/sale/receipt/ReceiptList'),
           meta: {
             title: '收款单',
+            keepAlive: true,
             permission: ['user']
           }
         },
@@ -833,7 +834,7 @@ export default {
             keepAlive: false,
             permission: ['permission']
           }
-        },{
+        }, {
           path: '/sales-management/businessBorrowing/agencyContractView',
           name: 'Business_borrowingView',
           component: () => import('@/views/sales-management/businessBorrowing/agencyContractView'),

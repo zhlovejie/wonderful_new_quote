@@ -379,8 +379,13 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'receiptList') {
+        console.log(to.params.queryParam)
+
+        if (to.name === 'receiptList' && to.params.queryParam === undefined) {
           this.queryParam = { ...this.queryParam, dayWeekMonth: 1 }
+          this.searchAction()
+        } else {
+          this.queryParam = to.params.queryParam
           this.searchAction()
         }
       },
@@ -546,10 +551,13 @@ export default {
     },
     handleVue(e) {
       if (e.contractType === 1) {
-        this.$router.push({ name: 'ReceiptVue', params: { id: e.id } })
+        this.$router.push({ name: 'ReceiptVue', params: { id: e.id, queryParam: this.queryParam } })
       }
       if (e.contractType === 2) {
-        this.$router.push({ name: 'ReceiptSoftwareVue', params: { id: e.id } })
+        this.$router.push({
+          name: 'ReceiptSoftwareVue',
+          params: { id: e.id, queryParam: this.queryParam },
+        })
       }
     },
     handleAudit(e) {
@@ -559,10 +567,13 @@ export default {
         return
       }
       if (e.contractType === 1) {
-        this.$router.push({ name: 'ReceiptAudit', params: { id: e.id } })
+        this.$router.push({ name: 'ReceiptAudit', params: { id: e.id, queryParam: this.queryParam } })
       }
       if (e.contractType === 2) {
-        this.$router.push({ name: 'ReceiptSoftwareAudit', params: { id: e.id } })
+        this.$router.push({
+          name: 'ReceiptSoftwareAudit',
+          params: { id: e.id, queryParam: this.queryParam },
+        })
       }
     },
     handleAuditOk() {

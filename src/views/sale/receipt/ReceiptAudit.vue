@@ -378,7 +378,8 @@ export default {
       }
     },
     init() {
-      receiptDetail(this.$route.params).then((res) => {
+      console.log(this.$route.params)
+      receiptDetail({ id: this.$route.params.id }).then((res) => {
         console.log('res  ' + JSON.stringify(res))
         this.detailId = res.data.receiptId
         this.contractId = res.data.contractId
@@ -533,7 +534,7 @@ export default {
     // 返回
     goBackPricing() {
       // 点击返回，返回列表页
-      this.$router.push({ name: 'receiptList' })
+      this.$router.push({ name: 'receiptList', params: { queryParam: this.$route.params.queryParam } })
       this.$destroy('ReceiptAudit')
     },
     writeAccountNum(record) {
