@@ -248,3 +248,13 @@ export function customerListForLearn (param) {
     params: param
   })
 }
+
+/** 获取重复的客户 */
+export function customerrepetitionNames (param) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/customer/repetitionNames',
+    method: 'get',
+    params: param
+  })
+}
