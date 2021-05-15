@@ -2,11 +2,11 @@
   <!-- 重复的客户 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="范围开始" v-model="searchParam.startNum" allowClear style="width:160px;" />
-      <a-input placeholder="范围结束" v-model="searchParam.endNum" allowClear style="width:160px;" />
-      <a-input placeholder="排除的字符" v-model="searchParam.exChar" allowClear style="width:160px;" />
-      <a-input placeholder="设定多少位相同为重复" v-model="searchParam.num" allowClear style="width:160px;" />
-      <a-select placeholder="是否更新当前所有客户" v-model="searchParam.update" :allowClear="true" style="width: 180px">
+      <a-input placeholder="范围开始" v-model="searchParam.startNum" allowClear style="width:120px;" />
+      <a-input placeholder="范围结束" v-model="searchParam.endNum" allowClear style="width:120px;" />
+      <a-input placeholder="排除的字符" v-model="searchParam.exChar" allowClear style="width:180px;" />
+      <a-input placeholder="设定多少位相同为重复" v-model="searchParam.num" allowClear style="width:200px;" />
+      <a-select placeholder="是否更新当前所有客户" v-model="searchParam.update" :allowClear="true" style="width: 220px">
         <a-select-option :value="1">是</a-select-option>
         <a-select-option :value="2">否</a-select-option>
       </a-select>
@@ -22,6 +22,18 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+
+        <a-table
+          slot="expandedRowRender"
+          slot-scope="record, index, indent, expanded"
+          :columns="columns"
+          :data-source="record.repetitionCustomers"
+          :pagination="false"
+        >
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
+          </div>
+        </a-table>
       </a-table>
     </div>
   </div>
@@ -43,48 +55,27 @@ const columns = [
   },
   {
     align: 'center',
-    title: '编号',
-    dataIndex: 'reportNum'
+    title: '客户编号',
+    dataIndex: 'customerId'
   },
   {
     align: 'center',
-    title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName'
+    title: '客户名称',
+    dataIndex: 'name',
   },
   {
     align: 'center',
-    title: '岗位',
-    dataIndex: 'stationName',
-    key: 'stationName'
+    title: '所属销售',
+    dataIndex: 'userName'
   },
   {
     align: 'center',
-    title: '状态',
-    dataIndex: 'rebackFlag',
-    key: 'rebackFlag',
-    scopedSlots: { customRender: 'rebackFlag' }
-  },
-  {
-    align: 'center',
-    title: '提交人',
-    key: 'createuserName',
-    dataIndex: 'createuserName'
-  },
-  {
-    align: 'center',
-    title: '提交时间',
-    key: 'createdTime',
-    dataIndex: 'createdTime'
-  },
-  {
-    align: 'center',
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' }
+    title: '所属客户池',
+    dataIndex: 'poolTxt'
   }
 ]
 
+let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 export default {
   name: 'repetition-names-customer',
   data() {
@@ -93,7 +84,7 @@ export default {
         num:5,
         update:2
       },
-      columns: columns,
+      columns,
       dataSource: [],
       loading: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -129,8 +120,20 @@ export default {
       customerrepetitionNames(_searchParam)
         .then(res => {
           that.loading = false
-          that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
+          if(res && res.code && res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
+          that.dataSource = res.data.map((item, index) => {
+            item.key = uuid()
+            item.poolTxt = ({1:'公共',2:'部门'}[item.pool]) || `未知：${item.pool}`
+            if(Array.isArray(item.repetitionCustomers)){
+              item.repetitionCustomers.map(c => {
+                c.key = uuid()
+                c.poolTxt = ({1:'公共',2:'部门'}[item.pool]) || `未知：${item.pool}`
+                return c
+              })
+            }
             return item
           })
         })

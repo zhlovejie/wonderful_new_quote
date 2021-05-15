@@ -251,6 +251,7 @@ export function customerListForLearn (param) {
 
 /** 获取重复的客户 */
 export function customerrepetitionNames (param) {
+  axios.timeout = 300000
   return axios({
     baseURL: system.baseURL,
     url: '/customer/repetitionNames',
