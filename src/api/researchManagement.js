@@ -279,3 +279,144 @@ export function task_performancegetgetChargeIds(parameter) {
     params: parameter
   })
 }
+
+// 任务单列表
+export function task_TaskInfoPage(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-info/listDevelopmentTaskInfoPage',
+    method: 'get',
+    params: parameter
+  })
+}
+// 任务单列表
+export function task_countDevelopmentByStatus(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-info/countDevelopmentByStatus',
+    method: 'get',
+    params: parameter
+  })
+}
+//审核查看
+export function task_getTaskExcuteHisDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/getTaskExcuteHisDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+// 任务单查看
+export function task_getDevelopmentTaskInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'developmentBouns/development-task-info/getDevelopmentTaskInfo',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//配置新增
+export function task_appointHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/appointHis',
+    method: 'post',
+    data: parameter
+  })
+}
+//状态记录
+export function task_listDevelopmentTaskHisById(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-info/listDevelopmentTaskHisById',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//我的任务单
+export function task_listTaskExcuteHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/listTaskExcuteHis',
+    method: 'get',
+    params: parameter
+  })
+}
+//我的任务单认领
+export function task_listclaimHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/claimHis',
+    method: 'post',
+    data: parameter
+  })
+}
+//我的任务单驳回
+export function task_listoverruledHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/overruledHis',
+    method: 'post',
+    data: parameter
+  })
+}
+//  我的任务单完结
+export function task_listEndHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/endHis',
+    method: 'post',
+    data: parameter
+  })
+}
+
+// 我的任务单暂停
+export function task_listStopHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/stopHis',
+    method: 'post',
+    data: parameter
+  })
+}
+// 我的任务启动
+
+export function task_listStartHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/startHis',
+    method: 'post',
+    data: parameter
+  })
+}
+// 我的任务单 放弃
+export function task_listWaiveHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/waiveHis',
+    method: 'post',
+    data: parameter
+  })
+}
+// 任务单审核列表
+export function task_hislistTaskExcuteHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/listTaskExcuteHis',
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 我的任务单 放弃
+export function task_approvalHis(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/developmentBouns/development-task-excute-his/approvalHis',
+    method: 'post',
+    data: parameter
+  })
+}

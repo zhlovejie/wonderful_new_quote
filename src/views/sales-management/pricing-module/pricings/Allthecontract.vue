@@ -47,6 +47,10 @@
             <a type="primary" href="javascript:;">撤回</a>
           </a-popconfirm>
         </template>
+        <template v-if="$auth('pricing:one')">
+          <a-divider type="vertical" />
+          <a class="btn-action" type="primary" @click="TaskList(record)">任务单</a>
+        </template>
         <!-- <template v-if="$auth('pricing:one') && record.valencyStatus >= 3">
           <a-divider type="vertical" />
           <a class="btn-action" type="primary" @click="$refs.brifeDrawing.show(record.id)">简介效果图</a>
@@ -142,7 +146,7 @@
         </div>
       </a-table>
     </a-table>
-
+    <Appadd ref="appadd" />
     <a-modal title="客户信息" v-model="visible" :footer="null" :maskClosable="false">
       <p>客户名称：{{ customerName }}</p>
       <p>联系人：{{ linkManName }}</p>
@@ -188,6 +192,7 @@
 
 <script>
 import BrifeDrawing from './brifeDrawing'
+import Appadd from './Appadd'
 import {
   getPriceList,
   getCustomerInfo,
@@ -381,7 +386,7 @@ const innerColumns = [
 ]
 export default {
   name: 'AllTheContract',
-  components: { BrifeDrawing },
+  components: { BrifeDrawing, Appadd },
   data() {
     return {
       //userSign 1 销售 2 核价人
@@ -426,6 +431,10 @@ export default {
     //this.init()
   },
   methods: {
+    //弹出新增任务单
+    TaskList(record) {
+      this.$refs.appadd.query(record)
+    },
     init() {
       // 获取核价单列表数据
       this.getList()

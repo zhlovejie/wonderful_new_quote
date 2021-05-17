@@ -206,7 +206,7 @@ export default {
     init() {
       let that = this
       let queue = []
-      let task1 = task_performancegetSalerIds().then((res) => (that.personincharge = res.data))
+      let task1 = task_performancegetSalerIds({ status: 5 }).then((res) => (that.personincharge = res.data))
       let task2 = task_performancegetgetChargeIds().then((res) => {
         that.projectList = res.data
       })
