@@ -58,6 +58,15 @@ export default {
           }
         },
         {
+          path: '/sales-management/customer/repetition-names-customer',
+          name: 'repetition-names-customer',
+          component: () => import('@/views/sales-management/customer/repetition-names/List'),
+          meta: {
+            title: '客户查重',
+            permission: ['permission']
+          }
+        },
+        {
           path: '/sales-management/customer/curtomer-learn-not-maintain',
           name: 'curtomer-learn-not-maintain',
           component: () => import('@/views/sales-management/customer/curtomerLearn/List'),
