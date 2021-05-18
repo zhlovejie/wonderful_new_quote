@@ -12,7 +12,7 @@
         :filterOption="filterOption"
         v-model="salerId"
         :allowClear="true"
-        style="width: 170px; margin-right: 10px"
+        style="width: 160px; margin-right: 10px"
       >
         <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
           item.trueName
@@ -24,18 +24,18 @@
         :filterOption="filterOption"
         v-model="chargeId"
         :allowClear="true"
-        style="width: 170px; margin-right: 10px"
+        style="width: 160px; margin-right: 10px"
       >
         <a-select-option v-for="item in projectList" :key="item.id" :value="item.id">{{
           item.trueName
         }}</a-select-option>
       </a-select>
-      <a-input placeholder="任务编号" v-model="taskNum" allowClear style="width: 170px; margin-right: 10px" />
-      <a-input placeholder="产品名称" v-model="productName" allowClear style="width: 170px; margin-right: 10px" />
-      <a-input placeholder="项目描述" v-model="productDesc" allowClear style="width: 170px; margin-right: 10px" />
+      <a-input placeholder="任务编号" v-model="taskNum" allowClear style="width: 160px; margin-right: 10px" />
+      <a-input placeholder="产品名称" v-model="productName" allowClear style="width: 160px; margin-right: 10px" />
+      <a-input placeholder="项目描述" v-model="productDesc" allowClear style="width: 160px; margin-right: 10px" />
       <!-- <a-range-picker v-model="sDate" style="margin-right: 10px" /> -->
-      <a-month-picker style="width: 170px; margin-right: 10px" placeholder="开始月份" v-model="startDate" />
-      <a-month-picker style="width: 170px; margin-right: 10px" placeholder="结束月份" v-model="staticsDate" />
+      <a-month-picker style="width: 160px; margin-right: 10px" placeholder="开始月份" v-model="startDate" />
+      <a-month-picker style="width: 160px; margin-right: 10px" placeholder="结束月份" v-model="staticsDate" />
 
       <a-button
         class="a-button"

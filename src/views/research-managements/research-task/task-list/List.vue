@@ -43,8 +43,8 @@
         style="width: 170px; margin-right: 10px"
       />
       <!-- <a-range-picker v-model="sDate" style="margin-right: 10px" /> -->
-      <a-month-picker style="width: 170px; margin-right: 10px" placeholder="开始月份" v-model="startDate" />
-      <a-month-picker style="width: 170px; margin-right: 10px" placeholder="结束月份" v-model="staticsDate" />
+      <a-date-picker style="width: 170px; margin-right: 10px" placeholder="开始日期" v-model="startDate" />
+      <a-date-picker style="width: 170px; margin-right: 10px" placeholder="结束日期" v-model="staticsDate" />
 
       <a-button
         class="a-button"
@@ -212,8 +212,8 @@ export default {
   computed: {
     searchParam() {
       return {
-        beginTime: this.startDate instanceof moment ? this.startDate.format('YYYY-MM') : undefined,
-        endTime: this.staticsDate instanceof moment ? this.staticsDate.format('YYYY-MM') : undefined,
+        beginTime: this.startDate instanceof moment ? this.startDate.format('YYYY-MM-DD') : undefined,
+        endTime: this.staticsDate instanceof moment ? this.staticsDate.format('YYYY-MM-DD') : undefined,
       }
     },
   },
@@ -240,7 +240,7 @@ export default {
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign(
-        {},
+        { status: this.activeKey },
         { ...this.searchParam },
         { ...this.pagination1 },
         { ...this.queryParam },
@@ -273,14 +273,8 @@ export default {
     },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
-      // if (this.activeKey !== 0) {
-      //   this.approval_status = undefined
-      // }
-      if (this.activeKey !== 0) {
-        this.searchAction({ current: 1, status: this.activeKey })
-      } else {
-        this.searchAction({ current: 1 })
-      }
+
+      this.searchAction({ current: 1 })
     },
     doAction(type, record) {
       this.$refs.appadd.query(type, record)

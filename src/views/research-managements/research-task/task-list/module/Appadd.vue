@@ -204,9 +204,13 @@ export default {
     },
     handleOk() {
       let that = this
+      if (that.isView) {
+        return (that.visible = false)
+      }
       that.form.validateFields((err, values) => {
         if (!err) {
           let react = {
+            operationType: 0,
             taskId: this.record.id,
           }
           values.developmentTaskExcuteHis = react

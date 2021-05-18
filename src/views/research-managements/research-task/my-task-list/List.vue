@@ -43,8 +43,8 @@
         style="width: 170px; margin-right: 10px"
       />
       <!-- <a-range-picker v-model="sDate" style="margin-right: 10px" /> -->
-      <a-month-picker style="width: 170px; margin-right: 10px" placeholder="开始月份" v-model="startDate" />
-      <a-month-picker style="width: 170px; margin-right: 10px" placeholder="结束月份" v-model="staticsDate" />
+      <a-date-picker style="width: 170px; margin-right: 10px" placeholder="开始日期" v-model="startDate" />
+      <a-date-picker style="width: 170px; margin-right: 10px" placeholder="结束日期" v-model="staticsDate" />
 
       <a-button
         class="a-button"
@@ -97,7 +97,7 @@
           </template>
           <template v-if="activeKey === 3">
             <template>
-              <a type="primary" @click="doAction('view', record)">查看</a>
+              <a type="primary" @click="doAction('views', record)">查看</a>
             </template>
             <template>
               <a-divider type="vertical" />
@@ -241,8 +241,8 @@ export default {
   computed: {
     searchParam() {
       return {
-        beginTime: this.startDate instanceof moment ? this.startDate.format('YYYY-MM') : undefined,
-        endTime: this.staticsDate instanceof moment ? this.staticsDate.format('YYYY-MM') : undefined,
+        beginTime: this.startDate instanceof moment ? this.startDate.format('YYYY-MM-DD') : undefined,
+        endTime: this.staticsDate instanceof moment ? this.staticsDate.format('YYYY-MM-DD') : undefined,
       }
     },
   },
@@ -306,8 +306,9 @@ export default {
     //启动
     startup(record) {
       let that = this
-      that.$success({
+      that.$confirm({
         okText: '确认',
+        cancelText: '取消',
         title: `确认完结此任务单${record.taskNum}吗`,
         content: '请确定相关数据已上传，保证数据无误方可完结此任务单。',
         onOk() {
@@ -322,14 +323,18 @@ export default {
             that.$message.info(res.msg)
           })
         },
+        onCancel() {
+          console.log('Cancel')
+        },
       })
     },
 
     //完结
     showConfirm(record) {
       let that = this
-      that.$success({
+      that.$confirm({
         okText: '确认',
+        cancelText: '取消',
         title: `确认完结此任务单${record.taskNum}吗`,
         content: '请确定相关数据已上传，保证数据无误方可完结此任务单。',
         onOk() {
@@ -345,6 +350,9 @@ export default {
               that.$message.info(res.msg)
             })
             .catch((err) => (that.spinning = false))
+        },
+        onCancel() {
+          console.log('Cancel')
         },
       })
     },

@@ -10,7 +10,7 @@
   >
     <template slot="footer">
       <template v-if="isEdit">
-        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">驳回</a-button>
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction()">驳回</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction()">认领</a-button>
       </template>
       <template v-else>
@@ -47,7 +47,7 @@
             <td>{{ carCodeDetail.productCode }}</td>
           </tr>
           <tr>
-            <td>项目描述</td>
+            <td style="width: 160px">项目描述</td>
             <td>{{ carCodeDetail.productDesc }}</td>
           </tr>
           <tr>
@@ -62,6 +62,13 @@
             <td>计划完成时间</td>
             <td>{{ carCodeDetail.explainFinishTime }}</td>
           </tr>
+
+          <template v-if="isViews">
+            <tr>
+              <td>倒计时(H)</td>
+              <td>{{ carCodeDetail.countdownTime }}</td>
+            </tr>
+          </template>
           <template v-if="isSuspend">
             <tr>
               <td>倒计时(H)</td>
@@ -155,6 +162,9 @@ export default {
     modalTitle() {
       let tit = this.isEdit ? '认领' : '查看'
       return `${tit}`
+    },
+    isViews() {
+      return this.type === 'views'
     },
     isView() {
       return this.type === 'view'
