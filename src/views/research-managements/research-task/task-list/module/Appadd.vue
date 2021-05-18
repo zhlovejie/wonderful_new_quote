@@ -19,7 +19,7 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>任务编号</td>
+            <td style="width: 160px">任务编号</td>
             <td>{{ record.taskNum }}</td>
           </tr>
           <tr>
@@ -48,57 +48,63 @@
           </tr>
           <tr>
             <td>项目负责人</td>
-            <td>
-              <template v-if="isEdit">
-                <a-form-item>
-                  <a-select
-                    @change="depChangeHandler"
-                    v-decorator="['chargeDepartmentId', { rules: [{ required: true, message: '请选择部门!' }] }]"
-                    style="width: 48%"
-                    placeholder="请选择部门"
-                  >
-                    <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
-                      item.departmentName
-                    }}</a-select-option>
-                  </a-select>
-                </a-form-item>
-                <a-form-item>
-                  <a-select
-                    style="width: 48%"
-                    placeholder="请选择人员"
-                    v-decorator="['chargeId', { rules: [{ required: true, message: '请选择人员!' }] }]"
-                  >
-                    <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
-                      item.trueName
-                    }}</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </template>
-              <span v-else>{{ carCodeDetail.chargeName }}</span>
+            <td v-if="isEdit">
+              <!-- <template v-if="isEdit"> -->
+              <a-form-item>
+                <a-select
+                  @change="depChangeHandler"
+                  v-decorator="['chargeDepartmentId', { rules: [{ required: true, message: '请选择部门!' }] }]"
+                  style="width: 48%"
+                  placeholder="请选择部门"
+                >
+                  <a-select-option v-for="item in departmentList" :key="item.id" :value="item.id">{{
+                    item.departmentName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  style="width: 48%"
+                  placeholder="请选择人员"
+                  v-decorator="['chargeId', { rules: [{ required: true, message: '请选择人员!' }] }]"
+                >
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+              <!-- </template> -->
+              <!-- <span v-else>{{ carCodeDetail.chargeName }}</span> -->
+            </td>
+            <td v-else>
+              <span>{{ carCodeDetail.chargeName }}</span>
             </td>
           </tr>
           <tr>
             <td>难易系数</td>
-            <td>
-              <a-form-item v-if="isEdit">
+            <td v-if="isEdit">
+              <a-form-item>
                 <a-select
                   placeholder="选择难易系数"
                   v-decorator="['difficultDicId', { rules: [{ required: true, message: '请选择难易系数!' }] }]"
                   :allowClear="true"
-                  style="width: 70%"
+                  style="width: 80%"
                 >
                   <a-select-option v-for="item in degree" :key="item.id" :value="item.id">{{
                     item.text
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
-              <span v-else>{{ carCodeDetail.difficult }}</span>
+              <!-- <span v-else>{{ carCodeDetail.difficult }}</span> -->
+            </td>
+            <td v-else>
+              <span>{{ carCodeDetail.difficult }}</span>
             </td>
           </tr>
           <tr>
             <td>计划完成时间</td>
-            <td>
-              <a-form-item v-if="isEdit">
+            <td v-if="isEdit">
+              <a-form-item>
                 <a-date-picker
                   show-time
                   v-decorator="[
@@ -107,10 +113,13 @@
                       rules: [{ required: true, message: '请选择计划完成时间' }],
                     },
                   ]"
-                  style="width: 100%"
+                  style="width: 80%"
                 />
               </a-form-item>
-              <span v-else>{{ carCodeDetail.explainFinishTime }}</span>
+              <!-- <span v-else>{{ carCodeDetail.explainFinishTime }}</span> -->
+            </td>
+            <td v-else>
+              <span>{{ carCodeDetail.explainFinishTime }}</span>
             </td>
           </tr>
         </table>
@@ -138,7 +147,7 @@ export default {
       spinning: false,
       record: {},
       carCodeList: [],
-      type: 'View',
+      type: 'view',
       form: this.$form.createForm(this),
     }
   },
@@ -151,7 +160,7 @@ export default {
       return this.type === 'view'
     },
     isEdit() {
-      return this.actionType === 'Dispatch '
+      return this.type === 'Dispatch'
     },
     isDisabled() {
       return this.isView || this.isEditSalary
