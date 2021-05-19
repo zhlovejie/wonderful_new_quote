@@ -133,12 +133,7 @@
   </a-modal>
 </template>
 <script>
-import {
-  task_listStopHis,
-  task_getTaskExcuteHisDetail,
-  task_listWaiveHis,
-  task_approvalHis,
-} from '@/api/researchManagement'
+import { task_getTaskExcuteHisDetail, task_approvalHis } from '@/api/researchManagement'
 import moment from 'moment'
 import Approval from './Approval'
 export default {
@@ -157,7 +152,7 @@ export default {
       spinning: false,
       record: {},
       carCodeList: [],
-      type: 'View',
+      type: 'viewsuspend',
       form: this.$form.createForm(this),
     }
   },
@@ -194,6 +189,12 @@ export default {
     fillData(record) {
       task_getTaskExcuteHisDetail({ id: record.id }).then((res) => {
         console.log(res)
+        if (res.data.countdownTime !== null) {
+          let react = res.data.countdownTime.toString()
+          let arr = react.split('.')
+          let str = '0.' + arr[1]
+          res.data.countdownTime = arr[0] + '小时' + str * 60 + '分钟'
+        }
         this.carCodeDetail = res.data
       })
     },

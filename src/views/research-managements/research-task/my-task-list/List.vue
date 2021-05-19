@@ -1,5 +1,5 @@
 <template>
-  <!-- 任务绩效 -->
+  <!-- 我的任务单 -->
   <div class="record-new-list-wrapper">
     <div class="search-wrapper">
       <a-input
@@ -87,7 +87,7 @@
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
         <div slot="taskSource" slot-scope="text, record, index">
-          <span>{{ text === 1 ? '销售订单' : '核价单' }}</span>
+          <span>{{ record.taskSource === 1 ? '销售订单' : '核价单' }}</span>
         </div>
         <div slot="action" slot-scope="text, record">
           <template v-if="activeKey === 2">
@@ -99,17 +99,19 @@
             <template>
               <a type="primary" @click="doAction('views', record)">查看</a>
             </template>
-            <template>
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('suspend', record)">暂停</a>
-            </template>
-            <template>
-              <a-divider type="vertical" />
-              <a type="primary" @click="doAction('giveUp', record)">放弃</a>
-            </template>
-            <template>
-              <a-divider type="vertical" />
-              <a type="primary" @click="showConfirm(record)">完结</a>
+            <template v-if="record.operateFlag === 2">
+              <template>
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('suspend', record)">暂停</a>
+              </template>
+              <template>
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('giveUp', record)">放弃</a>
+              </template>
+              <template>
+                <a-divider type="vertical" />
+                <a type="primary" @click="showConfirm(record)">完结</a>
+              </template>
             </template>
           </template>
           <template v-if="activeKey === 4">
@@ -159,6 +161,7 @@ const columns = [
   {
     align: 'center',
     title: '来源',
+    dataIndex: 'taskSource',
     scopedSlots: { customRender: 'taskSource' },
   },
   {
@@ -309,8 +312,8 @@ export default {
       that.$confirm({
         okText: '确认',
         cancelText: '取消',
-        title: `确认完结此任务单${record.taskNum}吗`,
-        content: '请确定相关数据已上传，保证数据无误方可完结此任务单。',
+        title: `确认启动此任务单${record.taskNum}吗`,
+        content: '启动此任务单后,倒计时开始计时,请在规定时间内完成任务',
         onOk() {
           let values = {
             developmentTaskExcuteHis: {

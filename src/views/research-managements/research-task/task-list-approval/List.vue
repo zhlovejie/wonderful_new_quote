@@ -1,5 +1,5 @@
 <template>
-  <!-- 任务绩效 -->
+  <!-- 任务单审核-->
   <div class="record-new-list-wrapper">
     <div class="search-wrapper">
       <a-input
@@ -269,27 +269,24 @@ export default {
     },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
-      // if (this.activeKey !== 0) {
-      //   this.approval_status = undefined
-      // }
-      // if (this.activeKey !== 0) {
-      //   this.searchAction({ current: 1, status: this.activeKey })
-      // } else {
       this.searchAction({ current: 1 })
-      // }
     },
     doAction(type, record) {
       if (type === 'view' && record.operationType === 2) {
         this.$refs.appadd.query('viewsuspend', record)
+        return
       }
       if (type === 'approval' && record.operationType === 2) {
         this.$refs.appadd.query('approvalsuspend', record)
+        return
       }
       if (type === 'view' && record.operationType === 5) {
         this.$refs.appadd.query('viewgiveUp', record)
+        return
       }
       if (type === 'approval' && record.operationType === 5) {
         this.$refs.appadd.query('approvalgiveUp', record)
+        return
       }
     },
     //审批流组件

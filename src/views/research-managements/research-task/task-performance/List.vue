@@ -59,7 +59,7 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="taskSource" slot-scope="text, record, index">
-          <span>{{ text === 1 ? '销售订单' : '核价单' }}</span>
+          <span>{{ text === 2 ? '核价单' : ' 销售订单' }}</span>
         </div>
         <div slot="productDesc" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
@@ -101,6 +101,7 @@ const columns = [
   {
     align: 'center',
     title: '来源',
+    dataIndex: 'taskSource',
     scopedSlots: { customRender: 'taskSource' },
   },
   {

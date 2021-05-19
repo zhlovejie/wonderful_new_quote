@@ -198,6 +198,13 @@ export default {
     fillData(record) {
       task_getDevelopmentTaskInfo({ id: record.id }).then((res) => {
         console.log(res)
+        if (res.data.countdownTime !== null) {
+          let react = res.data.countdownTime.toString()
+          let arr = react.split('.')
+          let str = '0.' + arr[1]
+          res.data.countdownTime = arr[0] + '小时' + str * 60 + '分钟'
+        }
+
         this.carCodeDetail = res.data
       })
     },

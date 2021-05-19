@@ -72,7 +72,23 @@ export default {
       // 获取审批预览信息
       task_listDevelopmentTaskHisById({ id: instanceId })
         .then((res) => {
-          this.priewData = res.data
+          this.priewData = res.data.map((item) => {
+            if (item.countdownTime) {
+              let react = item.countdownTime.toString()
+              let arr = react.split('.')
+              let str = '0.' + arr[1]
+              this.countdown = arr[0] + '小时' + str * 60 + '分钟'
+            } else {
+              this.countdown = null
+            }
+            return {
+              countdownTime: this.countdown,
+              operationType: item.operationType,
+              reason: item.reason,
+              createdName: item.createdName,
+              createdTime: item.createdTime,
+            }
+          })
           this.loading = false
         })
         .catch((error) => {

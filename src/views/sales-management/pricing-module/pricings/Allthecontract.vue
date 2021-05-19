@@ -47,7 +47,7 @@
             <a type="primary" href="javascript:;">撤回</a>
           </a-popconfirm>
         </template>
-        <template v-if="$auth('pricing:one')">
+        <template v-if="record.valencyStatus !== 0 && record.developmentFlag !== 0">
           <a-divider type="vertical" />
           <a class="btn-action" type="primary" @click="TaskList(record)">任务单</a>
         </template>

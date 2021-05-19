@@ -93,7 +93,7 @@
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
         <div slot="taskSource" slot-scope="text, record, index">
-          <span>{{ text === 1 ? '销售订单' : '核价单' }}</span>
+          <span>{{ record.taskSource === 1 ? '销售订单' : '核价单' }}</span>
         </div>
         <div slot="action" slot-scope="text, record">
           <template v-if="activeKey === 0">
