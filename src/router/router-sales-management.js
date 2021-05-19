@@ -597,7 +597,7 @@ export default {
           hidden: true,
           component: () => import('@/views/sale/refund-receipt/List'),
           meta: {
-            title: '退款单',
+            title: '退款申请单',
             permission: ['permission']
           }
         },
