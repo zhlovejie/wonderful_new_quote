@@ -41,7 +41,7 @@
           </div>
 
           <div slot="changeHours" slot-scope="text, record, index">
-            <span v-if="record.operationType === 3 || record.operationType === 4">+{{ text }}</span>
+            <span v-if="record.operationType === 3 || record.operationType === 4 || record.operationType === 8">+{{ text }}</span>
             <span v-if="record.operationType === 1 || record.operationType === 2">-{{ text }}</span>
             <span v-if="(record.operationType === 5 || record.operationType === 6) && text > 0">+{{ text }}</span>
             <span v-if="(record.operationType === 5 || record.operationType === 6) && text < 0">{{ text }}</span>
@@ -55,6 +55,7 @@
             <span v-if="text === 5">手动修改调休</span>
             <span v-if="text === 6">手动修改年假</span>
             <span v-if="text === 7">调休负时长清零</span>
+            <span v-if="text === 8">出差加班</span>
           </div>
         </a-table>
       </div>
