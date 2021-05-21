@@ -338,9 +338,8 @@ export function routineMaterialInfoCheckName(parameter) {
  export function routineMaterialInfoExportList(parameter) {
   return axios({
     baseURL: materialBaseUrl,
-    url: '/routineMaterialInfo/exportList',
-    method: 'GET',
-    params: parameter
+    url: `/routineMaterialInfo/exportList?${parameter}`,
+    method: 'GET'
   })
 }
 /**禁用 */
@@ -379,3 +378,232 @@ export function routineMaterialInfoTwoTierTreeList(parameter) {
     params: parameter
   })
 }
+/**附件接口 */
+export function routineMaterialAccessory(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialAccessory/list',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+export function routineMaterialAccessoryDelete(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/routineMaterialAccessory`,
+    method: 'DELETE',
+    params: parameter
+  })
+}
+
+/* ---------常规物料库审核------------------------------ */
+export function routineMaterialAudit(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialAudit/audit',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+export function routineMaterialBatchAudit(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialAudit/auditBatch',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+export function routineMaterialAuditList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialAudit/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
+/* ---------常规物料库审核--END---------------------------- */
+
+
+/* ---------成品物料库审核------------------------------ */
+export function productMaterialAudit(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialAudit/audit',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+export function productMaterialBatchAudit(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialAudit/auditBatch',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+export function productMaterialAuditList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialAudit/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
+/* ---------成品物料库审核--END---------------------------- */
+
+
+/* ---------成品物料库基本接口------------------------------ */
+/**详情 */
+export function productMaterialInfo(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**新增 */
+export function productMaterialInfoAdd(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo',
+    method: 'POST',
+    data: parameter
+  })
+}
+/**修改 */
+export function productMaterialInfoUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo',
+    method: 'PUT',
+    data: parameter
+  })
+}
+/**删除  */
+export function productMaterialInfoDelete(parameter) {
+  let url = parameter.split('=')[1].split(',').map(s => `ids=${s}`).join('&')
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/productMaterialInfo?${url}`,
+    method: 'DELETE'
+  })
+}
+/**反审核，权限码：productMaterial:annulAudit*/
+export function productMaterialInfoAnnulAudit(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/annulAudit',
+    method: 'PUT',
+    data: parameter
+  })
+}
+/**提交审核 */
+export function productMaterialInfoAudit(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/audit',
+    method: 'PUT',
+    data: parameter
+  })
+}
+
+/**
+ * @description 判断是否有重复的物料名称，有返回true，没有返回false
+ * @param materialName 物料名称
+ * @param ruleId 物料规则id
+ * @param id  物料id
+ */
+export function productMaterialInfoCheckName(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/checkName',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**
+ * @description 根据所选列表导出
+ * @param ids 所选的物料id
+ */
+ export function productMaterialInfoExportList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/productMaterialInfo/exportList?${parameter}`,
+    method: 'GET'
+  })
+}
+/**禁用 */
+export function productMaterialInfoForbidden(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/forbidden',
+    method: 'PUT',
+    data: parameter
+  })
+}
+/**启用 */
+export function productMaterialInfoStartUsing(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/startUsing',
+    method: 'PUT',
+    data: parameter
+  })
+}
+/**列表  */
+export function productMaterialInfoPageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**树形列表  */
+export function productMaterialInfoTwoTierTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/twoTierTreeList',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**附件接口 */
+export function productMaterialAccessory(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialAccessory/list',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+export function productMaterialAccessoryDelete(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/productMaterialAccessory`,
+    method: 'DELETE',
+    params: parameter
+  })
+}
+
+/**
+ * 获取顺序的物料代码号
+ * @param {ruleId} 物料规则id
+ * @returns
+ */
+export function productMaterialInfoGetCode(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialInfo/getCode',
+    method: 'GET',
+    params: parameter
+  })
+}
+/* ---------成品物料库基本接口--END---------------------------- */

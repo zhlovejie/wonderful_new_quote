@@ -4,10 +4,10 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input placeholder="代码模糊查询" v-model="queryParam.code" allowClear style="width: 150px" />
+          <a-input placeholder="名称模糊查询" v-model="queryParam.materialName" allowClear style="width: 150px" />
         </a-form-item>
         <a-form-item>
-          <a-input placeholder="名称模糊查询" v-model="queryParam.ruleName" allowClear style="width: 150px" />
+          <a-input placeholder="代码模糊查询" v-model="queryParam.materialCode" allowClear style="width: 150px" />
         </a-form-item>
         <a-form-item label="审批状态" v-if="+activeKey === 1">
           <a-select style="width: 150px" v-model="queryParam.status">
@@ -60,31 +60,37 @@
 </template>
 
 <script>
-import { materialRuleAudit, materialRuleAuditBatch, materialRuleAuditPageList } from '@/api/routineMaterial'
+// import { materialRuleAudit, materialRuleAuditBatch, materialRuleAuditPageList } from '@/api/routineMaterial'
+
+import {
+  routineMaterialAudit,
+  routineMaterialBatchAudit,
+  routineMaterialAuditList,
+
+  productMaterialAudit,
+  productMaterialBatchAudit,
+  productMaterialAuditList
+} from '@/api/routineMaterial'
+
 import Approval from './Approval'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
   {
     align: 'center',
-    title: '代码',
-    dataIndex: 'allCode',
+    title: '物料代码',
+    dataIndex: 'materialCode',
   },
   {
     align: 'center',
     title: '路径',
-    dataIndex: 'allName',
+    dataIndex: 'path',
   },
   {
     align: 'center',
-    title: '名称',
-    dataIndex: 'ruleName',
+    title: '中文名称',
+    dataIndex: 'materialName',
   },
-  {
-    align: 'center',
-    title: '状态',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-  },
+
   {
     align: 'center',
     title: '提交人',
@@ -95,10 +101,27 @@ const columns = [
     title: '提交时间',
     dataIndex: 'createdTime',
   },
+  {
+    align: 'center',
+    title: '审核结果',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
+  }
 ]
-
+const __API__ = {
+  '1':{ //常规
+    audit:routineMaterialAudit,
+    batchAudit:routineMaterialBatchAudit,
+    list:routineMaterialAuditList
+  },
+  '2':{ //成品
+    audit:productMaterialAudit,
+    batchAudit:productMaterialBatchAudit,
+    list:productMaterialAuditList
+  }
+}
 export default {
-  name: 'material-management-audit-RoutineList',
+  name: 'material-rule-management-library-component-audit',
   components: {
     Approval,
     ApproveInfo,
@@ -150,14 +173,15 @@ export default {
       },
       immediate: true,
     }
-
   },
   methods: {
     init() {
       const that = this
-      that.queryParam = { ...that.queryParam, queryType: that.activeKey, type: that.type }
+      that.__API__ = __API__[that.type]
+      // that.queryParam = { ...that.queryParam }
       let queue = []
-      that.search()
+      // that.search()
+      that.tabChange(that.tabKey)
       return Promise.all(queue)
     },
     rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
@@ -175,7 +199,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       that.loading = true
-      materialRuleAuditPageList(_searchParam)
+      that.__API__.list(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -219,7 +243,7 @@ export default {
       const that = this
       let values = Object.assign({}, opt || {}, { approveId: that.selectedRows[0].id })
       that.spinning = true
-      materialRuleAudit(values)
+      that.__API__.audit(values)
         .then((res) => {
           that.spinning = false
           that.$message.info(res.msg)
@@ -237,7 +261,7 @@ export default {
       const that = this
       const ids = that.selectedRows.map((item) => item.id).join(',')
       that.spinning = true
-      materialRuleAuditBatch(`ids=${ids}`)
+      that.__API__.batchAudit(`ids=${ids}`)
         .then((res) => {
           that.spinning = false
           that.$message.info(res.msg)

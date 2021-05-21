@@ -109,7 +109,7 @@ export default {
         {
           path: '/material-rule-management/library/normal/audit',
           name: 'material-rule-management-library-normal-audit',
-          component: () => import('@/views/material-management/library/NormalAuditList'),
+          component: () => import('@/views/material-management/library/audit/NormalAuditList'),
           meta: {
             title: '常规物料库审核',
             icon: 'setting',
@@ -120,7 +120,7 @@ export default {
         {
           path: '/material-rule-management/library/finished-code/audit',
           name: 'material-rule-management-finished-product-audit',
-          component: () => import('@/views/material-management/library/FinishedProductAuditList'),
+          component: () => import('@/views/material-management/library/audit/FinishedProductAuditList'),
           meta: {
             title: '成品代码库审核',
             icon: 'setting',
