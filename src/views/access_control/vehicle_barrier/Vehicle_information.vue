@@ -17,6 +17,13 @@
         allowClear
         v-model="queryParam.licensePlateNumber"
       />
+      <a-input
+        class="main-items"
+        style="width: 200px; margin-right: 10px"
+        placeholder="姓名"
+        allowClear
+        v-model="queryParam.userName"
+      />
       <a-select
         placeholder="方向"
         v-model="queryParam.direction"
@@ -128,6 +135,13 @@ export default {
           key: 'date',
           dataIndex: 'date',
         },
+        {
+          align: 'center',
+          title: '姓名',
+          key: 'userName',
+          dataIndex: 'userName',
+        },
+
         {
           align: 'center',
           title: '车牌号',

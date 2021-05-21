@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新增实际退款"
+    title="新增实际退款单"
     :width="800"
     :visible="visible"
     @ok="handleOk"
@@ -128,7 +128,7 @@ export default {
       let that = this
       that.programme.push({
         key: uuid(),
-        refundAmount: '',
+        refundAmount: that.record.refundAmountMoney - this.totalPrice,
         refundDate: undefined,
       })
     },
