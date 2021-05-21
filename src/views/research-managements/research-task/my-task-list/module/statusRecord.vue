@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="状态" v-model="visible" :width="650" :footer="null" :maskClosable="false">
+  <a-modal title="状态" v-model="visible" :width="800" :footer="null" :maskClosable="false">
     <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="false" :loading="loading">
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
@@ -77,7 +77,7 @@ export default {
               let react = item.countdownTime.toString()
               let arr = react.split('.')
               let str = '0.' + arr[1]
-              this.countdown = arr[0] + '小时' + str * 60 + '分钟'
+              this.countdown = arr[0] + '小时' + parseInt(str * 60) + '分钟'
             } else {
               this.countdown = null
             }

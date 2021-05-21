@@ -202,7 +202,7 @@ export default {
           let react = res.data.countdownTime.toString()
           let arr = react.split('.')
           let str = '0.' + arr[1]
-          res.data.countdownTime = arr[0] + '小时' + str * 60 + '分钟'
+          res.data.countdownTime = arr[0] + '小时' + parseInt(str * 60) + '分钟'
         }
 
         this.carCodeDetail = res.data

@@ -11,22 +11,28 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="id" hidden>
-          <a-input v-decorator="['id',{initialValue:detail.id}]" />
+          <a-input v-decorator="['id', { initialValue: detail.id }]" />
         </a-form-item>
         <a-form-item label="type" hidden>
-          <a-input v-decorator="['type',{initialValue:detail.type}]" />
+          <a-input v-decorator="['type', { initialValue: detail.type }]" />
         </a-form-item>
         <a-form-item label="type" hidden>
-          <a-input v-decorator="['toolType',{initialValue:detail.toolType}]" />
+          <a-input v-decorator="['toolType', { initialValue: detail.toolType }]" />
         </a-form-item>
         <a-form-item label="文件名称">
           <a-input
             placeholder="请输入文件名称"
-            v-decorator="['fileName', {
-              rules: [{
-                required: true, message: '请输入文件名称!',
-              }]
-            }]"
+            v-decorator="[
+              'fileName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入文件名称!',
+                  },
+                ],
+              },
+            ]"
           />
         </a-form-item>
         <a-form-item label="文件">
@@ -35,18 +41,13 @@
             name="files"
             :multiple="true"
             :action="this.uploadPath"
-            :fileList="fileList" 
+            :fileList="fileList"
             :beforeUpload="beforeUpload"
             @change="handleChange"
           >
-            <a-button>
-              <a-icon type="upload" />上传（.docx、.doc、.pdf类型）
-            </a-button>
+            <a-button> <a-icon type="upload" />上传（.docx、.doc、.pdf类型） </a-button>
           </a-upload>
-          <a-input
-            type="hidden"
-            v-decorator="['fileUrl', {rules: [{required: true,message: '请选择文件！'}]}]"
-          />
+          <a-input type="hidden" v-decorator="['fileUrl', { rules: [{ required: true, message: '请选择文件！' }] }]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -71,11 +72,11 @@ export default {
       uploadPath: getUploadPath(),
       accept:
         '.docx, .doc, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf',
-      detail:{}
+      detail: {},
     }
   },
   computed: {
-    modalTitle(){
+    modalTitle() {
       return this.isAdd ? '添加' : '编辑'
     },
     isAdd() {
@@ -86,13 +87,13 @@ export default {
     },
   },
   methods: {
-    query(actionType, record, fileType,toolType=0) {
+    query(actionType, record, fileType, toolType = 0) {
       let that = this
       that.form.resetFields()
       that.fileList = []
       that.visible = true
       that.actionType = actionType
-      that.detail = Object.assign({},record || {},{ type: fileType ,toolType:toolType})
+      that.detail = Object.assign({}, record || {}, { type: fileType, toolType: toolType })
       //that.form.setFieldsValue({ type: fileType })
 
       if (that.isEdit) {
@@ -107,7 +108,7 @@ export default {
               status: 'done',
               name: _fileName,
               url: record.fileUrl,
-            }
+            },
           ]
         }
       }
@@ -141,7 +142,7 @@ export default {
       }
       return isLt10M
     },
-    checkFile(file){
+    checkFile(file) {
       return file.size / 1024 / 1024 < 10
     },
     handleChange({ file, fileList }) {
@@ -158,7 +159,7 @@ export default {
         // 删除清空
         this.form.setFieldsValue({ fileUrl: '' })
       }
-      this.fileList = fileList.filter(f => this.checkFile(f))
+      this.fileList = fileList.filter((f) => this.checkFile(f))
     },
     handleCancel() {
       this.visible = false
