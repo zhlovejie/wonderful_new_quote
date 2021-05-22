@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-spin :spinning="spinning" :tip="tip">
     <a-form-model
       ref="ruleForm"
       :model="form"
@@ -83,7 +84,7 @@
         取消
       </a-button>
     </p>
-
+    </a-spin>
     <div style="position: absolute;left: -99999px;" class="wuliao-qr-code-wrapper">
       <vue-qr :text="qrText" :size="qrSize" :callback="qrChangeHandler" ></vue-qr>
     </div>
@@ -92,7 +93,9 @@
 <script>
 import {
   routineMaterialRulePageTwoTierTreeList,
-  routineMaterialInfoTwoTierTreeList
+  routineMaterialInfoTwoTierTreeList,
+  routineMaterialInfoCheckCode,
+  routineMaterialInfoCheckName
 } from '@/api/routineMaterial'
 
 import VueQr from 'vue-qr'
@@ -130,6 +133,8 @@ export default {
       thicknessList:[],
       widthList:[],
       lengthList:[],
+      spinning:false,
+      tip:'数据处理中...'
     }
   },
   created() {
@@ -154,7 +159,9 @@ export default {
     },
     async qrChangeHandler(dataUrl,id){
       const that = this
-
+      console.log(`qrChangeHandler called`,arguments)
+      that.tip = '生成物料二维码...'
+      that.spinning = true
       if(dataUrl){
         let file = await new Promise((resolve) => {
           setTimeout(function(){
@@ -183,13 +190,16 @@ export default {
           const formData = new FormData()
           formData.append('file', file)
           let url = await customUpload(formData).then((res) => res.data)
+          that.spinning = false
           that.wuliaoQrUrl = url
           return url
         }else{
           that.wuliaoQrUrl = null
+          that.spinning = false
           return null
         }
       }else{
+        that.spinning = false
         that.wuliaoQrUrl = null
         return null
       }
@@ -197,13 +207,20 @@ export default {
     wuliaoQrUrlReady(){
       const that = this
       let timer = null
+      let t1 = Date.now()
+      let max = 1000 * 3
       return new Promise((resolve) =>{
         timer = setInterval(function(){
-          if(that.wuliaoQrUrl !== null){
+          if(typeof that.wuliaoQrUrl === 'string' && that.wuliaoQrUrl.length > 0){
             clearInterval(timer)
             resolve(that.wuliaoQrUrl)
           }
-        },100)
+          let t2 = Date.now()
+          if(t2 - t1 >= max){
+            clearInterval(timer)
+            resolve(null)
+          }
+        },250)
       })
     },
     parentCodes(_parentId,_dataList) {
@@ -244,12 +261,32 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
+          let ruleId = that.form.parentId
+          let materialName = that.getNode(ruleId).title
           let materialCode = that.makeMaterialCode()
+
+          that.tip = '检测物料代码是否重复...'
+          that.spinning = true
+          let isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({materialCode}).then(res => res.data).catch(err => false)
+          that.spinning = false
+          if(isMaterialCodeDuplicate){
+            that.$message.info('物料代码重复，禁止操作')
+            return
+          }
+
+          // let isMaterialNameDuplicate = await routineMaterialInfoCheckName({materialName,ruleId}).then(res => res.data).catch(err => false)
+          // if(isMaterialNameDuplicate){
+          //   that.$message.info('物料名称重复，禁止操作')
+          //   return
+          // }
+
           that.qrText = materialCode
           await that.wuliaoQrUrlReady()
           let materialQrCode = that.wuliaoQrUrl
-          let ruleId = that.form.parentId
-          let materialName = that.getNode(ruleId).title
+          if(!materialQrCode){
+            that.$message.info('物料二维码生成失败，请联系管理员。')
+            return
+          }
 
           let {texture,thickness,width,length} = that.form
           let textureText = that.textureList.find(item => item.code === texture).fullName

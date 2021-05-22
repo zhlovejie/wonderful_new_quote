@@ -48,7 +48,7 @@
       <!-- 附件 END-->
       <p
         style="margin-top:20px;text-align:center;"
-        v-if="normalAddForm.isEdit"
+        v-if="normalAddForm.isAdd || normalAddForm.isEdit"
       >
         <a-button
           type="primary"
@@ -103,7 +103,13 @@ export default {
       let res = await that.$refs.baseData.validate()
       if (res) {
         that.spinning = true
-        let api = that.normalAddForm.isAdd ? routineMaterialInfoAdd : routineMaterialInfoUpdate
+        let api;
+        if(that.normalAddForm.isNormal){
+          api = that.normalAddForm.isAdd ? routineMaterialInfoAdd : routineMaterialInfoUpdate
+        }else{
+          api = that.normalAddForm.isAdd ? productMaterialInfoAdd : productMaterialInfoUpdate
+        }
+
         console.log(that.normalAddForm.submitParams)
         api({ ...that.normalAddForm.submitParams })
           .then(res => {
