@@ -236,7 +236,16 @@ export default {
     }
   },
   created() {
-    this.form = this.normalAddForm.submitParams
+    const that = this
+    that.form = that.normalAddForm.submitParams
+    if(that.normalAddForm.isAdd){
+      that.$nextTick(() => {
+        that.form = {
+          ...that.form,
+          useStatus:1
+        }
+      })
+    }
   },
   methods: {
     validate() {

@@ -131,11 +131,11 @@ export default {
         return item
       })
       that.$nextTick(() => {
-        that.$refs.uploadFile.setFiles([...that.dataSource])
+        that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
       })
     }else{
       that.$nextTick(() => {
-        that.$refs.uploadFile.setFiles([...that.dataSource])
+        that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
       })
     }
   },
@@ -155,7 +155,7 @@ export default {
             that.$message.info(res.msg)
             if(+res.code === 200){
               that.dataSource = that.dataSource.filter(item => item.key !== record.key)
-              that.$refs.uploadFile.setFiles([...that.dataSource])
+              that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
               that.updateData()
             }
           }).catch(err =>{
@@ -164,7 +164,7 @@ export default {
           })
         }else{
           that.dataSource = that.dataSource.filter(item => item.key !== record.key)
-          that.$refs.uploadFile.setFiles([...that.dataSource])
+          that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
           that.updateData()
         }
         return

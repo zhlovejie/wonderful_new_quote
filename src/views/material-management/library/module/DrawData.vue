@@ -79,12 +79,9 @@
         slot="action"
         slot-scope="text, record"
       >
-        <a
-          type="primary"
-          @click="doAction('view',record)"
-        >查看</a>
+        <!-- <a type="primary" @click="doAction('view',record)" >查看</a> -->
         <template v-if="normalAddForm.isEdit">
-          <a-divider type="vertical" />
+          <!-- <a-divider type="vertical" /> -->
           <a
             type="primary"
             @click="doAction('del',record)"
@@ -186,7 +183,7 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-        that.$message.info('咱不支持图纸预览')
+        that.$message.info('暂不支持图纸预览')
         return
       } else if (type === 'del') {
         that.dataSource = that.dataSource.filter(item => item.key !== record.key)

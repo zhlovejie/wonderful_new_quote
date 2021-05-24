@@ -226,17 +226,17 @@ export default {
     parentCodes(_parentId,_dataList) {
       let arr = []
       let parentId = _parentId
-      if(+parentId === 0){
-        return '0'
-      }
+      // if(+parentId === 0){
+      //   return '0'
+      // }
       while (+parentId) {
         let target = _dataList.find((item) => +item.key === +parentId)
         arr.push({ ...target })
         parentId = target.parentId
-        if(+parentId === 0){
-          target = _dataList.find((item) => +item.key === +parentId)
-          arr.push({ ...target })
-        }
+        // if(+parentId === 0){
+        //   target = _dataList.find((item) => +item.key === +parentId)
+        //   arr.push({ ...target })
+        // }
       }
       return arr
         .reverse()

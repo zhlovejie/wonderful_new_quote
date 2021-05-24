@@ -219,7 +219,7 @@ import {
   productMaterialInfoStartUsing,
   productMaterialInfoPageList,
   productMaterialInfoTwoTierTreeList,
-  productMaterialInfoExportList
+  __MaterialInfoExport
 } from '@/api/routineMaterial'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './module/NormalAddForm'
@@ -243,12 +243,12 @@ const columns = [
     dataIndex: 'materialSource',
     scopedSlots: { customRender: 'materialSource' }
   },
-  {
-    align: 'center',
-    title: '规格型号',
-    dataIndex: 'specifications',
-    scopedSlots: { customRender: 'specifications' }
-  },
+  // {
+  //   align: 'center',
+  //   title: '规格型号',
+  //   dataIndex: 'specifications',
+  //   scopedSlots: { customRender: 'specifications' }
+  // },
   {
     align: 'center',
     title: '主计量单位',
@@ -581,7 +581,7 @@ export default {
       that.selectedRows = []
       that.search()
     },
-    doAction(type, record) {
+    async doAction(type, record) {
       const that = this
       if (type === 'add') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
@@ -607,14 +607,9 @@ export default {
         return
       } else if (type === 'export') {
         let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        productMaterialInfoExportList(ids).then(res => {
-          console.log(res)
-          try {
-            that.$message.info(res.msg)
-          } catch (err) {
-            that.$message.info(err)
-          }
-        })
+        let res = await __MaterialInfoExport(2,ids)
+        console.log(res)
+        that.$message.info(res.msg)
         return
       } else if (type === 'filter') {
         that.$refs.searchForm.query()
@@ -624,7 +619,7 @@ export default {
           disable: {
             api: productMaterialInfoForbidden,
             title: '禁用',
-            tpl: names => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`
+            tpl: names => `是否要删除所选项目${names}？`
           },
           enable: {
             api: productMaterialInfoStartUsing,
@@ -639,7 +634,7 @@ export default {
           approval: {
             api: productMaterialInfoAudit,
             title: '审核',
-            tpl: names => `审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`
+            tpl: names => `确定要审核项目${names}吗？`
           },
           unapproval: {
             api: productMaterialInfoAnnulAudit,

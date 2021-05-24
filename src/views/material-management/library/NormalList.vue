@@ -219,7 +219,7 @@ import {
   routineMaterialInfoStartUsing,
   routineMaterialInfoPageList,
   routineMaterialInfoTwoTierTreeList,
-  routineMaterialInfoExportList
+  __MaterialInfoExport
 } from '@/api/routineMaterial'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './module/NormalAddForm'
@@ -581,7 +581,7 @@ export default {
       that.selectedRows = []
       that.search()
     },
-    doAction(type, record) {
+    async doAction(type, record) {
       const that = this
       if (type === 'add') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
@@ -607,14 +607,9 @@ export default {
         return
       } else if (type === 'export') {
         let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        routineMaterialInfoExportList(ids).then(res => {
-          console.log(res)
-          try {
-            that.$message.info(res.msg)
-          } catch (err) {
-            that.$message.info(err)
-          }
-        })
+        let res = await __MaterialInfoExport(1,ids)
+        console.log(res)
+        that.$message.info(res.msg)
         return
       } else if (type === 'filter') {
         that.$refs.searchForm.query()
@@ -624,7 +619,7 @@ export default {
           disable: {
             api: routineMaterialInfoForbidden,
             title: '禁用',
-            tpl: names => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`
+            tpl: names => `是否要删除所选项目${names}？`
           },
           enable: {
             api: routineMaterialInfoStartUsing,
@@ -634,12 +629,15 @@ export default {
           del: {
             api: routineMaterialInfoDelete,
             title: '删除',
+            /**
+             * 如果此物料关联了 BOM则不可以删除 给出提示物料已使用，禁止删除！
+             */
             tpl: names => `确定要删除${names}吗？`
           },
           approval: {
             api: routineMaterialInfoAudit,
             title: '审核',
-            tpl: names => `审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`
+            tpl: names => `确定要审核项目${names}吗？`
           },
           unapproval: {
             api: routineMaterialInfoAnnulAudit,

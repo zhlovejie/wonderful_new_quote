@@ -100,7 +100,7 @@ export default {
           name: 'material-rule-management-library-finished-code',
           component: () => import('@/views/material-management/library/FinishedCodeList'),
           meta: {
-            title: '成品代码库',
+            title: '成品物料库',
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
@@ -122,7 +122,7 @@ export default {
           name: 'material-rule-management-finished-product-audit',
           component: () => import('@/views/material-management/library/audit/FinishedProductAuditList'),
           meta: {
-            title: '成品代码库审核',
+            title: '成品物料库审核',
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
