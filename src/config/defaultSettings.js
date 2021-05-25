@@ -31,7 +31,7 @@ export default {
   // baseURL: 'http://192.168.13.170:8995/oa',
   //baseURL:'http://192.168.13.250/cloud',
 
-  materialBaseUrl: 'http://106.14.194.64/cloud_development', //物料规则专用地址
+  materialBaseUrl: 'http://192.168.12.96:8996', //物料规则专用地址
 
 
   baseURL: 'http://192.168.13.158:8999/oa',

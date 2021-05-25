@@ -153,7 +153,7 @@ export default {
           that.expandedKeys = that.generateList(that.orgTree).map(item => item.key)
         })
         .catch(err => {
-          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+          that.$message.error(`调用接口[monitoringEquipmentTreeList]时发生错误，错误信息:${err}`)
           return null
         })
 
