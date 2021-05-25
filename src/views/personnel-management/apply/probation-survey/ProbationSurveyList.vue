@@ -58,6 +58,10 @@
             <template v-else>
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
+            <template v-if="$auth('probationSurvey:salary') && record.state === 2">
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('approval_Distribution', record)">分配工资</a>
+            </template>
 
             <template v-if="record.state === 1 && record.createdId === userInfo.id">
               <a-divider type="vertical" />

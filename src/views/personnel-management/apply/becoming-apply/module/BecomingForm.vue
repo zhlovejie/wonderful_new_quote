@@ -234,13 +234,28 @@
                       />
                     </a-form-item>
                   </td>
-                  <td>转正后薪资</td>
+                  <td>转正后总薪资</td>
+                  <td colspan="2">
+                    <a-form-item>
+                      <a-input-number
+                        style="width: 100%"
+                        placeholder="转正后总薪资"
+                        :disabled="disabled"
+                        :min="0"
+                        :max="100000000"
+                        :step="1"
+                        v-decorator="['fullMemberSalary', { rules: [{ required: true, message: '输入转正后总薪资' }] }]"
+                      />
+                    </a-form-item>
+                  </td>
+                </tr>
+                <tr v-if="isEditSalary">
+                  <td>转正基本工资</td>
                   <td colspan="2">
                     <a-form-item>
                       <a-select
                         placeholder="选择转正基本工资"
                         style="width: 100%"
-                        :disabled="disabled"
                         v-decorator="[
                           'fullMemberBasicSalary',
                           { rules: [{ required: true, message: '请选择转正基本工资' }] },
@@ -255,11 +270,13 @@
                         <a-select-option :value="3500">3500</a-select-option>
                       </a-select>
                     </a-form-item>
+                  </td>
+                  <td>转正岗位工资</td>
+                  <td colspan="2">
                     <a-form-item>
                       <a-input-number
                         style="width: 100%"
                         placeholder="转正岗位工资"
-                        :disabled="disabled"
                         :min="0"
                         :max="100000000"
                         :step="1"
@@ -288,122 +305,6 @@
               </a-form-item>
             </td>
           </tr>
-          <!-- <tr v-if="isEditSalary || isModified">
-            <td>工资分配</td>
-            <td colspan="5">
-              <div class="bank-card-list-wrapper">
-                <a-form-item label="卡1">
-                  <a-input-number
-                    style="width: 150px"
-                    :disabled="isView"
-                    :min="0"
-                    :max="100000000"
-                    :step="1"
-                    v-decorator="['userBankCardList.0.salary']"
-                  />
-                  <a-input hidden v-decorator="['userBankCardList.0.id']" />
-                </a-form-item>
-                <a-form-item label="卡2">
-                  <a-input-number
-                    style="width: 150px"
-                    :disabled="isView"
-                    :min="0"
-                    :max="100000000"
-                    :step="1"
-                    v-decorator="['userBankCardList.1.salary']"
-                  />
-                  <a-input hidden v-decorator="['userBankCardList.1.id']" />
-                </a-form-item>
-                <a-form-item label="卡3">
-                  <a-input-number
-                    style="width: 150px"
-                    :disabled="isView"
-                    :min="0"
-                    :max="100000000"
-                    :step="1"
-                    v-decorator="['userBankCardList.2.salary']"
-                  />
-                  <a-input hidden v-decorator="['userBankCardList.2.id']" />
-                </a-form-item>
-              </div>
-            </td>
-          </tr> -->
-
-          <!-- <tr>
-            <td >分管总经理审批意见</td>
-            <td >
-              <a-form-item>
-                <a-input  v-decorator="['c1', { rules: [{ required: false, message: '请输入审批意见' }] }]"/>
-              </a-form-item>
-            </td>
-            <td >审批人</td>
-            <td >
-              <a-form-item>
-                <a-input  v-decorator="['c2', { rules: [{ required: false, message: '请输入审批意见' }] }]"/>
-              </a-form-item>
-            </td>
-            <td >日期</td>
-            <td >
-              <a-form-item>
-                <a-date-picker 
-                  disabled 
-                  style="width:100%;" 
-                  v-decorator="['entryDate',{initialValue:moment(),rules: [{required: false,message: '输入入职日期'}]}]" 
-                  format="YYYY-MM-DD"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td >股东会审核意见</td>
-            <td >
-              <a-form-item>
-                <a-input  v-decorator="['c1', { rules: [{ required: false, message: '请输入审批意见' }] }]"/>
-              </a-form-item>
-            </td>
-            <td >审批人</td>
-            <td >
-              <a-form-item>
-                <a-input  v-decorator="['c2', { rules: [{ required: false, message: '请输入审批意见' }] }]"/>
-              </a-form-item>
-            </td>
-            <td >日期</td>
-            <td >
-              <a-form-item>
-                <a-date-picker 
-                  disabled 
-                  style="width:100%;" 
-                  v-decorator="['entryDate',{initialValue:moment(),rules: [{required: false,message: '输入入职日期'}]}]" 
-                  format="YYYY-MM-DD"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td >人力资源部意见</td>
-            <td >
-              <a-form-item>
-                <a-input  v-decorator="['c1', { rules: [{ required: false, message: '请输入审批意见' }] }]"/>
-              </a-form-item>
-            </td>
-            <td >审批人</td>
-            <td >
-              <a-form-item>
-                <a-input  v-decorator="['c2', { rules: [{ required: false, message: '请输入审批意见' }] }]"/>
-              </a-form-item>
-            </td>
-            <td >日期</td>
-            <td >
-              <a-form-item>
-                <a-date-picker 
-                  disabled 
-                  style="width:100%;" 
-                  v-decorator="['entryDate',{initialValue:moment(),rules: [{required: false,message: '输入入职日期'}]}]" 
-                  format="YYYY-MM-DD"
-                />
-              </a-form-item>
-            </td>
-          </tr> -->
         </table>
       </a-form>
       <template v-if="isApproval">
@@ -445,7 +346,7 @@ export default {
       departmentDataSource: [], //岗位
       stationDataSource: [], //部门
       record: {},
-
+      survey: {},
       fullMemberCode: '',
       proposerName: '',
       sex: '',
@@ -539,6 +440,7 @@ export default {
             that.$message.info(res.msg || '请求失败')
             return
           }
+          that.survey = res.data
           let data = Object.assign({}, res.data)
           that.fullMemberCode = data.fullMemberCode
           that.proposerName = data.proposerName
@@ -687,11 +589,21 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          let _userBankCardList = {
-            userBankCardList: values.userBankCardList,
+          if (
+            Number(values.fullMemberSalary) !==
+            Number(values.fullMemberPostSalary) + Number(values.fullMemberBasicSalary)
+          ) {
+            return this.$message.error('转正总工资 = 转正基本工资 + 转正岗位工资')
+          }
+          let react = {
+            id: that.record.id,
+            fullMemberSalary: values.fullMemberSalary,
+            fullMemberPostSalary: values.fullMemberPostSalary,
+            fullMemberBasicSalary: values.fullMemberBasicSalary,
+            proposerId: this.survey.proposerId,
           }
           that.spinning = true
-          personnelFullMemberApply_updateUserBackCardSalary(_userBankCardList)
+          personnelFullMemberApply_updateUserBackCardSalary(react)
             .then((res) => {
               that.spinning = false
               that.form.resetFields() // 清空表

@@ -145,13 +145,44 @@
             </tr>
             <!-- <tr v-if="!isSelfApproval"> -->
             <tr>
-              <td>原薪资</td>
+              <td>原总薪资</td>
+              <td>
+                <a-form-item>
+                  <a-input-number
+                    placeholder="原总薪资"
+                    style="width: 100%"
+                    disabled
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['oldSalary', { rules: [{ required: true, message: '请输入原总薪资(元)' }] }]"
+                  />
+                </a-form-item>
+              </td>
+              <td>期望总薪资(元)</td>
+              <td>
+                <a-form-item>
+                  <a-input-number
+                    placeholder="期望总薪资"
+                    style="width: 100%"
+                    :disabled="isDisabled"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['expectSalary', { rules: [{ required: true, message: '请输入期望总薪资(元)' }] }]"
+                  />
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td>分配原总薪资</td>
               <td>
                 <a-form-item>
                   <a-select
-                    placeholder="基本工资"
+                    placeholder="选择基本工资"
+                    :allowClear="true"
+                    disabled
                     style="width: 50%"
-                    :disabled="isDisabled"
                     v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -165,21 +196,22 @@
                   <a-input-number
                     placeholder="岗位工资"
                     style="width: 50%"
-                    :disabled="isDisabled"
+                    :allowClear="true"
                     :min="0"
+                    disabled
                     :step="1"
                     :precision="2"
                     v-decorator="['oldPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
-              <td>期望薪资(元)</td>
-              <td>
+              <td v-if="distribution">分配期望总薪资(元)</td>
+              <td v-if="distribution">
                 <a-form-item>
                   <a-select
-                    placeholder="基本工资"
+                    placeholder="选择基本工资"
                     style="width: 50%"
-                    :disabled="isDisabled"
+                    :allowClear="true"
                     v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -190,19 +222,10 @@
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
                   </a-select>
-                  <!-- <a-input-number
-                    placeholder="基本工资"
-                    style="width: 50%"
-                    :disabled="isDisabled"
-                    :min="0"
-                    :step="1"
-                    :precision="2"
-                    v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '请输入基本工资(元)' }] }]"
-                  /> -->
                   <a-input-number
                     placeholder="岗位工资"
                     style="width: 50%"
-                    :disabled="isDisabled"
+                    :allowClear="true"
                     :min="0"
                     :step="1"
                     :precision="2"
@@ -216,7 +239,7 @@
               <td colspan="3">
                 <a-form-item>
                   <a-textarea
-                    :disabled="isView"
+                    :disabled="isView || distribution"
                     placeholder="工作业绩"
                     :rows="3"
                     v-decorator="['attachInfo', { rules: [{ required: true, message: '工作业绩' }] }]"
@@ -229,7 +252,7 @@
               <td colspan="3">
                 <a-form-item>
                   <a-textarea
-                    :disabled="isAdd || istext || isView"
+                    :disabled="isAdd || istext || isView || distribution"
                     placeholder="工作业绩"
                     :rows="3"
                     v-decorator="['jobResult', { rules: [{ required: false, message: '工作业绩' }] }]"
@@ -319,13 +342,44 @@
               <td>{{ salary_entryYears }}</td>
             </tr>
             <tr>
-              <td>原薪资</td>
+              <td>原总薪资</td>
+              <td>
+                <a-form-item>
+                  <a-input-number
+                    placeholder="原总薪资"
+                    style="width: 100%"
+                    disabled
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['oldSalary', { rules: [{ required: true, message: '请输入原总薪资(元)' }] }]"
+                  />
+                </a-form-item>
+              </td>
+              <td>期望总薪资(元)</td>
+              <td>
+                <a-form-item>
+                  <a-input-number
+                    placeholder="期望总薪资"
+                    style="width: 100%"
+                    :disabled="isDisabled"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['expectSalary', { rules: [{ required: true, message: '请输入期望总薪资(元)' }] }]"
+                  />
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td>分配原总薪资</td>
               <td>
                 <a-form-item>
                   <a-select
-                    placeholder="基本工资"
+                    placeholder="选择基本工资"
+                    :allowClear="true"
+                    disabled
                     style="width: 50%"
-                    :disabled="isDisabled"
                     v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -336,19 +390,11 @@
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
                   </a-select>
-                  <!-- <a-input-number
-                    placeholder="基本工资"
-                    style="width: 50%"
-                    :disabled="isDisabled"
-                    :min="0"
-                    :step="1"
-                    :precision="2"
-                    v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '请输入基本工资(元)' }] }]"
-                  /> -->
                   <a-input-number
                     placeholder="岗位工资"
+                    :allowClear="true"
+                    disabled
                     style="width: 50%"
-                    :disabled="isDisabled"
                     :min="0"
                     :step="1"
                     :precision="2"
@@ -356,13 +402,13 @@
                   />
                 </a-form-item>
               </td>
-              <td>期望薪资(元)</td>
-              <td>
+              <td v-if="distribution">分配期望总薪资(元)</td>
+              <td v-if="distribution">
                 <a-form-item>
                   <a-select
-                    placeholder="基本工资"
+                    placeholder="选择基本工资"
+                    :allowClear="true"
                     style="width: 50%"
-                    :disabled="isDisabled"
                     v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -373,26 +419,16 @@
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
                   </a-select>
-                  <!-- <a-input-number
-                    placeholder="基本工资"
-                    style="width: 50%"
-                    :disabled="isDisabled"
-                    :min="0"
-                    :step="1"
-                    :precision="2"
-                    v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '请输入基本工资(元)' }] }]"
-                  /> -->
                   <a-input-number
                     placeholder="岗位工资"
+                    :allowClear="true"
                     style="width: 50%"
-                    :disabled="isDisabled"
                     :min="0"
                     :step="1"
                     :precision="2"
                     v-decorator="['expectPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
                 </a-form-item>
-                <!-- <a-form-item> </a-form-item> -->
               </td>
             </tr>
             <tr>
@@ -449,11 +485,13 @@ import {
   getSalaryChangeDetail,
   saveOrUpdateSalaryChangeApply,
   approveSalaryChangeApply,
+  saveOrChangeApply,
   //调岗调薪
   getPositionAndSalaryChangeDetail,
   saveOrUpdatePositionAndSalaryChangeApply,
   approvePositionAndSalaryChange,
   getSalaryBaseCommonByUserId,
+  saveOrPositionAndSalaryChangeApply,
 } from '@/api/personnelManagement'
 import moment from 'moment'
 import Approval from './Approval'
@@ -491,12 +529,18 @@ export default {
       isSelfApproval: false,
       spinning: false,
       taskFlag: 0, //1 调薪人自己节点  0其他人 默认其他人
+      survey: {},
+      record: {},
     }
   },
   computed: {
     modalTitle() {
-      let m = { view: '查看', add: '新增', edit: '修改', approval: '审批' }
-      return `${m[this.actionType]}${this.operationStatusTxt}申请`
+      let m = { view: '查看', add: '新增', edit: '修改', approval: '审批', distribution: '分配' }
+      if (this.distribution) {
+        return `${m[this.actionType]}${this.operationStatusTxt}薪资`
+      } else {
+        return `${m[this.actionType]}${this.operationStatusTxt}申请`
+      }
     },
     operationStatusTxt() {
       let map = { 0: '调岗', 1: '调薪', 2: '调岗调薪' }
@@ -527,6 +571,9 @@ export default {
     isApproval() {
       return this.actionType === 'approval'
     },
+    distribution() {
+      return this.actionType === 'distribution'
+    },
     istext() {
       return (
         (this.isEdit && this.userInfo.id === Number(this.record.createdId)) ||
@@ -536,7 +583,7 @@ export default {
 
     isDisabled() {
       //此状态下表单元素被禁用
-      return this.isView || this.isApproval
+      return this.isView || this.isApproval || this.distribution
     },
     salary_entryYears() {
       let that = this
@@ -597,6 +644,45 @@ export default {
     async handleOk() {
       //debugger
       let that = this
+      if (that.distribution) {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            if (Number(values.oldSalary) !== Number(values.oldBasicSalary) + Number(values.oldPostSalary)) {
+              return this.$message.error('原总工资 = 原基本工资 + 原岗位工资')
+            }
+            if (Number(values.expectSalary) !== Number(values.expectBasicSalary) + Number(values.expectPostSalary)) {
+              return this.$message.error('期待总工资 = 期待基本工资 + 期待岗位工资')
+            }
+            let apiMap = {
+              0: saveOrUpdatePositionChangeApply,
+              1: saveOrChangeApply,
+              2: saveOrPositionAndSalaryChangeApply,
+            }
+            let react = {
+              id: that.record.id,
+              oldBasicSalary: values.oldBasicSalary,
+              oldPostSalary: values.oldPostSalary,
+              oldSalary: values.oldSalary,
+              expectSalary: values.expectSalary,
+              expectPostSalary: values.expectPostSalary,
+              expectBasicSalary: values.expectBasicSalary,
+              applyUserId: this.survey.applyUserId,
+            }
+
+            apiMap[that.operationStatus](react)
+              .then((res) => {
+                that.spinning = false
+                console.log(res)
+                that.form.resetFields() // 清空表
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('finish')
+              })
+              .catch((err) => (that.spinning = false))
+          }
+        })
+        return
+      }
       //员工审批调薪填写业绩的特别处理
       if (that.isApproval && that.isSelfApproval) {
         this.form.validateFields((err, values) => {
@@ -666,6 +752,7 @@ export default {
         that.$message.error('获取数据失败，请稍后再试')
         return
       }
+      that.survey = data
       that.taskFlag = data.taskFlag || 0
       //填充调岗
       if (that.isPost || that.isPostAndSalary) {
@@ -779,6 +866,7 @@ export default {
             that.form.setFieldsValue({
               oldBasicSalary: res.data.realityBasicSalary,
               oldPostSalary: res.data.realityPostSalary,
+              oldSalary: Number(res.data.realityBasicSalary) + Number(res.data.realityPostSalary),
             })
           }
         })

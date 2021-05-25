@@ -124,7 +124,7 @@
                     <a-form-item>
                       <a-select
                         style="width: 150px"
-                        :disabled="isView"
+                        :disabled="isView || isDistribution"
                         @change="scoreChange('d1', $event)"
                         v-decorator="['leaderSkill', { rules: [{ required: true, message: '选择自评分数' }] }]"
                         placeholder="选择自评分数"
@@ -162,7 +162,7 @@
                     <a-form-item>
                       <a-select
                         style="width: 150px"
-                        :disabled="isView"
+                        :disabled="isView || isDistribution"
                         @change="scoreChange('d2', $event)"
                         v-decorator="['leaderCoordinate', { rules: [{ required: true, message: '选择自评分数' }] }]"
                         placeholder="选择自评分数"
@@ -200,7 +200,7 @@
                     <a-form-item>
                       <a-select
                         style="width: 150px"
-                        :disabled="isView"
+                        :disabled="isView || isDistribution"
                         @change="scoreChange('d3', $event)"
                         v-decorator="['leaderImprove', { rules: [{ required: true, message: '选择自评分数' }] }]"
                         placeholder="选择自评分数"
@@ -238,7 +238,7 @@
                     <a-form-item>
                       <a-select
                         style="width: 150px"
-                        :disabled="isView"
+                        :disabled="isView || isDistribution"
                         @change="scoreChange('d4', $event)"
                         v-decorator="['leaderExecution', { rules: [{ required: true, message: '选择自评分数' }] }]"
                         placeholder="选择自评分数"
@@ -276,7 +276,7 @@
                     <a-form-item>
                       <a-select
                         style="width: 150px"
-                        :disabled="isView"
+                        :disabled="isView || isDistribution"
                         @change="scoreChange('d5', $event)"
                         v-decorator="['leaderEfficiency', { rules: [{ required: true, message: '选择自评分数' }] }]"
                         placeholder="选择自评分数"
@@ -314,7 +314,7 @@
                     <a-form-item>
                       <a-select
                         style="width: 150px"
-                        :disabled="isView"
+                        :disabled="isView || isDistribution"
                         @change="scoreChange('d6', $event)"
                         v-decorator="['leaderAccuracy', { rules: [{ required: true, message: '选择自评分数' }] }]"
                         placeholder="选择自评分数"
@@ -342,7 +342,7 @@
               <a-form-item>
                 <a-radio-group
                   @change="onChange"
-                  :disabled="isView"
+                  :disabled="isView || isDistribution"
                   v-decorator="['probationState', { rules: [{ required: true, message: '请选择试用期状态' }] }]"
                 >
                   <a-radio :value="1"> 通过</a-radio>
@@ -366,6 +366,19 @@
             </td>
           </tr>
           <tr>
+            <td>试用期总工资</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-input
+                  :disabled="isView || isDistribution"
+                  placeholder="试用期总工资"
+                  style="width: 80%"
+                  v-decorator="['probationSalary', { rules: [{ required: true, message: '请输入试用期总工资' }] }]"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <tr v-if="!isApproval">
             <td>试用期基本工资</td>
             <td>
               <a-form-item>
@@ -388,24 +401,18 @@
             <td>试用期岗位工资</td>
             <td>
               <a-form-item>
-              <a-input
-                :disabled="isView"
-                placeholder="试用期岗位工资"
-                style="width: 80%"
-                v-decorator="['probationPostSalary', { rules: [{ required: true, message: '请输入试用期岗位工资' }] }]"
-              />
+                <a-input
+                  :disabled="isView"
+                  placeholder="试用期岗位工资"
+                  style="width: 80%"
+                  v-decorator="[
+                    'probationPostSalary',
+                    { rules: [{ required: true, message: '请输入试用期岗位工资' }] },
+                  ]"
+                />
               </a-form-item>
             </td>
           </tr>
-          <!-- <tr>
-
-          </tr> -->
-          <!-- <tr v-if="wage && wage > 0">
-            <td>工资分配</td>
-            <td colspan="3">
-              <a-form-item> 卡2：{{ wage }} </a-form-item>
-            </td>
-          </tr> -->
         </table>
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -418,6 +425,7 @@ import {
   approvalLookProbationSurvey, //详情
   approvalProbationSurvey, //提交
   updateProbationById,
+  updateHandleProbationSurvey,
 } from '@/api/personnelManagement'
 import Approval from './Approval'
 export default {
@@ -438,6 +446,7 @@ export default {
       departmentDataSource: [], //岗位
       stationDataSource: [], //部门
       record: {},
+      survey: {},
       s1: 0,
       s2: 0,
       s3: 0,
@@ -458,6 +467,9 @@ export default {
   },
   computed: {
     modalTitle() {
+      if (this.isDistribution) {
+        return '试用期分配工资'
+      }
       let txt = this.isView ? '查看' : '审批'
       return `${txt}试用期调查表`
     },
@@ -466,6 +478,9 @@ export default {
     },
     isApproval() {
       return this.type === 'approval'
+    },
+    isDistribution() {
+      return this.type === 'Distribution'
     },
     userTotalScore() {
       let c = 0
@@ -487,9 +502,10 @@ export default {
       c += parseInt(this.d6, 10)
       return isNaN(c) ? 0 : c
     },
-    isPersonLeader(){ //当前登录人是否为  该员工的上级领导
+    isPersonLeader() {
+      //当前登录人是否为  该员工的上级领导
       return this.leaderName === this.userInfo.trueName
-    }
+    },
   },
   methods: {
     onChange(checked) {
@@ -518,6 +534,7 @@ export default {
       approvalLookProbationSurvey({ id: this.record.id }).then((res) => {
         this.form.resetFields()
         let obj = Object.assign({}, res.data)
+        this.survey = res.data
         obj.entryDate = this.moment(obj.entryDate)
         this.leaderName = res.data.leaderName
         let fillObj = {}
@@ -567,21 +584,25 @@ export default {
           // values.opinion = opt.opinion
           that.spinning = true
 
-          let approvalResult = await approvalProbationSurvey(param).then(res => +res.code).catch(err => {
-            console.log(err)
-            return 500
-          })
-          let updateResult = await updateProbationById({id:param.id,probationState:values.probationState}).then(res => +res.code).catch(err => {
-            console.log(err)
-            return 500
-          })
+          let approvalResult = await approvalProbationSurvey(param)
+            .then((res) => +res.code)
+            .catch((err) => {
+              console.log(err)
+              return 500
+            })
+          let updateResult = await updateProbationById({ id: param.id, probationState: values.probationState })
+            .then((res) => +res.code)
+            .catch((err) => {
+              console.log(err)
+              return 500
+            })
           that.spinning = false
-          if(approvalResult === 200 && updateResult === 200){
+          if (approvalResult === 200 && updateResult === 200) {
             that.form.resetFields() // 清空表
             that.visible = false
             that.$message.info('操作成功')
             that.$emit('finish')
-          }else{
+          } else {
             that.$message.info('操作失败，请稍后再试。')
           }
         }
@@ -589,28 +610,55 @@ export default {
     },
     passAction() {
       const that = this
-      that.validateForm().then(hasError => {
-        if(!hasError){
+      that.validateForm().then((hasError) => {
+        if (!hasError) {
           that.submitAction({
             isAdopt: 0,
             opinion: '通过',
           })
         }
       })
-
     },
     noPassAction() {
       const that = this
       //that.opinion = ''
-      that.validateForm().then(hasError => {
-        if(!hasError){
+      that.validateForm().then((hasError) => {
+        if (!hasError) {
           that.$refs.approval.query()
         }
       })
-
     },
     handleOk(isAdopt) {
-      this.handleCancel()
+      if (this.isDistribution) {
+        let that = this
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            if (
+              Number(values.probationSalary) !==
+              Number(values.probationBasicSalary) + Number(values.probationPostSalary)
+            ) {
+              return this.$message.error('试用期总工资 = 试用期基本工资 + 试用期岗位工资')
+            }
+            let react = {
+              id: that.record.id,
+              probationSalary: values.probationSalary,
+              probationBasicSalary: values.probationBasicSalary,
+              probationPostSalary: values.probationPostSalary,
+              userId: this.survey.userId,
+            }
+
+            updateHandleProbationSurvey(react).then((res) => {
+              console.log(res)
+              that.form.resetFields() // 清空表
+              that.visible = false
+              that.$message.info(res.msg)
+              that.$emit('finish')
+            })
+          }
+        })
+      } else {
+        this.handleCancel()
+      }
       // let that = this
       // that.form.validateFields((err, values) => {
       //   if (!err) {
@@ -652,14 +700,14 @@ export default {
     },
 
     action(values) {},
-    validateForm(){
+    validateForm() {
       const that = this
-      return new Promise((resolve) =>{
+      return new Promise((resolve) => {
         that.form.validateFields((err) => {
           resolve(!!err)
         })
       })
-    }
+    },
   },
 }
 </script>
