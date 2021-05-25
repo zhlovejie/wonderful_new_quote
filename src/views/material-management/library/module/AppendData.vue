@@ -27,6 +27,21 @@
       >
         <span>{{ index + 1 }}</span>
       </div>
+      <div
+        slot="accessoryType"
+        slot-scope="text, record, index"
+      >
+        <a-select
+          :disabled="normalAddForm.isView"
+          placeholder="请选择类别"
+          :allowClear="true"
+          style="width:180px;"
+          @change="(e) => accessoryTypeChange(e,record)"
+          :value="record.accessoryType || undefined"
+        >
+          <a-select-option v-for="item in category" :key="item.id" :value="item.id">{{item.text}}</a-select-option>
+        </a-select>
+      </div>
 
       <div
         slot="action"
@@ -45,6 +60,7 @@
         </template>
       </div>
     </a-table>
+    <XdocView ref="xdocView" />
   </div>
 </template>
 
@@ -55,7 +71,8 @@ const columns = [
   {
     align: 'center',
     title: '文件名称',
-    dataIndex: 'fileName'
+    dataIndex: 'fileName',
+    width:200
   },
   {
     align: 'center',
@@ -84,21 +101,24 @@ import {
   routineMaterialAccessoryDelete,
   productMaterialAccessoryDelete
 } from '@/api/routineMaterial'
+import { getDictionary } from '@/api/common'
+import XdocView from './XdocView'
+let uuid = function(){
+  return Math.random().toString(32).slice(-10);
+}
 
-let uuid = () =>
-  Math.random()
-    .toString(32)
-    .slice(-10)
+
+
 export default {
   name: 'AppendData',
   components: {
-    UploadFile
+    UploadFile,
+    XdocView
   },
   inject: ['normalAddForm'],
   data() {
     return {
       loading:false,
-      columns,
       dataSource: [],
       detail: {},
       uploadConfig: {
@@ -116,18 +136,39 @@ export default {
           }
         }
       },
-      userInfo: this.$store.getters.userInfo // 当前登录人
+      userInfo: this.$store.getters.userInfo, // 当前登录人
+      category:[]
+    }
+  },
+  computed:{
+    columns(){
+      const that = this
+      let _columns = [...columns]
+      if(that.normalAddForm.isProduct){
+        _columns = [
+          {
+            align: 'center',
+            title: '类别',
+            dataIndex: 'accessoryType',
+            scopedSlots: { customRender: 'accessoryType' }
+          },
+          ..._columns
+        ]
+      }
+      return _columns
     }
   },
   created() {
     const that = this
+    getDictionary({ text: '成品物料库附件类别' }).then((res) => (that.category = res.data))
     let accessory = that.normalAddForm.submitParams.accessory
     if (accessory) {
       that.dataSource = accessory.map(item => {
-        let uuid = uuid()
-        item.key = uuid
-        item.uid = uuid
+        let _uuid = uuid()
+        item.key = _uuid
+        item.uid = _uuid
         item.url = item.fileUrl
+        item.accessoryType = item.accessoryType
         return item
       })
       that.$nextTick(() => {
@@ -144,7 +185,8 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-        that.$message.info('暂不支持预览')
+        // that.$message.info('暂不支持预览')
+        that.$refs.xdocView.query(record.fileUrl)
         return
       } else if (type === 'del') {
         let _api_del = that.normalAddForm.isNormal ? routineMaterialAccessoryDelete : productMaterialAccessoryDelete
@@ -174,20 +216,21 @@ export default {
       const that = this
       let dataSource = [...that.dataSource]
       let keys = dataSource.map(item => item.key)
-      let filesForAdd = files.filter(f => f && f.status === 'done' && keys.includes(f.uid))
+      let filesForAdd = files.filter(f => f && f.status === 'done' && !keys.includes(f.uid))
 
       filesForAdd.map(f => {
         let _time = that.moment().format('YYYY-MM-DD HH:mm:ss')
-        let _uid = uuid()
+        // let _uid = uuid()
         dataSource.push({
-          key: _uid,
+          key: f.uid,
           fileName: f.name,
           fileUrl: f.url,
           createdName: that.userInfo.trueName,
           createdTime: _time,
           modifyTime: _time,
-          uid: _uid,
-          url:f.url
+          uid: f.uid,
+          url:f.url,
+          accessoryType:null
         })
       })
       that.dataSource = dataSource
@@ -199,6 +242,31 @@ export default {
       that.normalAddForm.submitParams.accessory = [...that.dataSource].map(item => {
         return { ...item, materialId: id }
       })
+    },
+    accessoryTypeChange(e,record){
+      let dataSource = [...this.dataSource]
+      let target = dataSource.find(item => record.key === item.key)
+      if(target){
+        target['accessoryType'] = e
+        this.dataSource = dataSource
+        this.updateData()
+      }
+    },
+    validate(){
+      const that = this
+      let {isNormal,isProduct} = that.normalAddForm
+
+      if(isNormal){
+        return true
+      }else if(isProduct){
+        let productCheck = that.dataSource.find(item => !item.accessoryType)
+        if(productCheck){
+          that.$message.info('请选择附件类别')
+        }
+        return productCheck ? false : true
+      }else{
+        return true
+      }
     }
   }
 }

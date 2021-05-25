@@ -133,7 +133,7 @@
             <span style="margin-left:5px;">
               <a-tooltip>
                 <template slot="title">
-                  ( 换算率 * 主计量单位 ) = 辅计量单位
+                  换算率 = 辅计量单位 / 主计量单位
                 </template>
                 <span class="icon-required">换算率</span>
                 <a-icon
@@ -148,10 +148,13 @@
               ref="conversionRate"
               prop="conversionRate"
             >
-              <a-input
+              <a-input-number
                 :disabled="normalAddForm.isView"
                 v-model="form.conversionRate"
                 :allowClear="true"
+                :min="0"
+                :step="1"
+                style="width:100%;"
               />
             </a-form-model-item>
           </td>
@@ -172,22 +175,28 @@
           </td>
         </tr>
         <tr>
-          <td>备注</td>
-          <td>
-            <a-form-model-item
-              ref="estimateWeight"
-              prop="remark"
-            >
-              <a-input
-                :disabled="normalAddForm.isView"
-                v-model="form.remark"
-                type="textarea"
-                :allowClear="true"
-              />
-            </a-form-model-item>
-          </td>
+          <template v-if="normalAddForm.isNormal">
+            <td>
+              <span class="icon-required">是否需要送检</span>
+            </td>
+            <td>
+              <a-form-model-item
+                ref="needCheck"
+                prop="needCheck"
+              >
+                <a-radio-group
+                  :disabled="normalAddForm.isView"
+                  name="radioGroup"
+                  v-model="form.needCheck"
+                >
+                  <a-radio :value="1">是</a-radio>
+                  <a-radio :value="2">否</a-radio>
+                </a-radio-group>
+              </a-form-model-item>
+            </td>
+          </template>
           <td>原K3物料代码</td>
-          <td>
+          <td :colspan="normalAddForm.isNormal ? 1 : 3">
             <a-form-model-item
               ref="k3Code"
               prop="k3Code"
@@ -195,6 +204,22 @@
               <a-input
                 :disabled="normalAddForm.isView"
                 v-model="form.k3Code"
+                :allowClear="true"
+              />
+            </a-form-model-item>
+          </td>
+        </tr>
+        <tr>
+          <td>备注</td>
+          <td colspan="3">
+            <a-form-model-item
+              ref="remark"
+              prop="remark"
+            >
+              <a-input
+                :disabled="normalAddForm.isView"
+                v-model="form.remark"
+                type="textarea"
                 :allowClear="true"
               />
             </a-form-model-item>
@@ -223,7 +248,8 @@ export default {
         conversionRate: undefined,
         estimateWeight: undefined,
         remark: undefined,
-        k3Code: undefined
+        k3Code: undefined,
+        needCheck:2
       },
       rules: {
         materialSource: [{ required: true, message: '请选择物料来源属性' }],
@@ -231,7 +257,8 @@ export default {
         mainUnit: [{ required: true, message: '请选择主计量单位' }],
         subUnit: [{ required: true, message: '请选择辅计量单位' }],
         conversionRate: [{ required: true, message: '请输入换算率' }],
-        estimateWeight: [{ required: true, message: '请输入预估重量' }]
+        estimateWeight: [{ required: true, message: '请输入预估重量' }],
+        needCheck:[{ required: true, message: '请选择是否需要送检' }]
       }
     }
   },
@@ -242,7 +269,8 @@ export default {
       that.$nextTick(() => {
         that.form = {
           ...that.form,
-          useStatus:1
+          useStatus:1,
+          needCheck:2
         }
       })
     }

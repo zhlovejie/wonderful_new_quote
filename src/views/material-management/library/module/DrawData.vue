@@ -79,9 +79,9 @@
         slot="action"
         slot-scope="text, record"
       >
-        <!-- <a type="primary" @click="doAction('view',record)" >查看</a> -->
+        <a type="primary" @click="doAction('view',record)" >查看</a>
         <template v-if="normalAddForm.isEdit">
-          <!-- <a-divider type="vertical" /> -->
+          <a-divider type="vertical" />
           <a
             type="primary"
             @click="doAction('del',record)"
@@ -93,12 +93,14 @@
       ref="uploadFileModel"
       @change="fileChange"
     />
+    <XdocView ref="xdocView" />
   </div>
 </template>
 
 <script>
 import moment from 'moment'
 import UploadFileModel from './UploadFileModel'
+import XdocView from './XdocView'
 const columns = [
   {
     align: 'center',
@@ -141,7 +143,8 @@ export default {
   name: 'DrawData',
   inject: ['normalAddForm'],
   components: {
-    UploadFileModel
+    UploadFileModel,
+    XdocView
   },
   data() {
     return {
@@ -183,7 +186,9 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-        that.$message.info('暂不支持图纸预览')
+        // that.$message.info('暂不支持图纸预览')
+        // debugger
+        that.$refs.xdocView.query(record.fileUrl)
         return
       } else if (type === 'del') {
         that.dataSource = that.dataSource.filter(item => item.key !== record.key)

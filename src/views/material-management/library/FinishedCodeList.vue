@@ -188,11 +188,11 @@
             </a-tooltip>
           </div>
           <a
-            slot="approvalStatus"
+            slot="auditStatus"
             slot-scope="text, record"
             @click="approvalPreview(record)"
           >
-            查看
+            {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
           </a>
         </a-table>
       </div>
@@ -262,8 +262,9 @@ const columns = [
   },
   {
     align: 'center',
-    title: '审核人',
-    scopedSlots: { customRender: 'approvalStatus' }
+    title: '审核状态',
+    dataIndex: 'auditStatus',
+    scopedSlots: { customRender: 'auditStatus' }
   }
 ]
 
@@ -488,7 +489,7 @@ export default {
           }
         })
         .catch(err => {
-          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+          that.$message.error(`调用接口[productMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
         })
     },
     search(params = {}) {
@@ -704,7 +705,6 @@ export default {
         },
         on: {
           dblclick: event => {
-            console.log(record)
             const that = this
             that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
             that.$nextTick(() => {
@@ -712,10 +712,9 @@ export default {
                 ...record,
                 __selectItem: that.parentItem,
                 __treeData: [...that.orgTree],
-                __from: 'normal'
+                __from: 'product'
               })
             })
-            debugger
           }
         }
       }

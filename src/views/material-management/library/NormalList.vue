@@ -188,11 +188,11 @@
             </a-tooltip>
           </div>
           <a
-            slot="approvalStatus"
+            slot="auditStatus"
             slot-scope="text, record"
             @click="approvalPreview(record)"
           >
-            查看
+            {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
           </a>
         </a-table>
       </div>
@@ -262,8 +262,9 @@ const columns = [
   },
   {
     align: 'center',
-    title: '审核人',
-    scopedSlots: { customRender: 'approvalStatus' }
+    title: '审核状态',
+    dataIndex: 'auditStatus',
+    scopedSlots: { customRender: 'auditStatus' }
   }
 ]
 
@@ -488,7 +489,7 @@ export default {
           }
         })
         .catch(err => {
-          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+          that.$message.error(`调用接口[routineMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
         })
     },
     search(params = {}) {
@@ -700,7 +701,8 @@ export default {
     customRowFunction(record) {
       // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
       // isForbidden  是否禁用：1禁用，2启用
-      let { useStatus, isForbidden } = record
+      // auditStatus 审核状态：1未审核，2审批中，3已审核
+      let { useStatus, isForbidden ,auditStatus} = record
       return {
         style: {
           color: +isForbidden === 1 ? 'red' : +useStatus === 2 ? 'blue' : ''
@@ -718,7 +720,6 @@ export default {
                 __from: 'normal'
               })
             })
-            debugger
           }
         }
       }

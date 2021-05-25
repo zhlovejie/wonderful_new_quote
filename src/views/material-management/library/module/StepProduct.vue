@@ -197,7 +197,15 @@ export default {
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let ruleId = that.form.parentId
+          if(+ruleId === 0){
+            that.$message.info('禁止在根节点增加成品物料')
+            return
+          }
           let orderCode = await productMaterialInfoGetCode({ruleId}).then(res => res.data)
+          if(!orderCode){
+            that.$message.info('获取顺序的物料代码号失败')
+            return
+          }
           let materialCode = that.makeMaterialCode(orderCode)
           that.qrText = materialCode
           await that.wuliaoQrUrlReady()
@@ -223,7 +231,7 @@ export default {
       const that = this
       let {parentId,isIntelligent} = this.form
       let prefixCode = this.parentCodes(parentId,that.dataList)
-      return `${prefixCode}.${orderCode}.${+isIntelligent === 1 ? 'Z' : 'F'}`
+      return `${prefixCode}${orderCode}${+isIntelligent === 1 ? 'Z' : 'F'}`
     },
     resetForm() {
       this.$refs.ruleForm.resetFields()

@@ -44,6 +44,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        :customRow="customRowFunction"
         :rowSelection="
           +activeKey === 2 ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
         "
@@ -51,10 +52,15 @@
         <div slot="status" slot-scope="text, record, index">
           <a @click="approvalPreview(record)">{{ { 1: '待审批', 2: '通过', 3: '不通过' }[text] }}</a>
         </div>
+
       </a-table>
     </div>
     <Approval ref="approval" @opinionChange="opinionChange" />
     <ApproveInfo ref="approveInfoCard" />
+    <NormalAddForm
+      ref="NormalAddForm"
+      :key="normalAddFormKeyCount"
+    />
     </a-spin>
   </a-card>
 </template>
@@ -74,6 +80,7 @@ import {
 
 import Approval from './Approval'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import NormalAddForm from '../module/NormalAddForm'
 const columns = [
   {
     align: 'center',
@@ -125,6 +132,7 @@ export default {
   components: {
     Approval,
     ApproveInfo,
+    NormalAddForm
   },
   props: {
     type:{
@@ -154,7 +162,8 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
-      spinning:false
+      spinning:false,
+      normalAddFormKeyCount:1
     }
   },
   watch: {
@@ -284,6 +293,28 @@ export default {
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    customRowFunction(record) {
+      const that = this
+      let __from = +that.type === 1 ? 'normal' : 'product'
+      let { materialId } = record
+      return {
+        on: {
+          dblclick: event => {
+            console.log(record)
+            const that = this
+            that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+            that.$nextTick(() => {
+              that.$refs.NormalAddForm.query('view', {
+                id:materialId,
+                __selectItem: null,
+                __treeData: [],
+                __from: __from
+              })
+            })
+          }
+        }
+      }
     },
   },
 }

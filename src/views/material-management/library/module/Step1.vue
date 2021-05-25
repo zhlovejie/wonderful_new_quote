@@ -74,6 +74,7 @@
       <a-button
         type="primary"
         @click="onSubmit"
+        :disabled="nextButtonDisable"
       >
         下一步
       </a-button>
@@ -134,7 +135,17 @@ export default {
       widthList:[],
       lengthList:[],
       spinning:false,
-      tip:'数据处理中...'
+      tip:'数据处理中...',
+      // nextButtonDisable:true
+    }
+  },
+  computed:{
+    nextButtonDisable(){
+      let case1 = this.textureList.length === 0
+      let case2 = this.thicknessList.length === 0
+      let case3 = this.widthList.length === 0
+      let case4 = this.lengthList.length === 0
+      return case1 || case2 || case3 || case4
     }
   },
   created() {
@@ -143,6 +154,7 @@ export default {
   methods: {
     async init(type, record) {
       const that = this
+      that.nextButtonDisable = false
       that.form = that.normalAddForm.submitParams
       that.qrText = ''
       that.wuliaoQrUrl = null
@@ -323,9 +335,19 @@ export default {
       this.$emit('change', { __action__: 'close', values: null })
     },
     handleClick(selectedKeys, e) {
+      const that = this
       let node = {...e.dataRef}
-      this.normalAddForm.selectNode = node
-      this.initSpecifications(node)
+      that.normalAddForm.selectNode = node
+      that.form = {
+        ...that.form,
+        texture: undefined,
+        thickness: undefined,
+        width: undefined,
+        length: undefined,
+      },
+      that.$nextTick(() => {
+        that.initSpecifications(node)
+      })
     },
     initSpecifications(node){
       const that = this
@@ -382,11 +404,11 @@ export default {
                 item.fullName = `${(item.newRuleName || item.ruleName)}(${item.code})`
               })
             }else{
-              list.push({
-                id:-1,
-                code:0,
-                fullName:'未配置'
-              })
+              // list.push({
+              //   id:-1,
+              //   code:0,
+              //   fullName:'未配置'
+              // })
             }
           })
         );

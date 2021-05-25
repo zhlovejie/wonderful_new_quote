@@ -100,8 +100,11 @@ export default {
     async onSubmit() {
       const that = this
       let refs = ['baseData', 'technologyData', 'shoppingData']
-      let res = await that.$refs.baseData.validate()
-      if (res) {
+
+      let baseDataResult = await that.$refs.baseData.validate()
+      let appendDataResult = await that.$refs.appendData.validate()
+
+      if (baseDataResult && appendDataResult) {
         that.spinning = true
         let api;
         if(that.normalAddForm.isNormal){

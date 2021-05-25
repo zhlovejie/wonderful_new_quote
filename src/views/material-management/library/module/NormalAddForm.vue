@@ -114,7 +114,9 @@ export default {
       } else if (isView || isEdit) {
         let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
         let accessory = await __APIAccessory({ materialId: record.id }).then(res => res.data)
-        let result = await routineMaterialInfo({ id: record.id }).then(res => res.data)
+
+        let __APIInfo = that.isNormal ? routineMaterialInfo : productMaterialInfo
+        let result = await __APIInfo({ id: record.id }).then(res => res.data)
 
         that.submitParams = {
           ...result,
