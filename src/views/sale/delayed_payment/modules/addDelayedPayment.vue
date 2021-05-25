@@ -544,7 +544,9 @@ export default {
     },
     disabledDate(current) {
       // 后三十天内可选
-      return current < moment().subtract(1, 'days') || current > moment().add(30, 'd')
+      return (
+        current < moment(this.promiseTimes).subtract(-1, 'days') || current > moment(this.promiseTimes).add(30, 'd')
+      )
     },
 
     disabledDateTime() {},
