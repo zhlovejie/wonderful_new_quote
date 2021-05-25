@@ -13,7 +13,9 @@
       <a-form-item label="部门">
         <a-select style="width: 150px" v-model="selectedDepartment">
           <a-select-option :value="0">请选择</a-select-option>
-          <a-select-option v-for="val in department" :key="val.id" :value="val.id">{{ val.departmentName }}</a-select-option>
+          <a-select-option v-for="val in department" :key="val.id" :value="val.id">{{
+            val.departmentName
+          }}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item>
@@ -35,9 +37,9 @@
             <div slot="states" slot-scope="text, record">
               <template v-if="$auth('user:edit')">
                 <a-switch
-                  @click="changeStatue(text,record,&quot;&quot;)"
+                  @click="changeStatue(text, record, '')"
                   checkedChildren="启用"
-                  :checked="(text === 0) ? true : false"
+                  :checked="text === 0 ? true : false"
                   unCheckedChildren="禁用"
                 />
               </template>
@@ -51,7 +53,7 @@
               <div v-else>女</div>
             </div>
             <div slot="positionStatuss" slot-scope="text, record">
-              <span>{{getUserStatusTxt(text)}}</span>
+              <span>{{ getUserStatusTxt(text) }}</span>
             </div>
             <div slot="action" slot-scope="text, record">
               <template v-if="$auth('user:reset')">
@@ -81,7 +83,7 @@
 </template>
 
 <script>
-import { getDevisionList, getUserList, modifyStatus , initializePassword} from '../../../api/systemSetting'
+import { getDevisionList, getUserList, modifyStatus, initializePassword } from '../../../api/systemSetting'
 import moment from 'moment'
 import { STable } from '@/components'
 import UserModal from './modules/UserModal'
@@ -95,19 +97,19 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '工号',
     dataIndex: 'jobNum',
-    key: 'jobNum'
+    key: 'jobNum',
   },
   {
     align: 'center',
     title: '姓名',
     dataIndex: 'trueName',
-    key: 'trueName'
+    key: 'trueName',
   },
   {
     align: 'center',
@@ -115,50 +117,50 @@ const columns = [
     dataIndex: 'sex',
     // key: 'sex',
     key: 'sexs',
-    scopedSlots: { customRender: 'sexs' }
+    scopedSlots: { customRender: 'sexs' },
   },
   {
     align: 'center',
     title: '用户名',
     dataIndex: 'userName',
-    key: 'userName'
+    key: 'userName',
   },
   {
     align: 'center',
     title: '手机号',
     dataIndex: 'mobile',
-    key: 'mobile'
+    key: 'mobile',
   },
   {
     align: 'center',
     title: '部门',
     dataIndex: 'department.departmentName',
-    key: 'department.departmentName'
+    key: 'department.departmentName',
   },
   {
     align: 'center',
     title: '岗位',
     dataIndex: 'station.stationName',
-    key: 'station.stationName'
+    key: 'station.stationName',
   },
   {
     align: 'center',
     title: '微信号',
     dataIndex: 'wxNum',
-    key: 'wxNum'
+    key: 'wxNum',
   },
   {
     align: 'center',
     title: 'qq号',
     dataIndex: 'qqNum',
-    key: 'qqNum'
+    key: 'qqNum',
   },
   {
     align: 'center',
     title: '员工状态',
     dataIndex: 'positionStatus',
     key: 'positionStatuss',
-    scopedSlots: { customRender: 'positionStatuss' }
+    scopedSlots: { customRender: 'positionStatuss' },
   },
   {
     align: 'center',
@@ -166,14 +168,14 @@ const columns = [
     dataIndex: 'status',
     // key: 'status'
     key: 'states',
-    scopedSlots: { customRender: 'states' }
+    scopedSlots: { customRender: 'states' },
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 const data = []
@@ -183,9 +185,9 @@ export default {
     //UserSee,
     UserSeeNew,
     UserModal,
-    STable
+    STable,
   },
-  data () {
+  data() {
     return {
       data: data,
       columns: columns,
@@ -213,26 +215,26 @@ export default {
       selectedStationId: 0,
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return getUserList(Object.assign(parameter, this.queryParam)).then(res => {
+      loadData: (parameter) => {
+        return getUserList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
-      }
+      },
     }
   },
-  mounted () {
+  mounted() {
     this.getList({})
     getDevisionList()
-      .then(data => {
+      .then((data) => {
         this.department = data.data
       })
-      .catch(error => {
+      .catch((error) => {
         this.loading = false
         console.error(error)
       })
   },
   methods: {
-    search () {
+    search() {
       if (this.trueName != '') {
         this.$set(this.queryParam, 'trueName', this.trueName)
       } else {
@@ -256,11 +258,11 @@ export default {
       this.$refs.table.refresh(false)
     },
     // 获取用户管理页面列表
-    getList (params = {}) {
+    getList(params = {}) {
       params = {
         current: params.current || 1,
         // results: 10,
-        size: 8
+        size: 8,
         // ...params
       }
       if (this.selectedDepartment) {
@@ -277,20 +279,20 @@ export default {
       }
       this.loading = true
       getUserList(params)
-        .then(data => {
+        .then((data) => {
           const pagination = { ...this.pagination }
           pagination.total = data.data.total || 200
           this.loading = false
           this.data = data.data.records
           this.pagination = pagination
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
     // eslint-disable-next-line
-    del (row) {
+    del(row) {
       const _this = this
       this.$confirm({
         title: '警告',
@@ -298,23 +300,23 @@ export default {
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           console.log('OK')
           // 在这里调用删除接口
-          const params = { 'id': row.id, 'isDelete': 1 }
-          modifyStatus(params).then(res => {
+          const params = { id: row.id, isDelete: 1 }
+          modifyStatus(params).then((res) => {
             if (res.code == 200) {
               _this.$message.success('删除成功')
               _this.$refs.table.refresh(false)
             }
           })
         },
-        onCancel () {
+        onCancel() {
           console.log('Cancel')
-        }
+        },
       })
     },
-    resetPassword (row) {
+    resetPassword(row) {
       const _this = this
       this.$confirm({
         title: '警告',
@@ -322,11 +324,11 @@ export default {
         okText: '确定',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           console.log('OK')
           // 在这里调用删除接口
-          const params = { 'id': row.id }
-          initializePassword(params).then(res => {
+          const params = { id: row.id }
+          initializePassword(params).then((res) => {
             // debugger
             if (res.code == 200) {
               _this.$message.success('重置成功')
@@ -336,25 +338,25 @@ export default {
             }
           })
         },
-        onCancel () {
+        onCancel() {
           console.log('Cancel')
-        }
+        },
       })
     },
     // 新增
-    handleAdd () {
+    handleAdd() {
       this.$refs.modal.add()
     },
     // 修改
-    handleEdit (e) {
+    handleEdit(e) {
       this.$refs.modal.edit(e)
     },
     // 查看
-    handleSee (e) {
+    handleSee(e) {
       //this.$refs.see.see(e)
-      this.$refs.userSeeNew.query('view',e)
+      this.$refs.userSeeNew.query('view', e)
     },
-    changeStatue (text, record) {
+    changeStatue(text, record) {
       let status = 0
       if (text == 0) {
         status = 1
@@ -364,35 +366,36 @@ export default {
       record.status = status
       const params = { id: record.id, status: status }
       modifyStatus(params)
-        .then(data => {
+        .then((data) => {
           if (data.code == 200) {
             this.$message.success('修改成功')
             this.$refs.table.refresh(false)
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
-    handleSaveOk () {
+    handleSaveOk() {
       this.$refs.table.refresh(false)
     },
-    handleSaveClose () {
-    },
-    getUserStatusTxt(type){//请选择员工状态
+    handleSaveClose() {},
+    getUserStatusTxt(type) {
+      //请选择员工状态
       let map = {
-        1:'试用期',
-        2:'试用期不通过',
-        3:'在职',
-        4:'离职'
+        1: '试用期',
+        2: '试用期不通过',
+        3: '在职',
+        4: '离职',
+        5: '转正不通过',
       }
-      try{
+      try {
         return map[type]
-      }catch(err){
+      } catch (err) {
         return map['0']
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
