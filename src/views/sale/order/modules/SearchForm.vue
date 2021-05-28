@@ -17,7 +17,7 @@
               showSearch
               :allowClear="true"
               :filterOption="filterSalersOption"
-              placeholder="销售经理"
+              placeholder="销售人员"
               style="width: 100%"
               v-decorator="['saleUserId']"
             >
@@ -33,62 +33,18 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="提交人">
-            <a-input v-decorator="['createName']" placeholder="提交人" :allowClear="true" />
+          <a-form-item label="订单编号">
+            <a-input v-decorator="['orderNum']" placeholder="根据订单编号模糊查询" :allowClear="true" />
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="发货编号">
-            <a-input v-decorator="['invoiceNum']" placeholder="发货编号" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="单据状态">
-            <a-select v-decorator="['approveStatus', { initialValue: 0 }]" placeholder="单据状态">
-              <a-select-option :value="0">全部</a-select-option>
-              <a-select-option :value="1">待审批</a-select-option>
-              <a-select-option :value="2">出库</a-select-option>
-              <a-select-option :value="3">不通过</a-select-option>
-              <a-select-option :value="4">待确认</a-select-option>
-              <a-select-option :value="5">待出库</a-select-option>
-            </a-select>
+          <a-form-item label="合同编号">
+            <a-input v-decorator="['contractNum']" placeholder="根据合同编号模糊查询" :allowClear="true" />
           </a-form-item>
         </a-col>
         <a-col :span="24">
-          <a-form-item label="提交时间">
+          <a-form-item label="创建时间">
             <a-range-picker v-decorator="['sDate']" style="width: 100%" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="0">
-        <a-col :span="24">发货信息</a-col>
-        <a-col :span="12">
-          <a-form-item label="产品名称">
-            <a-input v-decorator="['productName']" placeholder="产品名称" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="规格型号">
-            <a-input v-decorator="['productStand']" placeholder="规格型号" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="产品代码">
-            <a-input v-decorator="['productModel']" placeholder="产品代码" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="运费结算方式">
-            <a-select placeholder="运费结算方式" v-decorator="['settlementMethod']">
-              <a-select-option :value="1">代付</a-select-option>
-              <a-select-option :value="2">包邮</a-select-option>
-              <a-select-option :value="3">到付</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="24">
-          <a-form-item label="发货时间">
-            <a-range-picker v-decorator="['dDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -107,7 +63,7 @@
   </a-modal>
 </template>
 <script>
-import { getListSaleContractUser } from '@/api/contractListManagement'
+import { getAllContractSalesman } from '@api/order'
 export default {
   name: 'searchForm',
   components: {},
@@ -117,12 +73,14 @@ export default {
       visible: false,
       form: this.$form.createForm(this),
       saleUser: [],
+      isShowApproveStatus: false,
     }
   },
   methods: {
-    query() {
+    query(tabKey) {
+      this.isShowApproveStatus = +tabKey === 0
       this.visible = true
-      getListSaleContractUser().then((res) => (this.saleUser = res.data))
+      getAllContractSalesman().then((res) => (this.saleUser = res.data))
     },
     handleCancel() {
       this.visible = false
@@ -142,15 +100,6 @@ export default {
           values.startTime = undefined
           values.endTime = undefined
           delete values.sDate
-        }
-        if (Array.isArray(values.dDate) && values.dDate.length === 2) {
-          values.startDeliveryTime = values.dDate[0].format('YYYY-MM-DD')
-          values.endDeliveryTime = values.dDate[1].format('YYYY-MM-DD')
-          delete values.dDate
-        } else {
-          values.startDeliveryTime = undefined
-          values.endDeliveryTime = undefined
-          delete values.dDate
         }
         console.log(values)
         this.$emit('change', values)

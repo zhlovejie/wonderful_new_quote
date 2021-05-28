@@ -1,45 +1,40 @@
 <template>
   <a-card :bordered="false">
-    <div class="top-ation">
-      <a-form layout="inline" :form="form">
-        <a-form-item label="客户名称">
-          <a-input v-model="customerName" />
-        </a-form-item>
-        <a-form-item label="销售经理">
-          <a-select
-            optionFilterProp="children"
-            showSearch
-            :allowClear="true"
-            :filterOption="filterSalersOption"
-            placeholder="销售经理"
-            style="width: 160px"
-            v-model="saleUserId"
+    <div class="refund-receipt-list-wrapper">
+      <div class="search-wrapper">
+        <a-button-group>
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+            >今天</a-button
           >
-            <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
-              item.salesmanName
-            }}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="单据状态" v-show="showFlag">
-          <a-select v-model="approveStatus" style="width: 150px">
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <template v-if="$auth('advances:list')">
-            <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
-          </template>
-          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
-        </a-form-item>
-        <div class="table-operator fl-r">
-          <template v-if="$auth('advances:add')">
-            <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-          </template>
-        </div>
-      </a-form>
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+            >本周</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+            >本月</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+            >全部</a-button
+          >
+        </a-button-group>
+        <a-button
+          class="a-button"
+          style="margin-bottom: 20px; margin-left: 10px"
+          type="primary"
+          icon="search"
+          @click="openSearchModel"
+          >高级筛选</a-button
+        >
+        <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
+        <a-button
+          class="a-button"
+          style="float: right"
+          type="primary"
+          icon="plus"
+          @click="handleAdd"
+          v-if="$auth('advances:add')"
+          >新建</a-button
+        >
+      </div>
     </div>
     <a-row>
       <a-alert :message="searchTotalMoney" type="info" />
@@ -126,6 +121,7 @@
     <advances-audit ref="advanceAudit" @ok="handleAuditOk" @close="handleSaveClose"></advances-audit>
     <Tendering ref="tendering"></Tendering>
     <InvestigateNode ref="node"></InvestigateNode>
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </a-card>
 </template>
 
@@ -135,6 +131,7 @@ import { getServiceList, deleteById, revocationAdvances } from '@/api/advances'
 import { advancesGetSumAmountByList } from '@/api/receipt'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
+import SearchForm from './SearchForm'
 import AdvancesAdd from './AdvancesAdd'
 import AdvancesVue from './AdvancesVue'
 import AdvancesAudit from './AdvancesAudit'
@@ -149,6 +146,7 @@ export default {
     Tendering,
     InvestigateNode,
     STable,
+    SearchForm,
   },
   data() {
     return {
@@ -158,7 +156,8 @@ export default {
         showTotal: (total) => '共' + total + '条数据',
       },
       userInfo: this.$store.getters.userInfo,
-      queryParam: {},
+      queryParam: { dayWeekMonth: 1 },
+      dayWeekMonth: 1,
       recordResult: {},
       queryRecord: {},
       contractState: 0,
@@ -198,7 +197,7 @@ export default {
           scopedSlots: { customRender: 'order' },
         },
         {
-          title: '收款编号',
+          title: '预收款编号',
           dataIndex: 'advancesCode',
           // key: 'title',
           scopedSlots: { customRender: 'advancesCode' },
@@ -263,16 +262,28 @@ export default {
     this.fetchTotalMoney()
   },
   methods: {
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.contractState)
+    },
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.queryParam = { ...this.queryParam, ...params, dayWeekMonth: this.dayWeekMonth }
+      this.search()
+    },
+    simpleSearch(type) {
+      if (type === 4) {
+        this.queryParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.search()
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.search()
+      }
+    },
     search() {
-      const that = this
-      this.queryParam = {
-        customerName: this.customerName,
-        statue: this.contractState,
-        saleUserId: this.saleUserId,
-      }
-      if (this.showFlag) {
-        this.queryParam['approveStatus'] = this.approveStatus
-      }
       this.$refs.table.refresh(true)
       this.fetchTotalMoney()
     },

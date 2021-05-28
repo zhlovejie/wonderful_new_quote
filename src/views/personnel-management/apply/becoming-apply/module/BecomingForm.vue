@@ -249,12 +249,13 @@
                     </a-form-item>
                   </td>
                 </tr>
-                <tr v-if="isEditSalary">
+                <tr v-if="isEditSalary || (isView && this.record.state === 2)">
                   <td>转正基本工资</td>
                   <td colspan="2">
                     <a-form-item>
                       <a-select
                         placeholder="选择转正基本工资"
+                        :disabled="isView"
                         style="width: 100%"
                         v-decorator="[
                           'fullMemberBasicSalary',
@@ -276,6 +277,7 @@
                     <a-form-item>
                       <a-input-number
                         style="width: 100%"
+                        :disabled="isView"
                         placeholder="转正岗位工资"
                         :min="0"
                         :max="100000000"

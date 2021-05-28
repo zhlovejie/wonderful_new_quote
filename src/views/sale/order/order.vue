@@ -1,7 +1,36 @@
 <template>
   <a-card :bordered="false">
     <!--搜索模块-->
-    <div class="order-search-wrapper">
+    <div class="refund-receipt-list-wrapper">
+      <div class="search-wrapper">
+        <a-button-group>
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+            >今天</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+            >本周</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+            >本月</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+            >全部</a-button
+          >
+        </a-button-group>
+        <a-button
+          class="a-button"
+          style="margin-bottom: 20px; margin-left: 10px"
+          type="primary"
+          icon="search"
+          @click="openSearchModel"
+          >高级筛选</a-button
+        >
+        <a-button class="a-button" style="margin-left: 10px" type="primary" icon="download" @click="exportHandler"
+          >导出</a-button
+        >
+      </div>
+    </div>
+    <!-- <div class="order-search-wrapper">
       <a-form>
         <a-row :gutter="24">
           <a-col :span="8">
@@ -15,17 +44,17 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <!-- <CustomerSelect
-              ref="customerSelect"
-              :options="customerSelectOptions"
-              @selected="handleCustomerSelected"
-              @inputClear="handleCustomerClear"
-            /> -->
             <a-form-item label="客户名称">
-            <a-input :allowClear="true"  class="a-select" style="width:100%;" placeholder="客户名称模糊查询" v-model="queryParam.customerName" />
+              <a-input
+                :allowClear="true"
+                class="a-select"
+                style="width: 100%"
+                placeholder="客户名称模糊查询"
+                v-model="queryParam.customerName"
+              />
             </a-form-item>
           </a-col>
-          
+
           <a-col :span="8">
             <a-form-item label="销售人员">
               <a-select
@@ -52,15 +81,15 @@
             <template v-if="$auth('order:list')">
               <a-form-item>
                 <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-                <a-button style="margin-left:10px;" type="primary" icon="download" @click="exportHandler">导出</a-button>
+                <a-button style="margin-left: 10px" type="primary" icon="download" @click="exportHandler"
+                  >导出</a-button
+                >
               </a-form-item>
             </template>
           </a-col>
         </a-row>
-
-        <!--              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>-->
       </a-form>
-    </div>
+    </div> -->
     <a-layout>
       <!--  此处编写表单中的功能按钮    -->
       <a-layout-content>
@@ -90,12 +119,14 @@
         </s-table>
       </a-layout-content>
     </a-layout>
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </a-card>
 </template>
 <script>
 import { getOrderList, getAllContractSalesman } from '@api/order'
 import { STable } from '@/components'
 import orderModule from './modules/orderModule'
+import SearchForm from './modules/SearchForm'
 import system from '@/config/defaultSettings'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import moment from 'moment'
@@ -130,7 +161,7 @@ const columns = [
     align: 'center',
     title: '对应销售',
     dataIndex: 'saleUserName',
-    key: 'saleUserId'
+    key: 'saleUserId',
   },
   {
     align: 'center',
@@ -158,10 +189,13 @@ export default {
     STable,
     system,
     CustomerSelect,
+    SearchForm,
   },
   data() {
     return {
-      queryParam: {},
+      queryParam: {
+        dayWeekMonth: 1,
+      },
       customers: [],
       sales: [],
       selectedRowKeys: [],
@@ -169,6 +203,7 @@ export default {
       pagination: {
         showTotal: (total) => '共' + total + '条数据',
       },
+      dayWeekMonth: 1,
       // 表头
       columns: columns,
       // 初始化加载 必须为 Promise 对象
@@ -211,6 +246,27 @@ export default {
     },
   },
   methods: {
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.activeKey)
+    },
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.queryParam = { ...this.queryParam, ...params, dayWeekMonth: this.dayWeekMonth }
+      this.$refs.table.refresh(true)
+    },
+    simpleSearch(type) {
+      if (type === 4) {
+        this.queryParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.$refs.table.refresh(true)
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.$refs.table.refresh(true)
+      }
+    },
     // 编辑
     handleEdit(record) {
       this.$router.push({ name: 'orderModule', params: { contractId: record.id, show: false } })
@@ -251,23 +307,20 @@ export default {
     handleCustomerClear() {
       'customerId' in this.queryParam && delete this.queryParam.customerId
     },
-    onPickerChange(arrMoment, arrStr) {
-      //debugger
-      //arrMoment  2个moment对象
-      //arrStr  2个 YYYY-MM-DD 字符串
-      this.queryParam.startTime = arrStr[0].length > 0 ? `${arrStr[0]} 00:00:00` : ''
-      this.queryParam.endTime = arrStr[1].length > 0 ? `${arrStr[1]} 23:59:59` : ''
-
-      //this.queryParam.startTime = arrMoment.length === 0 ? null : arrMoment[0].format('YYYY-MM-DD HH:mm:ss')
-      //this.queryParam.endTime = arrMoment.length === 0 ? null : arrMoment[1].format('YYYY-MM-DD HH:mm:ss')
-    },
-    async exportHandler(){
+    // onPickerChange(arrMoment, arrStr) {
+    //   //debugger
+    //   //arrMoment  2个moment对象
+    //   //arrStr  2个 YYYY-MM-DD 字符串
+    //   this.queryParam.startTime = arrStr[0].length > 0 ? `${arrStr[0]} 00:00:00` : ''
+    //   this.queryParam.endTime = arrStr[1].length > 0 ? `${arrStr[1]} 23:59:59` : ''
+    // },
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(4,{...that.queryParam},'销售订单')
+      let res = await exprotAction(4, { ...that.queryParam }, '销售订单')
       console.log(res)
       that.$message.info(res.msg)
-    }
-  }
+    },
+  },
 }
 </script>
 

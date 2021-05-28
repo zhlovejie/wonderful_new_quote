@@ -1,12 +1,20 @@
 <template>
-  <a-modal
-    title="选择合同"
-    :width="600"
-    v-model="visible"
-    :maskClosable="false" 
-    @cancel="handleCancel"
-    :footer="null"
-  >
+  <a-modal title="选择合同" :width="600" v-model="visible" :maskClosable="false" @cancel="handleCancel" :footer="null">
+    <div class="search-wrapper">
+      <a-input
+        placeholder="合同编号"
+        :allowClear="true"
+        v-model="searchParam.contractNum"
+        style="width: 200px; margin-right: 20px; margin-bottom: 20px"
+      />
+      <a-input
+        placeholder="客户名称"
+        :allowClear="true"
+        v-model="searchParam.customerName"
+        style="width: 200px; margin-right: 20px; margin-bottom: 20px"
+      />
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+    </div>
     <a-table
       :columns="columns"
       :dataSource="dataSource"
@@ -18,57 +26,56 @@
         <span>{{ index + 1 }}</span>
       </div>
       <div slot="contractNum" slot-scope="text, record">
-        <a href="javascript:void(0);" @click="selected(record)">{{text}}</a>
+        <a href="javascript:void(0);" @click="selected(record)">{{ text }}</a>
       </div>
     </a-table>
   </a-modal>
 </template>
 
 <script>
-import { 
-  refundGetApprovedSaleContract
-} from '@/api/receipt'
+import { refundGetApprovedSaleContract } from '@/api/receipt'
 let columns = [
   {
     align: 'center',
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '合同编号',
     dataIndex: 'contractNum',
-    scopedSlots: { customRender: 'contractNum' }
+    scopedSlots: { customRender: 'contractNum' },
   },
   {
     title: '客户名称',
-    dataIndex: 'customerName'
-  }
+    dataIndex: 'customerName',
+  },
 ]
 export default {
   name: 'ContractSelect',
-  data () {
+  data() {
     return {
       visible: false,
       loading: true,
+      searchParam: {},
       pagination: {
-        current: 1
+        current: 1,
       },
       columns: columns,
-      dataSource:[],
+      dataSource: [],
     }
   },
   methods: {
-    searchAction(opt={}){
+    searchAction(opt = {}) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {}, {
-        searchStatus: that.activeKey
+        searchStatus: that.activeKey,
       })
       console.log('执行搜索...', _searchParam)
       that.loading = true
       refundGetApprovedSaleContract(_searchParam)
-        .then(res => {
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -79,16 +86,16 @@ export default {
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
-    query (record) {
+    query(record) {
       this.visible = true
       this.searchAction()
     },
-    handleCancel () {
+    handleCancel() {
       this.visible = false
     },
-    selected (record) {
+    selected(record) {
       this.$emit('onSelect', record)
       this.handleCancel()
     },
@@ -99,7 +106,7 @@ export default {
       pager.current = pagination.current
       this.pagination = pager
       this.searchAction()
-    }
-  }
+    },
+  },
 }
 </script>

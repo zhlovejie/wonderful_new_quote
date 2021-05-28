@@ -66,7 +66,7 @@ export default {
       form: this.$form.createForm(this),
       confirmLoading: false,
       actionType: 'add',
-      //1技术参数 2运营指导手册 3软件说明文档 6 企业简介 7 销售技巧 8 产品说明书
+      // 4电子图册 5产品海报
       fileType: 0,
       fileList: [],
       uploadPath: getUploadPath(),
@@ -136,14 +136,14 @@ export default {
       })
     },
     beforeUpload(file) {
-      const isLt10M = this.checkFile(file)
-      if (!isLt10M) {
-        this.$message.error('上传文件必须小于10M!')
+      const isLt100M = this.checkFile(file)
+      if (!isLt100M) {
+        this.$message.error('上传文件必须小于100M!')
       }
-      return isLt10M
+      return isLt100M
     },
     checkFile(file) {
-      return file.size / 1024 / 1024 < 10
+      return file.size / 1024 / 1024 < 100
     },
     handleChange({ file, fileList }) {
       //console.log(arguments)

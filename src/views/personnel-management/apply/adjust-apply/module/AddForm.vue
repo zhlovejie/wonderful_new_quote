@@ -402,12 +402,13 @@
                   />
                 </a-form-item>
               </td>
-              <td v-if="distribution">分配期望总薪资(元)</td>
-              <td v-if="distribution">
+              <td v-if="distribution || (isView && this.record.status === 1)">分配期望总薪资(元)</td>
+              <td v-if="distribution || (isView && this.record.status === 1)">
                 <a-form-item>
                   <a-select
                     placeholder="选择基本工资"
                     :allowClear="true"
+                    :disabled="isView"
                     style="width: 50%"
                     v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
@@ -422,6 +423,7 @@
                   <a-input-number
                     placeholder="岗位工资"
                     :allowClear="true"
+                    :disabled="isView"
                     style="width: 50%"
                     :min="0"
                     :step="1"

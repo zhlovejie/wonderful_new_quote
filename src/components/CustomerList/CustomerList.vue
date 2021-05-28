@@ -73,7 +73,6 @@ export default {
       consumerNam: null,
       consumerId: null,
       loading: false,
-      userInfo: this.$store.getters.userInfo, // 当前登录人
       pagination: {
         current: 1,
       },
@@ -108,7 +107,7 @@ export default {
     searchAction() {
       const that = this
       that.loading = true
-      let _param = Object.assign({}, that.pagination, that.searchParams, that.extendParam, { userId: that.userInfo.id })
+      let _param = Object.assign({}, that.pagination, that.searchParams, that.extendParam)
       console.log(_param)
       return getcusSelectsListPage(_param)
         .then((res) => {
