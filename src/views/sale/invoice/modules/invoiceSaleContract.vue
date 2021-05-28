@@ -3,20 +3,21 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item label="客户名称">
-          <a-input v-model="customerName" />
+          <a-input style="width: 150px" :allowClear="true" v-model="queryParam.customerName" />
         </a-form-item>
         <a-form-item label="销售人员">
-          <a-select class="a-select" style="width: 150px" v-model="userId" defaultValue="0">
-            <a-select-option :value="0">请选择销售人员</a-select-option>
-            <a-select-option :key="val.id" v-for="val in saleUsers" :value="val.id">{{ val.trueName }}</a-select-option>
+          <a-select class="a-select" :allowClear="true" style="width: 150px" v-model="queryParam.userId">
+            <a-select-option :key="val.userId" v-for="val in saleUsers" :value="val.userId">{{
+              val.salesmanName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="是否含税">
           <a-select
+            :allowClear="true"
             class="a-select"
             style="width: 150px"
-            defaultValue="1"
-            v-model="isTax"
+            v-model="queryParam.isTax"
             showSearch
             placeholder="是否含税"
             optionFilterProp="children"
@@ -50,6 +51,7 @@ import { STable } from '@/components'
 import { invoiceSaleContract } from '@/api/invoice'
 import { listUserBySale } from '@/api/systemSetting'
 import ContractInfo from '@/components/CustomerList/ContractInfo'
+import { getListSalesman } from '@/api/contractListManagement'
 export default {
   name: 'InvoiceSaleContract',
   components: {
@@ -107,13 +109,9 @@ export default {
   },
   methods: {
     init() {
-      listUserBySale().then((res) => (this.saleUsers = res.data))
+      getListSalesman().then((res) => (this.saleUsers = res.data))
     },
     search() {
-      this.queryParam = {
-        customerName: this.customerName,
-        userId: this.userId,
-      }
       this.$refs.table.refresh(true)
     },
     clickVue(data) {

@@ -37,6 +37,12 @@
             <a-input v-decorator="['paperCode']" placeholder="开票编号" :allowClear="true" />
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-form-item label="开票单位名称">
+            <a-input v-decorator="['openUnit']" placeholder="开票单位名称" :allowClear="true" />
+          </a-form-item>
+        </a-col>
+
         <a-col :span="12" v-if="isShowApproveStatus">
           <a-form-item label="单据状态">
             <a-select v-decorator="['approvalStatue']" placeholder="单据状态" :allowClear="true">

@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="选择合同" :width="600" v-model="visible" :maskClosable="false" @cancel="handleCancel" :footer="null">
+  <a-modal title="选择合同" :width="800" v-model="visible" :maskClosable="false" @cancel="handleCancel" :footer="null">
     <div class="search-wrapper">
       <a-input
         placeholder="合同编号"
@@ -50,6 +50,10 @@ let columns = [
   {
     title: '客户名称',
     dataIndex: 'customerName',
+  },
+  {
+    title: '销售经理',
+    dataIndex: 'saleUserName',
   },
 ]
 export default {
