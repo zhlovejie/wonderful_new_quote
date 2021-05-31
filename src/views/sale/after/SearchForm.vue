@@ -33,61 +33,48 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="提交人">
-            <a-input v-decorator="['createName']" placeholder="提交人" :allowClear="true" />
+          <a-form-item label="任务单编号">
+            <a-input v-decorator="['aftersaleCode']" placeholder="任务单编号" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
-          <a-form-item label="发货编号">
-            <a-input v-decorator="['invoiceNum']" placeholder="发货编号" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
+        <a-col :span="12" v-if="isShowApproveStatus">
           <a-form-item label="单据状态">
-            <a-select v-decorator="['approveStatus', { initialValue: 0 }]" placeholder="单据状态">
-              <a-select-option :value="0">全部</a-select-option>
+            <a-select v-decorator="['approvalStatue']" placeholder="单据状态" :allowClear="true">
               <a-select-option :value="1">待审批</a-select-option>
-              <a-select-option :value="2">出库</a-select-option>
+              <a-select-option :value="2">通过</a-select-option>
               <a-select-option :value="3">不通过</a-select-option>
-              <a-select-option :value="4">待确认</a-select-option>
-              <a-select-option :value="5">待出库</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-form-item label="售后类型">
+            <a-select v-decorator="['aftersaleType']" placeholder="选择售后类型" :allowClear="true">
+              <a-select-option :value="1">首次调试</a-select-option>
+              <a-select-option :value="2">远程调试</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="是否完结">
+            <a-select v-decorator="['aftersaleIsend']" placeholder="选择是否完结" :allowClear="true">
+              <a-select-option :value="1">未完结</a-select-option>
+              <a-select-option :value="2">完结</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <!-- <a-col :span="12">
+          <a-form-item label="申请人">
+            <a-input v-decorator="['createName']" placeholder="申请人模糊查询" :allowClear="true" />
+          </a-form-item>
+        </a-col> -->
+
         <a-col :span="24">
-          <a-form-item label="提交时间">
+          <a-form-item label="申请时间">
             <a-range-picker v-decorator="['sDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row :gutter="0">
-        <a-col :span="24">发货信息</a-col>
-        <a-col :span="12">
-          <a-form-item label="产品名称">
-            <a-input v-decorator="['productName']" placeholder="产品名称" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="规格型号">
-            <a-input v-decorator="['productStand']" placeholder="规格型号" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="产品代码">
-            <a-input v-decorator="['productModel']" placeholder="产品代码" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="运费结算方式">
-            <a-select placeholder="运费结算方式" v-decorator="['settlementMethod']">
-              <a-select-option :value="1">代付</a-select-option>
-              <a-select-option :value="2">包邮</a-select-option>
-              <a-select-option :value="3">到付</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
         <a-col :span="24">
-          <a-form-item label="发货时间">
+          <a-form-item label="时间要求">
             <a-range-picker v-decorator="['dDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>
@@ -108,6 +95,7 @@
 </template>
 <script>
 import { getListSaleContractUser } from '@/api/contractListManagement'
+import { getAccountBankList } from '@/api/receipt'
 export default {
   name: 'searchForm',
   components: {},
@@ -117,12 +105,21 @@ export default {
       visible: false,
       form: this.$form.createForm(this),
       saleUser: [],
+      moneyTypes: [],
+      isShowApproveStatus: false,
     }
   },
   methods: {
-    query() {
+    query(tabKey) {
+      this.isShowApproveStatus = +tabKey === 0
       this.visible = true
       getListSaleContractUser().then((res) => (this.saleUser = res.data))
+      getAccountBankList().then((res) => {
+        //获取结算方式
+        console.log('getAccountBankList res :' + JSON.stringify(res))
+        this.moneyTypes = res.data
+        console.log('this.moneyTypes' + JSON.stringify(this.moneyTypes))
+      })
     },
     handleCancel() {
       this.visible = false
@@ -144,12 +141,12 @@ export default {
           delete values.sDate
         }
         if (Array.isArray(values.dDate) && values.dDate.length === 2) {
-          values.startDeliveryTime = values.dDate[0].format('YYYY-MM-DD')
-          values.endDeliveryTime = values.dDate[1].format('YYYY-MM-DD')
+          values.startSceneTime = values.dDate[0].format('YYYY-MM-DD')
+          values.endSceneTime = values.dDate[1].format('YYYY-MM-DD')
           delete values.dDate
         } else {
-          values.startDeliveryTime = undefined
-          values.endDeliveryTime = undefined
+          values.startSceneTime = undefined
+          values.endSceneTime = undefined
           delete values.dDate
         }
         console.log(values)

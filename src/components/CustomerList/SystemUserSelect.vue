@@ -1,64 +1,59 @@
 <template>
-  <a-modal
-    title="选择人员"
-    :width="850"
-    :visible="visible"
-    @cancel="handleCancel"
-    :footer="null" 
-    :maskClosable="false"
-  >
-  <a-card :bordered="false">
-    <a-form layout="inline" :form="form">
-      <a-form-item label="工号">
-        <a-input v-model="jobNum" />
-      </a-form-item>
-      <a-form-item label="姓名">
-        <a-input v-model="trueName" />
-      </a-form-item>
-      <a-form-item label="手机号">
-        <a-input v-model="mobile" />
-      </a-form-item>
-      <a-form-item label="部门">
-        <a-select style="width: 150px" v-model="selectedDepartment">
-          <a-select-option :value="0">请选择</a-select-option>
-          <a-select-option v-for="val in department" :key="val.id" :value="val.id">{{ val.departmentName }}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" icon="search" @click="search">查询</a-button>
-      </a-form-item>
-    </a-form>
-    <a-layout>
-      <a-layout-content>
-        <s-table ref="table" size="default" :columns="columns" :data="loadData" :alert="false">
-          <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
-          </div>
-          <div slot="trueName" slot-scope="text,record">
-            <a href="javascript:void(0);" @click="selectedUser(record)">{{text}}</a>
-          </div>
-          <div slot="states" slot-scope="text">
-            <span v-if="text === 0">启用</span>
-            <span v-if="text === 1">禁用</span>
-          </div>
-          
-          <div slot="sexs" slot-scope="text">
-            <div v-if="text === 1">男</div>
-            <div v-else>女</div>
-          </div>
-          <div slot="positionStatuss" slot-scope="text">
-            <div v-if="text === 0">试用期</div>
-            <div v-else>正式员工</div>
-          </div>
-        </s-table>
-      </a-layout-content>
-    </a-layout>
-  </a-card>
+  <a-modal title="选择人员" :width="850" :visible="visible" @cancel="handleCancel" :footer="null" :maskClosable="false">
+    <a-card :bordered="false">
+      <a-form layout="inline" :form="form">
+        <a-form-item label="工号">
+          <a-input v-model="jobNum" />
+        </a-form-item>
+        <a-form-item label="姓名">
+          <a-input v-model="trueName" />
+        </a-form-item>
+        <a-form-item label="手机号">
+          <a-input v-model="mobile" />
+        </a-form-item>
+        <a-form-item label="部门">
+          <a-select style="width: 150px" v-model="selectedDepartment">
+            <a-select-option :value="0">请选择</a-select-option>
+            <a-select-option v-for="val in department" :key="val.id" :value="val.id">{{
+              val.departmentName
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" icon="search" @click="search">查询</a-button>
+        </a-form-item>
+      </a-form>
+      <a-layout>
+        <a-layout-content>
+          <s-table ref="table" size="default" :columns="columns" :data="loadData" :alert="false">
+            <div slot="order" slot-scope="text, record, index">
+              <span>{{ index + 1 }}</span>
+            </div>
+            <div slot="trueName" slot-scope="text, record">
+              <a href="javascript:void(0);" @click="selectedUser(record)">{{ text }}</a>
+            </div>
+            <div slot="states" slot-scope="text">
+              <span v-if="text === 0">启用</span>
+              <span v-if="text === 1">禁用</span>
+            </div>
+
+            <div slot="sexs" slot-scope="text">
+              <div v-if="text === 1">男</div>
+              <div v-else>女</div>
+            </div>
+            <div slot="positionStatuss" slot-scope="text">
+              <div v-if="text === 1">试用期</div>
+              <div v-else>正式员工</div>
+            </div>
+          </s-table>
+        </a-layout-content>
+      </a-layout>
+    </a-card>
   </a-modal>
 </template>
 
 <script>
-import { getDevisionList, getUserList} from '@/api/systemSetting'
+import { getDevisionList, getUserList } from '@/api/systemSetting'
 import moment from 'moment'
 import { STable } from '@/components'
 
@@ -68,20 +63,20 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
     title: '工号',
     dataIndex: 'jobNum',
-    key: 'jobNum'
+    key: 'jobNum',
   },
   {
     align: 'center',
     title: '姓名',
     dataIndex: 'trueName',
     key: 'trueName',
-    scopedSlots: { customRender: 'trueName' }
+    scopedSlots: { customRender: 'trueName' },
   },
   {
     align: 'center',
@@ -89,42 +84,42 @@ const columns = [
     dataIndex: 'sex',
     // key: 'sex',
     key: 'sexs',
-    scopedSlots: { customRender: 'sexs' }
+    scopedSlots: { customRender: 'sexs' },
   },
   {
     align: 'center',
     title: '手机号',
     dataIndex: 'mobile',
-    key: 'mobile'
+    key: 'mobile',
   },
   {
     align: 'center',
     title: '部门',
     dataIndex: 'department.departmentName',
-    key: 'department.departmentName'
+    key: 'department.departmentName',
   },
   {
     align: 'center',
     title: '岗位',
     dataIndex: 'station.stationName',
-    key: 'station.stationName'
+    key: 'station.stationName',
   },
   {
     align: 'center',
     title: '员工状态',
     dataIndex: 'positionStatus',
     key: 'positionStatuss',
-    scopedSlots: { customRender: 'positionStatuss' }
-  }
+    scopedSlots: { customRender: 'positionStatuss' },
+  },
 ]
 
 const data = []
 export default {
   name: 'SystemUser',
   components: {
-    STable
+    STable,
   },
-  data () {
+  data() {
     return {
       data: data,
       columns: columns,
@@ -152,26 +147,26 @@ export default {
       selectedStationId: 0,
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return getUserList(Object.assign(parameter, this.queryParam)).then(res => {
+      loadData: (parameter) => {
+        return getUserList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
-      }
+      },
     }
   },
-  mounted () {
+  mounted() {
     this.getList({})
     getDevisionList()
-      .then(data => {
+      .then((data) => {
         this.department = data.data
       })
-      .catch(error => {
+      .catch((error) => {
         this.loading = false
         console.error(error)
       })
   },
   methods: {
-    search () {
+    search() {
       if (this.trueName != '') {
         this.$set(this.queryParam, 'trueName', this.trueName)
       } else {
@@ -195,11 +190,11 @@ export default {
       this.$refs.table.refresh(false)
     },
     // 获取用户管理页面列表
-    getList (params = {}) {
+    getList(params = {}) {
       params = {
         current: params.current || 1,
         // results: 10,
-        size: 8
+        size: 8,
         // ...params
       }
       if (this.selectedDepartment) {
@@ -216,32 +211,32 @@ export default {
       }
       this.loading = true
       getUserList(params)
-        .then(data => {
+        .then((data) => {
           const pagination = { ...this.pagination }
           pagination.total = data.data.total || 200
           this.loading = false
           this.data = data.data.records
           this.pagination = pagination
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
     },
-    query(decoratorKey){
+    query(decoratorKey) {
       this.decoratorKey = decoratorKey
       this.form.resetFields()
-      this.$nextTick(() =>this.visible = true)
+      this.$nextTick(() => (this.visible = true))
     },
-    handleCancel(){
+    handleCancel() {
       this.form.resetFields()
-      this.$nextTick(() =>this.visible = false)
+      this.$nextTick(() => (this.visible = false))
     },
-    selectedUser(record){
-      this.visible = false 
-      this.$emit('selectSystemUsers',{decoratorKey:this.decoratorKey,record:record})
-    }
-  }
+    selectedUser(record) {
+      this.visible = false
+      this.$emit('selectSystemUsers', { decoratorKey: this.decoratorKey, record: record })
+    },
+  },
 }
 </script>
 

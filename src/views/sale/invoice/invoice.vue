@@ -223,7 +223,7 @@ export default {
     Tendering,
     InvestigateNode,
     STable,
-    SearchForm
+    SearchForm,
   },
   data() {
     return {
@@ -266,7 +266,7 @@ export default {
         },
         {
           title: '销售经理',
-          dataIndex: 'saleUserName'
+          dataIndex: 'saleUserName',
         },
         {
           title: '运费结算方式',
@@ -278,8 +278,8 @@ export default {
           dataIndex: 'consignee',
         },
         {
-          title: '联系方式',
-          dataIndex: 'contactInformation',
+          title: '发货时间',
+          dataIndex: 'deliveryTime',
         },
         {
           title: '单据状态',
@@ -537,12 +537,12 @@ export default {
         return
       }
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(1,{...that.queryParam},'发货单')
+      let res = await exprotAction(1, { ...that.queryParam }, '发货单')
       console.log(res)
       that.$message.info(res.msg)
-    }
+    },
   },
 }
 </script>

@@ -2,38 +2,34 @@
   <!-- 赠送单 -->
   <div class="container-list-wrapper">
     <div class="search-wrapper">
-      <a-input placeholder="退款编号模糊查询" :allowClear="true" v-model="presentNum" style="width: 200px" />
-      <a-select
-        optionFilterProp="children"
-        showSearch
-        :allowClear="true"
-        :filterOption="filterSalersOption"
-        placeholder="请选择销售人员"
-        style="width: 200px"
-        v-model="saleUserId"
-      >
-        <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
-          item.salesmanName
-        }}</a-select-option>
-      </a-select>
-
-      <a-select v-if="activeKey === 0" placeholder="处理状态" :allowClear="true" v-model="status" style="width: 120px">
-        <a-select-option :value="0">待审批</a-select-option>
-        <a-select-option :value="1">通过</a-select-option>
-        <a-select-option :value="2">不通过</a-select-option>
-      </a-select>
-
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
-      <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
+      <a-button-group>
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+          >今天</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+          >本周</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+          >本月</a-button
+        >
+        <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+          >全部</a-button
+        >
+      </a-button-group>
       <a-button
         class="a-button"
-        style="float: right"
+        style="margin-bottom: 20px; margin-left: 10px"
         type="primary"
-        icon="plus"
-        @click="doAction('add', null)"
-        v-if="$auth('present:add')"
-        >申请</a-button
+        icon="search"
+        @click="openSearchModel"
+        >高级筛选</a-button
       >
+      <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
+      <div class="table-operator fl-r">
+        <template v-if="$auth('present:add')">
+          <a-button class="a-button" type="primary" icon="plus" @click="doAction('add', null)">申请</a-button>
+        </template>
+      </div>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -120,12 +116,14 @@
     </div>
     <ApproveInfo ref="approveInfoCard" />
     <AddForm ref="addForm" @finish="searchAction()" />
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </div>
 </template>
 <script>
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import { presentPageList, presentRevocation, presentDel } from '@/api/receipt'
 import AddForm from './module/AddForm'
+import SearchForm from './module/SearchForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { exprotAction } from '@/api/receipt'
 const columns = [
@@ -229,6 +227,7 @@ export default {
   components: {
     AddForm: AddForm,
     ApproveInfo: ApproveInfo,
+    SearchForm,
   },
   data() {
     return {
@@ -236,6 +235,8 @@ export default {
       saleUserId: undefined,
       status: undefined,
       saleUser: [],
+      searchParam: { dayWeekMonth: 1 },
+      dayWeekMonth: 1,
       approval_status: undefined,
       activeKey: 0,
       columns: columns,
@@ -252,15 +253,15 @@ export default {
     }
   },
   computed: {
-    searchParam() {
-      return {
-        current: 1,
-        presentNum: this.presentNum,
-        saleUserId: this.saleUserId,
-        status: this.status,
-        searchStatus: this.approval_status,
-      }
-    },
+    // searchParam() {
+    //   return {
+    //     current: 1,
+    //     presentNum: this.presentNum,
+    //     saleUserId: this.saleUserId,
+    //     status: this.status,
+    //     searchStatus: this.approval_status,
+    //   }
+    // },
   },
   watch: {
     $route: {
@@ -273,6 +274,27 @@ export default {
     },
   },
   methods: {
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.activeKey)
+    },
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.searchParam = { ...this.searchParam, ...params, dayWeekMonth: this.dayWeekMonth }
+      this.searchAction()
+    },
+    simpleSearch(type) {
+      if (type === 4) {
+        this.searchParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.searchParam = { ...this.searchParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.searchParam = { ...this.searchParam, dayWeekMonth: this.dayWeekMonth }
+        this.searchAction()
+      }
+    },
     init() {
       let that = this
       getListSaleContractUser().then((res) => (that.saleUser = res.data))
@@ -358,13 +380,13 @@ export default {
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(11,{...that.searchParam,searchStatus: that.activeKey},'赠送单')
+      let res = await exprotAction(11, { ...that.searchParam, searchStatus: that.activeKey }, '赠送单')
       console.log(res)
       that.$message.info(res.msg)
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>

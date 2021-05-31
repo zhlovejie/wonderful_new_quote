@@ -95,6 +95,17 @@ export function approvalProbationSurvey(parameter) {
     data: parameter
   })
 }
+//试用期调查工资分配
+export function updateHandleProbationSurvey(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/probationSurvey/updateHandleProbationSurvey',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
 
 /**
  * 根据id修改调查表状态
@@ -400,7 +411,7 @@ export function personnelFullMemberApply_Approval(parameter) {
 export function personnelFullMemberApply_updateUserBackCardSalary(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: 'personnelFullMemberApply/updateUserBackCardSalary',
+    url: 'personnelFullMemberApply/updateFullMemberApply ',
     method: 'post',
     data: parameter
   })
@@ -569,7 +580,15 @@ export function saveOrUpdateSalaryChangeApply(parameter) {
     data: parameter
   })
 }
-
+//调薪工资分配
+export function saveOrChangeApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salaryApply/updateSalaryChangeApply',
+    method: 'post',
+    data: parameter
+  })
+}
 //调薪审批
 export function approveSalaryChangeApply(parameter) {
   return axios({
@@ -594,6 +613,15 @@ export function saveOrUpdatePositionAndSalaryChangeApply(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/positionAndSalaryApply/saveOrUpdatePositionAndSalaryChangeApply',
+    method: 'post',
+    data: parameter
+  })
+}
+//调岗调薪工资分配
+export function saveOrPositionAndSalaryChangeApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/positionAndSalaryApply/updateSalaryChangeApply',
     method: 'post',
     data: parameter
   })

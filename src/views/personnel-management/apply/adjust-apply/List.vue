@@ -79,6 +79,16 @@
             <a type="primary" @click="doAction('view', record)">查看</a>
             <template
               v-if="
+                $auth('adjustApply:distribution') &&
+                record.status === 1 &&
+                (record.operationStatus === 1 || record.operationStatus === 2)
+              "
+            >
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('distribution', record)">分配薪资</a>
+            </template>
+            <template
+              v-if="
                 $auth('adjustApply:edit') &&
                 (record.status === 2 || record.status === 3) &&
                 record.showModifyButtonFlag === 1 &&

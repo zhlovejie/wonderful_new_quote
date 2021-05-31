@@ -302,7 +302,7 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
       }
-      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam,opt)
+      let _searchParam = Object.assign({}, { ...that.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getReserveList(_searchParam)
@@ -328,7 +328,7 @@ export default {
         })
         .catch((err) => (that.loading = false))
     },
-        // 分页
+    // 分页
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
       this.searchAction()
@@ -385,6 +385,7 @@ export default {
         2: '试用期不通过',
         3: '在职',
         4: '离职',
+        5: '转正不通过',
       }
       try {
         return map[type]

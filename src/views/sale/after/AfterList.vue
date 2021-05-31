@@ -1,45 +1,36 @@
 <template>
   <a-card :bordered="false">
-    <div class="top-ation">
-      <a-form layout="inline" :form="form">
-        <a-form-item label="客户名称">
-          <a-input v-model="customerName" />
-        </a-form-item>
-        <a-form-item label="销售经理">
-          <a-select
-            optionFilterProp="children"
-            showSearch
-            :allowClear="true"
-            :filterOption="filterSalersOption"
-            placeholder="销售经理"
-            style="width: 200px"
-            v-model="saleUserId"
+    <div class="refund-receipt-list-wrapper">
+      <div class="search-wrapper">
+        <a-button-group>
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+            >今天</a-button
           >
-            <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
-              item.salesmanName
-            }}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="审批状态" v-show="show">
-          <a-select style="width: 150px" v-model="approvalStatusSelect" defaultValue="0">
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <template v-if="$auth('after:list')">
-            <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
-          </template>
-          <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
-        </a-form-item>
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+            >本周</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 3 }" @click="simpleSearch(3)"
+            >本月</a-button
+          >
+          <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 4 }" @click="simpleSearch(4)"
+            >全部</a-button
+          >
+        </a-button-group>
+        <a-button
+          class="a-button"
+          style="margin-bottom: 20px; margin-left: 10px"
+          type="primary"
+          icon="search"
+          @click="openSearchModel"
+          >高级筛选</a-button
+        >
+        <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         <div class="table-operator fl-r">
           <template v-if="$auth('after:add')">
             <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
           </template>
         </div>
-      </a-form>
+      </div>
     </div>
     <a-row>
       <a-col>
@@ -136,6 +127,7 @@
     </a-row>
     <InvestigateNode ref="node" />
     <Tendering ref="tenderingModel"></Tendering>
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
     <a-modal title="上传" :confirmLoading="confirmLoadingTwo" :maskClosable="false" @ok="handleOk" v-model="visibleTwo">
       <span :spinning="confirmLoadingTwo">
         <a-form :form="form2" class="form">
@@ -163,6 +155,7 @@ import { STable } from '@/components'
 import { deleteAfterSale, getServiceList, updateAfterSale, revocationAfterSale } from '@/api/after'
 import InvestigateNode from '../record/InvestigateNode'
 import Tendering from '../record/TenderingUnit'
+import SearchForm from './SearchForm'
 import { getUploadPath } from '@/api/manage'
 import { exprotAction } from '@/api/receipt'
 import { getListSaleContractUser } from '@/api/contractListManagement'
@@ -172,6 +165,7 @@ export default {
     Tendering,
     InvestigateNode,
     STable,
+    SearchForm,
   },
   data() {
     return {
@@ -179,14 +173,15 @@ export default {
       form2: this.$form.createForm(this),
       userInfo: this.$store.getters.userInfo,
       // 查询参数
-      queryParam: {},
+      queryParam: { dayWeekMonth: 1 },
       recordResult: {},
       queryRecord: {},
       contractState: 0,
+      dayWeekMonth: 1,
       vueBoolean: this.$store.getters.vueBoolean,
       saleCustomer: 0,
       customerName: '',
-      saleUserId:undefined,
+      saleUserId: undefined,
       saleCustomers: [],
       pagination: {
         showTotal: (total) => '共' + total + '条数据',
@@ -303,15 +298,28 @@ export default {
     },
   },
   methods: {
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.contractState)
+    },
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.queryParam = { ...this.queryParam, ...params, dayWeekMonth: this.dayWeekMonth }
+      this.search()
+    },
+    simpleSearch(type) {
+      if (type === 4) {
+        this.queryParam.dayWeekMonth = undefined
+        this.dayWeekMonth = undefined
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.search()
+      } else {
+        this.dayWeekMonth = this.dayWeekMonth === type ? undefined : type
+        this.queryParam = { ...this.queryParam, dayWeekMonth: this.dayWeekMonth }
+        this.search()
+      }
+    },
     search() {
-      this.queryParam = {
-        customerName: this.customerName,
-        statue: this.contractState,
-        saleUserId:this.saleUserId
-      }
-      if (this.show == true) {
-        this.queryParam['approvalStatue'] = this.approvalStatusSelect
-      }
       this.$refs.table.refresh(true)
     },
     handleAdd() {
@@ -484,16 +492,16 @@ export default {
         return
       }
     },
-    async exportHandler(){
+    async exportHandler() {
       const that = this
-      let res = await exprotAction(6,{...that.queryParam},'产品调试任务单')
+      let res = await exprotAction(6, { ...that.queryParam }, '产品调试任务单')
       console.log(res)
       that.$message.info(res.msg)
     },
     filterSalersOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-    }
-  }
+    },
+  },
 }
 </script>
 
