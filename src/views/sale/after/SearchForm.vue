@@ -34,7 +34,7 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="任务单编号">
-            <a-input v-decorator="['advancesCode']" placeholder="任务单编号" :allowClear="true" />
+            <a-input v-decorator="['aftersaleCode']" placeholder="任务单编号" :allowClear="true" />
           </a-form-item>
         </a-col>
         <a-col :span="12" v-if="isShowApproveStatus">
@@ -74,7 +74,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="24">
-          <a-form-item label="收款日期">
+          <a-form-item label="时间要求">
             <a-range-picker v-decorator="['dDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>

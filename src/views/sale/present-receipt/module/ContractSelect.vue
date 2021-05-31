@@ -7,6 +7,22 @@
         v-model="searchParam.contractNum"
         style="width: 200px; margin-right: 20px; margin-bottom: 20px"
       />
+
+      <a-select
+        class="a-select"
+        style="width: 200px; margin-right: 20px; margin-bottom: 20px"
+        v-model="searchParam.userId"
+        showSearch
+        :allowClear="true"
+        placeholder="销售人员"
+        optionFilterProp="children"
+        :filterOption="filterCustomerOption"
+      >
+        <a-select-option v-for="val in saleUsers" :key="val.userId" :value="val.userId">{{
+          val.salesmanName
+        }}</a-select-option>
+      </a-select>
+
       <a-input
         placeholder="客户名称"
         :allowClear="true"
@@ -34,6 +50,7 @@
 
 <script>
 import { refundGetApprovedSaleContract } from '@/api/receipt'
+import { getListSalesman } from '@/api/contractListManagement'
 let columns = [
   {
     align: 'center',
@@ -62,6 +79,7 @@ export default {
     return {
       visible: false,
       loading: true,
+      saleUsers: [],
       searchParam: {},
       pagination: {
         current: 1,
@@ -95,6 +113,9 @@ export default {
     query(record) {
       this.visible = true
       this.searchAction()
+      getListSalesman().then((res) => {
+        this.saleUsers = res.data
+      })
     },
     handleCancel() {
       this.visible = false
@@ -110,6 +131,12 @@ export default {
       pager.current = pagination.current
       this.pagination = pager
       this.searchAction()
+    },
+    // 选择客户名称下拉框根据输入项进行筛选
+    filterCustomerOption(input, option) {
+      // 是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      // option.componentOptions.children[0].text   结果是"郑州依依不舍"
     },
   },
 }
