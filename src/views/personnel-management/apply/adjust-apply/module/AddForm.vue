@@ -192,6 +192,9 @@
                     <a-select-option :value="3000">3000</a-select-option>
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
+                    <a-select-option :value="4000">4000</a-select-option>
+                    <a-select-option :value="4500">4500</a-select-option>
+                    <a-select-option :value="5000">5000</a-select-option>
                   </a-select>
                   <a-input-number
                     placeholder="岗位工资"
@@ -221,6 +224,9 @@
                     <a-select-option :value="3000">3000</a-select-option>
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
+                    <a-select-option :value="4000">4000</a-select-option>
+                    <a-select-option :value="4500">4500</a-select-option>
+                    <a-select-option :value="5000">5000</a-select-option>
                   </a-select>
                   <a-input-number
                     placeholder="岗位工资"
@@ -389,6 +395,9 @@
                     <a-select-option :value="3000">3000</a-select-option>
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
+                    <a-select-option :value="4000">4000</a-select-option>
+                    <a-select-option :value="4500">4500</a-select-option>
+                    <a-select-option :value="5000">5000</a-select-option>
                   </a-select>
                   <a-input-number
                     placeholder="岗位工资"
@@ -419,6 +428,9 @@
                     <a-select-option :value="3000">3000</a-select-option>
                     <a-select-option :value="3300">3300</a-select-option>
                     <a-select-option :value="3500">3500</a-select-option>
+                    <a-select-option :value="4000">4000</a-select-option>
+                    <a-select-option :value="4500">4500</a-select-option>
+                    <a-select-option :value="5000">5000</a-select-option>
                   </a-select>
                   <a-input-number
                     placeholder="岗位工资"
