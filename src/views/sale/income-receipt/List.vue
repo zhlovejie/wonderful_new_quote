@@ -366,7 +366,7 @@ export default {
         },
         opt || {},
         {
-          searchStatus: that.activeKey,
+          status: that.activeKey,
         }
       )
       console.log('执行搜索...', _searchParam)
