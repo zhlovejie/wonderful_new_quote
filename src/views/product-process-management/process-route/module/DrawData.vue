@@ -71,25 +71,7 @@ import moment from 'moment'
 import UploadFileModel from './UploadFileModel'
 import XdocView from './XdocView'
 import { getDictionary } from '@/api/common'
-const columns = [
-  {
-    align: 'center',
-    title: '类别',
-    dataIndex: 'type',
-    scopedSlots: { customRender: 'type' }
-  },
-  {
-    align: 'center',
-    title: '文件名称',
-    dataIndex: 'fileName'
-  },
-  {
-    align: 'center',
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
-]
+
 let uuid = () =>
   Math.random()
     .toString(32)
@@ -103,7 +85,6 @@ export default {
   data() {
     return {
       form: this.$form.createForm(this, { name: 'DrawData' }),
-      columns,
       dataSource: [],
       detail: {},
       uploadConfig: {
@@ -124,6 +105,30 @@ export default {
     title(){
       let m = {0:'图纸信息',1:'排版图',2:'程序'}
       return m[this.detail.type]
+    },
+    columns(){
+      const baseColumns = [
+        {
+          align: 'center',
+          title: '文件名称',
+          dataIndex: 'fileName'
+        },
+        {
+          align: 'center',
+          title: '操作',
+          key: 'action',
+          scopedSlots: { customRender: 'action' }
+        }
+      ]
+      if(this.detail.type === 0){
+        baseColumns.unshift({
+          align: 'center',
+          title: '类别',
+          dataIndex: 'type',
+          scopedSlots: { customRender: 'type' }
+        })
+      }
+      return baseColumns
     }
   },
   created() {
@@ -135,7 +140,7 @@ export default {
     query(params = {}){
       const that = this
       that.detail = {...params}
-      that.visible = true
+      that.$nextTick(() => that.visible = true)
     },
     doAction(type, record) {
       const that = this
@@ -159,6 +164,7 @@ export default {
             key: uuid(),
             type: file.__fileType,
             fileName: file.__fileName,
+            typeName:file.__typeName,
             url: file.url
           }
         ]
@@ -188,6 +194,7 @@ export default {
         let __data = data.map(item => {
           return {
             picDicId:item.type,
+            picDicName:item.typeName,
             picName:item.fileName,
             picUrl:item.url,
             id:item.id

@@ -67,7 +67,6 @@ export default {
       this.visible = false
     },
     async query(params={}){
-      debugger
       const that = this
       that.type = +params.type
       await getDictionary({ text: '工艺路线-图纸信息-图纸类型' }).then((res) => (that.list = res.data))
@@ -75,9 +74,14 @@ export default {
     },
     fileChange(files){
       if(Array.isArray(files) && files.length === 1){
+        let typeName;
         let fileType = this.form.getFieldValue('fileType')
         let fileName = this.form.getFieldValue('fileName')
-        this.$emit('change',{...files[0],__fileType:fileType,__fileName:fileName})
+
+        if(fileType){
+          typeName = this.list.find(item => +item.id === +fileType).text
+        }
+        this.$emit('change',{...files[0],__fileType:fileType,__fileName:fileName,__typeName:typeName})
       }else{
         this.$emit('change',null)
       }

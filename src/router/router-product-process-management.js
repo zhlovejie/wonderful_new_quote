@@ -10,7 +10,7 @@ export default { //工艺管理
   component: PageView,
   meta: {
     title: '工艺管理',
-    icon: 'team',
+    icon: 'setting',
     permission: ['permission']
   },
   redirect: '/product-process-management/workshop-management',

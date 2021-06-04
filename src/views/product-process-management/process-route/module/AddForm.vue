@@ -197,20 +197,12 @@
                 v-for="(item,idx) in processTableData"
                 :key="item.id"
               >
-                <td>{{item.serialNum}}</td>
+                <td>{{item.orderNum}}</td>
                 <td>{{workshop.departmentName}}</td>
                 <td>{{item.processName}}</td>
                 <td>{{item.processNum}}</td>
                 <td>
                   <!--checkType -->
-                  <a-form-model-item
-                    :prop="'domains.' + idx + '.value'"
-                    :rules="{
-                      required: true,
-                      message: 'domain can not be null',
-                      trigger: 'blur',
-                    }"
-                  >
                   <a-select
                     placeholder="检验方式"
                     style="widtd:120px"
@@ -222,7 +214,6 @@
                     <a-select-option :value="2">抽检</a-select-option>
                     <a-select-option :value="3">全检</a-select-option>
                   </a-select>
-                  </a-form-model-item>
                 </td>
                 <td>
                   <!-- foreignFlag -->
@@ -238,6 +229,14 @@
                   </a-select>
                 </td>
                 <td>
+                  <a-form-model-item
+                    :prop="'processes.' + idx + '.duration'"
+                    :rules="{
+                      required: true,
+                      message: '请输入时长',
+                      trigger: 'blur',
+                    }"
+                  >
                   <a-input-number
                     style="width:120px;"
                     :min="0"
@@ -246,8 +245,17 @@
                     :value="item.duration"
                     @change="(e) => processTableDataChange('duration',item.id,e)"
                   />
+                  </a-form-model-item>
                 </td>
                 <td>
+                  <a-form-model-item
+                    :prop="'processes.' + idx + '.personCost'"
+                    :rules="{
+                      required: true,
+                      message: '请输入人工费',
+                      trigger: 'blur',
+                    }"
+                  >
                   <a-input-number
                     style="width:120px;"
                     :min="0"
@@ -256,6 +264,7 @@
                     :value="item.personCost"
                     @change="(e) => processTableDataChange('personCost',item.id,e)"
                   />
+                  </a-form-model-item>
                 </td>
                 <td>
                   <a
@@ -342,7 +351,7 @@ import { addAndUpdateMeetingLeave, approvalMeetingLeave, getMeetingLeaveDetail }
 
 import { routineMaterialInfoPageList } from '@/api/routineMaterial'
 
-import { craftRouteGetCode, craftRouteGetAllWorkshop, craftRouteGetProcessByWorkshop } from '@/api/craftRoute'
+import { craftRouteGetCode, craftRouteGetAllWorkshop, craftRouteGetProcessByWorkshop ,craftRouteAdd} from '@/api/craftRoute'
 import vuedraggable from 'vuedraggable'
 import ConfigRules from './ConfigRules'
 import DrawData from './DrawData'
@@ -399,7 +408,7 @@ export default {
       this.processTableData = val
         .map(id => processByWorkshop.find(item => item.id === id))
         .map((item, idx) => {
-          item.serialNum = idx + 1
+          item.orderNum = idx + 1
           if (!item.checkType) {
             item.checkType = 2
           }
@@ -408,6 +417,25 @@ export default {
           }
           return item
         })
+    },
+    processTableData(val){
+      let p = val.map(item => {
+        return {
+          checkType:item.checkType,
+          duration:item.duration,
+          foreignFlag:item.foreignFlag,
+          orderNum:item.orderNum,
+          personCost:item.personCost,
+          processCode:item.processNum,
+          processId:item.id,
+          processName:item.processName,
+          workshopId:item.workshopId
+        }
+      })
+      this.form = {
+        ...this.form,
+        processes:p
+      }
     }
   },
   computed: {
@@ -477,7 +505,7 @@ export default {
     reSortAction() {
       let _processTableData = this.processTableData.map(p => Object.assign({}, p))
       this.processTableData = _processTableData.map((p, index) => {
-        p.serialNum = index + 1
+        p.orderNum = index + 1
         return p
       })
     },
@@ -503,9 +531,14 @@ export default {
       this.materialInfo = { ...target }
       this.form = {
         ...this.form,
-        materialCommonId:this.materialInfo.materialCode,
+        materialCommonId:this.materialInfo.id,
         materialCommonCaculatorUnit:this.materialInfo.mainUnit,
         materialCode:this.materialInfo.materialCode,
+
+
+        materialCommonCode:this.materialInfo.materialCode,
+        materialCommonName:this.materialInfo.materialName,
+        materialCommonType:this.materialInfo.specifications,
       }
       Object.assign(this, {
         materialValueList: [],
@@ -518,16 +551,16 @@ export default {
         that.handleCancel()
         return
       }
-
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          alert('submit!');
+          craftRouteAdd({...that.form}).then(res => {
+            console.log(res)
+          })
         } else {
           console.log('error submit!!');
           return false;
         }
       });
-
     },
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
@@ -542,8 +575,9 @@ export default {
           that.form = {
             ...that.form,
             routeCode: res.data,
-            materialGroupCode: that.targetNode.materialCode,
-            materialCommonCaculatorUnit:that.targetNode.materialCode
+            materialGroupId: that.targetNode.__id,
+            materialCommonCaculatorUnit:that.targetNode.materialCode,
+            materialGroupCode:that.targetNode.materialCode
           }
         })
 
@@ -594,18 +628,36 @@ export default {
       this.$refs[refName].query(params)
     },
     configRulesHandler(data){
-      debugger
       this.form = {
         ...this.form,
         deviceId:data.id
       }
     },
     drawDataHandler(data){
-      this.form = {
-        ...this.form,
-        ...data
+      debugger
+      const that = this
+      if(!data){
+        return
       }
-    },
+      if('rangeProcesses' in data){
+        if(data.rangeProcesses.find(item => +item.fileType === 1)){
+          let rangeProcesses = that.form.rangeProcesses || []
+          that.form.rangeProcesses = [
+            ...(rangeProcesses.filter(item => +item.fileType !== 1)),
+            ...data.rangeProcesses
+          ]
+        }else{
+          let rangeProcesses = that.form.rangeProcesses || []
+          that.form.rangeProcesses = [
+            ...(rangeProcesses.filter(item => +item.fileType !== 2)),
+            ...data.rangeProcesses
+          ]
+        }
+      }
+      if('picFiles' in data){
+        this.form = {...this.form,...data }
+      }
+    }
   }
 }
 </script>
