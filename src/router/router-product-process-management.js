@@ -62,7 +62,7 @@ export default { //工艺管理
       },
       redirect: '/product-process-management/equipment-management/list',
       children: [{
-        path: '/product-process-management/equipment-management/list',
+          path: '/product-process-management/equipment-management/list',
           name: 'product-process-management_equipment-management_list',
           component: () => import('@/views/product-process-management/equipment/List'),
           meta: {
@@ -110,6 +110,7 @@ export default { //工艺管理
         keepAlive: false,
         permission: ['permission']
       },
+      redirect:'/product-process-management/process-route-management/route',
       children: [{
           path: '/product-process-management/process-route-management/route',
           name: 'product-process-management_process-route-management_route',
