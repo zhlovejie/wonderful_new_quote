@@ -9,7 +9,25 @@ const api = {
   ueditorUploadPath: system.baseURL + '/ueditor/uploadImg',
   getDictionary: '/dictionary/getListByText',
   getAreaByParent: '/areaDic/queryList',
-  getOneArea: '/areaDic/getOneArea'
+  getOneArea: '/areaDic/getOneArea',
+  devUploadPath: system.baseURL + '/devFileUpload/uploadFile',
+  devDelPath: system.baseURL + '/devFileUpload/deleteFile',
+}
+
+/**
+ * 研发专用文件上传接口
+ * @returns
+ */
+export function devFileUploadPath() {
+  return api.devUploadPath
+}
+
+/**
+ * 研发专用文件删除接口
+ * @returns
+ */
+ export function devDelPath() {
+  return api.devDelPath
 }
 
 // 获取上传图片的路径
@@ -183,3 +201,4 @@ export function userUpdatePassWord(params) {
     data: params
   })
 }
+

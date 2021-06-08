@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="900"
+    :width="650"
     :visible="visible"
     :maskClosable="false"
     @cancel="handleCancel"
@@ -10,93 +10,65 @@
     <a-form :form="form" class="search-form-wrapper">
       <a-row :gutter="0">
         <a-col :span="24">基本信息</a-col>
-        <a-col :span="12">
+        <a-col :span="24">
+          <a-form-item label="工艺路线代码">
+            <a-input v-decorator="['routeCode']" placeholder="工艺路线代码" :allowClear="true" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="24">
+          <a-form-item label="工艺路线名称">
+            <a-input v-decorator="['routeName']" placeholder="工艺路线名称" :allowClear="true" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="24">
           <a-form-item label="物料代码">
-            <a-input v-decorator="['materialCode']" placeholder="物料代码" :allowClear="true" />
+            <a-input v-decorator="['materialCommonCode']" placeholder="物料代码" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
-          <a-form-item label="中文名称">
-            <a-input v-decorator="['materialName']" placeholder="中文名称" :allowClear="true" />
+        <a-col :span="24">
+          <a-form-item label="物料名称">
+            <a-input v-decorator="['materialCommonName']" placeholder="物料名称" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
-          <a-form-item label="原K3物料代码">
-            <a-input v-decorator="['k3Code']" placeholder="原K3物料代码" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="物料来源属性">
-            <a-select v-decorator="['materialSource']" placeholder="物料来源属性">
-              <a-select-option :value="1">自制</a-select-option>
-              <a-select-option :value="2">外购</a-select-option>
-              <a-select-option :value="3">委外</a-select-option>
-              <a-select-option :value="4">标准件</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="主计量单位">
-            <a-select v-decorator="['mainUnit']" placeholder="主计量单位">
-              <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12" >
-          <a-form-item label="审核">
-            <a-select v-decorator="['auditStatus']" placeholder="审核状态">
-              <a-select-option :value="1">未审核</a-select-option>
-              <a-select-option :value="2">审核中</a-select-option>
-              <a-select-option :value="3">已审核</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-
         <a-col :span="24" >
-          <a-form-item label="禁用">
-            <a-radio-group
-              v-decorator="['isForbidden']"
-              style="width: 100%"
-            >
-              <a-radio :value="1">否</a-radio>
-              <a-radio :value="2">是</a-radio>
+          <a-form-item label="审核">
+            <a-select v-decorator="['status']" placeholder="审核状态">
+              <a-select-option :value="1">待审核</a-select-option>
+              <a-select-option :value="2">审核中</a-select-option>
+              <a-select-option :value="3">审核通过</a-select-option>
+              <a-select-option :value="4">审核不通过</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="24">
+          <a-form-item label="缺省状态">
+            <a-radio-group v-decorator="['defaultStatus']" style="width: 100%">
+              <a-radio :value="1">是</a-radio>
+              <a-radio :value="0">否</a-radio>
             </a-radio-group>
           </a-form-item>
         </a-col>
 
-        <a-col :span="24">规格型号</a-col>
-        <a-col :span="6">
-          <a-form-item label="材质">
-            <a-input v-decorator="['texture']" placeholder="材质" :allowClear="true" />
+        <a-col :span="24">操作信息</a-col>
+        <a-col :span="24">
+          <a-form-item label="提交人">
+            <a-input v-decorator="['createdName']" placeholder="提交人" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="6">
-          <a-form-item label="厚度">
-            <a-input v-decorator="['thickness']" placeholder="厚度" :allowClear="true" />
+        <a-col :span="24">
+          <a-form-item label="提交时间">
+            <a-range-picker v-decorator="['date']" style="width: 100%"/>
           </a-form-item>
         </a-col>
-        <a-col :span="6">
-          <a-form-item label="宽度">
-            <a-input v-decorator="['width']" placeholder="宽度" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="6">
-          <a-form-item label="长度">
-            <a-input v-decorator="['length']" placeholder="长度" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-
       </a-row>
       <a-row :gutter="0" type="flex" justify="center">
-        <a-col :span="3">
+        <a-col :span="3" >
           <a-button key="close" icon="close" @click="actionHandler('close')">取消</a-button>
         </a-col>
-        <a-col :span="3">
+        <a-col :span="3" :offset="1">
           <a-button key="reload" icon="reload" @click="actionHandler('reset')">重置</a-button>
         </a-col>
-        <a-col :span="3">
+        <a-col :span="3" :offset="1">
           <a-button key="search" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
         </a-col>
       </a-row>
@@ -128,6 +100,16 @@ export default {
         this.form.resetFields()
       } else if (type === 'search') {
         let values = this.form.getFieldsValue()
+        if (Array.isArray(values.date)) {
+          if (values.date.length === 2) {
+            values.startTime = arrMoment[0].format('YYYY-MM-DD')
+            values.endTime = arrMoment[1].format('YYYY-MM-DD')
+          } else {
+            values.startTime = undefined
+            values.endTime = undefined
+          }
+        }
+        delete values.date
         console.log(values)
         this.$emit('change', values)
         this.handleCancel()

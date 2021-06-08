@@ -166,6 +166,7 @@ export default {
       that.loading = true
       that.dataSource = [
         {
+          id:1,
           a1: 'test1',
           a2: 'test2',
           a3: 'test3',
