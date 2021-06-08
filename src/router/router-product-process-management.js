@@ -14,8 +14,7 @@ export default { //工艺管理
     permission: ['permission']
   },
   redirect: '/product-process-management/workshop-management',
-  children: [
-    {
+  children: [{
       path: '/product-process-management/workshop-management',
       name: 'product-process-management_workshop-management',
       component: () => import('@/views/product-process-management/workshop/List'),
@@ -110,7 +109,7 @@ export default { //工艺管理
         keepAlive: false,
         permission: ['permission']
       },
-      redirect:'/product-process-management/process-route-management/route',
+      redirect: '/product-process-management/process-route-management/route',
       children: [{
           path: '/product-process-management/process-route-management/route',
           name: 'product-process-management_process-route-management_route',

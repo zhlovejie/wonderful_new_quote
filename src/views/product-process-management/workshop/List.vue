@@ -4,22 +4,22 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input placeholder="车间代码模糊查询" v-model="searchParam.meetingName" allowClear style="width:180px;" />
+          <a-input placeholder="车间代码模糊查询" v-model="searchParam.workshopNum" allowClear style="width: 180px" />
         </a-form-item>
         <a-form-item>
-          <a-input placeholder="车间名称模糊查询" v-model="searchParam.userName" allowClear style="width:180px;" />
+          <a-input
+            placeholder="车间名称模糊查询"
+            v-model="searchParam.departmentName"
+            allowClear
+            style="width: 180px"
+          />
         </a-form-item>
         <a-form-item>
-          <a-button
-            class="a-button"
-            type="primary"
-            icon="search"
-            @click="searchAction({current:1})"
-          >查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float:right;">
+        <div class="action-wrapper" style="float: right">
           <a-form-item>
-          <a-button type="primary" icon="plus" @click="doAction('add',null)">新增</a-button>
+            <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
         </div>
       </a-form>
@@ -37,11 +37,11 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view',record)">查看</a>
+          <a type="primary" @click="doAction('view', record)">查看</a>
           <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit',record)">修改</a>
+          <a type="primary" @click="doAction('edit', record)">修改</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del',record)">
+          <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
             <a type="primary">删除</a>
           </a-popconfirm>
         </div>
@@ -52,12 +52,7 @@
 </template>
 
 <script>
-
-import {
-  delMeetingLeave,
-  getMeetingLeavePageList,
-  revocationMeetingLeave
-} from '@/api/meetingManagement'
+import { pageDevelopmentdelete, pageDevelopmentCraftWorkshopList } from '@/api/ProcessManagement'
 import AddForm from './AddForm'
 import moment from 'moment'
 
@@ -67,61 +62,51 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     align: 'center',
-    title: '会议编号',
-    dataIndex: 'meetingNum'
+    title: '车间代码',
+    dataIndex: 'workshopNum',
   },
   {
     align: 'center',
-    title: '会议类别',
-    dataIndex: 'typeDicName'
-  },
-  {
-    align: 'center',
-    title: '会议部门',
-    dataIndex: 'departmentName'
-  },
-  {
-    align: 'center',
-    title: '会议名称',
-    dataIndex: 'name'
-  },
-  {
-    align: 'center',
-    title: '请假事由',
-    dataIndex: 'leaveReason'
-  },
-  {
-    align: 'center',
-    title: '状态',
-    dataIndex: 'statusTxt',
-    scopedSlots: { customRender: 'statusTxt' }
+    title: '车间名称',
+    dataIndex: 'departmentName',
   },
   {
     align: 'center',
     title: '提交人',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
   },
   {
     align: 'center',
     title: '提交时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
+  },
+  {
+    align: 'center',
+    title: '修改人',
+    dataIndex: 'modifierName',
+  },
+
+  {
+    align: 'center',
+    title: '修改时间',
+    dataIndex: 'modifyTime',
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'product-process-management_workshop-management',
   components: {
-    AddForm
+    AddForm,
   },
   data() {
     return {
@@ -136,18 +121,18 @@ export default {
         showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
-      searchParam:{}
+      searchParam: {},
     }
   },
   watch: {
     $route: {
-      handler: function(to, from) {
+      handler: function (to, from) {
         if (to.name === 'product-process-management_workshop-management') {
           this.init()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     moment,
@@ -161,11 +146,11 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
       }
-      let _searchParam = Object.assign({}, { ...this.searchParam }, opt,paginationParam)
+      let _searchParam = Object.assign({}, { ...this.searchParam }, opt, paginationParam)
       that.loading = true
-      return
-      getMeetingLeavePageList(_searchParam)
-        .then(res => {
+
+      pageDevelopmentCraftWorkshopList(_searchParam)
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -186,7 +171,7 @@ export default {
             that.search()
           }
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -198,19 +183,19 @@ export default {
     },
     doAction(actionType, record) {
       let that = this
-      if (['view','add','edit','approval'].includes(actionType)) {
+      if (['view', 'add', 'edit'].includes(actionType)) {
         this.$refs.addForm.query(actionType, record)
       } else if (actionType === 'del') {
-        delMeetingLeave({id:record.id}).then(res => {
+        pageDevelopmentdelete({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
         return
-      }else {
+      } else {
         that.$message.info(`未知指令：${actionType}`)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

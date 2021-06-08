@@ -1,3 +1,4 @@
+
 <template>
   <a-modal
     :title="modalTitle"
@@ -9,32 +10,22 @@
     :destroyOnClose="true"
   >
     <a-spin :spinning="spinning">
-      <a-form-model
-        ref="ruleForm"
-        :model="form"
-        :rules="rules"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-
-        <a-form-model-item label="车间名称" prop="name">
-          <a-select v-model="form.name" placeholder="选择车间名称" :disabled="isDisabled">
-            <a-select-option value="shanghai">
-              Zone one
-            </a-select-option>
-            <a-select-option value="beijing">
-              Zone two
-            </a-select-option>
+      <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-model-item label="车间名称" prop="departmentId">
+          <a-select v-model="form.departmentId" placeholder="选择车间名称" :disabled="isDisabled">
+            <a-select-option v-for="item in department" :key="item.id" :value="item.id">{{
+              item.departmentName
+            }}</a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item ref="code" label="车间代码" prop="code">
+        <a-form-model-item ref="code" label="车间代码" prop="workshopNum">
           <a-input
             :disabled="isDisabled"
             placeholder="车间代码"
-            v-model="form.code"
+            v-model="form.workshopNum"
             @blur="
               () => {
-                $refs.code.onFieldBlur();
+                $refs.code.onFieldBlur()
               }
             "
           />
@@ -45,38 +36,26 @@
 </template>
 
 <script>
-import {
-  addAndUpdateMeetingLeave,
-  approvalMeetingLeave,
-  getMeetingLeaveDetail
-} from '@/api/meetingManagement'
-import moment from 'moment'
-
+import { gsaveOrUpdate } from '@/api/ProcessManagement'
+import { getDevisionManagementList } from '@/api/systemSetting'
 
 export default {
   name: 'product-process-management_workshop-management-addForm',
-  components: {
-
-  },
+  components: {},
   data() {
     return {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
       visible: false,
+      department: [],
       actionType: 'view',
       spinning: false,
       detail: {},
-      form:{
-        name:undefined,
-        code:undefined
+      form: {},
+      rules: {
+        departmentId: [{ required: true, message: '请选择车间名称', trigger: 'change' }],
+        workshopNum: [{ required: true, message: '请输入车间代码', trigger: 'blur' }],
       },
-      rules:{
-        name: [{ required: true, message: '请选择车间名称', trigger: 'change' }],
-        code: [
-          { required: true, message: '请输入车间代码', trigger: 'blur' }
-        ],
-
-      }
     }
   },
   computed: {
@@ -92,10 +71,10 @@ export default {
     isEdit() {
       return this.actionType === 'edit'
     },
-    isApproval(){
+    isApproval() {
       return this.actionType === 'approval'
     },
-    isDisabled(){
+    isDisabled() {
       return this.isView || this.isApproval
     },
     footer() {
@@ -118,7 +97,13 @@ export default {
           )
         )
       } else if (that.isApproval) {
-        btn.push(h('a-button', { key: 'no-pass', on: { click: that.noPassAction } ,props:{loading: that.spinning}}, '不通过'))
+        btn.push(
+          h(
+            'a-button',
+            { key: 'no-pass', on: { click: that.noPassAction }, props: { loading: that.spinning } },
+            '不通过'
+          )
+        )
         btn.push(
           h(
             'a-button',
@@ -131,63 +116,61 @@ export default {
     },
   },
   methods: {
-    moment,
     async handleOk() {
       let that = this
       if (that.isView) {
         that.handleCancel()
         return
       }
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          values.beginTime = values.beginTime.format('YYYY-MM-DD HH:mm:ss')
-          values.endTime = values.endTime.format('YYYY-MM-DD HH:mm:ss')
-          that.spinning = true
-          addAndUpdateMeetingLeave(values)
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          let react = that.department.find((item) => item.id === that.form.departmentId)
+          let values = {
+            departmentName: react.departmentName,
+            departmentId: that.form.departmentId,
+            workshopNum: that.form.workshopNum,
+          }
+          if (that.isEdit) {
+            values.id = that.form.id
+          }
+          gsaveOrUpdate(values)
             .then((res) => {
               that.spinning = false
-              that.form.resetFields() // 清空表
+              that.$refs.ruleForm.resetFields()
+              that.$emit('finish')
               that.visible = false
               that.$message.info(res.msg)
-              that.$emit('finish')
             })
             .catch((err) => (that.spinning = false))
+        } else {
+          console.log('error submit!!')
+          return false
         }
       })
     },
     handleCancel() {
-      this.form.resetFields()
+      this.$refs.ruleForm.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
     async query(type, record = {}) {
+      this.form = {}
       let that = this
       that.visible = true
       that.actionType = type
       that.leaveTime = ''
       that.detail = {}
-      if(that.isAdd){
-        let {id:meetingId,setTimeStr} = record
-        let f = (str) => {
-          let [ymd,sub] = str.split(' ')
-          let [s,e] = sub.split('-')
-          return {beginTime:`${ymd} ${s}:00`,endTime:`${ymd} ${e}:00`}
-        }
-        let {beginTime,endTime} = f(setTimeStr)
-        that.detail = {
-          meetingId,
-          beginTime,
-          endTime
-        }
-        that.leaveTime = that.calcTimes(that.moment(beginTime),that.moment(endTime))
-      }else{
-        await getMeetingLeaveDetail({id:record.id}).then(res =>{
-          that.detail = res.data
-          let {beginTime,endTime} = that.detail
-          that.leaveTime = that.calcTimes(that.moment(beginTime),that.moment(endTime))
+      getDevisionManagementList({ parentId: 4, current: 1, size: 200 })
+        .then((res) => {
+          that.department = res.data.records
         })
+        .catch((error) => {
+          console.error(error)
+        })
+      if (!that.isAdd) {
+        this.form = record
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -213,3 +196,4 @@ export default {
   width: 160px;
 }
 </style>
+
