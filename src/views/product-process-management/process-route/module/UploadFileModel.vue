@@ -56,15 +56,30 @@ export default {
         maxFileCount:1
       },
       list:[],
-      type:null
+      type:null,
+      fileInfo:null
     }
   },
   methods:{
     handleSubmit(){
-      this.handleCancel()
+      const that = this
+      that.form.validateFields((err, values) => {
+        if (!err) {
+          let typeName
+          let {fileType,fileName} = values
+          if(fileType){
+            typeName = that.list.find(item => +item.id === +fileType).text
+          }
+          that.$emit('change',{...that.fileInfo,__fileType:fileType,__fileName:fileName,__typeName:typeName})
+          that.$nextTick(() => that.visible = false)
+        }
+      });
     },
     handleCancel(){
-      this.visible = false
+      const that = this
+      that.fileInfo = null
+      that.$emit('change',null)
+      that.$nextTick(() => that.visible = false)
     },
     async query(params={}){
       const that = this
@@ -73,17 +88,11 @@ export default {
       that.visible = true
     },
     fileChange(files){
+      const that = this
       if(Array.isArray(files) && files.length === 1){
-        let typeName;
-        let fileType = this.form.getFieldValue('fileType')
-        let fileName = this.form.getFieldValue('fileName')
-
-        if(fileType){
-          typeName = this.list.find(item => +item.id === +fileType).text
-        }
-        this.$emit('change',{...files[0],__fileType:fileType,__fileName:fileName,__typeName:typeName})
+        that.fileInfo = {...files[0]}
       }else{
-        this.$emit('change',null)
+        that.fileInfo = null
       }
     }
   }

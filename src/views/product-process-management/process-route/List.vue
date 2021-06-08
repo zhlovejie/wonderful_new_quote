@@ -37,16 +37,32 @@
           <a-form layout="inline">
             <a-form-item>
               <a-input
-                placeholder="代码模糊查询"
-                v-model="queryParam.materialCode"
+                placeholder="工艺路线代码"
+                v-model="queryParam.routeCode"
                 allowClear
                 style="width: 150px"
               />
             </a-form-item>
             <a-form-item>
               <a-input
-                placeholder="名称模糊查询"
-                v-model="queryParam.materialName"
+                placeholder="工艺路线名称"
+                v-model="queryParam.routeName"
+                allowClear
+                style="width: 150px"
+              />
+            </a-form-item>
+            <a-form-item>
+              <a-input
+                placeholder="物料代码"
+                v-model="queryParam.materialCommonCode"
+                allowClear
+                style="width: 150px"
+              />
+            </a-form-item>
+            <a-form-item>
+              <a-input
+                placeholder="物料名称"
+                v-model="queryParam.materialCommonName"
                 allowClear
                 style="width: 150px"
               />
@@ -63,58 +79,58 @@
                 type="primary"
                 icon="filter"
                 @click="doAction('filter', null)"
-              >筛选</a-button>
+              >高级筛选</a-button>
             </a-form-item>
             <a-form-item >
               <a-button
                 type="primary"
+                :disabled="!canAdd"
                 @click="doAction('add', null)"
               >新增</a-button>
             </a-form-item>
-            <a-form-item v-if="$auth('routineMaterialInfo:edit')">
+            <a-form-item >
               <a-button
                 :disabled="!canEdit"
                 type="primary"
                 @click="doAction('edit', null)"
               >修改</a-button>
             </a-form-item>
-
-            <a-form-item v-if="$auth('routineMaterialInfo:disable')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('disable', null)"
-              >禁用</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('routineMaterialInfo:enable')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('enable', null)"
-              >启用</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('routineMaterialInfo:del')">
+            <a-form-item >
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('del', null)"
               >删除</a-button>
             </a-form-item>
-            <a-form-item v-if="$auth('routineMaterialInfo:audit')">
+            <a-form-item >
+              <a-button
+                :disabled="!canEdit"
+                type="primary"
+                @click="doAction('copy', null)"
+              >复制</a-button>
+            </a-form-item>
+            <a-form-item >
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('approval', null)"
               >审核</a-button>
             </a-form-item>
-            <a-form-item v-if="$auth('routineMaterial:annulAudit')">
+            <a-form-item >
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('unapproval', null)"
               >反审核</a-button>
             </a-form-item>
-            <a-form-item v-if="$auth('routineMaterial:annulAudit')">
+            <a-form-item >
+              <a-button
+                :disabled="!canAdd"
+                type="primary"
+                @click="doAction('import', null)"
+              >导入</a-button>
+            </a-form-item>
+            <a-form-item >
               <a-button
                 :disabled="!canUse"
                 type="primary"
@@ -123,6 +139,94 @@
             </a-form-item>
           </a-form>
         </div>
+        <h3 class="_hd">基本信息</h3>
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="false"
+          :loading="loading"
+          :customRow="customRowFunction"
+          :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          size="small"
+        >
+          <div
+            slot="order"
+            slot-scope="text, record, index"
+          >
+            <span>{{ index + 1 }}</span>
+          </div>
+          <div
+            slot="materialCommonCaculatorUnit"
+            slot-scope="text, record, index"
+          >
+            {{ {1:'支',2:'把',3:'件'}[text] }}
+          </div>
+
+          <div
+            slot="defaultStatus"
+            slot-scope="text, record, index"
+          >
+            {{ {1:'是',0:'否'}[text] }}
+          </div>
+
+
+          <div
+            slot="materialCommonType"
+            slot-scope="text, record, index"
+          >
+            <a-tooltip>
+              <template slot="title">
+                {{text}}
+              </template>
+              <span class="icon-required">查看</span>
+              <a-icon
+                type="question-circle"
+                style="margin-left:5px;color:#1890ff;"
+              />
+            </a-tooltip>
+          </div>
+          <a
+            slot="status"
+            slot-scope="text, record"
+            @click="approvalPreview(record)"
+          >
+            {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
+          </a>
+        </a-table>
+
+        <h3 class="_hd">工序信息</h3>
+        <a-table
+          :columns="gxColumns"
+          :dataSource="gxDataSource"
+          :pagination="false"
+          :loading="gxLoading"
+          size="small"
+        >
+          <div
+            slot="personCost"
+            slot-scope="text, record, index"
+          >
+            <span>{{ text | moneyFormatNumber }}</span>
+          </div>
+          <div
+            slot="workshopId"
+            slot-scope="text, record, index"
+          >
+            <span>{{ getWorkShop(text) }}</span>
+          </div>
+          <div
+            slot="checkType"
+            slot-scope="text, record, index"
+          >
+            <span>{{ {1:'免检',2:'抽检',3:'全检'}[text] }}</span>
+          </div>
+          <div
+            slot="foreignFlag"
+            slot-scope="text, record, index"
+          >
+            <span>{{ {1:'是',0:'否'}[text] }}</span>
+          </div>
+        </a-table>
       </div>
     </div>
     <NormalAddForm
@@ -140,17 +244,24 @@
 
 <script>
 import {
-  productMaterialInfoDelete,
-  productMaterialInfoAnnulAudit,
-  productMaterialInfoAudit,
-  productMaterialInfoForbidden,
-  productMaterialInfoStartUsing,
-  productMaterialInfoPageList,
+
   productMaterialInfoTwoTierTreeList,
-  __MaterialInfoExport
+
 } from '@/api/routineMaterial'
 
-import {getAllProductMaterial,craftRouteDetail,craftRouteListByMaterial} from '@/api/craftRoute'
+import {
+  getAllProductMaterial,
+  craftRouteDetail,
+  craftRouteListByMaterial,
+  craftRouteDelete,
+craftRouteAuditByMaterial,
+craftRouteAnnulAuditBatch,
+__craftRouteExport,
+craftRouteGetAllWorkshop,
+
+craftRouteAudit,
+craftRouteAnnulAudit
+} from '@/api/craftRoute'
 
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import AddForm from './module/AddForm'
@@ -160,43 +271,105 @@ import SearchForm from './module/SearchForm'
 const columns = [
   {
     align: 'center',
+    title: '工艺路线代码',
+    dataIndex: 'routeCode'
+  },
+  {
+    align: 'center',
+    title: '工艺路线名称',
+    dataIndex: 'routeName'
+  },
+  {
+    align: 'center',
     title: '物料代码',
-    dataIndex: 'materialCode'
+    dataIndex: 'materialCommonCode'
   },
   {
     align: 'center',
-    title: '中文名称',
-    dataIndex: 'materialName'
+    title: '物料名称',
+    dataIndex: 'materialCommonName'
   },
   {
     align: 'center',
-    title: '物料来源属性',
-    dataIndex: 'materialSource',
-    scopedSlots: { customRender: 'materialSource' }
+    title: '规格型号',
+    dataIndex: 'materialCommonType',
+    scopedSlots: { customRender: 'materialCommonType' }
   },
-  // {
-  //   align: 'center',
-  //   title: '规格型号',
-  //   dataIndex: 'specifications',
-  //   scopedSlots: { customRender: 'specifications' }
-  // },
   {
     align: 'center',
     title: '主计量单位',
-    dataIndex: 'mainUnit',
-    scopedSlots: { customRender: 'mainUnit' }
+    dataIndex: 'materialCommonCaculatorUnit',
+    scopedSlots: { customRender: 'materialCommonCaculatorUnit' }
   },
   {
     align: 'center',
-    title: '录入人',
+    title: '缺省状态',
+    dataIndex: 'defaultStatus',
+    scopedSlots: { customRender: 'defaultStatus' }
+  },
+  // {
+  //   align: 'center',
+  //   title: '审核状态',
+  //   dataIndex: 'status',
+  //   scopedSlots: { customRender: 'status' }
+  // },
+    {
+    align: 'center',
+    title: '提交人',
     dataIndex: 'createdName'
   },
+    {
+    align: 'center',
+    title: '提交时间',
+    dataIndex: 'createdTime'
+  }
+]
+
+const gxColumns = [
   {
     align: 'center',
-    title: '审核状态',
-    dataIndex: 'auditStatus',
-    scopedSlots: { customRender: 'auditStatus' }
-  }
+    title: '顺序号',
+    dataIndex: 'orderNum'
+  },
+  {
+    align: 'center',
+    title: '工作中心部门',
+    dataIndex: 'workshopId',
+    scopedSlots: { customRender: 'workshopId' }
+  },
+  {
+    align: 'center',
+    title: '工序名',
+    dataIndex: 'processName'
+  },
+  {
+    align: 'center',
+    title: '工序代码',
+    dataIndex: 'processCode'
+  },
+  {
+    align: 'center',
+    title: '检验方式',
+    dataIndex: 'checkType',
+    scopedSlots: { customRender: 'checkType' }
+  },
+  {
+    align: 'center',
+    title: '是否外协',
+    dataIndex: 'foreignFlag',
+    scopedSlots: { customRender: 'foreignFlag' }
+  },
+  {
+    align: 'center',
+    title: '时长(秒)',
+    dataIndex: 'duration'
+  },
+  {
+    align: 'center',
+    title: '工人费(元)',
+    dataIndex: 'personCost',
+    scopedSlots: { customRender: 'personCost' }
+  },
 ]
 
 const getParentKey = (key, tree) => {
@@ -228,8 +401,10 @@ export default {
       selectedTreeNode: null, //新增修改后刷新节点用
       // 表头
       columns,
+      gxColumns,
       orgTree: [],
       dataSource: [],
+      gxDataSource:[],
       selectedRowKeys: [],
       selectedRows: [],
 
@@ -239,17 +414,11 @@ export default {
       autoExpandParent: true,
 
       loading: false,
+      gxLoading:false,
       queryParam: {},
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        showSizeChanger: true,
-        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: this.onShowSizeChangeHandler
-      },
       treeInputSearchDebounce: null,
-      normalAddFormKeyCount: 1
+      normalAddFormKeyCount: 1,
+      allWorkshop:[]
     }
   },
   watch: {
@@ -266,15 +435,19 @@ export default {
     canEdit() {
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
-      let selectedRows = this.selectedRows
-      if (selectedRows.length === 1) {
-        let { auditStatus, forbidden } = selectedRows[0]
-        return !(+forbidden === 1 || +auditStatus === 3)
-      }
-      return false
+      // let selectedRows = this.selectedRows
+      // if (selectedRows.length === 1) {
+      //   let { auditStatus, forbidden } = selectedRows[0]
+      //   return !(+forbidden === 1 || +auditStatus === 3)
+      // }
+      // return false
+      return this.selectedRows.length === 1
     },
     canUse() {
       return this.selectedRows.length > 0
+    },
+    canAdd(){
+      return !!this.parentItem.isProduct
     }
   },
   methods: {
@@ -318,22 +491,46 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
+      const that = this
       // if (this.treeInputSearchDebounce === null) {
       //   this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
       // }
 
-      this.parentId = 0
-      this.selectedTreeNode = null
-      this.queryParam = {
-        ...this.queryParam,
-        ruleId: this.parentId
+      that.parentId = 0
+      that.selectedTreeNode = null
+      that.queryParam = {
+        ...that.queryParam
       }
-      this.fetchTree()
+      that.fetchTree()
       //this.search()
 
-      this.$nextTick(() => {
-        this._ResizeColumnInstance = new ResizeColumn()
+      that.$nextTick(() => {
+        that._ResizeColumnInstance = new ResizeColumn()
       })
+
+      craftRouteGetAllWorkshop().then(res => {
+          that.allWorkshop = res.data
+        })
+    },
+    search(params = {}) {
+      const that = this
+      that.loading = true
+      let _searchParam = Object.assign({}, { ...that.queryParam }, params)
+      craftRouteListByMaterial(_searchParam)
+        .then(res => {
+          that.loading = false
+          if (!(res && res.data && Array.isArray(res.data))) {
+            return
+          }
+          that.dataSource = res.data.map((item, index) => {
+            item.key = index + 1
+            return item
+          })
+        })
+        .catch(err => {
+          console.error(err)
+          that.loading = false
+        })
     },
     /**
      * @description 树加载规则： 1.先加载规则 2.如果没有规则，尝试加载规则对应的成品 3.如果是成品 加载对应成品的工艺
@@ -350,12 +547,18 @@ export default {
         }
         let {isRule,isProduct,isSubProduct} = treeNode.dataRef
         if(isRule){
-          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data)
+          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
           if(ruleResult.length > 0){
             treeNode.dataRef.children = ruleResult.map(item => that.formatRuleNode(item))
             that.orgTree = [...that.orgTree]
           }else{
-            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data)
+            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
             if(productResult.length > 0){
               treeNode.dataRef.children = productResult.map(item => that.formatProductNode(item))
               that.orgTree = [...that.orgTree]
@@ -363,7 +566,10 @@ export default {
           }
         }
         if(isProduct){
-          let subProductResult = await craftRouteListByMaterial({materialGroupId:treeNode.dataRef.__id}).then(res => res.data)
+          let subProductResult = await craftRouteListByMaterial({materialGroupId:treeNode.dataRef.__id}).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
           if(subProductResult.length > 0){
             treeNode.dataRef.children = subProductResult.map(item => that.formatSubProductNode(item))
             that.orgTree = [...that.orgTree]
@@ -426,6 +632,8 @@ export default {
       obj.title = `${item.materialName}(${item.materialCode})`
       obj.__materialName = item.materialName
       obj.__materialCode = item.materialCode
+      obj.__mainUnit = item.mainUnit
+      obj.__materialSource = item.materialSource
       obj.scopedSlots = { title: 'title' }
       obj.isProduct = true
       return obj
@@ -452,13 +660,19 @@ export default {
       if (selectedKeys[0] !== undefined) {
         parentId = selectedKeys[0]
       }
-      that.queryParam = { ...that.queryParam, ruleId: parentId }
+
       that.parentId = parentId
       that.parentItem = { ...dataRef }
 
       that.selectedRowKeys = []
       that.selectedRows = []
 
+      if(dataRef.isProduct){
+        that.queryParam = { ...that.queryParam, materialGroupId: dataRef.__id}
+        that.search()
+      }else{
+        that.dataSource = []
+      }
     },
 
     async doAction(type, record) {
@@ -485,41 +699,54 @@ export default {
           })
         })
         return
-      } else if (type === 'export') {
-        let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        let res = await __MaterialInfoExport(2,ids)
-        console.log(res)
-        that.$message.info(res.msg)
+      } else if (type === 'copy') {
+        that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+        that.$nextTick(() => {
+          that.$refs.NormalAddForm.query(type, {
+            ...that.selectedRows[0],
+            __selectItem: that.parentItem,
+            __treeData: [...that.orgTree],
+            __from: 'product'
+          })
+        })
+        return
+      }
+      else if(type === 'import'){
+        that.$message.info('暂未开发...')
+        return
+      }
+      else if (type === 'export') {
+        that.$message.info('暂未开发...')
+        return
+        // let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
+        // let res = await __craftRouteExport(2,ids)
+        // console.log(res)
+        // that.$message.info(res.msg)
         return
       } else if (type === 'filter') {
         that.$refs.searchForm.query()
         return
       } else {
         let m = {
-          disable: {
-            api: productMaterialInfoForbidden,
-            title: '禁用',
-            tpl: names => `是否要删除所选项目${names}？`
-          },
-          enable: {
-            api: productMaterialInfoStartUsing,
-            title: '启用',
-            tpl: names => `确定要启用${names}吗？`
+          copy: {
+            api: null,
+            title: '复制',
+            tpl: names => `是否要复制所选项目${names}？`
           },
           del: {
-            api: productMaterialInfoDelete,
+            api: craftRouteDelete,
             title: '删除',
             tpl: names => `确定要删除${names}吗？`
           },
           approval: {
-            api: productMaterialInfoAudit,
+            api: craftRouteAudit,
             title: '审核',
             tpl: names => `确定要审核项目${names}吗？`
           },
           unapproval: {
-            api: productMaterialInfoAnnulAudit,
+            api: craftRouteAnnulAudit,
             title: '反审核',
-            tpl: names => `反审核项目${names}后，数据标记为未审核，是否继续？`
+            tpl: names => `确定要反审核项目${names}吗？`
           }
         }
         let target = m[type]
@@ -527,7 +754,7 @@ export default {
           that.$message.error(`不支持的操作类型:${type}`)
           return
         }
-        let itemNames = `【${that.selectedRows.map(item => item.materialName).join('，')}】`
+        let itemNames = ` ${that.selectedRows.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} `
         let ids = that.selectedRows.map(item => item.id).join(',')
         that.$confirm({
           title: '提示',
@@ -536,7 +763,7 @@ export default {
           cancelText: '取消',
           onOk() {
             target
-              .api(`ids=${ids}`)
+              .api(`id=${ids}`)
               .then(res => {
                 that.$message.info(res.msg)
                 if (res.code === 200) {
@@ -584,6 +811,48 @@ export default {
     paramChangeHandler(params) {
       this.queryParam = { ...this.queryParam, ...params }
       this.search()
+    },
+    customRowFunction(record) {
+      // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
+      // isForbidden  是否禁用：1禁用，2启用
+      let { useStatus, isForbidden } = record
+      return {
+        style: {
+          color: +isForbidden === 1 ? 'red' : +useStatus === 2 ? 'blue' : ''
+        },
+        on: {
+          click:event => {
+            const that = this
+            that.gxLoading = true
+            craftRouteDetail({id:record.id}).then(res => {
+              that.gxLoading = false
+              that.gxDataSource = res.data.processes
+            }).catch(err => {
+              that.gxLoading = false
+              console.log(err)
+            })
+          },
+          dblclick: event => {
+            return
+            // const that = this
+            // that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+
+            // that.$nextTick(() => {
+            //   that.$refs.NormalAddForm.query('view', {
+            //     ...record,
+            //     __selectItem: that.parentItem,
+            //     __treeData: [...that.orgTree],
+            //     __from: 'product'
+            //   })
+            // })
+          }
+        }
+      }
+    },
+    getWorkShop(id){
+      const that = this
+      let target = that.allWorkshop.find(item => String(item.id) === String(id))
+      return target.departmentName
     }
   },
   beforeDestroy() {
@@ -596,6 +865,14 @@ export default {
 </script>
 
 <style scoped>
+._hd{
+  background-color: #f5f5f5;
+  line-height: 30px;
+  font-weight: normal;
+  font-size: 100%;
+  padding-left: 20px;
+  margin: 0;
+}
 .product-process-management_process-route-management_route >>> .resize-column-wrapper {
   width: 100%;
   height: 100%;

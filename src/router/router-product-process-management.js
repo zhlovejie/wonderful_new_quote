@@ -5,7 +5,7 @@ import {
 } from '@/layouts'
 
 export default { //工艺管理
-  path: 'product-process-management',
+  path: '/product-process-management',
   name: 'product-process-management',
   component: PageView,
   meta: {
@@ -126,14 +126,37 @@ export default { //工艺管理
         {
           path: '/product-process-management/process-route-management/approval',
           name: 'product-process-management_process-route-management_approval',
-          component: () => import('@/views/product-process-management/process-route/Approval'),
+          component: RouteView,
           meta: {
             title: '工艺路线审核',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
           },
-          children: []
+          children: [
+            {
+              path: '/product-process-management/process-route-management/approval/mysubmit',
+              name: 'product-process-management_process-route-management_approval_mysubmit',
+              component: () => import('@/views/product-process-management/process-route/Approval'),
+              meta: {
+                title: '我提交的',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              }
+            },
+            {
+              path: '/product-process-management/process-route-management/approval/myaction',
+              name: 'product-process-management_process-route-management_approval_myaction',
+              component: () => import('@/views/product-process-management/process-route/Approval'),
+              meta: {
+                title: '待我处理的',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              }
+            }
+          ]
         }
       ]
     }

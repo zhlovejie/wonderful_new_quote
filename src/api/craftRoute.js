@@ -59,7 +59,7 @@ export function craftRouteUpdate(parameter) {
 
 /**删除 */
 export function craftRouteDelete(parameter) {
-  let url = parameter.split('=')[1].split(',').map(s => `ids=${s}`).join('&')
+  let url = parameter.split('=')[1].split(',').map(s => `id=${s}`).join('&')
   return axios({
     baseURL: materialBaseUrl,
     url: `/craftRoute?${url}`,
