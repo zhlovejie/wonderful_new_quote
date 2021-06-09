@@ -50,22 +50,52 @@
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit', record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
-            <a type="primary">删除</a>
-          </a-popconfirm>
+          <template v-if="record.status !== 3">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('edit', record)">修改</a>
+          </template>
+          <template v-if="record.status !== 3">
+            <a-divider type="vertical" />
+            <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
+              <a type="primary">删除</a>
+            </a-popconfirm>
+          </template>
+          <template v-if="record.status === 1">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('fix', record)">报修</a>
+          </template>
+          <template v-if="record.status === 2">
+            <a-divider type="vertical" />
+            <a-popconfirm ok-text="确定" cancel-text="取消" @confirm="doAction('acceptance', record)">
+              <template slot="title">
+                <p>是否要执行验收操作？</p>
+                <p>确定设备已验收成功,可正常操作使用</p>
+              </template>
+              <a type="primary">验收</a>
+            </a-popconfirm>
+            <!-- <a type="primary" @click="doAction('acceptance', record)">验收</a> -->
+          </template>
+          <template v-if="record.status !== 3">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('Scrap', record)">报废</a>
+          </template>
         </div>
       </a-table>
     </div>
     <AddForm key="k1" ref="addForm" @finish="searchAction" />
+    <FixForm ref="fixForm" @finish="searchAction()" />
   </div>
 </template>
 
 <script>
 import AddForm from './modules/AddForm'
-import { pageDevelopmentCraftDev } from '@/api/ProcessManagement'
+import FixForm from './modules/FixForm'
+import {
+  pageDevelopmentCraftDev,
+  pageDevesaveDelete,
+  pageDevesaveScrap,
+  pageacceptanceCheck,
+} from '@/api/ProcessManagement'
 const columns = [
   {
     align: 'center',
@@ -132,6 +162,7 @@ export default {
   name: 'product-process-management_equipment-management_list',
   components: {
     AddForm,
+    FixForm,
   },
 
   data() {
@@ -210,10 +241,27 @@ export default {
       if (['view', 'add', 'edit'].includes(actionType)) {
         this.$refs.addForm.query(actionType, record)
       } else if (actionType === 'del') {
-        getDetailDelete({ id: record.id }).then((res) => {
+        pageDevesaveDelete({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
+        return
+      } else if (actionType === 'Scrap') {
+        pageDevesaveScrap({ id: record.id }).then((res) => {
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+      if (actionType === 'acceptance') {
+        pageacceptanceCheck({ id: record.id }).then((res) => {
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+      if (actionType === 'fix') {
+        that.$refs.fixForm.query('add', record)
         return
       } else {
         that.$message.info(`未知指令：${actionType}`)

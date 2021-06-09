@@ -23,6 +23,10 @@ const api = {
   pageImportExcel: '/craft/development-craft-process/importExcel',
   pageDevelopmentCraftDev: '/developmentCraftDev/pageDevelopmentCraftDev',
   pageDevesaveOrUpdate: '/developmentCraftDev/saveOrUpdate',
+  pageDevesaveCraftDev: '/developmentCraftDev/getDetailDevelopmentCraftDev',
+  pageDevesaveDelete: '/developmentCraftDev/delete',
+  pageDevesaveScrap: '/developmentCraftDev/scrap',
+  pageacceptanceCheck: '/developmentCraftDev/acceptanceCheck',
 
 
 
@@ -31,6 +35,45 @@ const api = {
 
 
 
+
+}
+//设备列表验收
+export function pageacceptanceCheck(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageacceptanceCheck,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//设备列表报废
+export function pageDevesaveScrap(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevesaveScrap,
+    method: 'get',
+    params: parameter
+  })
+}
+//设备列表删除
+export function pageDevesaveDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevesaveDelete,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//查看设备信息详情
+export function pageDevesaveCraftDev(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevesaveCraftDev,
+    method: 'get',
+    params: parameter
+  })
 }
 //设备列表新增修改
 export function pageDevesaveOrUpdate(parameter) {

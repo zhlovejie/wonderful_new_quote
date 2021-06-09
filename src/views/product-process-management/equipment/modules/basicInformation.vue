@@ -310,29 +310,27 @@ export default {
         })
         .catch((err) => (that.loading = false))
       if (!that.isAdd) {
-        // await getDetailDevelopmentCraftProcess({ id: record.id }).then((res) => {
-        //   that.detail = res.data
-        //   let arr = (res.data.picsUrl || '').split(',')
-        //   ;(this.fileList = arr.map((item) => {
-        //     return {
-        //       uid: uuid(),
-        //       url: item,
-        //       status: 'done',
-        //       name: '1',
-        //     }
-        //   })),
-        //     this.form.setFieldsValue({
-        //       devName: res.data.devName,
-        //       name: res.data.name,
-        //       num: res.data.num,
-        //       devChargeDepartmentId: res.data.devChargeDepartmentId,
-        //       devChargeId: res.data.devChargeId,
-        //       installPositionDicId: res.data.installPositionDicId,
-        //       installDicId: res.data.installDicId,
-        //       changePrice: res.data.changePrice,
-        //       installPositionDesc: res.data.installPositionDesc,
-        //     })
-        // })
+        that.equipment = record.devNum
+        let arr = (record.devPics || '').split(',')
+        ;(this.fileList = arr.map((item) => {
+          return {
+            uid: uuid(),
+            url: item,
+            status: 'done',
+            name: '1',
+          }
+        })),
+          this.form.setFieldsValue({
+            devName: record.devName,
+            devType: record.devType,
+            devNum: record.devNum,
+            devChargeDepartmentId: record.devChargeDepartmentId,
+            devChargeId: record.devChargeId,
+            installPositionDicId: record.installPositionDicId,
+            installDicId: record.installDicId,
+            // changePrice: record.changePrice,
+            installPositionDesc: record.installPositionDesc,
+          })
       }
     },
     async qrChangeHandler(dataUrl, id) {

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { pageDevesaveOrUpdate } from '@/api/ProcessManagement'
+import { pageDevesaveOrUpdate, pageDevesaveCraftDev } from '@/api/ProcessManagement'
 import BasicInformation from './basicInformation'
 import EquipmentOperation from './equipmentOperation'
 import Maintain from './maintain'
@@ -49,6 +49,7 @@ export default {
   data() {
     return {
       // refs: ['basicInformation'],
+      detail: {},
       visible: false,
       actionType: 'view',
     }
@@ -112,7 +113,6 @@ export default {
       that.$refs.afterSaleService.handleOk()
 
       let valuer = that.$refs.basicInformation.hendle()
-      let basic = { ...valuer }
       let security = that.$refs.security.hendle()
       let maintain = that.$refs.maintain.hendle()
       let afterSaleService = that.$refs.afterSaleService.hendle()
@@ -126,6 +126,11 @@ export default {
       let standingConsumables = that.$refs.standingConsumables.handleOk()
       let standingConsumablesData = that.$refs.standingConsumables.handleData()
 
+      let basic = { ...valuer }
+      if (that.isEdit) {
+        basic.id = that.detail.id
+        basic.deleteIds = [...equipmentData, ...maintenanceData, ...standingConsumablesData]
+      }
       basic.developmentCraftDevCares = maintain
 
       basic.developmentCraftDevSafeItems = security
@@ -145,40 +150,6 @@ export default {
           that.$emit('finish')
         })
         .catch((err) => (that.spinning = false))
-
-      // that.form.validateFields((err, values) => {
-      //   if (!err) {
-      //     console.log(values)
-      //     if (that.isEdit) {
-      //       values.id = that.record.id
-      //     }
-      //     if (that.fileList.length === 0) {
-      //       return that.$message.error('请上传模具图片')
-      //     }
-      //     let react = that.Warehouse.find((item) => +item.id === +values.depositDicId)
-      //     let reacts = that.Position.find((item) => +item.id === +values.depositPositionDicId)
-      //     values.depositPositionDetail = react.text + '-' + reacts.text
-      //     let arrUrl = []
-      //     this.fileList.map((itme) => {
-      //       if (itme.response) {
-      //         arrUrl.push(itme.response.data)
-      //       } else {
-      //         arrUrl.push(itme.url)
-      //       }
-      //     })
-      //     values.picsUrl = arrUrl.toString()
-      //     that.spinning = true
-      //     saveOrUpdate(values)
-      //       .then((res) => {
-      //         that.spinning = false
-      //         that.form.resetFields() // 清空表
-      //         that.visible = false
-      //         that.$message.info(res.msg)
-      //         that.$emit('finish')
-      //       })
-      //       .catch((err) => (that.spinning = false))
-      //   }
-      // })
     },
     handleCancel() {
       // this.fileList = []
@@ -190,15 +161,10 @@ export default {
       that.visible = true
       that.actionType = type
       that.record = record
-      this.$nextTick(() => {
-        that.$refs.basicInformation.query(type, record)
-        that.$refs.maintain.query(type, record)
-        that.$refs.security.query(type, record)
-        that.$refs.afterSaleService.query(type, record)
-        // that.$refs.standingConsumables.query(type, record)
-      })
       if (!that.isAdd) {
-        // await getDetailDevelopmentCraftProcess({ id: record.id }).then((res) => {
+        await pageDevesaveCraftDev({ id: record.id }).then((res) => {
+          that.detail = res.data
+        })
         //   that.detail = res.data
         //   let arr = (res.data.picsUrl || '').split(',')
         //   ;(this.fileList = arr.map((item) => {
@@ -209,19 +175,17 @@ export default {
         //       name: '1',
         //     }
         //   })),
-        //     this.form.setFieldsValue({
-        //       typeNo: res.data.typeNo,
-        //       name: res.data.name,
-        //       num: res.data.num,
-        //       keepDepartmentId: res.data.keepDepartmentId,
-        //       keepUserId: res.data.keepUserId,
-        //       depositPositionDicId: res.data.depositPositionDicId,
-        //       depositDicId: res.data.depositDicId,
-        //       changePrice: res.data.changePrice,
-        //       depositDesc: res.data.depositDesc,
-        //     })
-        // })
       }
+      this.$nextTick(() => {
+        that.$refs.basicInformation.query(type, that.detail)
+        that.$refs.equipmentOperation.query(type, that.detail)
+        that.$refs.maintenanceProcedures.query(type, that.detail)
+        that.$refs.maintain.query(type, that.detail)
+        that.$refs.security.query(type, that.detail)
+        that.$refs.afterSaleService.query(type, that.detail)
+        that.$refs.standingConsumables.query(type, that.detail)
+        // that.$refs.standingConsumables.query(type, record)
+      })
     },
   },
 }

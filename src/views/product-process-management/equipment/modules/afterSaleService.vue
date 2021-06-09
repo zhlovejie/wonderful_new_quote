@@ -8,7 +8,7 @@
           <th>联系单位</th>
           <th>联系人</th>
           <th>联系电话</th>
-          <th>操作</th>
+          <th v-if="type !== 'view'">操作</th>
         </tr>
         <tr v-for="(item, index) in programme" :key="item.key">
           <td>{{ index + 1 }}</td>
@@ -54,10 +54,12 @@
               />
             </a-form-item>
           </td>
-          <td>
-            <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction(index)">
-              <a href="javascript:;">删除</a>
-            </a-popconfirm>
+          <td v-if="type !== 'view'">
+            <template>
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction(index)">
+                <a href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
           </td>
         </tr>
         <tr>
@@ -124,7 +126,7 @@ export default {
       if (type === 'add') {
         this.addprogramme()
       } else {
-        this.fillData()
+        this.programme = this.record.developmentCraftDevPostServices
       }
     },
     //删除

@@ -7,7 +7,7 @@
         </a-form-item>
         <div class="action-wrapper" style="float: right;margin-bottom：10px ;">
           <a-form-item>
-            <template>
+            <template v-if="types !== 'view'">
               <!-- : 1、设备操作规程 2、保养操作规程 3、耗材 -->
               <a-button type="primary" icon="plus" @click="handleAction('add', null)">上传文件</a-button>
             </template>
@@ -23,11 +23,11 @@
         <template>
           <a @click="delSee(record.fileUrl)">查看</a>
         </template>
-        <template>
+        <template v-if="types !== 'view'">
           <a-divider type="vertical" />
           <a @click="handleAction('edit', record)">修改</a>
         </template>
-        <template>
+        <template v-if="types !== 'view'">
           <a-divider type="vertical" />
           <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del', record)">
             <a href="javascript:;">删除</a>
@@ -65,7 +65,7 @@ const columns = [
   {
     align: 'center',
     title: '提交人',
-    dataIndex: 'modcreatedNameifierName',
+    dataIndex: 'createdName',
   },
 
   {
@@ -101,6 +101,7 @@ export default {
     return {
       selectedRowKeys: [],
       selectedRows: [],
+      types: '',
       DeleteData: [],
       // 表头
       columns: columns,
@@ -112,6 +113,12 @@ export default {
     //查看
     delSee(idurl) {
       this.$refs.xdocView.query(idurl)
+    },
+    query(type, record) {
+      this.types = type
+      if (type !== 'add') {
+        this.dataSource = record.standingConsumables
+      }
     },
     handleAction(type, record) {
       const that = this

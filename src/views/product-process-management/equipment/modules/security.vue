@@ -6,7 +6,7 @@
         <tr>
           <th>序号</th>
           <th>安全事项</th>
-          <th>操作</th>
+          <th v-if="type !== 'view'">操作</th>
         </tr>
         <tr v-for="(item, index) in programme" :key="item.key">
           <td>{{ index + 1 }}</td>
@@ -24,10 +24,12 @@
               />
             </a-form-item>
           </td>
-          <td>
-            <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction(index)">
-              <a href="javascript:;">删除</a>
-            </a-popconfirm>
+          <td v-if="type !== 'view'">
+            <template v-if="type !== 'view'">
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction(index)">
+                <a href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
           </td>
         </tr>
         <tr>
@@ -94,39 +96,12 @@ export default {
       if (type === 'add') {
         this.addprogramme()
       } else {
-        this.fillData()
+        this.programme = this.record.developmentCraftDevSafeItems
       }
     },
     //删除
     handleAction(index) {
       this.programme.splice(index, 1)
-    },
-    // 详情
-    fillData() {
-      let that = this
-      //   let id = {
-      //     oaTrainYearPlanId: this.record.id,
-      //   }
-      //   annualDetail(id).then((res) => {
-      //     this.year = res.data.year
-      //     this.remark = res.data.remark
-      //     this.programme = res.data.planItemList.map((item) => {
-      //       let arr = item.itemList.map((i) => {
-      //         return {
-      //           beginData: [moment(i.beginTime), moment(i.endTime)],
-      //           beginTime: moment(i.beginTime),
-      //           endTime: moment(i.endTime),
-      //           joinPerson: i.joinPerson,
-      //           title: i.title,
-      //         }
-      //       })
-      //       return {
-      //         month: item.monthStr,
-      //         monthId: item.month,
-      //         oaTrainYearPlanItemDetailSaveBoList: arr,
-      //       }
-      //     })
-      //   })
     },
 
     handleOk() {
