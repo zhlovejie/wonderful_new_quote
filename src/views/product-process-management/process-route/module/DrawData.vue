@@ -225,7 +225,9 @@ export default {
     },
     handleSubmit() {
       const that = this
-      that.$emit('change', that.formatData())
+      if(!that.addForm.isDisabled){
+        that.$emit('change', that.formatData())
+      }
       that.handleCancel()
     },
     handleCancel() {

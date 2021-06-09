@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="添加操作规程"
+    :title="modelTitle"
     :width="1050"
     :visible="visible"
     @cancel="handleCancel"
@@ -8,12 +8,17 @@
     :maskClosable="false"
     :destroyOnClose="true"
   >
+    <template v-if="addForm.isDisabled">
+      <ConfigRulesView ref="configRulesView"/>
+    </template>
+
+    <template v-else>
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
           <a-input
             placeholder="设备名称/设备编号模糊查询"
-            v-model="searchParam.a"
+            v-model="searchParam.numORName"
             allowClear
             style="width:220px;"
           />
@@ -21,7 +26,7 @@
         <a-form-item>
           <a-input
             placeholder="设备型号"
-            v-model="searchParam.b"
+            v-model="searchParam.devType"
             allowClear
             style="width:180px;"
           />
@@ -29,10 +34,22 @@
         <a-form-item>
           <a-input
             placeholder="设备责任人"
-            v-model="searchParam.c"
+            v-model="searchParam.devChargeName"
             allowClear
             style="width:180px;"
           />
+        </a-form-item>
+        <a-form-item>
+          <a-select
+            placeholder="状态"
+            v-model="searchParam.status"
+            allowClear
+            style="width: 180px"
+          >
+            <a-select-option :value="1">在库</a-select-option>
+            <a-select-option :value="2">保修中</a-select-option>
+            <a-select-option :value="3">报废</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item>
           <a-button
@@ -51,6 +68,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        size="small"
       >
         <div
           slot="order"
@@ -58,90 +76,79 @@
         >
           <span>{{ index + 1 }}</span>
         </div>
-
-        <div
-          slot="meetingNum"
-          slot-scope="text, record"
-        >
-          <a
-            href="javascript:void(0);"
-            @click="() => doAction(record)"
-          >{{text}}</a>
-        </div>
-        <div
-          slot="typeDicName"
-          slot-scope="text, record"
-        >
-          <a
-            href="javascript:void(0);"
-            @click="() => doAction(record)"
-          >{{text}}</a>
-        </div>
-        <div
-          slot="departmentName"
-          slot-scope="text, record"
-        >
-          <a
-            href="javascript:void(0);"
-            @click="() => doAction(record)"
-          >{{text}}</a>
-        </div>
         <div
           slot="status"
+          slot-scope="text, record, index"
+        >
+          <span>{{ text === 1 ? '正常' : text === 2 ? '保修中' : '报废' }}</span>
+        </div>
+
+        <div
+          slot="devName"
           slot-scope="text, record"
         >
-          {{ {1:'正常',2:'报修中',3:'报废'}[text] }}
+          <a
+            href="javascript:void(0);"
+            @click="() => doAction(record)"
+          >{{text}}</a>
         </div>
       </a-table>
     </div>
+    </template>
 
   </a-modal>
 </template>
 
 <script>
+import { pageDevelopmentCraftDev,pageDevesaveCraftDev } from '@/api/ProcessManagement'
+import ConfigRulesView from './ConfigRulesView'
 const columns = [
   {
     align: 'center',
     title: '序号',
+    key: 'order',
     width: '70px',
     scopedSlots: { customRender: 'order' }
   },
   {
     align: 'center',
     title: '设备编号',
-    dataIndex: 'a1',
-    scopedSlots: { customRender: 'meetingNum' }
+    dataIndex: 'devNum'
   },
   {
     align: 'center',
     title: '设备名称',
-    dataIndex: 'a2',
-    scopedSlots: { customRender: 'typeDicName' }
+    dataIndex: 'devName',
+    scopedSlots: { customRender: 'devName' }
   },
   {
     align: 'center',
     title: '设备型号',
-    dataIndex: 'a3',
-    scopedSlots: { customRender: 'departmentName' }
+    dataIndex: 'devType'
   },
   {
     align: 'center',
-    title: '设备责任人',
-    dataIndex: 'a4'
+    title: '设备负责人',
+    dataIndex: 'devChargeName'
   },
   {
     align: 'center',
     title: '安装位置',
-    dataIndex: 'a5'
+    dataIndex: 'installPosition'
   },
   {
     align: 'center',
     title: '设备状态',
-    dataIndex: 'a6',
+    dataIndex: 'status',
     scopedSlots: { customRender: 'status' }
   }
 ]
+
 export default {
+  inject: ['addForm'],
+  components:{
+    ConfigRulesView
+  },
   data() {
     return {
       visible: false,
@@ -159,26 +166,27 @@ export default {
       searchParam: {}
     }
   },
+  computed:{
+    modelTitle(){
+      return `${this.addForm.modalTitle}操作规程`
+    }
+  },
   methods: {
     query() {
       const that = this
       that.visible = true
-      that.loading = true
-      that.dataSource = [
-        {
-          id:1,
-          a1: 'test1',
-          a2: 'test2',
-          a3: 'test3',
-          a4: 'test4',
-          a5: 'test5',
-          a6: '1'
-        }
-      ]
 
-      setTimeout(() => {
-        that.loading = false
-      }, 1500)
+      that.$nextTick(() => {
+        if(that.addForm.isDisabled){
+          let deviceId = that.addForm.form.deviceId
+          if(deviceId && that.$refs.configRulesView){
+            that.$refs.configRulesView.query(deviceId)
+          }
+        }else{
+          that.searchAction()
+        }
+      })
+
     },
     handleCancel() {
       this.visible = false
@@ -187,12 +195,12 @@ export default {
       let that = this
       let paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.pageSize || 10
+        size: that.pagination.pageSize || 10,
       }
       let _searchParam = Object.assign({}, { ...this.searchParam }, opt, paginationParam)
       that.loading = true
-      getMeetingLeavePageList(_searchParam)
-        .then(res => {
+      pageDevelopmentCraftDev(_searchParam)
+        .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -213,7 +221,7 @@ export default {
             that.search()
           }
         })
-        .catch(err => (that.loading = false))
+        .catch((err) => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -223,9 +231,24 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
-    doAction(record) {
-      this.$emit('change', record)
-      this.handleCancel()
+    async doAction(record) {
+      const that = this
+      //检测该设备是否有操作规程
+      let case1 = await pageDevesaveCraftDev({ id:record.id }).then((res) => {
+        if(res && res.data && res.data.equipmentOperations && Array.isArray(res.data.equipmentOperations)){
+          return res.data.equipmentOperations.length > 0
+        }
+        return false
+      })
+      if(!case1){
+        // let {devNum,devName,devType} = record
+        // let __msg = `${}`
+        that.$message.info('该设备无相关操作规程，请及时维护设备信息！')
+        return
+      }else{
+        that.$emit('change', record)
+        that.handleCancel()
+      }
     }
   }
 }
