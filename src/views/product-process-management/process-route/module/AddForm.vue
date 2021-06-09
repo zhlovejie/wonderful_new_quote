@@ -391,7 +391,8 @@ import {
   craftRouteAdd,
   craftRouteUpdate,
   craftRouteDetail,
-  craftRouteApprove
+  craftRouteApprove,
+  craftRouteGetDeviceFile
 } from '@/api/craftRoute'
 import vuedraggable from 'vuedraggable'
 import ConfigRules from './ConfigRules'

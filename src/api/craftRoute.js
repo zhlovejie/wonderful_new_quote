@@ -147,7 +147,11 @@ export function craftRouteGetCode(parameter) {
   })
 }
 
-/**根据设备id获取设备操作规程 */
+/**
+ * 根据设备id获取设备操作规程
+ * @param {integer} deviceId 设备id
+ * @returns
+ */
 export function craftRouteGetDeviceFile(parameter) {
   return axios({
     baseURL: materialBaseUrl,
