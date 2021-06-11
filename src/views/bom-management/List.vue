@@ -242,16 +242,19 @@
         </a-table>
       </div>
     </div>
-    <!-- <NormalAddForm
+    <NormalAddForm
       ref="NormalAddForm"
       :key="normalAddFormKeyCount"
       @finish="finishHandler"
     />
-    <ApproveInfo ref="approveInfoCard" />
-    <SearchForm
+    <!--
+      <ApproveInfo ref="approveInfoCard" />
+     -->
+     <SearchForm
       ref="searchForm"
       @change="paramChangeHandler"
-    /> -->
+    />
+    <AddGroupForm ref="addGroupForm" @finish="finishHandler"/>
   </a-card>
 </template>
 
@@ -264,10 +267,11 @@ import {
   __MaterialInfoExport
 } from '@/api/bomManagement'
 // import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-// import NormalAddForm from './module/NormalAddForm'
+import NormalAddForm from './modules/AddForm'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
-// import SearchForm from './module/SearchForm'
-// let uuid = () => Math.random().toString(16).slice(2);
+import AddGroupForm from './modules/AddGroupForm'
+import SearchForm from './modules/SearchForm'
+let uuid = () => Math.random().toString(16).slice(2);
 const columns = [
   {
     align: 'center',
@@ -407,9 +411,10 @@ const getParentKey = (key, tree) => {
 export default {
   name: 'bom-management_list',
   components: {
-    // NormalAddForm,
+    NormalAddForm,
     // ApproveInfo,
-    // SearchForm
+    SearchForm,
+    AddGroupForm
   },
   data() {
     return {
@@ -474,7 +479,7 @@ export default {
       }
       return arr
         .reverse()
-        .map(item => item.code)
+        .map(item => item.key)
         .join('.')
     }
   },
@@ -546,11 +551,8 @@ export default {
         }
         getBomTree({ parentId: treeNode.dataRef.value })
           .then(res => {
-            let oldChildren = [...(treeNode.dataRef.children || [])]
             let newChildren = res.data.map(item => that.formatTreeData(item))
-            let children = that.margeNode(oldChildren, newChildren)
-
-            treeNode.dataRef.children = children
+            treeNode.dataRef.children = newChildren
             that.orgTree = [...that.orgTree]
             that.dataList = that.generateList(that.orgTree)
             resolve()
@@ -695,7 +697,13 @@ export default {
     },
     async doAction(type, record) {
       const that = this
-      if (type === 'add') {
+      if(type === 'addGroup'){
+        that.$refs['addGroupForm'].query({
+          __selectItem: that.parentItem
+        })
+        return
+      }
+      else if (type === 'add') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
         that.$nextTick(() => {
           that.$refs.NormalAddForm.query(type, {
@@ -789,6 +797,8 @@ export default {
       this.selectedRowKeys = []
       this.selectedRows = []
       this.search()
+      this.fetchTree()
+      return
       if (param && param.key) {
         let target = this.findTreeNode(this.$refs.treeRef, param.key)
         if (target) {
