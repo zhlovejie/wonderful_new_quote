@@ -19,14 +19,9 @@
           >
             <template
               slot="title"
-              slot-scope="{ title }"
+              slot-scope="{ title ,__color}"
             >
-              <span v-if="title.indexOf(searchValue) > -1">
-                {{ title.substr(0, title.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else>{{ title }}</span>
+              <span :style="{'color':__color}">{{ title }}</span>
             </template>
           </a-tree>
         </div>
@@ -81,62 +76,62 @@
                 @click="doAction('filter', null)"
               >高级筛选</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('craftRoute:add')">
               <a-button
                 type="primary"
                 :disabled="!canAdd"
                 @click="doAction('add', null)"
               >新增</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('craftRoute:update')">
               <a-button
                 :disabled="!canEdit"
                 type="primary"
                 @click="doAction('edit', null)"
               >修改</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('craftRoute:del')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('del', null)"
               >删除</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('craftRoute:add')">
               <a-button
                 :disabled="!canEdit"
                 type="primary"
                 @click="doAction('copy', null)"
               >复制</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('craftRoute:audit')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('approval', null)"
               >审核</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('craftRoute:annulAudit')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('unapproval', null)"
               >反审核</a-button>
             </a-form-item>
-            <a-form-item >
+            <!-- <a-form-item >
               <a-button
                 :disabled="!canAdd"
                 type="primary"
                 @click="doAction('import', null)"
               >导入</a-button>
-            </a-form-item>
-            <a-form-item >
+            </a-form-item> -->
+            <!-- <a-form-item >
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('export', null)"
               >导出</a-button>
-            </a-form-item>
+            </a-form-item> -->
           </a-form>
         </div>
         <h3 class="_hd">基本信息</h3>
@@ -645,6 +640,12 @@ export default {
       obj.__id = item.id
       obj.__materialName = item.materialCommonName
       obj.__materialCode = item.materialCommonCode
+      obj.__status = item.status
+      //审批状态 审批中2黄  通过3蓝  不通过4红
+      let m_color = {
+        1:'normal',2:'#dada18',3:'blue',4:'red'
+      }
+      obj.__color = m_color[item.status]
       obj.title = `${item.materialCommonCode}(${item.materialCommonName})`
       obj.scopedSlots = { title: 'title' }
       obj.isSubProduct = true
@@ -728,11 +729,6 @@ export default {
         return
       } else {
         let m = {
-          copy: {
-            api: null,
-            title: '复制',
-            tpl: names => `是否要复制所选项目${names}？`
-          },
           del: {
             api: craftRouteDelete,
             title: '删除',
@@ -755,24 +751,52 @@ export default {
           return
         }
         let itemNames = ` ${that.selectedRows.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} `
-        let ids = that.selectedRows.map(item => item.id).join(',')
+
+        if(type === 'approval'){
+          //待审核，审核不通过
+          let items = that.selectedRows.filter(item => +item.status !== 1 && +item.status !== 4)
+          if(items.length > 0){
+            that.$message.info(`${items.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} 已经提交审核或审核通过了。禁止重复提交审核！`)
+            return
+          }
+        }
+        if(type === 'unapproval'){
+          let items = that.selectedRows.filter(item => +item.status !== 3)
+          if(items.length > 0){
+            that.$message.info(`${items.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} 尚未通过审核。禁止反审核操作！`)
+            return
+          }
+        }
+
+        // let ids = that.selectedRows.map(item => item.id).join(',')
         that.$confirm({
           title: '提示',
           content: target.tpl(itemNames),
           okText: '确定',
           cancelText: '取消',
           onOk() {
-            target
-              .api(`id=${ids}`)
-              .then(res => {
-                that.$message.info(res.msg)
-                if (res.code === 200) {
-                  that.finishHandler({ key: that.parentItem.value })
-                }
-              })
-              .catch(err => {
-                that.$message.error(err.message)
-              })
+            let arr = []
+
+            that.selectedRows.map(item => {
+              arr.push(target.api(`id=${item.id}`).then(res => +res.code === 200))
+            })
+
+            Promise.all(arr).then(result => {
+              that.$message.info('操作成功')
+              that.finishHandler({ key: that.parentItem.value })
+            })
+
+            // target
+            //   .api(`id=${ids}`)
+            //   .then(res => {
+            //     that.$message.info(res.msg)
+            //     if (res.code === 200) {
+            //       that.finishHandler({ key: that.parentItem.value })
+            //     }
+            //   })
+            //   .catch(err => {
+            //     that.$message.error(err.message)
+            //   })
           }
         })
       }
@@ -833,7 +857,18 @@ export default {
             })
           },
           dblclick: event => {
+            const that = this
+            that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+            that.$nextTick(() => {
+              that.$refs.NormalAddForm.query('view', {
+                ...record,
+                __selectItem: that.parentItem,
+                __treeData: [...that.orgTree],
+                __from: 'product'
+              })
+            })
             return
+
             // const that = this
             // that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
 

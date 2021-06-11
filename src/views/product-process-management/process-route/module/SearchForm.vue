@@ -32,7 +32,7 @@
         </a-col>
         <a-col :span="24" >
           <a-form-item label="审核">
-            <a-select v-decorator="['status']" placeholder="审核状态">
+            <a-select v-decorator="['status']" :allowClear="true" placeholder="审核状态">
               <a-select-option :value="1">待审核</a-select-option>
               <a-select-option :value="2">审核中</a-select-option>
               <a-select-option :value="3">审核通过</a-select-option>
@@ -101,9 +101,10 @@ export default {
       } else if (type === 'search') {
         let values = this.form.getFieldsValue()
         if (Array.isArray(values.date)) {
+
           if (values.date.length === 2) {
-            values.startTime = arrMoment[0].format('YYYY-MM-DD')
-            values.endTime = arrMoment[1].format('YYYY-MM-DD')
+            values.startTime = values.date[0].format('YYYY-MM-DD')
+            values.endTime = values.date[1].format('YYYY-MM-DD')
           } else {
             values.startTime = undefined
             values.endTime = undefined
