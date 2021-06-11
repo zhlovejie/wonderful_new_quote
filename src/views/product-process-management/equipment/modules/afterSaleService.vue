@@ -133,39 +133,12 @@ export default {
     handleAction(index) {
       this.programme.splice(index, 1)
     },
-    // 详情
-    fillData() {
-      let that = this
-      //   let id = {
-      //     oaTrainYearPlanId: this.record.id,
-      //   }
-      //   annualDetail(id).then((res) => {
-      //     this.year = res.data.year
-      //     this.remark = res.data.remark
-      //     this.programme = res.data.planItemList.map((item) => {
-      //       let arr = item.itemList.map((i) => {
-      //         return {
-      //           beginData: [moment(i.beginTime), moment(i.endTime)],
-      //           beginTime: moment(i.beginTime),
-      //           endTime: moment(i.endTime),
-      //           joinPerson: i.joinPerson,
-      //           title: i.title,
-      //         }
-      //       })
-      //       return {
-      //         month: item.monthStr,
-      //         monthId: item.month,
-      //         oaTrainYearPlanItemDetailSaveBoList: arr,
-      //       }
-      //     })
-      //   })
-    },
-
     handleOk() {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          this.values = values.programme
+          that.$emit('file', values.programme)
+          // this.values = values.programme
         }
       })
     },

@@ -247,13 +247,11 @@ export default {
             }
           })
           values.devPics = arrUrl.toString()
-          that.values = values
+          that.$emit('file', values)
         }
       })
     },
-    hendle() {
-      return this.values
-    },
+
     handleCancel() {
       this.fileList = []
       this.form.resetFields() // 清空表

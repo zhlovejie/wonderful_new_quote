@@ -25,18 +25,18 @@
           <tr>
             <td style="width: 150px">申请部门</td>
             <td style="width: 180px">
-              <a-form-item>{{ userInfo.departmentName }}</a-form-item>
+              <a-form-item>{{ detail.departmentName || userInfo.departmentName }}</a-form-item>
             </td>
             <td style="width: 150px">申请人</td>
             <td style="width: 180px">{{ userInfo.trueName }}</td>
             <td style="width: 150px">申请日期</td>
-            <td style="width: 180px">{{ detail.__currentDate }}</td>
+            <td style="width: 180px">{{ detail.applyTime || detail.__currentDate }}</td>
           </tr>
           <tr>
             <td style="width: 150px">设备/模具编号</td>
-            <td style="width: 180px">{{ detail.devNum }}</td>
+            <td style="width: 180px">{{ detail.code || record.devNum }}</td>
             <td style="width: 150px">设备/模具名称</td>
-            <td style="width: 180px">{{ detail.devName }}</td>
+            <td style="width: 180px">{{ detail.name || record.devName }}</td>
             <td style="width: 150px">需求时间</td>
             <td style="width: 180px">
               <a-form-item>
@@ -135,12 +135,13 @@ import {
 } from '@/api/systemSetting'
 import Approval from './Approval'
 import { getDictionaryList } from '@/api/workBox'
+
 import {
-  oaAssertsInfoRecoveAddOrUpdate,
-  oaAssertsInfoRecoveDetail,
-  oaAssertsInfoRecoveApproval,
-  oaAssertsInfoRecoveHandleRevocation,
-} from '@/api/assetManagement'
+  pageacceptanceGuarantee,
+  pageDevelopmentDetail,
+  pageDevelopmentApproval,
+  pageDevelopmenthandleRevocation,
+} from '@/api/ProcessManagement'
 import moment from 'moment'
 export default {
   name: 'asset-management-management-FixForm',
@@ -200,13 +201,14 @@ export default {
       let that = this
       that.visible = true
       that.type = type
+      console.log(that.userInfo)
       that.record = Object.assign({}, record, { __currentDate: moment().format('YYYY-MM-DD') })
       that.detail = {}
 
       await that.initData()
 
       //if(!that.isAdd){
-      await oaAssertsInfoRecoveDetail({ id: that.record.id }).then((res) => {
+      await pageDevelopmentDetail({ id: that.record.id }).then((res) => {
         that.detail = Object.assign({}, that.record || {}, res.data || {})
       })
       //}
@@ -238,19 +240,20 @@ export default {
             values.id = that.record.id
           } else if (that.isAdd) {
             //报修   来自 管理资产 和 我的资产
-            values.assertsId = that.record.id
+            values.devId = that.record.id
+            values.departmentName = that.userInfo.departmentName
+
             if (values.needTime && values.needTime instanceof moment) {
               values.needTime = values.needTime.format('YYYY-MM-DD')
             }
-            values.code = that.detail.code
-            values.name = that.detail.name
+            values.code = that.record.devNum
+            values.name = that.record.devName
             //取当前登录人的 人员ID和部门ID
             values.departmentId = that.userInfo.departmentId
             values.userId = that.userInfo.id
           } else if (that.isEdit) {
             //debugger
             values.id = that.detail.id
-            values.assertsId = that.detail.assertsId
             if (values.needTime && values.needTime instanceof moment) {
               values.needTime = values.needTime.format('YYYY-MM-DD')
             }
@@ -261,7 +264,7 @@ export default {
             values.userId = that.userInfo.id
           }
 
-          let api = that.isFix ? oaAssertsInfoRecoveHandleRevocation : oaAssertsInfoRecoveAddOrUpdate
+          let api = that.isFix ? pageDevelopmenthandleRevocation : pageacceptanceGuarantee
 
           that.spinning = true
           api(values)
@@ -290,7 +293,7 @@ export default {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
-      oaAssertsInfoRecoveApproval(values)
+      pageDevelopmentApproval(values)
         .then((res) => {
           that.spinning = false
           console.log(res)

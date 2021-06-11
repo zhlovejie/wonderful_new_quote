@@ -27,6 +27,19 @@ const api = {
   pageDevesaveDelete: '/developmentCraftDev/delete',
   pageDevesaveScrap: '/developmentCraftDev/scrap',
   pageacceptanceCheck: '/developmentCraftDev/acceptanceCheck',
+  pageacceptanceGuarantee: '/developmentCraftDev/guarantee',
+  pageDevelopmentCraftDevRecoveApply: '/craft/development-craft-dev-recove-apply/pageDevelopmentCraftDevRecoveApply',
+  pageDevelopmentDetail: '/craft/development-craft-dev-recove-apply/getDetailDevelopmentCraftDevRecoveApply',
+  pageDevelopmentgetRevocation: '/craft/development-craft-dev-recove-apply/getRevocation',
+  pageDevelopmentRevocation: '/craft/development-craft-dev-recove-apply/revocation',
+  pageDevelopmentConcludeRevocation: '/craft/development-craft-dev-recove-apply/concludeRevocation',
+  pageDevelopmentApproval: '/craft/development-craft-dev-recove-apply/approval',
+  pageDevelopmenthandleRevocation: '/craft/development-craft-dev-recove-apply/handleRevocation',
+  pageDevelopmenthandleUploadRevocation: '/craft/development-craft-dev-recove-apply/uploadRevocation',
+  pageDevelopmentCraftDevCareLog: '/craft/development-craft-dev-care-log/pageDevelopmentCraftDevCareLog',
+  listDevelopmentCraftDevCareLogCount: '/craft/development-craft-dev-care-log/listDevelopmentCraftDevCareLogCount',
+  getDetailDevelopmentCraftDevCareLog: '/craft/development-craft-dev-care-log/getDetailDevelopmentCraftDevCareLog',
+  updateDevelopmentCraftDevCareLog: '/craft/development-craft-dev-care-log/updateDevelopmentCraftDevCareLog',
 
 
 
@@ -36,6 +49,131 @@ const api = {
 
 
 
+
+
+
+}
+/*修改接口（处理checkFlag=1，验收checkFlag=2)*/
+export function updateDevelopmentCraftDevCareLog(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.updateDevelopmentCraftDevCareLog,
+    method: 'post',
+    data: parameter
+  })
+}
+// 查询保养日志详情
+export function getDetailDevelopmentCraftDevCareLog(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getDetailDevelopmentCraftDevCareLog,
+    method: 'get',
+    params: parameter
+  })
+}
+// 保养总数
+export function listDevelopmentCraftDevCareLogCount(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.listDevelopmentCraftDevCareLogCount,
+    method: 'get',
+    params: parameter
+  })
+}
+// 保养列表
+export function pageDevelopmentCraftDevCareLog(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentCraftDevCareLog,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//上传凭证
+export function pageDevelopmenthandleUploadRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmenthandleUploadRevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+//填写维修方案
+export function pageDevelopmenthandleRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmenthandleRevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+/*设备维修审批*/
+export function pageDevelopmentApproval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentApproval,
+    method: 'post',
+    data: parameter
+  })
+}
+
+//完结
+export function pageDevelopmentConcludeRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentConcludeRevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//撤回
+export function pageDevelopmentRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentRevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+//查看凭证
+export function pageDevelopmentgetRevocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentgetRevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//分页查询设备保修申请单
+export function pageDevelopmentDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+//分页查询设备保修申请单
+export function pageDevelopmentCraftDevRecoveApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageDevelopmentCraftDevRecoveApply,
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*报修 新增或修改*/
+export function pageacceptanceGuarantee(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.pageacceptanceGuarantee,
+    method: 'post',
+    data: parameter
+  })
 }
 //设备列表验收
 export function pageacceptanceCheck(parameter) {

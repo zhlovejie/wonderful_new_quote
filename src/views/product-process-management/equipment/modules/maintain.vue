@@ -207,8 +207,7 @@ export default {
               checkUserId: item.checkUserId,
             }
           })
-
-          this.values = react
+          that.$emit('file', react)
         }
       })
     },

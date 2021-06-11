@@ -9,17 +9,17 @@
     :destroyOnClose="true"
   >
     <!-- 基本数据 -->
-    <BasicInformation ref="basicInformation" />
+    <BasicInformation ref="basicInformation" @file="receive" />
     <!-- 设备操作规程 -->
     <EquipmentOperation ref="equipmentOperation" />
     <!-- 保养资料 -->
-    <Maintain ref="maintain" />
+    <Maintain ref="maintain" @file="maintains" />
     <!-- 保养操作规程 -->
     <MaintenanceProcedures ref="maintenanceProcedures" />
     <!-- 安全事项 -->
-    <Security ref="security" />
+    <Security ref="security" @file="securitys" />
     <!-- 售后服务 -->
-    <AfterSaleService ref="afterSaleService" />
+    <AfterSaleService ref="afterSaleService" @file="afterSaleServices" />
     <!-- 常备耗材 -->
     <StandingConsumables ref="standingConsumables" />
   </a-modal>
@@ -50,6 +50,10 @@ export default {
     return {
       // refs: ['basicInformation'],
       detail: {},
+      basicInformation: undefined,
+      security: undefined,
+      maintain: undefined,
+      afterSaleService: undefined,
       visible: false,
       actionType: 'view',
     }
@@ -97,6 +101,19 @@ export default {
     },
   },
   methods: {
+    receive(data) {
+      this.basicInformation = data
+    },
+    securitys(data) {
+      this.security = data
+    },
+    maintains(data) {
+      this.maintain = data
+    },
+    afterSaleServices(data) {
+      this.afterSaleService = data
+    },
+
     async handleOk() {
       let that = this
       if (that.isView) {
@@ -112,10 +129,10 @@ export default {
       //售后服务
       that.$refs.afterSaleService.handleOk()
 
-      let valuer = that.$refs.basicInformation.hendle()
-      let security = that.$refs.security.hendle()
-      let maintain = that.$refs.maintain.hendle()
-      let afterSaleService = that.$refs.afterSaleService.hendle()
+      // let valuer = that.$refs.basicInformation.hendle()
+      // let security = that.$refs.security.hendle()
+      // let maintain = that.$refs.maintain.hendle()
+      // let afterSaleService = that.$refs.afterSaleService.hendle()
       //设备操作规程
       let equipment = that.$refs.equipmentOperation.handleOk()
       let equipmentData = that.$refs.equipmentOperation.handleData()
@@ -125,31 +142,42 @@ export default {
       //常备耗材
       let standingConsumables = that.$refs.standingConsumables.handleOk()
       let standingConsumablesData = that.$refs.standingConsumables.handleData()
+      if (equipment.length === 0) {
+        return that.$message.error('请上传设备操作规程')
+      }
+      if (maintenance.length === 0) {
+        return that.$message.error('请上传保养操作规程')
+      }
+      if (standingConsumables.length === 0) {
+        return that.$message.error('请上传常备耗材')
+      }
 
-      let basic = { ...valuer }
+      let basic = { ...that.basicInformation }
       if (that.isEdit) {
         basic.id = that.detail.id
         basic.deleteIds = [...equipmentData, ...maintenanceData, ...standingConsumablesData]
       }
-      basic.developmentCraftDevCares = maintain
+      basic.developmentCraftDevCares = that.maintain
 
-      basic.developmentCraftDevSafeItems = security
+      basic.developmentCraftDevSafeItems = that.security
 
-      basic.developmentCraftDevPostServices = afterSaleService
+      basic.developmentCraftDevPostServices = that.afterSaleService
       basic.equipmentOperations = equipment
       basic.maintenanceOperations = maintenance
       basic.standingConsumables = standingConsumables
 
       console.log(basic)
 
-      pageDevesaveOrUpdate(basic)
-        .then((res) => {
-          that.spinning = false
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch((err) => (that.spinning = false))
+      if (that.basicInformation && that.security && that.maintain && that.afterSaleService) {
+        pageDevesaveOrUpdate(basic)
+          .then((res) => {
+            that.spinning = false
+            that.visible = false
+            that.$message.info(res.msg)
+            that.$emit('finish')
+          })
+          .catch((err) => (that.spinning = false))
+      }
     },
     handleCancel() {
       // this.fileList = []

@@ -108,12 +108,9 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          this.values = values.programme
+          that.$emit('file', values.programme)
         }
       })
-    },
-    hendle() {
-      return this.values
     },
     handleCancel() {
       this.programme = []

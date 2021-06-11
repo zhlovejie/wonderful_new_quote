@@ -21,15 +21,15 @@
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <a-form-item>
+        <a-form-item v-if="$auth('step:upload')">
           <a-upload :beforeUpload="beforeUpload" :showUploadList="false">
             <a-button class="a-button" type="primary" icon="upload" :loading="uploading">导入</a-button>
           </a-upload>
         </a-form-item>
-        <a-form-item>
+        <a-form-item v-if="$auth('step:exprot')">
           <a-button class="a-button" type="primary" @click="exprotAction()">下载模板</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float: right">
+        <div class="action-wrapper" style="float: right" v-if="$auth('step:add')">
           <a-form-item>
             <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
@@ -49,13 +49,19 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit', record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
-            <a type="primary">删除</a>
-          </a-popconfirm>
+          <template v-if="$auth('step:view')">
+            <a type="primary" @click="doAction('view', record)">查看</a>
+          </template>
+          <template v-if="$auth('step:edit')">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('edit', record)">修改</a>
+          </template>
+          <template v-if="$auth('step:del')">
+            <a-divider type="vertical" />
+            <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
+              <a type="primary">删除</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
