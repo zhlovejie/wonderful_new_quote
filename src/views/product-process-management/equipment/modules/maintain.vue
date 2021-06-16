@@ -9,6 +9,7 @@
           <th>保养周期</th>
           <th>保养人</th>
           <th>验收负责人</th>
+          <th v-if="type !== 'view'">操作</th>
         </tr>
         <tr v-for="(item, index) in programme" :key="item.key">
           <td>{{ index + 1 }}</td>
@@ -75,6 +76,13 @@
                 style="width: 100%"
               />
             </a-form-item>
+          </td>
+          <td v-if="type !== 'view'">
+            <template v-if="type !== 'view'">
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction(index)">
+                <a href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
           </td>
         </tr>
         <tr>
@@ -210,6 +218,10 @@ export default {
           that.$emit('file', react)
         }
       })
+    },
+    //删除
+    handleAction(index) {
+      this.programme.splice(index, 1)
     },
     hendle() {
       return this.values
