@@ -142,6 +142,9 @@ export default {
       //常备耗材
       let standingConsumables = that.$refs.standingConsumables.handleOk()
       let standingConsumablesData = that.$refs.standingConsumables.handleData()
+      if (that.basicInformation === undefined) {
+        return that.$message.error('请完善基本信息')
+      }
       if (equipment.length === 0) {
         return that.$message.error('请上传设备操作规程')
       }
