@@ -42,7 +42,7 @@
           <!-- <a-tab-pane tab="我的" :key="1" /> -->
           <!-- <template v-if="$auth('materialRuleAudit:approval')"> -->
           <a-tab-pane tab="待我审批" :key="2" />
-          <a-tab-pane tab="我已审批" :key="3" />
+          <!-- <a-tab-pane tab="我已审批" :key="3" /> -->
           <!-- </template> -->
         </a-tabs>
         <a-table
@@ -75,7 +75,7 @@
           </div>
           <div slot="action" slot-scope="text, record, index">
             <a @click="doAction('view', record)">查看</a>
-            <template v-if="+record.status === 1">
+            <template v-if="+record.status === 2">
               <a-divider type="vertical" />
               <a @click="doAction('approval', record)">审批</a>
             </template>
@@ -84,7 +84,7 @@
       </div>
 
       <ApproveInfo ref="approveInfoCard" />
-      <NormalAddForm ref="normalAddForm" :key="normalAddFormKeyCount" />
+      <NormalAddForm ref="normalAddForm" :key="normalAddFormKeyCount" @finish="finishHandler" />
     </a-spin>
   </a-card>
 </template>
@@ -286,6 +286,9 @@ export default {
       const that = this
       that.$refs['normalAddForm'].query(type, { ...record })
     },
+    finishHandler(){
+      this.search()
+    }
   },
 }
 </script>
