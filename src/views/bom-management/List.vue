@@ -113,7 +113,7 @@
             </a-form-item>
             <a-form-item >
               <a-button
-                :disabled="!canUse"
+                :disabled="!canUseButton"
                 type="primary"
                 @click="doAction('use', null)"
               >使用</a-button>
@@ -204,6 +204,15 @@
           >
             {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
           </a>
+          <div slot="materialProperty" slot-scope="text, record, index" >
+            {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
+          </div>
+          <div slot="materialUnit" slot-scope="text, record, index" >
+            {{ {1:'支',2:'把',3:'件'}[text] }}
+          </div>
+          <div slot="isDelete" slot-scope="text, record, index" >
+            {{ {1:'是',0:'否'}[text] }}
+          </div>
         </a-table>
 
         <a-table
@@ -239,6 +248,18 @@
           >
             {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
           </a>
+
+
+          <div slot="materialProperty" slot-scope="text, record, index" >
+            {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
+          </div>
+          <div slot="materialUnit" slot-scope="text, record, index" >
+            {{ {1:'支',2:'把',3:'件'}[text] }}
+          </div>
+          <div slot="isDelete" slot-scope="text, record, index" >
+            {{ {1:'是',0:'否'}[text] }}
+          </div>
+
         </a-table>
       </div>
     </div>
@@ -264,6 +285,7 @@ import {
   listMaterialForm,
   getBomTree,
   listMaterialFormChildDetail,
+  useMaterialForm,
   __MaterialInfoExport
 } from '@/api/bomManagement'
 // import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -309,12 +331,14 @@ const columns = [
   {
     align: 'center',
     title: '物料属性',
-    dataIndex: 'materialProperty'
+    dataIndex: 'materialProperty',
+    scopedSlots: { customRender: 'materialProperty' }
   },
   {
     align: 'center',
     title: '辅计量单位',
-    dataIndex: 'materialUnit'
+    dataIndex: 'materialUnit',
+    scopedSlots: { customRender: 'materialUnit' }
   },
   {
     align: 'center',
@@ -363,12 +387,14 @@ const columnsDetail = [
   {
     align: 'center',
     title: '物料属性',
-    dataIndex: 'materialProperty'
+    dataIndex: 'materialProperty',
+    scopedSlots: { customRender: 'materialProperty' }
   },
   {
     align: 'center',
     title: '辅计量单位',
-    dataIndex: 'materialUnit'
+    dataIndex: 'materialUnit',
+    scopedSlots: { customRender: 'materialUnit' }
   },
   {
     align: 'center',
@@ -378,7 +404,8 @@ const columnsDetail = [
   {
     align: 'center',
     title: '使用状态',
-    dataIndex: 'materialStatus'
+    dataIndex: 'useStatus',
+    scopedSlots: { customRender: 'useStatus' }
   },
   {
     align: 'center',
@@ -465,6 +492,20 @@ export default {
     },
     canUse() {
       return this.selectedRows.length > 0
+    },
+    /**
+     * 如果点击BOM组别名称，点击使用，则是对BOM组别名称下的所有的BOM组进行使用
+     * 如果BOM组别下有未审核过的数据，则只对审核过的数据更改状态为使用
+     */
+    canUseButton(){
+      let {__status,__useStatus} = this.parentItem
+      if(!('__status' in this.parentItem)){
+        return false
+      }
+      if(__useStatus === null && __status === null){
+        return true
+      }
+      return +__status === 2
     },
     treeSelectedKeys() {
       return [String(this.parentId)]
@@ -714,7 +755,7 @@ export default {
           })
         })
         return
-      } else if (type === 'edit') {
+      } else if (type === 'edit' || type === 'copy') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
         that.$nextTick(() => {
           that.$refs.NormalAddForm.query(type, {
@@ -725,7 +766,8 @@ export default {
           })
         })
         return
-      } else if (type === 'export') {
+      }
+      else if (type === 'export') {
         let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
         let res = await __MaterialInfoExport(1,ids)
         console.log(res)
@@ -736,15 +778,10 @@ export default {
         return
       } else {
         let m = {
-          disable: {
-            api: routineMaterialInfoForbidden,
-            title: '禁用',
-            tpl: names => `是否要删除所选项目${names}？`
-          },
-          enable: {
-            api: routineMaterialInfoStartUsing,
-            title: '启用',
-            tpl: names => `确定要启用${names}吗？`
+          use:{
+            api:useMaterialForm,
+            title:'使用',
+            tpl: names => `是否要更改状态未使用？`
           },
           del: {
             api: delMaterialForm,
