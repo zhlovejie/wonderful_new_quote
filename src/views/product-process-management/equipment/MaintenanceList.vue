@@ -16,7 +16,7 @@
       >
         <a-select-option :value="1">周</a-select-option>
         <a-select-option :value="2">月</a-select-option>
-        <a-select-option :value="2">年</a-select-option>
+        <a-select-option :value="3">年</a-select-option>
       </a-select>
       <a-select
         placeholder="状态"
