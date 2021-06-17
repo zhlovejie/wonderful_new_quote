@@ -52,6 +52,7 @@
                 <td>
                   <a-form-model-item prop="materialCode">
                     <a-select
+                      v-if="!isDisabled"
                       show-search
                       :value="form.materialCode"
                       placeholder="模糊搜索"
@@ -75,6 +76,7 @@
                         {{ item.__label }}
                       </a-select-option>
                     </a-select>
+                    <span v-else>{{form.materialCode}}</span>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -105,18 +107,21 @@
                 <td>
                   <a-form-model-item prop="yield">
                     <a-input-number
+                      v-if="!isDisabled"
                       style="width:100%;"
                       :min="0"
                       :max="100"
                       :step="1"
                       v-model="form.yield"
                     />
+                    <span v-else>{{form.yield}}</span>
                   </a-form-model-item>
                 </td>
                 <td>工艺路线代码</td>
                 <td>
                   <a-form-model-item prop="routeCode">
                     <a-select
+                      v-if="!isDisabled"
                       show-search
                       :value="form.routeCode"
                       placeholder="模糊搜索"
@@ -141,13 +146,14 @@
                         {{ item.__label }}
                       </a-select-option>
                     </a-select>
+                    <span v-else>{{form.routeCode}}</span>
                   </a-form-model-item>
                 </td>
               </tr>
               <tr>
                 <td>工艺路线名称</td>
                 <td>
-                  <a-form-model-item >
+                  <a-form-model-item>
                     {{form.routeName}}
                   </a-form-model-item>
                 </td>
@@ -155,10 +161,12 @@
                 <td>
                   <a-form-model-item prop="remark">
                     <a-textarea
+                      v-if="!isDisabled"
                       placeholder="备注"
                       :rows="1"
                       v-model="form.remark"
                     />
+                    <span v-else>{{form.remark}}</span>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -173,10 +181,16 @@
               :pagination="false"
               size="small"
             >
-              <div slot="order" slot-scope="text, record, index">
+              <div
+                slot="order"
+                slot-scope="text, record, index"
+              >
                 {{index + 1}}
               </div>
-              <div slot="useStatus" slot-scope="text, record, index">
+              <div
+                slot="useStatus"
+                slot-scope="text, record, index"
+              >
                 {{ {0:'未使用',1:'使用'}[text] }}
               </div>
               <div
@@ -194,42 +208,69 @@
                   />
                 </a-tooltip>
               </div>
-              <div slot="materialProperty" slot-scope="text, record, index" >
+              <div
+                slot="materialProperty"
+                slot-scope="text, record, index"
+              >
                 {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
               </div>
-              <div slot="materialUnit" slot-scope="text, record, index" >
+              <div
+                slot="materialUnit"
+                slot-scope="text, record, index"
+              >
                 {{ {1:'支',2:'把',3:'件'}[text] }}
               </div>
-              <div slot="isDelete" slot-scope="text, record, index" >
+              <div
+                slot="isDelete"
+                slot-scope="text, record, index"
+              >
                 {{ {1:'是',0:'否'}[text] }}
               </div>
 
-
-
-              <div slot="level" slot-scope="text, record, index" >
+              <div
+                slot="level"
+                slot-scope="text, record, index"
+              >
                 <a-form-model-item
                   :prop="`formChildDetailList.${index}.level`"
                   :rules=" {required: true, message: '输入顺序号'}"
                 >
-                  <a-input v-model="record.level" style="width:100px;" />
+                  <a-input
+                    v-model="record.level"
+                    style="width:100px;"
+                    v-if="!isDisabled"
+                  />
+                  <span v-else>{{record.level}}</span>
                 </a-form-model-item>
               </div>
 
-              <div slot="researchCode" slot-scope="text, record, index" >
+              <div
+                slot="researchCode"
+                slot-scope="text, record, index"
+              >
                 <a-form-model-item
                   :prop="`formChildDetailList.${index}.researchCode`"
                   :rules=" {required: true, message: '输入自研结构件代码'}"
                 >
-                  <a-input v-model="record.researchCode" style="width:100px;"/>
+                  <a-input
+                    v-model="record.researchCode"
+                    style="width:100px;"
+                    v-if="!isDisabled"
+                  />
+                  <span v-else>{{record.researchCode}}</span>
                 </a-form-model-item>
               </div>
 
-              <div slot="materialCode" slot-scope="text, record, index" >
+              <div
+                slot="materialCode"
+                slot-scope="text, record, index"
+              >
                 <a-form-model-item
                   :prop="`formChildDetailList.${index}.materialCode`"
                   :rules=" {required: true, message: '请选择物料代码'}"
                 >
                   <a-select
+                    v-if="!isDisabled"
                     style="width:150px;"
                     show-search
                     :value="record.materialCode"
@@ -253,117 +294,43 @@
                       {{ item.__label }}
                     </a-select-option>
                   </a-select>
+                  <span v-else>{{record.materialCode}}</span>
                 </a-form-model-item>
               </div>
 
-              <div slot="materialNum" slot-scope="text, record, index" >
+              <div
+                slot="materialNum"
+                slot-scope="text, record, index"
+              >
                 <a-form-model-item
                   :prop="`formChildDetailList.${index}.materialNum`"
                   :rules=" {required: true, message: '输入用量'}"
                 >
                   <a-input-number
+                    v-if="!isDisabled"
                     style="width:80px;"
                     :min="0"
                     :step="1"
                     :precision="2"
                     v-model="record.materialNum"
                   />
+                  <span v-else>{{record.materialNum}}</span>
                 </a-form-model-item>
               </div>
-              <div slot="action" slot-scope="text, record, index" >
-                <a href="javascript:void(0);" @click="materialTableAction('del',record)">删除</a>
+              <div
+                slot="action"
+                slot-scope="text, record, index"
+              >
+                <a
+                  v-if="!isDisabled"
+                  href="javascript:void(0);"
+                  @click="materialTableAction('del',record)"
+                >删除</a>
               </div>
             </a-table>
 
-
-            <!-- <table class="custom-table custom-table-border">
-              <tr>
-                <th style="width:80px;">序号</th>
-                <th style="width:100px;">顺序号</th>
-                <th style="width:100px;">自研结构件代码</th>
-                <th>物料代码</th>
-                <th>物料名称</th>
-                <th style="width:150px;">规格型号</th>
-                <th>物料属性</th>
-                <th>辅计量单位</th>
-                <th style="width:100px;">用量</th>
-                <th>发料仓库</th>
-                <th style="width:80px;">操作</th>
-              </tr>
-              <tr v-for="(item ,idx) in form.formChildDetailList" :key="item.key">
-                <td>{{idx + 1}}</td>
-                <td>
-                  <a-form-model-item
-                    :prop="`formChildDetailList.${idx}.level`"
-                    :rules=" {required: true, message: '输入顺序号'}"
-                  >
-                    <a-input v-model="item.level" />
-                  </a-form-model-item>
-                </td>
-                <td>
-                  <a-form-model-item
-                    :prop="`formChildDetailList.${idx}.researchCode`"
-                    :rules=" {required: true, message: '输入自研结构件代码'}"
-                  >
-                    <a-input v-model="item.researchCode" />
-                  </a-form-model-item>
-                </td>
-                <td>
-                  <a-form-model-item
-                    :prop="`formChildDetailList.${idx}.materialCode`"
-                    :rules=" {required: true, message: '请选择物料代码'}"
-                  >
-                    <a-select
-                      show-search
-                      :value="item.materialCode"
-                      placeholder="模糊搜索"
-                      style="width: 100%"
-                      :default-active-first-option="false"
-                      :show-arrow="false"
-                      :filter-option="false"
-                      @search="materialFuzzyAction"
-                      @change="(key) => materialFuzzyTableHandleChange(key,item)"
-                    >
-                      <a-spin
-                        v-if="materialFuzzySearch.fetching"
-                        slot="notFoundContent"
-                        size="small"
-                      />
-                      <a-select-option
-                        v-for="item in materialFuzzySearch.list"
-                        :key="item.__key"
-                        :value="item.__key"
-                      >
-                        {{ item.__label }}
-                      </a-select-option>
-                    </a-select>
-                  </a-form-model-item>
-                </td>
-                <td>{{item.materialName}}</td>
-                <td>{{item.modelType}}</td>
-                <td>{{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[item.materialProperty]}}</td>
-                <td>{{ {1:'支',2:'把',3:'件'}[item.materialUnit] }}</td>
-                <td>
-                  <a-form-model-item
-                    :prop="`formChildDetailList.${idx}.materialNum`"
-                    :rules=" {required: true, message: '输入用量'}"
-                  >
-                    <a-input-number
-                      style="width:100%;"
-                      :min="0"
-                      :step="1"
-                      :precision="2"
-                      v-model="item.materialNum"
-                    />
-                  </a-form-model-item>
-                </td>
-                <td>{{item.storeAddress}}</td>
-                <td>
-                  <a href="javascript:void(0);" @click="materialTableAction('del',item)">删除</a>
-                </td>
-              </tr>
-            </table> -->
             <a-button
+              v-if="!isDisabled"
               style="width:100%;"
               type="dashed"
               icon="plus"
@@ -388,16 +355,17 @@
               </tr>
               <tr>
                 <td>
-                  {{ [3,4].includes(+form.status) ? '审核人员' : '最后更新人' }}
+                  {{ [1,2,3].includes(+form.status) ? '审核人员' : '最后更新人' }}
                 </td>
                 <td>{{form.modifierName}}</td>
-                <td>{{ [3,4].includes(+form.status) ? '审核时间' : '最后更新时间' }}</td>
+                <td>{{ [1,2,3].includes(+form.status) ? '审核时间' : '最后更新时间' }}</td>
                 <td>{{form.modifyTime}}</td>
               </tr>
             </table>
           </div>
         </div>
       </a-form-model>
+      <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
@@ -405,7 +373,10 @@
 <script>
 //物料代码模糊搜索
 import { routineMaterialInfoPageList } from '@/api/routineMaterial'
-import { materialFormAddOrUpdate,getMaterialFormDetail } from '@/api/bomManagement'
+//工艺路线模糊搜索
+import { craftRouteApprovePageList } from '@/api/craftRoute'
+import { materialFormAddOrUpdate, getMaterialFormDetail,approvalMaterialForm } from '@/api/bomManagement'
+import Approval from './ApprovalForm'
 import moment from 'moment'
 
 const columnsDetail = [
@@ -472,21 +443,21 @@ const columnsDetail = [
     align: 'center',
     title: '操作',
     scopedSlots: { customRender: 'action' }
-  },
+  }
 ]
 
-
-let uuid = () => Math.random().toString(16).slice(2);
+const uuid = () =>
+  Math.random()
+    .toString(16)
+    .slice(2)
 export default {
   name: 'bom-management-wrapper',
-  provide(){
+  provide() {
     return {
-      addForm:this
+      addForm: this
     }
   },
-  components: {
-
-  },
+  components: {Approval},
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
     this.bomFuzzyAction = this.$_.debounce(this.bomFuzzyAction, 800)
@@ -496,20 +467,20 @@ export default {
       actionType: 'view',
       spinning: false,
       detail: {},
-      materialFuzzySearch:{
+      materialFuzzySearch: {
         list: [],
-        item:{},
-        fetching: false,
+        item: {},
+        fetching: false
       },
-      bomFuzzySearch:{
-        list:[],
-        item:{},
-        fetching:false
+      bomFuzzySearch: {
+        list: [],
+        item: {},
+        fetching: false
       },
       form: {
-        materialNum:1, //数量默认 1 不可更改，前端不展示
-        yield:100,
-        formChildDetailList:[],//物料信息
+        materialNum: 1, //数量默认 1 不可更改，前端不展示
+        yield: 100,
+        formChildDetailList: [] //物料信息
       },
       rules: {
         routeName: [{ required: true, message: '请输入工艺路线名称' }],
@@ -546,7 +517,7 @@ export default {
       const btn = []
       if (that.isView) {
         return null
-      } else if (that.isAdd || that.isEdit) {
+      } else if (that.isAdd || that.isEdit || that.isCopy) {
         btn.push(h('a-button', { key: 'cancel', on: { click: that.handleCancel } }, '取消'))
         btn.push(
           h(
@@ -591,7 +562,7 @@ export default {
       this.$refs['ruleForm'].validate(valid => {
         if (valid) {
           that.spinning = true
-          materialFormAddOrUpdate({...that.form}).then(res => {
+          materialFormAddOrUpdate({ ...that.form }).then(res => {
             console.log(res)
             that.spinning = false
             console.log(res)
@@ -602,10 +573,10 @@ export default {
             }
           })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
@@ -616,25 +587,33 @@ export default {
       that.actionType = type
       that.detail = record
       that.targetNode = record.__selectItem
-      if(type === 'add'){
+      if (type === 'add') {
         that.form = {
           ...that.form,
-          bomGroupName:that.targetNode.title,
-          groupId:that.targetNode.value
+          bomGroupName: that.targetNode.title,
+          groupId: that.targetNode.value
         }
-      }else if(type === 'edit' || type === 'copy'){
-        let isEdit = type === 'edit'
-        let isCopy = type === 'copy'
-        getMaterialFormDetail({id:record.id}).then(res => {
-          let data = res.data
+      } else{
+        const isEdit = type === 'edit'
+        const isCopy = type === 'copy'
+        getMaterialFormDetail({ id: record.id }).then(res => {
+          const data = res.data
           data.formChildDetailList = data.detailListVo.map(item => {
-            return Object.assign({},item,{key:uuid()})
+            return Object.assign({}, item, { key: uuid() })
           })
-          if(isCopy){
+          if (isCopy) {
             delete data.id
             delete data.bomCode
+            delete data.createdName
+            delete data.modifierName
+            delete data.createdTime
+            delete data.modifyTime
+
+            delete data.createdId
+            delete data.modifierId
+
             data.formChildDetailList = data.formChildDetailList.map(item => {
-              let _item = Object.assign({},item)
+              const _item = Object.assign({}, item)
               delete _item.id
               return _item
             })
@@ -650,7 +629,7 @@ export default {
         size: 10,
         materialCode: wd
       }
-      that.materialFuzzySearch = {...that.materialFuzzySearch,fetching:true}
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
       const result = await routineMaterialInfoPageList(_searchParam).then(res => {
         if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
           return []
@@ -670,7 +649,7 @@ export default {
           return item
         })
       })
-      that.materialFuzzySearch = {...that.materialFuzzySearch,fetching:true,list:result}
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true, list: result }
     },
     materialFuzzyHandleChange(key) {
       const that = this
@@ -681,38 +660,38 @@ export default {
         materialCode: target.materialCode,
         materialName: target.materialName,
         materialProperty: target.materialSource,
-        materialUnit:target.mainUnit,
-        modelType:target.specifications
+        materialUnit: target.mainUnit,
+        modelType: target.specifications
       }
       console.log(target)
-      that.materialFuzzySearch = {list:[],fetching:false,item:target}
+      that.materialFuzzySearch = { list: [], fetching: false, item: target }
     },
-    materialFuzzyTableHandleChange(key,item){
+    materialFuzzyTableHandleChange(key, item) {
       const that = this
       const target = that.materialFuzzySearch.list.find(item => item.__key === key)
-      let formChildDetailList = [...that.form.formChildDetailList]
-      let _target = formChildDetailList.find(itemSelf => itemSelf.key === item.key)
+      const formChildDetailList = [...that.form.formChildDetailList]
+      const _target = formChildDetailList.find(itemSelf => itemSelf.key === item.key)
 
-      _target.materialId =  target.id,
-      _target.materialCode =  target.materialCode,
-      _target.materialName =  target.materialName,
-      _target.materialProperty =  target.materialSource,
-      _target.materialUnit = target.mainUnit,
-      _target.modelType = target.specifications
+      ;(_target.materialId = target.id),
+      (_target.materialCode = target.materialCode),
+      (_target.materialName = target.materialName),
+      (_target.materialProperty = target.materialSource),
+      (_target.materialUnit = target.mainUnit),
+      (_target.modelType = target.specifications)
 
-      that.form = {...that.form,formChildDetailList}
-      that.materialFuzzySearch = {list:[],fetching:false,item:target}
+      that.form = { ...that.form, formChildDetailList }
+      that.materialFuzzySearch = { list: [], fetching: false, item: target }
     },
-    materialTableAction(type,item){
+    materialTableAction(type, item) {
       const that = this
-      if(type === 'add'){
-        let formChildDetailList = [...that.form.formChildDetailList]
-        formChildDetailList.push({key:uuid()})
-        that.form = {...that.form,formChildDetailList}
-      }else if(type === 'del'){
+      if (type === 'add') {
+        const formChildDetailList = [...that.form.formChildDetailList]
+        formChildDetailList.push({ key: uuid() })
+        that.form = { ...that.form, formChildDetailList }
+      } else if (type === 'del') {
         let formChildDetailList = [...that.form.formChildDetailList]
         formChildDetailList = formChildDetailList.filter(itemSelf => itemSelf.key !== item.key)
-        that.form = {...that.form,formChildDetailList}
+        that.form = { ...that.form, formChildDetailList }
       }
     },
     async bomFuzzyAction(wd) {
@@ -722,24 +701,53 @@ export default {
         size: 10,
         materialCode: wd
       }
-      that.bomFuzzySearch = {...that.bomFuzzySearch,fetching:true}
-      const result = await new Promise((resolve,reject) => {
-        let testData = [
-          {__value:'test1',__label:'测试工艺路线1',__key:uuid(),routeCode:'111',routeName:'test1111'},
-          {__value:'test2',__label:'测试工艺路线2',__key:uuid(),routeCode:'222',routeName:'test2222'},
-        ]
-        setTimeout(() => {
-          resolve(testData)
-        }, 200);
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true }
+      const result = await craftRouteApprovePageList({ status: 3 }).then(res => {
+        const records = res.data.records.map(item => {
+          item.__key = uuid()
+          item.__label = `${item.routeCode}(${item.routeName})`
+          item.__value = item.routeCode
+          return item
+        })
+        return records
       })
-      that.bomFuzzySearch = {...that.bomFuzzySearch,fetching:true,list:result}
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true, list: result }
     },
     bomFuzzyHandleChange(key) {
       const that = this
       const target = that.bomFuzzySearch.list.find(item => item.__key === key)
       console.log(target)
-      that.form = {...that.form,craftId:target.id,routeCode:target.routeCode,routeName:target.routeName}
-      that.bomFuzzySearch = {list:[],fetching:false,item:target}
+      that.form = { ...that.form, craftId: target.id, routeCode: target.routeCode, routeName: target.routeName }
+      that.bomFuzzySearch = { list: [], fetching: false, item: target }
+    },
+    submitAction(opt) {
+      const that = this
+      const values = Object.assign({}, opt || {}, { approveId: that.detail.id })
+      that.spinning = true
+      approvalMaterialForm(values)
+        .then(res => {
+          that.spinning = false
+          that.$message.info(res.msg)
+          if(+res.code === 200){
+            that.handleCancel()
+            that.$emit('finish')
+          }
+        })
+        .catch(err => (that.spinning = false))
+    },
+    passAction(opt = {}) {
+      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+    },
+    noPassAction() {
+      const that = this
+      that.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion
+      })
     }
   }
 }

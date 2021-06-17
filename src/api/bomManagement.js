@@ -230,7 +230,34 @@ export function auditMaterialForm(parameter) {
   })
 }
 
+/**
+ * 物料单详情批量修改替换列表
+ * @param {*} parameter
+ * @returns
+ */
+ export function updateBatchChildDetailList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/bom/material-form-child-detail/updateBatchChildDetailList',
+    method: 'POST',
+    data: parameter
+  })
+}
 
+
+/**
+ * 物料单详情信息列表模糊搜索
+ * @param {*} parameter
+ * @returns
+ */
+ export function listMaterialFormChildDetailByBomIdAndCode(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/bom/material-form-child-detail/listMaterialFormChildDetailByBomIdAndCode',
+    method: 'GET',
+    params: parameter
+  })
+}
 
 export function __craftRouteExport(type,params) {
   const m = {

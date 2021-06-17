@@ -61,6 +61,30 @@ export default { //BOM管理
           }
         }
       ]
+    },
+    {
+      path: '/bom-management/comprehensive',
+      name: 'bom-management_comprehensive',
+      component: () => import('@/views/bom-management/ComprehensiveList'),
+      meta: {
+        title: 'BOM综合',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: []
+    },
+    {
+      path: '/bom-management/diff',
+      name: 'bom-management_diff',
+      component: () => import('@/views/bom-management/DiffList'),
+      meta: {
+        title: 'BOM差异分析',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: []
     }
   ]
 }

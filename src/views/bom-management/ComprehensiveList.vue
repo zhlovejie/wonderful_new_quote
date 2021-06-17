@@ -77,79 +77,6 @@
                 @click="doAction('filter', null)"
               >筛选</a-button>
             </a-form-item>
-            <a-form-item >
-              <a-button
-                type="primary"
-                @click="doAction('addGroup', null)"
-              >新增BOM组</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                type="primary"
-                @click="doAction('add', null)"
-              >新增</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                :disabled="!canEdit"
-                type="primary"
-                @click="doAction('edit', null)"
-              >修改</a-button>
-            </a-form-item>
-
-            <a-form-item >
-              <a-button
-                type="primary"
-                @click="doAction('del', null)"
-              >删除</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('copy', null)"
-              >复制</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                :disabled="!canUseButton"
-                type="primary"
-                @click="doAction('use', null)"
-              >使用</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                type="primary"
-                @click="doAction('approval', null)"
-              >审核</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                type="primary"
-                @click="doAction('unapproval', null)"
-              >反审核</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('editBatch', null)"
-              >BOM成批修改</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('import', null)"
-              >导入</a-button>
-            </a-form-item>
-            <a-form-item >
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('export', null)"
-              >导出</a-button>
-            </a-form-item>
           </a-form>
         </div>
         <a-alert
@@ -194,13 +121,6 @@
               />
             </a-tooltip>
           </div>
-          <a
-            slot="status"
-            slot-scope="text, record"
-            @click="approvalPreview(record)"
-          >
-            {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
-          </a>
           <div slot="materialProperty" slot-scope="text, record, index" >
             {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
           </div>
@@ -238,13 +158,6 @@
               />
             </a-tooltip>
           </div>
-          <a
-            slot="status"
-            slot-scope="text, record"
-            @click="approvalPreview(record)"
-          >
-            {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
-          </a>
 
 
           <div slot="materialProperty" slot-scope="text, record, index" >
@@ -260,20 +173,11 @@
         </a-table>
       </div>
     </div>
-    <NormalAddForm
-      ref="NormalAddForm"
-      :key="normalAddFormKeyCount"
-      @finish="finishHandler"
-    />
-    <!--
-      <ApproveInfo ref="approveInfoCard" />
-     -->
      <SearchForm
       ref="searchForm"
       @change="paramChangeHandler"
     />
-    <AddGroupForm ref="addGroupForm" @finish="finishHandler"/>
-    <BatchUpdate ref="batchUpdate" @finish="finishHandler"/>
+
   </a-card>
 </template>
 
@@ -282,18 +186,15 @@ import {
   delMaterialForm,
   listMaterialForm,
   getBomTree,
-  listMaterialFormChildDetail,
+  leafNodeMaterialFormChildDetail,
   useMaterialForm,
   auditMaterialForm,
   reverseAuditMaterialForm,
   __MaterialInfoExport
 } from '@/api/bomManagement'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-import NormalAddForm from './modules/AddForm'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
-import AddGroupForm from './modules/AddGroupForm'
 import SearchForm from './modules/SearchForm'
-import BatchUpdate from './modules/BatchUpdate'
+
 let uuid = () => Math.random().toString(16).slice(2);
 const columns = [
   {
@@ -437,13 +338,9 @@ const getParentKey = (key, tree) => {
 }
 
 export default {
-  name: 'bom-management_list',
+  name: 'bom-management_comprehensive',
   components: {
-    NormalAddForm,
-    // ApproveInfo,
     SearchForm,
-    AddGroupForm,
-    BatchUpdate
   },
   data() {
     return {
@@ -481,34 +378,14 @@ export default {
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'bom-management_list') {
+        if (to.name === 'bom-management_comprehensive') {
           this.init()
         }
       },
       immediate: true
     }
   },
-  computed: {
-    canEdit() {
-      return this.selectedRows.length === 1
-    },
-    canUse() {
-      return this.selectedRows.length > 0
-    },
-    /**
-     * 如果点击BOM组别名称，点击使用，则是对BOM组别名称下的所有的BOM组进行使用
-     * 如果BOM组别下有未审核过的数据，则只对审核过的数据更改状态为使用
-     */
-    canUseButton(){
-      let {__status,__useStatus} = this.parentItem
-      if(!('__status' in this.parentItem)){
-        return false
-      }
-      if(__useStatus === null && __status === null){
-        return true
-      }
-      return +__status === 2
-    },
+  computed:{
     treeSelectedKeys() {
       return [String(this.parentId)]
     },
@@ -740,141 +617,9 @@ export default {
     },
     async doAction(type, record) {
       const that = this
-      if(type === 'editBatch'){
-        that.$refs['batchUpdate'].query()
-        return
-      }else if(type === 'addGroup'){
-        that.$refs['addGroupForm'].query({
-          __selectItem: that.parentItem
-        })
-        return
-      }
-      else if (type === 'add') {
-        that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
-        that.$nextTick(() => {
-          that.$refs.NormalAddForm.query(type, {
-            ...record,
-            __selectItem: that.parentItem,
-            __treeData: [...that.orgTree],
-            __from: 'normal'
-          })
-        })
-        return
-      } else if (type === 'edit' || type === 'copy') {
-        that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
-        that.$nextTick(() => {
-          that.$refs.NormalAddForm.query(type, {
-            ...that.selectedRows[0],
-            __selectItem: that.parentItem,
-            __treeData: [...that.orgTree],
-            __from: 'normal'
-          })
-        })
-        return
-      }
-      else if (type === 'export111') {
-        let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        let res = await __MaterialInfoExport(1,ids)
-        console.log(res)
-        that.$message.info(res.msg)
-        return
-      } else if (type === 'filter') {
+      if (type === 'filter') {
         that.$refs.searchForm.query()
         return
-      } else {
-        let m = {
-          use:{
-            api:useMaterialForm,
-            title:'使用',
-            tpl: names => `是否要更改状态未使用？`
-          },
-          del: {
-            api: delMaterialForm,
-            title: '删除',
-            /**
-             * 如果此物料关联了 BOM则不可以删除 给出提示物料已使用，禁止删除！
-             */
-            tpl: names => `确定要删除${names}吗？`
-          },
-          approval: {
-            api: auditMaterialForm,
-            title: '审核',
-            tpl: names => `确定要审核项目${names}吗？`
-          },
-          unapproval: {
-            api: reverseAuditMaterialForm,
-            title: '反审核',
-            tpl: names => `反审核项目${names}后，数据标记为未审核，是否继续？`
-          }
-        }
-        let target = m[type]
-        if (!target) {
-          that.$message.error(`不支持的操作类型:${type}`)
-          return
-        }
-
-        let isSingle = that.selectedRows.length > 0
-        let itemNames = isSingle
-          ? `【${that.selectedRows.map(item => item.bomCode).join('，')}】`
-          : `节点【${that.parentItem.title}】`
-
-        if(!isSingle && +that.parentItem.key === 0){
-          that.$message.info('根节点禁止操作')
-          return
-        }
-
-        that.$confirm({
-          title: '提示',
-          content: target.tpl(itemNames),
-          okText: '确定',
-          cancelText: '取消',
-          onOk() {
-            if(isSingle){
-              let arr = []
-              that.selectedRows.map(item => {
-                arr.push(target.api({bomStatus:1,id:item.id}).then(res => {
-                  return {result:res,target:item}
-                }))
-              })
-              Promise.all(arr).then(res => {
-                let msg = ''
-
-                res.map(r => {
-                  let {result,target} = r
-                  if(+result.code !== 200){
-                    msg += `【${target.bomCode}】${result.msg} `
-                  }
-                })
-                if(msg.length > 0){
-                  const h = that.$createElement;
-                  that.$info({
-                    title: '提示',
-                    content: h('div', {}, [
-                      h('p', msg)
-                    ]),
-                    width: 450,
-                    onOk() {},
-                  });
-                }else{
-                  that.$message.info('操作成功')
-                }
-                that.finishHandler({ key: that.parentItem.value })
-              }).catch(err => {
-                that.$message.error(err.message)
-              })
-            }else{
-              let {key,__bomStatus} = that.parentItem
-              target.api({bomStatus:__bomStatus,id:key}).then(res => {
-                that.$message.info(res.msg)
-                if (+res.code === 200) {
-                  that.finishHandler({ key: that.parentItem.value })
-                }
-              }).catch(err => {
-                that.$message.error(err.message)
-              })
-            }
-          }
-        })
       }
     },
     finishHandler(param) {
@@ -909,11 +654,10 @@ export default {
         on: {
           click:event => {
             const that = this
-            listMaterialFormChildDetail({bomId:record.id}).then(res => {
-              console.log(res)
+            leafNodeMaterialFormChildDetail({bomId:record.id}).then(res => {
               let format2Children = (item)=> {
                 let _item = Object.assign({},item)
-                _item.key = _item.level
+                _item.key = uuid()
                 _item.children = _item.detailListVo || []
                 if (Array.isArray(_item.children) && _item.children.length > 0) {
                   _item.children = _item.children.map(v => format2Children(v))
@@ -932,13 +676,6 @@ export default {
           }
         }
       }
-    },
-    approvalPreview(record) {
-      if (!record.instanceId) {
-        this.$message.info('未生成审批流程')
-        return
-      }
-      this.$refs.approveInfoCard.init(record.instanceId)
     },
     paramChangeHandler(params) {
       this.queryParam = { ...this.queryParam, ...params }
