@@ -270,7 +270,7 @@
                         :precision="0"
                         v-model="item.duration"
                       />
-                      <span>{{item.duration}}</span>
+                      <span v-else>{{item.duration}}</span>
                     </a-form-model-item>
                   </td>
                   <td>
@@ -297,7 +297,7 @@
                   <td v-if="!isDisabled">
                     <a
                       href="javascript:void(0);"
-                      @click="processTableDataChange('del',item.processId)"
+                      @click="processTableDataChange('del',item)"
                     >删除</a>
                   </td>
                 </tr>
@@ -392,7 +392,8 @@ import {
   craftRouteUpdate,
   craftRouteDetail,
   craftRouteApprove,
-  craftRouteGetDeviceFile
+  craftRouteGetDeviceFile,
+  craftRouteProcessDelete
 } from '@/api/craftRoute'
 import vuedraggable from 'vuedraggable'
 import ConfigRules from './ConfigRules'
@@ -549,13 +550,18 @@ export default {
         return p
       })
     },
-    processTableDataChange(field, processId, val) {
+    async processTableDataChange(field, record, val) {
       const that = this
       if (field === 'clear') {
         that.form = { ...that.form, processes: [], processList: [] }
       } else if (field === 'del') {
+
+        await craftRouteProcessDelete(record.id).then(res => {
+          console.log(res)
+        })
+
         let { processes, processList } = that.form
-        processes = processes.filter(item => item.processId !== processId)
+        processes = processes.filter(item => item.processId !== record.processId)
         processList = processes.map(item => item.processId)
         that.form = { ...that.form, processes, processList }
       }
