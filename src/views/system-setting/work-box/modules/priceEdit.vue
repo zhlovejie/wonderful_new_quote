@@ -26,19 +26,23 @@
           <a-input v-decorator="['area', {}]" />
         </a-form-item> -->
         <a-form-item label="成本价" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-Number
+          <a-input-number
+            style="width: 100%"
+            :min="0"
+            :step="1"
+            :precision="3"
             v-decorator="[
               'costPrice',
               {
                 rules: [
                   {
                     required: true,
-                    message: '请输入B价!',
+                    message: '请输入成本价!',
                   },
                 ],
               },
             ]"
-            @change="constPriceAction($event)"
+            @change="(e) => constPriceAction(e)"
           />
         </a-form-item>
         <!-- <a-form-item label="A价" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -101,6 +105,7 @@ export default {
       // 父页面点击修改调用
       this.type = type
       this.visible = true
+
       this.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
         this.form.setFieldsValue({
@@ -200,9 +205,15 @@ export default {
     //   }
     //   return null
     // },
-    constPriceAction(e) {
+    constPriceAction(val) {
       let that = this
-      let _costPrice = parseFloat(e.target.value)
+      // （成本价/0.750） *（1+税率）
+      debugger
+      let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate)).toFixed(3)
+
+      this.form.setFieldsValue({
+        priceC: _costPrice,
+      })
       // _costPrice = isNaN(_costPrice) ? 0 : _costPrice
       // let apriceRate = this.priceByArea['1'], //a价
       //   bpriceRate = this.priceByArea['2'], //b价
