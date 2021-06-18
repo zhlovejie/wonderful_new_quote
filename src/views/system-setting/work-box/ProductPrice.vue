@@ -73,26 +73,25 @@
       </span>
       <span slot="action" slot-scope="text, record">
         <template>
+          <template v-if="$auth('productPrice:add')">
+            <a
+              @click="handleEdit('add', record)"
+              v-if="record.costPrice == null && record.priceA == null && record.priceB == null && record.priceC == null"
+              >新增</a
+            >
+          </template>
           <template v-if="$auth('productPrice:eidt')">
             <a
-              @click="handleEdit(record)"
+              @click="handleEdit('eidt', record)"
               v-if="record.costPrice != null || record.priceA != null || record.priceB != null || record.priceC != null"
               >修改</a
             >
           </template>
           <template v-if="$auth('productPrice:modification')">
-            <a-divider type="vertical" />
             <a
               @click="handleModification(record)"
               v-if="record.costPrice != null || record.priceA != null || record.priceB != null || record.priceC != null"
-              >修改记录</a
-            >
-          </template>
-          <template v-if="$auth('productPrice:add')">
-            <a
-              @click="handleEdit(record)"
-              v-if="record.costPrice == null && record.priceA == null && record.priceB == null && record.priceC == null"
-              >新增</a
+              ><a-divider type="vertical" />修改记录</a
             >
           </template>
         </template>
@@ -160,14 +159,14 @@ export default {
           dataIndex: 'costPrice',
           scopedSlots: { customRender: 'costPrice' },
         },
-        {
-          title: 'A价',
-          dataIndex: 'priceA',
-        },
-        {
-          title: 'B价',
-          dataIndex: 'priceB',
-        },
+        // {
+        //   title: 'A价',
+        //   dataIndex: 'priceA',
+        // },
+        // {
+        //   title: 'B价',
+        //   dataIndex: 'priceB',
+        // },
         {
           title: 'C价',
           dataIndex: 'priceC',
@@ -222,9 +221,9 @@ export default {
     handleModification(record) {
       this.$refs.modification.query(record)
     },
-    handleEdit(record) {
+    handleEdit(type, record) {
       // 修改
-      this.$refs.priceEdit.edit(record)
+      this.$refs.priceEdit.edit(type, record)
     },
     handleOk() {
       this.$refs.table.refresh()
