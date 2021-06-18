@@ -91,6 +91,7 @@ export default {
   components: {
     PreviewStrategicCooperationAgreement
   },
+  inject: ['rootInstanceFrom'],
   data() {
     return {
       form: this.$form.createForm(this,{name:'qualifications-borrow-management-step1-2'}),
@@ -128,7 +129,7 @@ export default {
   methods: {
     moment: moment,
     init() {
-      
+
     },
     async handleOk(saveType) {
       let that = this
@@ -165,8 +166,11 @@ export default {
         })
     },
     handleCancel() {
-      this.form.resetFields()
-      this.$nextTick(() => (this.visible = false))
+      const that = this
+      that.form.resetFields()
+      that.$nextTick(() => {
+        that.rootInstanceFrom.handleCancel()
+      })
     },
     async query(type, record) {
       let that = this

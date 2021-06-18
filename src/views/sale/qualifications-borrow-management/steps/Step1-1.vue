@@ -48,7 +48,7 @@
                 `effective`,
                 {
                   initialValue: [
-                    detail.effectiveStart ? moment(detail.effectiveStart) : moment(), 
+                    detail.effectiveStart ? moment(detail.effectiveStart) : moment(),
                     detail.effectiveEnd ? moment(detail.effectiveEnd) : moment()
                   ],
                   rules: [{ required: true, message: '请选择代班时间' }],
@@ -139,6 +139,7 @@ export default {
   components: {
     PreviewDistributorContract
   },
+  inject: ['rootInstanceFrom'],
   data() {
     return {
       form: this.$form.createForm(this,{name:'qualifications-borrow-management-step1-1'}),
@@ -222,8 +223,11 @@ export default {
         })
     },
     handleCancel() {
-      this.form.resetFields()
-      this.$nextTick(() => (this.visible = false))
+      const that = this
+      that.form.resetFields()
+      that.$nextTick(() => {
+        that.rootInstanceFrom.handleCancel()
+      })
     },
     async query(type, record) {
       let that = this
