@@ -68,6 +68,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        :customRow="customRowFunction"
         size="small"
       >
         <div
@@ -248,6 +249,15 @@ export default {
       }else{
         that.$emit('change', record)
         that.handleCancel()
+      }
+    },
+    customRowFunction(record) {
+      const that = this
+      const deviceId = that.addForm.form.deviceId
+      return {
+        style: {
+          'background-color': +record.id === +deviceId ? '#e6f7ff' : ''
+        },
       }
     }
   }

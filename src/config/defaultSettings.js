@@ -28,12 +28,10 @@ export default {
 
   // baseURL: 'http://192.168.12.96:8995/',
   // baseURL: 'http://192.168.13.151:8998',
-  baseURL: 'http://192.168.12.96:8995/',
+  baseURL: 'http://192.168.12.96:9996',
   //baseURL:'http://192.168.13.250/cloud',
 
-  materialBaseUrl: 'http://192.168.12.96:8995/', //物料规则专用地址
-
-
+  materialBaseUrl: 'http://192.168.12.96:9996', //物料规则专用地址
   // baseURL: 'http://192.168.13.158:8999/oa',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息
