@@ -191,6 +191,26 @@ export function craftRouteApprovePageList(parameter) {
 }
 
 
+/**根据图纸信息id 删除图纸 */
+export function craftRouteProcessDelete(id) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/craftRouteProcess?id=${id}`,
+    method: 'DELETE'
+  })
+}
+
+
+/**根据工艺路线删除工序 */
+export function craftRouteProcessDeleteByRoute(routeId) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/craftRouteProcess/deleteByRoute?routeId=${routeId}`,
+    method: 'DELETE'
+  })
+}
+
+
 export function __craftRouteExport(type,params) {
   const m = {
     1:'/routineMaterialInfo/exportList', //常规物料
