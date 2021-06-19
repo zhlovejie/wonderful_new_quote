@@ -259,12 +259,12 @@ export function auditMaterialForm(parameter) {
   })
 }
 
-export function __craftRouteExport(type,params) {
+export function bomExport(type,params) {
   const m = {
-    1:'/routineMaterialInfo/exportList', //常规物料
-    2:'/productMaterialInfo/exportList'  //成品物料
+    //导出 物料单详情信息叶节点列表对比（bom差异分析）
+    1:'/bom/material-form-child-detail/exportLeafNodeCompare',
   }
-  let fileName = type === 1 ? '常规物料库' : '成品物料库'
+  let fileName = 'bom差异分析'
   let url = `${materialBaseUrl}${m[type]}?${params}`
   return axios({
     url: url,
@@ -273,7 +273,8 @@ export function __craftRouteExport(type,params) {
   }).then((res) => {
     console.log(res)
     if (res instanceof Blob) {
-      const isFile = res.type === 'application/vnd.ms-excel'
+
+      const isFile = res.type === 'application/vnd.ms-excel' || res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       const isJson = res.type === 'application/json'
       if (isFile) {
         //返回文件 则下载
