@@ -34,8 +34,8 @@
             :loading="loading"
           >
             <a-select-option v-for="item in saleValenc" :key="item.id" :value="item.id"
-              >{{ item.newBasisModel }} ( {{ item.productName }} )</a-select-option
-            >
+              >{{ item.newBasisModel }}-{{ item.productCode }}
+            </a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="成本价" v-if="type === 3">
@@ -53,7 +53,13 @@
         </a-form-item>
       </a-form>
     </div>
-    <div class="steps-content" v-if="current === 2">3</div>
+    <div class="steps-content" v-if="current === 2">
+      <a-table :columns="columns" :dataSource="dataSource" :customRow="customRowFunction">
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
+      </a-table>
+    </div>
     <div class="steps-action">
       <a-button v-if="current === 1" type="primary" @click="next"> 确定 </a-button>
       <a-button v-if="current === 2" type="primary" @click="prev"> 退出 </a-button>
@@ -61,7 +67,7 @@
         v-if="current === 2"
         type="primary"
         style="margin-left: 8px"
-        @click="$message.success('Processing complete!')"
+        @click="$message.success('没得接口 没有写!')"
       >
         下载
       </a-button>
@@ -78,13 +84,37 @@ import {
   materialCodePricing,
   valencyCodePricing,
 } from '@/api/productOfferManagement'
+const columns = [
+  {
+    align: 'center',
+    title: '序号',
+    scopedSlots: { customRender: 'order' },
+  },
+  {
+    align: 'center',
+    title: '区间值名称',
+    dataIndex: 'intervalValueName',
+  },
+  {
+    align: 'center',
+    title: '提成比率',
+    dataIndex: 'commissionRate',
+  },
+  {
+    align: 'center',
+    title: '销售价格',
+    dataIndex: 'price',
+  },
+]
 
 export default {
   data() {
     return {
+      columns,
       current: 0,
       loading: true,
       tionList: [],
+      dataSource: [],
       saleValenc: [],
       depList: [],
       form: this.$form.createForm(this, { name: 'pom-pricing' }),
@@ -102,6 +132,16 @@ export default {
     },
   },
   methods: {
+    customRowFunction(record) {
+      //rateType 1 总区间 蓝色  2 推荐区间 黄色 3竞争力区间 红色
+      let { rateType } = record
+      return {
+        style: {
+          'background-color': rateType === 1 ? '#D5DCF7 ' : +rateType === 2 ? '#EFE68E' : '#EC9495',
+        },
+      }
+    },
+
     init() {
       productInformationList().then((res) => {
         if (res.code === 200) {
@@ -140,14 +180,21 @@ export default {
           let api = m[this.type]
           api(values).then((res) => {
             console.log(res.data)
+
             if (res.code === 200) {
               this.current++
+              this.dataSource = res.data.sort(function (a, b) {
+                return a.rateType - b.rateType
+              })
+            } else {
+              this.$message.error(res.msg)
             }
           })
         }
       })
     },
     prev() {
+      this.dataSource = []
       this.current = 0
     },
   },

@@ -230,6 +230,16 @@ export function priceAdjustProductQuoteDownload(parameter) {
     data: parameter
   })
 }
+// 报价区间
+export function productEvaluation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/productEvaluation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 /**系列产品报价新增和修改 */
 export function priceAdjustProductQuoteAddOrUpdate(parameter) {

@@ -208,11 +208,10 @@ export default {
     constPriceAction(val) {
       let that = this
       // （成本价/0.750） *（1+税率）
-      debugger
-      let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate)).toFixed(3)
+      let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate))
 
       this.form.setFieldsValue({
-        priceC: _costPrice,
+        priceC: _costPrice.toFixed(2),
       })
       // _costPrice = isNaN(_costPrice) ? 0 : _costPrice
       // let apriceRate = this.priceByArea['1'], //a价

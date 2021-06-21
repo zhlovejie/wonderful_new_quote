@@ -273,6 +273,7 @@ export default {
           installExplain: record.installExplain,
           operateExplain: record.operateExplain,
           fullName: record.fullName,
+          productTypeConfigId: record.productTypeConfigId,
           seriesFlag: record.seriesFlag,
           area: String(record.area),
         })

@@ -32,7 +32,6 @@
         <!--                      <a-select-option v-for="item in targetList" :key="item.id">{{item.text}}</a-select-option>-->
         <!--                    </a-select>-->
       </a-table>
-
     </a-spin>
   </a-modal>
   <!--end 标的名称弹出层 -->
@@ -44,15 +43,15 @@ import { getTarget } from '@/api/contractListManagement'
 export default {
   name: 'TargetidModel',
   components: {
-    STable
+    STable,
   },
-  data () {
+  data() {
     return {
       visible: false,
       confirmLoading: false,
       form: this.$form.createForm(this),
       queryParam: {
-        productType: this.productType
+        productType: this.productType,
       },
       customerName: '',
       loading: true,
@@ -65,47 +64,48 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           title: '标的名称',
           dataIndex: 'targetName',
-          scopedSlots: { customRender: 'targetName' }
+          scopedSlots: { customRender: 'targetName' },
         },
-        {
-          title: '税率',
-          dataIndex: 'tax'
-        }
+        // {
+        //   title: '税率',
+        //   dataIndex: 'tax'
+        // }
       ],
       targetId: 0, // 标的id
       nuclearPriceModel: '', // 核价编号
       loadData: [],
 
-
-      recordParam:null
+      recordParam: null,
     }
   },
   computed: {},
   watch: {},
-  cerated () {
+  cerated() {
     console.log('从父页面传来的productType', this.productType)
   },
-  mounted () {
+  mounted() {
     this.init()
   },
   methods: {
-    init () {
-      getTarget().then((res) => {
-        console.log('返回关联字典表 智能/非智能/软件/其他', res)
-        this.loadData = res.data
-        this.targetId = res.data.id
-        this.tax = res.data.tax
-        this.targetName = res.data.text
-      }).catch(error => {
-        console.error(error)
-      })
+    init() {
+      getTarget()
+        .then((res) => {
+          console.log('返回关联字典表 智能/非智能/软件/其他', res)
+          this.loadData = res.data
+          this.targetId = res.data.id
+          this.tax = res.data.tax
+          this.targetName = res.data.text
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
-    query (record) {
+    query(record) {
       console.log('query record' + JSON.stringify(record))
       this.visible = true
       this.recordParam = record
@@ -119,27 +119,26 @@ export default {
       // } else {
       //   // this.$refs.table.refresh(true)
       // }
-      try{
+      try {
         this.$refs.table.refresh(true)
-      }catch(err){}
+      } catch (err) {}
     },
     // 关闭弹窗函数
-    close () {
+    close() {
       this.$emit('close')
       this.visible = false
     },
     // 点击产品代码执行关闭弹窗函数
-    clickVue (data) {
+    clickVue(data) {
       this.$emit('custom-change', {
-        selectItem:data,  //用户选择项目
-        recordParam:this.recordParam //父页面传过来的项目
+        selectItem: data, //用户选择项目
+        recordParam: this.recordParam, //父页面传过来的项目
       })
       this.close()
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-
 </style>

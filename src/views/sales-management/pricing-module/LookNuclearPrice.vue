@@ -70,14 +70,12 @@
 
         <div slot="costPrice" slot-scope="text">
           <span v-if="+text === -1">***</span>
-          <span v-else>{{text}}</span>
+          <span v-else>{{ text }}</span>
         </div>
 
         <div slot="status" slot-scope="text">
-          <span>{{+text === 0 ? '启用' : '禁用'}}</span>
+          <span>{{ +text === 0 ? '启用' : '禁用' }}</span>
         </div>
-
-        
       </a-table>
     </a-card>
 
@@ -169,20 +167,20 @@ const columns = [
     scopedSlots: { customRender: 'referencePic' },
     width: '150px',
   },
-  {
-    align: 'center',
-    title: '修改点',
-    dataIndex: 'revisedPart',
-    key: 'revisedPart',
-    width: '150px',
-  },
-  {
-    align: 'center',
-    title: '新产品区域',
-    dataIndex: 'areaText',
-    key: 'areaText',
-    width: '150px',
-  },
+  // {
+  //   align: 'center',
+  //   title: '修改点',
+  //   dataIndex: 'revisedPart',
+  //   key: 'revisedPart',
+  //   width: '150px',
+  // },
+  // {
+  //   align: 'center',
+  //   title: '新产品区域',
+  //   dataIndex: 'areaText',
+  //   key: 'areaText',
+  //   width: '150px',
+  // },
   {
     align: 'center',
     title: '成本价',
@@ -191,24 +189,24 @@ const columns = [
     scopedSlots: { customRender: 'costPrice' },
     width: '150px',
   },
-  {
-    align: 'center',
-    title: 'A价',
-    dataIndex: 'aprice',
-    key: 'aprice',
-  },
-  {
-    align: 'center',
-    title: 'B价',
-    dataIndex: 'bprice',
-    key: 'bprice',
-  },
-  {
-    align: 'center',
-    title: 'C价',
-    dataIndex: 'cprice',
-    key: 'cprice',
-  },
+  // {
+  //   align: 'center',
+  //   title: 'A价',
+  //   dataIndex: 'aprice',
+  //   key: 'aprice',
+  // },
+  // {
+  //   align: 'center',
+  //   title: 'B价',
+  //   dataIndex: 'bprice',
+  //   key: 'bprice',
+  // },
+  // {
+  //   align: 'center',
+  //   title: 'C价',
+  //   dataIndex: 'cprice',
+  //   key: 'cprice',
+  // },
   {
     align: 'center',
     title: '效果图',
@@ -222,6 +220,20 @@ const columns = [
     title: '规格型号',
     dataIndex: 'valencySpecs',
     key: 'valencySpecs',
+    width: '250px',
+  },
+  {
+    align: 'center',
+    title: '核价代码',
+    dataIndex: 'productCode',
+    key: 'productCode',
+    width: '250px',
+  },
+  {
+    align: 'center',
+    title: '产品类型',
+    dataIndex: 'typeConfigName',
+    key: 'typeConfigName',
     width: '250px',
   },
   {
@@ -243,7 +255,7 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-  }
+  },
 ]
 export default {
   name: 'LookNuclearPrice',

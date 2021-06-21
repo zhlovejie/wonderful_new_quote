@@ -626,7 +626,6 @@ export default {
       if (target) {
         target.targetId = selectItem.id
         target.targetName = selectItem.text
-        target.tax = this.isTax ? parseFloat(selectItem.tax) : 0
         this.dataSource = dataSource
       }
       this.freshValidateData()
@@ -677,6 +676,7 @@ export default {
         target['productModel'] = selectItem.productModel
         target['productId'] = selectItem.id
         target['productName'] = selectItem.productName
+        target.tax = this.isTax ? parseFloat(selectItem.tax) : 0
         this.dataSource = dataSource
       }
       this.freshValidateData()
