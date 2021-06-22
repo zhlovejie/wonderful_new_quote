@@ -120,6 +120,20 @@ export function auditMaterialForm(parameter) {
 }
 
 /**
+ * 物料单基本信息列表不带分页 tree显示用
+ * @param {*} parameter
+ * @returns
+ */
+ export function allListMaterialForm(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/bom/material-form/allListMaterialForm',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**
  * 物料单审批列表（我的待审批已审批）权限 materialForm:findAll
  * @param {*} parameter
  * @returns

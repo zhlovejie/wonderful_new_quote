@@ -111,7 +111,7 @@ export default {
       that.columns = columns
 
       that.$nextTick(() => {
-        that.params = { beforeId: beforeNode.key, afterId: afterNode.key }
+        that.params = { beforeId: beforeNode.__id, afterId: afterNode.__id }
         that.spinning = true
         leafNodeCompareById(that.params)
           .then(res => {

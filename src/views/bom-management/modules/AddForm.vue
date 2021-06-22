@@ -119,7 +119,8 @@
                 </td>
                 <td>工艺路线代码</td>
                 <td>
-                  <a-form-model-item prop="routeCode">
+                  <div style="display:flex;">
+                  <a-form-model-item prop="routeCode" style="flex:1;">
                     <a-select
                       v-if="!isDisabled"
                       show-search
@@ -147,7 +148,15 @@
                       </a-select-option>
                     </a-select>
                     <span v-else>{{form.routeCode}}</span>
+
+
+
                   </a-form-model-item>
+                  <div style="margin-left:10px;">
+                    <a-button type="primary" v-if="isAdd" @click="processRouterAction('add')">新增</a-button>
+                    <a v-else href="javascript:void(0);" @click="processRouterAction('view')">查看</a>
+                  </div>
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -366,6 +375,7 @@
         </div>
       </a-form-model>
       <Approval ref="approval" @opinionChange="opinionChange" />
+      <ProcessRouteAddForm ref="processRouteAddForm" />
     </a-spin>
   </a-modal>
 </template>
@@ -375,6 +385,8 @@
 import { routineMaterialInfoPageList } from '@/api/routineMaterial'
 //工艺路线模糊搜索
 import { craftRouteApprovePageList } from '@/api/craftRoute'
+//工艺路线新增
+import ProcessRouteAddForm from '@/views/product-process-management/process-route/module/AddForm'
 import { materialFormAddOrUpdate, getMaterialFormDetail,approvalMaterialForm } from '@/api/bomManagement'
 import Approval from './ApprovalForm'
 import moment from 'moment'
@@ -457,7 +469,7 @@ export default {
       addForm: this
     }
   },
-  components: {Approval},
+  components: {Approval,ProcessRouteAddForm},
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
     this.bomFuzzyAction = this.$_.debounce(this.bomFuzzyAction, 800)
@@ -551,7 +563,12 @@ export default {
   },
   methods: {
     moment,
+    processRouterAction(type){
 
+      let detail = {...this.detail}
+      detail.id = this.form.craftId
+      this.$refs['processRouteAddForm'].query(type,detail)
+    },
     async handleOk() {
       const that = this
       if (that.isView) {
@@ -587,11 +604,13 @@ export default {
       that.actionType = type
       that.detail = record
       that.targetNode = record.__selectItem
+      // debugger
       if (type === 'add') {
         that.form = {
           ...that.form,
           bomGroupName: that.targetNode.title,
-          groupId: that.targetNode.value
+          // groupId: that.targetNode.value
+          groupId:that.targetNode.__id
         }
       } else{
         const isEdit = type === 'edit'

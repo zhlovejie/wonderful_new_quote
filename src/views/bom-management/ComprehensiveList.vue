@@ -182,6 +182,15 @@
 </template>
 
 <script>
+//左侧树 使用工艺路线的树
+import {
+  productMaterialInfoTwoTierTreeList,
+} from '@/api/routineMaterial'
+import {
+  getAllProductMaterial,
+  craftRouteListByMaterial
+} from '@/api/craftRoute'
+//左侧树 使用工艺路线的树 END
 import {
   delMaterialForm,
   listMaterialForm,
@@ -190,6 +199,7 @@ import {
   useMaterialForm,
   auditMaterialForm,
   reverseAuditMaterialForm,
+  allListMaterialForm,
   __MaterialInfoExport
 } from '@/api/bomManagement'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
@@ -461,28 +471,6 @@ export default {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
-    onLoadData(treeNode, isForceRefresh = false) {
-      const that = this
-      that.selectedTreeNode = treeNode
-      return new Promise(resolve => {
-        if (!isForceRefresh && treeNode.dataRef.children) {
-          resolve()
-          return
-        }
-        getBomTree({ parentId: treeNode.dataRef.value })
-          .then(res => {
-            let newChildren = res.data.map(item => that.formatTreeData(item))
-            treeNode.dataRef.children = newChildren
-            that.orgTree = [...that.orgTree]
-            that.dataList = that.generateList(that.orgTree)
-            resolve()
-          })
-          .catch(err => {
-            console.error(err)
-            that.$message.error(`调用接口[getBomTree]时发生错误，错误信息:${err}`)
-          })
-      })
-    },
     margeNode(oldChildren, newChildren) {
       let arr = []
       for (let i = 0; i < newChildren.length; i++) {
@@ -500,33 +488,6 @@ export default {
         }
       }
       return arr
-    },
-    fetchTree() {
-      const that = this
-      // getBomTree({parentId:that.parentId}).then(res =>{
-      //   console.log(res)
-      // })
-      getBomTree({ parentId: 0 })
-        .then(res => {
-          const root = {
-            key: '0',
-            value: '0',
-            title: 'BOM资料',
-            isLeaf: false,
-            parentId: 0,
-            children: res.data.map(item => that.formatTreeData(item)),
-            scopedSlots: { title: 'title' }
-          }
-          that.orgTree = [root]
-          that.dataList = that.generateList(that.orgTree)
-
-          if (String(that.parentId) === '0') {
-            that.parentItem = root
-          }
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[getBomTree]时发生错误，错误信息:${err}`)
-        })
     },
     search(params = {}) {
       const that = this
@@ -579,25 +540,129 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
+        fetchTree() {
+      const that = this
+      productMaterialInfoTwoTierTreeList({ parentId: 0 })
+        .then(res => {
+          const root = {
+            key: '0',
+            value: '0',
+            title: 'BOM资料',
+            isLeaf: false,
+            code: '0',
+            parentId: 0,
+            children: res.data.map(item => that.formatRuleNode(item)),
+            scopedSlots: { title: 'title' }
+          }
+          that.orgTree = [root]
+          that.dataList = that.generateList(that.orgTree)
+
+          if (String(that.parentId) === '0') {
+            that.parentItem = root
+          }
+        })
+        .catch(err => {
+          that.$message.error(`调用接口[productMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    /**
+     * @description 树加载规则： 1.先加载规则 2.如果没有规则，尝试加载规则对应的成品 3.如果是成品 加载对应成品的工艺
+     * @param {treeNode} treeNode 被展开的树节点
+     * @param {boolean} force 是否强制加载节点数据
+     */
+    onLoadData(treeNode,force=false) {
+      const that = this
+      that.selectedTreeNode = treeNode
+      return new Promise(async resolve => {
+        if (treeNode.dataRef.children && !force) {
+          resolve()
+          return
+        }
+        let {isRule,isProduct,isSubProduct} = treeNode.dataRef
+        if(isRule){
+          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
+          if(ruleResult.length > 0){
+            treeNode.dataRef.children = ruleResult.map(item => that.formatRuleNode(item))
+            that.orgTree = [...that.orgTree]
+          }else{
+            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
+            if(productResult.length > 0){
+              treeNode.dataRef.children = productResult.map(item => that.formatProductNode(item))
+              that.orgTree = [...that.orgTree]
+            }
+          }
+        }
+        if(isProduct){
+          let subProductResult = await allListMaterialForm({groupId:treeNode.dataRef.__id}).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
+          if(subProductResult.length > 0){
+            treeNode.dataRef.children = subProductResult.map(item => that.formatSubProductNode(item))
+            that.orgTree = [...that.orgTree]
+          }
+        }
+        resolve()
+      })
+    },
     //格式化接口数据 key,title,value
-    formatTreeData(item) {
+    formatRuleNode(item) {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = item.bomName
+      let ruleName = item.newRuleName || item.ruleName
+      let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
+      obj.title = `${ruleName}${showCode}`
       obj.value = String(item.id)
-      obj.isLeaf = !(Array.isArray(item.sunList) && item.sunList.length > 0)
       obj.parentId = item.parentId
-      obj.__bomStatus = item.bomStatus
-      obj.__useStatus = item.useStatus
-      obj.__status = item.status
+      obj.codeLength = +item.codeLength
+      obj.code = item.code
       obj.scopedSlots = { title: 'title' }
-      if (Array.isArray(item.sunList) && item.sunList.length > 0) {
-        obj.children = item.sunList.map(v => that.formatTreeData(v))
+      obj.isRule = true
+      if (Array.isArray(item.subList) && item.subList.length > 0) {
+        obj.children = item.subList.map(v => that.formatRuleNode(v))
       }
       return obj
     },
-
+    formatProductNode(item) {
+      let that = this
+      let obj = {}
+      obj.key = obj.value = String(item.materialCode)
+      obj.__id = item.id
+      obj.__ruleId = item.ruleId
+      obj.title = `${item.materialName}(${item.materialCode})`
+      obj.__materialName = item.materialName
+      obj.__materialCode = item.materialCode
+      obj.__mainUnit = item.mainUnit
+      obj.__materialSource = item.materialSource
+      obj.scopedSlots = { title: 'title' }
+      obj.isProduct = true
+      return obj
+    },
+    formatSubProductNode(item) {
+      let that = this
+      let obj = {}
+      obj.key = obj.value = String(item.routeCode)+'_'+String(item.routeName)+'_'+String(item.materialCode)
+      obj.__id = item.id
+      obj.__materialName = item.materialName
+      obj.__materialCode = item.materialCode
+      obj.__status = item.status
+      //审批状态 审批中2黄  通过3蓝  不通过4红
+      let m_color = {
+        1:'normal',2:'#dada18',3:'blue',4:'red'
+      }
+      obj.__color = m_color[item.status]
+      obj.title = `${item.materialCode}(${item.materialName})`
+      obj.scopedSlots = { title: 'title' }
+      obj.isSubProduct = true
+      return obj
+    },
     handleClick(selectedKeys, e) {
       const that = this
       that.selectedTreeNode = e.node
@@ -607,13 +672,19 @@ export default {
       if (selectedKeys[0] !== undefined) {
         parentId = selectedKeys[0]
       }
-      that.queryParam = { ...that.queryParam, groupId: parentId }
+      // that.queryParam = { ...that.queryParam, groupId: parentId }
       that.parentId = parentId
       that.parentItem = { ...dataRef }
 
       that.selectedRowKeys = []
       that.selectedRows = []
-      that.search()
+      // that.search()
+      if(dataRef.isProduct){
+        that.queryParam = { ...that.queryParam, groupId: dataRef.__id}
+        that.search()
+      }else{
+        that.dataSource = []
+      }
     },
     async doAction(type, record) {
       const that = this

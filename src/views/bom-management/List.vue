@@ -23,14 +23,9 @@
           >
             <template
               slot="title"
-              slot-scope="{ title }"
+              slot-scope="{ title ,__color}"
             >
-              <span v-if="title.indexOf(searchValue) > -1">
-                {{ title.substr(0, title.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else>{{ title }}</span>
+              <span :style="{'color':__color}">{{ title }}</span>
             </template>
           </a-tree>
         </div>
@@ -72,25 +67,29 @@
             </a-form-item>
             <a-form-item>
               <a-button
+                v-if="$auth('bom-management_list:filter')"
                 type="primary"
                 icon="filter"
                 @click="doAction('filter', null)"
               >筛选</a-button>
             </a-form-item>
-            <a-form-item >
+            <!-- <a-form-item >
               <a-button
                 type="primary"
                 @click="doAction('addGroup', null)"
               >新增BOM组</a-button>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:add')"
+                :disabled="canAdd"
                 type="primary"
                 @click="doAction('add', null)"
               >新增</a-button>
             </a-form-item>
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:edit')"
                 :disabled="!canEdit"
                 type="primary"
                 @click="doAction('edit', null)"
@@ -99,12 +98,14 @@
 
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:del')"
                 type="primary"
                 @click="doAction('del', null)"
               >删除</a-button>
             </a-form-item>
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:copy')"
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('copy', null)"
@@ -112,6 +113,7 @@
             </a-form-item>
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:use')"
                 :disabled="!canUseButton"
                 type="primary"
                 @click="doAction('use', null)"
@@ -119,32 +121,37 @@
             </a-form-item>
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:approval')"
                 type="primary"
                 @click="doAction('approval', null)"
               >审核</a-button>
             </a-form-item>
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:unapproval')"
                 type="primary"
                 @click="doAction('unapproval', null)"
               >反审核</a-button>
             </a-form-item>
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:batchupdate')"
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('editBatch', null)"
               >BOM成批修改</a-button>
             </a-form-item>
-            <a-form-item >
+            <!-- <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:import')"
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('import', null)"
               >导入</a-button>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item >
               <a-button
+                v-if="$auth('bom-management_list:export')"
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('export', null)"
@@ -265,6 +272,7 @@
       :key="normalAddFormKeyCount"
       @finish="finishHandler"
     />
+
     <!--
       <ApproveInfo ref="approveInfoCard" />
      -->
@@ -278,6 +286,16 @@
 </template>
 
 <script>
+//左侧树 使用工艺路线的树
+import {
+  productMaterialInfoTwoTierTreeList,
+} from '@/api/routineMaterial'
+
+import {
+  getAllProductMaterial,
+  craftRouteListByMaterial
+} from '@/api/craftRoute'
+//左侧树 使用工艺路线的树 END
 import {
   delMaterialForm,
   listMaterialForm,
@@ -286,10 +304,14 @@ import {
   useMaterialForm,
   auditMaterialForm,
   reverseAuditMaterialForm,
+  allListMaterialForm,
   __MaterialInfoExport
 } from '@/api/bomManagement'
 // import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './modules/AddForm'
+
+
+
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import AddGroupForm from './modules/AddGroupForm'
 import SearchForm from './modules/SearchForm'
@@ -489,8 +511,17 @@ export default {
     }
   },
   computed: {
+    canAdd(){
+      let {isProduct} = this.parentItem
+      return !isProduct
+    },
     canEdit() {
-      return this.selectedRows.length === 1
+      // debugger
+      let selectedRows = this.selectedRows
+      if(selectedRows.length === 1 && +selectedRows[0].status !== 2){
+        return true
+      }
+      return false
     },
     canUse() {
       return this.selectedRows.length > 0
@@ -500,14 +531,16 @@ export default {
      * 如果BOM组别下有未审核过的数据，则只对审核过的数据更改状态为使用
      */
     canUseButton(){
-      let {__status,__useStatus} = this.parentItem
-      if(!('__status' in this.parentItem)){
-        return false
-      }
-      if(__useStatus === null && __status === null){
-        return true
-      }
-      return +__status === 2
+      // debugger
+      // let {__status,__useStatus} = this.parentItem
+      // if(!('__status' in this.parentItem)){
+      //   return false
+      // }
+      // if(__useStatus === null && __status === null){
+      //   return true
+      // }
+      // return +__status === 2
+      return true
     },
     treeSelectedKeys() {
       return [String(this.parentId)]
@@ -584,28 +617,7 @@ export default {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
-    onLoadData(treeNode, isForceRefresh = false) {
-      const that = this
-      that.selectedTreeNode = treeNode
-      return new Promise(resolve => {
-        if (!isForceRefresh && treeNode.dataRef.children) {
-          resolve()
-          return
-        }
-        getBomTree({ parentId: treeNode.dataRef.value })
-          .then(res => {
-            let newChildren = res.data.map(item => that.formatTreeData(item))
-            treeNode.dataRef.children = newChildren
-            that.orgTree = [...that.orgTree]
-            that.dataList = that.generateList(that.orgTree)
-            resolve()
-          })
-          .catch(err => {
-            console.error(err)
-            that.$message.error(`调用接口[getBomTree]时发生错误，错误信息:${err}`)
-          })
-      })
-    },
+
     margeNode(oldChildren, newChildren) {
       let arr = []
       for (let i = 0; i < newChildren.length; i++) {
@@ -623,33 +635,6 @@ export default {
         }
       }
       return arr
-    },
-    fetchTree() {
-      const that = this
-      // getBomTree({parentId:that.parentId}).then(res =>{
-      //   console.log(res)
-      // })
-      getBomTree({ parentId: 0 })
-        .then(res => {
-          const root = {
-            key: '0',
-            value: '0',
-            title: 'BOM资料',
-            isLeaf: false,
-            parentId: 0,
-            children: res.data.map(item => that.formatTreeData(item)),
-            scopedSlots: { title: 'title' }
-          }
-          that.orgTree = [root]
-          that.dataList = that.generateList(that.orgTree)
-
-          if (String(that.parentId) === '0') {
-            that.parentItem = root
-          }
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[getBomTree]时发生错误，错误信息:${err}`)
-        })
     },
     search(params = {}) {
       const that = this
@@ -702,25 +687,127 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
+    fetchTree() {
+      const that = this
+      productMaterialInfoTwoTierTreeList({ parentId: 0 })
+        .then(res => {
+          const root = {
+            key: '0',
+            value: '0',
+            title: 'BOM资料',
+            isLeaf: false,
+            code: '0',
+            parentId: 0,
+            children: res.data.map(item => that.formatRuleNode(item)),
+            scopedSlots: { title: 'title' }
+          }
+          that.orgTree = [root]
+          that.dataList = that.generateList(that.orgTree)
+
+          if (String(that.parentId) === '0') {
+            that.parentItem = root
+          }
+        })
+        .catch(err => {
+          that.$message.error(`调用接口[productMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    /**
+     * @description 树加载规则： 1.先加载规则 2.如果没有规则，尝试加载规则对应的成品 3.如果是成品 加载对应成品的工艺
+     * @param {treeNode} treeNode 被展开的树节点
+     * @param {boolean} force 是否强制加载节点数据
+     */
+    onLoadData(treeNode,force=false) {
+      const that = this
+      that.selectedTreeNode = treeNode
+      return new Promise(async resolve => {
+        if (treeNode.dataRef.children && !force) {
+          resolve()
+          return
+        }
+        let {isRule,isProduct,isSubProduct} = treeNode.dataRef
+        if(isRule){
+          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
+          if(ruleResult.length > 0){
+            treeNode.dataRef.children = ruleResult.map(item => that.formatRuleNode(item))
+            that.orgTree = [...that.orgTree]
+          }else{
+            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
+            if(productResult.length > 0){
+              treeNode.dataRef.children = productResult.map(item => that.formatProductNode(item))
+              that.orgTree = [...that.orgTree]
+            }
+          }
+        }
+        if(isProduct){
+          let subProductResult = await allListMaterialForm({groupId:treeNode.dataRef.__id}).then(res => res.data).catch(err => {
+            console.log(err)
+            return []
+          })
+          if(subProductResult.length > 0){
+            treeNode.dataRef.children = subProductResult.map(item => that.formatSubProductNode(item))
+            that.orgTree = [...that.orgTree]
+          }
+        }
+        resolve()
+      })
+    },
     //格式化接口数据 key,title,value
-    formatTreeData(item) {
+    formatRuleNode(item) {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = item.bomName
+      let ruleName = item.newRuleName || item.ruleName
+      let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
+      obj.title = `${ruleName}${showCode}`
       obj.value = String(item.id)
-      obj.isLeaf = !(Array.isArray(item.sunList) && item.sunList.length > 0)
       obj.parentId = item.parentId
-      obj.__bomStatus = item.bomStatus
-      obj.__useStatus = item.useStatus
-      obj.__status = item.status
+      obj.codeLength = +item.codeLength
+      obj.code = item.code
       obj.scopedSlots = { title: 'title' }
-      if (Array.isArray(item.sunList) && item.sunList.length > 0) {
-        obj.children = item.sunList.map(v => that.formatTreeData(v))
+      obj.isRule = true
+      if (Array.isArray(item.subList) && item.subList.length > 0) {
+        obj.children = item.subList.map(v => that.formatRuleNode(v))
       }
       return obj
     },
-
+    formatProductNode(item) {
+      let that = this
+      let obj = {}
+      obj.key = obj.value = String(item.materialCode)
+      obj.__id = item.id
+      obj.__ruleId = item.ruleId
+      obj.title = `${item.materialName}(${item.materialCode})`
+      obj.__materialName = item.materialName
+      obj.__materialCode = item.materialCode
+      obj.__mainUnit = item.mainUnit
+      obj.__materialSource = item.materialSource
+      obj.scopedSlots = { title: 'title' }
+      obj.isProduct = true
+      return obj
+    },
+    formatSubProductNode(item) {
+      let that = this
+      let obj = {}
+      obj.key = obj.value = String(item.routeCode)+'_'+String(item.routeName)+'_'+String(item.materialCode)
+      obj.__id = item.id
+      obj.__materialName = item.materialName
+      obj.__materialCode = item.materialCode
+      obj.__status = item.status
+      //蓝色-使用绿色-已审核黑色-未使用/未审核
+      let {status,useStatus} = item
+      obj.__color = +useStatus === 1 ? 'blue' : status === 2 ? '#b1b1b1' : ''
+      obj.title = `${item.materialCode}(${item.materialName})`
+      obj.scopedSlots = { title: 'title' }
+      obj.isSubProduct = true
+      return obj
+    },
     handleClick(selectedKeys, e) {
       const that = this
       that.selectedTreeNode = e.node
@@ -730,13 +817,19 @@ export default {
       if (selectedKeys[0] !== undefined) {
         parentId = selectedKeys[0]
       }
-      that.queryParam = { ...that.queryParam, groupId: parentId }
+      // that.queryParam = { ...that.queryParam, groupId: parentId }
       that.parentId = parentId
       that.parentItem = { ...dataRef }
 
       that.selectedRowKeys = []
       that.selectedRows = []
-      that.search()
+      // that.search()
+      if(dataRef.isProduct){
+        that.queryParam = { ...that.queryParam, groupId: dataRef.__id}
+        that.search()
+      }else{
+        that.dataSource = []
+      }
     },
     async doAction(type, record) {
       const that = this
@@ -772,7 +865,7 @@ export default {
         })
         return
       }
-      else if (type === 'export111') {
+      else if (type === 'export') {
         let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
         let res = await __MaterialInfoExport(1,ids)
         console.log(res)
@@ -863,8 +956,11 @@ export default {
                 that.$message.error(err.message)
               })
             }else{
-              let {key,__bomStatus} = that.parentItem
-              target.api({bomStatus:__bomStatus,id:key}).then(res => {
+              let {isRule,isProduct,isSubProduct,__id,key} = that.parentItem
+              let __bomStatus = isRule ? 0 : 1
+              let _id = isRule ? key : __id
+
+              target.api({bomStatus:__bomStatus,id:_id}).then(res => {
                 that.$message.info(res.msg)
                 if (+res.code === 200) {
                   that.finishHandler({ key: that.parentItem.value })
@@ -881,8 +977,8 @@ export default {
       this.selectedRowKeys = []
       this.selectedRows = []
       this.search()
-      this.fetchTree()
-      return
+      // this.fetchTree()
+      // return
       if (param && param.key) {
         let target = this.findTreeNode(this.$refs.treeRef, param.key)
         if (target) {
@@ -904,8 +1000,11 @@ export default {
       }
     },
     customRowFunction(record) {
-
+      let {useStatus,status} = record
       return {
+        // style: {
+        //   color: +useStatus === 1 ? 'blue' : status === 2 ? 'green' : ''
+        // },
         on: {
           click:event => {
             const that = this
