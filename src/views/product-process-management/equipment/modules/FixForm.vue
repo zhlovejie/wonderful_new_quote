@@ -25,12 +25,12 @@
           <tr>
             <td style="width: 150px">申请部门</td>
             <td style="width: 180px">
-              <a-form-item>{{ detail.departmentName || userInfo.departmentName }}</a-form-item>
+              <a-form-item>{{ record.departmentName || userInfo.departmentName }}</a-form-item>
             </td>
             <td style="width: 150px">申请人</td>
             <td style="width: 180px">{{ userInfo.trueName }}</td>
             <td style="width: 150px">申请日期</td>
-            <td style="width: 180px">{{ detail.applyTime || detail.__currentDate }}</td>
+            <td style="width: 180px">{{ isAdd ? record.__currentDate : record.applyDate }}</td>
           </tr>
           <tr>
             <td style="width: 150px">设备/模具编号</td>
@@ -155,8 +155,7 @@ export default {
       record: {},
       detail: {},
       isManagerCheck: false,
-      msg:
-        '注：维修时间超过2小时的必须部门主管签字确认，已保证正常生产和发货；设备/模具/工装需外协维修的，维修方案确定后须报部门负责人审批后执行。',
+      msg: '注：维修时间超过2小时的必须部门主管签字确认，已保证正常生产和发货；设备/模具/工装需外协维修的，维修方案确定后须报部门负责人审批后执行。',
       userInfo: this.$store.getters.userInfo,
     }
   },
@@ -207,11 +206,11 @@ export default {
 
       await that.initData()
 
-      //if(!that.isAdd){
-      await pageDevelopmentDetail({ id: that.record.id }).then((res) => {
-        that.detail = Object.assign({}, that.record || {}, res.data || {})
-      })
-      //}
+      if (!that.isAdd) {
+        await pageDevelopmentDetail({ id: that.record.id }).then((res) => {
+          that.detail = Object.assign({}, that.record || {}, res.data || {})
+        })
+      }
       // if (that.isEdit) {
       //   that.$nextTick(() => {
       //     that.form.setFieldsValue(Object.assign({}, that.record))

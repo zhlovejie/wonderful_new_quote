@@ -17,7 +17,7 @@
             <a-form-item>
               <a-input
                 placeholder="保养内容"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 180px"
                 @change="inputChange($event, item.key, 'careContent')"
                 v-decorator="[
@@ -25,32 +25,37 @@
                   { initialValue: item.careContent, rules: [{ required: true, message: '请输入保养内容' }] },
                 ]"
               />
+              <span v-else>{{ item.careContent }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <a-select
                 placeholder="保养周期"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 :allowClear="true"
                 mode="multiple"
                 style="width: 180px"
                 @change="inputChange($event, item.key, 'careType')"
                 v-decorator="[
                   `programme.${index}.careType`,
-                  { initialValue: item.careType, rules: [{ required: true, message: '请输入保养周期' }] },
+                  { initialValue: item.careTypes, rules: [{ required: true, message: '请输入保养周期' }] },
                 ]"
               >
                 <a-select-option :value="1">周</a-select-option>
                 <a-select-option :value="2">月</a-select-option>
                 <a-select-option :value="3">年</a-select-option>
               </a-select>
+              <span v-else
+                >{{ item.careType.includes('1') ? '周' : '' }}{{ item.careType.includes('2') ? '月' : ''
+                }}{{ item.careType.includes('3') ? '年' : '' }}</span
+              >
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <DepUserSelect
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 :depId="item.careDepartmentId"
                 :userId="item.careUserId"
                 @change="
@@ -60,12 +65,13 @@
                 "
                 style="width: 100%"
               />
+              <span v-else>{{ item.careUserName }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <DepUserSelect
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 :depId="item.checkDepartmentId"
                 :userId="item.checkUserId"
                 @change="
@@ -75,6 +81,7 @@
                 "
                 style="width: 100%"
               />
+              <span v-else>{{ item.checkUserName }}</span>
             </a-form-item>
           </td>
           <td v-if="type !== 'view'">
@@ -85,7 +92,7 @@
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="!isDisabled">
           <td colspan="5">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>

@@ -70,7 +70,10 @@
                   @change="inputChange($event, item.id, 'careRemark')"
                   v-decorator="[
                     `carCodeDetail.${index}.careRemark`,
-                    { initialValue: item.careRemark, rules: [{ required: true, message: '请输入保养备注' }] },
+                    {
+                      initialValue: item.careRemark,
+                      rules: [{ required: item.careResult === 2 ? true : false, message: '请输入保养备注' }],
+                    },
                   ]"
                 />
               </a-form-item>
@@ -101,7 +104,10 @@
                   @change="inputChange($event, item.id, 'checkRemark')"
                   v-decorator="[
                     `carCodeDetail.${index}.checkRemark`,
-                    { initialValue: item.checkRemark, rules: [{ required: true, message: '请输入保养备注' }] },
+                    {
+                      initialValue: item.checkRemark,
+                      rules: [{ required: item.checkResult === 2 ? true : false, message: '请输入保养备注' }],
+                    },
                   ]"
                 />
               </a-form-item>
@@ -190,10 +196,11 @@ export default {
     },
 
     inputChange(event, key, field) {
+      console.log(arguments, event instanceof Event)
       let carCodeDetail = [...this.carCodeDetail]
       let target = carCodeDetail.find((item) => item.id === key)
       if (target) {
-        target[field] = event instanceof Event ? event.target.value : event
+        target[field] = event.target.value
         this.carCodeDetail = carCodeDetail
       }
     },

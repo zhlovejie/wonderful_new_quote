@@ -14,7 +14,7 @@
             <a-form-item>
               <a-input
                 placeholder="安全事项"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 50%"
                 @change="inputChange($event, item.key, 'safeContent')"
                 v-decorator="[
@@ -22,6 +22,7 @@
                   { initialValue: item.safeContent, rules: [{ required: true, message: '请输入安全事项' }] },
                 ]"
               />
+              <span v-else>{{ item.safeContent }}</span>
             </a-form-item>
           </td>
           <td v-if="type !== 'view'">
@@ -32,7 +33,7 @@
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="!isDisabled">
           <td colspan="5">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>

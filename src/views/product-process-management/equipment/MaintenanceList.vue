@@ -79,7 +79,7 @@
           <a>{{ getStateText(text) }}</a>
         </div>
         <div slot="careType" slot-scope="text, record, index">
-          <span>{{ record.careType === 1 ? '周 ' : record.careType === 2 ? '年' : '月' }}</span>
+          <span>{{ record.careType === 1 ? '周 ' : record.careType === 2 ? '月' : '年' }}</span>
         </div>
         <div slot="action" slot-scope="text, record">
           <template v-if="$auth('equipmMaintenanceList:view')">

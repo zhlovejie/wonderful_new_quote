@@ -25,10 +25,6 @@
         </template>
         <template v-if="types !== 'view'">
           <a-divider type="vertical" />
-          <a @click="handleAction('edit', record)">修改</a>
-        </template>
-        <template v-if="types !== 'view'">
-          <a-divider type="vertical" />
           <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del', record)">
             <a href="javascript:;">删除</a>
           </a-popconfirm>

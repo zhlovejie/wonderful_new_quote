@@ -14,10 +14,11 @@
             <a-form-item>
               <a-input
                 style="width: 100%"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 placeholder="设备名称"
                 v-decorator="['devName', { rules: [{ required: true, message: '请输入设备名称' }] }]"
               />
+              <span v-else>{{ record.devName }}</span>
             </a-form-item>
           </td>
         </tr>
@@ -27,21 +28,21 @@
             <a-form-item>
               <a-input
                 style="width: 100%"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 placeholder="设备型号"
                 v-decorator="['devType', { rules: [{ required: true, message: '请输入设备型号' }] }]"
               />
+              <span v-else>{{ record.devType }}</span>
             </a-form-item>
           </td>
           <td>设备责任人</td>
-          <td>
+          <td v-if="!isDisabled">
             <a-form-item style="width: 50%; float: left">
               <a-select
                 v-decorator="['devChargeDepartmentId', { rules: [{ required: true, message: '请选择部门' }] }]"
                 placeholder="选择部门"
                 @change="depChangeHandler"
                 allowClear
-                :disabled="isDisabled"
               >
                 <a-select-option v-for="item in department" :key="item.id" :value="item.id">{{
                   item.departmentName
@@ -53,7 +54,6 @@
                 v-decorator="['devChargeId', { rules: [{ required: true, message: '请选择人员' }] }]"
                 placeholder="选择人员"
                 allowClear
-                :disabled="isDisabled"
               >
                 <a-select-option v-for="item in userList" :key="item.id" :value="item.id">{{
                   item.trueName
@@ -61,16 +61,18 @@
               </a-select>
             </a-form-item>
           </td>
+          <td v-else>
+            <span>{{ record.devChargeName }}</span>
+          </td>
         </tr>
         <tr>
           <td>安装位置</td>
-          <td>
+          <td v-if="!isDisabled">
             <a-form-item style="width: 50%; float: left">
               <a-select
                 v-decorator="['installDicId', { rules: [{ required: true, message: '请选择仓库' }] }]"
                 placeholder="选择仓库"
                 allowClear
-                :disabled="isDisabled"
               >
                 <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
                   item.text
@@ -79,7 +81,6 @@
             </a-form-item>
             <a-form-item style="width: 50%; float: left">
               <a-select
-                :disabled="isDisabled"
                 v-decorator="['installPositionDicId', { rules: [{ required: true, message: '请选择选择仓位' }] }]"
                 placeholder="选择仓位"
                 allowClear:disabled="isDisabled"
@@ -90,29 +91,36 @@
               </a-select>
             </a-form-item>
           </td>
+          <td v-else>
+            <span>{{ record.installPosition }}</span>
+          </td>
           <td>仓位说明</td>
           <td>
             <a-form-item>
               <a-textarea
                 style="width: 100%"
+                v-if="!isDisabled"
                 :rows="2"
                 v-decorator="['installPositionDesc', { rules: [{ required: false, message: '请输入仓位说明' }] }]"
                 :disabled="isDisabled"
                 placeholder="仓位说明"
               />
+              <span v-else>{{ record.installPositionDesc }}</span>
             </a-form-item>
           </td>
         </tr>
         <tr>
           <td>二维码</td>
-          <td>
+          <td colspan="3">
             <a-form-item>
               <img v-if="qrcodeUrl" :src="qrcodeUrl" alt="" srcset="" />
               <span v-else>系统自动生成</span>
             </a-form-item>
           </td>
+        </tr>
+        <tr>
           <td>设备图片</td>
-          <td>
+          <td colspan="3">
             <a-form-item style="margin-left: 150px; margin-top: 10px">
               <a-upload
                 key=""
@@ -135,7 +143,6 @@
             </a-form-item>
           </td>
         </tr>
-        <tr></tr>
       </table>
     </a-form>
     <div style="position: absolute; left: -99999px" class="wuliao-qr-code-wrapper">
@@ -206,7 +213,7 @@ export default {
       return this.actionType === 'approval'
     },
     isDisabled() {
-      return this.isView || this.isApproval
+      return this.isView
     },
   },
   methods: {
@@ -281,6 +288,7 @@ export default {
     async query(type, record = {}) {
       let that = this
       that.visible = true
+      that.record = record
       that.actionType = type
       if (!that.isAdd) {
         await that.initUserList(record.devChargeDepartmentId)
@@ -296,17 +304,19 @@ export default {
         }
       }
       await that.initDepList()
+      if (!that.isView) {
+        queryCode({ code: 'Warehouse_01' })
+          .then((res) => {
+            that.Warehouse = res.data
+          })
+          .catch((err) => (that.loading = false))
+        queryCode({ code: 'Position_01' })
+          .then((res) => {
+            that.Position = res.data
+          })
+          .catch((err) => (that.loading = false))
+      }
 
-      queryCode({ code: 'Warehouse_01' })
-        .then((res) => {
-          that.Warehouse = res.data
-        })
-        .catch((err) => (that.loading = false))
-      queryCode({ code: 'Position_01' })
-        .then((res) => {
-          that.Position = res.data
-        })
-        .catch((err) => (that.loading = false))
       if (!that.isAdd) {
         that.equipment = record.devNum
         let arr = (record.devPics || '').split(',')

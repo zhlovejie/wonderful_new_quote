@@ -12,8 +12,8 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>模具名称</td>
-            <td>
+            <td class="requiredMark">模具名称</td>
+            <td >
               <a-form-item>
                 <a-input
                   style="width: 100%"
@@ -23,7 +23,7 @@
                 />
               </a-form-item>
             </td>
-            <td>模具型号</td>
+            <td class="requiredMark">模具型号</td>
             <td>
               <a-form-item>
                 <a-input
@@ -36,10 +36,10 @@
             </td>
           </tr>
           <tr>
-            <td>个数</td>
+            <td class="requiredMark">个数</td>
             <td>
               <a-form-item>
-                <a-input
+                <a-input-number
                   style="width: 100%"
                   :disabled="isDisabled"
                   placeholder="模具个数"
@@ -47,7 +47,7 @@
                 />
               </a-form-item>
             </td>
-            <td>保管责任人</td>
+            <td class="requiredMark">保管责任人</td>
             <td>
               <a-form-item style="width: 50%; float: left">
                 <a-select
@@ -77,7 +77,7 @@
             </td>
           </tr>
           <tr>
-            <td>存放位置</td>
+            <td class="requiredMark">存放位置</td>
             <td>
               <a-form-item style="width: 50%; float: left">
                 <a-select
@@ -104,7 +104,7 @@
                 </a-select>
               </a-form-item>
             </td>
-            <td>仓位说明</td>
+            <td class="requiredMark">仓位说明</td>
             <td>
               <a-form-item>
                 <a-textarea
@@ -118,7 +118,7 @@
             </td>
           </tr>
           <tr>
-            <td>图片</td>
+            <td class="requiredMark">图片</td>
             <td colspan="3">
               <a-form-item style="margin-left: 150px; margin-top: 10px">
                 <a-upload
@@ -152,7 +152,7 @@
             </td>
           </tr>
           <tr>
-            <td>换模价格(元)</td>
+            <td class="requiredMark">换模价格(元)</td>
             <td colspan="3">
               <a-form-item>
                 <a-input-number
@@ -320,6 +320,7 @@ export default {
     },
     handleCancel() {
       this.fileList = []
+      this.qrcodeUrl = ''
       this.form.resetFields() // 清空表
       this.$nextTick(() => (this.visible = false))
     },
@@ -474,6 +475,15 @@ export default {
 </script>
 
 <style scoped>
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;

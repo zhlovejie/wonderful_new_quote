@@ -19,8 +19,8 @@
         </a-form-item>
         <a-form-item>
           <a-select placeholder="状态" v-model="searchParam.status" allowClear style="width: 180px">
-            <a-select-option :value="1">在库</a-select-option>
-            <a-select-option :value="2">保修中</a-select-option>
+            <a-select-option :value="1">正常</a-select-option>
+            <a-select-option :value="2">报修中</a-select-option>
             <a-select-option :value="3">报废</a-select-option>
           </a-select>
         </a-form-item>

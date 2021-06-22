@@ -16,7 +16,7 @@
             <a-form-item>
               <a-input
                 placeholder="联系单位"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 80%"
                 @change="inputChange($event, item.key, 'relationUnit')"
                 v-decorator="[
@@ -24,13 +24,14 @@
                   { initialValue: item.relationUnit, rules: [{ required: true, message: '请输入联系方式' }] },
                 ]"
               />
+              <span v-else>{{ item.relationUnit }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <a-input
                 placeholder="联系人"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 80%"
                 @change="inputChange($event, item.key, 'relationUserName')"
                 v-decorator="[
@@ -38,13 +39,14 @@
                   { initialValue: item.relationUserName, rules: [{ required: true, message: '请输入联系人' }] },
                 ]"
               />
+              <span v-else>{{ item.relationUserName }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <a-input
                 placeholder="联系电话"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 80%"
                 @change="inputChange($event, item.key, 'relationUserTel')"
                 v-decorator="[
@@ -52,6 +54,7 @@
                   { initialValue: item.relationUserTel, rules: [{ required: true, message: '请输入联系电话' }] },
                 ]"
               />
+              <span v-else>{{ item.relationUserTel }}</span>
             </a-form-item>
           </td>
           <td v-if="type !== 'view'">
@@ -62,7 +65,7 @@
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="!isDisabled">
           <td colspan="5">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>
