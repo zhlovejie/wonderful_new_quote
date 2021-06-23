@@ -5,8 +5,10 @@
       <a-input placeholder="区间开始范围查询" v-model="startName" allowClear style="width: 220px" />
       <a-input placeholder="区间结束范围查询" v-model="endName" allowClear style="width: 220px" />
       <a-button type="primary" icon="search" @click="searchAction">查询</a-button>
-      <a-button type="primary" style="fmargin-left: 10px" @click="downloadAction">下载</a-button>
-      <template>
+      <template v-if="$auth('Interval-allocation:downloadAction')">
+        <a-button type="primary" style="fmargin-left: 10px" @click="downloadAction">下载</a-button>
+      </template>
+      <template v-if="$auth('Interval-allocation:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
       </template>
     </div>
@@ -22,10 +24,10 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template>
+          <template v-if="$auth('Interval-allocation:edit')">
             <a type="primary" @click="doAction('edit', record)">修改</a>
           </template>
-          <template>
+          <template v-if="$auth('Interval-allocation:del')">
             <a-divider type="vertical" />
             <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="doAction('del', record)">
               <a type="primary">删除</a>

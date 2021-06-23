@@ -4,7 +4,7 @@
     <div class="search-wrapper">
       <a-input placeholder="产品类型模糊查询" v-model="typeName" allowClear style="width: 220px" />
       <a-button type="primary" icon="search" @click="searchAction">查询</a-button>
-      <template>
+      <template v-if="$auth('product-type:add')">
         <a-button style="float: right" type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
       </template>
     </div>
@@ -20,14 +20,14 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template>
+          <template v-if="$auth('product-type:view')">
             <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
-          <template>
+          <template v-if="$auth('product-type:edit')">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('edit', record)">修改</a>
           </template>
-          <template>
+          <template v-if="$auth('product-type:del')">
             <a-divider type="vertical" />
             <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="doAction('del', record)">
               <a type="primary">删除</a>

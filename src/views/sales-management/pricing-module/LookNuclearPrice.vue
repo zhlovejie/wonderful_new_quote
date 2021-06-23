@@ -154,33 +154,12 @@ const columns = [
   },
   {
     align: 'center',
-    title: '产品区域',
-    dataIndex: 'oldAreaText',
-    key: 'oldAreaText',
-    width: '150px',
-  },
-  {
-    align: 'center',
     title: '参考图片',
     dataIndex: 'referencePic',
     key: 'referencePic',
     scopedSlots: { customRender: 'referencePic' },
     width: '150px',
   },
-  // {
-  //   align: 'center',
-  //   title: '修改点',
-  //   dataIndex: 'revisedPart',
-  //   key: 'revisedPart',
-  //   width: '150px',
-  // },
-  // {
-  //   align: 'center',
-  //   title: '新产品区域',
-  //   dataIndex: 'areaText',
-  //   key: 'areaText',
-  //   width: '150px',
-  // },
   {
     align: 'center',
     title: '成本价',
@@ -189,24 +168,6 @@ const columns = [
     scopedSlots: { customRender: 'costPrice' },
     width: '150px',
   },
-  // {
-  //   align: 'center',
-  //   title: 'A价',
-  //   dataIndex: 'aprice',
-  //   key: 'aprice',
-  // },
-  // {
-  //   align: 'center',
-  //   title: 'B价',
-  //   dataIndex: 'bprice',
-  //   key: 'bprice',
-  // },
-  // {
-  //   align: 'center',
-  //   title: 'C价',
-  //   dataIndex: 'cprice',
-  //   key: 'cprice',
-  // },
   {
     align: 'center',
     title: '效果图',
