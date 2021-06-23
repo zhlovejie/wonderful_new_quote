@@ -68,7 +68,7 @@
                       v-if="!isDisabled"
                       :disabled="!isAdd"
                       show-search
-                      :value="materialInfo.materialCode"
+                      :value="materialInfo.materialCodeFormat"
                       placeholder="模糊搜索"
                       style="width: 100%"
                       :default-active-first-option="false"
@@ -86,12 +86,12 @@
                       <a-select-option
                         v-for="d in materialValueList"
                         :key="d.id"
-                        :value="d.materialCode"
+                        :value="d.materialCodeFormat"
                       >
                         {{ d.materialName }}
                       </a-select-option>
                     </a-select>
-                    <span v-else>{{materialInfo.materialCode}}</span>
+                    <span v-else>{{materialInfo.materialCodeFormat}}</span>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -568,7 +568,7 @@ export default {
     },
     materialValueHandleChange(value) {
       const that = this
-      const target = that.materialValueList.find(item => item.materialCode === value)
+      const target = that.materialValueList.find(item => item.materialCodeFormat === value)
       that.materialInfo = { ...target }
       that.form = {
         ...that.form,
@@ -576,7 +576,7 @@ export default {
         materialCommonCaculatorUnit: that.materialInfo.mainUnit,
         materialCode: that.materialInfo.materialCode,
 
-        materialCommonCode: that.materialInfo.materialCode,
+        materialCommonCode: that.materialInfo.materialCodeFormat,
         materialCommonName: that.materialInfo.materialName,
         materialCommonType: that.materialInfo.specifications
       }
@@ -641,6 +641,14 @@ export default {
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
     },
+    formatMaterialCode(codeStr){
+      if(typeof codeStr !== 'string'){
+        console.warn(`${codeStr} is not string type..`)
+        return ''
+      }
+      let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
+      return codeStr.split('.').map(s => s.replace(trimLeft,'').replace(trimRight,'')).join('')
+    },
     async query(type, record = {}) {
       const that = this
       that.visible = true
@@ -684,7 +692,8 @@ export default {
                 item.departmentName = workshop.departmentName
                 return item
               }),
-              materialCode: res.data.materialCommonCode
+              materialCode: res.data.materialCommonCode,
+              materialCodeFormat:res.data.materialCommonCode
             }
 
             that.materialInfo = {
@@ -693,7 +702,8 @@ export default {
               materialCode: that.form.materialCommonCode,
               materialName: that.form.materialCommonName,
               specifications: that.form.materialCommonType,
-              materialCode: that.form.materialCommonCode
+              materialCode: that.form.materialCommonCode,
+              materialCodeFormat:that.form.materialCommonCode
             }
           })
           .catch(err => {
@@ -725,6 +735,7 @@ export default {
                 return item
               }),
               materialCode: res.data.materialCommonCode,
+              materialCodeFormat:res.data.materialCommonCode,
               routeCode
             }
 
@@ -748,9 +759,9 @@ export default {
               id: parms.materialCommonId,
               mainUnit: parms.materialCommonCaculatorUnit,
               materialCode: parms.materialCommonCode,
+              materialCodeFormat:parms.materialCommonCode,
               materialName: parms.materialCommonName,
-              specifications: parms.materialCommonType,
-              materialCode: parms.materialCommonCode
+              specifications: parms.materialCommonType
             }
           })
           .catch(err => {
@@ -788,7 +799,8 @@ export default {
         }
         return res.data.records.map((item, index) => {
           item.key = index + 1
-          item.specifications = `
+          item.materialCodeFormat = that.formatMaterialCode(item.materialCode)
+          item.specifications = item.specification || `
               材质：${item.texture}
               厚度：${item.thickness}
               宽度：${item.width}
