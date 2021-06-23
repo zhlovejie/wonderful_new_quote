@@ -158,7 +158,7 @@ export default {
         },100)
       })
     },
-    parentCodes(_parentId,_dataList) {
+    parentCodes(_parentId,_dataList,joinSymbol=".") {
       let arr = []
       let parentId = _parentId
       // if(+parentId === 0){
@@ -176,7 +176,7 @@ export default {
       return arr
         .reverse()
         .map((item) => item.code)
-        .join('.')
+        .join(joinSymbol)
     },
     getNode(key){
       return this.dataList.find(n => n.key === key)
@@ -230,7 +230,7 @@ export default {
     makeMaterialCode(orderCode){
       const that = this
       let {parentId,isIntelligent} = this.form
-      let prefixCode = this.parentCodes(parentId,that.dataList)
+      let prefixCode = this.parentCodes(parentId,that.dataList,"")
       return `${prefixCode}${orderCode}${+isIntelligent === 1 ? 'Z' : 'F'}`
     },
     resetForm() {

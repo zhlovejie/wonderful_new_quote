@@ -359,7 +359,7 @@ export default {
       return arr
         .reverse()
         .map(item => item.code)
-        .join('.')
+        .join('')
     }
   },
   methods: {
@@ -508,7 +508,7 @@ export default {
           }
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            item.fullCode = that.parentCodes ? `${that.parentCodes}.${item.code}` : item.code
+            item.fullCode = that.parentCodes ? `${that.parentCodes}${item.code}` : item.code
             item.specifications = `
               材质：${item.texture}
               厚度：${item.thickness}

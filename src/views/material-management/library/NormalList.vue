@@ -173,7 +173,7 @@
             {{ {1:'支',2:'把',3:'件'}[text] }}
           </div>
           <div
-            slot="specifications"
+            slot="specification"
             slot-scope="text, record, index"
           >
             <a-tooltip>
@@ -246,8 +246,8 @@ const columns = [
   {
     align: 'center',
     title: '规格型号',
-    dataIndex: 'specifications',
-    scopedSlots: { customRender: 'specifications' }
+    dataIndex: 'specification',
+    scopedSlots: { customRender: 'specification' }
   },
   {
     align: 'center',
