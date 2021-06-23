@@ -19,7 +19,7 @@
         <a-form-item>
           <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
         </a-form-item>
-        <template v-if="+activeKey === 2 && $auth('materialRuleAudit:approval')">
+        <template v-if="+activeKey === 2 && ((type === 1 && $auth('routineMaterialAudit:approval')) || (type === 2 && $auth('productMaterialAudit:approval')))">
           <a-form-item>
             <a-button :disabled="selectedRows.length === 0" type="primary" @click="passAction">通过</a-button>
           </a-form-item>

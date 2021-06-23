@@ -83,10 +83,11 @@
           <td>规格型号</td>
           <td colspan="3">
             <a-form-model-item>
-              材质：{{form.texture}}&nbsp;&nbsp;
+              <!-- 材质：{{form.texture}}&nbsp;&nbsp;
               厚度：{{form.thickness}}&nbsp;&nbsp;
               宽度：{{form.width}}&nbsp;&nbsp;
-              长度：{{form.length}}
+              长度：{{form.length}} -->
+              {{form.specification}}
             </a-form-model-item>
           </td>
         </tr>
