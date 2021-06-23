@@ -23,10 +23,10 @@
         <template>
           <a @click="delSee(record.fileUrl)">查看</a>
         </template>
-        <template v-if="types !== 'view'">
+        <!-- <template v-if="types !== 'view'">
           <a-divider type="vertical" />
           <a @click="handleAction('edit', record)">修改</a>
-        </template>
+        </template> -->
         <template v-if="types !== 'view'">
           <a-divider type="vertical" />
           <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del', record)">
@@ -72,16 +72,6 @@ const columns = [
     align: 'center',
     title: '提交时间',
     dataIndex: 'createdTime',
-  },
-  {
-    align: 'center',
-    title: '修改人',
-    dataIndex: 'modifierName',
-  },
-  {
-    align: 'center',
-    title: '修改时间',
-    dataIndex: 'modifyTime',
   },
   {
     align: 'center',

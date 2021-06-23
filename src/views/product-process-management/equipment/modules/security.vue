@@ -19,7 +19,7 @@
                 @change="inputChange($event, item.key, 'safeContent')"
                 v-decorator="[
                   `programme.${index}.safeContent`,
-                  { initialValue: item.safeContent, rules: [{ required: true, message: '请输入安全事项' }] },
+                  { initialValue: item.safeContent, rules: [{ required: false, message: '请输入安全事项' }] },
                 ]"
               />
               <span v-else>{{ item.safeContent }}</span>
@@ -94,9 +94,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'add') {
-        this.addprogramme()
-      } else {
+      if (type !== 'add') {
         this.programme = this.record.developmentCraftDevSafeItems
       }
     },

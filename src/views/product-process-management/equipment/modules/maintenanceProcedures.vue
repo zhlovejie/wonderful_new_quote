@@ -65,16 +65,6 @@ const columns = [
   },
   {
     align: 'center',
-    title: '修改人',
-    dataIndex: 'modifierName',
-  },
-  {
-    align: 'center',
-    title: '修改时间',
-    dataIndex: 'modifyTime',
-  },
-  {
-    align: 'center',
     title: '操作',
     key: 'action',
     scopedSlots: { customRender: 'action' },

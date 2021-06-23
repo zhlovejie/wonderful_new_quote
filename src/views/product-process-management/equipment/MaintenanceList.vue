@@ -14,9 +14,9 @@
         :allowClear="true"
         style="width: 170px; margin-right: 10px"
       >
-        <a-select-option :value="1">周</a-select-option>
-        <a-select-option :value="2">月</a-select-option>
-        <a-select-option :value="3">年</a-select-option>
+        <a-select-option :value="1">周保养</a-select-option>
+        <a-select-option :value="2">月保养</a-select-option>
+        <a-select-option :value="3">年保养</a-select-option>
       </a-select>
       <a-select
         placeholder="状态"
@@ -79,7 +79,7 @@
           <a>{{ getStateText(text) }}</a>
         </div>
         <div slot="careType" slot-scope="text, record, index">
-          <span>{{ record.careType === 1 ? '周 ' : record.careType === 2 ? '月' : '年' }}</span>
+          <span>{{ record.careType === 1 ? '周保养 ' : record.careType === 2 ? '月保养' : '年保养' }}</span>
         </div>
         <div slot="action" slot-scope="text, record">
           <template v-if="$auth('equipmMaintenanceList:view')">
@@ -115,7 +115,7 @@ const columns = [
   {
     align: 'center',
     title: '保养时间',
-    dataIndex: 'careTime',
+    dataIndex: 'careCreatedTime',
   },
   {
     align: 'center',
@@ -146,7 +146,7 @@ const columns = [
   {
     align: 'center',
     title: '实际保养时间',
-    dataIndex: 'careCreatedTime',
+    dataIndex: 'careTime',
   },
   {
     align: 'center',

@@ -145,15 +145,15 @@ export default {
       if (that.basicInformation === undefined) {
         return that.$message.error('请完善基本信息')
       }
-      if (equipment.length === 0) {
-        return that.$message.error('请上传设备操作规程')
-      }
-      if (maintenance.length === 0) {
-        return that.$message.error('请上传保养操作规程')
-      }
-      if (standingConsumables.length === 0) {
-        return that.$message.error('请上传常备耗材')
-      }
+      // if (equipment.length === 0) {
+      //   return that.$message.error('请上传设备操作规程')
+      // }
+      // if (maintenance.length === 0) {
+      //   return that.$message.error('请上传保养操作规程')
+      // }
+      // if (standingConsumables.length === 0) {
+      //   return that.$message.error('请上传常备耗材')
+      // }
 
       let basic = { ...that.basicInformation }
       if (that.isEdit) {
@@ -169,9 +169,7 @@ export default {
       basic.maintenanceOperations = maintenance
       basic.standingConsumables = standingConsumables
 
-      console.log(basic)
-
-      if (that.basicInformation && that.security && that.maintain && that.afterSaleService) {
+      if (that.basicInformation) {
         pageDevesaveOrUpdate(basic)
           .then((res) => {
             that.spinning = false

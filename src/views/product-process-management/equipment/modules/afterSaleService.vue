@@ -21,7 +21,7 @@
                 @change="inputChange($event, item.key, 'relationUnit')"
                 v-decorator="[
                   `programme.${index}.relationUnit`,
-                  { initialValue: item.relationUnit, rules: [{ required: true, message: '请输入联系方式' }] },
+                  { initialValue: item.relationUnit, rules: [{ required: false, message: '请输入联系方式' }] },
                 ]"
               />
               <span v-else>{{ item.relationUnit }}</span>
@@ -36,7 +36,7 @@
                 @change="inputChange($event, item.key, 'relationUserName')"
                 v-decorator="[
                   `programme.${index}.relationUserName`,
-                  { initialValue: item.relationUserName, rules: [{ required: true, message: '请输入联系人' }] },
+                  { initialValue: item.relationUserName, rules: [{ required: false, message: '请输入联系人' }] },
                 ]"
               />
               <span v-else>{{ item.relationUserName }}</span>
@@ -51,7 +51,7 @@
                 @change="inputChange($event, item.key, 'relationUserTel')"
                 v-decorator="[
                   `programme.${index}.relationUserTel`,
-                  { initialValue: item.relationUserTel, rules: [{ required: true, message: '请输入联系电话' }] },
+                  { initialValue: item.relationUserTel, rules: [{ required: false, message: '请输入联系电话' }] },
                 ]"
               />
               <span v-else>{{ item.relationUserTel }}</span>
@@ -126,9 +126,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'add') {
-        this.addprogramme()
-      } else {
+      if (type !== 'add') {
         this.programme = this.record.developmentCraftDevPostServices
       }
     },

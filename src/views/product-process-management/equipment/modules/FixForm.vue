@@ -285,6 +285,7 @@ export default {
       })
     },
     handleCancel() {
+      this.detail = {}
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },

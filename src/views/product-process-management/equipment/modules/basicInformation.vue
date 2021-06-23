@@ -4,12 +4,12 @@
       <table class="custom-table custom-table-border">
         <h3>基本数据</h3>
         <tr>
-          <td>设备编号</td>
+          <td class="requiredMark">设备编号</td>
           <td>
             <span v-if="equipment">{{ equipment }}</span>
             <span v-else>系统自动生成</span>
           </td>
-          <td>设备名称</td>
+          <td class="requiredMark">设备名称</td>
           <td>
             <a-form-item>
               <a-input
@@ -23,7 +23,7 @@
           </td>
         </tr>
         <tr>
-          <td>设备型号</td>
+          <td class="requiredMark">设备型号</td>
           <td>
             <a-form-item>
               <a-input
@@ -35,7 +35,7 @@
               <span v-else>{{ record.devType }}</span>
             </a-form-item>
           </td>
-          <td>设备责任人</td>
+          <td class="requiredMark">设备责任人</td>
           <td v-if="!isDisabled">
             <a-form-item style="width: 50%; float: left">
               <a-select
@@ -66,7 +66,7 @@
           </td>
         </tr>
         <tr>
-          <td>安装位置</td>
+          <td class="requiredMark">安装位置</td>
           <td v-if="!isDisabled">
             <a-form-item style="width: 50%; float: left">
               <a-select
@@ -119,9 +119,9 @@
           </td>
         </tr>
         <tr>
-          <td>设备图片</td>
+          <td class="requiredMark">设备图片</td>
           <td colspan="3">
-            <a-form-item style="margin-left: 150px; margin-top: 10px">
+            <a-form-item style="margin-left: 350px; margin-top: 10px">
               <a-upload
                 key=""
                 :disabled="isDisabled"
@@ -283,7 +283,9 @@ export default {
     },
     depChangeHandler(depId) {
       this.userList = []
-      this.initUserList(depId)
+      if (!this.isView) {
+        this.initUserList(depId)
+      }
     },
     async query(type, record = {}) {
       let that = this
@@ -303,8 +305,9 @@ export default {
           this.qrcodeUrl = materialQrCode
         }
       }
-      await that.initDepList()
+
       if (!that.isView) {
+        await that.initDepList()
         queryCode({ code: 'Warehouse_01' })
           .then((res) => {
             that.Warehouse = res.data
@@ -317,7 +320,7 @@ export default {
           .catch((err) => (that.loading = false))
       }
 
-      if (!that.isAdd) {
+      if (!that.isAdd && !that.isView) {
         that.equipment = record.devNum
         let arr = (record.devPics || '').split(',')
         ;(this.fileList = arr.map((item) => {
@@ -412,6 +415,15 @@ export default {
 </script>
 
 <style scoped>
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;

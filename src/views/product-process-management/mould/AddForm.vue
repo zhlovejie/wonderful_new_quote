@@ -13,7 +13,7 @@
         <table class="custom-table custom-table-border">
           <tr>
             <td class="requiredMark">模具名称</td>
-            <td >
+            <td>
               <a-form-item>
                 <a-input
                   style="width: 100%"
@@ -350,6 +350,7 @@ export default {
       that.visible = true
       that.actionType = type
       that.leaveTime = ''
+      that.qrcodeUrl = ''
       that.record = record
       that.detail = {}
       that.fileList = []

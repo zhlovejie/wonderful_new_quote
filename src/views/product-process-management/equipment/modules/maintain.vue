@@ -22,7 +22,7 @@
                 @change="inputChange($event, item.key, 'careContent')"
                 v-decorator="[
                   `programme.${index}.careContent`,
-                  { initialValue: item.careContent, rules: [{ required: true, message: '请输入保养内容' }] },
+                  { initialValue: item.careContent, rules: [{ required: false, message: '请输入保养内容' }] },
                 ]"
               />
               <span v-else>{{ item.careContent }}</span>
@@ -39,7 +39,7 @@
                 @change="inputChange($event, item.key, 'careType')"
                 v-decorator="[
                   `programme.${index}.careType`,
-                  { initialValue: item.careTypes, rules: [{ required: true, message: '请输入保养周期' }] },
+                  { initialValue: item.careTypes, rules: [{ required: false, message: '请输入保养周期' }] },
                 ]"
               >
                 <a-select-option :value="1">周</a-select-option>
@@ -93,7 +93,7 @@
           </td>
         </tr>
         <tr v-if="!isDisabled">
-          <td colspan="5">
+          <td colspan="6">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>
         </tr>
@@ -201,9 +201,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'add') {
-        this.addprogramme()
-      } else {
+      if (type !== 'add') {
         this.programme = this.record.developmentCraftDevCares
       }
     },
@@ -216,7 +214,7 @@ export default {
             return {
               careContent: item.careContent,
               careDepartmentId: item.careDepartmentId,
-              careType: item.careType.toString(),
+              careType: item.careType ? item.careType.toString() : '',
               careUserId: item.careUserId,
               checkDepartmentId: item.checkDepartmentId,
               checkUserId: item.checkUserId,
