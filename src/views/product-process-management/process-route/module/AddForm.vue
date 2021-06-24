@@ -85,7 +85,7 @@
                       />
                       <a-select-option
                         v-for="d in materialValueList"
-                        :key="d.id"
+                        :key="d.key"
                         :value="d.materialCodeFormat"
                       >
                         {{ d.materialName }}
@@ -403,6 +403,7 @@ import moment from 'moment'
 import UploadFile from './UploadFile'
 import DepartmentPostCascade from '@/components/CustomerList/DepartmentPostCascade'
 import ApprovalForm from './ApprovalForm'
+let uuid = () => Math.random().toString(16).slice(2);
 //this.$_.debounce(this.onChange, 2000)
 export default {
   name: 'product-process-management_process-route-management_route-addForm',
@@ -574,7 +575,7 @@ export default {
         ...that.form,
         materialCommonId: that.materialInfo.id,
         materialCommonCaculatorUnit: that.materialInfo.mainUnit,
-        materialCode: that.materialInfo.materialCode,
+        materialCode: that.materialInfo.materialCodeFormat,
 
         materialCommonCode: that.materialInfo.materialCodeFormat,
         materialCommonName: that.materialInfo.materialName,
@@ -641,13 +642,13 @@ export default {
     handleCancel() {
       this.$nextTick(() => (this.visible = false))
     },
-    formatMaterialCode(codeStr){
+    formatMaterialCode(codeStr,joinSymbol=""){
       if(typeof codeStr !== 'string'){
         console.warn(`${codeStr} is not string type..`)
         return ''
       }
       let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
-      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join('')
+      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
     },
     async query(type, record = {}) {
       const that = this
@@ -798,8 +799,8 @@ export default {
           return []
         }
         return res.data.records.map((item, index) => {
-          item.key = index + 1
-          item.materialCodeFormat = that.formatMaterialCode(item.materialCode)
+          item.key = uuid()
+          item.materialCodeFormat = that.formatMaterialCode(item.materialCode,".")
           item.specifications = item.specification || `
               材质：${item.texture}
               厚度：${item.thickness}

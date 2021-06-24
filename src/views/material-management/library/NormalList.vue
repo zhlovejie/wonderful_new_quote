@@ -419,7 +419,7 @@ export default {
       this.selectedTreeNode = null
       this.queryParam = {
         ...this.queryParam,
-        ruleId: this.parentId
+        ruleId: +this.parentId === 0 ? undefined : this.parentId
       }
       this.fetchTree()
       this.search()
@@ -590,7 +590,7 @@ export default {
       if (selectedKeys[0] !== undefined) {
         parentId = selectedKeys[0]
       }
-      that.queryParam = { ...that.queryParam, ruleId: parentId }
+      that.queryParam = { ...that.queryParam, ruleId: +parentId === 0 ? undefined : parentId }
       that.parentId = parentId
       that.parentItem = { ...dataRef }
 

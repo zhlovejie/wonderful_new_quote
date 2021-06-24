@@ -673,6 +673,7 @@ export default {
         that.search()
       }else{
         that.dataSource = []
+        that.gxDataSource = []
       }
     },
 
