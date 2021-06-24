@@ -33,7 +33,14 @@
           message: `请选择${item.newRuleName || item.ruleName}`,
         }"
       >
-        <a-select v-model="item.selectedID" placeholder="请选择" :allowClear="true">
+        <a-select
+          show-search
+          option-filter-prop="children"
+          v-model="item.selectedID"
+          placeholder="请选择"
+          :allowClear="true"
+          :filter-option="filterOption"
+        >
           <a-select-option v-for="sub in item.subList" :key="sub.id" :value="sub.id">
             {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
@@ -215,6 +222,14 @@ export default {
         .map((item) => item.code)
         .join(joinSymbol)
     },
+    formatMaterialCode(codeStr,joinSymbol=""){
+      if(typeof codeStr !== 'string'){
+        console.warn(`${codeStr} is not string type..`)
+        return ''
+      }
+      let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
+      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
+    },
     getNode(key){
       return this.dataList.find(n => n.key === key)
     },
@@ -235,10 +250,10 @@ export default {
         if (valid) {
           let ruleId = that.form.parentId
           let materialName = that.getNode(ruleId).title
-          // debugger
           //成品物料库 物料代码不显示点
           let materialCode = that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
-
+          // 去除物料代码的0
+          materialCode = that.formatMaterialCode(materialCode,".")
           that.tip = '检测物料代码是否重复...'
           that.spinning = true
           let isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({materialCode}).then(res => res.data).catch(err => false)
@@ -442,7 +457,12 @@ export default {
         obj.children = item.subList.map(v => that.formatTreeData(v))
       }
       return obj
-    }
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
   }
 }
 </script>

@@ -14,18 +14,20 @@ export default {
     permission: ['permission']
   },
   redirect: '/material-rule-management/rule',
-  children: [{
+  children: [
+    {
       path: '/material-rule-management/rule',
       name: 'material-rule-management-rule',
       redirect: '/material-rule-management/rule/routine',
       component: RouteView,
       meta: {
-        title: '规则',
+        title: '物料规则',
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/material-rule-management/rule/routine',
           name: 'material-rule-management-routine',
           component: () => import('@/views/material-management/rule/RoutineList'),
@@ -46,33 +48,34 @@ export default {
             keepAlive: false,
             permission: ['permission']
           }
-        }
+        },
+        {
+          path: '/material-rule-management/rule/audit/routine',
+          name: 'material-rule-management-audit-routine',
+          component: () => import('@/views/material-management/audit/RoutineList'),
+          meta: {
+            title: '常规物料规则审核',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          props:true
+        },
+        {
+          path: '/material-rule-management/rule/audit/finished-product',
+          name: 'material-rule-management-audit-finished-product',
+          component: () => import('@/views/material-management/audit/FinishedProductList'),
+          meta: {
+            title: '成品物料规则审核',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          },
+          props:true
+        },
       ]
     },
-    {
-      path: '/material-rule-management/audit/routine',
-      name: 'material-rule-management-audit-routine',
-      component: () => import('@/views/material-management/audit/RoutineList'),
-      meta: {
-        title: '常规物料规则审核',
-        icon: 'setting',
-        keepAlive: false,
-        permission: ['permission']
-      },
-      props:true
-    },
-    {
-      path: '/material-rule-management/audit/finished-product',
-      name: 'material-rule-management-audit-finished-product',
-      component: () => import('@/views/material-management/audit/FinishedProductList'),
-      meta: {
-        title: '成品物料规则审核',
-        icon: 'setting',
-        keepAlive: false,
-        permission: ['permission']
-      },
-      props:true
-    },
+
     {
       path: '/material-rule-management/library',
       name: 'material-rule-management-library',

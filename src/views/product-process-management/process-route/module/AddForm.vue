@@ -647,7 +647,7 @@ export default {
         return ''
       }
       let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
-      return codeStr.split('.').map(s => s.replace(trimLeft,'').replace(trimRight,'')).join('')
+      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join('')
     },
     async query(type, record = {}) {
       const that = this

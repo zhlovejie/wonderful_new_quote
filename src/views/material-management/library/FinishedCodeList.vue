@@ -123,7 +123,7 @@
                 @click="doAction('unapproval', null)"
               >反审核</a-button>
             </a-form-item>
-            <a-form-item v-if="$auth('routineMaterial:annulAudit')">
+            <a-form-item v-if="$auth('routineMaterial:export')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
@@ -139,9 +139,9 @@
           style="margin-top: 10px"
         >
           <div slot="description">
-            <span style="color: blue">蓝色未使用</span>
+            <span style="color: blue">蓝色使用</span>
             <span style="color: red; margin: 0 10px">红色禁用</span>
-            <span>黑色使用/未检测</span>
+            <span>黑色未使用/未检测</span>
           </div>
         </a-alert>
         <a-table
@@ -613,14 +613,19 @@ export default {
         that.$message.info(res.msg)
         return
       } else if (type === 'filter') {
-        that.$refs.searchForm.query()
+        that.$refs.searchForm.query({
+            ...record,
+            __selectItem: that.parentItem,
+            __treeData: [...that.orgTree],
+            __from: 'product'
+          })
         return
       } else {
         let m = {
           disable: {
             api: productMaterialInfoForbidden,
             title: '禁用',
-            tpl: names => `是否要删除所选项目${names}？`
+            tpl: names => `是否要禁用所选项目${names}？`
           },
           enable: {
             api: productMaterialInfoStartUsing,
@@ -701,7 +706,7 @@ export default {
       let { useStatus, isForbidden } = record
       return {
         style: {
-          color: +isForbidden === 1 ? 'red' : +useStatus === 2 ? 'blue' : ''
+          color: +isForbidden === 1 ? 'red' : +useStatus === 1 ? 'blue' : ''
         },
         on: {
           dblclick: event => {

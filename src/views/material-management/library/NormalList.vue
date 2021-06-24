@@ -123,7 +123,7 @@
                 @click="doAction('unapproval', null)"
               >反审核</a-button>
             </a-form-item>
-            <a-form-item v-if="$auth('routineMaterial:annulAudit')">
+            <a-form-item v-if="$auth('routineMaterial:export')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
@@ -139,9 +139,9 @@
           style="margin-top: 10px"
         >
           <div slot="description">
-            <span style="color: blue">蓝色未使用</span>
+            <span style="color: blue">蓝色使用</span>
             <span style="color: red; margin: 0 10px">红色禁用</span>
-            <span>黑色使用/未检测</span>
+            <span>黑色未使用/未检测</span>
           </div>
         </a-alert>
         <a-table
@@ -159,6 +159,13 @@
           >
             <span>{{ index + 1 }}</span>
           </div>
+          <div
+            slot="materialCode"
+            slot-scope="text, record, index"
+          >
+            <span>{{ formatMaterialCode(text,".") }}</span>
+          </div>
+
           <div
             slot="materialSource"
             slot-scope="text, record, index"
@@ -230,7 +237,8 @@ const columns = [
   {
     align: 'center',
     title: '物料代码',
-    dataIndex: 'materialCode'
+    dataIndex: 'materialCode',
+    scopedSlots: { customRender: 'materialCode' }
   },
   {
     align: 'center',
@@ -536,6 +544,14 @@ export default {
           that.loading = false
         })
     },
+    formatMaterialCode(codeStr,joinSymbol=""){
+      if(typeof codeStr !== 'string'){
+        console.warn(`${codeStr} is not string type..`)
+        return ''
+      }
+      let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
+      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
+    },
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
       this.search()
@@ -613,14 +629,19 @@ export default {
         that.$message.info(res.msg)
         return
       } else if (type === 'filter') {
-        that.$refs.searchForm.query()
+        that.$refs.searchForm.query({
+            ...record,
+            __selectItem: that.parentItem,
+            __treeData: [...that.orgTree],
+            __from: 'normal'
+          })
         return
       } else {
         let m = {
           disable: {
             api: routineMaterialInfoForbidden,
             title: '禁用',
-            tpl: names => `是否要删除所选项目${names}？`
+            tpl: names => `是否要禁用所选项目${names}？`
           },
           enable: {
             api: routineMaterialInfoStartUsing,
@@ -705,7 +726,7 @@ export default {
       let { useStatus, isForbidden ,auditStatus} = record
       return {
         style: {
-          color: +isForbidden === 1 ? 'red' : +useStatus === 2 ? 'blue' : ''
+          color: +isForbidden === 1 ? 'red' : +useStatus === 1 ? 'blue' : ''
         },
         on: {
           dblclick: event => {

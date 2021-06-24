@@ -20,7 +20,7 @@
               <a-input
                 v-model="form.materialCode"
                 placeholder="系统生成"
-                :disabled="true"
+                :disabled="!normalAddForm.isAdd"
               />
             </a-form-model-item>
           </td>
@@ -34,7 +34,7 @@
             >
               <a-input
                 v-model="form.materialName"
-                :disabled="normalAddForm.isView"
+                :disabled="!normalAddForm.isAdd"
               />
             </a-form-model-item>
           </td>
