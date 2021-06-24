@@ -57,7 +57,7 @@
       </span>
       <span slot="productPic" slot-scope="text">
         <template v-if="text">
-          <img style="width:96px;height:auto;"  :src="text" />
+          <img style="width: 96px; height: auto" :src="text" />
         </template>
         <template v-else>暂无图片</template>
       </span>
@@ -143,6 +143,7 @@ export default {
         },
         {
           title: '名称',
+          width: '180px',
           dataIndex: 'productName',
         },
         {
@@ -155,7 +156,7 @@ export default {
         },
         {
           title: '类型',
-          dataIndex: 'productTypeText',
+          dataIndex: 'productTypeConfigName',
         },
         {
           title: '常规系列',

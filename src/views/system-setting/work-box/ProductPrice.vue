@@ -51,9 +51,9 @@
         <span v-if="$auth('productPrice:add') || $auth('productPrice:eidt')">{{ text }}</span>
         <span v-else>***</span>
       </span>
-      <span slot="productTypeText" slot-scope="text">
+      <!-- <span slot="productTypeText" slot-scope="text">
         {{ getProductTypeText(text) }}
-      </span>
+      </span> -->
       <span slot="productPic" slot-scope="text">
         <img style="height: 70px; lenght: 70px" :src="text" />
       </span>
@@ -151,8 +151,8 @@ export default {
         // },
         {
           title: '产品类型',
-          dataIndex: 'productType',
-          scopedSlots: { customRender: 'productTypeText' },
+          dataIndex: 'productTypeConfigName',
+          // scopedSlots: { customRender: 'productTypeText' },
         },
         {
           title: '成本价',
@@ -247,10 +247,10 @@ export default {
           console.log(err)
         })
     },
-    getProductTypeText(id) {
-      let target = this.productTypes.find((item) => +item.id === +id)
-      return target ? target.text : ''
-    },
+    // getProductTypeText(id) {
+    //   let target = this.productTypes.find((item) => +item.id === +id)
+    //   return target ? target.text : ''
+    // },
     downloadAction() {
       let that = this
       downProductInformation(this.queryParam)

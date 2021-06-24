@@ -11,7 +11,7 @@
       <a-form :form="form" class="add-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width: 120px">产品类型名称</td>
+            <td class="requiredMark" style="width: 120px">产品类型名称</td>
             <td colspan="2">
               <a-form-item>
                 <a-input
@@ -22,22 +22,19 @@
             </td>
           </tr>
           <tr>
-            <td style="width: 120px">税率</td>
+            <td class="requiredMark" style="width: 120px">税率(%)</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-Number
                   :disabled="isView"
                   style="width: 100%"
-                  :min="0"
-                  :step="1"
-                  :precision="3"
                   v-decorator="['taxRate', { rules: [{ required: true, message: '请输入税率' }] }]"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td style="width: 120px">编码</td>
+            <td class="requiredMark" style="width: 120px">编码</td>
             <td colspan="2">
               <a-form-item>
                 <a-input
@@ -94,6 +91,7 @@
             </td>
           </tr>
         </table>
+        <div style="margin-top: 20px">编码规则：数字加字母组合，不允许输入空格与中文字符。</div>
       </a-form>
     </a-spin>
   </a-modal>
@@ -164,7 +162,10 @@ export default {
         this.typeConfigRangeList[0].startInterval !== undefined &&
         this.typeConfigRangeList[0].endInterval !== undefined
       ) {
-        if (this.typeConfigRangeList[0].startInterval < this.typeConfigRangeList[0].endInterval) {
+        if (
+          this.typeConfigRangeList[0].startInterval < this.typeConfigRangeList[0].endInterval ||
+          this.typeConfigRangeList[0].startInterval === this.typeConfigRangeList[0].endInterval
+        ) {
           if (
             (this.typeConfigRangeList[0].startInterval < this.typeConfigRangeList[1].endInterval &&
               this.typeConfigRangeList[0].endInterval > this.typeConfigRangeList[1].startInterval) ||
@@ -181,7 +182,10 @@ export default {
         this.typeConfigRangeList[1].startInterval !== undefined &&
         this.typeConfigRangeList[1].endInterval !== undefined
       ) {
-        if (this.typeConfigRangeList[1].startInterval < this.typeConfigRangeList[1].endInterval) {
+        if (
+          this.typeConfigRangeList[1].startInterval < this.typeConfigRangeList[1].endInterval ||
+          this.typeConfigRangeList[1].startInterval === this.typeConfigRangeList[1].endInterval
+        ) {
           if (
             (this.typeConfigRangeList[1].startInterval < this.typeConfigRangeList[0].endInterval &&
               this.typeConfigRangeList[1].endInterval > this.typeConfigRangeList[0].startInterval) ||
@@ -198,7 +202,10 @@ export default {
         this.typeConfigRangeList[2].startInterval !== undefined &&
         this.typeConfigRangeList[2].endInterval !== undefined
       ) {
-        if (this.typeConfigRangeList[2].startInterval < this.typeConfigRangeList[2].endInterval) {
+        if (
+          this.typeConfigRangeList[2].startInterval < this.typeConfigRangeList[2].endInterval ||
+          this.typeConfigRangeList[2].startInterval === this.typeConfigRangeList[2].endInterval
+        ) {
           if (
             (this.typeConfigRangeList[2].startInterval < this.typeConfigRangeList[1].endInterval &&
               this.typeConfigRangeList[2].endInterval > this.typeConfigRangeList[1].startInterval) ||
@@ -268,6 +275,12 @@ export default {
     },
     async query(type, record) {
       let that = this
+      this.typeConfigRangeList[0].startInterval = undefined
+      this.typeConfigRangeList[0].endInterval = undefined
+      this.typeConfigRangeList[1].startInterval = undefined
+      this.typeConfigRangeList[1].endInterval = undefined
+      this.typeConfigRangeList[2].startInterval = undefined
+      this.typeConfigRangeList[2].endInterval = undefined
       that.actionType = type
       that.record = record || {}
       that.form.resetFields()
@@ -330,6 +343,15 @@ export default {
 }
 </script>
 <style>
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .ant-upload-list-picture-card .ant-upload-list-item-info::before {
   left: 0;
 }

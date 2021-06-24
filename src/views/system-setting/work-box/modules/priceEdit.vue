@@ -90,11 +90,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      let m = {
-        add: '新增',
-        edit: '修改',
-      }
-      return `${m[this.type]}产品价格`
+      return `${this.type === 'add' ? '新增' : '修改'}产品价格`
     },
   },
   created(record) {
@@ -208,7 +204,7 @@ export default {
     constPriceAction(val) {
       let that = this
       // （成本价/0.750） *（1+税率）
-      let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate))
+      let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate) / 100)
 
       this.form.setFieldsValue({
         priceC: _costPrice.toFixed(2),

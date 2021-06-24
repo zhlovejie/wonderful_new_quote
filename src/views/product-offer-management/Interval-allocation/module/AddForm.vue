@@ -11,7 +11,7 @@
       <a-form :form="form" class="add-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width: 120px">区域值名称</td>
+            <td style="width: 120px" class="requiredMark">区间值名称</td>
             <td>
               <a-form-item>
                 <a-input
@@ -21,7 +21,7 @@
             </td>
           </tr>
           <tr>
-            <td style="width: 120px">利润值</td>
+            <td style="width: 120px" class="requiredMark">利润值</td>
             <td>
               <a-form-item>
                 <a-input-Number
@@ -36,11 +36,11 @@
             </td>
           </tr>
           <tr>
-            <td>利润系数</td>
+            <td class="requiredMark">利润系数</td>
             <td>{{ profitCoefficient !== undefined ? profitCoefficient : '自动计算' }}</td>
           </tr>
           <tr>
-            <td>提成比率</td>
+            <td class="requiredMark">提成比率</td>
             <td>{{ commissionRate !== undefined ? commissionRate : '自动计算' }}</td>
           </tr>
           <tr>
@@ -172,6 +172,15 @@ export default {
 }
 </script>
 <style>
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .ant-upload-list-picture-card .ant-upload-list-item-info::before {
   left: 0;
 }

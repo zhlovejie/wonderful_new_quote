@@ -105,6 +105,15 @@
           </a-tooltip>
           <span v-else>{{ text }}</span>
         </div>
+
+        <div slot="typeConfigName" slot-scope="text, record">
+          <a-tooltip v-if="String(text).length > 10">
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
+          </a-tooltip>
+          <span v-else>{{ text }}</span>
+        </div>
+
         <div slot="valencySpecs" slot-scope="text">
           <a-tooltip v-if="String(text).length > 10">
             <template slot="title">{{ text }}</template>
@@ -346,6 +355,14 @@ const innerColumns = [
     dataIndex: 'productName',
     key: 'productName',
     scopedSlots: { customRender: 'productName' },
+    width: '200px',
+  },
+  {
+    align: 'center',
+    title: '产品类型',
+    dataIndex: 'typeConfigName',
+    key: 'typeConfigName',
+    scopedSlots: { customRender: 'typeConfigName' },
     width: '200px',
   },
   {
