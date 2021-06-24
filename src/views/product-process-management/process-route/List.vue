@@ -851,7 +851,7 @@ export default {
             that.gxLoading = true
             craftRouteDetail({id:record.id}).then(res => {
               that.gxLoading = false
-              that.gxDataSource = res.data.processes
+              that.gxDataSource = res.data.processes.sort((a,b) => a.orderNum - b.orderNum)
             }).catch(err => {
               that.gxLoading = false
               console.log(err)

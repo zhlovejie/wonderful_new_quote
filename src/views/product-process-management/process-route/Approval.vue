@@ -24,7 +24,7 @@
             <a-input placeholder="物料名称" v-model="queryParam.materialCommonName" allowClear style="width: 150px" />
           </a-form-item>
           <a-form-item v-if="+activeKey === 1">
-            <a-select style="width: 150px" placeholder="审批状态" v-model="queryParam.status">
+            <a-select style="width: 150px" placeholder="审批状态" allowClear v-model="queryParam.status">
               <a-select-option :value="1">待审批</a-select-option>
               <a-select-option :value="2">审核中</a-select-option>
               <a-select-option :value="3">通过</a-select-option>
@@ -39,11 +39,12 @@
 
       <div class="main-wrapper">
         <a-tabs v-if="status.isAction" :activeKey="activeKey" :defaultActiveKey="2" @change="tabChange">
-          <!-- <a-tab-pane tab="我的" :key="1" /> -->
-          <!-- <template v-if="$auth('materialRuleAudit:approval')"> -->
-          <a-tab-pane tab="待我审批" :key="2" />
-          <!-- <a-tab-pane tab="我已审批" :key="3" /> -->
-          <!-- </template> -->
+          <a-tab-pane v-for="tab in tabList" :key="tab.key">
+            <span slot="tab">
+              <span>{{tab.label}}</span>
+              <span style="color:red;margin-left:5px;">{{`(${tab.qty})`}}</span>
+            </span>
+          </a-tab-pane>
         </a-tabs>
         <a-table
           :columns="columns"
@@ -197,6 +198,18 @@ export default {
         isSubmit: false,
         isAction: false,
       },
+      tabList:[
+        {
+          key:2,
+          label:"待我审批",
+          qty:''
+        },
+        {
+          key:3,
+          label:"我已审批",
+          qty:''
+        }
+      ]
     }
   },
   watch: {
@@ -224,9 +237,31 @@ export default {
     },
   },
   methods: {
-    init() {
+    async init() {
       const that = this
-      that.search()
+      that.search();
+      that.status.isAction && that.initQty()
+    },
+    async initQty(){
+      const that = this
+      let tabList = [...that.tabList]
+      let arr = []
+      tabList.map(tab => {
+        arr.push(craftRouteApprovePageList({queryType:tab.key,current: 1,size: 1}).then(res => {
+          return {key:tab.key,qty:+res.data.total}
+        }).catch(err => {
+          console.warn(err)
+          return {key:tab.key,qty:0}
+        }))
+      })
+      let result = await Promise.all(arr)
+      result.map(item => {
+        let target = tabList.find(t => t.key === item.key)
+        if(target){
+          target.qty = item.qty
+        }
+      })
+      that.tabList = tabList
     },
     search(params = {}) {
       const that = this
@@ -239,7 +274,7 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       that.loading = true
-      craftRouteApprovePageList(_searchParam)
+      return craftRouteApprovePageList(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -278,6 +313,7 @@ export default {
       }
       this.queryParam = { ...this.queryParam, queryType: this.activeKey }
       this.search({ current: 1 })
+      this.status.isAction && this.initQty()
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)

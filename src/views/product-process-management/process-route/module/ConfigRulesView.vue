@@ -48,7 +48,12 @@ const columns = [
     align: 'center',
     title: '修改时间',
     dataIndex: 'modifyTime',
-  }
+  },
+  {
+    align: 'center',
+    title: '操作',
+    scopedSlots: { customRender: 'action' }
+  },
 ]
 
 export default {

@@ -545,11 +545,24 @@ export default {
       }
     },
     reSortAction() {
-      const _processTableData = this.processTableData.map(p => Object.assign({}, p))
-      this.processTableData = _processTableData.map((p, index) => {
-        p.orderNum = index + 1
-        return p
+      // const _processTableData = this.processTableData.map(p => Object.assign({}, p))
+      // this.processTableData = _processTableData.map((p, index) => {
+      //   p.orderNum = index + 1
+      //   return p
+      // })
+
+      let processes = [...this.form.processes]
+
+      processes.map((item,idx) => {
+        item.orderNum = idx + 1
+        return item
       })
+
+      this.form = {
+        ...this.form,
+        processes
+      }
+
     },
     async processTableDataChange(field, record, val) {
       const that = this
@@ -692,7 +705,7 @@ export default {
               processes: processes.map(item => {
                 item.departmentName = workshop.departmentName
                 return item
-              }),
+              }).sort((a,b) => a.orderNum - b.orderNum),
               materialCode: res.data.materialCommonCode,
               materialCodeFormat:res.data.materialCommonCode
             }
