@@ -12,12 +12,12 @@
         <a-form-item label="产品类型">
           <a-select
             style="width: 200px"
-            v-model.trim="queryParam.productType"
+            v-model.trim="queryParam.productTypeConfigId"
             placeholder="请选择产品类型"
             default-value=""
           >
             <a-select-option v-for="ptype in productTypes" :key="ptype.index" :value="ptype.id">{{
-              ptype.text
+              ptype.typeName
             }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -118,7 +118,7 @@ import { STable } from '@/components'
 import CreateForm from './modules/CreateForm'
 import Preview from './modules/Preview'
 import { getProductList, delProduct, editProduct, importExcel } from '@/api/workBox'
-import { getDictionary } from '@/api/common'
+import { typeConfigList } from '@/api/productOfferManagement'
 
 export default {
   name: 'ProductList',
@@ -220,7 +220,7 @@ export default {
   },
   created() {
     // 初始化钩子,获取所有产品类型
-    getDictionary({ text: '产品类型' }).then((res) => {
+    typeConfigList().then((res) => {
       this.productTypes = res.data
     })
   },

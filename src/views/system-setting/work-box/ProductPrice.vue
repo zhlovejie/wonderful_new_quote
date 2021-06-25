@@ -24,12 +24,12 @@
 
       <a-select
         style="width: 200px; margin-left: 10px"
-        v-model.trim="queryParam.productType"
+        v-model.trim="queryParam.productTypeConfigId"
         placeholder="产品类型"
         :allowClear="true"
       >
         <a-select-option v-for="ptype in productTypes" :key="ptype.index" :value="ptype.id">{{
-          ptype.text
+          ptype.typeName
         }}</a-select-option>
       </a-select>
 
@@ -109,7 +109,7 @@ import priceEdit from './modules/priceEdit'
 import Modification from './modules/Modification'
 import Preview from './modules/Preview'
 import { getProductList, delProduct, editProduct, downProductInformation } from '@/api/workBox'
-import { getDictionary } from '@/api/common'
+import { typeConfigList } from '@/api/productOfferManagement'
 
 export default {
   name: 'ProductPrice',
@@ -144,11 +144,6 @@ export default {
           width: '150px',
           dataIndex: 'productStandard',
         },
-
-        // {
-        //   title: '区域',
-        //   dataIndex: 'areaName',
-        // },
         {
           title: '产品类型',
           dataIndex: 'productTypeConfigName',
@@ -159,14 +154,6 @@ export default {
           dataIndex: 'costPrice',
           scopedSlots: { customRender: 'costPrice' },
         },
-        // {
-        //   title: 'A价',
-        //   dataIndex: 'priceA',
-        // },
-        // {
-        //   title: 'B价',
-        //   dataIndex: 'priceB',
-        // },
         {
           title: 'C价',
           dataIndex: 'priceC',
@@ -184,7 +171,6 @@ export default {
         {
           title: '操作时间',
           dataIndex: 'modifyTime',
-          // sorter: true
         },
         {
           title: '操作',
@@ -212,7 +198,7 @@ export default {
   },
   created() {
     // 初始化钩子,获取所有产品类型
-    getDictionary({ text: '产品类型' }).then((res) => {
+    typeConfigList().then((res) => {
       this.productTypes = res.data
     })
   },

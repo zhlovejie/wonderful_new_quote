@@ -185,7 +185,7 @@ export default {
       let result = {
         __config: {
           showTitle: true,
-          costPrice: Object.assign({}, this.costPrice),
+          costPrice: this.dataSource,
           costPriceAll: Object.assign({}, this.costPriceAll),
         },
         optInfo: {},
@@ -322,6 +322,7 @@ export default {
         this.visible = false
         this.dataSource = []
       } else if (['price-view', 'price-view-cost'].includes(type)) {
+        this.assessment()
         this.unitPriceView = null
         that.isPriceViewCost = type === 'price-view-cost'
         this.makeViewDataSource()
@@ -353,7 +354,7 @@ export default {
             this.hackReset = true
           })
           .then(() => {
-            this.$refs.priceForm.query('add', productInfo)
+            this.$refs.priceForm.query('add', productInfo, this.dataSource)
           })
       } else if (type === 'price-view-download') {
         if (!this.unitPriceView) {

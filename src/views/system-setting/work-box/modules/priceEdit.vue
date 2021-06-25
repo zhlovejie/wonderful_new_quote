@@ -66,7 +66,7 @@
 
 <script>
 import { editProduct, queryTreeByArea, queryPriceByArea } from '@/api/workBox'
-
+import { typeConfigDetail } from '@/api/productOfferManagement'
 export default {
   name: 'PriceEdit',
   data() {
@@ -86,6 +86,7 @@ export default {
       treeData: [],
       record: {},
       priceByArea: {},
+      code: '',
     }
   },
   computed: {
@@ -100,7 +101,16 @@ export default {
     async edit(type, record) {
       // 父页面点击修改调用
       this.type = type
+
+      console.log(record)
       this.visible = true
+      if (record.taxRate === null) {
+        this.$message.error('请先选择产品类型')
+        this.visible = false
+      }
+      typeConfigDetail({ id: record.productTypeConfigId }).then((res) => {
+        this.code = res.data.code
+      })
 
       this.$nextTick(() => {
         // setFieldsValue只有通过这种方式给表单赋值
@@ -205,10 +215,16 @@ export default {
       let that = this
       // （成本价/0.750） *（1+税率）
       let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate) / 100)
+      if (that.code === 'peijian') {
+        this.form.setFieldsValue({
+          priceC: _costPrice.toFixed(2),
+        })
+      } else {
+        this.form.setFieldsValue({
+          priceC: parseInt(_costPrice),
+        })
+      }
 
-      this.form.setFieldsValue({
-        priceC: _costPrice.toFixed(2),
-      })
       // _costPrice = isNaN(_costPrice) ? 0 : _costPrice
       // let apriceRate = this.priceByArea['1'], //a价
       //   bpriceRate = this.priceByArea['2'], //b价
