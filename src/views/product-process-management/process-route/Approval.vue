@@ -202,12 +202,12 @@ export default {
         {
           key:2,
           label:"待我审批",
-          qty:''
+          qty:0
         },
         {
           key:3,
           label:"我已审批",
-          qty:''
+          qty:0
         }
       ]
     }
@@ -240,14 +240,14 @@ export default {
     async init() {
       const that = this
       that.search();
-      that.status.isAction && that.initQty()
+
     },
     async initQty(){
       const that = this
       let tabList = [...that.tabList]
       let arr = []
       tabList.map(tab => {
-        arr.push(craftRouteApprovePageList({queryType:tab.key,current: 1,size: 1}).then(res => {
+        arr.push(craftRouteApprovePageList({...that.queryParam,queryType:tab.key,current: 1,size: 1}).then(res => {
           return {key:tab.key,qty:+res.data.total}
         }).catch(err => {
           console.warn(err)
@@ -274,6 +274,8 @@ export default {
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       that.loading = true
+
+      that.status.isAction && that.initQty()
       return craftRouteApprovePageList(_searchParam)
         .then((res) => {
           that.loading = false
@@ -313,7 +315,6 @@ export default {
       }
       this.queryParam = { ...this.queryParam, queryType: this.activeKey }
       this.search({ current: 1 })
-      this.status.isAction && this.initQty()
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
