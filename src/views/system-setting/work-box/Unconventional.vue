@@ -94,8 +94,12 @@ export default {
           dataIndex: 'newBasisModel',
         },
         {
-          title: '产品类别',
-          dataIndex: 'productCategoryText',
+          title: '产品类型',
+          dataIndex: 'productTypeConfigName',
+        },
+        {
+          title: '核价代码',
+          dataIndex: 'productCode',
         },
         {
           title: '规格型号',
