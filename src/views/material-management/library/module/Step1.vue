@@ -22,59 +22,36 @@
         />
       </a-form-model-item>
 
+
       <a-form-model-item
-        ref="texture"
-        label="材质"
-        prop="texture"
+        v-for="(item,index) in form.specificationsList"
+        :key="item.id"
+        :label="item.newRuleName || item.ruleName"
+        :prop="'specificationsList.' + index + '.selectedID'"
+        :rules="{
+          required: true,
+          message: `请选择${item.newRuleName || item.ruleName}`,
+        }"
       >
-        <a-select v-model="form.texture" placeholder="请选择材质">
-          <a-select-option v-for="item in textureList" :key="item.id" :value="item.code">
-            {{item.fullName}}
+        <a-select
+          show-search
+          option-filter-prop="children"
+          v-model="item.selectedID"
+          placeholder="请选择"
+          :allowClear="true"
+          :filter-option="filterOption"
+        >
+          <a-select-option v-for="sub in item.subList" :key="sub.id" :value="sub.id">
+            {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
         </a-select>
       </a-form-model-item>
 
-      <a-form-model-item
-        ref="thickness"
-        label="厚度"
-        prop="thickness"
-      >
-        <a-select v-model="form.thickness" placeholder="请选择厚度">
-          <a-select-option v-for="item in thicknessList" :key="item.id" :value="item.code">
-            {{item.fullName}}
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-
-      <a-form-model-item
-        ref="width"
-        label="宽度"
-        prop="width"
-      >
-        <a-select v-model="form.width" placeholder="请选择宽度">
-          <a-select-option v-for="item in widthList" :key="item.id" :value="item.code">
-            {{item.fullName}}
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-
-      <a-form-model-item
-        ref="length"
-        label="长度"
-        prop="length"
-      >
-        <a-select v-model="form.length" placeholder="请选择长度">
-          <a-select-option v-for="item in lengthList" :key="item.id" :value="item.code">
-            {{item.fullName}}
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
     </a-form-model>
     <p style="margin-top:20px;text-align:center;">
       <a-button
         type="primary"
         @click="onSubmit"
-        :disabled="nextButtonDisable"
       >
         下一步
       </a-button>
@@ -113,17 +90,10 @@ export default {
       other: '',
       form: {
         parentId: undefined,
-        texture: undefined,
-        thickness: undefined,
-        width: undefined,
-        length: undefined,
+        specificationsList:[],//动态加载节点下的菜单
       },
       rules: {
         parentId: [{ required: true, message: '请选择位置/名称' }],
-        texture: [{ required: true, message: '请输入材质' }],
-        thickness: [{ required: true, message: '请输入厚度' }],
-        width: [{ required: true, message: '请输入宽度' }],
-        length: [{ required: true, message: '请输入长度' }]
       },
       treeData: [],
       dataList:[],
@@ -134,19 +104,16 @@ export default {
       thicknessList:[],
       widthList:[],
       lengthList:[],
+
+
+
       spinning:false,
       tip:'数据处理中...',
       // nextButtonDisable:true
     }
   },
   computed:{
-    nextButtonDisable(){
-      let case1 = this.textureList.length === 0
-      let case2 = this.thicknessList.length === 0
-      let case3 = this.widthList.length === 0
-      let case4 = this.lengthList.length === 0
-      return case1 || case2 || case3 || case4
-    }
+
   },
   created() {
     this.$nextTick(() => this.init())
@@ -235,7 +202,7 @@ export default {
         },250)
       })
     },
-    parentCodes(_parentId,_dataList) {
+    parentCodes(_parentId,_dataList,joinSymbol=".") {
       let arr = []
       let parentId = _parentId
       // if(+parentId === 0){
@@ -253,7 +220,15 @@ export default {
       return arr
         .reverse()
         .map((item) => item.code)
-        .join('.')
+        .join(joinSymbol)
+    },
+    formatMaterialCode(codeStr,joinSymbol=""){
+      if(typeof codeStr !== 'string'){
+        console.warn(`${codeStr} is not string type..`)
+        return ''
+      }
+      let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
+      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
     },
     getNode(key){
       return this.dataList.find(n => n.key === key)
@@ -275,8 +250,10 @@ export default {
         if (valid) {
           let ruleId = that.form.parentId
           let materialName = that.getNode(ruleId).title
-          let materialCode = that.makeMaterialCode()
-
+          //成品物料库 物料代码不显示点
+          let materialCode = that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
+          // 去除物料代码的0
+          materialCode = that.formatMaterialCode(materialCode,".")
           that.tip = '检测物料代码是否重复...'
           that.spinning = true
           let isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({materialCode}).then(res => res.data).catch(err => false)
@@ -300,11 +277,11 @@ export default {
             return
           }
 
-          let {texture,thickness,width,length} = that.form
-          let textureText = that.textureList.find(item => item.code === texture).fullName
-          let thicknessText = that.thicknessList.find(item => item.code === thickness).fullName
-          let widthText = that.widthList.find(item => item.code === width).fullName
-          let lengthText = that.lengthList.find(item => item.code === length).fullName
+          // let {texture,thickness,width,length} = that.form
+          // let textureText = that.textureList.find(item => item.code === texture).fullName
+          // let thicknessText = that.thicknessList.find(item => item.code === thickness).fullName
+          // let widthText = that.widthList.find(item => item.code === width).fullName
+          // let lengthText = that.lengthList.find(item => item.code === length).fullName
 
           let params = {
             ...that.form,
@@ -312,10 +289,11 @@ export default {
             materialQrCode,
             ruleId,
             materialName,
-            texture:textureText,
-            thickness:thicknessText,
-            width:widthText,
-            length:lengthText
+            // texture:textureText,
+            // thickness:thicknessText,
+            // width:widthText,
+            // length:lengthText
+            specification:that.getSpecification()
           }
 
           that.$emit('change', { __action__: 'nextStep', values: params })
@@ -324,11 +302,30 @@ export default {
         }
       })
     },
-    makeMaterialCode(){
+    makeMaterialCode(joinSymbol="."){
       const that = this
       let {parentId,texture,thickness,width,length} = this.form
-      let prefixCode = this.parentCodes(parentId,that.dataList)
-      return `${prefixCode}.${texture}.${thickness}.${width}.${length}`
+      let prefixCode = this.parentCodes(parentId,that.dataList,joinSymbol)
+
+      let arr = []
+      that.form.specificationsList.map(item => {
+        let target = item.subList.find(s => s.id === item.selectedID)
+        arr.push(target.code)
+      })
+
+      return `${prefixCode}${joinSymbol}${arr.join(joinSymbol)}`
+    },
+    /**
+     * 获取格式化规格型号
+     */
+    getSpecification(){
+      const that = this
+      let arr = []
+      that.form.specificationsList.map(item => {
+        let target = item.subList.find(s => s.id === item.selectedID)
+        arr.push(`${item.newRuleName || item.ruleName}:${(target.newRuleName || target.ruleName)}(${target.code})  `)
+      })
+      return arr.join(",")
     },
     resetForm() {
       this.$refs.ruleForm.resetFields()
@@ -387,36 +384,41 @@ export default {
             }
           }
          */
-        let list = res.data
-        let textureTarget = list.find(item => String(item.newRuleName).includes('材质') || String(item.ruleName).includes('材质'))
-        let thicknessTarget = list.find(item => String(item.newRuleName).includes('厚度') || String(item.ruleName).includes('厚度'))
-        let widthTarget = list.find(item => String(item.newRuleName).includes('宽度') || String(item.ruleName).includes('宽度'))
-        let lengthTarget = list.find(item => String(item.newRuleName).includes('长度') || String(item.ruleName).includes('长度'))
+        // let list = res.data
 
-        let textureList = textureTarget ? (textureTarget.subList || []) : []
-        let thicknessList = thicknessTarget ? (thicknessTarget.subList || []) : []
-        let widthList = widthTarget ? (widthTarget.subList || []) : []
-        let lengthList = lengthTarget ? (lengthTarget.subList || []) : [];
-        (
-          [textureList,thicknessList,widthList,lengthList].forEach(list => {
-            if(list.length > 0){
-              list.forEach(item => {
-                item.fullName = `${(item.newRuleName || item.ruleName)}(${item.code})`
-              })
-            }else{
-              // list.push({
-              //   id:-1,
-              //   code:0,
-              //   fullName:'未配置'
-              // })
-            }
-          })
-        );
-        // debugger
-        that.textureList = textureList
-        that.thicknessList = thicknessList
-        that.widthList = widthList
-        that.lengthList = lengthList
+        //加载为规格型号的数据
+        that.form = {...that.form,specificationsList:res.data.filter(item => item.isSpecification === 1)}
+        // isSpecification
+
+        // let textureTarget = list.find(item => String(item.newRuleName).includes('材质') || String(item.ruleName).includes('材质'))
+        // let thicknessTarget = list.find(item => String(item.newRuleName).includes('厚度') || String(item.ruleName).includes('厚度'))
+        // let widthTarget = list.find(item => String(item.newRuleName).includes('宽度') || String(item.ruleName).includes('宽度'))
+        // let lengthTarget = list.find(item => String(item.newRuleName).includes('长度') || String(item.ruleName).includes('长度'))
+
+        // let textureList = textureTarget ? (textureTarget.subList || []) : []
+        // let thicknessList = thicknessTarget ? (thicknessTarget.subList || []) : []
+        // let widthList = widthTarget ? (widthTarget.subList || []) : []
+        // let lengthList = lengthTarget ? (lengthTarget.subList || []) : [];
+        // (
+        //   [textureList,thicknessList,widthList,lengthList].forEach(list => {
+        //     if(list.length > 0){
+        //       list.forEach(item => {
+        //         item.fullName = `${(item.newRuleName || item.ruleName)}(${item.code})`
+        //       })
+        //     }else{
+        //       // list.push({
+        //       //   id:-1,
+        //       //   code:0,
+        //       //   fullName:'未配置'
+        //       // })
+        //     }
+        //   })
+        // );
+        // // debugger
+        // that.textureList = textureList
+        // that.thicknessList = thicknessList
+        // that.widthList = widthList
+        // that.lengthList = lengthList
       })
     },
     onLoadData(treeNode) {
@@ -455,7 +457,12 @@ export default {
         obj.children = item.subList.map(v => that.formatTreeData(v))
       }
       return obj
-    }
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
   }
 }
 </script>

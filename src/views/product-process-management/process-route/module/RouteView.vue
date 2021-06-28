@@ -1,14 +1,6 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :width="1050"
-    :visible="visible"
-    :footer="footer"
-    @cancel="handleCancel"
-    :maskClosable="false"
-    :destroyOnClose="true"
-  >
     <a-spin :spinning="spinning">
+      <div class="route-view-wrapper">
       <a-form-model
         ref="ruleForm"
         :model="form"
@@ -368,6 +360,7 @@
         </div>
 
       </a-form-model>
+      </div>
       <ConfigRules
         ref="configRules"
         @change="configRulesHandler"
@@ -378,7 +371,6 @@
       />
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
-  </a-modal>
 </template>
 
 <script>
@@ -685,7 +677,9 @@ export default {
         that.allWorkshop = res.data
       })
       if (that.isAdd) {
+        that.spinning = true
         await craftRouteGetCode().then(res => {
+          that.spinning = true
           that.form = {
             ...that.form,
             routeCode: res.data,
@@ -693,12 +687,17 @@ export default {
             materialCommonCaculatorUnit: that.targetNode.__mainUnit,
             materialGroupCode: that.targetNode.__materialCode
           }
+        }).catch(err => {
+          that.spinning = false
+          that.$message.info(err)
         })
         return
       }
       if (that.isEdit || that.isView || that.isApproval) {
+        that.spinning = true
         await craftRouteDetail({ id: that.detail.id })
           .then(async res => {
+            that.spinning = false
             console.log(res)
             const { processes } = res.data
             let workshopId = null
@@ -733,14 +732,17 @@ export default {
             }
           })
           .catch(err => {
-            console.log(err)
+            that.spinning = false
+            that.$message.info(err)
           })
         return
       }
       if (that.isCopy) {
+        that.spinning = true
         const routeCode = await craftRouteGetCode().then(res => res.data)
         await craftRouteDetail({ id: that.detail.id })
           .then(async res => {
+            that.spinning = false
             console.log(res)
             const { processes } = res.data
             let workshopId = null
@@ -791,7 +793,8 @@ export default {
             }
           })
           .catch(err => {
-            console.log(err)
+            that.spinning = false
+            that.$message.info(err)
           })
         that.actionType = 'add'
         return
@@ -917,11 +920,20 @@ export default {
   width: calc(100% + 2px);
 }
 
+.route-view-wrapper{
+  background-color: #f5f5f5;
+  padding: 20px;
+}
 .card-item {
   margin-bottom: 20px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 .__hd {
-  font-size: 125%;
+  font-size: 100%;
+  font-weight: bold;
   line-height: 40px;
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;

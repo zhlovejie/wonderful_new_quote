@@ -28,200 +28,202 @@
       </div>
       <div class="resize-column-control-bar"></div>
       <div class="resize-column-right">
-        <div class="search-wrapper">
-          <a-form layout="inline">
-            <a-form-item>
-              <a-input
-                placeholder="工艺路线代码"
-                v-model="queryParam.routeCode"
-                allowClear
-                style="width: 150px"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                placeholder="工艺路线名称"
-                v-model="queryParam.routeName"
-                allowClear
-                style="width: 150px"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                placeholder="物料代码"
-                v-model="queryParam.materialCommonCode"
-                allowClear
-                style="width: 150px"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                placeholder="物料名称"
-                v-model="queryParam.materialCommonName"
-                allowClear
-                style="width: 150px"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                icon="search"
-                @click="search({ current: 1 })"
-              >查询</a-button>
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                icon="filter"
-                @click="doAction('filter', null)"
-              >高级筛选</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('craftRoute:add')">
-              <a-button
-                type="primary"
-                :disabled="!canAdd"
-                @click="doAction('add', null)"
-              >新增</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('craftRoute:update')">
-              <a-button
-                :disabled="!canEdit"
-                type="primary"
-                @click="doAction('edit', null)"
-              >修改</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('craftRoute:del')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('del', null)"
-              >删除</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('craftRoute:add')">
-              <a-button
-                :disabled="!canEdit"
-                type="primary"
-                @click="doAction('copy', null)"
-              >复制</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('craftRoute:audit')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('approval', null)"
-              >审核</a-button>
-            </a-form-item>
-            <a-form-item v-if="$auth('craftRoute:annulAudit')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('unapproval', null)"
-              >反审核</a-button>
-            </a-form-item>
-            <!-- <a-form-item >
-              <a-button
-                :disabled="!canAdd"
-                type="primary"
-                @click="doAction('import', null)"
-              >导入</a-button>
-            </a-form-item> -->
-            <!-- <a-form-item >
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('export', null)"
-              >导出</a-button>
-            </a-form-item> -->
-          </a-form>
-        </div>
-        <h3 class="_hd">基本信息</h3>
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="false"
-          :loading="loading"
-          :customRow="customRowFunction"
-          :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
-          size="small"
-        >
-          <div
-            slot="order"
-            slot-scope="text, record, index"
-          >
-            <span>{{ index + 1 }}</span>
+        <template v-if="routeView">
+          <RouteViewFrom ref="routeViewFrom" />
+        </template>
+        <template v-else>
+          <div class="search-wrapper">
+            <a-form layout="inline">
+              <a-form-item>
+                <a-input
+                  placeholder="工艺路线代码"
+                  v-model="queryParam.routeCode"
+                  allowClear
+                  style="width: 150px"
+                />
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  placeholder="工艺路线名称"
+                  v-model="queryParam.routeName"
+                  allowClear
+                  style="width: 150px"
+                />
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  placeholder="物料代码"
+                  v-model="queryParam.materialCommonCode"
+                  allowClear
+                  style="width: 150px"
+                />
+              </a-form-item>
+              <a-form-item>
+                <a-input
+                  placeholder="物料名称"
+                  v-model="queryParam.materialCommonName"
+                  allowClear
+                  style="width: 150px"
+                />
+              </a-form-item>
+              <a-form-item>
+                <a-button
+                  type="primary"
+                  icon="search"
+                  @click="search({ current: 1 })"
+                >查询</a-button>
+              </a-form-item>
+              <a-form-item>
+                <a-button
+                  type="primary"
+                  icon="filter"
+                  @click="doAction('filter', null)"
+                >高级筛选</a-button>
+              </a-form-item>
+              <a-form-item v-if="$auth('craftRoute:add')">
+                <a-button
+                  type="primary"
+                  :disabled="!canAdd"
+                  @click="doAction('add', null)"
+                >新增</a-button>
+              </a-form-item>
+              <a-form-item v-if="$auth('craftRoute:update')">
+                <a-button
+                  :disabled="!canEdit"
+                  type="primary"
+                  @click="doAction('edit', null)"
+                >修改</a-button>
+              </a-form-item>
+              <a-form-item v-if="$auth('craftRoute:del')">
+                <a-button
+                  :disabled="!canUse"
+                  type="primary"
+                  @click="doAction('del', null)"
+                >删除</a-button>
+              </a-form-item>
+              <a-form-item v-if="$auth('craftRoute:add')">
+                <a-button
+                  :disabled="!canEdit"
+                  type="primary"
+                  @click="doAction('copy', null)"
+                >复制</a-button>
+              </a-form-item>
+              <a-form-item v-if="$auth('craftRoute:audit')">
+                <a-button
+                  :disabled="!canUse"
+                  type="primary"
+                  @click="doAction('approval', null)"
+                >审核</a-button>
+              </a-form-item>
+              <a-form-item v-if="$auth('craftRoute:annulAudit')">
+                <a-button
+                  :disabled="!canUse"
+                  type="primary"
+                  @click="doAction('unapproval', null)"
+                >反审核</a-button>
+              </a-form-item>
+              <!-- <a-form-item >
+                <a-button
+                  :disabled="!canAdd"
+                  type="primary"
+                  @click="doAction('import', null)"
+                >导入</a-button>
+              </a-form-item> -->
+              <!-- <a-form-item >
+                <a-button
+                  :disabled="!canUse"
+                  type="primary"
+                  @click="doAction('export', null)"
+                >导出</a-button>
+              </a-form-item> -->
+            </a-form>
           </div>
-          <div
-            slot="materialCommonCaculatorUnit"
-            slot-scope="text, record, index"
+          <h3 class="_hd">基本信息</h3>
+          <a-table
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="pagination"
+            :loading="loading"
+            @change="handleTableChange"
+            :customRow="customRowFunction"
+            :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
           >
-            {{ {1:'支',2:'把',3:'件'}[text] }}
-          </div>
+            <div
+              slot="order"
+              slot-scope="text, record, index"
+            >
+              <span>{{ index + 1 }}</span>
+            </div>
+            <div
+              slot="materialCommonCaculatorUnit"
+              slot-scope="text, record, index"
+            >
+              {{ {1:'支',2:'把',3:'件'}[text] }}
+            </div>
 
-          <div
-            slot="defaultStatus"
-            slot-scope="text, record, index"
-          >
-            {{ {1:'是',0:'否'}[text] }}
-          </div>
+            <div
+              slot="defaultStatus"
+              slot-scope="text, record, index"
+            >
+              {{ {1:'是',0:'否'}[text] }}
+            </div>
 
-
-          <div
-            slot="materialCommonType"
-            slot-scope="text, record, index"
+            <div
+              slot="materialCommonType"
+              slot-scope="text, record, index"
+            >
+              <a-tooltip>
+                <template slot="title">
+                  {{text}}
+                </template>
+                <span class="icon-required">查看</span>
+                <a-icon
+                  type="question-circle"
+                  style="margin-left:5px;color:#1890ff;"
+                />
+              </a-tooltip>
+            </div>
+            <a
+              slot="status"
+              slot-scope="text, record"
+              @click="approvalPreview(record)"
+            >
+              {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
+            </a>
+          </a-table>
+          <h3 class="_hd">工序信息</h3>
+          <a-table
+            :columns="gxColumns"
+            :dataSource="gxDataSource"
+            :pagination="false"
+            :loading="gxLoading"
           >
-            <a-tooltip>
-              <template slot="title">
-                {{text}}
-              </template>
-              <span class="icon-required">查看</span>
-              <a-icon
-                type="question-circle"
-                style="margin-left:5px;color:#1890ff;"
-              />
-            </a-tooltip>
-          </div>
-          <a
-            slot="status"
-            slot-scope="text, record"
-            @click="approvalPreview(record)"
-          >
-            {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
-          </a>
-        </a-table>
-
-        <h3 class="_hd">工序信息</h3>
-        <a-table
-          :columns="gxColumns"
-          :dataSource="gxDataSource"
-          :pagination="false"
-          :loading="gxLoading"
-          size="small"
-        >
-          <div
-            slot="personCost"
-            slot-scope="text, record, index"
-          >
-            <span>{{ text | moneyFormatNumber }}</span>
-          </div>
-          <div
-            slot="workshopId"
-            slot-scope="text, record, index"
-          >
-            <span>{{ getWorkShop(text) }}</span>
-          </div>
-          <div
-            slot="checkType"
-            slot-scope="text, record, index"
-          >
-            <span>{{ {1:'免检',2:'抽检',3:'全检'}[text] }}</span>
-          </div>
-          <div
-            slot="foreignFlag"
-            slot-scope="text, record, index"
-          >
-            <span>{{ {1:'是',0:'否'}[text] }}</span>
-          </div>
-        </a-table>
+            <div
+              slot="personCost"
+              slot-scope="text, record, index"
+            >
+              <span>{{ text | moneyFormatNumber }}</span>
+            </div>
+            <div
+              slot="workshopId"
+              slot-scope="text, record, index"
+            >
+              <span>{{ getWorkShop(text) }}</span>
+            </div>
+            <div
+              slot="checkType"
+              slot-scope="text, record, index"
+            >
+              <span>{{ {1:'免检',2:'抽检',3:'全检'}[text] }}</span>
+            </div>
+            <div
+              slot="foreignFlag"
+              slot-scope="text, record, index"
+            >
+              <span>{{ {1:'是',0:'否'}[text] }}</span>
+            </div>
+          </a-table>
+        </template>
       </div>
     </div>
     <NormalAddForm
@@ -238,28 +240,25 @@
 </template>
 
 <script>
-import {
-
-  productMaterialInfoTwoTierTreeList,
-
-} from '@/api/routineMaterial'
+import { productMaterialInfoTwoTierTreeList } from '@/api/routineMaterial'
 
 import {
   getAllProductMaterial,
   craftRouteDetail,
   craftRouteListByMaterial,
+  craftRouteApprovePageList,
   craftRouteDelete,
-craftRouteAuditByMaterial,
-craftRouteAnnulAuditBatch,
-__craftRouteExport,
-craftRouteGetAllWorkshop,
-
-craftRouteAudit,
-craftRouteAnnulAudit
+  craftRouteAuditByMaterial,
+  craftRouteAnnulAuditBatch,
+  __craftRouteExport,
+  craftRouteGetAllWorkshop,
+  craftRouteAudit,
+  craftRouteAnnulAudit
 } from '@/api/craftRoute'
 
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import AddForm from './module/AddForm'
+import RouteViewFrom from './module/RouteView'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import SearchForm from './module/SearchForm'
 
@@ -308,12 +307,12 @@ const columns = [
   //   dataIndex: 'status',
   //   scopedSlots: { customRender: 'status' }
   // },
-    {
+  {
     align: 'center',
     title: '提交人',
     dataIndex: 'createdName'
   },
-    {
+  {
     align: 'center',
     title: '提交时间',
     dataIndex: 'createdTime'
@@ -364,7 +363,7 @@ const gxColumns = [
     title: '工人费(元)',
     dataIndex: 'personCost',
     scopedSlots: { customRender: 'personCost' }
-  },
+  }
 ]
 
 const getParentKey = (key, tree) => {
@@ -385,9 +384,10 @@ const getParentKey = (key, tree) => {
 export default {
   name: 'product-process-management_process-route-management_route',
   components: {
-    NormalAddForm:AddForm,
+    NormalAddForm: AddForm,
     ApproveInfo,
-    SearchForm
+    SearchForm,
+    RouteViewFrom
   },
   data() {
     return {
@@ -399,7 +399,7 @@ export default {
       gxColumns,
       orgTree: [],
       dataSource: [],
-      gxDataSource:[],
+      gxDataSource: [],
       selectedRowKeys: [],
       selectedRows: [],
 
@@ -409,11 +409,21 @@ export default {
       autoExpandParent: true,
 
       loading: false,
-      gxLoading:false,
+      gxLoading: false,
       queryParam: {},
       treeInputSearchDebounce: null,
       normalAddFormKeyCount: 1,
-      allWorkshop:[]
+      allWorkshop: [],
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: this.onShowSizeChangeHandler
+      },
+
+      routeView: false //点击 subProduct 需要查看详情
     }
   },
   watch: {
@@ -441,7 +451,7 @@ export default {
     canUse() {
       return this.selectedRows.length > 0
     },
-    canAdd(){
+    canAdd() {
       return !!this.parentItem.isProduct
     }
   },
@@ -470,7 +480,7 @@ export default {
       })
     },
     generateList(data) {
-      let arr = []
+      const arr = []
       for (let i = 0; i < data.length; i++) {
         const node = data[i]
         arr.push({ ...node })
@@ -497,42 +507,58 @@ export default {
         ...that.queryParam
       }
       that.fetchTree()
-      //this.search()
+      this.search()
 
       that.$nextTick(() => {
         that._ResizeColumnInstance = new ResizeColumn()
       })
 
       craftRouteGetAllWorkshop().then(res => {
-          that.allWorkshop = res.data
-        })
+        that.allWorkshop = res.data
+      })
     },
     search(params = {}) {
       const that = this
+      const paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10
+      }
+      that.gxDataSource = []
       that.loading = true
-      let _searchParam = Object.assign({}, { ...that.queryParam }, params)
-      craftRouteListByMaterial(_searchParam)
+      const _searchParam = Object.assign({}, { ...that.queryParam }, params, paginationParam)
+      // craftRouteListByMaterial(_searchParam)
+      craftRouteApprovePageList(_searchParam)
         .then(res => {
           that.loading = false
-          if (!(res && res.data && Array.isArray(res.data))) {
-            return
-          }
-          that.dataSource = res.data.map((item, index) => {
+          that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             return item
           })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
+          that.pagination = pagination
         })
         .catch(err => {
           console.error(err)
           that.loading = false
         })
     },
+    // 分页
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination = { ...this.pagination, current: pagination.current }
+      this.search()
+    },
+    onShowSizeChangeHandler(current, pageSize) {
+      this.pagination = { ...this.pagination, current, pageSize }
+    },
     /**
      * @description 树加载规则： 1.先加载规则 2.如果没有规则，尝试加载规则对应的成品 3.如果是成品 加载对应成品的工艺
      * @param {treeNode} treeNode 被展开的树节点
      * @param {boolean} force 是否强制加载节点数据
      */
-    onLoadData(treeNode,force=false) {
+    onLoadData(treeNode, force = false) {
       const that = this
       that.selectedTreeNode = treeNode
       return new Promise(async resolve => {
@@ -540,32 +566,38 @@ export default {
           resolve()
           return
         }
-        let {isRule,isProduct,isSubProduct} = treeNode.dataRef
-        if(isRule){
-          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data).catch(err => {
-            console.log(err)
-            return []
-          })
-          if(ruleResult.length > 0){
+        const { isRule, isProduct, isSubProduct } = treeNode.dataRef
+        if (isRule) {
+          const ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
+            .then(res => res.data)
+            .catch(err => {
+              console.log(err)
+              return []
+            })
+          if (ruleResult.length > 0) {
             treeNode.dataRef.children = ruleResult.map(item => that.formatRuleNode(item))
             that.orgTree = [...that.orgTree]
-          }else{
-            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data).catch(err => {
-            console.log(err)
-            return []
-          })
-            if(productResult.length > 0){
+          } else {
+            const productResult = await getAllProductMaterial({ ruleId: treeNode.dataRef.value })
+              .then(res => res.data)
+              .catch(err => {
+                console.log(err)
+                return []
+              })
+            if (productResult.length > 0) {
               treeNode.dataRef.children = productResult.map(item => that.formatProductNode(item))
               that.orgTree = [...that.orgTree]
             }
           }
         }
-        if(isProduct){
-          let subProductResult = await craftRouteListByMaterial({materialGroupId:treeNode.dataRef.__id}).then(res => res.data).catch(err => {
-            console.log(err)
-            return []
-          })
-          if(subProductResult.length > 0){
+        if (isProduct) {
+          const subProductResult = await craftRouteListByMaterial({ materialGroupId: treeNode.dataRef.__id })
+            .then(res => res.data)
+            .catch(err => {
+              console.log(err)
+              return []
+            })
+          if (subProductResult.length > 0) {
             treeNode.dataRef.children = subProductResult.map(item => that.formatSubProductNode(item))
             that.orgTree = [...that.orgTree]
           }
@@ -600,11 +632,11 @@ export default {
     },
     //格式化接口数据 key,title,value
     formatRuleNode(item) {
-      let that = this
-      let obj = {}
+      const that = this
+      const obj = {}
       obj.key = String(item.id)
-      let ruleName = item.newRuleName || item.ruleName
-      let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
+      const ruleName = item.newRuleName || item.ruleName
+      const showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
       obj.title = `${ruleName}${showCode}`
       obj.value = String(item.id)
       obj.parentId = item.parentId
@@ -619,8 +651,8 @@ export default {
     },
 
     formatProductNode(item) {
-      let that = this
-      let obj = {}
+      const that = this
+      const obj = {}
       obj.key = obj.value = String(item.materialCode)
       obj.__id = item.id
       obj.__ruleId = item.ruleId
@@ -634,16 +666,20 @@ export default {
       return obj
     },
     formatSubProductNode(item) {
-      let that = this
-      let obj = {}
-      obj.key = obj.value = String(item.routeCode)+'_'+String(item.routeName)+'_'+String(item.materialCommonCode)
+      const that = this
+      const obj = {}
+      obj.key = obj.value =
+        String(item.routeCode) + '_' + String(item.routeName) + '_' + String(item.materialCommonCode)
       obj.__id = item.id
       obj.__materialName = item.materialCommonName
       obj.__materialCode = item.materialCommonCode
       obj.__status = item.status
       //审批状态 审批中2黄  通过3蓝  不通过4红
-      let m_color = {
-        1:'normal',2:'#dada18',3:'blue',4:'red'
+      const m_color = {
+        1: 'normal',
+        2: '#dada18',
+        3: 'blue',
+        4: 'red'
       }
       obj.__color = m_color[item.status]
       obj.title = `${item.materialCommonCode}(${item.materialCommonName})`
@@ -655,7 +691,7 @@ export default {
     handleClick(selectedKeys, e) {
       const that = this
       that.selectedTreeNode = e.node
-      let dataRef = e.node.dataRef
+      const dataRef = e.node.dataRef
       // 点击树结构菜单
       var parentId = this.parentId
       if (selectedKeys[0] !== undefined) {
@@ -668,11 +704,18 @@ export default {
       that.selectedRowKeys = []
       that.selectedRows = []
 
-      if(dataRef.isProduct){
-        that.queryParam = { ...that.queryParam, materialGroupId: dataRef.__id}
+      that.routeView = false
+      that.dataSource = []
+      that.gxDataSource = []
+      if (dataRef.isSubProduct) {
+        that.routeView = true
+        that.$nextTick(() => {
+          that.$refs['routeViewFrom'] && that.$refs['routeViewFrom'].query('view', { id: dataRef.__id })
+        })
+      } else {
+        that.routeView = false
+        that.queryParam = { ...that.queryParam, materialGroupId: dataRef.__id, queryType: 0 }
         that.search()
-      }else{
-        that.dataSource = []
       }
     },
 
@@ -688,7 +731,6 @@ export default {
             __from: 'product'
           })
         })
-        return
       } else if (type === 'edit') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
         that.$nextTick(() => {
@@ -699,7 +741,6 @@ export default {
             __from: 'product'
           })
         })
-        return
       } else if (type === 'copy') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
         that.$nextTick(() => {
@@ -710,25 +751,19 @@ export default {
             __from: 'product'
           })
         })
-        return
-      }
-      else if(type === 'import'){
+      } else if (type === 'import') {
         that.$message.info('暂未开发...')
-        return
-      }
-      else if (type === 'export') {
+      } else if (type === 'export') {
         that.$message.info('暂未开发...')
-        return
+
         // let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
         // let res = await __craftRouteExport(2,ids)
         // console.log(res)
         // that.$message.info(res.msg)
-        return
       } else if (type === 'filter') {
         that.$refs.searchForm.query()
-        return
       } else {
-        let m = {
+        const m = {
           del: {
             api: craftRouteDelete,
             title: '删除',
@@ -745,25 +780,31 @@ export default {
             tpl: names => `确定要反审核项目${names}吗？`
           }
         }
-        let target = m[type]
+        const target = m[type]
         if (!target) {
           that.$message.error(`不支持的操作类型:${type}`)
           return
         }
-        let itemNames = ` ${that.selectedRows.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} `
+        const itemNames = ` ${that.selectedRows.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} `
 
-        if(type === 'approval'){
+        if (type === 'approval') {
           //待审核，审核不通过
-          let items = that.selectedRows.filter(item => +item.status !== 1 && +item.status !== 4)
-          if(items.length > 0){
-            that.$message.info(`${items.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} 已经提交审核或审核通过了。禁止重复提交审核！`)
+          const items = that.selectedRows.filter(item => +item.status !== 1 && +item.status !== 4)
+          if (items.length > 0) {
+            that.$message.info(
+              `${items
+                .map(item => `${item.routeCode}【${item.routeName}】`)
+                .join('，')} 已经提交审核或审核通过了。禁止重复提交审核！`
+            )
             return
           }
         }
-        if(type === 'unapproval'){
-          let items = that.selectedRows.filter(item => +item.status !== 3)
-          if(items.length > 0){
-            that.$message.info(`${items.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} 尚未通过审核。禁止反审核操作！`)
+        if (type === 'unapproval') {
+          const items = that.selectedRows.filter(item => +item.status !== 3)
+          if (items.length > 0) {
+            that.$message.info(
+              `${items.map(item => `${item.routeCode}【${item.routeName}】`).join('，')} 尚未通过审核。禁止反审核操作！`
+            )
             return
           }
         }
@@ -775,7 +816,7 @@ export default {
           okText: '确定',
           cancelText: '取消',
           onOk() {
-            let arr = []
+            const arr = []
 
             that.selectedRows.map(item => {
               arr.push(target.api(`id=${item.id}`).then(res => +res.code === 200))
@@ -806,7 +847,7 @@ export default {
       this.selectedRows = []
       this.search()
       if (param && param.key) {
-        let target = this.findTreeNode(this.$refs.treeRef, param.key)
+        const target = this.findTreeNode(this.$refs.treeRef, param.key)
         if (target) {
           this.onLoadData(target, true)
         }
@@ -818,7 +859,7 @@ export default {
       }
       if (Array.isArray(rootNode.$children)) {
         for (let i = 0; i < rootNode.$children.length; i++) {
-          let node = this.findTreeNode(rootNode.$children[i], key)
+          const node = this.findTreeNode(rootNode.$children[i], key)
           if (node) {
             return node
           }
@@ -839,22 +880,24 @@ export default {
     customRowFunction(record) {
       // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
       // isForbidden  是否禁用：1禁用，2启用
-      let { useStatus, isForbidden } = record
+      const { useStatus, isForbidden } = record
       return {
         style: {
           color: +isForbidden === 1 ? 'red' : +useStatus === 2 ? 'blue' : ''
         },
         on: {
-          click:event => {
+          click: event => {
             const that = this
             that.gxLoading = true
-            craftRouteDetail({id:record.id}).then(res => {
-              that.gxLoading = false
-              that.gxDataSource = res.data.processes
-            }).catch(err => {
-              that.gxLoading = false
-              console.log(err)
-            })
+            craftRouteDetail({ id: record.id })
+              .then(res => {
+                that.gxLoading = false
+                that.gxDataSource = res.data.processes.sort((a, b) => a.orderNum - b.orderNum)
+              })
+              .catch(err => {
+                that.gxLoading = false
+                console.log(err)
+              })
           },
           dblclick: event => {
             const that = this
@@ -867,7 +910,6 @@ export default {
                 __from: 'product'
               })
             })
-            return
 
             // const that = this
             // that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
@@ -884,9 +926,9 @@ export default {
         }
       }
     },
-    getWorkShop(id){
+    getWorkShop(id) {
       const that = this
-      let target = that.allWorkshop.find(item => String(item.id) === String(id))
+      const target = that.allWorkshop.find(item => String(item.id) === String(id))
       return target.departmentName
     }
   },
@@ -900,7 +942,7 @@ export default {
 </script>
 
 <style scoped>
-._hd{
+._hd {
   background-color: #f5f5f5;
   line-height: 30px;
   font-weight: normal;
