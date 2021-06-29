@@ -6,14 +6,46 @@
       <a-step title="价格" />
     </a-steps>
     <div class="steps-content" v-if="current === 0">
+      <a-alert
+        v-if="current === 0"
+        style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+        message="请选择合适的类型进行核价"
+        type="info"
+        show-icon
+        closable
+      />
       <a-space :size="100">
-        <a-button size="large" type="primary" @click="nexts(1)">物料代码核价</a-button>
-        <a-button size="large" type="primary" @click="nexts(2)">核价代码核价</a-button>
-        <a-button size="large" type="primary" @click="nexts(3)">成本价核价</a-button>
+        <a-button size="large" type="dashed" @click="nexts(1)">物料代码核价</a-button>
+        <a-button size="large" type="dashed" @click="nexts(2)">核价代码核价</a-button>
+        <a-button size="large" type="dashed" @click="nexts(3)">成本价核价</a-button>
       </a-space>
     </div>
     <div class="steps-content" v-if="current === 1">
       <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 8 }">
+        <a-alert
+          v-if="type === 3"
+          style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+          message="通过成本价进行核价"
+          type="info"
+          show-icon
+          closable
+        />
+        <a-alert
+          v-if="type === 1"
+          style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+          message="通过物料代码进行核价"
+          type="info"
+          show-icon
+          closable
+        />
+        <a-alert
+          v-if="type === 2"
+          style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+          message="通过核价代码进行核价"
+          show-icon
+          type="info"
+          closable
+        />
         <a-form-item label="代码输入" v-if="type === 1">
           <a-select
             :filter-option="filterOption"
@@ -54,15 +86,30 @@
       </a-form>
     </div>
     <div class="steps-content" v-if="current === 2">
-      <a-table :columns="columns" :dataSource="dataSource" :customRow="customRowFunction">
+      <a-alert
+        v-if="current === 2"
+        style="width: 400px; margin: 0px auto; margin-bottom: 30px; text-align: left"
+        message="蓝色为总区间,黄色为推荐区间,红色为竞争力区间"
+        type="info"
+        show-icon
+        closable
+      />
+      <a-table
+        :columns="columns"
+        :dataSource="dataSource"
+        :customRow="customRowFunction"
+        :pagination="false"
+        size="small"
+      >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
       </a-table>
     </div>
     <div class="steps-action">
+      <a-button v-if="current === 1" type="primary" @click="prev" style="margin-right: 10px"> 上一步 </a-button>
       <a-button v-if="current === 1" type="primary" @click="next"> 确定 </a-button>
-      <a-button v-if="current === 2" type="primary" @click="prev"> 退出 </a-button>
+      <a-button v-if="current === 2" type="primary" @click="prev"> 返回核价 </a-button>
       <a-button
         v-if="current === 2"
         type="primary"
@@ -137,7 +184,7 @@ export default {
       let { rateType } = record
       return {
         style: {
-          'background-color': rateType === 1 ? '#D5DCF7 ' : +rateType === 2 ? '#EFE68E' : '#EC9495',
+          'background-color': rateType === 1 ? '#E6F7FF ' : +rateType === 2 ? '#FFFBE6' : '#FFF1F0',
         },
       }
     },
@@ -203,12 +250,15 @@ export default {
 
 <style>
 .steps-content {
-  margin-top: 25px;
   border-radius: 6px;
   background-color: #fff;
   min-height: 300px;
   text-align: center;
-  padding-top: 130px;
+  padding-top: 60px;
+}
+.ant-card-body {
+  padding-left: 250px;
+  padding-right: 250px;
 }
 
 .steps-action {
