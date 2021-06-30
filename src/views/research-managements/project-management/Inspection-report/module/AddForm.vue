@@ -23,12 +23,12 @@
                 </a-select>
               </a-form-model-item>
             </td>
-            <td>专利名称</td>
+            <td>检验报告名称</td>
             <td>
               <a-form-model-item ref="patentName" prop="patentName">
                 <a-input
                   :disabled="isDisabled"
-                  placeholder="专利名称"
+                  placeholder="检验报告名称"
                   v-model="form.patentName"
                   @blur="
                     () => {
@@ -84,7 +84,12 @@
 </template>
 
 <script>
-import { pageDevelopmentCraftSave, listProjectAllInfoDropDown, listProjectgetDetail } from '@/api/projectManagement'
+import {
+  pageDevelopmentSave,
+  listProjectAllInfoDropDown,
+  pageDevelopmentgetDetail,
+  managementUpdate,
+} from '@/api/projectManagement'
 import XdocView from './XdocView'
 import ToolBoxCommonUploadForm from './ToolBoxCommonUploadForm'
 export default {
@@ -108,7 +113,7 @@ export default {
       },
       rules: {
         projectId: [{ required: true, message: '请选择项目编码/项目名称', trigger: 'change' }],
-        patentName: [{ required: true, message: '请输入专利名称', trigger: 'blur' }],
+        patentName: [{ required: true, message: '请输入检验报告名称', trigger: 'blur' }],
       },
     }
   },
@@ -183,21 +188,33 @@ export default {
             projectId: that.form.projectId,
             proectStatus: react.status,
             patentName: that.form.patentName,
-            developmentProjectPatentFiles: that.fileManagement,
+            developmentProjectCheckFiles: that.fileManagement,
           }
           if (that.isEdit) {
             values.id = that.form.id
+            that.spinning = true
+            managementUpdate(values)
+              .then((res) => {
+                that.spinning = false
+                that.$refs.ruleForm.resetFields() // 清空表
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('finish')
+              })
+              .catch((err) => (that.spinning = false))
           }
-          that.spinning = true
-          pageDevelopmentCraftSave(values)
-            .then((res) => {
-              that.spinning = false
-              that.$refs.ruleForm.resetFields() // 清空表
-              that.visible = false
-              that.$message.info(res.msg)
-              that.$emit('finish')
-            })
-            .catch((err) => (that.spinning = false))
+          if (that.isAdd) {
+            that.spinning = true
+            pageDevelopmentSave(values)
+              .then((res) => {
+                that.spinning = false
+                that.$refs.ruleForm.resetFields() // 清空表
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('finish')
+              })
+              .catch((err) => (that.spinning = false))
+          }
         }
       })
     },
@@ -216,9 +233,9 @@ export default {
         that.workshop = res.data
       })
       if (!that.isAdd) {
-        await listProjectgetDetail({ id: record.id }).then((res) => {
+        await pageDevelopmentgetDetail({ id: record.id }).then((res) => {
           that.form = res.data
-          that.fileManagement = res.data.developmentProjectPatentFiles
+          that.fileManagement = res.data.developmentProjectCheckFiles
         })
       }
     },

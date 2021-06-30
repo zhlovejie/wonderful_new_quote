@@ -9,7 +9,7 @@
           <a-input v-model="projectName" placeholder="项目名称" style="width: 200px" :allowClear="true" />
         </a-form-item>
         <a-form-item>
-          <a-input v-model="patentName" placeholder="专利名称" style="width: 200px" :allowClear="true" />
+          <a-input v-model="patentName" placeholder="检验报告" style="width: 200px" :allowClear="true" />
         </a-form-item>
         <a-form-item v-show="show">
           <a-select style="width: 150px" placeholder="审批状态" v-model="approvalStatusSelect" :allowClear="true">
@@ -87,7 +87,7 @@
             </template>
             <template v-if="audit == 0 && record.status === 1">
               <a-divider type="vertical" />
-              <a type="primary" @click="toAdd('patent', record)">专利上传</a>
+              <a type="primary" @click="toAdd('patent', record)">检验报告上传</a>
             </template>
           </span>
         </s-table>
@@ -102,10 +102,10 @@
 
 <script>
 import {
-  pageDevelopmentCraftDevRecoveApply,
-  listProjectgetDelete,
-  acceptDevelopmentProjectPatentApply,
-  finishDevelopmentProjectPatentApply,
+  pageDevelopmentProjectCheckApply,
+  pageDevelopmentgetDelete,
+  acceptDevelopmentProjectCheckApply,
+  finishDevelopmentProjectCheckApply,
 } from '@/api/projectManagement'
 import { STable } from '@/components'
 import AddForm from './module/AddForm'
@@ -163,7 +163,7 @@ export default {
         },
         {
           align: 'center',
-          title: '专利名称',
+          title: '检验报告',
           dataIndex: 'patentName',
           key: 'patentName',
         },
@@ -196,7 +196,7 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
-        return pageDevelopmentCraftDevRecoveApply(Object.assign(parameter, this.queryParam)).then((res) => {
+        return pageDevelopmentProjectCheckApply(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
       },
@@ -221,7 +221,7 @@ export default {
         this.$refs.addForm.query(type, record)
       }
       if (type === 'accept') {
-        acceptDevelopmentProjectPatentApply({ id: record.id }).then((res) => {
+        acceptDevelopmentProjectCheckApply({ id: record.id }).then((res) => {
           if (res.code === 200) {
             this.$message.info(res.msg)
             this.search()
@@ -234,7 +234,7 @@ export default {
     },
     //完结
     confirmWithdraw(record) {
-      finishDevelopmentProjectPatentApply({ id: record.id }).then((res) => {
+      finishDevelopmentProjectCheckApply({ id: record.id }).then((res) => {
         if (res.code === 200) {
           this.$message.info(res.msg)
           this.search()
@@ -243,7 +243,7 @@ export default {
     },
     // 列表删除
     confirmDelete(record) {
-      listProjectgetDelete({ id: record.id }).then((res) => {
+      pageDevelopmentgetDelete({ id: record.id }).then((res) => {
         if (res.code === 200) {
           this.$message.info(res.msg)
           this.search()

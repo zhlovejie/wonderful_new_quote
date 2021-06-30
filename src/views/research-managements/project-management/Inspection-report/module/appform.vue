@@ -1,106 +1,44 @@
 <template>
   <a-modal
-    :title="modelTitle"
-    :width="800"
+    :title="modalTitle"
+    :width="600"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleSubmit"
+    @ok="handleOk"
     @cancel="handleCancel"
     :maskClosable="false"
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item hidden>
-          <a-input v-decorator="['id', { initialValue: detail.id }]" />
-        </a-form-item>
-        <a-form-item label="专利类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-select
-            placeholder="请选择专利类别"
+        <a-form-item label="文件名称">
+          <a-input
+            placeholder="请输入文件名称"
             v-decorator="[
-              'dicId',
-              { initialValue: detail.dicId, rules: [{ required: true, message: '请选择专利类别' }] },
+              'fileName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入文件名称!',
+                  },
+                ],
+              },
             ]"
+          />
+        </a-form-item>
+        <a-form-item label="文件">
+          <a-upload
+            :accept="accept"
+            name="files"
+            :multiple="true"
+            :action="this.uploadPath"
+            :fileList="fileList"
+            :beforeUpload="beforeUpload"
+            @change="handleChange"
           >
-            <a-select-option v-for="ptype in productTypes" :key="ptype.id" :value="ptype.id">{{
-              ptype.text
-            }}</a-select-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item label="专利名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input
-            v-decorator="[
-              'patentName',
-              { initialValue: detail.patentName, rules: [{ required: true, message: '请输入专利名称' }] },
-            ]"
-          />
-        </a-form-item>
-        <a-form-item label="专利号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input
-            v-decorator="[
-              'patentNum',
-              { initialValue: detail.patentNum, rules: [{ required: true, message: '请输入专利号' }] },
-            ]"
-          />
-        </a-form-item>
-        <a-form-item label="专利申请日" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-date-picker
-            placeholder="专利申请日"
-            v-decorator="[
-              'applicationDate',
-              {
-                initialValue: detail.applicationDate ? moment(`${detail.applicationDate}`) : undefined,
-                rules: [{ required: true, message: '选择专利申请日' }],
-              },
-            ]"
-            style="width: 100%"
-            format="YYYY-MM-DD"
-          />
-        </a-form-item>
-
-        <a-form-item label="图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <!-- <a-alert message="提示" type="warning" show-icon style="margin-bottom: 5px">
-            <div slot="description">
-              <div>上传的第一张图片将作为专利封面图片来展示</div>
-            </div>
-          </a-alert> -->
-          <div class="clearfix">
-            <a-upload
-              accept="multiple"
-              name="file"
-              :action="uploadPath"
-              listType="picture-card"
-              :fileList="fileList"
-              @preview="handlePreview"
-              @change="handleChange"
-              :beforeUpload="handleBeforeUpload"
-            >
-              <div v-if="fileList.length < 1">
-                <a-icon type="plus" />
-                <div class="ant-upload-text">选择图片</div>
-              </div>
-            </a-upload>
-            <a-modal :visible="previewVisible" :width="1000" :footer="null" @cancel="previewCancel">
-              <div style="overflow: auto">
-                <img alt="图片" style="width: auto; height: auto; max-height: 1000px" :src="previewImage" />
-              </div>
-            </a-modal>
-          </div>
-          <a-input type="hidden" v-decorator="['productPic', { initialValue: detail.productPic }]" />
-        </a-form-item>
-
-        <a-form-item label="专利描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <vue-ueditor-wrap v-model="content" ref="ueditor" :config="myConfig"></vue-ueditor-wrap>
-          <a-input
-            type="hidden"
-            v-decorator="[
-              'patentDescription',
-              {
-                initialValue: detail.patentDescription,
-                rules: [{ required: false, min: 5, message: '请填写专利描述！' }],
-              },
-            ]"
-          />
+            <a-button> <a-icon type="upload" />上传（.docx、.doc、.pdf类型） </a-button>
+          </a-upload>
+          <a-input type="hidden" v-decorator="['fileUrl', { rules: [{ required: true, message: '请选择文件！' }] }]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -108,69 +46,29 @@
 </template>
 
 <script>
-import { getProjectPatentDetail } from '@/api/workBox'
-import { patentUploadDevelopmentProjectPatentApply } from '@/api/projectManagement'
-
-import { getUploadPath2, getDictionary, getUeditorUploadPath, customUpload } from '@/api/common'
-import VueUeditorWrap from 'vue-ueditor-wrap'
-import ATextarea from 'ant-design-vue/es/input/TextArea'
-import moment from 'moment'
-let uuid = () => `${Math.random().toString(32).slice(-6)}-${Math.random().toString(32).slice(-6)}`
-
-const myConfig = Object.freeze({
-  // 如果需要上传功能,找后端小伙伴要服务器接口地址
-  // serverUrl: this.$config.baseUrl + 'ueditor/uploadImg',
-  serverUrl: getUeditorUploadPath(),
-  // 你的UEditor资源存放的路径,相对于打包后的index.html
-  UEDITOR_HOME_URL: '/plugins/',
-  // 编辑器不自动被内容撑高
-  autoHeightEnabled: false,
-  // 工具栏是否可以浮动
-  autoFloatEnabled: false,
-  // 初始容器高度
-  initialFrameHeight: 340,
-  // 初始容器宽度
-  initialFrameWidth: '100%',
-  // 关闭自动保存
-  nableAutoSave: true,
-})
-
+import { getUploadPath } from '@/api/manage'
+import { managementUploadDevelopmentProjectCheckApply } from '@/api/projectManagement'
 export default {
-  name: 'work-box-project-patent-addForm',
+  name: 'ToolBoxCommonUploadForm',
   data() {
     return {
-      // ueditor配置
-      myConfig,
-      content: '',
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 3 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 21 },
-      },
-      form: this.$form.createForm(this), // 只有这样注册后，才能通过表单拉取数据
-      visible: false, // 表单对话框是否可见
-      confirmLoading: false, // 确定按钮后是否显示加载图 loading
-      layout: 'inline', // 表单布局方式
-      productTypes: [],
-      actionType: 'add', // 新增还是修改的标记
-      previewVisible: false, // 图片预览框是否可见
-      previewImage: '', //  预览图片的src值
-      fileList: [], // 已上传的图片文件列表
-      uploadPath: getUploadPath2(),
-      detail: {},
+      visible: false,
+      department: [],
+      userList: [],
+      form: this.$form.createForm(this),
+      confirmLoading: false,
+      actionType: 'add',
+      fileList: [],
       record: {},
+      uploadPath: getUploadPath(),
+      accept:
+        '.docx, .doc, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf',
+      detail: {},
     }
   },
-  components: {
-    ATextarea,
-    VueUeditorWrap,
-  },
   computed: {
-    isView() {
-      return this.actionType === 'view'
+    modalTitle() {
+      return this.isAdd ? '添加' : '编辑'
     },
     isAdd() {
       return this.actionType === 'add'
@@ -178,238 +76,86 @@ export default {
     isEdit() {
       return this.actionType === 'edit'
     },
-    modelTitle() {
-      return this.isView ? '查看' : this.isAdd ? '新增' : '修改'
-    },
   },
   methods: {
-    moment,
-    async query(type, record) {
-      const that = this
-      that.visible = true
-      that.actionType = type
-      that.record = record
-      that.detail = {}
+    query(actionType, record) {
+      let that = this
+      that.form.resetFields()
       that.fileList = []
-      await getDictionary({ text: '专利类别' }).then((res) => (that.productTypes = res.data))
-      if (that.isAdd) {
-        return
-      }
-      return
-      // that.detail = await getProjectPatentDetail({ id: record.id }).then((res) => res.data)
-      // const {
-      //   form: { setFieldsValue },
-      // } = this
-      // that.$nextTick(() => {
-      //   // setFieldsValue只有通过这种方式给表单赋值
-      //   setFieldsValue(that.detail)
-      // })
-      if (that.detail.originalUrl) {
-        let _arr = []
-        let imgInfo = []
-        try {
-          imgInfo = JSON.parse(record.originalUrl)
-        } catch (err) {
-          imgInfo = []
+      that.record = record
+      that.visible = true
+      that.actionType = actionType
+      that.detail = Object.assign({}, record || {})
+      if (that.isEdit) {
+        let { fileName, id, fileUrl } = record
+        that.$nextTick(() => that.form.setFieldsValue({ fileName, id, fileUrl }))
+        if (record.fileUrl && record.fileUrl.length > 0) {
+          let _sp = record.fileUrl.split('/')
+          let _fileName = _sp[_sp.length - 1]
+          this.fileList = [
+            {
+              uid: '-1',
+              status: 'done',
+              name: _fileName,
+              url: record.fileUrl,
+            },
+          ]
         }
-
-        imgInfo.map((item) => {
-          const picList = item.thumb.split('/')
-          _arr.push({
-            uid: uuid(),
-            name: picList[picList.length - 1],
-            status: 'done',
-            url: item.thumb,
-            __thumbURL: item.thumb,
-            __originURL: item.origin,
-          })
-        })
-
-        that.fileList = _arr
       }
-      that.content = that.detail.patentDescription
     },
-    handleSubmit() {
+    handleOk() {
       const that = this
-      that.form.setFieldsValue({ patentDescription: that.content })
-      const {
-        form: { validateFields },
-      } = that
-      validateFields(async (errors, values) => {
-        if (!errors) {
-          let ArrFilesInfo = []
-          for (let file of that.fileList) {
-            if (file.__thumbURL && file.__originURL) {
-              ArrFilesInfo.push({
-                origin: file.__originURL,
-                thumb: file.__thumbURL,
-              })
-            } else if (file.response && file.originFileObj) {
-              file.__thumbURL = await that.customUploadAction(file.originFileObj)
-              file.__originURL = file.response.data
-              ArrFilesInfo.push({
-                origin: file.__originURL,
-                thumb: file.__thumbURL,
-              })
-            }
-          }
-          values.applicationDate = values.applicationDate.format('YYYY-MM-DD')
-          values.thumbnailUrl = ArrFilesInfo.length > 0 ? ArrFilesInfo[0].thumb : ''
-          values.originalUrl = JSON.stringify(ArrFilesInfo)
-          values.dicText = that.productTypes.find((item) => item.id === values.dicId).text
-
-          delete values.productPic
+      that.form.validateFields((err, values) => {
+        if (!err) {
           console.log(values)
-          // return
-          // that.$set(values, 'id', that.pId)
           let arr = {
-            patentId: that.record.id,
-            projectPatent: values,
+            checkId: this.record.id,
+            fileManagement: values,
           }
-          that.confirmLoading = true
-          patentUploadDevelopmentProjectPatentApply(arr)
+          managementUploadDevelopmentProjectCheckApply(arr)
             .then((res) => {
-              that.confirmLoading = false
+              that.spinning = false
+              that.form.resetFields() // 清空表
+              that.visible = false
               that.$message.info(res.msg)
-              if (res.code === 200) {
-                that.handleCancel()
-                that.$emit('finish') // 刷新父组件
-              }
+              that.$emit('finish')
+              that.handleCancel()
             })
-            .catch(function (err) {
-              that.confirmLoading = false
-              console.log(err)
-            })
+            .catch((err) => (that.spinning = false))
         }
       })
     },
-    handleCancel() {
-      this.fileList = []
-      this.installList = []
-      this.operateList = []
-      this.content = ''
-      this.form.resetFields() // 清空表
-      this.visible = false
-    },
-    previewCancel() {
-      this.previewVisible = false
-    },
-    handlePreview(file) {
-      // 点击文件链接或预览图标时的回调
-      let url = ''
-      if (file.response) {
-        url = file.response.data
-      } else {
-        url = file.__originURL ? file.__originURL : file.thumbUrl
+    beforeUpload(file) {
+      const isLt10M = this.checkFile(file)
+      if (!isLt10M) {
+        this.$message.error('上传文件必须小于10M!')
       }
-      this.previewImage = ''
-      this.previewVisible = true
-      this.$nextTick(() => {
-        this.previewImage = url
-      })
+      return isLt10M
+    },
+    checkFile(file) {
+      return file.size / 1024 / 1024 < 10
     },
     handleChange({ file, fileList }) {
-      // 上传中、完成、失败都会调用这个函数。
-      this.fileList = fileList.map((item) => {
-        let _uid = -Date.now()
-        item.uid = item.uid || _uid
-        if (item.originFileObj) {
-          item.originFileObj.uid = item.originFileObj.uid || _uid
+      //console.log(arguments)
+      //console.log('file.status:'+file.status)
+      // 上传中、完成、失败都会调用这个函数
+      fileList = fileList.slice(-1)
+      if (file && file.status === 'done') {
+        // 状态有：uploading done error removed
+        if (file.response && file.response.code === 200) {
+          this.form.setFieldsValue({ fileUrl: file.response.data[0].url })
         }
-        return item
-      }) // 展示照片墙
-
-      // debugger
-      let case1 = this.fileList
-        .map((f) => {
-          let _case =
-            f.response &&
-            f.response.code &&
-            f.response.code === 200 &&
-            Array.isArray(f.response.data) &&
-            f.response.data.length > 0
-          return _case ? { ...f.response.data[0] } : null
-        })
-        .filter((item) => item !== null)
-        .map((item) => item.url)
-        .join(',')
-      let case2 = this.fileList.map((item) => (item && item.url ? item.url : '')).join(',')
-      this.form.setFieldsValue({ productPic: case1 || case2 })
-    },
-    handleBeforeUpload(file, fileList) {
-      return true
-      // return this.compressPictures(file)
-    },
-    compressPictures(file) {
-      if (file.type.indexOf('image') !== 0) {
-        return false
+      } else if (file.status === 'removed') {
+        // 删除清空
+        this.form.setFieldsValue({ fileUrl: '' })
       }
-
-      return new Promise((resolve, reject) => {
-        let fileType = file.type
-        let reader = new FileReader(),
-          img = new Image()
-        reader.readAsDataURL(file)
-        reader.onload = (e) => {
-          img.src = e.target.result
-        }
-        img.onload = function () {
-          let canvas = document.createElement('canvas')
-          let context = canvas.getContext('2d')
-          let originWidth = this.width
-          let originHeight = this.height
-          let maxWidth = 500,
-            maxHeight = 500
-          let targetWidth = originWidth,
-            targetHeight = originHeight
-          if (originWidth > maxWidth || originHeight > maxHeight) {
-            if (originWidth / originHeight > maxWidth / maxHeight) {
-              targetWidth = maxWidth
-              targetHeight = Math.round(maxWidth * (originHeight / originWidth))
-            } else {
-              targetHeight = maxHeight
-              targetWidth = Math.round(maxHeight * (originWidth / originHeight))
-            }
-          }
-          canvas.width = targetWidth
-          canvas.height = targetHeight
-          context.clearRect(0, 0, targetWidth, targetHeight)
-          context.drawImage(img, 0, 0, targetWidth, targetHeight)
-          canvas.toBlob(
-            (blob) => {
-              resolve(new File([blob], file.name, { type: fileType }))
-            },
-            fileType,
-            0.92
-          )
-        }
-        img.onerror = function (err) {
-          reject(err)
-        }
-      })
+      this.fileList = fileList.filter((f) => this.checkFile(f))
     },
-    async customUploadAction(file) {
-      //上传 压缩过的图片
-      let that = this
-      let compressFile = await that.compressPictures(file)
-      const formData = new FormData()
-      formData.append('file', compressFile)
-      let url = await customUpload(formData).then((res) => res.data)
-      return url
+    handleCancel() {
+      this.visible = false
     },
   },
 }
 </script>
 
-<style>
-/* you can make up upload button and sample style by using stylesheets */
-.ant-upload-select-picture-card i {
-  font-size: 32px;
-  color: #999;
-}
 
-.ant-upload-select-picture-card .ant-upload-text {
-  margin-top: 8px;
-  color: #666;
-}
-</style>

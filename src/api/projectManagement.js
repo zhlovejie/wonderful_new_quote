@@ -15,9 +15,102 @@ const api = {
   acceptDevelopmentProjectPatentApply: '/project/development-project-patent-apply/acceptDevelopmentProjectPatentApply',
   finishDevelopmentProjectPatentApply: '/project/development-project-patent-apply/finishDevelopmentProjectPatentApply',
   patentUploadDevelopmentProjectPatentApply: '/project/development-project-patent-apply/patentUploadDevelopmentProjectPatentApply',
+  pageDevelopmentProjectCheckApply: '/project/development-project-check-apply/pageDevelopmentProjectCheckApply',
+  pageDevelopmentSave: '/project/development-project-check-apply/save',
+  pageDevelopmentgetDetail: '/project/development-project-check-apply/getDetail',
+  pageDevelopmentgetDelete: '/project/development-project-check-apply/delete',
+  acceptDevelopmentProjectCheckApply: '/project/development-project-check-apply/acceptDevelopmentProjectCheckApply',
+  finishDevelopmentProjectCheckApply: '/project/development-project-check-apply/finishDevelopmentProjectCheckApply',
+  managementUploadDevelopmentProjectCheckApply: '/project/development-project-check-apply/managementUploadDevelopmentProjectCheckApply',
+  managementUpdate: '/project/development-project-check-apply/update',
 
 
 }
+/*
+检验报告修改*/
+export function managementUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.managementUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+检验报告上传*/
+export function managementUploadDevelopmentProjectCheckApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.managementUploadDevelopmentProjectCheckApply,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+检验报告完结*/
+export function finishDevelopmentProjectCheckApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.finishDevelopmentProjectCheckApply,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+检验报告接受*/
+export function acceptDevelopmentProjectCheckApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.acceptDevelopmentProjectCheckApply,
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*
+检验报告删除*/
+export function pageDevelopmentgetDelete(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.pageDevelopmentgetDelete,
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*
+检验报告详情*/
+export function pageDevelopmentgetDetail(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.pageDevelopmentgetDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+检验报告新增*/
+export function pageDevelopmentSave(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.pageDevelopmentSave,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+检验报告*/
+export function pageDevelopmentProjectCheckApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.pageDevelopmentProjectCheckApply,
+    method: 'get',
+    params: parameter
+  })
+}
+
 /*
 项目专利上传*/
 export function patentUploadDevelopmentProjectPatentApply(parameter) {
