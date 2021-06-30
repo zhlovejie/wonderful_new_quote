@@ -400,3 +400,35 @@ export function valencyCodePricing(parameter) {
     params: parameter
   })
 }
+
+
+//导出成本价核价
+export function exportCostPricePricing(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/exportCostPricePricing',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+//导出物料核价
+export function exportMaterialCodePricing(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/exportMaterialCodePricing',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+//导出核价代码
+export function exportValencyCodePricing(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceAdjustProductConfig/exportValencyCodePricing',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}

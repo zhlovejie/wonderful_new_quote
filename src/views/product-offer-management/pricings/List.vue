@@ -8,7 +8,7 @@
     <div class="steps-content" v-if="current === 0">
       <a-alert
         v-if="current === 0"
-        style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+        style="width: 520px; margin: 0px auto; margin-bottom: 70px; text-align: left"
         message="请选择合适的类型进行核价"
         type="info"
         show-icon
@@ -24,7 +24,7 @@
       <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 8 }">
         <a-alert
           v-if="type === 3"
-          style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+          style="width: 520px; margin: 0px auto; margin-bottom: 70px; text-align: left"
           message="通过成本价进行核价"
           type="info"
           show-icon
@@ -32,7 +32,7 @@
         />
         <a-alert
           v-if="type === 1"
-          style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+          style="width: 520px; margin: 0px auto; margin-bottom: 70px; text-align: left"
           message="通过物料代码进行核价"
           type="info"
           show-icon
@@ -40,7 +40,7 @@
         />
         <a-alert
           v-if="type === 2"
-          style="width: 400px; margin: 0px auto; margin-bottom: 70px; text-align: left"
+          style="width: 520px; margin: 0px auto; margin-bottom: 70px; text-align: left"
           message="通过核价代码进行核价"
           show-icon
           type="info"
@@ -88,7 +88,7 @@
     <div class="steps-content" v-if="current === 2">
       <a-alert
         v-if="current === 2"
-        style="width: 400px; margin: 0px auto; margin-bottom: 30px; text-align: left"
+        style="width: 520px; margin: 0px auto; margin-bottom: 30px; text-align: left"
         message="蓝色为总区间,黄色为推荐区间,红色为竞争力区间"
         type="info"
         show-icon
@@ -110,14 +110,7 @@
       <a-button v-if="current === 1" type="primary" @click="prev" style="margin-right: 10px"> 上一步 </a-button>
       <a-button v-if="current === 1" type="primary" @click="next"> 确定 </a-button>
       <a-button v-if="current === 2" type="primary" @click="prev"> 返回核价 </a-button>
-      <a-button
-        v-if="current === 2"
-        type="primary"
-        style="margin-left: 8px"
-        @click="$message.success('没得接口 没有写!')"
-      >
-        下载
-      </a-button>
+      <a-button v-if="current === 2" type="primary" style="margin-left: 8px" @click="downloadAction"> 下载 </a-button>
     </div>
   </a-card>
 </template>
@@ -130,6 +123,9 @@ import {
   costPricePricing,
   materialCodePricing,
   valencyCodePricing,
+  exportCostPricePricing,
+  exportMaterialCodePricing,
+  exportValencyCodePricing,
 } from '@/api/productOfferManagement'
 const columns = [
   {
@@ -161,6 +157,7 @@ export default {
       current: 0,
       loading: true,
       tionList: [],
+      _searchParam: {},
       dataSource: [],
       saleValenc: [],
       depList: [],
@@ -212,6 +209,65 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
+    downloadAction() {
+      let that = this
+      that.spinning = true
+
+      let m = {
+        1: exportMaterialCodePricing,
+        2: exportValencyCodePricing,
+        3: exportCostPricePricing,
+      }
+      let api = m[this.type]
+
+      api(that._searchParam)
+        .then((res) => {
+          that.spinning = false
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `核价信息.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => (that.spinning = true))
+    },
     nexts(val) {
       this.type = val
       this.current++
@@ -219,6 +275,7 @@ export default {
     next() {
       this.form.validateFields((err, values) => {
         if (!err) {
+          this._searchParam = values
           let m = {
             1: materialCodePricing,
             2: valencyCodePricing,
@@ -248,7 +305,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .steps-content {
   border-radius: 6px;
   background-color: #fff;
