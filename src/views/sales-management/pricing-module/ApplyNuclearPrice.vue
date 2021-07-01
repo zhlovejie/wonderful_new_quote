@@ -52,7 +52,7 @@
           <template slot="referencePicture" slot-scope="text">
             <img style="height: 50px; lenght: 40px" :src="text" />
           </template>
-          <template slot="revisedPart" slot-scope="text, record">
+          <!-- <template slot="revisedPart" slot-scope="text, record">
             <a-select
               mode="multiple"
               style="width: 150px"
@@ -62,17 +62,17 @@
             >
               <a-select-option v-for="rPart in revisedParts" :key="rPart.text">{{ rPart.text }}</a-select-option>
             </a-select>
-          </template>
+          </template> -->
           <template slot="status" slot-scope="text, record">
-            <a-switch 
-              @change="statusChange(record, $event)" 
-              checked-children="启用" 
-              un-checked-children="禁用" 
-              default-checked 
+            <a-switch
+              @change="statusChange(record, $event)"
+              checked-children="启用"
+              un-checked-children="禁用"
+              default-checked
               :disabled="true"
             />
           </template>
-          
+
           <template slot="operation" slot-scope="text, record">
             <template v-if="record.editable">
               <span v-if="record.isNew">
@@ -178,13 +178,13 @@ export default {
           key: 'requirementDescription',
           scopedSlots: { customRender: 'requirementDescription' },
         },
-        {
-          align: 'center',
-          title: '产品区域',
-          dataIndex: 'productArea',
-          key: 'productArea',
-          scopedSlots: { customRender: 'productArea' },
-        },
+        // {
+        //   align: 'center',
+        //   title: '产品区域',
+        //   dataIndex: 'productArea',
+        //   key: 'productArea',
+        //   scopedSlots: { customRender: 'productArea' },
+        // },
         {
           align: 'center',
           title: '参考图片',
@@ -192,13 +192,13 @@ export default {
           key: 'referencePicture',
           scopedSlots: { customRender: 'referencePicture' },
         },
-        {
-          align: 'center',
-          title: '修改点',
-          dataIndex: 'revisedPart',
-          key: 'revisedPart',
-          scopedSlots: { customRender: 'revisedPart' },
-        },
+        // {
+        //   align: 'center',
+        //   title: '修改点',
+        //   dataIndex: 'revisedPart',
+        //   key: 'revisedPart',
+        //   scopedSlots: { customRender: 'revisedPart' },
+        // },
         {
           align: 'center',
           title: '状态',
@@ -264,7 +264,7 @@ export default {
         editable: true,
         isNew: true,
         basisModel: 0,
-        status:0
+        status: 0,
       })
     },
     // 删除行
@@ -367,10 +367,10 @@ export default {
             that.$message.error('请输入需求描述')
             return
           }
-          if (item.revisedPart.length === 0) {
-            that.$message.error('请选择修改点')
-            return
-          }
+          // if (item.revisedPart.length === 0) {
+          //   that.$message.error('请选择修改点')
+          //   return
+          // }
         }
 
         that.form.validateFields((err, values) => {
@@ -397,7 +397,7 @@ export default {
           demandRemarks: item.requirementDescription, //需求描述
           referencePic: item.referencePicture, //参考图片地址
           revisedPart: item.revisedPart, //其他
-          status:item.status //状态
+          status: item.status, //状态
         }
       })
       const params = {
@@ -556,13 +556,13 @@ export default {
           console.error(error)
         })
     },
-    statusChange(record,status){
+    statusChange(record, status) {
       //console.log(status)
       const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['status'] = status ? 0 : 1
       }
-    }
+    },
   },
 }
 </script>

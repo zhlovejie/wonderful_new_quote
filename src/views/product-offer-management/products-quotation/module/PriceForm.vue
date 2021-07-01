@@ -14,7 +14,7 @@
           <a-col :span="18">
             <a-row type="flex" justify="space-around" align="middle">
               <a-col :span="2">
-                <img src="@/assets/icon_contract.jpg" style="width:48px;height:56px;" alt="合同图标" />
+                <img src="@/assets/icon_contract.jpg" style="width: 48px; height: 56px" alt="合同图标" />
               </a-col>
               <a-col :span="22">
                 <div>江苏万德福公共设施科技有限公司</div>
@@ -23,20 +23,23 @@
             </a-row>
           </a-col>
           <a-col :span="6">
-            <h2 style="padding-left:20px;border-left:3px solid rgba(0, 0, 0, 0.85);">公司产品报价单</h2>
+            <h2 style="padding-left: 20px; border-left: 3px solid rgba(0, 0, 0, 0.85)">公司产品报价单</h2>
           </a-col>
         </a-row>
 
-        <div class="add-form__bd-item" style="border:none;">
+        <div class="add-form__bd-item" style="border: none">
           <a-row type="flex" justify="space-around" align="middle">
             <a-col :span="6">
-              <a-form-item label="报单编号">{{quoteCode}}</a-form-item>
+              <a-form-item label="报单编号">{{ quoteCode }}</a-form-item>
             </a-col>
             <a-col :span="6" :offset="11">
               <a-form-item label="报价时间">
                 <a-date-picker
-                  style="width:100%;"
-                  v-decorator="['quoteTime',{initialValue:moment(),rules: [{required: true,message: '输入报价时间'}]}]"
+                  style="width: 100%"
+                  v-decorator="[
+                    'quoteTime',
+                    { initialValue: moment(), rules: [{ required: true, message: '输入报价时间' }] },
+                  ]"
                   format="YYYY-MM-DD"
                 />
               </a-form-item>
@@ -51,16 +54,14 @@
               <a-form-item label="联系人">
                 <a-select
                   :allowClear="true"
-                  v-decorator="['saleUserId',{rules: [{ required: true, message: '请选销售经理'}]} ]"
+                  v-decorator="['saleUserId', { rules: [{ required: true, message: '请选销售经理' }] }]"
                   placeholder="请选销售经理"
-                  style="width: 100%;"
+                  style="width: 100%"
                   @change="saleUserChange"
                 >
-                  <a-select-option
-                    v-for="item in saleUserList"
-                    :value="item.userId"
-                    :key="item.userId"
-                  >{{ item.salesmanName }}</a-select-option>
+                  <a-select-option v-for="item in saleUserList" :value="item.userId" :key="item.userId">{{
+                    item.salesmanName
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item label="电话">
@@ -79,14 +80,14 @@
               </a-form-item>
               <a-form-item label="联系人">
                 <a-input
-                  v-decorator="['customerContacts',{rules: [{ required: false, message: '输入询价方联系人' }]}]"
+                  v-decorator="['customerContacts', { rules: [{ required: false, message: '输入询价方联系人' }] }]"
                   placeholder="询价方联系人"
                   :allowClear="true"
                 />
               </a-form-item>
               <a-form-item label="电话">
                 <a-input
-                  v-decorator="['customerMobile',{rules: [{ required: false, message: '输入询价方电话' }]}]"
+                  v-decorator="['customerMobile', { rules: [{ required: false, message: '输入询价方电话' }] }]"
                   placeholder="询价方电话"
                   :allowClear="true"
                 />
@@ -110,98 +111,104 @@
               <td>
                 <a-form-item>
                   <template v-if="!isView">
-                  <a-input
-                    v-decorator="['productName',{rules: [{ required: true, message: '产品名称' }]}]"
-                    placeholder="产品名称"
-                    :allowClear="true"
-                  />
+                    <a-input
+                      v-decorator="['productName', { rules: [{ required: true, message: '产品名称' }] }]"
+                      placeholder="产品名称"
+                      :allowClear="true"
+                    />
                   </template>
                   <template v-else>
-                    {{productName}}
+                    {{ productName }}
                   </template>
                 </a-form-item>
               </td>
-              <td style="width:96px;">
+              <td style="width: 96px">
                 <a-form-item>
                   <template v-if="!isView">
-                  <img
-                    @click="uploadFileModel(productPic)"
-                    style="width:100%;height:auto;overflow:hidden;cursor: pointer;"
-                    :src="productPic"
-                  />
+                    <img
+                      @click="uploadFileModel(productPic)"
+                      style="width: 100%; height: auto; overflow: hidden; cursor: pointer"
+                      :src="productPic"
+                    />
                   </template>
                   <template v-else>
-                    <img style="width:100%;height:auto;overflow:hidden;cursor: pointer;" :src="productPic" />
+                    <img style="width: 100%; height: auto; overflow: hidden; cursor: pointer" :src="productPic" />
                   </template>
                 </a-form-item>
               </td>
-              <td style="width:120px;">
+              <td style="width: 120px">
                 <a-form-item>
                   <template v-if="!isView">
-                  <a-input-number
-                    style="width:100%;"
-                    :min="1"
-                    :step="1"
-                    v-decorator="['productNum', { initialValue:1,rules: [{ required: true, message: '请输入数量' }]}]"
-                    @change="qtyChange"
-                  />
+                    <a-input-number
+                      style="width: 100%"
+                      :min="1"
+                      :step="1"
+                      v-decorator="[
+                        'productNum',
+                        { initialValue: 1, rules: [{ required: true, message: '请输入数量' }] },
+                      ]"
+                      @change="qtyChange"
+                    />
                   </template>
                   <template v-else>
-                    {{qty}}
+                    {{ qty }}
                   </template>
                 </a-form-item>
               </td>
-              <td style="width:240px;">
+              <td style="width: 240px">
                 <a-form-item>
                   <a-row>
                     <template v-if="!isView">
-                    <a-col :span="24">
-                      <a-select
-                        style="width:80px;"
-                        placeholder="价格"
-                        @change="unitPriceSelectChange"
-                      >
-                        <a-select-option value="aprice">A价</a-select-option>
+                      <a-col :span="24">
+                        <a-select
+                          style="width: 150px"
+                          placeholder="价格"
+                          v-decorator="['unitPrice', { rules: [{ required: true, message: '请输入单价' }] }]"
+                        >
+                          <a-select-option v-for="v in dataSource" :value="v.price" :key="v.id">{{
+                            v.price | moneyFormatNumber
+                          }}</a-select-option>
+                          <!-- <a-select-option value="aprice">A价</a-select-option>
                         <a-select-option value="bprice">B价</a-select-option>
                         <a-select-option value="cprice">C价</a-select-option>
                         <a-select-option value="retailPrice">市场价</a-select-option>
-                        <a-select-option value="otherPrice">其他</a-select-option>
-                      </a-select>
-                      <a-input-number
-                        v-if="unitPriceEdit"
-                        style="width:120px;margin-left:10px;"
-                        :min="0"
-                        :step="1"
-                        :precision="2"
-                        v-decorator="['unitPrice', {rules: [{ required: true, message: '请输入单价' }]}]"
-                        @change="unitPriceChange"
-                      />
-                    </a-col>
+                        <a-select-option value="otherPrice">其他</a-select-option> -->
+                        </a-select>
+                        <!-- <a-input-number
+                          v-if="unitPriceEdit"
+                          style="width: 120px; margin-left: 10px"
+                          :min="0"
+                          :step="1"
+                          :precision="2"
+                          v-decorator="['unitPrice', { rules: [{ required: true, message: '请输入单价' }] }]"
+                          @change="unitPriceChange"
+                        /> -->
+                      </a-col>
                     </template>
                     <template v-else>
                       <a-col :span="24">
-                        {{unitPrice | moneyFormatNumber}}
+                        {{ unitPrice | moneyFormatNumber }}
                       </a-col>
                     </template>
                   </a-row>
                 </a-form-item>
               </td>
               <td>
-                <a-form-item>{{clacPrice | moneyFormatNumber}}</a-form-item>
+                <a-form-item>{{ clacPrice | moneyFormatNumber }}</a-form-item>
               </td>
-              <td style="width:100px;">
+              <td style="width: 100px">
                 <a-form-item>
                   <template v-if="!isView">
-                  <a-switch
-                    checked-children="含税"
-                    un-checked-children="不含税"
-                    default-checked
-                    v-decorator="['remark', { initialValue:true}]"
-                    @change="taxChange"
-                  />
+                    <a-switch
+                      checked-children="含税"
+                      un-checked-children="不含税"
+                      default-checked
+                      v-decorator="['remark', { initialValue: true }]"
+                      @change="taxChange"
+                    />
                   </template>
                   <template v-else>
-                    {{hasTax ? '含税' : '不含税'}}
+                    {{ hasTax ? '含税' : '不含税' }}
                   </template>
                   <!-- <a-radio-group v-decorator="['remark',{initialValue: 1}]">
                   <a-radio :value="1">含税</a-radio>
@@ -236,7 +243,7 @@
 
 <script>
 import { getListSaleContractUser } from '@/api/contractListManagement'
-import { priceAdjustProductQuoteAddOrUpdate ,priceAdjustProductQuoteDetail} from '@/api/productOfferManagement'
+import { priceAdjustProductQuoteAddOrUpdate, priceAdjustProductQuoteDetail } from '@/api/productOfferManagement'
 import moment from 'moment'
 import CustomerSelect from '@/components/CustomerList/CustomerSelect'
 import SelectProductViewHTML from './SelectProductViewHTML'
@@ -247,7 +254,7 @@ export default {
   components: {
     CustomerSelect,
     UploadFile,
-    SelectProductViewHTML
+    SelectProductViewHTML,
   },
   data() {
     return {
@@ -256,29 +263,30 @@ export default {
       actionType: 'add',
       spinning: false,
       saleUserList: [],
+      dataSource: [],
       customerSelectOptions: {
         inputLabel: '询价方',
         wrapperStyle: {},
         formLayout: 'inline',
         formItemLayout: {
           labelCol: { span: '' },
-          wrapperCol: { span: '' }
+          wrapperCol: { span: '' },
         },
         inputRequired: true,
-        inputAllowClear: true
+        inputAllowClear: true,
       },
-      needOptions:{
-        userId:undefined
+      needOptions: {
+        userId: undefined,
       },
-      productName:'',
-      quoteCode:'',
+      productName: '',
+      quoteCode: '',
       productPic: '',
       unitPrice: 0,
       qty: 0,
       unitPriceEdit: false, //单价为其他时候可以编辑
-      hasTax:true,
+      hasTax: true,
       record: {},
-      viewDataSourceHTMLWithoutTitle:{}
+      viewDataSourceHTMLWithoutTitle: {},
     }
   },
   computed: {
@@ -287,7 +295,7 @@ export default {
         view: '查看',
         add: '新增',
         edit: '修改',
-        approval: '审批'
+        approval: '审批',
       }
       return `${m[this.actionType]}报价单`
     },
@@ -310,14 +318,14 @@ export default {
       let qty = parseInt(this.qty) || 1
       let price = parseFloat(this.unitPrice) || 0
       return (qty * price).toFixed(2)
-    }
+    },
   },
   methods: {
     moment,
     init() {
       let that = this
       let queue = []
-      let task1 = getListSaleContractUser().then(res => (that.saleUserList = res.data))
+      let task1 = getListSaleContractUser().then((res) => (that.saleUserList = res.data))
       queue.push(task1)
       return Promise.all(queue)
     },
@@ -328,7 +336,7 @@ export default {
         return
       }
 
-      let customerSelectResult = await this.$refs.customerSelect.validate().then(res => res)
+      let customerSelectResult = await this.$refs.customerSelect.validate().then((res) => res)
       console.log(customerSelectResult)
       if (customerSelectResult.err) {
         return
@@ -340,9 +348,9 @@ export default {
             values.id = that.record.id
           }
 
-          if(!that.unitPriceEdit){
-            values.unitPrice = that.unitPrice
-          }
+          // if (!that.unitPriceEdit) {
+          //   values.unitPrice = that.unitPrice
+          // }
 
           values.saleCustomerId = customerSelectResult.values.customerId
           values.customerName = customerSelectResult.values.customerName
@@ -352,18 +360,18 @@ export default {
           values.productPic = that.productPic
           values.quoteTime = values.quoteTime.format('YYYY-MM-DD')
           values.productQuoteChooses = [
-            ...that.record._viewDataSource.optStand.map(p => {
-              return { itemName: p.itemName, type: 1 ,introduction:p.introduction}
+            ...that.record._viewDataSource.optStand.map((p) => {
+              return { itemName: p.itemName, type: 1, introduction: p.introduction }
             }),
-            ...that.record._viewDataSource.optSelect.map(p => {
-              return { itemName: p.itemName, type: 2 ,introduction:p.introduction}
-            })
+            ...that.record._viewDataSource.optSelect.map((p) => {
+              return { itemName: p.itemName, type: 2, introduction: p.introduction }
+            }),
           ]
           console.log('Received values of form: ', values)
 
           that.spinning = true
           priceAdjustProductQuoteAddOrUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.visible = false
@@ -373,7 +381,7 @@ export default {
                 that.$message.warning(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err)
               that.$message.error('操作失败')
               that.spinning = false
@@ -385,8 +393,10 @@ export default {
       this.form.resetFields()
       this.$nextTick(() => (this.visible = false))
     },
-    async query(type, record) {
+    async query(type, record, dataSource) {
       let that = this
+      console.log(dataSource)
+      that.dataSource = dataSource
       that.actionType = type
       that.record = record || {}
       that.form.resetFields()
@@ -394,37 +404,36 @@ export default {
       await that.init()
       that.visible = true
 
-
       that.$nextTick(() => {
-        if(that.isAdd){
+        if (that.isAdd) {
           that.addAction()
-        }else{
+        } else {
           that.editAction()
         }
       })
     },
-    addAction(){
+    addAction() {
       let that = this
       that.productPic = that.record.productPic
       that.viewDataSourceHTMLWithoutTitle = that.record._viewDataSource
       that.form.setFieldsValue({ productName: that.record.name })
     },
-    editAction(){
+    editAction() {
       let that = this
-      priceAdjustProductQuoteDetail({id:this.record.id}).then(res =>{
+      priceAdjustProductQuoteDetail({ id: this.record.id }).then((res) => {
         //res.data.remark =
-        that.form.setFieldsValue({...res.data})
+        that.form.setFieldsValue({ ...res.data })
 
-        if(res.data.quoteTime){
-          that.form.setFieldsValue({quoteTime:that.moment(res.data.quoteTime)})
+        if (res.data.quoteTime) {
+          that.form.setFieldsValue({ quoteTime: that.moment(res.data.quoteTime) })
         }
 
         that.hasTax = +res.data.remark === 1 ? true : false
-        that.form.setFieldsValue({remark:that.hasTax})
+        that.form.setFieldsValue({ remark: that.hasTax })
         //quoteTime
         that.$refs.customerSelect.fill({
-          name:res.data.customerName,
-          id:res.data.customerId
+          name: res.data.customerName,
+          id: res.data.customerId,
         })
         that.productName = res.data.productName
         that.quoteCode = res.data.quoteCode
@@ -434,17 +443,16 @@ export default {
         that.unitPriceEdit = false
         that.viewDataSourceHTMLWithoutTitle = {
           __config: {
-            showTitle: false
+            showTitle: false,
           },
-          optStand:[...res.data.productQuoteChooses.filter(p => +p.type === 1)],
-          optSelect:[...res.data.productQuoteChooses.filter(p => +p.type === 2)],
+          optStand: [...res.data.productQuoteChooses.filter((p) => +p.type === 1)],
+          optSelect: [...res.data.productQuoteChooses.filter((p) => +p.type === 2)],
         }
 
         console.log(res)
       })
     },
     handleCustomerSelected(item) {
-
       //this.queryParam.customerId = item.id
       this.form.setFieldsValue({ customerId: item && item.id ? item.id : undefined })
     },
@@ -452,21 +460,19 @@ export default {
       //'customerId' in this.queryParam && delete this.queryParam.customerId
       this.form.setFieldsValue({ customerId: undefined })
     },
-    unitPriceSelectChange(val) {
-      this.unitPriceEdit = val === 'otherPrice'
-      try {
-        this.unitPrice = parseFloat(this.record._costPrice[val]) || 0
-        this.form.setFieldsValue({ unitPrice: this.unitPrice })
-      } catch (err) {
-        this.unitPrice = 0
-        console.log('获取单价失败：', val)
-        console.log(err)
-      }
-    },
-    unitPriceChange(val) {
-      this.unitPrice = +val
-      this.form.setFieldsValue({ unitPrice: this.unitPrice })
-    },
+    // unitPriceSelectChange(val) {
+    //   try {
+    //     this.form.setFieldsValue({ unitPrice: val })
+    //   } catch (err) {
+    //     this.unitPrice = 0
+    //     console.log('获取单价失败：', val)
+    //     console.log(err)
+    //   }
+    // },
+    // unitPriceChange(val) {
+    //   this.unitPrice = +val
+    //   this.form.setFieldsValue({ unitPrice: this.unitPrice })
+    // },
     qtyChange(val) {
       this.qty = +val
       this.form.setFieldsValue({ productNum: this.qty })
@@ -478,28 +484,29 @@ export default {
       }
     },
     uploadFileChange(fileList) {
-      let target = fileList.find(f => !!f.url)
+      let target = fileList.find((f) => !!f.url)
       if (target) {
         this.productPic = target.url
       }
     },
-    taxChange(checked){
+    taxChange(checked) {
       this.hasTax = checked
     },
-    saleUserChange(saleUserId){ //选择销售人员 填充对应的 微信和邮箱
+    saleUserChange(saleUserId) {
+      //选择销售人员 填充对应的 微信和邮箱
       //特殊处理
-      this.needOptions = { userId:saleUserId }
+      this.needOptions = { userId: saleUserId }
       this.$refs.customerSelect.handleClear()
-      this.form.setFieldsValue({customerId:undefined,customerName:undefined })
+      this.form.setFieldsValue({ customerId: undefined, customerName: undefined })
       //debugger
       //特殊处理
-      let target = this.saleUserList.find(user =>user.userId === parseInt(saleUserId))
+      let target = this.saleUserList.find((user) => user.userId === parseInt(saleUserId))
       console.log(target)
-      if(target){
-        this.form.setFieldsValue({saleUserPhone: target.mobile || target.userInfo.mobile || undefined})
+      if (target) {
+        this.form.setFieldsValue({ saleUserPhone: target.mobile || target.userInfo.mobile || undefined })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

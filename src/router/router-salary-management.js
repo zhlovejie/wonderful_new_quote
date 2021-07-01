@@ -307,156 +307,89 @@ export default {
         }
       ]
     },
-    { //补贴
-      path: '/salary-management/salary-subsidy',
-      name: 'salary-subsidy',
+    {
+      path: '/salary-management/salary-subsidy-rules',
+      name: 'salary-subsidy-rules',
       component: RouteView,
       meta: {
-        title: '补贴',
+        title: '补贴规则',
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
       },
       children: [{
-          path: '/salary-management/salary-subsidy-rules',
-          name: 'salary-subsidy-rules',
-          component: RouteView,
+          path: '/salary-management/salary-subsidy-engineer-rules',
+          name: 'salary-subsidy-engineer-rules',
+          component: () => import('@/views/salary-management/salary-subsidy-engineer-rules/List'),
           meta: {
-            title: '补贴规则',
+            title: '油补/通讯',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
           },
-          children: [{
-              path: '/salary-management/salary-subsidy-engineer-rules',
-              name: 'salary-subsidy-engineer-rules',
-              component: () => import('@/views/salary-management/salary-subsidy-engineer-rules/List'),
-              meta: {
-                title: '油补/通讯',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/salary-subsidy-rules-record',
-              name: 'salary-subsidy-rules-record',
-              component: () => import('@/views/salary-management/salary-subsidy-rules-record/List'),
-              meta: {
-                title: '多类补贴',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/engineer_subsidy',
-              name: 'engineer_subsidy',
-              component: () => import('@/views/salary-management/engineer_subsidy/List'),
-              meta: {
-                title: '高级工程师补贴规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/salary-subsidy-workyears-rules',
-              name: 'salary-subsidy-workyears-rules',
-              component: () => import('@/views/salary-management/salary-subsidy-workyears-rules/List'),
-              meta: {
-                title: '工龄补贴规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
+        },
+        {
+          path: '/salary-management/salary-subsidy-rules-record',
+          name: 'salary-subsidy-rules-record',
+          component: () => import('@/views/salary-management/salary-subsidy-rules-record/List'),
+          meta: {
+            title: '多类补贴',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/engineer_subsidy',
+          name: 'engineer_subsidy',
+          component: () => import('@/views/salary-management/engineer_subsidy/List'),
+          meta: {
+            title: '高级工程师补贴规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/salary-subsidy-workyears-rules',
+          name: 'salary-subsidy-workyears-rules',
+          component: () => import('@/views/salary-management/salary-subsidy-workyears-rules/List'),
+          meta: {
+            title: '工龄补贴规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
 
-            {
-              path: '/salary-management/salary-subsidy-workovertime-rules',
-              name: 'salary-subsidy-workovertime-rules',
-              component: () => import('@/views/salary-management/salary-subsidy-workovertime-rules/List'),
-              meta: {
-                title: '加班补贴规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/salary-subsidy-traffic-rules',
-              name: 'salary-subsidy-traffic-rules',
-              component: () => import('@/views/salary-management/salary-subsidy-traffic-rules/List'),
-              meta: {
-                title: '交通补贴规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/salary-subsidy-heat-rules',
-              name: 'salary-subsidy-heat-rules',
-              component: () => import('@/views/salary-management/salary-subsidy-heat-rules/List'),
-              meta: {
-                title: '高温补贴规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }
-          ]
-        },
         {
-          path: '/salary-management/salary-subsidy-oil',
-          name: 'salary-subsidy-oil',
-          component: () => import('@/views/salary-management/salary-subsidy-oil/List'),
+          path: '/salary-management/salary-subsidy-workovertime-rules',
+          name: 'salary-subsidy-workovertime-rules',
+          component: () => import('@/views/salary-management/salary-subsidy-workovertime-rules/List'),
           meta: {
-            title: '油补',
+            title: '加班补贴规则',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
           },
         },
         {
-          path: '/salary-management/salary-subsidy-communication',
-          name: 'salary-subsidy-communication',
-          component: () => import('@/views/salary-management/salary-subsidy-communication/List'),
+          path: '/salary-management/salary-subsidy-traffic-rules',
+          name: 'salary-subsidy-traffic-rules',
+          component: () => import('@/views/salary-management/salary-subsidy-traffic-rules/List'),
           meta: {
-            title: '通讯补贴',
+            title: '交通补贴规则',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
           },
         },
         {
-          path: '/salary-management/salary-subsidy-cover',
-          name: 'salary-subsidy-cover',
-          component: () => import('@/views/salary-management/salary-subsidy-cover/List'),
+          path: '/salary-management/salary-subsidy-heat-rules',
+          name: 'salary-subsidy-heat-rules',
+          component: () => import('@/views/salary-management/salary-subsidy-heat-rules/List'),
           meta: {
-            title: '代班补贴',
-            icon: 'select',
-            keepAlive: false,
-            permission: ['permission']
-          },
-        },
-        {
-          path: '/salary-management/salary-subsidy-other',
-          name: 'salary-subsidy-other',
-          component: () => import('@/views/salary-management/salary-subsidy-other/List'),
-          meta: {
-            title: '其它补贴',
-            icon: 'select',
-            keepAlive: false,
-            permission: ['permission']
-          },
-        },
-        {
-          path: '/salary-management/salary-subsidy-industrial-accident',
-          name: 'salary-subsidy-industrial-accident',
-          component: () => import('@/views/salary-management/salary-subsidy-industrial-accident/List'),
-          meta: {
-            title: '工伤补贴',
+            title: '高温补贴规则',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
@@ -464,6 +397,7 @@ export default {
         }
       ]
     },
+
     { //xucongcong-奖金管理
       path: '/salary-management/bonus',
       name: 'salary-management_bonus',

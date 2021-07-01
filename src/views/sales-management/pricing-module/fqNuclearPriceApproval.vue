@@ -5,21 +5,21 @@
       <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
     </div>
     <a-card class="card" :bordered="false">
-      <a-form :form="form" class="form" >
+      <a-form :form="form" class="form">
         <a-row class="form-row" :gutter="16">
           <a-col :lg="12" :md="12" :sm="24">
-            <a-form-item label="核价编号" :label-col="{ span: 3}" :wrapper-col="{ span:9 }">
-              <a-input v-model="valencyCode" disabled/>
+            <a-form-item label="核价编号" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
+              <a-input v-model="valencyCode" disabled />
             </a-form-item>
           </a-col>
           <a-col :lg="12" :md="12" :sm="24">
             <a-form-item label="单据状态" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
-              <a-input v-if="valencyStatus===0" v-model="statusName" disabled placeholder="待接收" />
-              <a-input v-else-if="valencyStatus===1" v-model="statusName" disabled/>
-              <a-input v-else-if="valencyStatus===2" v-model="statusName" disabled/>
-              <a-input v-else-if="valencyStatus===3" v-model="statusName" disabled/>
-              <a-input v-else-if="valencyStatus===4" v-model="statusName" disabled/>
-              <a-input v-else v-model="valencyStatus" disabled/>
+              <a-input v-if="valencyStatus === 0" v-model="statusName" disabled placeholder="待接收" />
+              <a-input v-else-if="valencyStatus === 1" v-model="statusName" disabled />
+              <a-input v-else-if="valencyStatus === 2" v-model="statusName" disabled />
+              <a-input v-else-if="valencyStatus === 3" v-model="statusName" disabled />
+              <a-input v-else-if="valencyStatus === 4" v-model="statusName" disabled />
+              <a-input v-else v-model="valencyStatus" disabled />
             </a-form-item>
           </a-col>
         </a-row>
@@ -29,7 +29,7 @@
               <a-input value="* * * * * * * *" disabled>* * * * * * * *</a-input>
             </a-form-item>
           </a-col>
-          <a-col :lg="{span: 12}" :md="{span: 12}" :sm="24">
+          <a-col :lg="{ span: 12 }" :md="{ span: 12 }" :sm="24">
             <a-form-item label="需求日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
               <a-input v-model="demandTime" disabled></a-input>
             </a-form-item>
@@ -40,34 +40,27 @@
 
     <!-- table -->
     <a-card class="card" title="产品信息" :bordered="false">
-      <a-table
-        :columns="columns"
-        :dataSource="data"
-        :pagination="false"
-        :loading="memberLoading"
-        bordered
-        rowKey="id"
-      >
-        <div slot="order" slot-scope="text,record,index">
-          <span>{{ index+1 }}</span>
+      <a-table :columns="columns" :dataSource="data" :pagination="false" :loading="memberLoading" bordered rowKey="id">
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
         </div>
         <template slot="costPrice" slot-scope="text, record">
-          <editable-cell :text="text" @change="onCellChange(record.key, 'costPrice', $event)"/>
+          <editable-cell :text="text" @change="onCellChange(record.key, 'costPrice', $event)" />
         </template>
 
         <template slot="aPrice" slot-scope="text, record">
-          <editable-cell :text="text" @change="onCellChange(record.key, 'aPrice', $event)"/>
+          <editable-cell :text="text" @change="onCellChange(record.key, 'aPrice', $event)" />
         </template>
 
         <template slot="bPrice" slot-scope="text, record">
-          <editable-cell :text="text" @change="onCellChange(record.key, 'bPrice', $event)"/>
+          <editable-cell :text="text" @change="onCellChange(record.key, 'bPrice', $event)" />
         </template>
         <template slot="cPrice" slot-scope="text, record">
-          <editable-cell :text="text" @change="onCellChange(record.key, 'cPrice', $event)"/>
+          <editable-cell :text="text" @change="onCellChange(record.key, 'cPrice', $event)" />
         </template>
 
         <template slot="referencePic" slot-scope="text, record">
-          <img style="height: 50px;lenght:40px" :src="text"/>
+          <img style="height: 50px; lenght: 40px" :src="text" />
         </template>
         <template slot="effectPicture" slot-scope="text, record">
           <div class="clearfix">
@@ -83,42 +76,41 @@
                 <div class="ant-upload-text">Upload</div>
               </div>
             </a-upload>
-            <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel" >
+            <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
               <img alt="example" style="width: 100%" :src="previewImage" />
             </a-modal>
           </div>
         </template>
         <template slot="functionBrief" slot-scope="text, record">
-          <editable-cell :text="text" @change="onCellChange(record.key, 'functionBrief', $event)"/>
+          <editable-cell :text="text" @change="onCellChange(record.key, 'functionBrief', $event)" />
         </template>
         <template slot="thisProductModel" slot-scope="text, record">
-          <editable-cell :text="text" @change="onCellChange(record.key, 'thisProductModel', $event)"/>
+          <editable-cell :text="text" @change="onCellChange(record.key, 'thisProductModel', $event)" />
         </template>
-
       </a-table>
     </a-card>
 
     <a-card class="card" :bordered="false">
       <a-form :form="form" class="form">
         <a-row class="form-row" :gutter="16">
-          <a-col :lg="{span: 6}" :md="{span: 12}" :sm="24">
+          <a-col :lg="{ span: 6 }" :md="{ span: 12 }" :sm="24">
             <a-form-item label="申请人" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
-              <a-input v-model="applyUserName" disabled/>
+              <a-input v-model="applyUserName" disabled />
             </a-form-item>
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item label="申请时间" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
-              <a-input v-model="createTime" disabled/>
+              <a-input v-model="createTime" disabled />
             </a-form-item>
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
-            <a-form-item label="核价人" :label-col="{ span: 6}" :wrapper-col="{ span:16 }">
-              <a-input v-model="valencyUserName" disabled/>
+            <a-form-item label="核价人" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
+              <a-input v-model="valencyUserName" disabled />
             </a-form-item>
           </a-col>
           <a-col :lg="6" :md="12" :sm="24">
             <a-form-item label="核价时间" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
-              <a-input placeholder="2019-06-05" disabled/>
+              <a-input placeholder="2019-06-05" disabled />
             </a-form-item>
           </a-col>
         </a-row>
@@ -194,27 +186,27 @@ export default {
           key: 'costPrice',
           scopedSlots: { customRender: 'costPrice' }
         },
-        {
-          align: 'center',
-          title: 'A价',
-          dataIndex: 'aPrice',
-          key: 'aPrice',
-          scopedSlots: { customRender: 'aPrice' }
-        },
-        {
-          align: 'center',
-          title: 'B价',
-          dataIndex: 'bPrice',
-          key: 'bPrice',
-          scopedSlots: { customRender: 'bPrice' }
-        },
-        {
-          align: 'center',
-          title: 'C价',
-          dataIndex: 'cPrice',
-          key: 'cPrice',
-          scopedSlots: { customRender: 'cPrice' }
-        },
+        // {
+        //   align: 'center',
+        //   title: 'A价',
+        //   dataIndex: 'aPrice',
+        //   key: 'aPrice',
+        //   scopedSlots: { customRender: 'aPrice' }
+        // },
+        // {
+        //   align: 'center',
+        //   title: 'B价',
+        //   dataIndex: 'bPrice',
+        //   key: 'bPrice',
+        //   scopedSlots: { customRender: 'bPrice' }
+        // },
+        // {
+        //   align: 'center',
+        //   title: 'C价',
+        //   dataIndex: 'cPrice',
+        //   key: 'cPrice',
+        //   scopedSlots: { customRender: 'cPrice' }
+        // },
         {
           align: 'center',
           title: '效果图片',
@@ -321,27 +313,27 @@ export default {
             key: 'costPrice',
             scopedSlots: { customRender: 'costPrice' }
           },
-          {
-            align: 'center',
-            title: 'A价',
-            dataIndex: 'aPrice',
-            key: 'aPrice',
-            scopedSlots: { customRender: 'aPrice' }
-          },
-          {
-            align: 'center',
-            title: 'B价',
-            dataIndex: 'bPrice',
-            key: 'bPrice',
-            scopedSlots: { customRender: 'bPrice' }
-          },
-          {
-            align: 'center',
-            title: 'C价',
-            dataIndex: 'cPrice',
-            key: 'cPrice',
-            scopedSlots: { customRender: 'cPrice' }
-          },
+          // {
+          //   align: 'center',
+          //   title: 'A价',
+          //   dataIndex: 'aPrice',
+          //   key: 'aPrice',
+          //   scopedSlots: { customRender: 'aPrice' }
+          // },
+          // {
+          //   align: 'center',
+          //   title: 'B价',
+          //   dataIndex: 'bPrice',
+          //   key: 'bPrice',
+          //   scopedSlots: { customRender: 'bPrice' }
+          // },
+          // {
+          //   align: 'center',
+          //   title: 'C价',
+          //   dataIndex: 'cPrice',
+          //   key: 'cPrice',
+          //   scopedSlots: { customRender: 'cPrice' }
+          // },
           {
             align: 'center',
             title: '效果图片',
@@ -570,134 +562,134 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .top-right {
-    margin-bottom: 12px;
-    margin-right: 6px;
-  }
+.top-right {
+  margin-bottom: 12px;
+  margin-right: 6px;
+}
 
-  .clearfix:after {
-    display: block;
-    content: '';
-    width: 100%;
-    height: 0;
-    clear: both;
-  }
+.clearfix:after {
+  display: block;
+  content: '';
+  width: 100%;
+  height: 0;
+  clear: both;
+}
 
-  .clearfix {
-    zoom: 1;
-  }
+.clearfix {
+  zoom: 1;
+}
 
-  .fl-r {
-    float: right;
-    margin-left: 8px;
-  }
+.fl-r {
+  float: right;
+  margin-left: 8px;
+}
 
-  .card {
-    margin-bottom: 24px;
-  }
+.card {
+  margin-bottom: 24px;
+}
 
-  .popover-wrapper {
-    /deep/ .antd-pro-pages-forms-style-errorPopover .ant-popover-inner-content {
-      min-width: 256px;
-      max-height: 290px;
-      padding: 0;
-      overflow: auto;
-    }
+.popover-wrapper {
+  /deep/ .antd-pro-pages-forms-style-errorPopover .ant-popover-inner-content {
+    min-width: 256px;
+    max-height: 290px;
+    padding: 0;
+    overflow: auto;
+  }
+}
+
+.antd-pro-pages-forms-style-errorIcon {
+  user-select: none;
+  margin-right: 24px;
+  color: #f5222d;
+  cursor: pointer;
+
+  i {
+    margin-right: 4px;
+  }
+}
+
+.antd-pro-pages-forms-style-errorListItem {
+  padding: 8px 16px;
+  list-style: none;
+  border-bottom: 1px solid #e8e8e8;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #e6f7ff;
   }
 
   .antd-pro-pages-forms-style-errorIcon {
-    user-select: none;
-    margin-right: 24px;
+    float: left;
+    margin-top: 4px;
+    margin-right: 12px;
+    padding-bottom: 22px;
     color: #f5222d;
-    cursor: pointer;
-
-    i {
-      margin-right: 4px;
-    }
   }
 
-  .antd-pro-pages-forms-style-errorListItem {
-    padding: 8px 16px;
-    list-style: none;
-    border-bottom: 1px solid #e8e8e8;
-    cursor: pointer;
-    transition: all .3s;
+  .antd-pro-pages-forms-style-errorField {
+    margin-top: 2px;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+  }
+}
 
-    &:hover {
-      background: #e6f7ff;
-    }
+.editable-cell {
+  position: relative;
+}
 
-    .antd-pro-pages-forms-style-errorIcon {
-      float: left;
-      margin-top: 4px;
-      margin-right: 12px;
-      padding-bottom: 22px;
-      color: #f5222d;
-    }
+.editable-cell-input-wrapper,
+.editable-cell-text-wrapper {
+  padding-right: 24px;
+}
 
-    .antd-pro-pages-forms-style-errorField {
-      margin-top: 2px;
-      color: rgba(0, 0, 0, .45);
-      font-size: 12px;
-    }
-  }
+.editable-cell-text-wrapper {
+  padding: 5px 24px 5px 5px;
+}
 
-  .editable-cell {
-    position: relative;
-  }
+.editable-cell-icon,
+.editable-cell-icon-check {
+  position: absolute;
+  right: 0;
+  width: 20px;
+  cursor: pointer;
+}
 
-  .editable-cell-input-wrapper,
-  .editable-cell-text-wrapper {
-    padding-right: 24px;
-  }
+.editable-cell-icon {
+  line-height: 18px;
+  display: none;
+}
+.editable-cell-icon.anticon.anticon-edit {
+  line-height: 18px;
+  display: none;
+}
+.editable-cell-icon-check {
+  line-height: 28px;
+}
 
-  .editable-cell-text-wrapper {
-    padding: 5px 24px 5px 5px;
-  }
+.editable-cell:hover .editable-cell-icon {
+  display: inline-block;
+}
 
-  .editable-cell-icon,
-  .editable-cell-icon-check {
-    position: absolute;
-    right: 0;
-    width: 20px;
-    cursor: pointer;
-  }
+.editable-cell-icon:hover,
+.editable-cell-icon-check:hover {
+  color: #108ee9;
+}
 
-  .editable-cell-icon {
-    line-height: 18px;
-    display: none;
-  }
-  .editable-cell-icon.anticon.anticon-edit{
-    line-height: 18px;
-    display: none;
-  }
-  .editable-cell-icon-check {
-    line-height: 28px;
-  }
+.editable-add-btn {
+  margin-bottom: 8px;
+}
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
 
-  .editable-cell:hover .editable-cell-icon {
-    display: inline-block;
-  }
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+}
 
-  .editable-cell-icon:hover,
-  .editable-cell-icon-check:hover {
-    color: #108ee9;
-  }
-
-  .editable-add-btn {
-    margin-bottom: 8px;
-  }
-  .ant-upload-select-picture-card i {
-    font-size: 32px;
-    color: #999;
-  }
-
-  .ant-upload-select-picture-card .ant-upload-text {
-    margin-top: 8px;
-    color: #666;
-  }
-
-  .ant-upload-list-picture-card .ant-upload-list-item-info:before{
-    transition: none!important;
-  }
+.ant-upload-list-picture-card .ant-upload-list-item-info:before {
+  transition: none !important;
+}
 </style>

@@ -1,10 +1,22 @@
 <template>
   <div>
     <a-form style="margin: 40px auto 0;">
-      <result :title="msg" :is-success="code === '200'?true:false" description="" style="max-width: 560px;">
+      <result
+        :title="msg"
+        :type="+code === 200 ? 'success' : 'error'"
+        description=""
+        style="max-width: 560px;"
+      >
         <div slot="action">
-          <a-button v-if="subType == 'add'" type="primary" @click="addAgain">继续添加</a-button>
-          <a-button style="margin-left: 8px" @click="toList">查看列表</a-button>
+          <a-button
+            v-if="subType == 'add'"
+            type="primary"
+            @click="addAgain"
+          >继续添加</a-button>
+          <a-button
+            style="margin-left: 8px"
+            @click="toList"
+          >查看列表</a-button>
         </div>
       </result>
     </a-form>
@@ -22,7 +34,7 @@ export default {
   components: {
     Result
   },
-  data () {
+  data() {
     return {
       msg: '',
       code: '',
@@ -34,31 +46,31 @@ export default {
      * 结果页面
      * @param res 处理结果
      */
-    result (res) {
+    result(res) {
       this.msg = res.msg
       this.code = res.code
     },
-    addAgain () {
+    addAgain() {
       this.$emit('addAgain')
     },
-    toList () {
+    toList() {
       this.$emit('toList')
     }
   }
 }
 </script>
 <style lang="less" scoped>
-  .information {
-    line-height: 22px;
+.information {
+  line-height: 22px;
 
-    .ant-row:not(:last-child) {
-      margin-bottom: 24px;
-    }
+  .ant-row:not(:last-child) {
+    margin-bottom: 24px;
   }
-  .money {
-    font-family: "Helvetica Neue",sans-serif;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 14px;
-  }
+}
+.money {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 14px;
+}
 </style>

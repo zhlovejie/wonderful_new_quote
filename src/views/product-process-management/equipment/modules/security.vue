@@ -14,14 +14,15 @@
             <a-form-item>
               <a-input
                 placeholder="安全事项"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 50%"
                 @change="inputChange($event, item.key, 'safeContent')"
                 v-decorator="[
                   `programme.${index}.safeContent`,
-                  { initialValue: item.safeContent, rules: [{ required: true, message: '请输入安全事项' }] },
+                  { initialValue: item.safeContent, rules: [{ required: false, message: '请输入安全事项' }] },
                 ]"
               />
+              <span v-else>{{ item.safeContent }}</span>
             </a-form-item>
           </td>
           <td v-if="type !== 'view'">
@@ -32,7 +33,7 @@
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="!isDisabled">
           <td colspan="5">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>
@@ -93,9 +94,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'add') {
-        this.addprogramme()
-      } else {
+      if (type !== 'add') {
         this.programme = this.record.developmentCraftDevSafeItems
       }
     },
@@ -108,12 +107,9 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          this.values = values.programme
+          that.$emit('file', values.programme)
         }
       })
-    },
-    hendle() {
-      return this.values
     },
     handleCancel() {
       this.programme = []

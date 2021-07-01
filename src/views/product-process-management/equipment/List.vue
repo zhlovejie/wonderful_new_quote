@@ -19,15 +19,15 @@
         </a-form-item>
         <a-form-item>
           <a-select placeholder="状态" v-model="searchParam.status" allowClear style="width: 180px">
-            <a-select-option :value="1">在库</a-select-option>
-            <a-select-option :value="2">保修中</a-select-option>
+            <a-select-option :value="1">正常</a-select-option>
+            <a-select-option :value="2">报修中</a-select-option>
             <a-select-option :value="3">报废</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float: right">
+        <div class="action-wrapper" style="float: right" v-if="$auth('equipmList:add')">
           <a-form-item>
             <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
@@ -49,22 +49,25 @@
           <span>{{ text === 1 ? '正常' : text === 2 ? '保修中' : '报废' }}</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
-          <template v-if="record.status !== 3">
+          <template v-if="$auth('equipmList:view')">
+            <a type="primary" @click="doAction('view', record)">查看</a>
+          </template>
+
+          <template v-if="record.status !== 3 && $auth('equipmList:edit')">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('edit', record)">修改</a>
           </template>
-          <template v-if="record.status !== 3">
+          <template v-if="record.status !== 3 && $auth('equipmList:del')">
             <a-divider type="vertical" />
             <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
               <a type="primary">删除</a>
             </a-popconfirm>
           </template>
-          <template v-if="record.status === 1">
+          <template v-if="record.status === 1 && $auth('equipmList:fix')">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('fix', record)">报修</a>
           </template>
-          <template v-if="record.status === 2">
+          <template v-if="record.status === 2 && $auth('equipmList:acceptance')">
             <a-divider type="vertical" />
             <a-popconfirm ok-text="确定" cancel-text="取消" @confirm="doAction('acceptance', record)">
               <template slot="title">
@@ -75,7 +78,7 @@
             </a-popconfirm>
             <!-- <a type="primary" @click="doAction('acceptance', record)">验收</a> -->
           </template>
-          <template v-if="record.status !== 3">
+          <template v-if="record.status !== 3 && $auth('equipmList:Scrap')">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('Scrap', record)">报废</a>
           </template>
@@ -240,6 +243,7 @@ export default {
       let that = this
       if (['view', 'add', 'edit'].includes(actionType)) {
         this.$refs.addForm.query(actionType, record)
+        return
       } else if (actionType === 'del') {
         pageDevesaveDelete({ id: record.id }).then((res) => {
           that.$message.info(res.msg)

@@ -48,7 +48,7 @@
 
     <a-modal
       title="产品评估"
-      :width="450"
+      :width="600"
       :visible="visible"
       @cancel="visible = false"
       :maskClosable="false"
@@ -58,10 +58,21 @@
     >
       <!-- <p>成本价：{{parseInt(costPrice.price) | moneyFormatNumber}}</p> -->
       <div class="price-wrapper">
-        <p>A价：{{ parseInt(costPrice.aprice) | moneyFormatNumber(0) }}</p>
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :customRow="customRowFunction"
+          :pagination="false"
+          size="small"
+        >
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
+          </div>
+        </a-table>
+        <!-- <p>A价：{{ parseInt(costPrice.aprice) | moneyFormatNumber(0) }}</p>
         <p>B价：{{ parseInt(costPrice.bprice) | moneyFormatNumber(0) }}</p>
         <p>C价：{{ parseInt(costPrice.cprice) | moneyFormatNumber(0) }}</p>
-        <p>市场价：{{ parseInt(costPrice.retailPrice) | moneyFormatNumber(0) }}</p>
+        <p>市场价：{{ parseInt(costPrice.retailPrice) | moneyFormatNumber(0) }}</p> -->
       </div>
       <div style="text-align: center; margin-top: 10px">
         <a-button type="primary" @click="doAction('price-ok')" style="margin: 0 10px">确定</a-button>
@@ -117,7 +128,7 @@
 </template>
 
 <script>
-import { priceAdjustProductQuoteDownload } from '@/api/productOfferManagement'
+import { priceAdjustProductQuoteDownload, productEvaluation } from '@/api/productOfferManagement'
 import SelectProduct from './module/SelectProduct'
 import SelectProductView from './module/SelectProductView'
 import SelectProductViewHTML from './module/SelectProductViewHTML'
@@ -135,12 +146,36 @@ export default {
   },
   data() {
     return {
+      columns: [
+        {
+          align: 'center',
+          title: '序号',
+          scopedSlots: { customRender: 'order' },
+        },
+        {
+          align: 'center',
+          title: '区间值名称',
+          dataIndex: 'intervalValueName',
+        },
+        {
+          align: 'center',
+          title: '提成比率',
+          dataIndex: 'commissionRate',
+        },
+        {
+          align: 'center',
+          title: '销售价格',
+          dataIndex: 'price',
+        },
+      ],
       activeKey: 1,
       optInfo: {},
       visible: false,
       visibleView: false,
+      productTypeConfigId: undefined,
       costPrice: {},
       costPriceAll: {},
+      dataSource: [],
       viewDataSource: [],
       unitPriceView: null, //预览选择的单价
       spinningView: false,
@@ -156,7 +191,7 @@ export default {
       let result = {
         __config: {
           showTitle: true,
-          costPrice: Object.assign({}, this.costPrice),
+          costPrice: this.dataSource,
           costPriceAll: Object.assign({}, this.costPriceAll),
         },
         optInfo: {},
@@ -225,6 +260,16 @@ export default {
     },
   },
   methods: {
+    customRowFunction(record) {
+      //rateType 1 总区间 蓝色  2 推荐区间 黄色 3竞争力区间 红色
+      let { rateType } = record
+      return {
+        style: {
+          'background-color': rateType === 1 ? '#E6F7FF ' : +rateType === 2 ? '#FFFBE6' : '#FFF1F0',
+        },
+      }
+    },
+
     init() {
       this.optInfo = {}
       this.visible = false
@@ -251,11 +296,23 @@ export default {
       }
       //this.$refs.productConfigSub.reset()
     },
+    assessment() {
+      productEvaluation({ id: this.productTypeConfigId, sumPrice: this.costPrice.price }).then((res) => {
+        if (res.code === 200) {
+          this.dataSource = res.data.sort(function (a, b) {
+            return a.rateType - b.rateType
+          })
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
     selectedHandler(record) {
       this.reset()
       this.optInfo = {
         name: record.name,
       }
+      this.productTypeConfigId = record.id
       this.spinning = true
       this.$nextTick(() => this.$refs.productConfigMain.query(record.id))
     },
@@ -263,12 +320,15 @@ export default {
       let that = this
       if (type === 'ok') {
         this.calcCostPrice()
+        this.assessment()
         this.visible = true
       } else if (type === 'reset') {
         this.reset()
       } else if (type === 'price-ok') {
         this.visible = false
+        this.dataSource = []
       } else if (['price-view', 'price-view-cost'].includes(type)) {
+        this.assessment()
         this.unitPriceView = null
         that.isPriceViewCost = type === 'price-view-cost'
         this.makeViewDataSource()
@@ -300,7 +360,7 @@ export default {
             this.hackReset = true
           })
           .then(() => {
-            this.$refs.priceForm.query('add', productInfo)
+            this.$refs.priceForm.query('add', productInfo, this.dataSource)
           })
       } else if (type === 'price-view-download') {
         if (!this.unitPriceView) {
@@ -444,7 +504,7 @@ export default {
       Object.keys(priceResult.totalPrice).map((key) => {
         priceResult.totalPrice[key] = formatPrice(priceResult.totalPrice[key])
       })
-
+      console.log(priceResult)
       this.costPriceAll = { ...priceResult }
       this.costPrice = { ...priceResult.totalPrice }
     },

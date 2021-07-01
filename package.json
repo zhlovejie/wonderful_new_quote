@@ -20,7 +20,7 @@
     "core-js": "^2.6.9",
     "cross-env": "^5.2.0",
     "enquire.js": "^2.1.6",
-    "ezuikit-js": "^0.2.3",
+    "ezuikit-js": "^0.2.4",
     "file-saver": "^2.0.2",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",

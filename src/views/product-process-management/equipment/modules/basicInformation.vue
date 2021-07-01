@@ -4,44 +4,45 @@
       <table class="custom-table custom-table-border">
         <h3>基本数据</h3>
         <tr>
-          <td>设备编号</td>
+          <td class="requiredMark">设备编号</td>
           <td>
             <span v-if="equipment">{{ equipment }}</span>
             <span v-else>系统自动生成</span>
           </td>
-          <td>设备名称</td>
+          <td class="requiredMark">设备名称</td>
           <td>
             <a-form-item>
               <a-input
                 style="width: 100%"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 placeholder="设备名称"
                 v-decorator="['devName', { rules: [{ required: true, message: '请输入设备名称' }] }]"
               />
+              <span v-else>{{ record.devName }}</span>
             </a-form-item>
           </td>
         </tr>
         <tr>
-          <td>设备型号</td>
+          <td class="requiredMark">设备型号</td>
           <td>
             <a-form-item>
               <a-input
                 style="width: 100%"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 placeholder="设备型号"
                 v-decorator="['devType', { rules: [{ required: true, message: '请输入设备型号' }] }]"
               />
+              <span v-else>{{ record.devType }}</span>
             </a-form-item>
           </td>
-          <td>设备责任人</td>
-          <td>
+          <td class="requiredMark">设备责任人</td>
+          <td v-if="!isDisabled">
             <a-form-item style="width: 50%; float: left">
               <a-select
                 v-decorator="['devChargeDepartmentId', { rules: [{ required: true, message: '请选择部门' }] }]"
                 placeholder="选择部门"
                 @change="depChangeHandler"
                 allowClear
-                :disabled="isDisabled"
               >
                 <a-select-option v-for="item in department" :key="item.id" :value="item.id">{{
                   item.departmentName
@@ -53,7 +54,6 @@
                 v-decorator="['devChargeId', { rules: [{ required: true, message: '请选择人员' }] }]"
                 placeholder="选择人员"
                 allowClear
-                :disabled="isDisabled"
               >
                 <a-select-option v-for="item in userList" :key="item.id" :value="item.id">{{
                   item.trueName
@@ -61,16 +61,18 @@
               </a-select>
             </a-form-item>
           </td>
+          <td v-else>
+            <span>{{ record.devChargeName }}</span>
+          </td>
         </tr>
         <tr>
-          <td>安装位置</td>
-          <td>
+          <td class="requiredMark">安装位置</td>
+          <td v-if="!isDisabled">
             <a-form-item style="width: 50%; float: left">
               <a-select
                 v-decorator="['installDicId', { rules: [{ required: true, message: '请选择仓库' }] }]"
                 placeholder="选择仓库"
                 allowClear
-                :disabled="isDisabled"
               >
                 <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
                   item.text
@@ -79,7 +81,6 @@
             </a-form-item>
             <a-form-item style="width: 50%; float: left">
               <a-select
-                :disabled="isDisabled"
                 v-decorator="['installPositionDicId', { rules: [{ required: true, message: '请选择选择仓位' }] }]"
                 placeholder="选择仓位"
                 allowClear:disabled="isDisabled"
@@ -90,30 +91,37 @@
               </a-select>
             </a-form-item>
           </td>
+          <td v-else>
+            <span>{{ record.installPosition }}</span>
+          </td>
           <td>仓位说明</td>
           <td>
             <a-form-item>
               <a-textarea
                 style="width: 100%"
+                v-if="!isDisabled"
                 :rows="2"
                 v-decorator="['installPositionDesc', { rules: [{ required: false, message: '请输入仓位说明' }] }]"
                 :disabled="isDisabled"
                 placeholder="仓位说明"
               />
+              <span v-else>{{ record.installPositionDesc }}</span>
             </a-form-item>
           </td>
         </tr>
         <tr>
           <td>二维码</td>
-          <td>
+          <td colspan="3">
             <a-form-item>
               <img v-if="qrcodeUrl" :src="qrcodeUrl" alt="" srcset="" />
               <span v-else>系统自动生成</span>
             </a-form-item>
           </td>
-          <td>设备图片</td>
-          <td>
-            <a-form-item style="margin-left: 150px; margin-top: 10px">
+        </tr>
+        <tr>
+          <td class="requiredMark">设备图片</td>
+          <td colspan="3">
+            <a-form-item style="margin-left: 350px; margin-top: 10px">
               <a-upload
                 key=""
                 :disabled="isDisabled"
@@ -135,7 +143,6 @@
             </a-form-item>
           </td>
         </tr>
-        <tr></tr>
       </table>
     </a-form>
     <div style="position: absolute; left: -99999px" class="wuliao-qr-code-wrapper">
@@ -206,7 +213,7 @@ export default {
       return this.actionType === 'approval'
     },
     isDisabled() {
-      return this.isView || this.isApproval
+      return this.isView
     },
   },
   methods: {
@@ -247,13 +254,11 @@ export default {
             }
           })
           values.devPics = arrUrl.toString()
-          that.values = values
+          that.$emit('file', values)
         }
       })
     },
-    hendle() {
-      return this.values
-    },
+
     handleCancel() {
       this.fileList = []
       this.form.resetFields() // 清空表
@@ -278,11 +283,14 @@ export default {
     },
     depChangeHandler(depId) {
       this.userList = []
-      this.initUserList(depId)
+      if (!this.isView) {
+        this.initUserList(depId)
+      }
     },
     async query(type, record = {}) {
       let that = this
       that.visible = true
+      that.record = record
       that.actionType = type
       if (!that.isAdd) {
         await that.initUserList(record.devChargeDepartmentId)
@@ -297,19 +305,22 @@ export default {
           this.qrcodeUrl = materialQrCode
         }
       }
-      await that.initDepList()
 
-      queryCode({ code: 'Warehouse_01' })
-        .then((res) => {
-          that.Warehouse = res.data
-        })
-        .catch((err) => (that.loading = false))
-      queryCode({ code: 'Position_01' })
-        .then((res) => {
-          that.Position = res.data
-        })
-        .catch((err) => (that.loading = false))
-      if (!that.isAdd) {
+      if (!that.isView) {
+        await that.initDepList()
+        queryCode({ code: 'Warehouse_01' })
+          .then((res) => {
+            that.Warehouse = res.data
+          })
+          .catch((err) => (that.loading = false))
+        queryCode({ code: 'Position_01' })
+          .then((res) => {
+            that.Position = res.data
+          })
+          .catch((err) => (that.loading = false))
+      }
+
+      if (!that.isAdd && !that.isView) {
         that.equipment = record.devNum
         let arr = (record.devPics || '').split(',')
         ;(this.fileList = arr.map((item) => {
@@ -404,6 +415,15 @@ export default {
 </script>
 
 <style scoped>
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;

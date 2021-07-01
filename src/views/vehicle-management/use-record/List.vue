@@ -4,21 +4,15 @@
       <a-form layout="inline" :form="form">
         <a-form-item>
           <a-button-group>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 1}"
-              @click="simpleSearch(1)"
-            >今天</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 2}"
-              @click="simpleSearch(2)"
-            >本周</a-button>
-            <a-button
-              type="primary"
-              :class="{currentDayWeekMonth:dayWeekMonth === 0}"
-              @click="simpleSearch(0)"
-            >全部</a-button>
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
+              >今天</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 2 }" @click="simpleSearch(2)"
+              >本周</a-button
+            >
+            <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 0 }" @click="simpleSearch(0)"
+              >全部</a-button
+            >
           </a-button-group>
         </a-form-item>
         <a-form-item>
@@ -38,25 +32,24 @@
       </div>
 
       <div slot="driverMode" slot-scope="text, record, index">
-        <span>{{ {1:'自驾',2:'司机'}[text] }}</span>
+        <span>{{ { 1: '自驾', 2: '司机' }[text] }}</span>
       </div>
 
       <div slot="status" slot-scope="text, record, index">
-        <a
-          href="javascript:void(0);"
-          @click="approvalPreview(record)"
-        >{{ {1:'待审批',2:'完结',3:'不通过',4:'已撤回',5:'待出车',6:'待回车'}[text] || '未知' }}</a>
+        <a href="javascript:void(0);" @click="approvalPreview(record)">{{
+          { 1: '待审批', 2: '完结', 3: '不通过', 4: '已撤回', 5: '待出车', 6: '待回车' }[text] || '未知'
+        }}</a>
       </div>
 
       <div slot="action" slot-scope="text, record, index">
-        <a type="primary" @click="doAction('view',record)">查看</a>
-        <a-divider type="vertical" />
-        <a type="primary" @click="doAction('view-map',record)">轨迹查看</a>
+        <a type="primary" @click="doAction('view', record)">查看</a>
+        <!-- <a-divider type="vertical" />
+        <a type="primary" @click="doAction('view-map',record)">轨迹查看</a> -->
       </div>
     </a-table>
     <ApproveInfo ref="approveInfoCard" />
     <SearchForm ref="searchForm" @change="paramChangeHandler" />
-    <AddForm ref="addForm"  />
+    <AddForm ref="addForm" />
   </a-card>
 </template>
 
@@ -146,7 +139,7 @@ export default {
       // 查询参数
       queryParam: {
         dayWeekMonth: 1,
-        searchStatus:0
+        searchStatus: 0,
       },
       dayWeekMonth: 1,
       dataSource: [],
@@ -222,7 +215,7 @@ export default {
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
-    }
+    },
   },
 }
 </script>

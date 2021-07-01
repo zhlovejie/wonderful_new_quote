@@ -124,8 +124,8 @@
                     { initialValue: detail.productsVal, rules: [{ required: true, message: '请选择产品' }] },
                   ]"
                 >
-                  <a-select-option v-for="item in productCategoryList" :key="item.id" :value="item.id">{{
-                    item.text
+                  <a-select-option v-for="item in productTypes" :key="item.id" :value="item.id">{{
+                    item.typeName
                   }}</a-select-option>
                 </a-select>
                 <span v-else>{{ detail.productsTxt }}</span>
@@ -497,7 +497,14 @@
         <template v-else>
           <!-- <a-button key="back" @click="handleCancel">取消</a-button> -->
           <div style="text-align: center">
-            <a-button v-if="isDisabled" style="margin-left: 10px" key="submit1" type="primary" @click="() => handleSubmit(1)">预览</a-button>
+            <a-button
+              v-if="isDisabled"
+              style="margin-left: 10px"
+              key="submit1"
+              type="primary"
+              @click="() => handleSubmit(1)"
+              >预览</a-button
+            >
             <a-button
               v-if="!isDisabled"
               style="margin-left: 10px"
@@ -523,6 +530,7 @@
   </a-modal>
 </template>
 <script>
+import { typeConfigList } from '@/api/productOfferManagement'
 import {
   agencyContractAddOrUpdate,
   agencyContractApprove,
@@ -555,6 +563,7 @@ export default {
       visible: false,
       spinning: false,
       actionType: 'view',
+      productTypes: [],
       detail: {},
       record: {},
       spinning: false,
@@ -609,10 +618,15 @@ export default {
     init() {
       let that = this
       let queue = []
+      // 初始化钩子,获取所有产品类型
+      let task3 = typeConfigList().then((res) => {
+        this.productTypes = res.data
+      })
       let task1 = getListByText({ text: '产品类型' }).then((res) => {
         that.productCategoryList = res.data.records
       })
       queue.push(task1)
+      queue.push(task3)
       let task2 = getListSalesman().then((res) => {
         that.saleUsers = res.data
       })
@@ -764,8 +778,8 @@ export default {
             let ids = values.products.join(',')
             let strs = values.products
               .map((v) => {
-                let target = that.productCategoryList.find((item) => +item.id === +v)
-                return target.text
+                let target = that.productTypes.find((item) => +item.id === +v)
+                return target.typeName
               })
               .join(',')
 

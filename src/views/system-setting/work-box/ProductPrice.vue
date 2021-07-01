@@ -24,12 +24,12 @@
 
       <a-select
         style="width: 200px; margin-left: 10px"
-        v-model.trim="queryParam.productType"
+        v-model.trim="queryParam.productTypeConfigId"
         placeholder="产品类型"
         :allowClear="true"
       >
         <a-select-option v-for="ptype in productTypes" :key="ptype.index" :value="ptype.id">{{
-          ptype.text
+          ptype.typeName
         }}</a-select-option>
       </a-select>
 
@@ -51,9 +51,9 @@
         <span v-if="$auth('productPrice:add') || $auth('productPrice:eidt')">{{ text }}</span>
         <span v-else>***</span>
       </span>
-      <span slot="productTypeText" slot-scope="text">
+      <!-- <span slot="productTypeText" slot-scope="text">
         {{ getProductTypeText(text) }}
-      </span>
+      </span> -->
       <span slot="productPic" slot-scope="text">
         <img style="height: 70px; lenght: 70px" :src="text" />
       </span>
@@ -73,26 +73,25 @@
       </span>
       <span slot="action" slot-scope="text, record">
         <template>
+          <template v-if="$auth('productPrice:add')">
+            <a
+              @click="handleEdit('add', record)"
+              v-if="record.costPrice == null && record.priceA == null && record.priceB == null && record.priceC == null"
+              >新增</a
+            >
+          </template>
           <template v-if="$auth('productPrice:eidt')">
             <a
-              @click="handleEdit(record)"
+              @click="handleEdit('eidt', record)"
               v-if="record.costPrice != null || record.priceA != null || record.priceB != null || record.priceC != null"
               >修改</a
             >
           </template>
           <template v-if="$auth('productPrice:modification')">
-            <a-divider type="vertical" />
             <a
               @click="handleModification(record)"
               v-if="record.costPrice != null || record.priceA != null || record.priceB != null || record.priceC != null"
-              >修改记录</a
-            >
-          </template>
-          <template v-if="$auth('productPrice:add')">
-            <a
-              @click="handleEdit(record)"
-              v-if="record.costPrice == null && record.priceA == null && record.priceB == null && record.priceC == null"
-              >新增</a
+              ><a-divider type="vertical" />修改记录</a
             >
           </template>
         </template>
@@ -110,7 +109,7 @@ import priceEdit from './modules/priceEdit'
 import Modification from './modules/Modification'
 import Preview from './modules/Preview'
 import { getProductList, delProduct, editProduct, downProductInformation } from '@/api/workBox'
-import { getDictionary } from '@/api/common'
+import { typeConfigList } from '@/api/productOfferManagement'
 
 export default {
   name: 'ProductPrice',
@@ -145,28 +144,15 @@ export default {
           width: '150px',
           dataIndex: 'productStandard',
         },
-
-        // {
-        //   title: '区域',
-        //   dataIndex: 'areaName',
-        // },
         {
           title: '产品类型',
-          dataIndex: 'productType',
-          scopedSlots: { customRender: 'productTypeText' },
+          dataIndex: 'productTypeConfigName',
+          // scopedSlots: { customRender: 'productTypeText' },
         },
         {
           title: '成本价',
           dataIndex: 'costPrice',
           scopedSlots: { customRender: 'costPrice' },
-        },
-        {
-          title: 'A价',
-          dataIndex: 'priceA',
-        },
-        {
-          title: 'B价',
-          dataIndex: 'priceB',
         },
         {
           title: 'C价',
@@ -185,7 +171,6 @@ export default {
         {
           title: '操作时间',
           dataIndex: 'modifyTime',
-          // sorter: true
         },
         {
           title: '操作',
@@ -213,7 +198,7 @@ export default {
   },
   created() {
     // 初始化钩子,获取所有产品类型
-    getDictionary({ text: '产品类型' }).then((res) => {
+    typeConfigList().then((res) => {
       this.productTypes = res.data
     })
   },
@@ -222,9 +207,9 @@ export default {
     handleModification(record) {
       this.$refs.modification.query(record)
     },
-    handleEdit(record) {
+    handleEdit(type, record) {
       // 修改
-      this.$refs.priceEdit.edit(record)
+      this.$refs.priceEdit.edit(type, record)
     },
     handleOk() {
       this.$refs.table.refresh()
@@ -248,10 +233,10 @@ export default {
           console.log(err)
         })
     },
-    getProductTypeText(id) {
-      let target = this.productTypes.find((item) => +item.id === +id)
-      return target ? target.text : ''
-    },
+    // getProductTypeText(id) {
+    //   let target = this.productTypes.find((item) => +item.id === +id)
+    //   return target ? target.text : ''
+    // },
     downloadAction() {
       let that = this
       downProductInformation(this.queryParam)

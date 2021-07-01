@@ -30,7 +30,7 @@
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float: right">
+        <div class="action-wrapper" style="float: right" v-if="$auth('mould:add')">
           <a-form-item>
             <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
@@ -50,13 +50,19 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('edit', record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
-            <a type="primary">删除</a>
-          </a-popconfirm>
+          <template v-if="$auth('mould:view')">
+            <a type="primary" @click="doAction('view', record)">查看</a>
+          </template>
+          <template v-if="$auth('mould:edit')">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('edit', record)">修改</a>
+          </template>
+          <template v-if="$auth('mould:del')">
+            <a-divider type="vertical" />
+            <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="doAction('del', record)">
+              <a type="primary">删除</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>

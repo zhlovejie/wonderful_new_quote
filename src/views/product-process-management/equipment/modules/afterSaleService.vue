@@ -16,42 +16,45 @@
             <a-form-item>
               <a-input
                 placeholder="联系单位"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 80%"
                 @change="inputChange($event, item.key, 'relationUnit')"
                 v-decorator="[
                   `programme.${index}.relationUnit`,
-                  { initialValue: item.relationUnit, rules: [{ required: true, message: '请输入联系方式' }] },
+                  { initialValue: item.relationUnit, rules: [{ required: false, message: '请输入联系方式' }] },
                 ]"
               />
+              <span v-else>{{ item.relationUnit }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <a-input
                 placeholder="联系人"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 80%"
                 @change="inputChange($event, item.key, 'relationUserName')"
                 v-decorator="[
                   `programme.${index}.relationUserName`,
-                  { initialValue: item.relationUserName, rules: [{ required: true, message: '请输入联系人' }] },
+                  { initialValue: item.relationUserName, rules: [{ required: false, message: '请输入联系人' }] },
                 ]"
               />
+              <span v-else>{{ item.relationUserName }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <a-input
                 placeholder="联系电话"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 80%"
                 @change="inputChange($event, item.key, 'relationUserTel')"
                 v-decorator="[
                   `programme.${index}.relationUserTel`,
-                  { initialValue: item.relationUserTel, rules: [{ required: true, message: '请输入联系电话' }] },
+                  { initialValue: item.relationUserTel, rules: [{ required: false, message: '请输入联系电话' }] },
                 ]"
               />
+              <span v-else>{{ item.relationUserTel }}</span>
             </a-form-item>
           </td>
           <td v-if="type !== 'view'">
@@ -62,7 +65,7 @@
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="!isDisabled">
           <td colspan="5">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>
@@ -123,9 +126,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'add') {
-        this.addprogramme()
-      } else {
+      if (type !== 'add') {
         this.programme = this.record.developmentCraftDevPostServices
       }
     },
@@ -133,39 +134,12 @@ export default {
     handleAction(index) {
       this.programme.splice(index, 1)
     },
-    // 详情
-    fillData() {
-      let that = this
-      //   let id = {
-      //     oaTrainYearPlanId: this.record.id,
-      //   }
-      //   annualDetail(id).then((res) => {
-      //     this.year = res.data.year
-      //     this.remark = res.data.remark
-      //     this.programme = res.data.planItemList.map((item) => {
-      //       let arr = item.itemList.map((i) => {
-      //         return {
-      //           beginData: [moment(i.beginTime), moment(i.endTime)],
-      //           beginTime: moment(i.beginTime),
-      //           endTime: moment(i.endTime),
-      //           joinPerson: i.joinPerson,
-      //           title: i.title,
-      //         }
-      //       })
-      //       return {
-      //         month: item.monthStr,
-      //         monthId: item.month,
-      //         oaTrainYearPlanItemDetailSaveBoList: arr,
-      //       }
-      //     })
-      //   })
-    },
-
     handleOk() {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
-          this.values = values.programme
+          that.$emit('file', values.programme)
+          // this.values = values.programme
         }
       })
     },

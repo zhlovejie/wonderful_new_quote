@@ -106,7 +106,31 @@
               </a-form-item>
             </td>
           </tr>
-
+          <tr>
+            <td>驾驶证上传</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-upload
+                  key=""
+                  :disabled="isDisabled"
+                  :action="uploadPath"
+                  accept=".png, .jpg"
+                  list-type="picture-card"
+                  :file-list="fileList"
+                  @preview="handlePreview"
+                  @change="handleChange"
+                >
+                  <div v-if="fileList.length < 3">
+                    <a-icon type="plus" />
+                    <div class="ant-upload-text">上传</div>
+                  </div>
+                </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel1">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </a-form-item>
+            </td>
+          </tr>
           <tr>
             <td>原因</td>
             <td colspan="3" style="text-align: left">
@@ -136,8 +160,18 @@
 import { getDictionary } from '@/api/common'
 import { driverAuthorityDetail, driverAuthorityApproval, driverAuthorityAddOrUpdate } from '@/api/vehicleManagement'
 import Approval from './Approval'
+import { getUploadPath2 } from '@/api/common'
 import DepUserSelect from '@/components/CustomerList/DepUserSelect'
 import moment from 'moment'
+const uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'AddForm',
   components: {
@@ -146,6 +180,10 @@ export default {
   },
   data() {
     return {
+      previewVisible: false, // 图片预览框是否可见
+      previewImage: '', //  预览图片的src值
+      fileList: [],
+      uploadPath: getUploadPath2(), // 上传图片的url
       form: this.$form.createForm(this, { name: 'add_form' }),
       visible: false,
       actionType: 'add',
@@ -190,6 +228,19 @@ export default {
       queue.push(task1)
       return Promise.all(queue)
     },
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    handleChange({ fileList }) {
+      this.fileList = fileList
+    },
+    handleCancel1() {
+      this.previewVisible = false
+    },
     async handleOk() {
       let that = this
       if (that.isView || that.isApproval) {
@@ -203,10 +254,22 @@ export default {
             values.departmentId = this.userInfo.departmentId
             values.userId = this.userInfo.id
           }
+          if (that.fileList.length === 0) {
+            return that.$message.error('请上传设备图片')
+          }
           let _values = {
             ...values,
             ...that.detail,
           }
+          let arrUrl = []
+          this.fileList.map((itme) => {
+            if (itme.response) {
+              arrUrl.push(itme.response.data)
+            } else {
+              arrUrl.push(itme.url)
+            }
+          })
+          _values.licenseUrl = arrUrl.toString()
           console.log(_values)
           //提交
           that.spinning = true
@@ -225,6 +288,7 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
+      this.fileList = []
       this.$nextTick(() => (this.visible = false))
     },
     async query(type, record) {
@@ -232,6 +296,7 @@ export default {
       that.actionType = type
       that.record = record || {}
       that.detail = {}
+      that.fileList = []
       that.form.resetFields()
       await that.init()
       that.visible = true
@@ -239,6 +304,16 @@ export default {
       if (!that.isAdd) {
         driverAuthorityDetail({ id: that.record.id }).then((res) => {
           that.detail = { ...res.data }
+          debugger
+          let arr = (res.data.licenseUrl || '').split(',')
+          that.fileList = arr.map((item) => {
+            return {
+              uid: uuid(),
+              url: item,
+              status: 'done',
+              name: '1',
+            }
+          })
         })
       }
     },

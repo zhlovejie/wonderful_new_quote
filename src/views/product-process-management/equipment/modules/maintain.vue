@@ -9,6 +9,7 @@
           <th>保养周期</th>
           <th>保养人</th>
           <th>验收负责人</th>
+          <th v-if="type !== 'view'">操作</th>
         </tr>
         <tr v-for="(item, index) in programme" :key="item.key">
           <td>{{ index + 1 }}</td>
@@ -16,40 +17,45 @@
             <a-form-item>
               <a-input
                 placeholder="保养内容"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 style="width: 180px"
                 @change="inputChange($event, item.key, 'careContent')"
                 v-decorator="[
                   `programme.${index}.careContent`,
-                  { initialValue: item.careContent, rules: [{ required: true, message: '请输入保养内容' }] },
+                  { initialValue: item.careContent, rules: [{ required: false, message: '请输入保养内容' }] },
                 ]"
               />
+              <span v-else>{{ item.careContent }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <a-select
                 placeholder="保养周期"
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 :allowClear="true"
                 mode="multiple"
                 style="width: 180px"
                 @change="inputChange($event, item.key, 'careType')"
                 v-decorator="[
                   `programme.${index}.careType`,
-                  { initialValue: item.careType, rules: [{ required: true, message: '请输入保养周期' }] },
+                  { initialValue: item.careTypes, rules: [{ required: false, message: '请输入保养周期' }] },
                 ]"
               >
                 <a-select-option :value="1">周</a-select-option>
                 <a-select-option :value="2">月</a-select-option>
                 <a-select-option :value="3">年</a-select-option>
               </a-select>
+              <span v-else
+                >{{ item.careType.includes('1') ? '周' : '' }}{{ item.careType.includes('2') ? '月' : ''
+                }}{{ item.careType.includes('3') ? '年' : '' }}</span
+              >
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <DepUserSelect
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 :depId="item.careDepartmentId"
                 :userId="item.careUserId"
                 @change="
@@ -59,12 +65,13 @@
                 "
                 style="width: 100%"
               />
+              <span v-else>{{ item.careUserName }}</span>
             </a-form-item>
           </td>
           <td>
             <a-form-item>
               <DepUserSelect
-                :disabled="isDisabled"
+                v-if="!isDisabled"
                 :depId="item.checkDepartmentId"
                 :userId="item.checkUserId"
                 @change="
@@ -74,11 +81,19 @@
                 "
                 style="width: 100%"
               />
+              <span v-else>{{ item.checkUserName }}</span>
             </a-form-item>
           </td>
+          <td v-if="type !== 'view'">
+            <template v-if="type !== 'view'">
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction(index)">
+                <a href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
+          </td>
         </tr>
-        <tr>
-          <td colspan="5">
+        <tr v-if="!isDisabled">
+          <td colspan="6">
             <a-button style="width: 100%" type="dashed" icon="plus" @click="addprogramme()"></a-button>
           </td>
         </tr>
@@ -186,9 +201,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      if (type === 'add') {
-        this.addprogramme()
-      } else {
+      if (type !== 'add') {
         this.programme = this.record.developmentCraftDevCares
       }
     },
@@ -201,16 +214,19 @@ export default {
             return {
               careContent: item.careContent,
               careDepartmentId: item.careDepartmentId,
-              careType: item.careType.toString(),
+              careType: item.careType ? item.careType.toString() : '',
               careUserId: item.careUserId,
               checkDepartmentId: item.checkDepartmentId,
               checkUserId: item.checkUserId,
             }
           })
-
-          this.values = react
+          that.$emit('file', react)
         }
       })
+    },
+    //删除
+    handleAction(index) {
+      this.programme.splice(index, 1)
     },
     hendle() {
       return this.values

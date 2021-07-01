@@ -15,7 +15,7 @@
             v-decorator="['name', { rules: [{ required: true, message: '请输入配置名称' }] }]"
           />
         </a-form-item>
-
+        <!-- 
         <a-form-item label="竞争力">
           <a-select 
             :disabled="isDisabled"
@@ -26,8 +26,7 @@
           >
             <a-select-option v-for="item in productPriceCoefficientList" :value="item.id" :key="item.id" >{{ item.name }}</a-select-option>
           </a-select>
-        </a-form-item>
-
+        </a-form-item> -->
 
         <a-form-item label="标准配置" class="add-shadow">
           <OptList
@@ -37,12 +36,9 @@
             :showRequire="false"
             @change="tableOptChoiceSelected"
           />
-          <a-button
-            style="width:100%;"
-            type="dashed"
-            icon="plus"
-            @click="ShowModule('optStand')"
-          >添加标准配置</a-button>
+          <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optStand')"
+            >添加标准配置</a-button
+          >
         </a-form-item>
         <div class="opt-choice-wrapper add-shadow">
           <a-form-item label="选择配置">
@@ -53,44 +49,34 @@
               :showRequire="false"
               @change="tableOptChoiceSelected"
             />
-            <a-button
-              style="width:100%;"
-              type="dashed"
-              icon="plus"
-              @click="ShowModule('optSelect')"
-            >添加选择配置</a-button>
+            <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optSelect')"
+              >添加选择配置</a-button
+            >
           </a-form-item>
 
           <a-form-item label="选择项">
-          <div
-            class="opt-choice-item"
-            v-for="(item,index) in optChoice"
-            :key="index"
-          >
-            <div class="opt-choice-header">
-              <h4>选择项{{index+1}}:</h4>
-              <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+            <div class="opt-choice-item" v-for="(item, index) in optChoice" :key="index">
+              <div class="opt-choice-header">
+                <h4>选择项{{ index + 1 }}:</h4>
+                <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+              </div>
+              <OptList
+                :ref="`ref_optChoice_${index}`"
+                :dataSource="item.dataSource"
+                :inputKey="`optChoice.${index}`"
+                :showRequire="true"
+                @change="tableOptChoiceSelected"
+              />
+              <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optChoice', index)"
+                >添加</a-button
+              >
             </div>
-            <OptList
-              :ref="`ref_optChoice_${index}`"
-              :dataSource="item.dataSource"
-              :inputKey="`optChoice.${index}`"
-              :showRequire="true"
-              @change="tableOptChoiceSelected"
-            />
-            <a-button
-              style="width:100%;"
-              type="dashed"
-              icon="plus"
-              @click="ShowModule('optChoice',index)"
-            >添加</a-button>
-          </div>
 
-          <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
+            <a-button style="width: 100%" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
           </a-form-item>
         </div>
 
-        <a-form-item label="备注" style="margin-top:10px;">
+        <a-form-item label="备注" style="margin-top: 10px">
           <a-textarea
             placeholder="备注"
             :rows="5"
@@ -108,17 +94,17 @@ import vuedraggable from 'vuedraggable'
 import {
   priceAdjustZktConfigDetail,
   priceAdjustZktConfigAddAndUpdate,
-  priceAdjustItemConfigList
-} from '@/api/productOfferManagement' 
-import {productPriceCoefficientListWithoutPage} from '@/api/workBox' 
+  priceAdjustItemConfigList,
+} from '@/api/productOfferManagement'
+import { productPriceCoefficientListWithoutPage } from '@/api/workBox'
 import TableOptChoice from './TableOptChoice'
-import OptList from './OptList' 
+import OptList from './OptList'
 export default {
   name: 'AddForm',
   components: {
     vuedraggable,
     TableOptChoice,
-    OptList
+    OptList,
   },
   data() {
     return {
@@ -129,7 +115,7 @@ export default {
       optStand: [], //标配项
       optSelect: [], //选配项
       optChoice: [], //选择项
-      productPriceCoefficientList:[]
+      productPriceCoefficientList: [],
     }
   },
   computed: {
@@ -138,7 +124,7 @@ export default {
         view: '查看',
         add: '新增',
         edit: '修改',
-        approval: '审批'
+        approval: '审批',
       }
       return `${m[this.actionType]}中控系统模块`
     },
@@ -156,16 +142,18 @@ export default {
     },
     isDisabled() {
       return this.isView || this.isApproval
-    }
+    },
   },
 
   methods: {
     init() {
       let that = this
       let queue = []
-      queue.push(productPriceCoefficientListWithoutPage().then(res =>{
-        that.productPriceCoefficientList = res.data
-      }))
+      queue.push(
+        productPriceCoefficientListWithoutPage().then((res) => {
+          that.productPriceCoefficientList = res.data
+        })
+      )
       return Promise.all(queue)
     },
     async handleOk() {
@@ -204,7 +192,7 @@ export default {
                 mainBody: 1,
                 orderNo: item.serialNum,
                 type: 1,
-                zktId: values.id || ''
+                zktId: values.id || '',
               })
             })
 
@@ -215,7 +203,7 @@ export default {
                 mainBody: 1,
                 orderNo: item.serialNum,
                 type: 2,
-                zktId: values.id || ''
+                zktId: values.id || '',
               })
             })
 
@@ -228,7 +216,7 @@ export default {
                   mainBody: 1,
                   orderNo: item.serialNum,
                   type: item.isRequire,
-                  zktId: values.id || ''
+                  zktId: values.id || '',
                 })
               })
             })
@@ -237,7 +225,7 @@ export default {
           console.log('Received values of form: ', values)
           that.spinning = true
           priceAdjustZktConfigAddAndUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.visible = false
@@ -247,7 +235,7 @@ export default {
                 that.$message.warning(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err)
               that.$message.error('操作失败')
               that.spinning = false
@@ -275,12 +263,12 @@ export default {
         return
       }
 
-      priceAdjustZktConfigDetail({ id: record.id }).then(res => {
+      priceAdjustZktConfigDetail({ id: record.id }).then((res) => {
         //debugger
         that.form.setFieldsValue({
           name: res.data.name,
           remarks: res.data.remarks,
-          priceCoefficientId:+res.data.priceCoefficientId
+          priceCoefficientId: +res.data.priceCoefficientId,
         })
         let { optStandData, optSelectData, optChoiceData } = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData
@@ -294,25 +282,25 @@ export default {
         optStand: {
           key: 'optStand',
           searchParam: { type: 1 },
-          selected: that.optStand.map(item => Object.assign({}, item))
+          selected: that.optStand.map((item) => Object.assign({}, item)),
         },
         optSelect: {
           key: 'optSelect',
           searchParam: { type: 1 },
-          selected: that.optSelect.map(item => Object.assign({}, item))
+          selected: that.optSelect.map((item) => Object.assign({}, item)),
         },
         optChoice: {
           key: 'optChoice',
-          searchParam: { },
-          selected: that.optChoice.map(item => Object.assign({}, item))
-        }
+          searchParam: {},
+          selected: that.optChoice.map((item) => Object.assign({}, item)),
+        },
       }
 
       if (key === 'optChoice') {
         map[key] = {
           key: `optChoice.${index}`,
-          searchParam: { type:1},
-          selected: that.optChoice[index]['dataSource'].map(item => Object.assign({}, item))
+          searchParam: { type: 1 },
+          selected: that.optChoice[index]['dataSource'].map((item) => Object.assign({}, item)),
         }
       }
 
@@ -342,14 +330,14 @@ export default {
     },
     addOptChoiceItem() {
       this.optChoice.push({
-        dataSource: []
+        dataSource: [],
       })
     },
     delOptChoice(index) {
       this.optChoice.splice(index, 1)
     },
     formatData(data) {
-      let formatDataItem = data => {
+      let formatDataItem = (data) => {
         //返回的列表数据格式转换成需要的数据格式
         return data.map((item, index) => {
           let _item = {
@@ -358,7 +346,7 @@ export default {
             key: item.itemId,
             order: index + 1,
             serialNum: index + 1,
-            zktId: item.zktId
+            zktId: item.zktId,
           }
           // if ([4, 5].includes(item.type)) {
           //   _item.isRequire = item.type === 4 ? true : false
@@ -368,30 +356,30 @@ export default {
         })
       }
       let optStandData = data
-        .filter(item => item.mainBody === 1 && item.type === 1)
+        .filter((item) => item.mainBody === 1 && item.type === 1)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optSelectData = data
-        .filter(item => item.mainBody === 1 && item.type === 2)
+        .filter((item) => item.mainBody === 1 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
-      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5,6].includes(item.type))
+      let optChoiceData = data.filter((item) => item.mainBody === 1 && [4, 5, 6].includes(item.type))
 
-      let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
+      let groups = [...new Set(optChoiceData.map((item) => item.groupId))].sort()
       let res = []
-      groups.map(groupId => {
-        let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
+      groups.map((groupId) => {
+        let dataSource = optChoiceData.filter((item) => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
         if (dataSource.length > 0) {
           res.push({
-            dataSource: formatDataItem(dataSource)
+            dataSource: formatDataItem(dataSource),
           })
         }
       })
       return {
         optStandData: formatDataItem(optStandData),
         optSelectData: formatDataItem(optSelectData),
-        optChoiceData: res
+        optChoiceData: res,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -409,11 +397,11 @@ export default {
 .add-form-wrapper >>> .custom-table {
   margin-bottom: 0;
 }
-.add-form-wrapper >>> .ant-form-item  .ant-form-item-label {
+.add-form-wrapper >>> .ant-form-item .ant-form-item-label {
   width: 135px;
   text-align: left;
 }
-.add-form-wrapper >>> .ant-form-item  .ant-form-item-control-wrapper {
+.add-form-wrapper >>> .ant-form-item .ant-form-item-control-wrapper {
   flex: 1;
 }
 
@@ -435,16 +423,16 @@ export default {
   padding: 0 15px;
 }
 
-.opt-choice-wrapper .opt-choice-item .opt-choice-header{
+.opt-choice-wrapper .opt-choice-item .opt-choice-header {
   display: flex;
   line-height: 40px;
 }
-.opt-choice-wrapper .opt-choice-item .opt-choice-header h4{
+.opt-choice-wrapper .opt-choice-item .opt-choice-header h4 {
   flex: 1;
   margin-bottom: 0;
 }
 
-.opt-choice-wrapper .opt-choice-item >>> .opt-list-is-require{
+.opt-choice-wrapper .opt-choice-item >>> .opt-list-is-require {
   position: absolute;
   top: 10px;
   right: 60px;
