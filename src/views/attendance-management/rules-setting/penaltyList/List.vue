@@ -93,6 +93,11 @@ const columns = [
 
   {
     align: 'center',
+    title: '补卡时间',
+    dataIndex: 'happenDate',
+  },
+  {
+    align: 'center',
     title: '部门',
     dataIndex: 'departmentName',
   },

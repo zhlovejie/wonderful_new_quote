@@ -68,6 +68,94 @@ export default { //人力资源
 
       ]
     },
+    { //补贴
+      path: '/salary-management/salary-subsidy',
+      name: 'salary-subsidy',
+      component: RouteView,
+      meta: {
+        title: '补贴管理',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: [{
+          path: '/Human-resource-management/senior_worker',
+          name: 'Human_senior_worker',
+          component: () => import('@/views/Human-resource-management/senior_worker/senior_worker_List'),
+          meta: {
+            title: '高级工程师管理 ',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/Human-resource-management/shuttle_Bus',
+          name: 'Human_shuttle_Bus',
+          component: () => import('@/views/Human-resource-management/shuttle_Bus/shuttle_Bus_List'),
+          meta: {
+            title: '申请班车记录',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }, {
+          path: '/salary-management/salary-subsidy-oil',
+          name: 'salary-subsidy-oil',
+          component: () => import('@/views/salary-management/salary-subsidy-oil/List'),
+          meta: {
+            title: '油补',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/salary-subsidy-communication',
+          name: 'salary-subsidy-communication',
+          component: () => import('@/views/salary-management/salary-subsidy-communication/List'),
+          meta: {
+            title: '通讯补贴',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/salary-subsidy-cover',
+          name: 'salary-subsidy-cover',
+          component: () => import('@/views/salary-management/salary-subsidy-cover/List'),
+          meta: {
+            title: '代班补贴',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/salary-subsidy-other',
+          name: 'salary-subsidy-other',
+          component: () => import('@/views/salary-management/salary-subsidy-other/List'),
+          meta: {
+            title: '其它补贴',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/salary-subsidy-industrial-accident',
+          name: 'salary-subsidy-industrial-accident',
+          component: () => import('@/views/salary-management/salary-subsidy-industrial-accident/List'),
+          meta: {
+            title: '工伤补贴',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }
+      ]
+    },
     {
       path: '/human_Resources/security/social',
       name: 'humanResourcesSee',
@@ -340,28 +428,7 @@ export default { //人力资源
       ]
     },
 
-    {
-      path: '/Human-resource-management/senior_worker',
-      name: 'Human_senior_worker',
-      component: () => import('@/views/Human-resource-management/senior_worker/senior_worker_List'),
-      meta: {
-        title: '高级工程师管理 ',
-        icon: 'select',
-        keepAlive: false,
-        permission: ['permission']
-      },
-    },
-    {
-      path: '/Human-resource-management/shuttle_Bus',
-      name: 'Human_shuttle_Bus',
-      component: () => import('@/views/Human-resource-management/shuttle_Bus/shuttle_Bus_List'),
-      meta: {
-        title: '申请班车记录',
-        icon: 'select',
-        keepAlive: false,
-        permission: ['permission']
-      },
-    },
+
 
 
 
