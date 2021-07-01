@@ -15,9 +15,15 @@
         closable
       />
       <a-space :size="100">
-        <a-button size="large" type="dashed" @click="nexts(1)">物料代码核价</a-button>
-        <a-button size="large" type="dashed" @click="nexts(2)">核价代码核价</a-button>
-        <a-button size="large" type="dashed" @click="nexts(3)">成本价核价</a-button>
+        <template v-if="$auth('pricings:material')">
+          <a-button size="large" type="dashed" @click="nexts(1)">物料代码核价</a-button>
+        </template>
+        <template v-if="$auth('pricings:pricing')">
+          <a-button size="large" type="dashed" @click="nexts(2)">核价代码核价</a-button>
+        </template>
+        <template v-if="$auth('pricings:Costprice')">
+          <a-button size="large" type="dashed" @click="nexts(3)">成本价核价</a-button>
+        </template>
       </a-space>
     </div>
     <div class="steps-content" v-if="current === 1">
