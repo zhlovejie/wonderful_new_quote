@@ -34,7 +34,7 @@ export default {
   materialBaseUrl: 'http://192.168.12.96:8996', //物料规则专用地址
 
 
-  baseURL: 'http://192.168.13.158:8995/oa',
+  baseURL: 'http://192.168.13.158:8999/oa',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息
     appKey: 'd39b58df3a9b437cac8a0c6a120ef1eb',
