@@ -55,7 +55,14 @@
             :autoExpandParent="autoExpandParent"
             @expand="onExpand"
             :showLine="true"
-          />
+          >
+            <template
+              slot="title"
+              slot-scope="{ title ,__color}"
+            >
+              <span :style="{'color':__color}">{{ title }}</span>
+            </template>
+          </a-tree>
         </div>
       </div>
       <div class="resize-column-control-bar">
@@ -373,12 +380,12 @@ export default {
       obj.__materialName = item.materialName
       obj.__materialCode = item.materialCode
       obj.__status = item.status
-      //审批状态 审批中2黄  通过3蓝  不通过4红
-      let m_color = {
-        1:'normal',2:'#dada18',3:'blue',4:'red'
-      }
-      obj.__color = m_color[item.status]
-      obj.title = `${item.materialCode}(${item.materialName})`
+      //蓝色-使用绿色-已审核黑色-未使用/未审核
+      let {status,useStatus} = item
+      obj.__color = +status === 2 ? 'green' : +useStatus === 1 ? 'blue' : ''
+
+      // obj.__color = +useStatus === 1 ? 'blue' : status === 2 ? '#b1b1b1' : ''
+      obj.title = `${item.materialName}(${item.bomCode})`
       obj.scopedSlots = { title: 'title' }
       obj.isSubProduct = true
       return obj

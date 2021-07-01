@@ -32,6 +32,11 @@
       </div>
       <div class="resize-column-control-bar"></div>
       <div class="resize-column-right">
+        <template v-if="routeView">
+          <FormView ref="formView" />
+        </template>
+
+        <template v-else>
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
@@ -136,7 +141,6 @@
             <a-form-item >
               <a-button
                 v-if="$auth('bom-management_list:batchupdate')"
-                :disabled="!canUse"
                 type="primary"
                 @click="doAction('editBatch', null)"
               >BOM成批修改</a-button>
@@ -167,10 +171,11 @@
         >
           <div slot="description">
             <span style="color: blue">蓝色-使用</span>
-            <span style="color: red; margin: 0 10px">绿色-已审核</span>
+            <span style="color: green; margin: 0 10px">绿色-已审核</span>
             <span>黑色-未使用/未审核</span>
           </div>
         </a-alert>
+        <a-card title="BOM基本数据" size="small" :bordered="false">
         <a-table
           :columns="columns"
           :dataSource="dataSource"
@@ -179,6 +184,7 @@
           @change="handleTableChange"
           :customRow="customRowFunction"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          size="small"
         >
           <div
             slot="useStatus"
@@ -201,13 +207,17 @@
               />
             </a-tooltip>
           </div>
-          <a
+          <div
             slot="status"
             slot-scope="text, record"
-            @click="approvalPreview(record)"
+
           >
-            {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
-          </a>
+            <a href="javascript:void(0);" v-if="+text !== 0" @click="approvalPreview(record)">
+              {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
+            </a>
+            <span v-else>待审核</span>
+
+          </div>
           <div slot="materialProperty" slot-scope="text, record, index" >
             {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
           </div>
@@ -218,11 +228,16 @@
             {{ {1:'是',0:'否'}[text] }}
           </div>
         </a-table>
+        </a-card>
 
+        <a-card title="BOM详情数据" size="small" :bordered="false"  style="margin-top:10px;">
         <a-table
           :columns="columnsDetail"
           :dataSource="detailDataSource"
+          :loading="loadingDetail"
           :pagination="false"
+          size="small"
+          :scroll="{ y: 300 }"
         >
           <div
             slot="useStatus"
@@ -264,7 +279,16 @@
             {{ {1:'是',0:'否'}[text] }}
           </div>
 
+          <div
+                slot="materialUseStatus"
+                slot-scope="text, record, index"
+              >
+                {{ {0:'未使用',1:'使用'}[text] }}
+              </div>
+
         </a-table>
+        </a-card>
+        </template>
       </div>
     </div>
     <NormalAddForm
@@ -273,9 +297,9 @@
       @finish="finishHandler"
     />
 
-    <!--
+
       <ApproveInfo ref="approveInfoCard" />
-     -->
+
      <SearchForm
       ref="searchForm"
       @change="paramChangeHandler"
@@ -307,9 +331,9 @@ import {
   allListMaterialForm,
   __MaterialInfoExport
 } from '@/api/bomManagement'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './modules/AddForm'
-
+import FormView from './modules/FormView'
 
 
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
@@ -427,8 +451,8 @@ const columnsDetail = [
   {
     align: 'center',
     title: '使用状态',
-    dataIndex: 'useStatus',
-    scopedSlots: { customRender: 'useStatus' }
+    dataIndex: 'materialUseStatus',
+    scopedSlots: { customRender: 'materialUseStatus' }
   },
   {
     align: 'center',
@@ -462,10 +486,11 @@ export default {
   name: 'bom-management_list',
   components: {
     NormalAddForm,
-    // ApproveInfo,
+    ApproveInfo,
     SearchForm,
     AddGroupForm,
-    BatchUpdate
+    BatchUpdate,
+    FormView
   },
   data() {
     return {
@@ -487,6 +512,7 @@ export default {
       autoExpandParent: true,
 
       loading: false,
+      loadingDetail:false,
       queryParam: {},
       pagination: {
         current: 1,
@@ -497,7 +523,8 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler
       },
       treeInputSearchDebounce: null,
-      normalAddFormKeyCount: 1
+      normalAddFormKeyCount: 1,
+      routeView: false //点击 subProduct 需要查看详情
     }
   },
   watch: {
@@ -802,8 +829,10 @@ export default {
       obj.__status = item.status
       //蓝色-使用绿色-已审核黑色-未使用/未审核
       let {status,useStatus} = item
-      obj.__color = +useStatus === 1 ? 'blue' : status === 2 ? '#b1b1b1' : ''
-      obj.title = `${item.materialCode}(${item.materialName})`
+      obj.__color = +status === 2 ? 'green' : +useStatus === 1 ? 'blue' : ''
+
+      // obj.__color = +useStatus === 1 ? 'blue' : status === 2 ? '#b1b1b1' : ''
+      obj.title = `${item.materialName}(${item.bomCode})`
       obj.scopedSlots = { title: 'title' }
       obj.isSubProduct = true
       return obj
@@ -824,14 +853,31 @@ export default {
       that.selectedRowKeys = []
       that.selectedRows = []
       // that.search()
-      if(dataRef.isProduct){
+
+      that.dataSource = []
+      that.detailDataSource = []
+      that.pagination = {...that.pagination,total:0,current:1}
+
+
+
+      that.routeView = false
+
+      if (dataRef.isSubProduct) {
+        that.routeView = true
+        that.$nextTick(() => {
+          that.$refs['formView'] && that.$refs['formView'].query('view', { id: dataRef.__id })
+        })
+      } else if(dataRef.isProduct){
         that.queryParam = { ...that.queryParam, groupId: dataRef.__id}
         that.search()
       }else{
-        that.dataSource = []
+        // that.dataSource = []
       }
+
+
     },
     async doAction(type, record) {
+
       const that = this
       if(type === 'editBatch'){
         that.$refs['batchUpdate'].query()
@@ -866,10 +912,10 @@ export default {
         return
       }
       else if (type === 'export') {
-        let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        let res = await __MaterialInfoExport(1,ids)
-        console.log(res)
-        that.$message.info(res.msg)
+        // let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
+        // let res = await __MaterialInfoExport(1,ids)
+        // console.log(res)
+        that.$message.info('功能开发中...')
         return
       } else if (type === 'filter') {
         that.$refs.searchForm.query()
@@ -957,7 +1003,7 @@ export default {
               })
             }else{
               let {isRule,isProduct,isSubProduct,__id,key} = that.parentItem
-              let __bomStatus = isRule ? 0 : 1
+              let __bomStatus = isProduct ? 0 : 1
               let _id = isRule ? key : __id
 
               target.api({bomStatus:__bomStatus,id:_id}).then(res => {
@@ -1007,8 +1053,15 @@ export default {
         // },
         on: {
           click:event => {
+            let target = event.currentTarget
+            target.parentNode.querySelectorAll('.ant-table-row').forEach((ele) => {
+                ele.classList.remove('tr-bg-e6f7ff')
+            })
+            target.classList.add('tr-bg-e6f7ff')
             const that = this
+            that.loadingDetail = true
             listMaterialFormChildDetail({bomId:record.id}).then(res => {
+              that.loadingDetail = false
               console.log(res)
               let format2Children = (item)=> {
                 let _item = Object.assign({},item)
@@ -1022,11 +1075,21 @@ export default {
                 return _item
               }
               that.detailDataSource = res.data.map(item => format2Children(item))
+            }).catch(err => {
+              that.$message.err(err)
+              that.loadingDetail = false
             })
           },
           dblclick: event => {
             console.log(record)
             const that = this
+            that.$refs['NormalAddForm'].query('view', {
+              ...record,
+              __selectItem: {
+                title: record.groupName,
+                value: record.groupId
+              }
+            })
 
           }
         }
@@ -1076,6 +1139,10 @@ export default {
 }
 .bom-management_list >>> .resize-column-wrapper .resize-column-right {
   flex: 1;
+}
+
+.bom-management_list >>> .tr-bg-e6f7ff{
+  background-color: #e6f7ff;
 }
 </style>
 

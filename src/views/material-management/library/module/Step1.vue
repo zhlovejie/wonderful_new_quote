@@ -75,7 +75,7 @@ import {
   routineMaterialInfoCheckCode,
   routineMaterialInfoCheckName
 } from '@/api/routineMaterial'
-
+import moment from 'moment'
 import VueQr from 'vue-qr'
 import { customUpload } from '@/api/common'
 export default {
@@ -119,6 +119,7 @@ export default {
     this.$nextTick(() => this.init())
   },
   methods: {
+    moment,
     async init(type, record) {
       const that = this
       that.nextButtonDisable = false
@@ -313,7 +314,12 @@ export default {
         arr.push(target.code)
       })
 
-      return `${prefixCode}${joinSymbol}${arr.join(joinSymbol)}`
+      //没有规格型号的情况 年月日时分秒4位毫秒数
+      let spec = arr.length > 0
+        ? arr.join(joinSymbol)
+        : 'NOSPEC'+ moment().format('YYYYMMDDHHmmssSSSS')
+
+      return `${prefixCode}${joinSymbol}${spec}`
     },
     /**
      * 获取格式化规格型号
@@ -325,7 +331,7 @@ export default {
         let target = item.subList.find(s => s.id === item.selectedID)
         arr.push(`${item.newRuleName || item.ruleName}:${(target.newRuleName || target.ruleName)}(${target.code})  `)
       })
-      return arr.join(",")
+      return arr.length > 0 ? arr.join(",") : '无'
     },
     resetForm() {
       this.$refs.ruleForm.resetFields()

@@ -23,20 +23,20 @@
           >
             <template
               slot="title"
-              slot-scope="{ title }"
+              slot-scope="{ title ,__color}"
             >
-              <span v-if="title.indexOf(searchValue) > -1">
-                {{ title.substr(0, title.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else>{{ title }}</span>
+              <span :style="{'color':__color}">{{ title }}</span>
             </template>
           </a-tree>
         </div>
       </div>
       <div class="resize-column-control-bar"></div>
       <div class="resize-column-right">
+        <template v-if="routeView">
+          <FormView ref="formView" />
+        </template>
+
+        <template v-else>
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
@@ -72,6 +72,7 @@
             </a-form-item>
             <a-form-item>
               <a-button
+                v-if="$auth('bom-management_list:filter')"
                 type="primary"
                 icon="filter"
                 @click="doAction('filter', null)"
@@ -87,10 +88,11 @@
         >
           <div slot="description">
             <span style="color: blue">蓝色-使用</span>
-            <span style="color: red; margin: 0 10px">绿色-已审核</span>
+            <span style="color: green; margin: 0 10px">绿色-已审核</span>
             <span>黑色-未使用/未审核</span>
           </div>
         </a-alert>
+        <a-card title="BOM基本数据" size="small" :bordered="false">
         <a-table
           :columns="columns"
           :dataSource="dataSource"
@@ -99,6 +101,7 @@
           @change="handleTableChange"
           :customRow="customRowFunction"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          size="small"
         >
           <div
             slot="useStatus"
@@ -121,6 +124,17 @@
               />
             </a-tooltip>
           </div>
+          <div
+            slot="status"
+            slot-scope="text, record"
+
+          >
+            <a href="javascript:void(0);" v-if="+text !== 0" @click="approvalPreview(record)">
+              {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
+            </a>
+            <span v-else>待审核</span>
+
+          </div>
           <div slot="materialProperty" slot-scope="text, record, index" >
             {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
           </div>
@@ -131,11 +145,16 @@
             {{ {1:'是',0:'否'}[text] }}
           </div>
         </a-table>
+        </a-card>
 
+        <a-card title="BOM详情数据" size="small" :bordered="false"  style="margin-top:10px;">
         <a-table
           :columns="columnsDetail"
           :dataSource="detailDataSource"
+          :loading="loadingDetail"
           :pagination="false"
+          size="small"
+          :scroll="{ y: 300 }"
         >
           <div
             slot="useStatus"
@@ -158,6 +177,13 @@
               />
             </a-tooltip>
           </div>
+          <a
+            slot="status"
+            slot-scope="text, record"
+            @click="approvalPreview(record)"
+          >
+            {{ {0:'待审核',1:'待审批',2:'通过',3:'不通过',4:'已反审核'}[text] }}
+          </a>
 
 
           <div slot="materialProperty" slot-scope="text, record, index" >
@@ -170,14 +196,33 @@
             {{ {1:'是',0:'否'}[text] }}
           </div>
 
+          <div
+                slot="materialUseStatus"
+                slot-scope="text, record, index"
+              >
+                {{ {0:'未使用',1:'使用'}[text] }}
+              </div>
+
         </a-table>
+        </a-card>
+        </template>
       </div>
     </div>
+    <NormalAddForm
+      ref="NormalAddForm"
+      :key="normalAddFormKeyCount"
+      @finish="finishHandler"
+    />
+
+
+      <ApproveInfo ref="approveInfoCard" />
+
      <SearchForm
       ref="searchForm"
       @change="paramChangeHandler"
     />
-
+    <AddGroupForm ref="addGroupForm" @finish="finishHandler"/>
+    <BatchUpdate ref="batchUpdate" @finish="finishHandler"/>
   </a-card>
 </template>
 
@@ -186,6 +231,7 @@
 import {
   productMaterialInfoTwoTierTreeList,
 } from '@/api/routineMaterial'
+
 import {
   getAllProductMaterial,
   craftRouteListByMaterial
@@ -195,6 +241,7 @@ import {
   delMaterialForm,
   listMaterialForm,
   getBomTree,
+  listMaterialFormChildDetail,
   leafNodeMaterialFormChildDetail,
   useMaterialForm,
   auditMaterialForm,
@@ -202,9 +249,15 @@ import {
   allListMaterialForm,
   __MaterialInfoExport
 } from '@/api/bomManagement'
-import ResizeColumn from '@/components/CustomerList/ResizeColumn'
-import SearchForm from './modules/SearchForm'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import NormalAddForm from './modules/AddForm'
+import FormView from './modules/FormView'
 
+
+import ResizeColumn from '@/components/CustomerList/ResizeColumn'
+import AddGroupForm from './modules/AddGroupForm'
+import SearchForm from './modules/SearchForm'
+import BatchUpdate from './modules/BatchUpdate'
 let uuid = () => Math.random().toString(16).slice(2);
 const columns = [
   {
@@ -270,11 +323,11 @@ const columns = [
 ]
 
 const columnsDetail = [
-  {
-    align: 'center',
-    title: '层级号',
-    dataIndex: 'level'
-  },
+  // {
+  //   align: 'center',
+  //   title: '层级号',
+  //   dataIndex: 'level'
+  // },
   {
     align: 'center',
     title: '自研结构件代码',
@@ -316,8 +369,8 @@ const columnsDetail = [
   {
     align: 'center',
     title: '使用状态',
-    dataIndex: 'useStatus',
-    scopedSlots: { customRender: 'useStatus' }
+    dataIndex: 'materialUseStatus',
+    scopedSlots: { customRender: 'materialUseStatus' }
   },
   {
     align: 'center',
@@ -350,7 +403,12 @@ const getParentKey = (key, tree) => {
 export default {
   name: 'bom-management_comprehensive',
   components: {
+    NormalAddForm,
+    ApproveInfo,
     SearchForm,
+    AddGroupForm,
+    BatchUpdate,
+    FormView
   },
   data() {
     return {
@@ -372,6 +430,7 @@ export default {
       autoExpandParent: true,
 
       loading: false,
+      loadingDetail:false,
       queryParam: {},
       pagination: {
         current: 1,
@@ -382,7 +441,8 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler
       },
       treeInputSearchDebounce: null,
-      normalAddFormKeyCount: 1
+      normalAddFormKeyCount: 1,
+      routeView: false //点击 subProduct 需要查看详情
     }
   },
   watch: {
@@ -395,7 +455,38 @@ export default {
       immediate: true
     }
   },
-  computed:{
+  computed: {
+    canAdd(){
+      let {isProduct} = this.parentItem
+      return !isProduct
+    },
+    canEdit() {
+      // debugger
+      let selectedRows = this.selectedRows
+      if(selectedRows.length === 1 && +selectedRows[0].status !== 2){
+        return true
+      }
+      return false
+    },
+    canUse() {
+      return this.selectedRows.length > 0
+    },
+    /**
+     * 如果点击BOM组别名称，点击使用，则是对BOM组别名称下的所有的BOM组进行使用
+     * 如果BOM组别下有未审核过的数据，则只对审核过的数据更改状态为使用
+     */
+    canUseButton(){
+      // debugger
+      // let {__status,__useStatus} = this.parentItem
+      // if(!('__status' in this.parentItem)){
+      //   return false
+      // }
+      // if(__useStatus === null && __status === null){
+      //   return true
+      // }
+      // return +__status === 2
+      return true
+    },
     treeSelectedKeys() {
       return [String(this.parentId)]
     },
@@ -471,6 +562,7 @@ export default {
         this._ResizeColumnInstance = new ResizeColumn()
       })
     },
+
     margeNode(oldChildren, newChildren) {
       let arr = []
       for (let i = 0; i < newChildren.length; i++) {
@@ -540,7 +632,7 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
-        fetchTree() {
+    fetchTree() {
       const that = this
       productMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then(res => {
@@ -653,12 +745,12 @@ export default {
       obj.__materialName = item.materialName
       obj.__materialCode = item.materialCode
       obj.__status = item.status
-      //审批状态 审批中2黄  通过3蓝  不通过4红
-      let m_color = {
-        1:'normal',2:'#dada18',3:'blue',4:'red'
-      }
-      obj.__color = m_color[item.status]
-      obj.title = `${item.materialCode}(${item.materialName})`
+      //蓝色-使用绿色-已审核黑色-未使用/未审核
+      let {status,useStatus} = item
+      obj.__color = +status === 2 ? 'green' : +useStatus === 1 ? 'blue' : ''
+
+      // obj.__color = +useStatus === 1 ? 'blue' : status === 2 ? '#b1b1b1' : ''
+      obj.title = `${item.materialName}(${item.bomCode})`
       obj.scopedSlots = { title: 'title' }
       obj.isSubProduct = true
       return obj
@@ -679,26 +771,178 @@ export default {
       that.selectedRowKeys = []
       that.selectedRows = []
       // that.search()
-      if(dataRef.isProduct){
+
+      that.dataSource = []
+      that.detailDataSource = []
+      that.pagination = {...that.pagination,total:0,current:1}
+
+
+
+      that.routeView = false
+
+      if (dataRef.isSubProduct) {
+        that.routeView = true
+        that.$nextTick(() => {
+          that.$refs['formView'] && that.$refs['formView'].query('view', { id: dataRef.__id })
+        })
+      } else if(dataRef.isProduct){
         that.queryParam = { ...that.queryParam, groupId: dataRef.__id}
         that.search()
       }else{
-        that.dataSource = []
+        // that.dataSource = []
       }
+
+
     },
     async doAction(type, record) {
+
       const that = this
-      if (type === 'filter') {
+      if(type === 'editBatch'){
+        that.$refs['batchUpdate'].query()
+        return
+      }else if(type === 'addGroup'){
+        that.$refs['addGroupForm'].query({
+          __selectItem: that.parentItem
+        })
+        return
+      }
+      else if (type === 'add') {
+        that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+        that.$nextTick(() => {
+          that.$refs.NormalAddForm.query(type, {
+            ...record,
+            __selectItem: that.parentItem,
+            __treeData: [...that.orgTree],
+            __from: 'normal'
+          })
+        })
+        return
+      } else if (type === 'edit' || type === 'copy') {
+        that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+        that.$nextTick(() => {
+          that.$refs.NormalAddForm.query(type, {
+            ...that.selectedRows[0],
+            __selectItem: that.parentItem,
+            __treeData: [...that.orgTree],
+            __from: 'normal'
+          })
+        })
+        return
+      }
+      else if (type === 'export') {
+        let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
+        let res = await __MaterialInfoExport(1,ids)
+        console.log(res)
+        that.$message.info(res.msg)
+        return
+      } else if (type === 'filter') {
         that.$refs.searchForm.query()
         return
+      } else {
+        let m = {
+          use:{
+            api:useMaterialForm,
+            title:'使用',
+            tpl: names => `是否要更改状态未使用？`
+          },
+          del: {
+            api: delMaterialForm,
+            title: '删除',
+            /**
+             * 如果此物料关联了 BOM则不可以删除 给出提示物料已使用，禁止删除！
+             */
+            tpl: names => `确定要删除${names}吗？`
+          },
+          approval: {
+            api: auditMaterialForm,
+            title: '审核',
+            tpl: names => `确定要审核项目${names}吗？`
+          },
+          unapproval: {
+            api: reverseAuditMaterialForm,
+            title: '反审核',
+            tpl: names => `反审核项目${names}后，数据标记为未审核，是否继续？`
+          }
+        }
+        let target = m[type]
+        if (!target) {
+          that.$message.error(`不支持的操作类型:${type}`)
+          return
+        }
+
+        let isSingle = that.selectedRows.length > 0
+        let itemNames = isSingle
+          ? `【${that.selectedRows.map(item => item.bomCode).join('，')}】`
+          : `节点【${that.parentItem.title}】`
+
+        if(!isSingle && +that.parentItem.key === 0){
+          that.$message.info('根节点禁止操作')
+          return
+        }
+
+        that.$confirm({
+          title: '提示',
+          content: target.tpl(itemNames),
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            if(isSingle){
+              let arr = []
+              that.selectedRows.map(item => {
+                arr.push(target.api({bomStatus:1,id:item.id}).then(res => {
+                  return {result:res,target:item}
+                }))
+              })
+              Promise.all(arr).then(res => {
+                let msg = ''
+
+                res.map(r => {
+                  let {result,target} = r
+                  if(+result.code !== 200){
+                    msg += `【${target.bomCode}】${result.msg} `
+                  }
+                })
+                if(msg.length > 0){
+                  const h = that.$createElement;
+                  that.$info({
+                    title: '提示',
+                    content: h('div', {}, [
+                      h('p', msg)
+                    ]),
+                    width: 450,
+                    onOk() {},
+                  });
+                }else{
+                  that.$message.info('操作成功')
+                }
+                that.finishHandler({ key: that.parentItem.value })
+              }).catch(err => {
+                that.$message.error(err.message)
+              })
+            }else{
+              let {isRule,isProduct,isSubProduct,__id,key} = that.parentItem
+              let __bomStatus = isProduct ? 0 : 1
+              let _id = isRule ? key : __id
+
+              target.api({bomStatus:__bomStatus,id:_id}).then(res => {
+                that.$message.info(res.msg)
+                if (+res.code === 200) {
+                  that.finishHandler({ key: that.parentItem.value })
+                }
+              }).catch(err => {
+                that.$message.error(err.message)
+              })
+            }
+          }
+        })
       }
     },
     finishHandler(param) {
       this.selectedRowKeys = []
       this.selectedRows = []
       this.search()
-      this.fetchTree()
-      return
+      // this.fetchTree()
+      // return
       if (param && param.key) {
         let target = this.findTreeNode(this.$refs.treeRef, param.key)
         if (target) {
@@ -720,15 +964,26 @@ export default {
       }
     },
     customRowFunction(record) {
-
+      let {useStatus,status} = record
       return {
+        // style: {
+        //   color: +useStatus === 1 ? 'blue' : status === 2 ? 'green' : ''
+        // },
         on: {
           click:event => {
+            let target = event.currentTarget
+            target.parentNode.querySelectorAll('.ant-table-row').forEach((ele) => {
+                ele.classList.remove('tr-bg-e6f7ff')
+            })
+            target.classList.add('tr-bg-e6f7ff')
             const that = this
+            that.loadingDetail = true
             leafNodeMaterialFormChildDetail({bomId:record.id}).then(res => {
+              that.loadingDetail = false
+              console.log(res)
               let format2Children = (item)=> {
                 let _item = Object.assign({},item)
-                _item.key = uuid()
+                _item.key = _item.level
                 _item.children = _item.detailListVo || []
                 if (Array.isArray(_item.children) && _item.children.length > 0) {
                   _item.children = _item.children.map(v => format2Children(v))
@@ -738,15 +993,32 @@ export default {
                 return _item
               }
               that.detailDataSource = res.data.map(item => format2Children(item))
+            }).catch(err => {
+              that.$message.err(err)
+              that.loadingDetail = false
             })
           },
           dblclick: event => {
             console.log(record)
             const that = this
+            that.$refs['NormalAddForm'].query('view', {
+              ...record,
+              __selectItem: {
+                title: record.groupName,
+                value: record.groupId
+              }
+            })
 
           }
         }
       }
+    },
+    approvalPreview(record) {
+      if (!record.instanceId) {
+        this.$message.info('未生成审批流程')
+        return
+      }
+      this.$refs.approveInfoCard.init(record.instanceId)
     },
     paramChangeHandler(params) {
       this.queryParam = { ...this.queryParam, ...params }
@@ -785,6 +1057,10 @@ export default {
 }
 .bom-management_list >>> .resize-column-wrapper .resize-column-right {
   flex: 1;
+}
+
+.bom-management_list >>> .tr-bg-e6f7ff{
+  background-color: #e6f7ff;
 }
 </style>
 

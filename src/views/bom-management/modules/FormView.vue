@@ -1,14 +1,6 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :width="1200"
-    :visible="visible"
-    :footer="footer"
-    @cancel="handleCancel"
-    :maskClosable="false"
-    :destroyOnClose="true"
-  >
     <a-spin :spinning="spinning">
+      <div class="route-view-wrapper">
       <a-form-model
         ref="ruleForm"
         :model="form"
@@ -60,7 +52,6 @@
                       :default-active-first-option="false"
                       :show-arrow="false"
                       :filter-option="false"
-                      :not-found-content="materialFuzzySearch.fetching ? undefined : '未找到匹配项'"
                       @search="(w) => materialFuzzyAction(w,true)"
                       @change="materialFuzzyHandleChange"
                     >
@@ -137,7 +128,7 @@
                       :default-active-first-option="false"
                       :show-arrow="false"
                       :filter-option="false"
-                      :not-found-content="bomFuzzySearch.fetching ? undefined : '未找到匹配项'"
+                      :not-found-content="null"
                       @search="bomFuzzyAction"
                       @change="bomFuzzyHandleChange"
                     >
@@ -188,13 +179,15 @@
               </tr>
             </table>
           </div>
-
+        </div>
+        <div class="card-item">
           <div class="__hd">物料信息</div>
           <div class="__bd">
             <a-table
               :columns="columnsDetail"
               :dataSource="form.formChildDetailList"
               :pagination="false"
+              :scroll="{ y: 450 }"
               size="small"
             >
               <div
@@ -364,7 +357,8 @@
               @click="materialTableAction('add')"
             >添加</a-button>
           </div>
-
+        </div>
+        <div class="card-item">
           <div class="__hd">操作信息</div>
           <div class="__bd">
             <table class="custom-table custom-table-border">
@@ -402,10 +396,10 @@
           </div>
         </div>
       </a-form-model>
+      </div>
       <Approval ref="approval" @opinionChange="opinionChange" />
       <ProcessRouteAddForm ref="processRouteAddForm" />
     </a-spin>
-  </a-modal>
 </template>
 
 <script>
@@ -728,7 +722,7 @@ export default {
           return item
         })
 
-      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: false, list: result }
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true, list: result }
     },
     materialFuzzyHandleChange(key) {
       const that = this
@@ -743,7 +737,7 @@ export default {
         modelType:  'specification' in target  ? (target.specification || target.specifications) : '无'
       }
       console.log(target)
-      that.materialFuzzySearch = { ...that.materialFuzzySearch, item: target }
+      that.materialFuzzySearch = { list: [], fetching: false, item: target }
     },
     materialFuzzyTableHandleChange(key, item) {
       // debugger
@@ -796,14 +790,14 @@ export default {
         })
         return records
       })
-      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: false, list: result }
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true, list: result }
     },
     bomFuzzyHandleChange(key) {
       const that = this
       const target = that.bomFuzzySearch.list.find(item => item.__key === key)
       console.log(target)
       that.form = { ...that.form, craftId: target.id, routeCode: target.routeCode, routeName: target.routeName }
-      that.bomFuzzySearch = { ...that.bomFuzzySearch, item: target }
+      that.bomFuzzySearch = { list: [], fetching: false, item: target }
     },
     submitAction(opt) {
       const that = this
@@ -865,11 +859,20 @@ export default {
   width: calc(100% + 2px);
 }
 
+.route-view-wrapper{
+  background-color: #f5f5f5;
+  padding: 20px;
+}
 .card-item {
   margin-bottom: 20px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 .__hd {
-  font-size: 125%;
+  font-size: 100%;
+  font-weight: bold;
   line-height: 40px;
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;

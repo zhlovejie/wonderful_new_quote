@@ -145,7 +145,7 @@
             slot-scope="text, record, index"
           >
             <a @click="doAction('view', record)">查看</a>
-            <template v-if="$auth('materialForm:approval') && +record.status === 1">
+            <template v-if=" status.isAction && +activeKey === 1 && $auth('materialForm:approval') && +record.status === 1">
               <a-divider type="vertical" />
               <a @click="doAction('approval', record)">审批</a>
             </template>

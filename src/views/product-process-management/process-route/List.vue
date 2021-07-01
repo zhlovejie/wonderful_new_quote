@@ -707,6 +707,7 @@ export default {
       that.routeView = false
       that.dataSource = []
       that.gxDataSource = []
+
       if (dataRef.isSubProduct) {
         that.routeView = true
         that.$nextTick(() => {
@@ -714,7 +715,9 @@ export default {
         })
       } else {
         that.routeView = false
-        that.queryParam = { ...that.queryParam, materialGroupId: dataRef.__id, queryType: 0 }
+        let materialGroupId = dataRef.__id || dataRef.value
+        materialGroupId = String(materialGroupId) === "0" ? undefined : materialGroupId
+        that.queryParam = { ...that.queryParam, materialGroupId, queryType: 0 }
         that.search()
       }
     },
