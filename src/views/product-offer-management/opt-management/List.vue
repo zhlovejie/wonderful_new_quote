@@ -43,34 +43,34 @@
                 @click="search({ current: 1 })"
               >查询</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('quotedItem:add')">
               <a-button
                 type="primary"
                 @click="doAction('add', null)"
               >新增</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('quotedItem:edit')">
               <a-button
                 :disabled="!canEdit"
                 type="primary"
                 @click="doAction('edit', null)"
               >修改</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('quotedItem:del')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('del', null)"
               >删除</a-button>
             </a-form-item>
-            <a-form-item>
+            <a-form-item v-if="$auth('quotedItem:pricing')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('price', null)"
               >核价</a-button>
             </a-form-item>
-            <a-form-item >
+            <a-form-item v-if="$auth('quotedItem:export')">
               <a-button
                 :disabled="!canUse"
                 type="primary"
@@ -87,23 +87,39 @@
           :loading="loading"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
         >
-          <div slot="order" slot-scope="text, record, index" >
+          <div
+            slot="order"
+            slot-scope="text, record, index"
+          >
             <span>{{ index + 1 }}</span>
           </div>
-          <div slot="price" slot-scope="text, record, index" >
+          <div
+            slot="price"
+            slot-scope="text, record, index"
+          >
             <span v-if="String(text) === '-1'">***</span>
             <span v-else>{{ text | moneyFormatNumber }}</span>
           </div>
 
-          <div slot="configType" slot-scope="text, record, index" >
+          <div
+            slot="configType"
+            slot-scope="text, record, index"
+          >
             <span>{{ {0:'配置名称',1:'配置参数',9:'树结束标记'}[text] }}</span>
           </div>
-
 
         </a-table>
       </div>
     </div>
-    <AddForm ref="addForm" @finish="finishHandler" />
+    <AddForm
+      ref="addForm"
+      @finish="finishHandler"
+    />
+    <PriceForm
+      ref="priceForm"
+      @finish="finishHandler"
+    />
+
   </a-card>
 </template>
 
@@ -118,6 +134,7 @@ import {
 
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import AddForm from './AddForm.vue'
+import PriceForm from './PriceForm'
 
 const columns = [
   {
@@ -145,7 +162,7 @@ const columns = [
   {
     align: 'center',
     title: '说明',
-    dataIndex: 'configExplain',
+    dataIndex: 'configExplain'
   },
   {
     align: 'center',
@@ -177,7 +194,8 @@ const getParentKey = (key, tree) => {
 export default {
   name: 'product-offer-management-opt-management',
   components: {
-    AddForm
+    AddForm,
+    PriceForm
   },
   data() {
     return {
@@ -246,7 +264,7 @@ export default {
       })
     },
     generateList(data) {
-      let arr = []
+      const arr = []
       for (let i = 0; i < data.length; i++) {
         const node = data[i]
         arr.push({ ...node })
@@ -286,7 +304,7 @@ export default {
             title: '配置项',
             isLeaf: false,
             parentId: 0,
-            children: res.data.map(item => that.formatTreeData(item)),
+            children: res.data.map(item => that.formatTreeData(item))
           }
           that.orgTree = [root]
           if (String(that.parentId) === '0') {
@@ -302,7 +320,7 @@ export default {
     search(params = {}) {
       const that = this
       that.loading = true
-      let _searchParam = Object.assign({}, { ...that.queryParam }, params)
+      const _searchParam = Object.assign({}, { ...that.queryParam }, params)
       priceQuotedItemConfigSubList(_searchParam)
         .then(res => {
           that.loading = false
@@ -318,8 +336,8 @@ export default {
     },
     //格式化接口数据 key,title,value
     formatTreeData(item) {
-      let that = this
-      let obj = {}
+      const that = this
+      const obj = {}
       obj.key = String(item.id)
       obj.title = item.configName
       obj.value = String(item.id)
@@ -335,7 +353,7 @@ export default {
     handleClick(selectedKeys, e) {
       const that = this
       that.selectedTreeNode = e.node
-      let dataRef = e.node.dataRef
+      const dataRef = e.node.dataRef
       // 点击树结构菜单
       var parentId = this.parentId
       if (selectedKeys[0] !== undefined) {
@@ -359,7 +377,6 @@ export default {
             __treeData: [...that.orgTree]
           })
         })
-        return
       } else if (type === 'edit') {
         that.$nextTick(() => {
           that.$refs.addForm.query(type, {
@@ -368,76 +385,39 @@ export default {
             __treeData: [...that.orgTree]
           })
         })
-        return
       } else if (type === 'export') {
-        let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        let res = await __MaterialInfoExport(1,ids)
-        console.log(res)
-        that.$message.info(res.msg)
+        that.$message.info('功能正在开发中...')
         return
+      } else if (type === 'price') {
+        const rows = that.selectedRows.map(r => Object.assign({}, r))
+        that.$refs.priceForm.query(rows)
       } else {
-        let m = {
+        const m = {
           del: {
             api: priceQuotedItemConfigDeleteBatch,
             title: '删除',
-            /**
-             * 如果此物料关联了 BOM则不可以删除 给出提示物料已使用，禁止删除！
-             */
             tpl: names => `确定要删除${names}吗？`
-          },
-          price: {
-            api: priceQuotedItemConfigSetPrices,
-            title: '核价',
-            tpl: names => `确定要核价项目${names}吗？`
           }
         }
-        let target = m[type]
+        const target = m[type]
         if (!target) {
           that.$message.error(`不支持的操作类型:${type}`)
           return
         }
-        let itemNames = `【${that.selectedRows.map(item => item.configName).join('，')}】`
-        let ids = that.selectedRows.map(item => item.id).join(',')
+        const itemNames = `【${that.selectedRows.map(item => item.configName).join('，')}】`
+        const ids = that.selectedRows.map(item => item.id).join(',')
         that.$confirm({
           title: '提示',
           content: target.tpl(itemNames),
           okText: '确定',
           cancelText: '取消',
           onOk() {
-            let isDelete = type === 'del'
-            let isPrice = type === 'price'
-
-            let param = {}
-            let priceQuotedItemConfigList = that.selectedRows.map(item => {
-              return {id:'',price:''}
-            })
-            // {
-            //   "priceQuotedItemConfigList": [
-            //     {
-            //       "configExplain": "",
-            //       "configName": "",
-            //       "configType": 0,
-            //       "createdId": 0,
-            //       "createdTime": "",
-            //       "id": 0,
-            //       "isDelete": 0,
-            //       "level": 0,
-            //       "line": 0,
-            //       "modifierId": 0,
-            //       "modifyTime": "",
-            //       "parentConfigId": 0,
-            //       "price": 0,
-            //       "serialNumber": 0
-            //     }
-            //   ]
-            // }
-
             target
-              .api({ids:ids})
+              .api({ ids: ids })
               .then(res => {
                 that.$message.info(res.msg)
                 if (res.code === 200) {
-                  that.finishHandler({ key: that.parentItem.value })
+                  that.finishHandler()
                 }
               })
               .catch(err => {
@@ -448,9 +428,13 @@ export default {
       }
     },
     finishHandler(param) {
-      this.selectedRowKeys = []
-      this.selectedRows = []
-      this.search()
+      const that = this
+      that.selectedRowKeys = []
+      that.selectedRows = []
+      that.$nextTick(() => {
+        that.search()
+        that.fetchTree()
+      })
     }
   },
   beforeDestroy() {

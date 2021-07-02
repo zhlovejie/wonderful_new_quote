@@ -16,33 +16,57 @@
         :rules="rules"
         class="addform-wrapper"
       >
-        <a-form-model-item label="配置类型" prop="configType">
-          <a-radio-group v-model="form.configType" :disabled="form.disabledConfigType">
+        <a-form-model-item
+          label="配置类型"
+          prop="configType"
+        >
+          <a-radio-group
+            v-model="form.configType"
+            :disabled="form.disabledConfigType"
+          >
             <a-radio :value="0">配置名称</a-radio>
             <a-radio :value="1">配置参数</a-radio>
           </a-radio-group>
         </a-form-model-item>
-        <a-form-model-item label="上级配置" prop="parentConfigId">
+        <a-form-model-item
+          label="上级配置"
+          prop="parentConfigId"
+        >
           <a-input v-model="form.parentConfigName" />
         </a-form-model-item>
-        <a-form-model-item label="配置名称" prop="configName">
+        <a-form-model-item
+          label="配置名称"
+          prop="configName"
+        >
           <a-input v-model="form.configName" />
         </a-form-model-item>
-        <a-form-model-item label="顺序号" prop="serialNumber">
-          <a-input-number v-model="form.serialNumber" style="width: 100%" :min="1" :max="9999" :step="1"/>
+        <a-form-model-item
+          label="顺序号"
+          prop="serialNumber"
+        >
+          <a-input-number
+            v-model="form.serialNumber"
+            style="width: 100%"
+            :min="1"
+            :max="9999"
+            :step="1"
+          />
         </a-form-model-item>
-        <a-form-model-item label="说明" prop="configExplain">
-          <a-input v-model="form.configExplain" type="textarea" />
+        <a-form-model-item
+          label="说明"
+          prop="configExplain"
+        >
+          <a-input
+            v-model="form.configExplain"
+            type="textarea"
+          />
         </a-form-model-item>
       </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 <script>
-
-import {
-  priceQuotedItemConfigAddOrUpdate
-} from '@/api/productOfferManagement'
+import { priceQuotedItemConfigAddOrUpdate } from '@/api/productOfferManagement'
 export default {
   name: 'product-offer-management-opt-management_AddForm',
   data() {
@@ -53,8 +77,8 @@ export default {
       treeData: [],
       value: [],
       form: {},
-      rules:{},
-      detail:{}
+      rules: {},
+      detail: {}
     }
   },
   created() {},
@@ -75,27 +99,27 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-      let {__selectItem, __treeData } = record
+      const { __selectItem, __treeData } = record
 
-      if(that.isAdd){
+      if (that.isAdd) {
         that.form = {
           ...that.form,
-          parentConfigId:__selectItem.key,
-          parentConfigName:__selectItem.title,
-          disabledConfigType:+__selectItem.parentId !== 0,
-          configType:__selectItem.configType
+          parentConfigId: __selectItem.key,
+          parentConfigName: __selectItem.title,
+          disabledConfigType: +__selectItem.parentId !== 0,
+          configType: __selectItem.configType
         }
-      }else if(that.isEdit){
+      } else if (that.isEdit) {
         that.form = {
           ...that.form,
-          parentConfigId:__selectItem.key,
-          parentConfigName:__selectItem.title,
-          disabledConfigType:+__selectItem.parentId !== 0,
-          id:record.id,
-          configName:record.configName,
-          serialNumber:record.serialNumber,
-          configExplain:record.configExplain,
-          configType:record.configType
+          parentConfigId: __selectItem.key,
+          parentConfigName: __selectItem.title,
+          disabledConfigType: +__selectItem.parentId !== 0,
+          id: record.id,
+          configName: record.configName,
+          serialNumber: record.serialNumber,
+          configExplain: record.configExplain,
+          configType: record.configType
         }
       }
     },
@@ -103,24 +127,25 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          priceQuotedItemConfigAddOrUpdate({...that.form}).then((res) => {
+          priceQuotedItemConfigAddOrUpdate({ ...that.form })
+            .then(res => {
               that.spinning = false
               that.$message.info(res.msg)
               that.$emit('finish')
               that.handleCancel()
             })
-            .catch((err) => (that.spinning = false))
+            .catch(err => (that.spinning = false))
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
       })
     },
     handleCancel() {
       const that = this
-      that.$refs.ruleForm.resetFields();
+      that.$refs.ruleForm.resetFields()
       that.form = {}
-      that.$nextTick(() => that.visible = false)
+      that.$nextTick(() => (that.visible = false))
     }
   }
 }

@@ -16,18 +16,31 @@
         :rules="rules"
         class="addform-wrapper"
       >
-        <a-form-model-item label="顺序号" prop="serialNumber">
-          <a-input-number v-model="form.serialNumber" style="width: 100%" :min="1" :max="9999" :step="1"/>
+        <a-form-model-item
+          v-for="(item,index) in form.priceQuotedItemConfigList"
+          :key="item.id"
+          :label="item.configName"
+          :prop="'priceQuotedItemConfigList.' + index + '.price'"
+          :rules="{
+            message: '请输入价格',
+            trigger: 'change',
+            validator:customValidator
+          }"
+        >
+          <a-input-number
+            v-model="item.price"
+            style="width: 100%"
+            :min="0"
+            :max="99999999"
+            :step="1"
+          />
         </a-form-model-item>
       </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 <script>
-
-import {
-  priceQuotedItemConfigAddOrUpdate
-} from '@/api/productOfferManagement'
+import { priceQuotedItemConfigSetPrices } from '@/api/productOfferManagement'
 export default {
   name: 'product-offer-management-opt-management_PriceForm',
   data() {
@@ -35,54 +48,56 @@ export default {
       type: 'add',
       visible: false,
       spinning: false,
-      treeData: [],
-      value: [],
-      form: {},
-      rules:{},
-      detail:{}
+      form: {
+        priceQuotedItemConfigList: []
+      },
+      rules: {}
     }
   },
   created() {},
   computed: {
     modalTitle() {
-      return this.type === 'add' ? '新增' : '修改'
-    },
-    isAdd() {
-      return this.type === 'add'
-    },
-    isEdit() {
-      return this.type === 'edit'
+      return '核价'
     }
   },
   methods: {
-    async query(type, record) {
+    async query(rows) {
       const that = this
       that.visible = true
-
-
+      that.form = { ...that.form, priceQuotedItemConfigList: rows }
     },
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          priceQuotedItemConfigAddOrUpdate({...that.form}).then((res) => {
+          priceQuotedItemConfigSetPrices({ ...that.form })
+            .then(res => {
               that.spinning = false
               that.$message.info(res.msg)
               that.$emit('finish')
               that.handleCancel()
             })
-            .catch((err) => (that.spinning = false))
+            .catch(err => (that.spinning = false))
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
       })
     },
     handleCancel() {
       const that = this
-      that.$refs.ruleForm.resetFields();
-      that.form = {}
-      that.$nextTick(() => that.visible = false)
+      that.$refs.ruleForm.resetFields()
+      that.form = { priceQuotedItemConfigList: [] }
+      that.$nextTick(() => (that.visible = false))
+    },
+    customValidator(rule, value, callback) {
+      if (String(value).length === 0) {
+        callback(new Error('请输入价格'))
+      } else if (+value <= 0) {
+        callback(new Error('价格必须大于零'))
+      } else {
+        callback()
+      }
     }
   }
 }
