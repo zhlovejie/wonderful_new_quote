@@ -648,7 +648,7 @@ export default {
         target['productTypeDicId'] = selectItem.productTypeDicId
         target['productId'] = selectItem.id
         target['productName'] = selectItem.productName
-        target.tax = parseFloat(selectItem.tax)
+        target['tax'] = selectItem.taxRate
         this.data = dataSource
       }
       this.freshValidateData()
