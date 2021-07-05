@@ -32,7 +32,7 @@
           label="上级配置"
           prop="parentConfigId"
         >
-          <a-input v-model="form.parentConfigName" />
+          <a-input v-model="form.parentConfigName" :disabled="true" />
         </a-form-model-item>
         <a-form-model-item
           label="配置名称"
@@ -77,7 +77,17 @@ export default {
       treeData: [],
       value: [],
       form: {},
-      rules: {},
+      rules: {
+        configType:[
+          {required: true, message: '请选择配置类型'}
+        ],
+        configName:[
+          {required: true, message: '请输入配置名称'}
+        ],
+        serialNumber:[
+          {required: true, message: '请输入顺序号'}
+        ]
+      },
       detail: {}
     }
   },
@@ -101,20 +111,24 @@ export default {
       that.visible = true
       const { __selectItem, __treeData } = record
 
+      // 配置类型 可以选择 名称或参数
+      // 如果为名称 ，添加下级 还是可以选择 名称或参数
+      // 如果为参数 ，添加下级 只能是参数 禁止修改了
+      let disabledConfigType =(+__selectItem.configType === 1)
       if (that.isAdd) {
         that.form = {
           ...that.form,
-          parentConfigId: __selectItem.key,
+          parentConfigId: +__selectItem.key === 0 ? undefined : __selectItem.key,
           parentConfigName: __selectItem.title,
-          disabledConfigType: +__selectItem.parentId !== 0,
+          disabledConfigType,
           configType: __selectItem.configType
         }
       } else if (that.isEdit) {
         that.form = {
           ...that.form,
-          parentConfigId: __selectItem.key,
+          parentConfigId: +__selectItem.key === 0 ? undefined : __selectItem.key,
           parentConfigName: __selectItem.title,
-          disabledConfigType: +__selectItem.parentId !== 0,
+          disabledConfigType,
           id: record.id,
           configName: record.configName,
           serialNumber: record.serialNumber,

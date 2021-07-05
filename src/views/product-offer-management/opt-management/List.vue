@@ -299,18 +299,17 @@ export default {
       priceQuotedItemConfigTreeList()
         .then(res => {
           const root = {
-            key: '0',
-            value: '0',
+            key: 0,
+            value: 0,
             title: '配置项',
             isLeaf: false,
-            parentId: 0,
+            parentId: null,
             children: res.data.map(item => that.formatTreeData(item))
           }
           that.orgTree = [root]
-          if (String(that.parentId) === '0') {
-            that.parentItem = root
-          }
-
+          // if (that.parentId === -1) {
+          //   that.parentItem = root
+          // }
           console.log(JSON.stringify(that.orgTree))
         })
         .catch(err => {
@@ -324,7 +323,7 @@ export default {
       priceQuotedItemConfigSubList(_searchParam)
         .then(res => {
           that.loading = false
-          that.dataSource = res.data.map((item, index) => {
+          that.dataSource = res.data.filter(item => item.configType !== 9).map((item, index) => {
             item.key = index + 1
             return item
           })

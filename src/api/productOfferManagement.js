@@ -436,70 +436,118 @@ export function exportValencyCodePricing(parameter) {
 
 /* 配置项管理 */
 
-/**新增和修改 */
-export function priceQuotedItemConfigAddOrUpdate(parameter) {
+  /**新增和修改 */
+  export function priceQuotedItemConfigAddOrUpdate(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/addAndUpdate',
+      method: 'post',
+      data: parameter
+    })
+  }
+
+  /**删除 */
+  export function priceQuotedItemConfigDelete(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/delItemConfig',
+      method: 'get',
+      params: parameter
+    })
+  }
+
+  /**批量删除 */
+  export function priceQuotedItemConfigDeleteBatch(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/delBatchItemConfig',
+      method: 'get',
+      params: parameter
+    })
+  }
+
+
+  /**根据父id和名子获取下一层列表 */
+  export function priceQuotedItemConfigSubList(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/getItemConfigList',
+      method: 'get',
+      params: parameter
+    })
+  }
+
+  /**根据父id获取树 */
+  export function priceQuotedItemConfigTreeList(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/getItemConfigTree',
+      method: 'get',
+      params: parameter
+    })
+  }
+
+  /**核价 权限 quotedItem:pricing */
+  export function priceQuotedItemConfigSetPrices(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/updateBatchItemConfig',
+      method: 'post',
+      data: parameter
+    })
+  }
+
+/* 配置项管理 END*/
+
+/* 中控系统配置 */
+export function priceQuotedZktListAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-item-config/addAndUpdate',
+    url: '/priceQuote/price-quoted-zkt/priceQuotedZktList',
     method: 'post',
     data: parameter
   })
 }
 
 /**删除 */
-export function priceQuotedItemConfigDelete(parameter) {
+export function priceQuotedZktDelete(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-item-config/delItemConfig',
+    url: '/priceQuote/price-quoted-zkt/delQuotedZkt',
     method: 'get',
     params: parameter
   })
 }
 
-/**批量删除 */
-export function priceQuotedItemConfigDeleteBatch(parameter) {
+/**详情 */
+export function priceQuotedZktDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-item-config/delBatchItemConfig',
+    url: '/priceQuote/price-quoted-zkt/priceQuotedZktDetail',
     method: 'get',
     params: parameter
   })
 }
 
-
-/**根据父id和名子获取下一层列表 */
-export function priceQuotedItemConfigSubList(parameter) {
+/**列表 */
+export function priceQuotedZktList(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-item-config/getItemConfigList',
+    url: '/priceQuote/price-quoted-zkt/priceQuotedZktList',
     method: 'get',
     params: parameter
   })
 }
 
-/**根据父id获取树 */
-export function priceQuotedItemConfigTreeList(parameter) {
+/* 核价 */
+export function priceQuotedZktSetPrice(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-item-config/getItemConfigTree',
-    method: 'get',
-    params: parameter
-  })
-}
-
-/**核价 权限 quotedItem:pricing */
-export function priceQuotedItemConfigSetPrices(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-item-config/updateBatchItemConfig',
+    url: '/priceQuote/price-quoted-zkt/updateBatchQuotedZkt',
     method: 'post',
     data: parameter
   })
 }
-
-/* 配置项管理 END*/
-
-/* 中控系统配置 */
 
 /* 中控系统配置 END*/
 
