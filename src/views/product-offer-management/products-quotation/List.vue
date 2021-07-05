@@ -502,7 +502,9 @@ export default {
       }
       //debugger
       Object.keys(priceResult.totalPrice).map((key) => {
-        priceResult.totalPrice[key] = formatPrice(priceResult.totalPrice[key])
+        priceResult.totalPrice[key] =
+          key !== 'price' ? formatPrice(priceResult.totalPrice[key]) : priceResult.totalPrice[key]
+        // priceResult.totalPrice[key] = formatPrice(priceResult.totalPrice[key])
       })
       console.log(priceResult)
       this.costPriceAll = { ...priceResult }

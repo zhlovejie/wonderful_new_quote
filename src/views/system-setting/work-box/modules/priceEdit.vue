@@ -215,13 +215,13 @@ export default {
       let that = this
       // （成本价/0.750） *（1+税率）
       let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate) / 100)
-      if (that.code === 'peijian') {
+      if (that.code === 'pj') {
         this.form.setFieldsValue({
           priceC: _costPrice.toFixed(2),
         })
       } else {
         this.form.setFieldsValue({
-          priceC: parseInt(_costPrice),
+          priceC: Math.ceil(_costPrice / 10) * 10,
         })
       }
 

@@ -72,7 +72,7 @@
             :loading="loading"
           >
             <a-select-option v-for="item in saleValenc" :key="item.id" :value="item.id"
-              >{{ item.newBasisModel }}-{{ item.productCode }}
+              >{{ item.productName }}-{{ item.productCode }}
             </a-select-option>
           </a-select>
         </a-form-item>
