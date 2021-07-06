@@ -22,14 +22,14 @@
             @click="search({ current: 1 })"
           >查询</a-button>
         </a-form-item>
-        <a-form-item >
+        <a-form-item>
           <a-button
             type="primary"
             @click="doAction('export', null)"
           >导出</a-button>
         </a-form-item>
 
-        <a-form-item  style="float:right;">
+        <a-form-item style="float:right;">
           <a-button
             type="primary"
             @click="doAction('add', null)"
@@ -62,17 +62,32 @@
         slot="action"
         slot-scope="text, record, index"
       >
-        <a type="primary" @click="doAction('view',record)">查看</a>
+        <a
+          type="primary"
+          @click="doAction('view',record)"
+        >查看</a>
         <a-divider type="vertical" />
-        <a type="primary" @click="doAction('edit',record)">修改</a>
+        <a
+          type="primary"
+          @click="doAction('edit',record)"
+        >修改</a>
         <a-divider type="vertical" />
-        <a type="primary" @click="doAction('record',record)">修改记录</a>
+        <a
+          type="primary"
+          @click="doAction('record',record)"
+        >修改记录</a>
         <a-divider type="vertical" />
-        <a-popconfirm title="是否要删除此行？" @confirm="doAction('del',record)">
+        <a-popconfirm
+          title="是否要删除此行？"
+          @confirm="doAction('del',record)"
+        >
           <a>删除</a>
         </a-popconfirm>
         <a-divider type="vertical" />
-        <a type="primary" @click="doAction('price',record)">核价</a>
+        <a
+          type="primary"
+          @click="doAction('price',record)"
+        >核价</a>
 
       </div>
 
@@ -138,7 +153,7 @@ const columns = [
     align: 'center',
     title: '操作',
     scopedSlots: { customRender: 'action' }
-  },
+  }
 ]
 
 export default {
@@ -167,9 +182,7 @@ export default {
       immediate: true
     }
   },
-  computed: {
-
-  },
+  computed: {},
   methods: {
     init() {
       this.search()
@@ -193,15 +206,25 @@ export default {
     },
     async doAction(type, record) {
       const that = this
-      if(['add','edit'].includes(type)){
-        that.$refs.addForm.query(type,{...record})
-        return
+      if (['add', 'edit', 'view'].includes(type)) {
+        that.$refs.addForm.query(type, { ...record })
+      } else if (type === 'del') {
+        priceQuotedZktDelete({ id: record.id }).then(res => {
+          that.$message.info(res.msg)
+          if (+res.code === 200) {
+            that.finishHandler()
+          }
+        })
+      } else if (type === 'price') {
+        that.$refs.priceForm.query({ ...record })
+      } else if (type === 'record' || type === 'export') {
+        that.$message.info('该功能正在开发中...')
       }
     },
     finishHandler(param) {
       const that = this
       that.$nextTick(() => {
-        that.fetchTree()
+        that.search()
       })
     }
   }
@@ -209,6 +232,5 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
 

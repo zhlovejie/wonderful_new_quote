@@ -17,12 +17,13 @@
         class="addform-wrapper"
       >
         <a-form-model-item
-          v-for="(item,index) in form.priceQuotedItemConfigList"
+          v-for="(item,index) in form.priceQuotedZktList"
+          placeholder="标配成本价"
           :key="item.id"
           :label="item.configName"
-          :prop="'priceQuotedItemConfigList.' + index + '.price'"
+          :prop="'priceQuotedZktList.' + index + '.price'"
           :rules="{
-            message: '请输入价格',
+            message: '请输入标配成本价',
             trigger: 'change',
             validator:customValidator
           }"
@@ -40,37 +41,42 @@
   </a-modal>
 </template>
 <script>
-import { priceQuotedItemConfigSetPrices } from '@/api/productOfferManagement'
+import {
+  priceQuotedZktSetPrice
+} from '@/api/productOfferManagement'
 export default {
-  name: 'product-offer-management-opt-management_PriceForm',
+  name: 'product-offer-management-control-system_PriceForm',
   data() {
     return {
       type: 'add',
       visible: false,
       spinning: false,
       form: {
-        priceQuotedItemConfigList: []
+        priceQuotedZktList: []
       },
-      rules: {}
+      rules: {},
+      record:{}
     }
   },
   created() {},
   computed: {
     modalTitle() {
-      return '核价'
+      return '中控系统核价'
     }
   },
   methods: {
-    async query(rows) {
+    async query(record) {
+      debugger
       const that = this
+      that.record = record
       that.visible = true
-      that.form = { ...that.form, priceQuotedItemConfigList: rows }
+      that.form = { ...that.form, priceQuotedZktList: [that.record] }
     },
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          priceQuotedItemConfigSetPrices({ ...that.form })
+          priceQuotedZktSetPrice({ ...that.form })
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)

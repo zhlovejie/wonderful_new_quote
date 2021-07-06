@@ -4,6 +4,7 @@
       <div
         class="options-hd"
         style="padding:20px;border:1px solid #e8e8e8;"
+        v-if="!disabled"
       >
         <div class="search-wrapper">
           <a-form layout="inline">
@@ -12,7 +13,7 @@
                 placeholder="模糊查询"
                 v-model="queryParam.configName"
                 allowClear
-                style="width: 280px"
+                style="width: 220px"
               />
             </a-form-item>
             <a-form-item>
@@ -30,7 +31,6 @@
         >
           <a-checkbox-group
             v-model="selectKeys"
-            name="checkboxgroup"
             :options="optionsCheckbox"
             @change="optionsCheckboxChange"
           />
@@ -41,26 +41,39 @@
         style="margin-top:20px;"
       >
         <p>配置清单</p>
-        <OptConfigTree :nodeList="optionsTableDataSource" >
-          <div slot-scope="node" style="padding:10px;">
-            <template v-if="node && +node.configType === 1">
-              <a-checkbox v-model="node.isChecked" @change="e => optChkboxChange(e.target.checked,{...node})" />
+        <OptConfigTree :nodeList="optionsTableDataSource">
+          <div
+            slot-scope="node"
+            style="padding:10px;"
+          >
+            <template v-if="node && node.itemConfigType === 1">
+              <template v-if="!disabled">
+                <a-checkbox
+                  v-model="node.__checked"
+                  @change="e => optChkboxChange(e.target.checked,{...node})"
+                />
+              </template>
+
               <a-popover
-                v-model="node.visible"
                 title="参数配置"
                 trigger="click"
+                v-model="node.visible"
+                v-if="!disabled"
               >
                 <a slot="content">
                   <a-radio-group
                     :options="optionsConfig"
                     v-model="node.configValue"
-                    @change="optRdoChange"
+                    @change="e => optRdoChange(e.target.value,{...node})"
                   />
                 </a>
-                <a-button type="link">{{node.title}}</a-button>
+                <a-button type="link">{{node.configName}}</a-button>
               </a-popover>
+              <span v-else>
+                <a-button type="link">{{node.configName}}</a-button>
+              </span>
             </template>
-            <template v-else>{{node.title}}</template>
+            <template v-else>{{node.configName}}</template>
           </div>
         </OptConfigTree>
       </div>
@@ -73,23 +86,16 @@ import { priceQuotedItemConfigSubList, priceQuotedItemConfigTreeList } from '@/a
 import OptConfigTree from './OptConfigTree'
 export default {
   name: 'options-select',
-  components:{OptConfigTree},
-  model: {
-    prop: 'optSelectedNodes',
-    event: 'change'
-  },
-  props:{
-    modelTitle:{
-      type:String,
-      default:() => '标准配置'
+  components: { OptConfigTree },
+  inject: ['addForm'],
+  props: {
+    modelTitle: {
+      type: String,
+      default: () => '标准配置'
     },
-    noShowKeys:{
-      type:Array,
-      default:() => []
-    },
-    optSelectedNodes:{
-      type:Array,
-      default:() => []
+    filterKeys: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -118,32 +124,71 @@ export default {
         }
       ],
       optionsConfig: [
-        { label: '默认选中', value: '0' },
-        { label: '默认不选中', value: '1' },
-        { label: '必选项', value: '2' },
-        { label: '非必选项', value: '3' }
+        { label: '必选项默认选中', value: '1' },
+        { label: '必选项默认不选中', value: '2' },
+        { label: '非必选项默认选中', value: '3' },
+        { label: '非必选项默认不选中', value: '4' }
       ],
+
+      optSelectedNodesThis: [],
+      type: 'add'
     }
   },
   computed: {
+    isAdd() {
+      return this.type === 'add'
+    },
+    isView() {
+      return this.type === 'view'
+    },
+    isEdit() {
+      return this.type === 'edit'
+    },
     optionsCheckbox() {
       return this.optionsList.map(item => {
         return { label: item.configName, value: item.id }
       })
+    },
+    disabled() {
+      return this.isView
     }
   },
-  created() {
-    this.init()
+  watch: {
+    filterKeys(keys) {
+      this.optionsList = this.optionsListCache.filter(opt => !keys.includes(opt.id))
+    }
   },
   methods: {
     async init() {
-      await Promise.all([this.fetchOptions(), this.fetchTree()])
+      const that = this
+      await Promise.all([that.fetchOptions(), that.fetchTree()])
+      that.optionsListCache = [...that.optionsList]
+    },
+    async query(type, nodes) {
+      const that = this
+      that.type = type
+      await that.init()
+      if (that.isAdd) {
+        that.selectKeys = []
+        that.optionsTableDataSource = []
+      } else if (that.isView) {
+        that.selectKeys = nodes.map(node => node.itemConfigId || node.key)
+        that.optionsTableDataSource = that.checkedAndRequired2ConfigValue(nodes)
+      } else if (that.isEdit) {
+        that.selectKeys = nodes.map(node => node.itemConfigId || node.key)
+        that.optionsCheckboxChange(that.selectKeys)
+
+        that.optionsTableDataSource = that.margeNodes(
+          that.optionsTableDataSource,
+          that.checkedAndRequired2ConfigValue(nodes)
+        )
+      }
     },
     fetchOptions() {
       const that = this
       return priceQuotedItemConfigSubList(that.queryParam)
         .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.configType !== 9)
+          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
         })
         .catch(err => {
           that.$message.error(err)
@@ -157,9 +202,9 @@ export default {
         if (String(obj.key) === String(id)) {
           return obj
         }
-        if (obj && obj.children) {
-          for (let i = 0, len = obj.children.length; i < len; i++) {
-            res = fNode(obj.children[i])
+        if (obj && obj.childrenList) {
+          for (let i = 0, len = obj.childrenList.length; i < len; i++) {
+            res = fNode(obj.childrenList[i])
             if (res !== null) {
               return res
             }
@@ -174,14 +219,15 @@ export default {
       return priceQuotedItemConfigTreeList()
         .then(res => {
           const root = {
+            id: 0,
             key: 0,
-            value: 0,
-            title: '配置项',
+            configName: '配置项',
             isLeaf: false,
-            parentId: null,
-            children: res.data.map(item => that.formatTreeData(item))
+            parentConfigId: null,
+            childrenList: res.data.map(item => that.formatTreeData(item))
           }
           that.treeData = root
+          console.log(JSON.stringify(root))
         })
         .catch(err => {
           that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
@@ -190,20 +236,23 @@ export default {
     formatTreeData(item) {
       const that = this
       const obj = {}
-      obj.key = String(item.id)
-      obj.title = item.configName
-      obj.value = String(item.id)
-      // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
-      obj.parentId = item.parentConfigId || 0
+      obj.id = undefined
+      obj.configName = item.configName
+      obj.parentConfigId = item.parentConfigId || 0
       obj.serialNumber = item.serialNumber
-      obj.configType = item.configType
+      obj.itemConfigType = item.itemConfigType
+      obj.itemConfigId = item.id
+      obj.key = item.id
 
-      obj.isChecked = false
-      obj.visible = false
-      obj.configValue = undefined
+      if (obj.itemConfigType === 1) {
+        obj.__checked = false
+        obj.configValue = undefined
+        obj.isChecked = -1
+        obj.isRequired = -1
+      }
 
       if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
-        obj.children = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
+        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
       }
       return obj
     },
@@ -215,24 +264,135 @@ export default {
         arr.push({ ...target })
       })
       that.optionsTableDataSource = arr
+
+      that.$emit('optChange', [...keys])
     },
-    optRdoChange(){
-      const that = this
-      that.$nextTick(() => {
-        that.$emit('change',optSelectedNodes)
-      })
+    optRdoChange(v, node) {
+      this.emitData()
     },
-    optChkboxChange(checked,node){
+    optChkboxChange(checked, node) {
       const that = this
-      let optSelectedNodes = [...this.optSelectedNodes]
-      if(checked){
-        optSelectedNodes.push(node)
-      }else{
-        optSelectedNodes = optSelectedNodes.filter(item => item.key !== node.key)
+      if (checked) {
+        const optionsTableDataSource = [...that.optionsTableDataSource]
+        const target = optionsTableDataSource.find(opt => that.findNode(opt, node.key))
+        if (target) {
+          const _node = that.findNode(target, node.key)
+          if (_node) {
+            _node.visible = true
+          }
+          that.optionsTableDataSource = optionsTableDataSource
+        }
       }
+      that.emitData()
+    },
+    emitData() {
+      const that = this
       that.$nextTick(() => {
-        that.$emit('change',optSelectedNodes)
+        const optionsTableDataSource = JSON.parse(JSON.stringify(that.optionsTableDataSource))
+        let list = that.filterCheckedNode(optionsTableDataSource)
+        list = that.configValue2CheckedAndRequired(list)
+        console.log(JSON.stringify(list))
+        that.$emit('change', list)
       })
+    },
+    configValue2CheckedAndRequired(nodes) {
+      const that = this
+      const f = n => {
+        if ('configValue' in n) {
+          if (+n.configValue === 1) {
+            n.isRequired = 0
+            n.isChecked = 0
+          } else if (+n.configValue === 2) {
+            n.isRequired = 0
+            n.isChecked = 1
+          } else if (+n.configValue === 3) {
+            n.isRequired = 1
+            n.isChecked = 0
+          } else if (+n.configValue === 4) {
+            n.isRequired = 1
+            n.isChecked = 1
+          }
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    },
+    filterCheckedNode(nodes) {
+      const f = n => {
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          if (n.childrenList.some(node => '__checked' in node)) {
+            n.childrenList = n.childrenList.map(node => f(node)).filter(node => node.__checked)
+          } else {
+            n.childrenList = n.childrenList.map(node => f(node))
+          }
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    },
+    checkedAndRequired2ConfigValue(nodes) {
+      const that = this
+      const f = n => {
+        if (n.isRequired === 0 && n.isChecked === 0) {
+          n.configValue = '1'
+        } else if (n.isRequired === 0 && n.isChecked === 1) {
+          n.configValue = '2'
+        } else if (n.isRequired === 1 && n.isChecked === 0) {
+          n.configValue = '3'
+        } else if (n.isRequired === 1 && n.isChecked === 1) {
+          n.configValue = '4'
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    },
+
+    margeNodes(sourceNodes, nodes) {
+      const that = this
+      const getCheckedNodes = function(nds) {
+        const arr = []
+        const f = n => {
+          if (n.itemConfigType === 1) {
+            arr.push(n)
+          }
+          if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+            n.childrenList = n.childrenList.map(node => f(node))
+          }
+          return n
+        }
+        nds.map(n => f(n))
+        return arr
+      }
+      const checkedNodes = getCheckedNodes(nodes)
+
+      const marge = function(snds) {
+        const f = n => {
+          const __node = checkedNodes.find(_n => _n.key === n.key)
+          if (n.itemConfigType === 1 && __node) {
+            n.__checked = true
+            n.configValue = __node.configValue
+            if (__node.id) {
+              n.id = __node.id
+            }
+            if (__node.zktId) {
+              n.zktId = __node.zktId
+            }
+          }
+          if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+            n.childrenList = n.childrenList.map(node => f(node))
+          }
+          return n
+        }
+        return snds.map(n => f(n))
+      }
+
+      return marge(sourceNodes)
     }
   }
 }

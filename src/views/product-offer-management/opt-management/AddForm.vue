@@ -18,10 +18,10 @@
       >
         <a-form-model-item
           label="配置类型"
-          prop="configType"
+          prop="itemConfigType"
         >
           <a-radio-group
-            v-model="form.configType"
+            v-model="form.itemConfigType"
             :disabled="form.disabledConfigType"
           >
             <a-radio :value="0">配置名称</a-radio>
@@ -78,7 +78,7 @@ export default {
       value: [],
       form: {},
       rules: {
-        configType:[
+        itemConfigType:[
           {required: true, message: '请选择配置类型'}
         ],
         configName:[
@@ -114,14 +114,14 @@ export default {
       // 配置类型 可以选择 名称或参数
       // 如果为名称 ，添加下级 还是可以选择 名称或参数
       // 如果为参数 ，添加下级 只能是参数 禁止修改了
-      let disabledConfigType =(+__selectItem.configType === 1)
+      let disabledConfigType =(+__selectItem.itemConfigType === 1)
       if (that.isAdd) {
         that.form = {
           ...that.form,
           parentConfigId: +__selectItem.key === 0 ? undefined : __selectItem.key,
           parentConfigName: __selectItem.title,
           disabledConfigType,
-          configType: __selectItem.configType
+          itemConfigType: __selectItem.itemConfigType
         }
       } else if (that.isEdit) {
         that.form = {
@@ -133,7 +133,7 @@ export default {
           configName: record.configName,
           serialNumber: record.serialNumber,
           configExplain: record.configExplain,
-          configType: record.configType
+          itemConfigType: record.itemConfigType
         }
       }
     },

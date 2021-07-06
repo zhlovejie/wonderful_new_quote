@@ -503,7 +503,7 @@ export function exportValencyCodePricing(parameter) {
 export function priceQuotedZktListAddOrUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/priceQuote/price-quoted-zkt/priceQuotedZktList',
+    url: '/priceQuote/price-quoted-zkt/addAndUpdateQuotedZkt',
     method: 'post',
     data: parameter
   })

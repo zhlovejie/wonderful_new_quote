@@ -24,14 +24,14 @@ export default {
       const that = this
       const h = that.$createElement
       const fNode = obj => {
-        const isTag = obj.configType === 1
+        const isTag = obj.itemConfigType === 1
         const vnode = isTag
           ? h('div', { style: { display: 'inline-block' } }, [])
           : h('table', null, [h('tr', null, [])])
         const arr = []
-        if (obj && obj.children) {
-          for (let i = 0, len = obj.children.length; i < len; i++) {
-            arr.push(fNode(obj.children[i]))
+        if (obj && obj.childrenList) {
+          for (let i = 0, len = obj.childrenList.length; i < len; i++) {
+            arr.push(fNode(obj.childrenList[i]))
           }
         }
 
@@ -73,6 +73,6 @@ export default {
   width: calc(100% + 4px);
 }
 .opt-config-tree-wrapper table td {
-  border: 1px solid #ccc;
+  border: 1px solid #e8e8e8;
 }
 </style>

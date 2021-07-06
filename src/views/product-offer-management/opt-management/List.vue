@@ -102,7 +102,7 @@
           </div>
 
           <div
-            slot="configType"
+            slot="itemConfigType"
             slot-scope="text, record, index"
           >
             <span>{{ {0:'配置名称',1:'配置参数',9:'树结束标记'}[text] }}</span>
@@ -156,8 +156,8 @@ const columns = [
   {
     align: 'center',
     title: '配置类型',
-    dataIndex: 'configType',
-    scopedSlots: { customRender: 'configType' }
+    dataIndex: 'itemConfigType',
+    scopedSlots: { customRender: 'itemConfigType' }
   },
   {
     align: 'center',
@@ -343,7 +343,7 @@ export default {
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentConfigId || 0
       obj.serialNumber = item.serialNumber
-      obj.configType = item.configType
+      obj.itemConfigType = item.itemConfigType
       if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
         obj.children = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
       }
