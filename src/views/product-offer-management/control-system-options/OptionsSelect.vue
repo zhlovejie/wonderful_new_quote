@@ -154,7 +154,10 @@ export default {
   watch: {
     filterKeys(keys) {
       const that = this
-      if(that.isEdit){
+      if(!that.optionsListCache){
+        return
+      }
+      if(that.isAdd || that.isEdit){
         let optionsList = [...this.optionsListCache]
         this.optionsList = optionsList.filter(opt => !keys.includes(opt.id))
         let arrKeys = this.optionsList.map(opt => opt.id)

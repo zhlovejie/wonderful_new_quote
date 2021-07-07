@@ -3,7 +3,6 @@
     :bordered="false"
     class="product-offer-management-control-system-options"
   >
-
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
@@ -22,19 +21,6 @@
             @click="search({ current: 1 })"
           >查询</a-button>
         </a-form-item>
-        <a-form-item>
-          <a-button
-            type="primary"
-            @click="doAction('export', null)"
-          >导出</a-button>
-        </a-form-item>
-
-        <a-form-item style="float:right;">
-          <a-button
-            type="primary"
-            @click="doAction('add', null)"
-          >新增</a-button>
-        </a-form-item>
       </a-form>
     </div>
 
@@ -44,6 +30,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
+      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
     >
       <div
         slot="order"
@@ -51,73 +38,20 @@
       >
         <span>{{ index + 1 }}</span>
       </div>
-      <div
-        slot="price"
-        slot-scope="text, record, index"
-      >
-        <span v-if="String(text) === '-1'">***</span>
-        <span v-else>{{ text | moneyFormatNumber }}</span>
-      </div>
-
-      <div
-        slot="action"
-        slot-scope="text, record, index"
-      >
-        <a
-          type="primary"
-          @click="doAction('view',record)"
-        >查看</a>
-        <a-divider type="vertical" />
-        <a
-          type="primary"
-          @click="doAction('edit',record)"
-        >修改</a>
-        <a-divider type="vertical" />
-        <a
-          type="primary"
-          @click="doAction('record',record)"
-        >修改记录</a>
-        <a-divider type="vertical" />
-        <a-popconfirm
-          title="是否要删除此行？"
-          @confirm="doAction('del',record)"
-        >
-          <a>删除</a>
-        </a-popconfirm>
-        <a-divider type="vertical" />
-        <a
-          type="primary"
-          @click="doAction('price',record)"
-        >核价</a>
-
-      </div>
-
     </a-table>
 
-    <AddForm
-      ref="addForm"
-      @finish="finishHandler"
-    />
-    <PriceForm
-      ref="priceForm"
-      @finish="finishHandler"
-    />
-
+    <p style="text-align:center;margin-top:20px;">
+      <a-button type="primary"  @click="stepAction('prev')">上一步</a-button>
+      <a-button type="primary" :disabled="btnNextDisabled" @click="stepAction('next')" style="margin-left:10px;">下一步</a-button>
+    </p>
   </a-card>
 </template>
 
 <script>
 import {
-  priceQuotedZktListAddOrUpdate,
-  priceQuotedZktDelete,
-  priceQuotedZktDetail,
-  priceQuotedZktList,
-  priceQuotedZktPageList,
-  priceQuotedZktSetPrice
+  priceQuotedZktPageList
 } from '@/api/productOfferManagement'
 
-import AddForm from './AddForm.vue'
-import PriceForm from './PriceForm'
 
 const columns = [
   {
@@ -129,12 +63,6 @@ const columns = [
     align: 'center',
     title: '中控系统名称',
     dataIndex: 'configName'
-  },
-  {
-    align: 'center',
-    title: '标配成本价',
-    dataIndex: 'price',
-    scopedSlots: { customRender: 'price' }
   },
   {
     align: 'center',
@@ -159,11 +87,7 @@ const columns = [
 ]
 
 export default {
-  name: 'product-offer-management-control-system-options',
-  components: {
-    AddForm,
-    PriceForm
-  },
+  inject:['addForm'],
   data() {
     return {
       // 表头
@@ -172,6 +96,8 @@ export default {
 
       loading: false,
       queryParam: {},
+      selectedRowKeys: [],
+      selectedRows: [],
       pagination: {
         current: 1,
         pageSize: 10,
@@ -182,21 +108,15 @@ export default {
       },
     }
   },
-  watch: {
-    $route: {
-      handler: function(to, from) {
-        if (to.name === 'product-offer-management-control-system-options') {
-          this.init()
-        }
-      },
-      immediate: true
+  computed:{
+    btnNextDisabled(){
+      return this.selectedRows.length <= 0
     }
   },
-  computed: {},
+  created(){
+    this.search()
+  },
   methods: {
-    init() {
-      this.search()
-    },
     search(params = {}) {
       const that = this
       that.loading = true
@@ -223,6 +143,10 @@ export default {
           that.loading = false
         })
     },
+    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
       this.search()
@@ -230,28 +154,13 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
-    async doAction(type, record) {
+    stepAction(type){
       const that = this
-      if (['add', 'edit', 'view'].includes(type)) {
-        that.$refs.addForm.query(type, { ...record })
-      } else if (type === 'del') {
-        priceQuotedZktDelete({ id: record.id }).then(res => {
-          that.$message.info(res.msg)
-          if (+res.code === 200) {
-            that.finishHandler()
-          }
-        })
-      } else if (type === 'price') {
-        that.$refs.priceForm.query({ ...record })
-      } else if (type === 'record' || type === 'export') {
-        that.$message.info('该功能正在开发中...')
+      if(type === 'next'){
+        that.$emit('change','step2','next',[...that.selectedRows])
+      }else if(type === 'prev'){
+        that.$emit('change','step2','prev',null)
       }
-    },
-    finishHandler(param) {
-      const that = this
-      that.$nextTick(() => {
-        that.search()
-      })
     }
   }
 }

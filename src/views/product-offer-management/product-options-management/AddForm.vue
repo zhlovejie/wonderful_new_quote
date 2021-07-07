@@ -1,53 +1,43 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1050"
+    :width="1200"
     :visible="visible"
     :destroyOnClose="true"
-    @ok="handleSubmit"
     @cancel="handleCancel"
+    :footer="null"
     :maskClosable="false"
     :confirmLoading="spinning"
   >
     <a-spin :spinning="spinning">
-      <a-form-model
-        ref="ruleForm"
-        :model="form"
-        :rules="rules"
-        class="addform-wrapper"
-      >
-        <a-form-model-item
-          label="中控系统名称"
-          prop="configName"
-        >
-          <a-input v-if="!isView" v-model="form.configName" />
-          <span v-else>{{form.configName}}</span>
-        </a-form-model-item>
-
-        <OptionsSelect ref="optStand" modelTitle="标准配置" @change="nodes => optStandItems = nodes" @optChange="keys => filterKeys = keys" />
-        <OptionsSelect ref="optChoice" modelTitle="选择配置" :filterKeys="filterKeys" @change="nodes => optChoiceItems = nodes" />
-
-        <a-form-model-item
-          label="备注"
-          prop="remark"
-        >
-          <a-input
-            v-if="!isView"
-            v-model="form.remark"
-            type="textarea"
-          />
-          <span v-else>{{form.remark}}</span>
-        </a-form-model-item>
-      </a-form-model>
+      <a-steps :current="currentStep">
+        <a-step v-for="(item,idx) in steps" :title="item.title" :key="idx" />
+      </a-steps>
+      <div class="step-wrapper">
+        <Step1 v-show="currentStep === 0" @change="stepChangeHander" />
+        <Step2 v-show="currentStep === 1" @change="stepChangeHander" />
+        <Step3 v-show="currentStep === 2" @change="stepChangeHander" />
+        <Step4 v-show="currentStep === 3" @change="stepChangeHander" />
+        <Step5 v-show="currentStep === 4" @change="stepChangeHander" @ok="handleSubmit" />
+      </div>
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { priceQuotedProductAddOrUpdate ,priceQuotedProductDetail} from '@/api/productOfferManagement'
-import OptionsSelect from './OptionsSelect'
+import Step1 from './Step1'
+import Step2 from './Step2'
+import Step3 from './Step3'
+import Step4 from './Step4'
+import Step5 from './Step5'
 export default {
   name: 'product-offer-management-product-options-management_AddForm',
-  components:{OptionsSelect},
+  components:{
+    Step1,
+    Step2,
+    Step3,
+    Step4,
+    Step5
+  },
   provide() {
     return {
       addForm: this
@@ -58,19 +48,19 @@ export default {
       type: 'add',
       visible: false,
       spinning: false,
-      treeData: [],
-      value: [],
-      form: {},
-      rules: {
-        configName:[
-          { required: true, message: '请输入中控系统名称', trigger: 'blur' },
-        ]
-      },
-      detail: {},
+      form:{},
+      currentStep:0,
+      steps:[
+        {title:'产品型号'},
+        {title:'中控型号'},
+        {title:'标配'},
+        {title:'选配'},
+        {title:'预览'},
+      ],
 
+      optControlItems:[],// 中控
       optStandItems:[], // 标配
       optChoiceItems:[],// 选配
-      filterKeys:[]
     }
   },
   created() {},
@@ -95,80 +85,31 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
+      that.spinning = false
 
-      if(that.isView || that.isEdit){
-        that.spinning = true
-        await priceQuotedProductDetail({id:record.id}).then(res => {
-          that.spinning = false
-          let result = res.data
-          let nodes = that.addNodesKey(result.childrenList)
-          let optStandItems = nodes.filter(item => +item.configType === 0)
-          let optChoiceItems = nodes.filter(item => +item.configType === 1)
-          that.optStandItems = optStandItems
-          that.optChoiceItems = optChoiceItems
-          delete result.childrenList
-          that.form = {...result}
-        }).catch(err => {
-          that.spinning = false
-          that.$message.error(err)
-        })
-      }
 
-      that.$nextTick(() => {
-        that.$refs.optStand.query(type,that.optStandItems)
-        that.$refs.optChoice.query(type,that.optChoiceItems)
-      })
     },
     handleSubmit() {
       const that = this
-      that.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          let priceQuotedZktConfigList = [
-            ...that.addConfigType(that.optStandItems,0), //标配 0
-            ...that.addConfigType(that.optChoiceItems,1) //选配 1
-          ]
-
-          priceQuotedProductAddOrUpdate({ ...that.form ,priceQuotedZktConfigList})
-            .then(res => {
-              that.spinning = false
-              that.$message.info(res.msg)
-              that.$emit('finish')
-              that.handleCancel()
-            })
-            .catch(err => (that.spinning = false))
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+      console.log('handleSubmit....',that.form)
+      that.spinning = true
     },
     handleCancel() {
       const that = this
-      that.$refs.ruleForm.resetFields()
       that.form = {}
+      that.currentStep = 0
       that.$nextTick(() => (that.visible = false))
     },
-    addConfigType(nodes,configType=0){
+    stepChangeHander(name,stepType,data){
       const that = this
-      let f = (n) => {
-        n.configType = configType
-        if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-          n.childrenList = n.childrenList.map(node => f(node))
-        }
-        return n
+      that.form = {...that.form,[name]:data}
+      if(stepType === 'next'){
+        that.currentStep = that.currentStep + 1
+      }else if(stepType === 'prev'){
+        that.currentStep = that.currentStep - 1
       }
-      return nodes.map(n => f(n))
-    },
-    addNodesKey(nodes){
-      const that = this
-      let f = (n) => {
-        n.key = n.itemConfigId
-        if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-          n.childrenList = n.childrenList.map(node => f(node))
-        }
-        return n
-      }
-      return nodes.map(n => f(n))
+
+      console.log(that.form)
     }
   }
 }

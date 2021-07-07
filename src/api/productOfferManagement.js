@@ -477,6 +477,16 @@ export function exportValencyCodePricing(parameter) {
     })
   }
 
+  /**根据父id和名子获取下一层列表 */
+  export function priceQuotedItemConfigSubPageList(parameter) {
+    return axios({
+      baseURL: system.baseURL,
+      url: '/priceQuote/price-quoted-item-config/getItemConfigPage',
+      method: 'get',
+      params: parameter
+    })
+  }
+
   /**根据父id获取树 */
   export function priceQuotedItemConfigTreeList(parameter) {
     return axios({
@@ -534,6 +544,16 @@ export function priceQuotedZktList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/priceQuote/price-quoted-zkt/priceQuotedZktList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**列表 */
+export function priceQuotedZktPageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-zkt/priceQuotedZktPage',
     method: 'get',
     params: parameter
   })

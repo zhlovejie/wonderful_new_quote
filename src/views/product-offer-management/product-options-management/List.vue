@@ -32,7 +32,7 @@
         <a-form-item style="float:right;">
           <a-button
             type="primary"
-            @click="doAction('add', null)"
+            @click="doAction('add', {})"
           >新增</a-button>
         </a-form-item>
       </a-form>

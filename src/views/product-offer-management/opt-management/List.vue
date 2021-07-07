@@ -83,8 +83,9 @@
         <a-table
           :columns="columns"
           :dataSource="dataSource"
-          :pagination="false"
+          :pagination="pagination"
           :loading="loading"
+          @change="handleTableChange"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
         >
           <div
@@ -128,6 +129,7 @@ import {
   priceQuotedItemConfigAddOrUpdate,
   priceQuotedItemConfigDeleteBatch,
   priceQuotedItemConfigSubList,
+  priceQuotedItemConfigSubPageList,
   priceQuotedItemConfigTreeList,
   priceQuotedItemConfigSetPrices
 } from '@/api/productOfferManagement'
@@ -215,7 +217,15 @@ export default {
       autoExpandParent: true,
 
       loading: false,
-      queryParam: {}
+      queryParam: {},
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: this.onShowSizeChangeHandler
+      },
     }
   },
   watch: {
@@ -319,19 +329,35 @@ export default {
     search(params = {}) {
       const that = this
       that.loading = true
-      const _searchParam = Object.assign({}, { ...that.queryParam }, params)
-      priceQuotedItemConfigSubList(_searchParam)
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10
+      }
+      const _searchParam = Object.assign({}, { ...that.queryParam },paginationParam, params)
+      priceQuotedItemConfigSubPageList(_searchParam)
         .then(res => {
           that.loading = false
-          that.dataSource = res.data.filter(item => item.configType !== 9).map((item, index) => {
+          that.dataSource = res.data.records.filter(item => item.configType !== 9).map((item, index) => {
             item.key = index + 1
             return item
           })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
+          that.pagination = pagination
         })
         .catch(err => {
           console.error(err)
           that.loading = false
         })
+    },
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination = { ...this.pagination, current: pagination.current }
+      this.search()
+    },
+    onShowSizeChangeHandler(current, pageSize) {
+      this.pagination = { ...this.pagination, current, pageSize }
     },
     //格式化接口数据 key,title,value
     formatTreeData(item) {
@@ -364,6 +390,9 @@ export default {
 
       that.selectedRowKeys = []
       that.selectedRows = []
+
+      that.pagination = {...that.pagination,current:1}
+
       that.search()
     },
     async doAction(type, record) {
