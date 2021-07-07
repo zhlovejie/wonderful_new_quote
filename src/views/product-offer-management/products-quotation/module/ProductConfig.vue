@@ -27,11 +27,7 @@
                 </td> -->
                 <td>
                   <a-checkbox
-                    :disabled="
-                      (parseInt(item.aprice) || 0) === 0 &&
-                      (parseInt(item.bprice) || 0) === 0 &&
-                      (parseInt(item.cprice) || 0) === 0
-                    "
+                    :disabled="(parseInt(item.price) || 0) === 0"
                     :checked="item.checked"
                     @change="optStandChoiceCheckChange(index, $event)"
                   />

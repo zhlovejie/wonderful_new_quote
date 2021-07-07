@@ -407,8 +407,15 @@ export default {
       let dataSource = [...this.data]
       let target = dataSource.find((item) => item.id === record.id)
       if (target) {
-        target[type] = val
-        this.date = dataSource
+        if (type === 'productTypeConfigId') {
+          let react = this.depList.find((item) => item.id === val)
+          target['productTypeConfigCode'] = react.code
+          target[type] = val
+          this.date = dataSource
+        } else {
+          target[type] = val
+          this.date = dataSource
+        }
       }
     },
     changeHandler(record, type, e) {

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="800"
+    :width="1050"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -12,10 +12,11 @@
         <table class="custom-table custom-table-border">
           <tr>
             <td class="requiredMark" style="width: 120px">产品类型名称</td>
-            <td colspan="2">
+            <td colspan="6">
               <a-form-item>
                 <a-input
                   :disabled="isView"
+                  style="width: 60%"
                   v-decorator="['typeName', { rules: [{ required: true, message: '请输入产品类型名称' }] }]"
                 />
               </a-form-item>
@@ -23,11 +24,11 @@
           </tr>
           <tr>
             <td class="requiredMark" style="width: 120px">税率(%)</td>
-            <td colspan="2">
+            <td colspan="6">
               <a-form-item>
                 <a-input-Number
                   :disabled="isView"
-                  style="width: 100%"
+                  style="width: 60%"
                   v-decorator="['taxRate', { rules: [{ required: true, message: '请输入税率' }] }]"
                 />
               </a-form-item>
@@ -35,9 +36,10 @@
           </tr>
           <tr>
             <td class="requiredMark" style="width: 120px">编码</td>
-            <td colspan="2">
+            <td colspan="6">
               <a-form-item>
                 <a-input
+                  style="width: 60%"
                   :disabled="isView"
                   v-decorator="['code', { rules: [{ required: true, message: '请输入编码' }] }]"
                 />
@@ -45,53 +47,144 @@
             </td>
           </tr>
           <tr>
-            <td colspan="3"><h3>区间范围</h3></td>
+            <td class="requiredMark" style="width: 120px">底价</td>
+            <td colspan="6">
+              <a-form-item>
+                <a-select
+                  class="a-select"
+                  style="width: 60%"
+                  showSearch
+                  :disabled="isView"
+                  :allowClear="true"
+                  optionFilterProp="children"
+                  :filterOption="filterCustomerOption"
+                  v-decorator="['lowPriceInterval', { rules: [{ required: true, message: '请选择底价区间' }] }]"
+                >
+                  <a-select-option v-for="val in configList" :key="val.idnex" :value="val.intervalValueName">{{
+                    val.intervalValueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7"><h3>区间范围</h3></td>
           </tr>
           <tr>
             <th>序号</th>
             <th>区间名称</th>
-            <th>区间范围</th>
+            <th>区间权限</th>
+            <th colspan="4">区间范围</th>
           </tr>
           <tr v-for="(item, index) in typeConfigRangeList" :key="item.index">
-            <td>{{ index + 1 }}</td>
-            <td>{{ item.name }}</td>
+            <td style="width: 70px">{{ index + 1 }}</td>
             <td>
-              <a-select
-                class="a-select"
-                style="width: 200px"
-                v-model="item.startInterval"
-                showSearch
-                :disabled="isView"
-                @change="Onchange()"
-                :allowClear="true"
-                placeholder="开始区间范围"
-                optionFilterProp="children"
-                :filterOption="filterCustomerOption"
-              >
-                <a-select-option v-for="val in configList" :key="val.idnex" :value="val.intervalValueName">{{
-                  val.intervalValueName
-                }}</a-select-option> </a-select
-              >至
-              <a-select
-                class="a-select"
-                style="width: 200px"
-                :disabled="isView"
-                v-model="item.endInterval"
-                @change="Onchange()"
-                showSearch
-                :allowClear="true"
-                placeholder="结束区间范围"
-                optionFilterProp="children"
-                :filterOption="filterCustomerOption"
-              >
-                <a-select-option v-for="val in configLists" :key="val.idnex" :value="val.intervalValueName">{{
-                  val.intervalValueName
-                }}</a-select-option>
-              </a-select>
+              <a-form-item>
+                <a-input
+                  placeholder="区间名称"
+                  :disabled="isView"
+                  style="width: 150px"
+                  @change="inputChange($event, item.key, 'intervalName')"
+                  v-decorator="[
+                    `typeConfigRangeList.${index}.intervalName`,
+                    { initialValue: item.intervalName, rules: [{ required: true, message: '请输入区间名称' }] },
+                  ]"
+                />
+              </a-form-item>
+            </td>
+            <td>
+              <a-form-item>
+                <a-select
+                  placeholder="区间权限"
+                  :disabled="isView"
+                  :allowClear="true"
+                  style="width: 150px"
+                  @change="inputChange($event, item.key, 'intervalPermission')"
+                  v-decorator="[
+                    `typeConfigRangeList.${index}.intervalPermission`,
+                    { initialValue: item.intervalPermission, rules: [{ required: true, message: '请选择区间权限' }] },
+                  ]"
+                >
+                  <a-select-option :value="0">全部可见</a-select-option>
+                  <a-select-option :value="1">销售总经理可见</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+            <td>默认区间</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  placeholder="默认区间"
+                  :disabled="isView"
+                  :allowClear="true"
+                  showSearch
+                  style="width: 150px"
+                  optionFilterProp="children"
+                  :filterOption="filterCustomerOption"
+                  @change="inputChange($event, item.key, 'defaultInterval')"
+                  v-decorator="[
+                    `typeConfigRangeList.${index}.defaultInterval`,
+                    { initialValue: item.defaultInterval, rules: [{ required: true, message: '请选择默认区间' }] },
+                  ]"
+                >
+                  <a-select-option v-for="val in configList" :key="val.idnex" :value="val.intervalValueName">{{
+                    val.intervalValueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+            <td>区间范围</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  placeholder="开始区间"
+                  :disabled="isView"
+                  :allowClear="true"
+                  showSearch
+                  style="width: 150px"
+                  optionFilterProp="children"
+                  :filterOption="filterCustomerOption"
+                  @change="inputChange($event, item.key, 'startInterval')"
+                  v-decorator="[
+                    `typeConfigRangeList.${index}.startInterval`,
+                    { initialValue: item.startInterval, rules: [{ required: true, message: '请选择开始区间' }] },
+                  ]"
+                >
+                  <a-select-option v-for="val in configList" :key="val.idnex" :value="val.intervalValueName">{{
+                    val.intervalValueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+              至
+              <a-form-item>
+                <a-select
+                  placeholder="结束区间"
+                  :disabled="isView"
+                  :allowClear="true"
+                  showSearch
+                  style="width: 150px"
+                  optionFilterProp="children"
+                  :filterOption="filterCustomerOption"
+                  @change="inputChange($event, item.key, 'endInterval')"
+                  v-decorator="[
+                    `typeConfigRangeList.${index}.endInterval`,
+                    { initialValue: item.endInterval, rules: [{ required: true, message: '请选择结束区间' }] },
+                  ]"
+                >
+                  <a-select-option v-for="val in configLists" :key="val.idnex" :value="val.intervalValueName">{{
+                    val.intervalValueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
             </td>
           </tr>
         </table>
+        <a-button style="width: 100%" v-if="!isView" type="dashed" icon="plus" @click="handleAction()"
+          >新增区间范围</a-button
+        >
         <div style="margin-top: 20px">编码规则：数字加字母组合，不允许输入空格与中文字符。</div>
+        <div>底价：低于底价至老板审批</div>
+        <div>区间权限：全部：销售人员可见;销售总经理：只有销售总经理可见</div>
       </a-form>
     </a-spin>
   </a-modal>
@@ -111,26 +204,7 @@ export default {
       spinning: false,
       configList: [],
       configLists: [],
-      typeConfigRangeList: [
-        {
-          name: '总区间',
-          rateType: 1,
-          startInterval: undefined,
-          endInterval: undefined,
-        },
-        {
-          name: '推荐区间',
-          rateType: 2,
-          startInterval: undefined,
-          endInterval: undefined,
-        },
-        {
-          name: '竞争利区间',
-          rateType: 3,
-          startInterval: undefined,
-          endInterval: undefined,
-        },
-      ],
+      typeConfigRangeList: [],
     }
   },
   computed: {
@@ -153,71 +227,23 @@ export default {
     },
   },
   methods: {
-    Onchange(value, val) {
-      this.verification()
+    inputChange(event, key, field) {
+      let typeConfigRangeList = [...this.typeConfigRangeList]
+      let target = typeConfigRangeList.find((item, index) => item.index === key)
+      if (target) {
+        target[field] = event instanceof Event ? event.target.value : event
+        this.typeConfigRangeList = typeConfigRangeList
+      }
     },
-    //区间范围验证
-    verification() {
-      if (
-        this.typeConfigRangeList[0].startInterval !== undefined &&
-        this.typeConfigRangeList[0].endInterval !== undefined
-      ) {
-        if (
-          this.typeConfigRangeList[0].startInterval < this.typeConfigRangeList[0].endInterval ||
-          this.typeConfigRangeList[0].startInterval === this.typeConfigRangeList[0].endInterval
-        ) {
-          if (
-            (this.typeConfigRangeList[0].startInterval < this.typeConfigRangeList[1].endInterval &&
-              this.typeConfigRangeList[0].endInterval > this.typeConfigRangeList[1].startInterval) ||
-            (this.typeConfigRangeList[0].startInterval < this.typeConfigRangeList[2].endInterval &&
-              this.typeConfigRangeList[0].endInterval > this.typeConfigRangeList[2].startInterval)
-          ) {
-            this.$message.error('区间范围存在重叠')
-          }
-        } else {
-          this.$message.error('总区间开始范围要大于结束范围')
-        }
-      }
-      if (
-        this.typeConfigRangeList[1].startInterval !== undefined &&
-        this.typeConfigRangeList[1].endInterval !== undefined
-      ) {
-        if (
-          this.typeConfigRangeList[1].startInterval < this.typeConfigRangeList[1].endInterval ||
-          this.typeConfigRangeList[1].startInterval === this.typeConfigRangeList[1].endInterval
-        ) {
-          if (
-            (this.typeConfigRangeList[1].startInterval < this.typeConfigRangeList[0].endInterval &&
-              this.typeConfigRangeList[1].endInterval > this.typeConfigRangeList[0].startInterval) ||
-            (this.typeConfigRangeList[1].startInterval < this.typeConfigRangeList[2].endInterval &&
-              this.typeConfigRangeList[1].endInterval > this.typeConfigRangeList[2].startInterval)
-          ) {
-            this.$message.error('区间范围存在重叠')
-          }
-        } else {
-          this.$message.error('推荐区间开始范围要大于结束范围')
-        }
-      }
-      if (
-        this.typeConfigRangeList[2].startInterval !== undefined &&
-        this.typeConfigRangeList[2].endInterval !== undefined
-      ) {
-        if (
-          this.typeConfigRangeList[2].startInterval < this.typeConfigRangeList[2].endInterval ||
-          this.typeConfigRangeList[2].startInterval === this.typeConfigRangeList[2].endInterval
-        ) {
-          if (
-            (this.typeConfigRangeList[2].startInterval < this.typeConfigRangeList[1].endInterval &&
-              this.typeConfigRangeList[2].endInterval > this.typeConfigRangeList[1].startInterval) ||
-            (this.typeConfigRangeList[2].startInterval < this.typeConfigRangeList[0].endInterval &&
-              this.typeConfigRangeList[2].endInterval > this.typeConfigRangeList[0].startInterval)
-          ) {
-            this.$message.error('区间范围存在重叠')
-          }
-        } else {
-          this.$message.error('竞争利区间开始范围要大于结束范围')
-        }
-      }
+
+    handleAction() {
+      this.typeConfigRangeList.push({
+        startInterval: undefined,
+        endInterval: undefined,
+        intervalName: undefined,
+        intervalPermission: undefined,
+        defaultInterval: undefined,
+      })
     },
     async handleOk() {
       let that = this
@@ -226,37 +252,20 @@ export default {
           if (that.isEdit) {
             values.id = that.record.id
           }
-          let react = that.typeConfigRangeList.every(
-            (i) => i.startInterval === undefined && i.endInterval === undefined
-          )
-          console.log(react)
-          if (react) {
-            return that.$message.error('请选择区间范围')
-          }
-          values.typeConfigRangeList = that.typeConfigRangeList.filter(
-            (val) => val.startInterval !== undefined && val.endInterval !== undefined
-          )
-          values.typeConfigRangeList = values.typeConfigRangeList.map((item) => {
-            return {
-              startInterval: item.startInterval,
-              endInterval: item.endInterval,
-              rateType: item.rateType,
-            }
-          })
+          console.log(values)
           that.spinning = true
           addAndUpdateTypeConfig(values)
             .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.visible = false
-                that.$message.success('操作成功')
+                that.$message.success(res.msg)
                 that.$emit('finish')
               } else {
                 that.$message.warning(res.msg)
               }
             })
             .catch((err) => {
-              console.log(err)
               that.$message.error('操作失败')
               that.spinning = false
             })
@@ -265,22 +274,11 @@ export default {
     },
     handleCancel() {
       this.form.resetFields()
-      this.typeConfigRangeList[0].startInterval = undefined
-      this.typeConfigRangeList[0].endInterval = undefined
-      this.typeConfigRangeList[1].startInterval = undefined
-      this.typeConfigRangeList[1].endInterval = undefined
-      this.typeConfigRangeList[2].startInterval = undefined
-      this.typeConfigRangeList[2].endInterval = undefined
+      this.typeConfigRangeList = []
       this.$nextTick(() => (this.visible = false))
     },
     async query(type, record) {
       let that = this
-      this.typeConfigRangeList[0].startInterval = undefined
-      this.typeConfigRangeList[0].endInterval = undefined
-      this.typeConfigRangeList[1].startInterval = undefined
-      this.typeConfigRangeList[1].endInterval = undefined
-      this.typeConfigRangeList[2].startInterval = undefined
-      this.typeConfigRangeList[2].endInterval = undefined
       that.actionType = type
       that.record = record || {}
       that.form.resetFields()
@@ -314,30 +312,10 @@ export default {
           code: res.data.code,
           typeName: res.data.typeName,
           taxRate: res.data.taxRate,
+          lowPriceInterval: res.data.lowPriceInterval,
         })
-        res.data.typeConfigRangeList.map((val) => {
-          if (val.rateType === 1) {
-            this.typeConfigRangeList[0].startInterval = val.startInterval
-            this.typeConfigRangeList[0].endInterval = val.endInterval
-          }
-          if (val.rateType === 2) {
-            this.typeConfigRangeList[1].startInterval = val.startInterval
-            this.typeConfigRangeList[1].endInterval = val.endInterval
-          }
-          if (val.rateType === 3) {
-            this.typeConfigRangeList[2].startInterval = val.startInterval
-            this.typeConfigRangeList[2].endInterval = val.endInterval
-          }
-        })
+        that.typeConfigRangeList = res.data.typeConfigRangeList
       })
-    },
-    formatHTML(htmlStr) {
-      if (typeof htmlStr !== 'string') {
-        return ''
-      }
-      htmlStr = htmlStr.replace(/[\n\r]/g, '<br/>')
-      htmlStr = htmlStr.replace(/\s+/g, '&nbsp;')
-      return htmlStr
     },
   },
 }

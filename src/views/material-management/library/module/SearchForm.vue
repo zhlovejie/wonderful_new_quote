@@ -65,29 +65,12 @@
             </a-radio-group>
           </a-form-item>
         </a-col>
-
-        <a-col :span="24">规格型号</a-col>
-        <a-col :span="6">
-          <a-form-item label="材质">
-            <a-input v-decorator="['texture']" placeholder="材质" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="6">
-          <a-form-item label="厚度">
-            <a-input v-decorator="['thickness']" placeholder="厚度" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="6">
-          <a-form-item label="宽度">
-            <a-input v-decorator="['width']" placeholder="宽度" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="6">
-          <a-form-item label="长度">
-            <a-input v-decorator="['length']" placeholder="长度" :allowClear="true" />
-          </a-form-item>
-        </a-col>
-
+        <template v-if="isNormal">
+          <a-col :span="24">规格型号</a-col>
+          <a-col :span="24">
+              <SpecificationSearch ref="specificationSearch" :info="detail" @change="specificationSearchChange" />
+          </a-col>
+        </template>
       </a-row>
       <a-row :gutter="0" type="flex" justify="center">
         <a-col :span="3">
@@ -104,18 +87,31 @@
   </a-modal>
 </template>
 <script>
+import SpecificationSearch from './SpecificationSearch'
 export default {
   name: 'searchForm',
-  components: {},
+  components: {SpecificationSearch},
   data() {
     return {
       modalTitle: '高级筛选',
       visible: false,
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      detail:{},
+
+      specification:undefined, //规格型号
+    }
+  },
+  computed:{
+    isNormal(){
+      return this.detail && this.detail.__from === 'normal'
+    },
+    isProduct(){
+      return this.detail && this.detail.__from === 'product'
     }
   },
   methods: {
-    query() {
+    query(record) {
+      this.detail = { ...record }
       this.visible = true
     },
     handleCancel() {
@@ -126,12 +122,18 @@ export default {
         this.handleCancel()
       } else if (type === 'reset') {
         this.form.resetFields()
+        this.specification = undefined
+        this.$refs['specificationSearch'] && this.$refs['specificationSearch'].reset()
       } else if (type === 'search') {
         let values = this.form.getFieldsValue()
+        values = {...values,specification:this.specification}
         console.log(values)
         this.$emit('change', values)
         this.handleCancel()
       }
+    },
+    specificationSearchChange({specification}){
+      this.specification = specification
     }
   }
 }

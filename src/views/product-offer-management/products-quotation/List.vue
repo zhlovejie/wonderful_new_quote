@@ -58,7 +58,13 @@
     >
       <!-- <p>成本价：{{parseInt(costPrice.price) | moneyFormatNumber}}</p> -->
       <div class="price-wrapper">
-        <a-table :columns="columns" :dataSource="dataSource" :customRow="customRowFunction">
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :customRow="customRowFunction"
+          :pagination="false"
+          size="small"
+        >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -259,7 +265,7 @@ export default {
       let { rateType } = record
       return {
         style: {
-          'background-color': rateType === 1 ? '#D5DCF7 ' : +rateType === 2 ? '#EFE68E' : '#EC9495',
+          'background-color': rateType === 1 ? '#E6F7FF ' : +rateType === 2 ? '#FFFBE6' : '#FFF1F0',
         },
       }
     },
@@ -496,7 +502,9 @@ export default {
       }
       //debugger
       Object.keys(priceResult.totalPrice).map((key) => {
-        priceResult.totalPrice[key] = formatPrice(priceResult.totalPrice[key])
+        priceResult.totalPrice[key] =
+          key !== 'price' ? formatPrice(priceResult.totalPrice[key]) : priceResult.totalPrice[key]
+        // priceResult.totalPrice[key] = formatPrice(priceResult.totalPrice[key])
       })
       console.log(priceResult)
       this.costPriceAll = { ...priceResult }

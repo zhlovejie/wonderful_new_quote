@@ -79,12 +79,12 @@ export default {
           url: monitorUrl,
           template: 'security', // simple - 极简版;standard-标准版;security - 安防版(预览回放);voice-语音版；
           // 视频上方头部控件
-          header: ['capturePicture', 'save', 'zoom'], // 如果templete参数不为simple,该字段将被覆盖
+          //header: ['capturePicture', 'save', 'zoom'], // 如果templete参数不为simple,该字段将被覆盖
           //plugin: ['talk'],                       // 加载插件，talk-对讲
           // 视频下方底部控件
-          footer: ['hd', 'fullScreen'], // 如果template参数不为simple,该字段将被覆盖
+          //footer: ['hd', 'fullScreen'], // 如果template参数不为simple,该字段将被覆盖
           audio: 1, // 是否默认开启声音 0 - 关闭 1 - 开启
-          autoplay: false,
+          //autoplay: false,
           width: 550,
           height: 400,
           handleSuccess: that.handleCameraSuccess,

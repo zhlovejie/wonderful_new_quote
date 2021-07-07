@@ -90,7 +90,7 @@ import moment from 'moment'
 import ProductCommon from './ProductCommon'
 import ProductC from './ProductC'
 import ProductSplitCommon from './ProductSplitCommon'
-import { getProductInfoBYTypeAndId} from '@/api/contractListManagement'
+import { getProductInfoBYTypeAndId } from '@/api/contractListManagement'
 export default {
   name: 'Step2',
   components: { ProductCommon, ProductSplitCommon, ProductC },
@@ -359,41 +359,46 @@ export default {
         let products = this.formatProduct(values)
         //fix 1206
         //[2021-05-06][销售合同]选择合同产品信息时，增加判定 选择的产品是否有成本价 如果没有成本价给出提示
-        let checkCostPriceResult = await Promise.all(products.map(item => {
-          return new Promise((resolve) => {
-            getProductInfoBYTypeAndId({
-              productType:item.productType,
-              productId:item.productId
-            }).then(res =>{
-              if(res && +res.code === 200){
-                resolve(res.data)
-              }else{
-                resolve(null)
-              }
-            }).catch(err =>{
-              console.log(err)
-              resolve(null)
+        let checkCostPriceResult = await Promise.all(
+          products.map((item) => {
+            return new Promise((resolve) => {
+              getProductInfoBYTypeAndId({
+                productType: item.productType,
+                productId: item.productId,
+              })
+                .then((res) => {
+                  if (res && +res.code === 200) {
+                    resolve(res.data)
+                  } else {
+                    resolve(null)
+                  }
+                })
+                .catch((err) => {
+                  console.log(err)
+                  resolve(null)
+                })
             })
           })
-        }))
-        let noCostPriceResult = checkCostPriceResult.filter(item => item && !item.costPrice)
-        if(noCostPriceResult && noCostPriceResult.length > 0){
-            that.$warning({
-              title: '产品暂无成本价',
-              content: (
-                <div class="__notice-wrapper">
-                  {
-                    noCostPriceResult.map(item => {
-                      return <p>产品代码：{item.productModel} 产品名称：{item.productName} </p>
-                    })
-                  }
-                  <p>以上产品暂无成本价，请先联系核价人员进行维护！！！</p>
-                </div>
-              ),
-              width: 650,
-              onOk: () => {
-              },
-            })
+        )
+        let noCostPriceResult = checkCostPriceResult.filter((item) => item && !item.costPrice)
+        if (noCostPriceResult && noCostPriceResult.length > 0) {
+          that.$warning({
+            title: '产品暂无成本价',
+            content: (
+              <div class="__notice-wrapper">
+                {noCostPriceResult.map((item) => {
+                  return (
+                    <p>
+                      产品代码：{item.productModel} 产品名称：{item.productName}{' '}
+                    </p>
+                  )
+                })}
+                <p>以上产品暂无成本价，请先联系核价人员进行维护！！！</p>
+              </div>
+            ),
+            width: 650,
+            onOk: () => {},
+          })
           return
         }
         //fix 1206 END

@@ -20,7 +20,7 @@
               <a-input
                 v-model="form.materialCode"
                 placeholder="系统生成"
-                :disabled="true"
+                :disabled="!normalAddForm.isAdd"
               />
             </a-form-model-item>
           </td>
@@ -34,7 +34,7 @@
             >
               <a-input
                 v-model="form.materialName"
-                :disabled="normalAddForm.isView"
+                :disabled="!normalAddForm.isAdd"
               />
             </a-form-model-item>
           </td>
@@ -83,10 +83,11 @@
           <td>规格型号</td>
           <td colspan="3">
             <a-form-model-item>
-              材质：{{form.texture}}&nbsp;&nbsp;
+              <!-- 材质：{{form.texture}}&nbsp;&nbsp;
               厚度：{{form.thickness}}&nbsp;&nbsp;
               宽度：{{form.width}}&nbsp;&nbsp;
-              长度：{{form.length}}
+              长度：{{form.length}} -->
+              {{form.specification}}
             </a-form-model-item>
           </td>
         </tr>

@@ -5526,10 +5526,10 @@ extsprintf@^1.2.0:
   resolved "https://registry.npm.taobao.org/extsprintf/download/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-ezuikit-js@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.npm.taobao.org/ezuikit-js/download/ezuikit-js-0.2.3.tgz#0b80cb68876a6ff0920865055044c77814a8442c"
-  integrity sha1-C4DLaIdqb/CSCGUFUETHeBSoRCw=
+ezuikit-js@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.npm.taobao.org/ezuikit-js/download/ezuikit-js-0.2.4.tgz#d70fdee515d89418a1ebe5bafc0747a7f7ab714e"
+  integrity sha1-1w/e5RXYlBih6+W6/AdHp/ercU4=
 
 fast-deep-equal@^1.0.0:
   version "1.1.0"
