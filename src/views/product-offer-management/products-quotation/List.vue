@@ -48,7 +48,7 @@
 
     <a-modal
       title="产品评估"
-      :width="600"
+      :width="800"
       :visible="visible"
       @cancel="visible = false"
       :maskClosable="false"
@@ -68,7 +68,16 @@
           :pagination="false"
         >
           <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
+            <span style="font-size: 20px">{{ index + 1 }}</span>
+          </div>
+          <div slot="commissionRate" slot-scope="text, record, index">
+            <span style="font-size: 20px">{{ text }}</span>
+          </div>
+          <div slot="price" slot-scope="text, record, index">
+            <span style="font-size: 20px">{{ text }}</span>
+          </div>
+          <div slot="intervalValueName" slot-scope="text, record, index">
+            <span style="font-size: 20px">{{ text }}</span>
           </div>
           <a-table
             slot="expandedRowRender"
@@ -188,16 +197,19 @@ export default {
           align: 'center',
           title: '区间值名称',
           dataIndex: 'intervalValueName',
+          scopedSlots: { customRender: 'intervalValueName' },
         },
         {
           align: 'center',
           title: '提成比率',
           dataIndex: 'commissionRate',
+          scopedSlots: { customRender: 'commissionRate' },
         },
         {
           align: 'center',
           title: '销售价格',
           dataIndex: 'price',
+          scopedSlots: { customRender: 'price' },
         },
       ],
       activeKey: 1,
@@ -622,7 +634,5 @@ export default {
 }
 .price-wrapper {
   text-align: center;
-  font-size: 125%;
-  font-weight: bold;
 }
 </style>

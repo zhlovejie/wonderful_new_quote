@@ -103,8 +103,18 @@
         :pagination="false"
       >
         <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
+          <span style="font-size: 20px">{{ index + 1 }}</span>
         </div>
+        <div slot="commissionRate" slot-scope="text, record, index">
+          <span style="font-size: 20px">{{ text }}</span>
+        </div>
+        <div slot="price" slot-scope="text, record, index">
+          <span style="font-size: 20px">{{ text }}</span>
+        </div>
+        <div slot="intervalValueName" slot-scope="text, record, index">
+          <span style="font-size: 20px">{{ text }}</span>
+        </div>
+
         <a-table
           slot="expandedRowRender"
           slot-scope="record, text"
@@ -172,16 +182,19 @@ const columns = [
     align: 'center',
     title: '区间值名称',
     dataIndex: 'intervalValueName',
+    scopedSlots: { customRender: 'intervalValueName' },
   },
   {
     align: 'center',
     title: '提成比率',
     dataIndex: 'commissionRate',
+    scopedSlots: { customRender: 'commissionRate' },
   },
   {
     align: 'center',
     title: '销售价格',
     dataIndex: 'price',
+    scopedSlots: { customRender: 'price' },
   },
 ]
 
@@ -371,6 +384,9 @@ export default {
 </script>
 
 <style scoped>
+.logListTable {
+  font-size: 20px;
+}
 .steps-content {
   border-radius: 6px;
   background-color: #fff;
