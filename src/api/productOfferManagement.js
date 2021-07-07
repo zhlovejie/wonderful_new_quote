@@ -296,6 +296,15 @@ export function intervalConfigDetail(parameter) {
     params: parameter
   })
 }
+// 区间配置根据名称详情
+export function intervalConfigDetailByName(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/quote/product-interval-config/intervalConfigDetailByName',
+    method: 'get',
+    params: parameter
+  })
+}
 
 //---------------------产品类型配置-END--------
 //产品类型配置列表
