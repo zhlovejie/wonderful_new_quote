@@ -553,6 +553,51 @@ export function priceQuotedZktSetPrice(parameter) {
 
 /* 产品配置管理 */
 
+/**新增和修改 */
+export function priceQuotedProductAddOrUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-product/addAndUpdatePriceQuotedProduct',
+    method: 'post',
+    data: parameter
+  })
+}
+/**删除 */
+export function priceQuotedProductDelete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-product/delQuotedProduct',
+    method: 'get',
+    params: parameter
+  })
+}
+/**详情 */
+export function priceQuotedProductDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-product/priceQuotedProductDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/**列表 */
+export function priceQuotedProductList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-product/priceQuotedProductList',
+    method: 'get',
+    params: parameter
+  })
+}
+/**核价 */
+export function priceQuotedProductSetPrice(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-product/updateBatchQuotedProduct',
+    method: 'post',
+    data: parameter
+  })
+}
 /* 产品配置管理 END*/
 
 /* 报价 */

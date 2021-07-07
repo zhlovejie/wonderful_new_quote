@@ -43,11 +43,10 @@
   </a-modal>
 </template>
 <script>
-import { priceQuotedZktListAddOrUpdate ,priceQuotedZktDetail} from '@/api/productOfferManagement'
-import { priceQuotedItemConfigSubList, priceQuotedItemConfigTreeList } from '@/api/productOfferManagement'
+import { priceQuotedProductAddOrUpdate ,priceQuotedProductDetail} from '@/api/productOfferManagement'
 import OptionsSelect from './OptionsSelect'
 export default {
-  name: 'product-offer-management-opt-management_AddForm',
+  name: 'product-offer-management-product-options-management_AddForm',
   components:{OptionsSelect},
   provide() {
     return {
@@ -71,10 +70,7 @@ export default {
 
       optStandItems:[], // 标配
       optChoiceItems:[],// 选配
-      filterKeys:[],
-
-      optionsList:[],
-      treeData:[]
+      filterKeys:[]
     }
   },
   created() {},
@@ -99,13 +95,10 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-      that.optStandItems = []
-      that.optChoiceItems = []
-      that.filterKeys = []
-      await Promise.all([that.fetchOptions(), that.fetchTree()])
+
       if(that.isView || that.isEdit){
         that.spinning = true
-        await priceQuotedZktDetail({id:record.id}).then(res => {
+        await priceQuotedProductDetail({id:record.id}).then(res => {
           that.spinning = false
           let result = res.data
           let nodes = that.addNodesKey(result.childrenList)
@@ -113,7 +106,6 @@ export default {
           let optChoiceItems = nodes.filter(item => +item.configType === 1)
           that.optStandItems = optStandItems
           that.optChoiceItems = optChoiceItems
-
           delete result.childrenList
           that.form = {...result}
         }).catch(err => {
@@ -123,11 +115,8 @@ export default {
       }
 
       that.$nextTick(() => {
-        that.$refs.optStand.query(type,that.optStandItems,{optionsList:that.optionsList,treeData:that.treeData})
-        that.$refs.optChoice.query(type,that.optChoiceItems,{optionsList:that.optionsList,treeData:that.treeData})
-
-
-        that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
+        that.$refs.optStand.query(type,that.optStandItems)
+        that.$refs.optChoice.query(type,that.optChoiceItems)
       })
     },
     handleSubmit() {
@@ -139,7 +128,7 @@ export default {
             ...that.addConfigType(that.optChoiceItems,1) //选配 1
           ]
 
-          priceQuotedZktListAddOrUpdate({ ...that.form ,priceQuotedZktConfigList})
+          priceQuotedProductAddOrUpdate({ ...that.form ,priceQuotedZktConfigList})
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)
@@ -180,60 +169,7 @@ export default {
         return n
       }
       return nodes.map(n => f(n))
-    },
-
-    fetchOptions() {
-      const that = this
-      return priceQuotedItemConfigSubList(that.queryParam)
-        .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
-        })
-        .catch(err => {
-          that.$message.error(err)
-          that.optionsList = []
-        })
-    },
-    fetchTree() {
-      const that = this
-      return priceQuotedItemConfigTreeList()
-        .then(res => {
-          const root = {
-            id: 0,
-            key: 0,
-            configName: '配置项',
-            isLeaf: false,
-            parentConfigId: null,
-            childrenList: res.data.map(item => that.formatTreeData(item))
-          }
-          that.treeData = root
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
-        })
-    },
-    formatTreeData(item) {
-      const that = this
-      const obj = {}
-      obj.id = undefined
-      obj.configName = item.configName
-      obj.parentConfigId = item.parentConfigId || 0
-      obj.serialNumber = item.serialNumber
-      obj.itemConfigType = item.itemConfigType
-      obj.itemConfigId = item.id
-      obj.key = item.id
-
-      if (obj.itemConfigType === 1) {
-        obj.__checked = false
-        obj.configValue = undefined
-        obj.isChecked = -1
-        obj.isRequired = -1
-      }
-
-      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
-        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
-      }
-      return obj
-    },
+    }
   }
 }
 </script>

@@ -56,7 +56,8 @@
 
               <a-popover
                 title="参数配置"
-                trigger="hover"
+                trigger="click"
+                v-model="node.visible"
                 v-if="!disabled"
               >
                 <a slot="content">
@@ -81,6 +82,7 @@
 </template>
 
 <script>
+import { priceQuotedItemConfigSubList, priceQuotedItemConfigTreeList } from '@/api/productOfferManagement'
 import OptConfigTree from './OptConfigTree'
 export default {
   name: 'options-select',
@@ -153,23 +155,19 @@ export default {
   },
   watch: {
     filterKeys(keys) {
-      const that = this
-      if(that.isEdit){
-        let optionsList = [...this.optionsListCache]
-        this.optionsList = optionsList.filter(opt => !keys.includes(opt.id))
-        let arrKeys = this.optionsList.map(opt => opt.id)
-        this.selectKeys = this.selectKeys.filter(k => arrKeys.includes(k))
-        this.optionsCheckboxChange(this.selectKeys)
-      }
+      this.optionsList = this.optionsListCache.filter(opt => !keys.includes(opt.id))
     }
   },
   methods: {
-    query(type, nodes,{optionsList,treeData}) {
+    async init() {
+      const that = this
+      await Promise.all([that.fetchOptions(), that.fetchTree()])
+      that.optionsListCache = [...that.optionsList]
+    },
+    async query(type, nodes) {
       const that = this
       that.type = type
-      that.optionsList = JSON.parse(JSON.stringify(optionsList))
-      that.treeData = JSON.parse(JSON.stringify(treeData))
-      that.optionsListCache = [...that.optionsList]
+      await that.init()
       if (that.isAdd) {
         that.selectKeys = []
         that.optionsTableDataSource = []
@@ -178,17 +176,25 @@ export default {
         that.optionsTableDataSource = that.checkedAndRequired2ConfigValue(nodes)
       } else if (that.isEdit) {
         that.selectKeys = nodes.map(node => node.itemConfigId || node.key)
-        that.optionsTableDataSource = that.selectKeys.map(key => {
-          const target = that.findNode(that.treeData, key)
-          return { ...target }
-        })
+        that.optionsCheckboxChange(that.selectKeys)
+
         that.optionsTableDataSource = that.margeNodes(
           that.optionsTableDataSource,
           that.checkedAndRequired2ConfigValue(nodes)
         )
       }
     },
-
+    fetchOptions() {
+      const that = this
+      return priceQuotedItemConfigSubList(that.queryParam)
+        .then(res => {
+          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
+        })
+        .catch(err => {
+          that.$message.error(err)
+          that.optionsList = []
+        })
+    },
     findNode(node, id) {
       //查找指定ID的节点
       let res = null
@@ -208,6 +214,48 @@ export default {
       }
       return fNode(node)
     },
+    fetchTree() {
+      const that = this
+      return priceQuotedItemConfigTreeList()
+        .then(res => {
+          const root = {
+            id: 0,
+            key: 0,
+            configName: '配置项',
+            isLeaf: false,
+            parentConfigId: null,
+            childrenList: res.data.map(item => that.formatTreeData(item))
+          }
+          that.treeData = root
+          console.log(JSON.stringify(root))
+        })
+        .catch(err => {
+          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    formatTreeData(item) {
+      const that = this
+      const obj = {}
+      obj.id = undefined
+      obj.configName = item.configName
+      obj.parentConfigId = item.parentConfigId || 0
+      obj.serialNumber = item.serialNumber
+      obj.itemConfigType = item.itemConfigType
+      obj.itemConfigId = item.id
+      obj.key = item.id
+
+      if (obj.itemConfigType === 1) {
+        obj.__checked = false
+        obj.configValue = undefined
+        obj.isChecked = -1
+        obj.isRequired = -1
+      }
+
+      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
+        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
+      }
+      return obj
+    },
     optionsCheckboxChange(keys) {
       const that = this
       const arr = []
@@ -218,21 +266,32 @@ export default {
       that.optionsTableDataSource = arr
 
       that.$emit('optChange', [...keys])
-      that.emitData()
     },
     optRdoChange(v, node) {
       this.emitData()
     },
     optChkboxChange(checked, node) {
       const that = this
+      if (checked) {
+        const optionsTableDataSource = [...that.optionsTableDataSource]
+        const target = optionsTableDataSource.find(opt => that.findNode(opt, node.key))
+        if (target) {
+          const _node = that.findNode(target, node.key)
+          if (_node) {
+            _node.visible = true
+          }
+          that.optionsTableDataSource = optionsTableDataSource
+        }
+      }
       that.emitData()
     },
     emitData() {
       const that = this
       that.$nextTick(() => {
         const optionsTableDataSource = JSON.parse(JSON.stringify(that.optionsTableDataSource))
-        let list = that.filterCheckedNode(optionsTableDataSource.filter(n => that.hasCheckedNode(n)))
+        let list = that.filterCheckedNode(optionsTableDataSource)
         list = that.configValue2CheckedAndRequired(list)
+        console.log(JSON.stringify(list))
         that.$emit('change', list)
       })
     },
@@ -261,7 +320,7 @@ export default {
       }
       return nodes.map(n => f(n))
     },
-    filterCheckedNode(nodes) { // 过滤未选择的子项
+    filterCheckedNode(nodes) {
       const f = n => {
         if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
           if (n.childrenList.some(node => '__checked' in node)) {
@@ -274,19 +333,6 @@ export default {
       }
       return nodes.map(n => f(n))
     },
-    hasCheckedNode(node){ // 过滤没有勾选子项的情况
-      let arr = []
-      const f = n => {
-        arr.push(n)
-        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
-          n.childrenList.map(_n => f(_n))
-        }
-      };
-      f(node);
-      return arr.some(n => '__checked' in n && n.__checked === true)
-    },
-
-
     checkedAndRequired2ConfigValue(nodes) {
       const that = this
       const f = n => {
@@ -345,6 +391,7 @@ export default {
         }
         return snds.map(n => f(n))
       }
+
       return marge(sourceNodes)
     }
   }
