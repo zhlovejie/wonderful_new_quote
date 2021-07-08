@@ -23,8 +23,225 @@ const api = {
   finishDevelopmentProjectCheckApply: '/project/development-project-check-apply/finishDevelopmentProjectCheckApply',
   managementUploadDevelopmentProjectCheckApply: '/project/development-project-check-apply/managementUploadDevelopmentProjectCheckApply',
   managementUpdate: '/project/development-project-check-apply/update',
+  listMyProjectAllInfo: '/project/development-project-all-info/listMyProjectAllInfo',
+  getDealChooseStageDetailWithAll: '/project/development-project-all-info/getDealChooseStageDetailWithAll',
+  saveAndUpdate: '/project/development-project-design-review/saveAndUpdate',
+  pageList: '/project/development-project-process-record/pageList',
+  withDrawProjectStageApply: '/project/development-project-all-info/withDrawProjectStageApply',
+  removeProjectStageApply: '/project/development-project-all-info/removeProjectStageApply',
+  getApproveChooseStageDetail: '/project/development-project-all-info/getApproveChooseStageDetailWithAll',
+  approveProjectStageApply: '/project/development-project-all-info/approveProjectStageApply',
+  getDealEveryChooseStageDetail: '/project/development-project-all-info/getDealEveryChooseStageDetail',
+  getDealEverySaveTrial: '/project/development-project-product-trial/saveTrial',
+  savaAndUpdate: '/project/development-project-feasibility-test/savaAndUpdate',
+  savaExportExcel: '/project/development-project-feasibility-test-result/exportExcel',
+  updateTestesult: '/project/development-project-feasibility-test/updateTestesult',
+  reviewSaveAndUpdate: '/project/development-project-feasibility-test-review/saveAndUpdate',
+  stabilitySaveAndUpdate: '/project/development-project-stability-test/saveAndUpdate',
+  stabilityupdateTestesult: '/project/development-project-stability-test/updateTestesult',
+  getMeetingRecordDetail: '/project/development-project-all-info/getMeetingRecordDetail',
+  stabilityReviewSaveAndUpate: '/project/development-project-stability-test-review/saveAndUpate',
+  confPlanReview: '/confPlanReview',
 
 
+
+
+}
+
+/*
+配置方案研发评审新增修改*/
+export function confPlanReview(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.confPlanReview,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+稳定性测试结果评审新增修改*/
+export function stabilityReviewSaveAndUpate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.stabilityReviewSaveAndUpate,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+会议详情*/
+export function getMeetingRecordDetail(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getMeetingRecordDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+
+/*
+稳定性测试结果*/
+export function stabilityupdateTestesult(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.stabilityupdateTestesult,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+稳定性测试新增修改*/
+export function stabilitySaveAndUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.stabilitySaveAndUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+可行性测试结果评审*/
+export function reviewSaveAndUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.reviewSaveAndUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+可行性测试结果*/
+export function updateTestesult(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.updateTestesult,
+    method: 'post',
+    data: parameter
+  })
+}
+/**下载测试报告*/
+export function savaExportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.savaExportExcel,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+/*
+可行性新增或修改*/
+export function savaAndUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.savaAndUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+/*
+新增产品试制*/
+export function getDealEverySaveTrial(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getDealEverySaveTrial,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+通过项目id查询单个阶段的详情信息(显示按钮)*/
+export function getDealEveryChooseStageDetail(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getDealEveryChooseStageDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+审批各个阶段的提交(通过和不通过按钮)*/
+export function approveProjectStageApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.approveProjectStageApply,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+通过项目id查询各个阶段的详情信息(审批按钮)*/
+export function getApproveChooseStageDetail(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getApproveChooseStageDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+删除各个阶段的提交(删除按钮)*/
+export function removeProjectStageApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.removeProjectStageApply,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+撤回各个阶段的提交(撤回按钮)*/
+export function withDrawProjectStageApply(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.withDrawProjectStageApply,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+新增和修改设计方案联合评审*/
+export function saveAndUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.saveAndUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+我的项目处理详情*/
+export function getDealChooseStageDetailWithAll(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getDealChooseStageDetailWithAll,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+我的项目列表*/
+export function listMyProjectAllInfo(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.listMyProjectAllInfo,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+项目审核列表*/
+export function pageList(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.pageList,
+    method: 'get',
+    params: parameter
+  })
 }
 /*
 检验报告修改*/

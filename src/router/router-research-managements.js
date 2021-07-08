@@ -158,12 +158,33 @@ export default { //研发管理
           },
         },
         {
+          path: '/research-managements/project-management/My-project/module',
+          name: 'project-management-My-handle',
+          component: () => import('@/views/research-managements/project-management/My-project/module/handle'),
+          meta: {
+            title: '我的项目',
+            keepAlive: true,
+            hidden: true,
+            permission: ['permission']
+          },
+        },
+        {
           path: '/research-managements/project-management/My-project',
           name: 'project-management-My-project',
           component: () => import('@/views/research-managements/project-management/My-project/List'),
           meta: {
             title: '我的项目',
             keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Project-audit/module',
+          name: 'project-management-Project-audit-handle',
+          component: () => import('@/views/research-managements/project-management/Project-audit/module/handle'),
+          meta: {
+            title: '项目审核',
+            keepAlive: true,
             permission: ['permission']
           },
         },
