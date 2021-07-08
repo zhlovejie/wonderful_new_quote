@@ -113,8 +113,10 @@ export default {
           api = that.normalAddForm.isAdd ? productMaterialInfoAdd : productMaterialInfoUpdate
         }
 
-        console.log(that.normalAddForm.submitParams)
-        api({ ...that.normalAddForm.submitParams })
+        // console.log(that.normalAddForm.submitParams)
+        let submitParams = {...that.normalAddForm.submitParams}
+        delete submitParams.specificationsList
+        api(submitParams)
           .then(res => {
             that.spinning = false
             that.$message.info(res.msg)

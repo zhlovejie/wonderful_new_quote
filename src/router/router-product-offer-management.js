@@ -196,11 +196,55 @@ export default { //产品报价管理
       ]
     },
     {
+      path: '/product-offer-management/pricing', // 访问路径
+      name: 'product-pricing',
+      component: RouteView,
+      meta: {
+        title: '核价配置',
+        icon: 'team',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: [{
+          path: '/product-offer-management/pricing/Interval-allocation',
+          name: 'Interval-allocation',
+          component: () => import('@/views/product-offer-management/Interval-allocation/List'),
+          meta: {
+            title: '区间配置',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/product-offer-management/pricing/product-type',
+          name: 'product-type',
+          component: () => import('@/views/product-offer-management/product-type/List'),
+          meta: {
+            title: '产品类型配置',
+            permission: ['permission']
+          }
+        },
+
+      ]
+    },
+    {
       path: '/product-offer-management/products-quotation',
       name: 'pom-products-quotation',
       component: () => import('@/views/product-offer-management/products-quotation/List'),
       meta: {
         title: '产品报价',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/product-offer-management/pricings',
+      name: 'pom-pricing',
+      component: () => import('@/views/product-offer-management/pricings/List'),
+      meta: {
+        title: '核价',
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']

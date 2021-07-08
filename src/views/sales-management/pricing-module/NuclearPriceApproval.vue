@@ -2,20 +2,14 @@
   <a-spin :spinning="spinning">
     <div>
       <div class="top-right clearfix">
-        <a-button
-          class="fl-r"
-          type="primary"
-          @click="validateAction"
-          :loading="loading"
-          icon="check"
-        >保存</a-button>
+        <a-button class="fl-r" type="primary" @click="validateAction" :loading="loading" icon="check">保存</a-button>
         <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
       </div>
       <a-card class="card" :bordered="false">
         <a-form class="form">
           <a-row class="form-row" :gutter="16">
             <a-col :lg="12" :md="12" :sm="24">
-              <a-form-item label="核价编号" :label-col="{ span: 3}" :wrapper-col="{ span:9 }">
+              <a-form-item label="核价编号" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
                 <a-input v-model="valencyCode" disabled />
               </a-form-item>
             </a-col>
@@ -37,7 +31,7 @@
                 <a-input value="* * * * * * * *" disabled>* * * * * * * *</a-input>
               </a-form-item>
             </a-col>
-            <a-col :lg="{span: 12}" :md="{span: 12}" :sm="24">
+            <a-col :lg="{ span: 12 }" :md="{ span: 12 }" :sm="24">
               <a-form-item label="需求日期" :label-col="{ span: 3 }" :wrapper-col="{ span: 9 }">
                 <a-input v-model="demandTime" disabled></a-input>
               </a-form-item>
@@ -62,74 +56,50 @@
             <template slot="costPrice" slot-scope="text, record">
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.costPrice`, {initialValue:record.costPrice,rules: [{ required: true, message: '请输入成本价',pattern:/^[1-9]\d.*$/ }]}]"
+                  v-decorator="[
+                    `record.${record.__index}.costPrice`,
+                    {
+                      initialValue: record.costPrice,
+                      rules: [{ required: true, message: '请输入成本价', pattern: /^[1-9]\d.*$/ }],
+                    },
+                  ]"
                   @change="costPriceChange(record, $event)"
                 />
               </a-form-item>
             </template>
-            <template slot="aPrice" slot-scope="text, record">
+            <!-- <template slot="aPrice" slot-scope="text, record">
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.aPrice`,{initialValue:record.aprice}]"
-                  @change="changeHandler(record , 'aPrice', $event)"
+                  v-decorator="[`record.${record.__index}.aPrice`, { initialValue: record.aprice }]"
+                  @change="changeHandler(record, 'aPrice', $event)"
                 />
               </a-form-item>
             </template>
             <template slot="bPrice" slot-scope="text, record">
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.bPrice`,{initialValue:record.bprice}]"
-                  @change="changeHandler(record , 'bPrice', $event)"
+                  v-decorator="[`record.${record.__index}.bPrice`, { initialValue: record.bprice }]"
+                  @change="changeHandler(record, 'bPrice', $event)"
                 />
               </a-form-item>
             </template>
             <template slot="cPrice" slot-scope="text, record">
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.cPrice`,{initialValue:record.cprice}]"
-                  @change="changeHandler(record , 'cPrice' , $event)"
+                  v-decorator="[`record.${record.__index}.cPrice`, { initialValue: record.cprice }]"
+                  @change="changeHandler(record, 'cPrice', $event)"
                 />
               </a-form-item>
-            </template>
+            </template> -->
             <template slot="referencePic" slot-scope="text, record">
-              <img style="height: auto;width:96px;border:none;" :src="text" />
+              <img style="height: auto; width: 96px; border: none" :src="text" />
             </template>
-
-            <!--          上传参考图片部分 begin!-->
-            <!--          <template slot="effectPic" slot-scope="text, record">-->
-            <!--            <a-form-item>-->
-            <!--              <div class="clearfix">-->
-            <!--                <a-upload-->
-            <!--                  accept="multiple"-->
-            <!--                  name="files"-->
-            <!--                  :action="uploadPath"-->
-            <!--                  listType="picture-card"-->
-            <!--                  :fileList="fileList"-->
-            <!--                  @preview="handlePreview"-->
-            <!--                  @change="uploadChange"-->
-            <!--                >-->
-            <!--                  <div v-if="fileList.length < 1">-->
-            <!--                    <a-icon type="plus" />-->
-            <!--                    <div class="ant-upload-text">选择图片</div>-->
-            <!--                  </div>-->
-            <!--                </a-upload>-->
-            <!--                <a-modal :visible="previewVisible" :footer="null" @cancel="previewCancel">-->
-            <!--                  <img alt="图片" style="width: 100%" :src="previewImage" />-->
-            <!--                </a-modal>-->
-            <!--              </div>-->
-            <!--              <a-input-->
-            <!--                type="hidden"-->
-            <!--                v-decorator="['effectPic', {rules: [{required: true,message: '请选择图片！'}]}]"-->
-            <!--              />-->
-            <!--            </a-form-item>-->
-            <!--          </template>-->
-
             <template slot="effectPic" slot-scope="text, record">
               <img
                 read-only="read-only"
                 @click="openModel(record)"
                 :src="record.effectPic"
-                style="width: 96px;min-height:96px;height:auto;border:none;"
+                style="width: 96px; min-height: 96px; height: auto; border: none"
               />
             </template>
 
@@ -137,9 +107,9 @@
               <a-form-item>
                 <a-textarea
                   rows="5"
-                  style="width:100%;"
-                  v-decorator="[`record.${record.__index}.valencySpecs`,{initialValue:record.valencySpecs}]"
-                  @change="changeHandler(record ,'valencySpecs' ,$event)"
+                  style="width: 100%"
+                  v-decorator="[`record.${record.__index}.valencySpecs`, { initialValue: record.valencySpecs }]"
+                  @change="changeHandler(record, 'valencySpecs', $event)"
                 />
               </a-form-item>
             </template>
@@ -151,69 +121,63 @@
             >
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.newBasisModel`,{initialValue:record.newBasisModel}]"
-                  @change="changeHandler(record ,'newBasisModel' ,$event)"
+                  v-decorator="[`record.${record.__index}.newBasisModel`, { initialValue: record.newBasisModel }]"
+                  @change="changeHandler(record, 'newBasisModel', $event)"
                 />
               </a-form-item>
             </template>
-            <template
-              v-if="isUpdateType && parseInt(valencyStatus) === 5"
-              slot="productName"
-              slot-scope="text, record"
-            >
+            <template v-if="isUpdateType && parseInt(valencyStatus) === 5" slot="productName" slot-scope="text, record">
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.productName`,{initialValue:record.productName}]"
-                  @change="changeHandler(record ,'productName' ,$event)"
+                  v-decorator="[`record.${record.__index}.productName`, { initialValue: record.productName }]"
+                  @change="changeHandler(record, 'productName', $event)"
                 />
               </a-form-item>
             </template>
 
-            <template slot="area" slot-scope="text, record">
-              <a-form-item>
-                <a-tree-select
-                  style="width:250px"
-                  :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
-                  :treeData="allAreas"
-                  @change="areaChange(record,$event)"
-                  placeholder="选择区域"
-                  v-decorator="[`record.${record.__index}.area`,{initialValue:record.area ? String(record.area) : undefined, rules: [{required: true, message: '请选择产品区域'}]}]"
-                ></a-tree-select>
-
-                <!-- <a-select
-                style="width:150px"
-                placeholder="请选择产品区域"
-                v-decorator="[ `record.${record.__index}.area`, {rules: [{ required: true, message: '请选择产品区域'}]}]"
-              >
-                <a-select-option @click="areaChange(record, areas)" v-for="areas in allAreas" :key="areas.id">{{ areas.text }}</a-select-option>
-                </a-select>-->
-              </a-form-item>
-            </template>
-
-            <template
-              slot="productName"
-              slot-scope="text, record"
-            >
+            <template slot="productName" slot-scope="text, record">
               <a-form-item>
                 <a-input
-                  v-decorator="[`record.${record.__index}.productName`,{initialValue:record.productName}]"
-                  @change="changeHandler(record ,'productName' ,$event)"
+                  v-decorator="[`record.${record.__index}.productName`, { initialValue: record.productName }]"
+                  @change="changeHandler(record, 'productName', $event)"
                 />
+              </a-form-item>
+            </template>
+            <template slot="productCode" slot-scope="text, record">
+              <span>{{ text !== null ? text : '系统自动生成' }}</span>
+            </template>
+
+            <template slot="typeConfigName" slot-scope="text, record">
+              <a-form-item>
+                <a-select
+                  @change="(value) => changeHandlers(value, record, 'productTypeConfigId')"
+                  v-decorator="[
+                    `record.${record.__index}.productTypeConfigId`,
+                    {
+                      initialValue: record.typeConfigName,
+                    },
+                  ]"
+                >
+                  <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+                    item.typeName
+                  }}</a-select-option>
+                </a-select>
               </a-form-item>
             </template>
 
             <template slot="status" slot-scope="text, record">
               <a-form-item>
                 <a-switch
-                  v-decorator="[`record.${record.__index}.status`,{initialValue:+record.status === 0 ? true : false,valuePropName:'checked'}]"
-                  @change="changeHandler(record,'status', $event)"
+                  v-decorator="[
+                    `record.${record.__index}.status`,
+                    { initialValue: +record.status === 0 ? true : false, valuePropName: 'checked' },
+                  ]"
+                  @change="changeHandler(record, 'status', $event)"
                   checked-children="启用"
                   un-checked-children="禁用"
                 />
               </a-form-item>
             </template>
-
-
           </a-table>
         </a-form>
       </a-card>
@@ -221,7 +185,7 @@
       <a-card class="card" :bordered="false">
         <a-form class="form">
           <a-row class="form-row" :gutter="16">
-            <a-col :lg="{span: 6}" :md="{span: 12}" :sm="24">
+            <a-col :lg="{ span: 6 }" :md="{ span: 12 }" :sm="24">
               <a-form-item label="申请人" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
                 <a-input v-model="applyUserName" disabled />
               </a-form-item>
@@ -237,7 +201,7 @@
               </a-form-item>
             </a-col>
             <a-col :lg="6" :md="12" :sm="24">
-              <a-form-item label="核价人" :label-col="{ span: 6}" :wrapper-col="{ span:16 }">
+              <a-form-item label="核价人" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
                 <a-input v-model="valencyUserName" disabled />
               </a-form-item>
             </a-col>
@@ -258,12 +222,13 @@
 </template>
 
 <script>
-import { getlookApplyNuclear, saveProduct, updateValencyProduct ,isRepeatCode} from '@/api/pricingModule'
+import { getlookApplyNuclear, saveProduct, updateValencyProduct, isRepeatCode } from '@/api/pricingModule'
 import { queryTreeByArea, queryPriceByArea } from '@/api/workBox'
 import moment from 'moment'
 import EditableCell from '@/components/Table/EditableCell'
 import { getUploadPath } from '@/api/manage'
 import UploadModel from './pricings/uploadModel'
+import { typeConfigList } from '@/api/productOfferManagement'
 import { getDictionary } from '@/api/common'
 import { calculatePrice } from '@/utils/util'
 // 上传图片
@@ -276,7 +241,7 @@ export default {
   name: 'NuclearPriceApproval',
   components: {
     UploadModel,
-    EditableCell
+    EditableCell,
   },
   props: {},
   data() {
@@ -293,7 +258,7 @@ export default {
         {
           title: '需求数量',
           dataIndex: 'demandNumber',
-          width:80
+          width: 80,
         },
         {
           title: '规格',
@@ -302,72 +267,61 @@ export default {
         {
           title: '需求描述',
           dataIndex: 'demandRemarks',
-          width:300
+          width: 300,
         },
-        {
-          title: '产品区域',
-          dataIndex: 'oldAreaText',
-        },
+        // {
+        //   title: '产品区域',
+        //   dataIndex: 'oldAreaText',
+        // },
         {
           title: '参考图片',
           dataIndex: 'referencePic',
           scopedSlots: { customRender: 'referencePic' },
-          width:120
+          width: 120,
         },
-        {
-          title: '修改点',
-          dataIndex: 'revisedPart'
-        },
-        {
-          title: '新产品区域',
-          dataIndex: 'area',
-          scopedSlots: { customRender: 'area' },
-          width:280
-        },
+
         {
           title: '成本价',
           dataIndex: 'costPrice',
-          scopedSlots: { customRender: 'costPrice' }
+          scopedSlots: { customRender: 'costPrice' },
         },
-        {
-          title: 'A价',
-          dataIndex: 'aPrice',
-          scopedSlots: { customRender: 'aPrice' }
-        },
-        {
-          title: 'B价',
-          dataIndex: 'bPrice',
-          scopedSlots: { customRender: 'bPrice' }
-        },
-        {
-          title: 'C价',
-          dataIndex: 'cPrice',
-          scopedSlots: { customRender: 'cPrice' }
-        },
+
         {
           title: '效果图片',
           dataIndex: 'effectPic',
           scopedSlots: { customRender: 'effectPic' },
-          width:120
+          width: 120,
         },
         {
           title: '核价规格',
           dataIndex: 'valencySpecs',
           scopedSlots: { customRender: 'valencySpecs' },
-          width:300
+          width: 300,
         },
         {
           title: '产品名称',
           dataIndex: 'productName',
-          scopedSlots: { customRender: 'productName' }
+          scopedSlots: { customRender: 'productName' },
         },
+        {
+          title: '产品类型',
+          dataIndex: 'typeConfigName',
+          scopedSlots: { customRender: 'typeConfigName' },
+        },
+        {
+          title: '核价代码',
+          dataIndex: 'productCode',
+          scopedSlots: { customRender: 'productCode' },
+        },
+
         {
           align: 'center',
           title: '状态',
           dataIndex: 'status',
           scopedSlots: { customRender: 'status' },
-        }
+        },
       ],
+      depList: [],
       data: [],
       errors: [],
       form: this.$form.createForm(this),
@@ -394,19 +348,19 @@ export default {
       areaPercentage: 0, // 产品区域计算用的数额
       areaRateCache: {}, //产品根据区域计算 接口缓存
       instanceId: 0,
-      spinning: false
+      spinning: false,
     }
   },
   computed: {
-    isUpdateType: function() {
+    isUpdateType: function () {
       //核价还是修改  修改增加了 产品名字和代码
       return this.$route.params.type === 'update'
-    }
+    },
   },
   watch: {
     $route(to, from) {
       this.init()
-    }
+    },
   },
   mounted() {
     this.init()
@@ -416,6 +370,12 @@ export default {
       this.initArea()
       // 获取页面的一些信息
       this.getOrderInfo()
+      typeConfigList().then((res) => {
+        if (res.code === 200) {
+          this.loading = false
+          this.depList = res.data
+        }
+      })
     },
     // 返回
     goBackPricing() {
@@ -439,11 +399,26 @@ export default {
       this.$refs.uploadModel.query({ effectPic: this.effectPic })
     },
     cancel(key) {
-      const target = this.data.filter(item => item.key === key)[0]
+      const target = this.data.filter((item) => item.key === key)[0]
       target.editable = false
     },
+    changeHandlers(val, record, type) {
+      console.log(val)
+      let dataSource = [...this.data]
+      let target = dataSource.find((item) => item.id === record.id)
+      if (target) {
+        if (type === 'productTypeConfigId') {
+          let react = this.depList.find((item) => item.id === val)
+          target['productTypeConfigCode'] = react.code
+          target[type] = val
+          this.date = dataSource
+        } else {
+          target[type] = val
+          this.date = dataSource
+        }
+      }
+    },
     changeHandler(record, type, e) {
-
       /*
       isRepeatCode({newBasisModel:ivalue}).then(res =>{
           if(res.code !== 200){
@@ -454,32 +429,12 @@ export default {
         })
       */
 
-      const v = e.target ? e.target.value.trim() : (e === true ? 0 : 1)
+      const v = e.target ? e.target.value.trim() : e === true ? 0 : 1
       let dataSource = [...this.data]
-      let target = dataSource.find(item => item.id === record.id)
+      let target = dataSource.find((item) => item.id === record.id)
       if (target) {
         target[type] = v
         this.date = dataSource
-      }
-    },
-    // 产品区域变更
-    async areaChange(record, key) {
-      let that = this
-      let _dataSource = [...this.data]
-      let _target = _dataSource.find(item => item.id === record.id)
-      if (_target) {
-        _target['area'] = key
-        let resultRate = await this.initPriceByArea(key)
-        let calcResult = calculatePrice(_target.costPrice, resultRate)
-        _target['aPrice'] = calcResult.aPrice
-        _target['bPrice'] = calcResult.bPrice
-        _target['cPrice'] = calcResult.cPrice
-        this.data = _dataSource
-        let obj = {}
-        obj[`record.${record.__index}.aPrice`] = calcResult.aPrice
-        obj[`record.${record.__index}.bPrice`] = calcResult.bPrice
-        obj[`record.${record.__index}.cPrice`] = calcResult.cPrice
-        this.form.setFieldsValue(obj)
       }
     },
     //输入成本价
@@ -487,28 +442,26 @@ export default {
       let costPrice = parseFloat(e.target.value.trim())
       let _costPrice = isNaN(costPrice) ? 0 : costPrice
       let _dataSource = [...this.data]
-      let _target = _dataSource.find(item => item.id === record.id)
+      let _target = _dataSource.find((item) => item.id === record.id)
       if (_target) {
         _target['costPrice'] = _costPrice
-
-        let resultRate = null
-        if (_target['area'] === null || _target['area'] === undefined) {
-          //先选择成本价的处理
-          resultRate = { Ａ价: 0, Ｂ价: 0, Ｃ价: 0 }
-        } else {
-          resultRate = await this.initPriceByArea(_target['area'])
-        }
-
-        let calcResult = calculatePrice(_target.costPrice, resultRate)
-        _target['aPrice'] = calcResult.aPrice
-        _target['bPrice'] = calcResult.bPrice
-        _target['cPrice'] = calcResult.cPrice
-        this.data = _dataSource
-        let obj = {}
-        obj[`record.${record.__index}.aPrice`] = calcResult.aPrice
-        obj[`record.${record.__index}.bPrice`] = calcResult.bPrice
-        obj[`record.${record.__index}.cPrice`] = calcResult.cPrice
-        this.form.setFieldsValue(obj)
+        // let resultRate = null
+        // if (_target['area'] === null || _target['area'] === undefined) {
+        //   //先选择成本价的处理
+        //   resultRate = { Ａ价: 0, Ｂ价: 0, Ｃ价: 0 }
+        // } else {
+        //   resultRate = await this.initPriceByArea(_target['area'])
+        // }
+        // let calcResult = calculatePrice(_target.costPrice, resultRate)
+        // _target['aPrice'] = calcResult.aPrice
+        // _target['bPrice'] = calcResult.bPrice
+        // _target['cPrice'] = calcResult.cPrice
+        // this.data = _dataSource
+        // let obj = {}
+        // obj[`record.${record.__index}.aPrice`] = calcResult.aPrice
+        // obj[`record.${record.__index}.bPrice`] = calcResult.bPrice
+        // obj[`record.${record.__index}.cPrice`] = calcResult.cPrice
+        // this.form.setFieldsValue(obj)
       }
     },
     // 最终全页面提交
@@ -516,32 +469,34 @@ export default {
       const that = this
       const {
         $refs: { repository, task },
-        $notification
+        $notification,
       } = this
       console.log('最终全页面保存', this)
       // 拼接核价集合
       const bodys = []
       // debugger
       console.log('data======', this.data)
-      that.valencyProducts = that.data.map(item => {
+      that.valencyProducts = that.data.map((item) => {
         let _obj = {
           id: item.id, //主键id
           saleValencyId: item.saleValencyId, //合价表id
           basisModel: item.basisModel, //依据产品代码（产品id
           demandNumber: item.demandNumber, //需求数量
           specs: item.specs, //规格
+
           demandRemarks: item.demandRemarks, //描述
           referencePic: item.referencePic, //参考图片地址
           costPrice: item.costPrice || 0, //成本价
           effectPic: item.effectPic, //效果图地址
           valencySpecs: item.valencySpecs, //功能介绍
           remarks: item.remarks, //备注
-          bprice: item.bPrice || item.bprice || 0, //b价格
-          aprice: item.aPrice || item.aprice || 0, //a价格
-          cprice: item.cPrice || item.cprice || 0, //c价格
-          area: item.area,
-          productName:item.productName || '', //产品名称
-          status:+item.status
+          productTypeConfigId: item.productTypeConfigId,
+          // bprice: item.bPrice || item.bprice || 0, //b价格
+          // aprice: item.aPrice || item.aprice || 0, //a价格
+          // cprice: item.cPrice || item.cprice || 0, //c价格
+          // area: item.area,
+          productName: item.productName || '', //产品名称
+          status: +item.status,
         }
         if (that.isUpdateType) {
           _obj.newBasisModel = item.newBasisModel
@@ -564,7 +519,7 @@ export default {
         valencyTime: that.valencyTime, // 合价时间
         valencyProducts: bodys, // 上面拼接的核价集合
         instanceId: that.instanceId, //审批实例ID
-        explainText: that.explainText
+        explainText: that.explainText,
       }
 
       console.log(paramsz)
@@ -572,12 +527,12 @@ export default {
       if (that.isUpdateType) {
         that.spinning = true
         updateValencyProduct(paramsz)
-          .then(res => {
+          .then((res) => {
             that.spinning = false
             console.log('修改产品信息，请求后端接口结果', res)
             that.$router.push({ name: 'pricing' }) // 提交之后跳转到核价列表页
           })
-          .catch(error => {
+          .catch((error) => {
             that.spinning = false
             console.error(error)
           })
@@ -585,7 +540,7 @@ export default {
         // 校验成功，保存填写的信息，请求后端接口存起来，进入下一个页面
         that.spinning = true
         saveProduct(paramsz)
-          .then(res => {
+          .then((res) => {
             that.spinning = false
             console.log('插入产品信息，请求后端接口结果', res)
             if (res && res.code && res.code !== 200) {
@@ -595,11 +550,11 @@ export default {
             that.id = res.data.id
             that.loading = false
             that.form.setFieldsValue({
-              contractNum: res.data.contractNum
+              contractNum: res.data.contractNum,
             })
             that.$router.push({ name: 'pricing' }) // 提交之后跳转到核价列表页
           })
-          .catch(error => {
+          .catch((error) => {
             that.spinning = false
             console.error(error)
           })
@@ -618,7 +573,8 @@ export default {
           valencySpecs,
           area,
           productName,
-          newBasisModel
+          productTypeConfigId,
+          newBasisModel,
         } = this.data[i]
         if (!(parseFloat(costPrice) > 0)) {
           that.$message.error('请输入成本价')
@@ -632,20 +588,23 @@ export default {
           that.$message.error('请输入核价规格')
           return
         }
-        if (isEmpty(area)) {
-          that.$message.error('请输入产品区域')
+        // if (isEmpty(area)) {
+        //   that.$message.error('请输入产品区域')
+        //   return
+        // }
+        if (isEmpty(productName)) {
+          that.$message.error('请输入产品名称')
           return
         }
-
+        if (isEmpty(productTypeConfigId)) {
+          that.$message.error('请输入产品类型')
+          return
+        }
         if (that.isUpdateType && parseInt(that.valencyStatus) === 5) {
           if (isEmpty(newBasisModel)) {
             that.$message.error('请输入产品代码')
             return
           }
-          // if (isEmpty(productName)) {
-          //   that.$message.error('请输入产品名称')
-          //   return
-          // }
         }
       }
 
@@ -682,20 +641,18 @@ export default {
       that.form.resetFields()
       // 调取订单详情查询 接口
       getlookApplyNuclear(params)
-        .then(res => {
+        .then((res) => {
           console.log('//调取订单详情查询 接口', res)
           let fillabcPriceObj = {}
           this.data = res.data.valencyProducts.map((item, index) => {
             item.__index = index
-            fillabcPriceObj[`record.${index}.aPrice`] = item.aprice
-            fillabcPriceObj[`record.${index}.bPrice`] = item.bprice
-            fillabcPriceObj[`record.${index}.cPrice`] = item.cprice
+            // fillabcPriceObj[`record.${index}.aPrice`] = item.aprice
+            // fillabcPriceObj[`record.${index}.bPrice`] = item.bprice
+            // fillabcPriceObj[`record.${index}.cPrice`] = item.cprice
 
             fillabcPriceObj[`record.${index}.status`] = +item.status === 0 ? true : false
             return item
           })
-
-
 
           console.log('调取接口返回值的valencyProducts塞给表格的data', this.data)
           this.instanceId = res.data.instanceId
@@ -724,7 +681,7 @@ export default {
             this.statusName = '待审批'
           } else if (res.data.valencyStatus === 9) {
             this.statusName = '已撤回'
-          }else {
+          } else {
             this.statusName = '审批通过'
           }
 
@@ -737,7 +694,7 @@ export default {
                 dataIndex: 'newBasisModel',
                 key: 'newBasisModel',
                 width: '200px',
-                scopedSlots: { customRender: 'newBasisModel' }
+                scopedSlots: { customRender: 'newBasisModel' },
               },
               // {
               //   align: 'center',
@@ -757,7 +714,7 @@ export default {
 
           //that.$nextTick(() => that.form.setFieldsValue(fillabcPriceObj))
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false
           console.error(error)
         })
@@ -777,8 +734,8 @@ export default {
     },
     initArea() {
       let that = this
-      return queryTreeByArea().then(res => {
-        that.allAreas = res.data.map(item => that.formatTreeData(item)).map(item => that.delLevelGt2(item))
+      return queryTreeByArea().then((res) => {
+        that.allAreas = res.data.map((item) => that.formatTreeData(item)).map((item) => that.delLevelGt2(item))
       })
     },
     //格式化接口数据 key,title,value
@@ -796,7 +753,7 @@ export default {
       }
       level++
       if (item.children !== null && Array.isArray(item.children)) {
-        obj.children = item.children.map(v => that.formatTreeData(v, level))
+        obj.children = item.children.map((v) => that.formatTreeData(v, level))
       }
       return obj
     },
@@ -807,10 +764,10 @@ export default {
         return item
       }
       if (item.children !== null && Array.isArray(item.children)) {
-        if (item.children.filter(v => v.level > 2).length > 0) {
+        if (item.children.filter((v) => v.level > 2).length > 0) {
           item.children = []
         } else {
-          item.children.map(v => that.delLevelGt2(v))
+          item.children.map((v) => that.delLevelGt2(v))
         }
       }
       return item
@@ -820,15 +777,15 @@ export default {
       if (String(id) in that.areaRateCache) {
         return new Promise((resolve, reject) => {
           resolve(that.areaRateCache[String(id)])
-        }).then(res => res)
+        }).then((res) => res)
       } else {
-        return queryPriceByArea(String(id)).then(res => {
+        return queryPriceByArea(String(id)).then((res) => {
           that.areaRateCache[String(id)] = res.data
           return res.data
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

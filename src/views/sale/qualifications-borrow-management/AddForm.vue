@@ -66,7 +66,7 @@ import { businessDetailBorrowId } from '@/api/agencyContract'
 //3 代签购物合同的详情 purchaseContractId
 import { getPurchaseContractDetailByBorrowId } from '@/api/contractListManagement'
 //接口地址 /purchase-contract/getPurchaseContractDetail
-//4 销售合同 
+//4 销售合同
 
 //5 产品售后服务外包协议详情 id
 import { afterDetailBorrowId } from '@/api/agencyContract'
@@ -76,7 +76,7 @@ import { afterDetailBorrowId } from '@/api/agencyContract'
 /dealerContract/detail
 status 状态：1待提交，2待审批，3通过，4不通过，5已撤回
 
-战略合作协议 详情 
+战略合作协议 详情
 /cooperationProtocol/detail
 status 状态：1待提交，2待审批，3通过，4不通过，5已撤回
 
@@ -157,6 +157,11 @@ export default {
     Step4,
     Step5
   },
+  provide() {
+    return {
+      rootInstanceFrom: this
+    }
+  },
   data() {
     return {
       visible: false,
@@ -185,14 +190,14 @@ export default {
     },
     isDisabled() {
       //此状态下表单元素被禁用
-      return this.isView 
+      return this.isView
     },
   },
   methods: {
     async query(type, record = {}) {
       let that = this
       that.actionType = type
-      
+
       that.record = { ...record }
       if(that.record.__step){
         that.visible = true
@@ -208,7 +213,7 @@ export default {
 
       let {status,type:contractType,contractProperty} = this.record
       let key = status === 1 ? `${status}-${contractProperty}` : status === 2 ? `${status}-${contractType}` : `${status}`
-      
+
       /*
         检测是否存在当前状态对应的合同
         存在状态和合同不统一的问题，前一个合同审批通过后，状态更新为下个状态节点，但新的状态节点对应的合同尚未创建。
@@ -281,7 +286,7 @@ export default {
         }
         //代签购货合同特殊处理 END
 
-        //统一返回接口数据 
+        //统一返回接口数据
         return obj
       }
       return {

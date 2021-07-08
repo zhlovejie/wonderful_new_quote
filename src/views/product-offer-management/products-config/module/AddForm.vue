@@ -21,29 +21,31 @@
             v-decorator="['model', { rules: [{ required: true, message: '系列产品名称' }] }]"
           />
         </a-form-item>
-        <a-form-item label="竞争力">
-          <a-select 
+        <a-form-item label="产品类型">
+          <a-select
             :disabled="isDisabled"
-            :allowClear="true" 
-            v-decorator="['priceCoefficientId',{rules: [{ required: true, message: '请选择竞争力'}]}]" 
-            placeholder="请选择竞争力" 
+            :allowClear="true"
+            v-decorator="['productTypeConfigId', { rules: [{ required: true, message: '请选择产品类型' }] }]"
+            placeholder="请选择产品类型"
             style="width: 100%"
           >
-            <a-select-option v-for="item in productPriceCoefficientList" :value="item.id" :key="item.id" >{{ item.name }}</a-select-option>
+            <a-select-option v-for="item in productPriceCoefficientList" :value="item.id" :key="item.id">{{
+              item.typeName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="图片">
-          <UploadFile ref="uploadFile" txt="上传图片"/>
-          <a-input hidden v-decorator="['productPic',{rules: [{ required: true, message: '请上传产品图片'}]}]" />
+          <UploadFile ref="uploadFile" txt="上传图片" />
+          <a-input hidden v-decorator="['productPic', { rules: [{ required: true, message: '请上传产品图片' }] }]" />
         </a-form-item>
         <a-form-item label="是否为产品">
-          <a-radio-group v-decorator="['type',{initialValue: 1}]">
+          <a-radio-group v-decorator="['type', { initialValue: 1 }]">
             <a-radio :value="0">是</a-radio>
             <a-radio :value="1">否</a-radio>
           </a-radio-group>
         </a-form-item>
         <a-form-item label="是否在售">
-          <a-radio-group v-decorator="['isSale',{initialValue: 0}]">
+          <a-radio-group v-decorator="['isSale', { initialValue: 0 }]">
             <a-radio :value="0">在售</a-radio>
             <a-radio :value="1">停产</a-radio>
           </a-radio-group>
@@ -56,12 +58,9 @@
             :showRequire="false"
             @change="tableOptChoiceSelected"
           />
-          <a-button
-            style="width:100%;"
-            type="dashed"
-            icon="plus"
-            @click="ShowModule('optStand')"
-          >添加标准配置</a-button>
+          <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optStand')"
+            >添加标准配置</a-button
+          >
         </a-form-item>
         <a-form-item label="中控系列项" class="add-shadow">
           <OptList
@@ -71,12 +70,9 @@
             :showRequire="false"
             @change="tableOptChoiceSelected"
           />
-          <a-button
-            style="width:100%;"
-            type="dashed"
-            icon="plus"
-            @click="ShowModule('optControl')"
-          >添加标准配置</a-button>
+          <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optControl')"
+            >添加标准配置</a-button
+          >
         </a-form-item>
         <div class="opt-choice-wrapper add-shadow">
           <a-form-item label="选择配置">
@@ -87,45 +83,33 @@
               :showRequire="false"
               @change="tableOptChoiceSelected"
             />
-            <a-button
-              style="width:100%;"
-              type="dashed"
-              icon="plus"
-              @click="ShowModule('optSelect')"
-            >添加选择配置</a-button>
+            <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optSelect')"
+              >添加选择配置</a-button
+            >
           </a-form-item>
           <a-form-item label="选择项">
-          <div
-            class="opt-choice-item"
-            :label="`选择项 ${index+1}`"
-            v-for="(item,index) in optChoice"
-            :key="index"
-          >
-            <div class="opt-choice-header">
-              <h4>选择项{{index+1}}:</h4>
-              <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+            <div class="opt-choice-item" :label="`选择项 ${index + 1}`" v-for="(item, index) in optChoice" :key="index">
+              <div class="opt-choice-header">
+                <h4>选择项{{ index + 1 }}:</h4>
+                <a class="opt-choice-delete" @click="delOptChoice(index)" title="删除">删除</a>
+              </div>
+              <OptList
+                :ref="`ref_optChoice_${index}`"
+                :dataSource="item.dataSource"
+                :inputKey="`optChoice.${index}`"
+                :showRequire="true"
+                @change="tableOptChoiceSelected"
+              />
+              <a-button style="width: 100%" type="dashed" icon="plus" @click="ShowModule('optChoice', index)"
+                >添加</a-button
+              >
             </div>
-            <OptList
-              :ref="`ref_optChoice_${index}`"
-              :dataSource="item.dataSource"
-              :inputKey="`optChoice.${index}`"
-              :showRequire="true"
-              @change="tableOptChoiceSelected"
-            />
-            <a-button
-              style="width:100%;"
-              type="dashed"
-              icon="plus"
-              @click="ShowModule('optChoice',index)"
-            >添加</a-button>
-          </div>
 
-          <a-button style="width:100%;" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
+            <a-button style="width: 100%" type="dashed" icon="plus" @click="addOptChoiceItem">添加选择项</a-button>
           </a-form-item>
-
         </div>
 
-        <a-form-item label="备注" style="margin-top:10px;">
+        <a-form-item label="备注" style="margin-top: 10px">
           <a-textarea
             placeholder="备注"
             :rows="5"
@@ -142,9 +126,10 @@
 import vuedraggable from 'vuedraggable'
 import {
   priceAdjustProductConfigDetail,
-  priceAdjustProductConfigAddAndUpdate
-} from '@/api/productOfferManagement' 
-import {productPriceCoefficientListWithoutPage} from '@/api/workBox' 
+  priceAdjustProductConfigAddAndUpdate,
+  typeConfigList,
+} from '@/api/productOfferManagement'
+import { productPriceCoefficientListWithoutPage } from '@/api/workBox'
 import TableOptChoice from './TableOptChoice'
 import OptList from './OptList'
 import UploadFile from './UploadFile'
@@ -154,7 +139,7 @@ export default {
     vuedraggable,
     TableOptChoice,
     OptList,
-    UploadFile
+    UploadFile,
   },
   data() {
     return {
@@ -167,7 +152,7 @@ export default {
       optControl: [], //中控系列项
       optSelect: [], //选择配置
       optChoice: [], //选择项
-      productPriceCoefficientList:[]
+      productPriceCoefficientList: [],
     }
   },
   computed: {
@@ -176,7 +161,7 @@ export default {
         view: '查看',
         add: '新增',
         edit: '修改',
-        approval: '审批'
+        approval: '审批',
       }
       return `${m[this.actionType]}系列产品`
     },
@@ -194,16 +179,18 @@ export default {
     },
     isDisabled() {
       return this.isView || this.isApproval
-    }
+    },
   },
 
   methods: {
     init() {
       let that = this
       let queue = []
-      queue.push(productPriceCoefficientListWithoutPage({type:that.record.productType}).then(res =>{
-        that.productPriceCoefficientList = res.data
-      }))
+      queue.push(
+        typeConfigList().then((res) => {
+          that.productPriceCoefficientList = res.data
+        })
+      )
       return Promise.all(queue)
     },
     async handleOk() {
@@ -213,8 +200,8 @@ export default {
         return
       }
       let files = that.$refs.uploadFile.getFiles()
-      if(files.length > 0){
-        that.form.setFieldsValue({productPic:files[0].url})
+      if (files.length > 0) {
+        that.form.setFieldsValue({ productPic: files[0].url })
       }
 
       this.form.validateFields((err, values) => {
@@ -248,7 +235,7 @@ export default {
                 mainBody: 2,
                 orderNo: item.serialNum,
                 type: 1,
-                productId: values.id || ''
+                productId: values.id || '',
               })
             })
 
@@ -259,7 +246,7 @@ export default {
                 mainBody: 2,
                 orderNo: item.serialNum,
                 type: 3,
-                productId: values.id || ''
+                productId: values.id || '',
               })
             })
 
@@ -270,7 +257,7 @@ export default {
                 mainBody: 2,
                 orderNo: item.serialNum,
                 type: 2,
-                productId: values.id || ''
+                productId: values.id || '',
               })
             })
 
@@ -283,7 +270,7 @@ export default {
                   mainBody: 2,
                   orderNo: item.serialNum,
                   type: item.isRequire,
-                  productId: values.id || ''
+                  productId: values.id || '',
                 })
               })
             })
@@ -293,7 +280,7 @@ export default {
           console.log('Received values of form: ', values)
           that.spinning = true
           priceAdjustProductConfigAddAndUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.visible = false
@@ -303,7 +290,7 @@ export default {
                 that.$message.warning(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err)
               that.$message.error('操作失败')
               that.spinning = false
@@ -332,28 +319,30 @@ export default {
         return
       }
 
-      priceAdjustProductConfigDetail({ id: record.id }).then(res => {
-        
-        res.data.productPic && that.$refs.uploadFile && that.$refs.uploadFile.setFiles([{
-          name:res.data.productPic.split('/').slice(-1).join(''),
-          url:res.data.productPic
-        }])
+      priceAdjustProductConfigDetail({ id: record.id }).then((res) => {
+        res.data.productPic &&
+          that.$refs.uploadFile &&
+          that.$refs.uploadFile.setFiles([
+            {
+              name: res.data.productPic.split('/').slice(-1).join(''),
+              url: res.data.productPic,
+            },
+          ])
         //debugger
         that.form.setFieldsValue({
           name: res.data.name,
           model: res.data.model,
           type: res.data.type,
           remarks: res.data.remarks,
-          priceCoefficientId:+res.data.priceCoefficientId,
-          productPic:res.data.productPic || undefined,
-          isSale:res.data.isSale
+          productTypeConfigId: +res.data.productTypeConfigId,
+          productPic: res.data.productPic || undefined,
+          isSale: res.data.isSale,
         })
-        let { optStandData, optSelectData, optChoiceData ,optControlData} = that.formatData(res.data.sysConfigList)
+        let { optStandData, optSelectData, optChoiceData, optControlData } = that.formatData(res.data.sysConfigList)
         that.optStand = optStandData
         that.optSelect = optSelectData
         that.optChoice = optChoiceData
         that.optControl = optControlData
-
       })
     },
     ShowModule(key, index) {
@@ -362,30 +351,30 @@ export default {
         optStand: {
           key: 'optStand',
           searchParam: { type: 1 },
-          selected: that.optStand.map(item => Object.assign({}, item))
+          selected: that.optStand.map((item) => Object.assign({}, item)),
         },
         optControl: {
           key: 'optControl',
           searchParam: { type: 2 },
-          selected: that.optControl.map(item => Object.assign({}, item))
+          selected: that.optControl.map((item) => Object.assign({}, item)),
         },
         optSelect: {
           key: 'optSelect',
           searchParam: { type: 1 },
-          selected: that.optSelect.map(item => Object.assign({}, item))
+          selected: that.optSelect.map((item) => Object.assign({}, item)),
         },
         optChoice: {
           key: 'optChoice',
           searchParam: {},
-          selected: that.optChoice.map(item => Object.assign({}, item))
-        }
+          selected: that.optChoice.map((item) => Object.assign({}, item)),
+        },
       }
 
       if (key === 'optChoice') {
         map[key] = {
           key: `optChoice.${index}`,
-          searchParam: {  },
-          selected: that.optChoice[index]['dataSource'].map(item => Object.assign({}, item))
+          searchParam: {},
+          selected: that.optChoice[index]['dataSource'].map((item) => Object.assign({}, item)),
         }
       }
 
@@ -416,14 +405,14 @@ export default {
     },
     addOptChoiceItem() {
       this.optChoice.push({
-        dataSource: []
+        dataSource: [],
       })
     },
     delOptChoice(index) {
       this.optChoice.splice(index, 1)
     },
     formatData(data) {
-      let formatDataItem = data => {
+      let formatDataItem = (data) => {
         //返回的列表数据格式转换成需要的数据格式
         return data.map((item, index) => {
           let _item = {
@@ -442,24 +431,24 @@ export default {
         })
       }
       let optStandData = data
-        .filter(item => item.mainBody === 2 && item.type === 1)
+        .filter((item) => item.mainBody === 2 && item.type === 1)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optSelectData = data
-        .filter(item => item.mainBody === 2 && item.type === 2)
+        .filter((item) => item.mainBody === 2 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optControlData = data
-        .filter(item => item.mainBody === 2 && item.type === 3)
+        .filter((item) => item.mainBody === 2 && item.type === 3)
         .sort((a, b) => a.orderNo - b.orderNo)
 
-      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5,6].includes(item.type))
-      
-      let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
+      let optChoiceData = data.filter((item) => item.mainBody === 2 && [4, 5, 6].includes(item.type))
+
+      let groups = [...new Set(optChoiceData.map((item) => item.groupId))].sort()
       let res = []
-      groups.map(groupId => {
-        let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
+      groups.map((groupId) => {
+        let dataSource = optChoiceData.filter((item) => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
         if (dataSource.length > 0) {
           res.push({
-            dataSource: formatDataItem(dataSource)
+            dataSource: formatDataItem(dataSource),
           })
         }
       })
@@ -467,10 +456,10 @@ export default {
         optStandData: formatDataItem(optStandData),
         optSelectData: formatDataItem(optSelectData),
         optControlData: formatDataItem(optControlData),
-        optChoiceData: res
+        optChoiceData: res,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -489,11 +478,11 @@ export default {
   margin-bottom: 0;
 }
 
-.add-form-wrapper >>> .ant-form-item  .ant-form-item-label {
+.add-form-wrapper >>> .ant-form-item .ant-form-item-label {
   width: 120px;
   text-align: left;
 }
-.add-form-wrapper >>> .ant-form-item  .ant-form-item-control-wrapper {
+.add-form-wrapper >>> .ant-form-item .ant-form-item-control-wrapper {
   flex: 1;
 }
 
@@ -515,15 +504,15 @@ export default {
   padding: 0 15px;
 }
 
-.opt-choice-wrapper .opt-choice-item .opt-choice-header{
+.opt-choice-wrapper .opt-choice-item .opt-choice-header {
   display: flex;
   line-height: 40px;
 }
-.opt-choice-wrapper .opt-choice-item .opt-choice-header h4{
+.opt-choice-wrapper .opt-choice-item .opt-choice-header h4 {
   flex: 1;
   margin-bottom: 0;
 }
-.opt-choice-wrapper .opt-choice-item >>> .opt-list-is-require{
+.opt-choice-wrapper .opt-choice-item >>> .opt-list-is-require {
   position: absolute;
   top: 10px;
   right: 60px;

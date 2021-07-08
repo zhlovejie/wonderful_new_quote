@@ -28,14 +28,14 @@
         <a-form-item label="产品类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             placeholder="请选择产品类型"
-            v-decorator="['productType', { rules: [{ required: true, message: '请选择产品类型！' }] }]"
+            v-decorator="['productTypeConfigId', { rules: [{ required: true, message: '请选择产品类型！' }] }]"
           >
             <a-select-option v-for="ptype in productTypes" :key="ptype.id" :value="ptype.id">{{
-              ptype.text
+              ptype.typeName
             }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="区域" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <!-- <a-form-item label="区域" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-tree-select
             :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
             :treeData="treeData"
@@ -43,7 +43,7 @@
             v-decorator="['area', { rules: [{ required: true, message: '选择区域' }] }]"
           >
           </a-tree-select>
-        </a-form-item>
+        </a-form-item> -->
         <a-form-item label="是否是常规系列" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             placeholder="请选择是否是常规系列"
@@ -164,6 +164,7 @@
 
 <script>
 import { addProduct, editProduct, checkName, queryTreeByArea, queryCode } from '@/api/workBox'
+import { typeConfigList } from '@/api/productOfferManagement'
 import { getUploadPath2, getDictionary, getUeditorUploadPath, customUpload } from '@/api/common'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
@@ -230,7 +231,7 @@ export default {
   },
   created(record) {
     // 初始化钩子,获取所有产品类型
-    queryCode({ code: 'tool_product_type' }).then((res) => {
+    typeConfigList().then((res) => {
       this.productTypes = res.data
     })
     queryCode({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
@@ -272,6 +273,7 @@ export default {
           installExplain: record.installExplain,
           operateExplain: record.operateExplain,
           fullName: record.fullName,
+          productTypeConfigId: record.productTypeConfigId,
           seriesFlag: record.seriesFlag,
           area: String(record.area),
         })

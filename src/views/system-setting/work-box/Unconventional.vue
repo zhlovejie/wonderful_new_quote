@@ -22,13 +22,13 @@
         :allowClear="true"
       />
       <a-select
-        placeholder="选择产品类别"
+        placeholder="选择产品类型"
         v-model="queryParam.productCategory"
         :allowClear="true"
         style="width: 200px; margin-left: 10px"
       >
         <a-select-option v-for="item in products" :key="item.id" :value="item.id">
-          {{ item.text }}
+          {{ item.typeName }}
         </a-select-option>
       </a-select>
       <a-select
@@ -66,7 +66,7 @@
 import { STable } from '@/components'
 
 import { saleValencyProductList, getDictionaryList } from '@/api/workBox'
-
+import { typeConfigList } from '@/api/productOfferManagement'
 export default {
   name: 'ProductPrice',
   components: {
@@ -94,8 +94,12 @@ export default {
           dataIndex: 'newBasisModel',
         },
         {
-          title: '产品类别',
-          dataIndex: 'productCategoryText',
+          title: '产品类型',
+          dataIndex: 'productTypeConfigName',
+        },
+        {
+          title: '核价代码',
+          dataIndex: 'productCode',
         },
         {
           title: '规格型号',
@@ -111,14 +115,6 @@ export default {
         {
           title: '成本价',
           dataIndex: 'costPrice',
-        },
-        {
-          title: 'A价',
-          dataIndex: 'aprice',
-        },
-        {
-          title: 'B价',
-          dataIndex: 'bprice',
         },
         {
           title: 'C价',
@@ -149,7 +145,7 @@ export default {
     }
   },
   created() {
-    getDictionaryList({ parentId: 655 }).then((res) => (this.products = res.data))
+    typeConfigList().then((res) => (this.products = res.data))
     // 初始化钩子,获取所有产品类型
     // getDictionary({ text: '产品类型' }).then((res) => {
     //   this.productTypes = res.data

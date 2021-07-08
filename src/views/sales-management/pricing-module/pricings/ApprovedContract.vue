@@ -265,24 +265,24 @@ const innerColumns = [
     scopedSlots: { customRender: 'costPrice' },
     width: '120px',
   },
-  {
-    align: 'center',
-    title: 'A价（元）',
-    scopedSlots: { customRender: 'aprice' },
-    width: '120px',
-  },
-  {
-    align: 'center',
-    title: 'B价（元）',
-    scopedSlots: { customRender: 'bprice' },
-    width: '120px',
-  },
-  {
-    align: 'center',
-    title: 'C价（元）',
-    scopedSlots: { customRender: 'cprice' },
-    width: '120px',
-  },
+  // {
+  //   align: 'center',
+  //   title: 'A价（元）',
+  //   scopedSlots: { customRender: 'aprice' },
+  //   width: '120px',
+  // },
+  // {
+  //   align: 'center',
+  //   title: 'B价（元）',
+  //   scopedSlots: { customRender: 'bprice' },
+  //   width: '120px',
+  // },
+  // {
+  //   align: 'center',
+  //   title: 'C价（元）',
+  //   scopedSlots: { customRender: 'cprice' },
+  //   width: '120px',
+  // },
 ]
 const priewColumns = [
   {

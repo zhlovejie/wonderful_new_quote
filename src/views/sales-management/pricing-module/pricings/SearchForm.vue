@@ -18,12 +18,9 @@
         <a-col :span="12">
           <a-form-item label="销售经理">
             <a-select placeholder="销售经理" v-decorator="['saleUserId']">
-              <a-select-option
-                v-for="salesman in salesJurisdiction.allSalesman"
-                :key="salesman.id"
-                :value="salesman.userId"
-                >{{ salesman.salesmanName }}</a-select-option
-              >
+              <a-select-option v-for="salesman in allSalesman" :key="salesman.id" :value="salesman.userId">{{
+                salesman.salesmanName
+              }}</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -118,7 +115,7 @@ export default {
       modalTitle: '高级筛选',
       visible: false,
       form: this.$form.createForm(this),
-      salesJurisdiction: {},
+      allSalesman: {},
     }
   },
   methods: {
@@ -126,7 +123,18 @@ export default {
       let that = this
       that.visible = true
       that.$nextTick(() => {
-        salesJurisdiction().then((res) => (that.salesJurisdiction = res.data))
+        salesJurisdiction().then((res) => {
+          // 当前用户的销售权限
+          var salesJurisdiction = res.data
+          this.salesJurisdiction = salesJurisdiction
+          if (salesJurisdiction.top) {
+            // 最高权限才可以查看所有销售人员的客户
+            this.allSalesman = salesJurisdiction.allSalesman
+          }
+          if (salesJurisdiction.leader || salesJurisdiction.assistant) {
+            this.allSalesman = salesJurisdiction.subSalesman
+          }
+        })
       })
     },
     handleCancel() {
@@ -143,7 +151,7 @@ export default {
           values.startTime = values.sDate[0].format('YYYY-MM-DD')
           values.endTime = values.sDate[1].format('YYYY-MM-DD')
           delete values.sDate
-        }else{
+        } else {
           values.startTime = undefined
           values.endTime = undefined
           delete values.sDate
@@ -152,7 +160,7 @@ export default {
           values.startDemandTime = values.dDate[0].format('YYYY-MM-DD')
           values.endDemandTime = values.dDate[1].format('YYYY-MM-DD')
           delete values.dDate
-        }else{
+        } else {
           values.startDemandTime = undefined
           values.endDemandTime = undefined
           delete values.dDate

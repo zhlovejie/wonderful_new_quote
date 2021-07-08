@@ -91,7 +91,7 @@
                   v-decorator="['dicIds', { rules: [{ required: true, message: '请选择提成产品!' }] }]"
                 >
                   <a-select-option v-for="item in products" :key="item.id" :value="item.id">{{
-                    item.text
+                    item.typeName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
@@ -117,7 +117,7 @@
 </template>
 <script>
 import { bonus_getDepartmentByType } from '@/api/bonus_management'
-import { queryCode } from '@/api/workBox'
+import { typeConfigList } from '@/api/productOfferManagement'
 import {
   getStationList, //获取部门下面的岗位
   getUserByStation, //获取人员
@@ -173,7 +173,7 @@ export default {
   },
   created() {
     bonus_getDepartmentByType({ type: 4 }).then((res) => (this.departmentList = res.data))
-    queryCode({ code: 'percentare_soft_hard' }).then((res) => (this.products = res.data))
+    typeConfigList().then((res) => (this.products = res.data))
   },
   methods: {
     moment,

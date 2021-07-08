@@ -92,11 +92,11 @@
               </a-select>
             </template>
             <template slot="status" slot-scope="text, record">
-              <a-switch 
-                @change="statusChange(record, $event)" 
-                checked-children="启用" 
-                un-checked-children="禁用" 
-                :checked="+text === 0 ? true : false" 
+              <a-switch
+                @change="statusChange(record, $event)"
+                checked-children="启用"
+                un-checked-children="禁用"
+                :checked="+text === 0 ? true : false"
                 :disabled="true"
               />
             </template>
@@ -205,13 +205,13 @@ let columns = [
     key: 'demandRemarks',
     scopedSlots: { customRender: 'demandRemarks' },
   },
-  {
-    align: 'center',
-    title: '产品区域',
-    dataIndex: 'productArea',
-    key: 'productArea',
-    scopedSlots: { customRender: 'productArea' },
-  },
+  // {
+  //   align: 'center',
+  //   title: '产品区域',
+  //   dataIndex: 'productArea',
+  //   key: 'productArea',
+  //   scopedSlots: { customRender: 'productArea' },
+  // },
   {
     align: 'center',
     title: '参考图片',
@@ -219,13 +219,13 @@ let columns = [
     key: 'referencePic',
     scopedSlots: { customRender: 'referencePic' },
   },
-  {
-    align: 'center',
-    title: '修改点',
-    dataIndex: 'revisedPart',
-    key: 'revisedPart',
-    scopedSlots: { customRender: 'revisedPart' },
-  },
+  // {
+  //   align: 'center',
+  //   title: '修改点',
+  //   dataIndex: 'revisedPart',
+  //   key: 'revisedPart',
+  //   scopedSlots: { customRender: 'revisedPart' },
+  // },
   {
     align: 'center',
     title: '状态',
@@ -318,7 +318,7 @@ export default {
           productArea: item.oldAreaText, //产品区域
           referencePic: item.referencePic, //产品图片
           revisedPart: item.revisedPart, //修改点
-          status:item.status,
+          status: item.status,
           editable: true,
           isNew: true,
         })
@@ -420,10 +420,10 @@ export default {
           that.$message.error('请输入需求描述')
           return
         }
-        if (item.revisedPart.length === 0) {
-          that.$message.error('请选择修改点')
-          return
-        }
+        // if (item.revisedPart.length === 0) {
+        //   that.$message.error('请选择修改点')
+        //   return
+        // }
       }
 
       that.form.validateFields((err, values) => {
@@ -551,13 +551,13 @@ export default {
       let itemsStr = items.map((s) => `<li>${s}</li>`).join('')
       return `<ol style="text-align: left;">${itemsStr}</ol>`
     },
-    statusChange(record,status){
+    statusChange(record, status) {
       //console.log(status)
       const _index = this.data.findIndex((item) => item.key === record.key)
       if (_index >= 0) {
         this.data[_index]['status'] = status ? 0 : 1
       }
-    }
+    },
   },
 }
 </script>

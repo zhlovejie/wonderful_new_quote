@@ -84,6 +84,16 @@ export function accessHumanCardInfo(parameter) {
     data: parameter
   })
 }
+// 导出补卡罚款记录
+export function getExportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/recardFineRecord/recard-fine-record/exportFineRecordList',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 
 
 

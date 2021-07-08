@@ -87,7 +87,7 @@
             />
           </a-form-item>
 
-          <template v-if="isNormalAdd">
+          <template v-if="isNormalAdd || isNormalUpdate">
             <a-form-item label="是否为规格型号">
               <a-switch
                 checked-children="是"
@@ -102,6 +102,10 @@
                 ]"
               />
             </a-form-item>
+          </template>
+
+          <template v-if="isNormalAdd">
+
             <a-form-item label="是否存在循环">
               <a-switch
                 checked-children="是"
@@ -310,6 +314,9 @@ export default {
     isNormalAdd() {
       return this.isNormal && this.isAdd
     },
+    isNormalUpdate(){
+      return this.isNormal && this.isEdit
+    },
     isProductAdd() {
       return this.isProduct && this.isAdd
     },
@@ -345,7 +352,7 @@ export default {
       that.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true
-          if (that.isAdd && 'isSpecification' in values) {
+          if ((that.isAdd || that.isEdit) && 'isSpecification' in values) {
             values.isSpecification = values.isSpecification === true ? 1 : 2
           }
           let param = { ...values }

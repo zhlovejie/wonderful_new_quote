@@ -595,7 +595,6 @@ export default {
       if (target) {
         target.targetId = selectItem.id
         target.targetName = selectItem.text
-        target.tax = parseFloat(selectItem.tax)
         this.data = dataSource
       }
       this.freshValidateData()
@@ -649,6 +648,7 @@ export default {
         target['productTypeDicId'] = selectItem.productTypeDicId
         target['productId'] = selectItem.id
         target['productName'] = selectItem.productName
+        target['tax'] = selectItem.taxRate
         this.data = dataSource
       }
       this.freshValidateData()

@@ -32,6 +32,9 @@ import accessControl from '@/router/router-access_control'
 import monitorDevice from '@/router/router-monitor-device'
 import materialRuleManagement from '@/router/router-material-rule-management'
 
+import productProcessManagement from '@/router/router-product-process-management'
+import bomManagement from '@/router/router-bom-management'
+
 const __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
   systemSetting, //系统设置
@@ -53,6 +56,8 @@ const __ROUTER_MAP__ = [
   accessControl, //门禁管理
   monitorDevice, // 监控管理
   materialRuleManagement, //物料管理
+  productProcessManagement, //工艺管理
+  bomManagement, //BOM管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示

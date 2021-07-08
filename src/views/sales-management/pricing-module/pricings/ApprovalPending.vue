@@ -13,9 +13,9 @@
         <span>{{ index + 1 }}</span>
       </div>
 
-      <template slot="customerName" slot-scope="text,record">
+      <template slot="customerName" slot-scope="text, record">
         <span v-if="+record.userSign === 2">***</span>
-        <a  @click="consumerInfo(record)" v-else>{{ text }}</a>
+        <a @click="consumerInfo(record)" v-else>{{ text }}</a>
       </template>
       <a slot="valencyCode" slot-scope="text, record" @click="lookApplyNuclear(record)">{{ text }}</a>
       <a slot="valencyStatus" slot-scope="text, record" @click="approvalPreview(record)">
@@ -272,25 +272,7 @@ const innerColumns = [
     dataIndex: 'costPrice',
     key: 'costPrice',
     scopedSlots: { customRender: 'costPrice' },
-    width: '120px'
-  },
-  {
-    align: 'center',
-    title: 'A价（元）',
-    scopedSlots: { customRender: 'aprice' },
-    width: '120px'
-  },
-  {
-    align: 'center',
-    title: 'B价（元）',
-    scopedSlots: { customRender: 'bprice' },
-    width: '120px'
-  },
-  {
-    align: 'center',
-    title: 'C价（元）',
-    scopedSlots: { customRender: 'cprice' },
-    width: '120px'
+    width: '120px',
   },
 ]
 const priewColumns = [
