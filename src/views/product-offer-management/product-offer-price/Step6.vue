@@ -3,22 +3,20 @@
     :bordered="false"
     class="product-offer-management-control-system-options"
   >
-    <div class="wrapper">
+    <div class="wrapper" id="product-offer-management-product-offer-price-print">
       <div style="font-weight: 700;">
         <p>产品信息：{{msg.productInfo}}</p>
         <p>产品型号：{{msg.productType}}</p>
-        <p v-if="msg.productTypeConfigName">产品类型：{{msg.productTypeConfigName}}</p>
-        <p>中控型号：{{msg.controlType}}</p>
+        <p>产品类型：{{msg.productTypeConfigName}}</p>
       </div>
       <p>
-      <h3>中控配置</h3>
       <OptionsSelect
         ref="optControlStand"
-        modelTitle="标准配置"
+        modelTitle="中控-标准配置"
       />
       <OptionsSelect
         ref="optControlChoice"
-        modelTitle="选择配置"
+        modelTitle="中控-选择配置"
       />
       </p>
       <p>
@@ -26,6 +24,8 @@
           ref="optStand"
           modelTitle="标准配置"
         />
+      </p>
+      <p>
         <OptionsSelect
           ref="optChoice"
           modelTitle="选择配置"
@@ -39,7 +39,7 @@
       >上一步</a-button>
       <a-button
         type="primary"
-        @click="stepAction('ok')"
+        @click="stepAction('print')"
         style="margin-left:10px;"
       >下载</a-button>
     </p>
@@ -50,6 +50,7 @@ import {
   productMaterialInfoGetCode
 } from '@/api/routineMaterial'
 import OptionsSelect from '@/views/product-offer-management/control-system-options/OptionsSelect'
+import util from '@/components/_util/util'
 export default {
   components:{OptionsSelect},
   inject:['addForm'],
@@ -83,6 +84,7 @@ export default {
         step4:choices,
         productSeries,
         productName,
+        productTypeConfigId,
         productTypeConfigName
       } = this.addForm.form
 
@@ -91,8 +93,9 @@ export default {
       let parentCode = _productsPath.map(item => item.code).join('')
       that.msg = {
         productInfo:_productsPath.map(item => item.title).join('->'),
-        productType:`${productName}(${parentCode}${orderCode})`,
+        productType:`${productTypeConfigName}(${parentCode}${orderCode})`,
         productTypeCode:`${parentCode}${orderCode}`,
+        productTypeConfigName
       }
 
       let {optionsList,treeData} = that.addForm
@@ -104,7 +107,7 @@ export default {
       ]
 
       refs.map(item => {
-        that.$refs.[item.refName].query('view',that.$_.cloneDeep(stands.items),{
+        that.$refs.[item.refName].query('view',that.$_.cloneDeep(item.data),{
           optionsList:that.$_.cloneDeep(optionsList),
           treeData:that.$_.cloneDeep(treeData)
         })
@@ -116,6 +119,8 @@ export default {
         that.$emit('ok')
       } else if (type === 'prev') {
         that.$emit('change', 'step6', 'prev', null)
+      } else if(type === 'print'){
+        util.handleWindowPrint(`#product-offer-management-product-offer-price-print`, that.msg.productType)
       }
     }
   }

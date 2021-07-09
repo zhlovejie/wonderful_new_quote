@@ -55,10 +55,25 @@ export default {
 
       that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
     },
+    addConfigType(nodes, configType = 0) {
+      const that = this
+      const f = n => {
+        n.configType = configType
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    },
     stepAction(type){
       const that = this
       if(type === 'next'){
-        that.$emit('change','step2','next',{optStandItems:that.optStandItems,optChoiceItems:that.optChoiceItems})
+        let {optStandItems,optChoiceItems} = that
+        that.$emit('change','step2','next',{
+          optStandItems:that.addConfigType(optStandItems,0),
+          optChoiceItems:that.addConfigType(optChoiceItems,1)
+        })
       }else if(type === 'prev'){
         that.$emit('change','step2','prev',null)
       }

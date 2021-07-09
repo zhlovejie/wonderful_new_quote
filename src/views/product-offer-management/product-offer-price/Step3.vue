@@ -16,7 +16,7 @@
           placeholder="选择产品类型"
           v-model="form.productTypeConfigName"
           style="width: 280px"
-          readonly="readonly"
+          read-only="read-only"
           @click="openModel('productTypeSelect')"
         />
       </a-form-model-item>

@@ -64,6 +64,7 @@ export default {
       ],
       // step3,step4 数据源
       optionsList: [],
+      allOptionsList:[],
       treeData: [],
     }
   },
@@ -117,6 +118,7 @@ export default {
       return priceQuotedItemConfigSubList(that.queryParam)
         .then(res => {
           that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
+          that.allOptionsList = res.data.filter(item => item.itemConfigType !== 9)
         })
         .catch(err => {
           that.$message.error(err)
