@@ -60,8 +60,8 @@
             :loading="loading"
           >
             <a-select-option v-for="item in tionList" :key="item.id" :value="item.id"
-              >{{ item.productModel }} ( {{ item.productName }} )</a-select-option
-            >
+              >产品名称： {{ item.productName }} --产品代码：{{ item.productModel }}
+            </a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="代码输入" v-if="type === 2">
@@ -72,7 +72,8 @@
             :loading="loading"
           >
             <a-select-option v-for="item in saleValenc" :key="item.id" :value="item.id"
-              >{{ item.productName }}-{{ item.productCode }}
+              >核价产品代码：{{ item.productCode }}--产品代码{{ item.newBasisModel }}---产品名称：
+              {{ item.productName }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -92,24 +93,40 @@
       </a-form>
     </div>
     <div class="steps-content" v-if="current === 2">
-      <a-alert
-        v-if="current === 2"
-        style="width: 520px; margin: 0px auto; margin-bottom: 30px; text-align: left"
-        message="蓝色为总区间,黄色为推荐区间,红色为竞争力区间"
-        type="info"
-        show-icon
-        closable
-      />
       <a-table
         :columns="columns"
         :dataSource="dataSource"
+        @expand="expandHandler"
+        :expandedRowKeys="expandedRowKeys"
+        class="components-table-demo-nested"
         :customRow="customRowFunction"
         :pagination="false"
-        size="small"
       >
         <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
+          <span style="font-size: 20px">{{ index + 1 }}</span>
         </div>
+        <div slot="commissionRate" slot-scope="text, record, index">
+          <span style="font-size: 20px">{{ text }}</span>
+        </div>
+        <div slot="price" slot-scope="text, record, index">
+          <span style="font-size: 20px">{{ text }}</span>
+        </div>
+        <div slot="intervalValueName" slot-scope="text, record, index">
+          <span style="font-size: 20px">{{ text }}</span>
+        </div>
+
+        <a-table
+          slot="expandedRowRender"
+          slot-scope="record, text"
+          :columns="innerColumns"
+          :dataSource="record.innerData"
+          :pagination="false"
+          size="small"
+        >
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
+          </div>
+        </a-table>
       </a-table>
     </div>
     <div class="steps-action">
@@ -133,7 +150,7 @@ import {
   exportMaterialCodePricing,
   exportValencyCodePricing,
 } from '@/api/productOfferManagement'
-const columns = [
+const innerColumns = [
   {
     align: 'center',
     title: '序号',
@@ -155,16 +172,43 @@ const columns = [
     dataIndex: 'price',
   },
 ]
+const columns = [
+  {
+    align: 'center',
+    title: '序号',
+    scopedSlots: { customRender: 'order' },
+  },
+  {
+    align: 'center',
+    title: '区间值名称',
+    dataIndex: 'intervalValueName',
+    scopedSlots: { customRender: 'intervalValueName' },
+  },
+  {
+    align: 'center',
+    title: '提成比率',
+    dataIndex: 'commissionRate',
+    scopedSlots: { customRender: 'commissionRate' },
+  },
+  {
+    align: 'center',
+    title: '销售价格',
+    dataIndex: 'price',
+    scopedSlots: { customRender: 'price' },
+  },
+]
 
 export default {
   data() {
     return {
       columns,
+      innerColumns,
       current: 0,
       loading: true,
       tionList: [],
       _searchParam: {},
       dataSource: [],
+      expandedRowKeys: [],
       saleValenc: [],
       depList: [],
       form: this.$form.createForm(this, { name: 'pom-pricing' }),
@@ -182,6 +226,28 @@ export default {
     },
   },
   methods: {
+    expandHandler(expanded, record) {
+      console.log(arguments)
+      if (expanded) {
+        this.expandedRowKeys = [...this.expandedRowKeys, record.key]
+        let m = {
+          1: materialCodePricing,
+          2: valencyCodePricing,
+          3: costPricePricing,
+        }
+        let api = m[this.type]
+        api({ rangeId: record.rangeId, ...this._searchParam }).then((res) => {
+          if (res.code === 200) {
+            let react = this.dataSource.find((item) => item.key === record.key)
+            react.innerData = res.data
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
+      }
+    },
     customRowFunction(record) {
       //rateType 1 总区间 蓝色  2 推荐区间 黄色 3竞争力区间 红色
       let { rateType } = record
@@ -226,7 +292,7 @@ export default {
       }
       let api = m[this.type]
 
-      api(that._searchParam)
+      api({ rangeId: -1, ...that._searchParam })
         .then((res) => {
           that.spinning = false
           console.log(res)
@@ -293,9 +359,15 @@ export default {
 
             if (res.code === 200) {
               this.current++
-              this.dataSource = res.data.sort(function (a, b) {
-                return a.rateType - b.rateType
+              this.dataSource = res.data.map((item, index) => {
+                item.key = index + 1
+                item.innerData = []
+                return item
               })
+              this.expandedRowKeys = that.dataSource.map((item) => item.key) || []
+              // this.dataSource = res.data.sort(function (a, b) {
+              //   return a.rateType - b.rateType
+              // })
             } else {
               this.$message.error(res.msg)
             }
@@ -312,6 +384,9 @@ export default {
 </script>
 
 <style scoped>
+.logListTable {
+  font-size: 20px;
+}
 .steps-content {
   border-radius: 6px;
   background-color: #fff;

@@ -48,7 +48,7 @@
 
     <a-modal
       title="产品评估"
-      :width="600"
+      :width="800"
       :visible="visible"
       @cancel="visible = false"
       :maskClosable="false"
@@ -61,18 +61,37 @@
         <a-table
           :columns="columns"
           :dataSource="dataSource"
+          @expand="expandHandler"
+          :expandedRowKeys="expandedRowKeys"
+          class="components-table-demo-nested"
           :customRow="customRowFunction"
           :pagination="false"
-          size="small"
         >
           <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
+            <span style="font-size: 20px">{{ index + 1 }}</span>
           </div>
+          <div slot="commissionRate" slot-scope="text, record, index">
+            <span style="font-size: 20px">{{ text }}</span>
+          </div>
+          <div slot="price" slot-scope="text, record, index">
+            <span style="font-size: 20px">{{ text }}</span>
+          </div>
+          <div slot="intervalValueName" slot-scope="text, record, index">
+            <span style="font-size: 20px">{{ text }}</span>
+          </div>
+          <a-table
+            slot="expandedRowRender"
+            slot-scope="record, text"
+            size="small"
+            :columns="innerColumns"
+            :dataSource="record.innerData"
+            :pagination="false"
+          >
+            <div slot="order" slot-scope="text, record, index">
+              <span>{{ index + 1 }}</span>
+            </div>
+          </a-table>
         </a-table>
-        <!-- <p>A价：{{ parseInt(costPrice.aprice) | moneyFormatNumber(0) }}</p>
-        <p>B价：{{ parseInt(costPrice.bprice) | moneyFormatNumber(0) }}</p>
-        <p>C价：{{ parseInt(costPrice.cprice) | moneyFormatNumber(0) }}</p>
-        <p>市场价：{{ parseInt(costPrice.retailPrice) | moneyFormatNumber(0) }}</p> -->
       </div>
       <div style="text-align: center; margin-top: 10px">
         <a-button type="primary" @click="doAction('price-ok')" style="margin: 0 10px">确定</a-button>
@@ -146,7 +165,7 @@ export default {
   },
   data() {
     return {
-      columns: [
+      innerColumns: [
         {
           align: 'center',
           title: '序号',
@@ -168,6 +187,31 @@ export default {
           dataIndex: 'price',
         },
       ],
+      columns: [
+        {
+          align: 'center',
+          title: '序号',
+          scopedSlots: { customRender: 'order' },
+        },
+        {
+          align: 'center',
+          title: '区间值名称',
+          dataIndex: 'intervalValueName',
+          scopedSlots: { customRender: 'intervalValueName' },
+        },
+        {
+          align: 'center',
+          title: '提成比率',
+          dataIndex: 'commissionRate',
+          scopedSlots: { customRender: 'commissionRate' },
+        },
+        {
+          align: 'center',
+          title: '销售价格',
+          dataIndex: 'price',
+          scopedSlots: { customRender: 'price' },
+        },
+      ],
       activeKey: 1,
       optInfo: {},
       visible: false,
@@ -176,6 +220,7 @@ export default {
       costPrice: {},
       costPriceAll: {},
       dataSource: [],
+      expandedRowKeys: [],
       viewDataSource: [],
       unitPriceView: null, //预览选择的单价
       spinningView: false,
@@ -296,12 +341,38 @@ export default {
       }
       //this.$refs.productConfigSub.reset()
     },
+    expandHandler(expanded, record) {
+      console.log(arguments)
+      if (expanded) {
+        this.expandedRowKeys = [...this.expandedRowKeys, record.key]
+        productEvaluation({
+          rangeId: record.rangeId,
+          id: this.productTypeConfigId,
+          sumPrice: this.costPrice.price,
+        }).then((res) => {
+          if (res.code === 200) {
+            let react = this.dataSource.find((item) => item.key === record.key)
+            react.innerData = res.data
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      } else {
+        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
+      }
+    },
     assessment() {
       productEvaluation({ id: this.productTypeConfigId, sumPrice: this.costPrice.price }).then((res) => {
         if (res.code === 200) {
-          this.dataSource = res.data.sort(function (a, b) {
-            return a.rateType - b.rateType
+          this.dataSource = res.data.map((item, index) => {
+            item.key = index + 1
+            item.innerData = []
+            return item
           })
+          this.expandedRowKeys = that.dataSource.map((item) => item.key) || []
+          // this.dataSource = res.data.sort(function (a, b) {
+          //   return a.rateType - b.rateType
+          // })
         } else {
           this.$message.error(res.msg)
         }
@@ -563,7 +634,5 @@ export default {
 }
 .price-wrapper {
   text-align: center;
-  font-size: 125%;
-  font-weight: bold;
 }
 </style>

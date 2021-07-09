@@ -45,17 +45,6 @@
             @change="(e) => constPriceAction(e)"
           />
         </a-form-item>
-        <!-- <a-form-item label="A价" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['priceA',{}]"/>
-        </a-form-item>
-        <a-form-item label="B价" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input
-            v-decorator="['priceB',{ rules: [{
-              pattern: /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/, message: '请输入正确B价!',
-            }, {
-              required: true, message: '请输入B价!',
-            }]}]"/>
-        </a-form-item> -->
         <a-form-item label="C价" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input disabled placeholder="自动计算" v-decorator="['priceC']" />
         </a-form-item>
@@ -66,7 +55,7 @@
 
 <script>
 import { editProduct, queryTreeByArea, queryPriceByArea } from '@/api/workBox'
-import { typeConfigDetail } from '@/api/productOfferManagement'
+import { typeConfigDetail, intervalConfigDetailByName } from '@/api/productOfferManagement'
 export default {
   name: 'PriceEdit',
   data() {
@@ -87,6 +76,8 @@ export default {
       record: {},
       priceByArea: {},
       code: '',
+      lowPriceInterval: '',
+      profitValue: '',
     }
   },
   computed: {
@@ -108,8 +99,12 @@ export default {
         this.$message.error('请先选择产品类型')
         this.visible = false
       }
-      typeConfigDetail({ id: record.productTypeConfigId }).then((res) => {
+      await typeConfigDetail({ id: record.productTypeConfigId }).then((res) => {
         this.code = res.data.code
+        this.lowPriceInterval = res.data.lowPriceInterval
+      })
+      await intervalConfigDetailByName({ intervalValueName: this.lowPriceInterval }).then((res) => {
+        this.profitValue = res.data.profitValue
       })
 
       this.$nextTick(() => {
@@ -214,7 +209,7 @@ export default {
     constPriceAction(val) {
       let that = this
       // （成本价/0.750） *（1+税率）
-      let _costPrice = (Number(val) / 0.75) * (1 + Number(that.record.taxRate) / 100)
+      let _costPrice = (Number(val) / Number(this.profitValue)) * (1 + Number(that.record.taxRate) / 100)
       if (that.code === 'pj') {
         this.form.setFieldsValue({
           priceC: _costPrice.toFixed(2),

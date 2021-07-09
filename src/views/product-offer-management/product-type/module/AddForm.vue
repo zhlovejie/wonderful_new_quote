@@ -191,6 +191,7 @@
 </template>
 
 <script>
+let uuid = () => Math.random().toString(32).slice(-10)
 import { addAndUpdateTypeConfig, typeConfigDetail, intervalConfigList } from '@/api/productOfferManagement'
 
 export default {
@@ -229,7 +230,7 @@ export default {
   methods: {
     inputChange(event, key, field) {
       let typeConfigRangeList = [...this.typeConfigRangeList]
-      let target = typeConfigRangeList.find((item, index) => item.index === key)
+      let target = typeConfigRangeList.find((item) => item.key === key)
       if (target) {
         target[field] = event instanceof Event ? event.target.value : event
         this.typeConfigRangeList = typeConfigRangeList
@@ -238,10 +239,11 @@ export default {
 
     handleAction() {
       this.typeConfigRangeList.push({
+        key: uuid(),
         startInterval: undefined,
         endInterval: undefined,
         intervalName: undefined,
-        intervalPermission: undefined,
+        intervalPermission: 0,
         defaultInterval: undefined,
       })
     },
@@ -254,6 +256,15 @@ export default {
           }
           console.log(values)
           that.spinning = true
+          values.typeConfigRangeList = values.typeConfigRangeList.map((item) => {
+            return {
+              startInterval: item.startInterval,
+              endInterval: item.endInterval,
+              intervalName: item.intervalName,
+              intervalPermission: item.intervalPermission,
+              defaultInterval: item.defaultInterval,
+            }
+          })
           addAndUpdateTypeConfig(values)
             .then((res) => {
               that.spinning = false
@@ -314,7 +325,16 @@ export default {
           taxRate: res.data.taxRate,
           lowPriceInterval: res.data.lowPriceInterval,
         })
-        that.typeConfigRangeList = res.data.typeConfigRangeList
+        that.typeConfigRangeList = res.data.typeConfigRangeList.map((item) => {
+          return {
+            key: uuid(),
+            startInterval: item.startInterval,
+            endInterval: item.endInterval,
+            intervalName: item.intervalName,
+            intervalPermission: item.intervalPermission,
+            defaultInterval: item.defaultInterval,
+          }
+        })
       })
     },
   },
