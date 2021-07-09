@@ -38,7 +38,7 @@
       </div>
       <div
         class="options-bd"
-        style="margin-top:20px;"
+        :style="{'margin-top':disabled ? '0' : '20px'}"
       >
         <p>配置清单</p>
         <OptConfigTree :nodeList="optionsTableDataSource">
@@ -122,10 +122,10 @@ export default {
         }
       ],
       optionsConfig: [
-        { label: '必选项默认选中', value: '1' },
-        { label: '必选项默认不选中', value: '2' },
-        { label: '非必选项默认选中', value: '3' },
-        { label: '非必选项默认不选中', value: '4' }
+        { label: '必选项默认选中', value: 1 },
+        { label: '必选项默认不选中', value: 2 },
+        { label: '非必选项默认选中', value: 3 },
+        { label: '非必选项默认不选中', value: 4 }
       ],
 
       optSelectedNodesThis: [],
@@ -162,7 +162,7 @@ export default {
         this.optionsList = optionsList.filter(opt => !keys.includes(opt.id))
         let arrKeys = this.optionsList.map(opt => opt.id)
         this.selectKeys = this.selectKeys.filter(k => arrKeys.includes(k))
-        this.optionsCheckboxChange(this.selectKeys)
+        // this.optionsCheckboxChange(this.selectKeys)
       }
     }
   },
@@ -170,24 +170,24 @@ export default {
     query(type, nodes,{optionsList,treeData}) {
       const that = this
       that.type = type
-      that.optionsList = JSON.parse(JSON.stringify(optionsList))
-      that.treeData = JSON.parse(JSON.stringify(treeData))
+      that.optionsList = that.$_.cloneDeep(optionsList)
+      that.treeData = that.$_.cloneDeep(treeData)
       that.optionsListCache = [...that.optionsList]
       if (that.isAdd) {
         that.selectKeys = []
         that.optionsTableDataSource = []
       } else if (that.isView) {
         that.selectKeys = nodes.map(node => node.itemConfigId || node.key)
-        that.optionsTableDataSource = that.checkedAndRequired2ConfigValue(nodes)
+        that.optionsTableDataSource = that.checkedAndRequired2ConfigValue(that.$_.cloneDeep(nodes))
       } else if (that.isEdit) {
         that.selectKeys = nodes.map(node => node.itemConfigId || node.key)
         that.optionsTableDataSource = that.selectKeys.map(key => {
           const target = that.findNode(that.treeData, key)
-          return { ...target }
+          return that.$_.cloneDeep(target)
         })
         that.optionsTableDataSource = that.margeNodes(
-          that.optionsTableDataSource,
-          that.checkedAndRequired2ConfigValue(nodes)
+          that.$_.cloneDeep(that.optionsTableDataSource),
+          that.checkedAndRequired2ConfigValue(that.$_.cloneDeep(nodes))
         )
       }
     },
@@ -216,7 +216,7 @@ export default {
       const arr = []
       this.selectKeys.map(key => {
         const target = that.findNode(that.treeData, key)
-        arr.push({ ...target })
+        arr.push(that.$_.cloneDeep(target))
       })
       that.optionsTableDataSource = arr
 
@@ -233,8 +233,8 @@ export default {
     emitData() {
       const that = this
       that.$nextTick(() => {
-        const optionsTableDataSource = JSON.parse(JSON.stringify(that.optionsTableDataSource))
-        let list = that.filterCheckedNode(optionsTableDataSource.filter(n => that.hasCheckedNode(n)))
+        const optionsTableDataSource = that.$_.cloneDeep(that.optionsTableDataSource).filter(n => that.hasCheckedNode(n))
+        let list = that.filterCheckedNode(optionsTableDataSource)
         list = that.configValue2CheckedAndRequired(list)
         that.$emit('change', list)
       })
@@ -294,13 +294,13 @@ export default {
       const that = this
       const f = n => {
         if (n.isRequired === 0 && n.isChecked === 0) {
-          n.configValue = '1'
+          n.configValue = 1
         } else if (n.isRequired === 0 && n.isChecked === 1) {
-          n.configValue = '2'
+          n.configValue = 2
         } else if (n.isRequired === 1 && n.isChecked === 0) {
-          n.configValue = '3'
+          n.configValue = 3
         } else if (n.isRequired === 1 && n.isChecked === 1) {
-          n.configValue = '4'
+          n.configValue = 4
         }
         if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
           n.childrenList = n.childrenList.map(node => f(node))

@@ -14,8 +14,9 @@ export default {
   },
   render(h) {
     const that = this
-    const list = this.nodeList.map(node => {
-      return h('div', { class: { 'opt-config-tree-item': true } }, [that.nodeFormat(node)])
+    const list = this.nodeList.map((node,idx) => {
+      let order = h('span',{class:{'opt-config-tree-item-order':true}},`${idx + 1}、`)
+      return h('div', { class: { 'opt-config-tree-item': true } }, [order,that.nodeFormat(node)])
     })
     return h('div', { class: { 'opt-config-tree-wrapper': true } }, list)
   },
@@ -63,7 +64,18 @@ export default {
 .opt-config-tree-wrapper .opt-config-tree-item {
   position: relative;
   margin-top: -1px;
+  display: flex;
 }
+
+.opt-config-tree-wrapper .opt-config-tree-item .opt-config-tree-item-order{
+  border: 1px solid #e8e8e8;
+  padding: 0 20px;
+  margin-right: -1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .opt-config-tree-wrapper table {
   width: 100%;
   border-collapse: collapse;

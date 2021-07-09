@@ -52,8 +52,7 @@ export default {
   watch:{
     'addForm.currentStep':{
       handler(val, oldVal){
-        console.log(arguments)
-        if(val === 3 && val > oldVal){
+        if(this.addForm.isAdd && val === 3 && val > oldVal){
           this.query('add')
         }
       },
@@ -78,30 +77,13 @@ export default {
       that.optChoiceItems = []
       that.filterKeys = []
 
-      let {optionsList,treeData} = that.addForm.form.step3
+      let {optionsList,treeData} = that.addForm
       that.optionsList = optionsList
       that.treeData = treeData
 
-      // await Promise.all([that.fetchOptions(), that.fetchTree()])
-      if (that.isView || that.isEdit) {
-        that.spinning = true
-        await priceQuotedZktDetail({ id: record.id })
-          .then(res => {
-            that.spinning = false
-            const result = res.data
-            const nodes = that.addNodesKey(result.childrenList)
-            const optStandItems = nodes.filter(item => +item.configType === 0)
-            const optChoiceItems = nodes.filter(item => +item.configType === 1)
-            that.optStandItems = optStandItems
-            that.optChoiceItems = optChoiceItems
-
-            delete result.childrenList
-            that.form = { ...result }
-          })
-          .catch(err => {
-            that.spinning = false
-            that.$message.error(err)
-          })
+      if(type === 'edit'){
+        let {items} = this.addForm.form.step4
+        that.optChoiceItems = that.addNodesKey(items)
       }
 
       that.$nextTick(() => {
@@ -204,6 +186,10 @@ export default {
       } else if (type === 'prev') {
         that.$emit('change', 'step4', 'prev', null)
       }
+    },
+    fill(data){
+      const that = this
+      that.query('edit')
     }
   }
 }

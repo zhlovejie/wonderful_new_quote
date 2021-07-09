@@ -7,6 +7,7 @@
       <div style="font-weight: 700;">
         <p>产品信息：{{msg.productInfo}}</p>
         <p>产品型号：{{msg.productType}}</p>
+        <p v-if="msg.productTypeConfigName">产品类型：{{msg.productTypeConfigName}}</p>
         <p>中控型号：{{msg.controlType}}</p>
       </div>
       <p>
@@ -28,6 +29,9 @@
   </a-card>
 </template>
 <script>
+import {
+  productMaterialInfoGetCode
+} from '@/api/routineMaterial'
 import OptionsSelect from '@/views/product-offer-management/control-system-options/OptionsSelect'
 export default {
   components:{OptionsSelect},
@@ -53,26 +57,48 @@ export default {
   },
 
   methods: {
-    init() {
+    async init() {
       const that = this
       let {
         step1:productsPath,
         step2:controls,
         step3:stands,
-        step4:choices
+        step4:choices,
+        productSeries,
+        productName,
+        productTypeConfigName
       } = this.addForm.form
 
-      that.msg = {
-        productInfo:productsPath.map(item => item.title).join('->'),
-        productType:productsPath[productsPath.length - 1].materialCode,
-        controlType:controls.map(item => item.configName).join('，')
+      if(productsPath.length === 0){
+        that.msg = {
+          productInfo:productName,
+          productType:productSeries,
+          productTypeCode:productSeries,
+          productTypeConfigName:productTypeConfigName,
+          controlType:controls.map(item => item.configName).join('，')
+        }
+      }else{
+        let _productsPath = [...productsPath].reverse()
+        let orderCode = await productMaterialInfoGetCode({ruleId:_productsPath[0].key}).then(res => res.data)
+        let parentCode = _productsPath.map(item => item.code).join('')
+        that.msg = {
+          productInfo:_productsPath.map(item => item.title).join('->'),
+          productType:`${productName}(${parentCode}${orderCode})`,
+          productTypeCode:`${parentCode}${orderCode}`,
+          controlType:controls.map(item => item.configName).join('，')
+        }
       }
 
-      let {optionsList,treeData} = stands
       that.$nextTick(() => {
+        let {optionsList,treeData} = that.addForm
         that.$refs.optStand.query('view',stands.items,{optionsList,treeData})
         that.$refs.optChoice.query('view',choices.items,{optionsList,treeData})
       })
+
+      that.addForm.form = {
+        ...that.addForm.form,
+        productSeries:that.msg.productTypeCode,
+      }
     },
     stepAction(type) {
       const that = this

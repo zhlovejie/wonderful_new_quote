@@ -101,11 +101,18 @@
       ref="priceForm"
       @finish="finishHandler"
     />
+    <StepView ref="stepView" />
 
   </a-card>
 </template>
 
 <script>
+import {
+  priceQuotedZktDetail,
+  priceQuotedItemConfigSubList,
+  priceQuotedItemConfigTreeList
+} from '@/api/productOfferManagement'
+
 import {
   priceQuotedProductAddOrUpdate,
   priceQuotedProductDelete,
@@ -116,7 +123,7 @@ import {
 
 import AddForm from './AddForm.vue'
 import PriceForm from './PriceForm'
-
+import StepView from './StepView'
 const columns = [
   {
     align: 'center',
@@ -165,7 +172,8 @@ export default {
   name: 'product-offer-management-product-options-management',
   components: {
     AddForm,
-    PriceForm
+    PriceForm,
+    StepView
   },
   data() {
     return {
@@ -174,7 +182,11 @@ export default {
       dataSource: [],
 
       loading: false,
-      queryParam: {}
+      queryParam: {},
+
+      // step3,step4 数据源
+      optionsList: [],
+      treeData: [],
     }
   },
   watch: {
@@ -190,7 +202,8 @@ export default {
   computed: {},
   methods: {
     init() {
-      this.search()
+      const that = this
+      that.search()
     },
     search(params = {}) {
       const that = this
@@ -211,9 +224,16 @@ export default {
     },
     async doAction(type, record) {
       const that = this
-      if (['add', 'edit', 'view'].includes(type)) {
-        that.$refs.addForm.query(type, { ...record })
-      } else if (type === 'del') {
+      if (['add', 'edit'].includes(type)) {
+        await Promise.all([that.fetchOptions(), that.fetchTree()])
+        that.$refs.addForm.query(type, { ...record },{optionsList:that.optionsList,treeData:that.treeData})
+        return
+      }else if (['view'].includes(type)) {
+        await Promise.all([that.fetchOptions(), that.fetchTree()])
+        that.$refs.stepView.query(type, { ...record },{optionsList:that.optionsList,treeData:that.treeData})
+        return
+      }
+      else if (type === 'del') {
         priceQuotedProductDelete({ id: record.id }).then(res => {
           that.$message.info(res.msg)
           if (+res.code === 200) {
@@ -231,7 +251,59 @@ export default {
       that.$nextTick(() => {
         that.search()
       })
-    }
+    },
+    fetchOptions() {
+      const that = this
+      return priceQuotedItemConfigSubList(that.queryParam)
+        .then(res => {
+          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
+        })
+        .catch(err => {
+          that.$message.error(err)
+          that.optionsList = []
+        })
+    },
+    fetchTree() {
+      const that = this
+      return priceQuotedItemConfigTreeList()
+        .then(res => {
+          const root = {
+            id: 0,
+            key: 0,
+            configName: '配置项',
+            isLeaf: false,
+            parentConfigId: null,
+            childrenList: res.data.map(item => that.formatTreeData(item))
+          }
+          that.treeData = root
+        })
+        .catch(err => {
+          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    formatTreeData(item) {
+      const that = this
+      const obj = {}
+      obj.id = undefined
+      obj.configName = item.configName
+      obj.parentConfigId = item.parentConfigId || 0
+      obj.serialNumber = item.serialNumber
+      obj.itemConfigType = item.itemConfigType
+      obj.itemConfigId = item.id
+      obj.key = item.id
+
+      if (obj.itemConfigType === 1) {
+        obj.__checked = false
+        obj.configValue = undefined
+        obj.isChecked = -1
+        obj.isRequired = -1
+      }
+
+      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
+        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
+      }
+      return obj
+    },
   }
 }
 </script>

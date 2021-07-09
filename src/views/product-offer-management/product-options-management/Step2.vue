@@ -129,7 +129,7 @@ export default {
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
+            item.key = item.id
             return item
           })
           //设置数据总条数
@@ -161,6 +161,17 @@ export default {
       }else if(type === 'prev'){
         that.$emit('change','step2','prev',null)
       }
+    },
+    fill(data){
+      let {step2} = this.addForm.form
+      this.selectedRowKeys = step2.map(item => item.itemConfigId)
+      this.selectedRows = step2.map(item => {
+        return {
+          id:item.itemConfigId,
+          configName:item.configName,
+          configType:item.configType
+        }
+      })
     }
   }
 }

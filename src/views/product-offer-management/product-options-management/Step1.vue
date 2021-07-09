@@ -42,61 +42,9 @@
       </div>
       <div class="resize-column-control-bar"></div>
       <div class="resize-column-right">
-        <div class="search-wrapper">
-          <a-form layout="inline">
-            <a-form-item>
-              <a-input
-                placeholder="代码模糊查询"
-                v-model="queryParam.materialCode"
-                allowClear
-                style="width: 150px"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                placeholder="名称模糊查询"
-                v-model="queryParam.materialName"
-                allowClear
-                style="width: 150px"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                icon="search"
-                @click="search({ current: 1 })"
-              >查询</a-button>
-            </a-form-item>
-          </a-form>
-        </div>
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="pagination"
-          :loading="loading"
-          @change="handleTableChange"
-          :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
-        >
-          <div
-            slot="order"
-            slot-scope="text, record, index"
-          >
-            <span>{{ index + 1 }}</span>
-          </div>
-          <div
-            slot="materialSource"
-            slot-scope="text, record, index"
-          >
-            {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
-          </div>
 
-          <div
-            slot="mainUnit"
-            slot-scope="text, record, index"
-          >
-            {{ {1:'支',2:'把',3:'件'}[text] }}
-          </div>
-        </a-table>
+        <div class="selected-items">{{parentItem.title}}</div>
+
       </div>
     </div>
 
@@ -213,7 +161,7 @@ export default {
         .join('.')
     },
     btnNextDisabled(){
-      return this.selectedRows.length !== 1
+      return +this.parentId === 0
     }
   },
   methods: {
@@ -263,7 +211,7 @@ export default {
         ruleId: this.parentId
       }
       this.fetchTree()
-      this.search()
+      // this.search()
 
       this.$nextTick(() => {
         this._ResizeColumnInstance = new ResizeColumn()
@@ -378,7 +326,7 @@ export default {
     },
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
-      this.search()
+      // this.search()
     },
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
@@ -420,7 +368,7 @@ export default {
 
       that.selectedRowKeys = []
       that.selectedRows = []
-      that.search()
+      // that.search()
     },
     getEmitData(){
       const that = this
@@ -431,13 +379,13 @@ export default {
         arr.push({ ...target })
         parentId = target.parentId
       }
-      let parentsCode = arr.reverse().map(item => item.code).join('')
-      let row = {...that.selectedRows[0]}
-      let code = row.materialCode.replace(parentsCode,'')
-      arr.push({
-        ...row,
-        title:`${row.materialName}(${code})`
-      })
+      // let parentsCode = arr.reverse().map(item => item.code).join('')
+      // let row = {...that.selectedRows[0]}
+      // let code = row.materialCode.replace(parentsCode,'')
+      // arr.push({
+      //   ...row,
+      //   title:`${row.materialName}(${code})`
+      // })
       return arr
     },
     stepAction(type){
@@ -478,6 +426,18 @@ export default {
 }
 .material-rule-management-library-normal >>> .resize-column-wrapper .resize-column-right {
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected-items{
+  border: 2px solid rgb(233, 148, 148);
+  border-radius: 6px;
+  padding: 25px 80px;
+  margin-top: -50px;
+  background-color: #f0f0f0;
+  font-size: 36px;
 }
 </style>
 

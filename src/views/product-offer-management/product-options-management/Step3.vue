@@ -3,6 +3,36 @@
     :bordered="false"
     class="product-offer-management-control-system-options"
   >
+    <a-form-model
+      ref="ruleForm"
+      :model="form"
+      :rules="rules"
+    >
+      <a-form-model-item
+        label="产品名称"
+        prop="productName"
+      >
+        <a-input
+          placeholder="产品名称"
+          v-model="form.productName"
+          allowClear
+          style="width: 280px"
+        />
+      </a-form-model-item>
+      <a-form-model-item
+        label="产品类型"
+        prop="productTypeConfigId"
+      >
+        <a-input
+          placeholder="选择产品类型"
+          v-model="form.productTypeConfigName"
+          style="width: 280px"
+          readonly="readonly"
+          @click="openModel('productTypeSelect')"
+        />
+      </a-form-model-item>
+
+    </a-form-model>
     <OptionsSelect
       key="optStand"
       ref="optStand"
@@ -22,18 +52,18 @@
         style="margin-left:10px;"
       >下一步</a-button>
     </p>
+    <ProductTypeSelect
+      ref="productTypeSelect"
+      @change="productTypeSelectHandler"
+    />
   </a-card>
 </template>
 <script>
-import {
-  priceQuotedZktDetail,
-  priceQuotedItemConfigSubList,
-  priceQuotedItemConfigTreeList
-} from '@/api/productOfferManagement'
 
 import OptionsSelect from '@/views/product-offer-management/control-system-options/OptionsSelect'
+import ProductTypeSelect from './ProductTypeSelect'
 export default {
-  components: { OptionsSelect },
+  components: { OptionsSelect ,ProductTypeSelect},
   inject:['addForm'],
   data() {
     return {
@@ -46,7 +76,18 @@ export default {
       optChoiceItems: [], // 选配
       filterKeys: [],
       optionsList: [],
-      treeData: []
+      treeData: [],
+      productTypeConfigId:1,
+
+      form:{},
+      rules:{
+        productName:[
+          {required: true, message: '请输入产品名称', trigger: 'blur'}
+        ],
+        productTypeConfigId:[
+          {required: true, message: '请选择产品类型'}
+        ]
+      }
     }
   },
   computed:{
@@ -55,10 +96,12 @@ export default {
     }
   },
   created() {
-    this.query('add')
+    if(this.addForm.isAdd){
+      this.$nextTick(() => this.query('add'))
+    }
   },
   methods: {
-    async query(type) {
+    query(type) {
       const that = this
       that.type = type
       that.detail = {}
@@ -66,34 +109,15 @@ export default {
       that.optStandItems = []
       that.optChoiceItems = []
       that.filterKeys = []
-      await Promise.all([that.fetchOptions(), that.fetchTree()])
-      if (that.isView || that.isEdit) {
-        that.spinning = true
-        await priceQuotedZktDetail({ id: record.id })
-          .then(res => {
-            that.spinning = false
-            const result = res.data
-            const nodes = that.addNodesKey(result.childrenList)
-            const optStandItems = nodes.filter(item => +item.configType === 0)
-            const optChoiceItems = nodes.filter(item => +item.configType === 1)
-            that.optStandItems = optStandItems
-            that.optChoiceItems = optChoiceItems
+      that.optionsList = that.addForm.optionsList
+      that.treeData = that.addForm.treeData
 
-            delete result.childrenList
-            that.form = { ...result }
-          })
-          .catch(err => {
-            that.spinning = false
-            that.$message.error(err)
-          })
+      if(type === 'edit'){
+        let {items} = that.addForm.form.step3
+        that.optStandItems = that.addNodesKey(items)
       }
-
       that.$nextTick(() => {
         that.$refs.optStand.query(type, that.optStandItems, { optionsList: that.optionsList, treeData: that.treeData })
-        // that.$refs.optChoice.query(type, that.optChoiceItems, {
-        //   optionsList: that.optionsList,
-        //   treeData: that.treeData
-        // })
         that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
       })
     },
@@ -119,72 +143,50 @@ export default {
       }
       return nodes.map(n => f(n))
     },
-    fetchOptions() {
-      const that = this
-      return priceQuotedItemConfigSubList(that.queryParam)
-        .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
-        })
-        .catch(err => {
-          that.$message.error(err)
-          that.optionsList = []
-        })
-    },
-    fetchTree() {
-      const that = this
-      return priceQuotedItemConfigTreeList()
-        .then(res => {
-          const root = {
-            id: 0,
-            key: 0,
-            configName: '配置项',
-            isLeaf: false,
-            parentConfigId: null,
-            childrenList: res.data.map(item => that.formatTreeData(item))
-          }
-          that.treeData = root
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
-        })
-    },
-    formatTreeData(item) {
-      const that = this
-      const obj = {}
-      obj.id = undefined
-      obj.configName = item.configName
-      obj.parentConfigId = item.parentConfigId || 0
-      obj.serialNumber = item.serialNumber
-      obj.itemConfigType = item.itemConfigType
-      obj.itemConfigId = item.id
-      obj.key = item.id
 
-      if (obj.itemConfigType === 1) {
-        obj.__checked = false
-        obj.configValue = undefined
-        obj.isChecked = -1
-        obj.isRequired = -1
-      }
-
-      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
-        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
-      }
-      return obj
+    openModel(refName){
+      this.$refs[refName].query()
+    },
+    productTypeSelectHandler(record){
+      this.form = {...this.form,productTypeConfigId:record.id,productTypeConfigName:record.typeName}
     },
     stepAction(type) {
       const that = this
       if (type === 'next') {
-        const data = {
-          items: that.addConfigType(that.optStandItems, 0),
-          filterKeys: that.filterKeys,
+        this.$refs.ruleForm.validate(valid => {
+          if (valid) {
+            const data = {
+              items: that.addConfigType(that.optStandItems, 0),
+              filterKeys: that.filterKeys,
+              productTypeConfigId:that.productTypeConfigId
+            }
+            that.$emit('change', 'step3', 'next', data)
 
-          optionsList:JSON.parse(JSON.stringify(that.optionsList)),
-          treeData:JSON.parse(JSON.stringify(that.treeData))
-        }
-        that.$emit('change', 'step3', 'next', data)
+            // 产品名称和产品类型
+            that.addForm.form = {
+              ...that.addForm.form,
+              productName:that.form.productName,
+              productTypeConfigId:that.form.productTypeConfigId
+            }
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+
       } else if (type === 'prev') {
         that.$emit('change', 'step3', 'prev', null)
       }
+    },
+    fill(data){
+      const that = this
+      let {items,productName,productTypeConfigId,productTypeConfigName,filterKeys} = this.addForm.form.step3
+      that.optStandItems = that.addNodesKey(items)
+      that.filterKeys = filterKeys
+      that.form = {
+        productName,productTypeConfigId,productTypeConfigName
+      }
+      that.query('edit')
     }
   }
 }
