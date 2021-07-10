@@ -145,9 +145,7 @@ export default {
 
       let allNodes = items.map(nodes => that.getNodes(nodes)).flat(Infinity)
       let result = allNodes.map(node => {
-        debugger
         let target = allOptionsList.find(opt => opt.id === node.itemConfigId)
-        console.log(node,target)
         if(target){
           return Number(target.price) || 0
         }

@@ -205,7 +205,24 @@ export default {
             parentConfigId: null,
             childrenList: res.data.map(item => that.formatTreeData(item))
           }
-          that.treeData = root
+
+          // 去除没有参数的分支
+          let shaking = (node) =>{
+            let f = (n) => {
+              if(!('childrenList' in n)){
+                n.childrenList = []
+              }
+              if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
+                n.childrenList = n.childrenList.map(node => f(node)).filter(node => {
+                  return !(node.itemConfigType === 0 && node.childrenList.length === 0)
+                })
+              }
+              return n
+            }
+            return f(node)
+          }
+
+          that.treeData = shaking(root)
         })
         .catch(err => {
           that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
