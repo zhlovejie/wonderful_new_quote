@@ -3,6 +3,14 @@
 </template>
 
 <script>
+import {
+  schemeNodeRelationDetail,
+  schemeNodeRelationList,
+  schemeNodeRelationDelete,
+  schemeNodeRelationAdd,
+  schemeNodeRelationUpdate
+} from '@/api/researchManagementByWzz'
+
 export default {}
 </script>
 
