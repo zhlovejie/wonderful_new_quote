@@ -155,7 +155,7 @@ export default {
           scopedSlots: { customRender: 'costPrice' },
         },
         {
-          title: 'C价',
+          title: '底价',
           dataIndex: 'priceC',
         },
         {

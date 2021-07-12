@@ -117,7 +117,7 @@ export default {
           dataIndex: 'costPrice',
         },
         {
-          title: 'C价',
+          title: '底价',
           dataIndex: 'cprice',
         },
         {

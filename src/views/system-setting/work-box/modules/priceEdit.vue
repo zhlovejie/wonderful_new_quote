@@ -100,8 +100,13 @@ export default {
         this.visible = false
       }
       await typeConfigDetail({ id: record.productTypeConfigId }).then((res) => {
-        this.code = res.data.code
-        this.lowPriceInterval = res.data.lowPriceInterval
+        if (res.code === 200) {
+          this.code = res.data.code
+          this.lowPriceInterval = res.data.lowPriceInterval
+        } else {
+          this.$message.error(res.msg)
+          this.visible = false
+        }
       })
       await intervalConfigDetailByName({ intervalValueName: this.lowPriceInterval }).then((res) => {
         this.profitValue = res.data.profitValue
@@ -215,8 +220,9 @@ export default {
           priceC: _costPrice.toFixed(2),
         })
       } else {
+        let arr = parseInt(_costPrice)
         this.form.setFieldsValue({
-          priceC: Math.ceil(_costPrice / 10) * 10,
+          priceC: Math.ceil(arr / 10) * 10,
         })
       }
 
