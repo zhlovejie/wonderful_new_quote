@@ -128,7 +128,7 @@ export default {
       const that = this
       return priceQuotedItemConfigSubList(that.queryParam)
         .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
+          that.optionsList = res.data.filter(item => item.parentConfigId === 0 && item.itemConfigType !== 9)
         })
         .catch(err => {
           that.$message.error(err)
