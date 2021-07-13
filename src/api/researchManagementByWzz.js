@@ -76,6 +76,15 @@ export function nodeInfoList(parameter) {
   })
 }
 
+export function nodeInfoListAll(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/node-info/listNodeInfoAll',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export function nodeInfoDelete(parameter) {
   return axios({
     baseURL: system.baseURL,

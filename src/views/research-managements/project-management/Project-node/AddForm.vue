@@ -20,62 +20,115 @@
           label="节点选项"
           prop="configName"
         >
-          <a-input v-if="!isView" v-model="form.configName" />
-          <span v-else>{{form.configName}}</span>
+          <a-input
+            v-if="!isView"
+            v-model="form.nodeName"
+          />
+          <span v-else>{{form.nodeName}}</span>
         </a-form-model-item>
-        <a-form-model-item label="关联节点" prop="region">
-          <a-select v-model="form.region" placeholder="please select your zone">
-            <a-select-option value="shanghai">
-              Zone one
-            </a-select-option>
-            <a-select-option value="beijing">
-              Zone two
-            </a-select-option>
+        <a-form-model-item
+          v-if="!isView"
+          label="关联节点"
+          prop="stageList"
+        >
+          <a-select
+            mode="multiple"
+            v-model="form.stageList"
+            placeholder="请选择关联节点"
+          >
+            <a-select-option
+              v-for="item in nodeList"
+              :value="item.id"
+              :key="item.id"
+            >{{item.text}}</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-form-model>
+
+      <h3>已关联节点列表</h3>
+      <table class="custom-table custom-table-border">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>关联节点</th>
+            <th v-if="!isView"><a
+                href="javascript:void(0);"
+                @click="doAction('clearAll')"
+              >清空</a></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item,idx) in stageList"
+            :key="item.id"
+          >
+            <td>{{idx + 1}}</td>
+            <td>{{item.text}}</td>
+            <td v-if="!isView"><a
+                href="javascript:void(0);"
+                @click="doAction('clear',item)"
+              >删除</a></td>
+          </tr>
+        </tbody>
+      </table>
+
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { priceQuotedZktListAddOrUpdate ,priceQuotedZktDetail} from '@/api/productOfferManagement'
-import { priceQuotedItemConfigSubList, priceQuotedItemConfigTreeList } from '@/api/productOfferManagement'
+import { nodeInfoDetail, nodeInfoAdd, nodeInfoUpdate } from '@/api/researchManagementByWzz'
+
+function makeNodes() {
+  const arr = [
+    '立项阶段',
+    '设计方案评审',
+    '试制资料输出',
+    '产品试制',
+    '可行性测试',
+    '可行性测试结果联合评审',
+    '稳定性测试',
+    '稳定性测试结果评审',
+    '配置方案研发',
+    '配置方案研发评审',
+    '配置方案技术资料归档',
+    '设计模块',
+    '工艺研发',
+    '工艺下达',
+    '小批量生产',
+    '小批量生产评审',
+    '样品展示',
+    '批量生产&完结'
+  ]
+  return arr.map((v, idx) => {
+    return {
+      id: idx + 1,
+      text: v
+    }
+  })
+}
 
 export default {
-  name: 'product-offer-management-opt-management_AddForm',
-  components:{},
-  provide() {
-    return {
-      addForm: this
-    }
-  },
+  name: 'project-management-Project-node_AddForm',
+  components: {},
   data() {
     return {
       type: 'add',
       visible: false,
       spinning: false,
-      treeData: [],
-      value: [],
-      form: {},
-      rules: {
-        configName:[
-          { required: true, message: '请输入中控系统名称', trigger: 'blur' },
-        ]
+      form: {
+        stageList: []
       },
-      detail: {},
-
-      optStandItems:[], // 标配
-      optChoiceItems:[],// 选配
-      filterKeys:[],
-
-      optionsList:[],
-      treeData:[]
+      rules: {
+        nodeName: [{ required: true, message: '请输入节点选项名称' }],
+        stageList: [{ required: true, message: '请选择关联节点' }]
+      },
+      nodeList: Object.freeze(makeNodes())
     }
   },
   created() {},
   computed: {
     modalTitle() {
-      let type = this.type
+      const type = this.type
       return type === 'add' ? '新增' : type === 'edit' ? '修改' : type === 'view' ? '查看' : '未知'
     },
     isAdd() {
@@ -86,6 +139,13 @@ export default {
     },
     isView() {
       return this.type === 'view'
+    },
+    stageList() {
+      if (this.form && this.form.stageList) {
+        const stageList = [...this.form.stageList]
+        return this.nodeList.filter(node => stageList.includes(node.id)).sort((a, b) => a.id - b.id)
+      }
+      return []
     }
   },
   methods: {
@@ -97,44 +157,34 @@ export default {
       that.optStandItems = []
       that.optChoiceItems = []
       that.filterKeys = []
-      await Promise.all([that.fetchOptions(), that.fetchTree()])
-      if(that.isView || that.isEdit){
+
+      if (!this.isAdd) {
         that.spinning = true
-        await priceQuotedZktDetail({id:record.id}).then(res => {
+        await nodeInfoDetail({ nodeId: record.nodeId }).then(res => {
           that.spinning = false
-          let result = res.data
-          let nodes = that.addNodesKey(result.childrenList)
-          let optStandItems = nodes.filter(item => +item.configType === 0)
-          let optChoiceItems = nodes.filter(item => +item.configType === 1)
-          that.optStandItems = optStandItems
-          that.optChoiceItems = optChoiceItems
-
-          delete result.childrenList
-          that.form = {...result}
-        }).catch(err => {
-          that.spinning = false
-          that.$message.error(err)
-        })
+          console.log(res)
+          that.form = res.data
+        }).catch(err => (that.spinning = false))
       }
-
-      that.$nextTick(() => {
-        that.$refs.optStand.query(type,that.optStandItems,{optionsList:that.optionsList,treeData:that.treeData})
-        that.$refs.optChoice.query(type,that.optChoiceItems,{optionsList:that.optionsList,treeData:that.treeData})
-
-
-        that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
-      })
+    },
+    doAction(type, item) {
+      const that = this
+      if (type === 'clearAll') {
+        that.form = { ...that.form, stageList: [] }
+      } else if (type === 'clear') {
+        let stageList = [...that.form.stageList]
+        stageList = stageList.filter(v => v !== item.id)
+        that.form = { ...that.form, stageList }
+      }
     },
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          let priceQuotedZktConfigList = [
-            ...that.addConfigType(that.optStandItems,0), //标配 0
-            ...that.addConfigType(that.optChoiceItems,1) //选配 1
-          ]
-
-          priceQuotedZktListAddOrUpdate({ ...that.form ,priceQuotedZktConfigList})
+          const api = that.isAdd ? nodeInfoAdd : nodeInfoUpdate
+          const stageList = [...that.form.stageList].sort((a, b) => a - b)
+          that.spinning = true
+          api({ ...that.form, stageList })
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)
@@ -153,104 +203,11 @@ export default {
       that.$refs.ruleForm.resetFields()
       that.form = {}
       that.$nextTick(() => (that.visible = false))
-    },
-    addConfigType(nodes,configType=0){
-      const that = this
-      let f = (n) => {
-        n.configType = configType
-        if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-          n.childrenList = n.childrenList.map(node => f(node))
-        }
-        return n
-      }
-      return nodes.map(n => f(n))
-    },
-    addNodesKey(nodes){
-      const that = this
-      let f = (n) => {
-        n.key = n.itemConfigId
-        if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-          n.childrenList = n.childrenList.map(node => f(node))
-        }
-        return n
-      }
-      return nodes.map(n => f(n))
-    },
-
-    fetchOptions() {
-      const that = this
-      return priceQuotedItemConfigSubList(that.queryParam)
-        .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === null && item.itemConfigType !== 9)
-        })
-        .catch(err => {
-          that.$message.error(err)
-          that.optionsList = []
-        })
-    },
-    fetchTree() {
-      const that = this
-      return priceQuotedItemConfigTreeList()
-        .then(res => {
-          const root = {
-            id: 0,
-            key: 0,
-            configName: '配置项',
-            isLeaf: false,
-            parentConfigId: null,
-            childrenList: res.data.map(item => that.formatTreeData(item))
-          }
-
-          // 去除没有参数的分支
-          let shaking = (node) =>{
-            let f = (n) => {
-              if(!('childrenList' in n)){
-                n.childrenList = []
-              }
-              if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-                n.childrenList = n.childrenList.map(node => f(node)).filter(node => {
-                  return !(node.itemConfigType === 0 && node.childrenList.length === 0)
-                })
-              }
-              return n
-            }
-            return f(node)
-          }
-
-          that.treeData = shaking(root)
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
-        })
-    },
-    formatTreeData(item) {
-      const that = this
-      const obj = {}
-      obj.id = undefined
-      obj.configName = item.configName
-      obj.parentConfigId = item.parentConfigId || 0
-      obj.serialNumber = item.serialNumber
-      obj.itemConfigType = item.itemConfigType
-      obj.itemConfigId = item.id
-      obj.key = item.id
-
-      if (obj.itemConfigType === 1) {
-        obj.__checked = false
-        obj.configValue = undefined
-        obj.isChecked = -1
-        obj.isRequired = -1
-      }
-
-      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
-        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
-      }
-      return obj
-    },
+    }
   }
 }
 </script>
 
 <style scoped>
-
 </style>
 
