@@ -42,12 +42,191 @@ const api = {
   getMeetingRecordDetail: '/project/development-project-all-info/getMeetingRecordDetail',
   stabilityReviewSaveAndUpate: '/project/development-project-stability-test-review/saveAndUpate',
   confPlanReview: '/confPlanReview',
+  getCraftTask: '/craftDevelopment/getCraftTask',
+  craftDevelopment: '/craftDevelopment',
+  startTraining: '/craftSnapMeetingHis/startTraining',
+  finishTraining: '/craftSnapMeetingHis/finishTraining',
+  smallBatch: '/smallBatch',
+  smallBatchReview: '/smallBatchReview',
+  sampleShow: '/sampleShow',
+  getPlan: '/smallBatch/getPlan',
+  batch: '/batch',
+  fileDesignDivConf: '/fileDesignDivConf',
+  submitToAudit: '/fileDesignDivConf/submitToAudit',
+  submitTolist: '/designFileMeetingHis/list',
+  startTrainings: '/fileDesignDivConf/startTraining',
+  finishTrainings: '/fileDesignDivConf/finishTraining',
+
+
+
 
 
 
 
 }
+/*
+结束培训*/
+export function finishTrainings(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.finishTrainings,
+    method: 'post',
+    data: parameter
+  })
+}
 
+
+/*
+发起培训*/
+export function startTrainings(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.startTrainings,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+获取培训记录*/
+export function submitTolist(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.submitTolist,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+/*
+上传设计模块*/
+export function submitToAudit(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.submitToAudit,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+/** 配货站信息删除接口 */
+export function fileDesignDivConfDelete(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.fileDesignDivConf,
+    method: 'delete',
+    params: parameter
+
+  })
+}
+
+/*
+上传设计模块*/
+export function fileDesignDivConf(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.fileDesignDivConf,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+完结*/
+export function batch(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.batch,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+获取生产计划相关内容*/
+export function getPlan(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getPlan,
+    method: 'get',
+    params: parameter
+  })
+}
+/*
+样品展示*/
+export function sampleShow(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.sampleShow,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+小批量生产评审新增*/
+export function smallBatchReview(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.smallBatchReview,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+小批量接口新增*/
+export function smallBatch(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.smallBatch,
+    method: 'post',
+    data: parameter
+  })
+}
+/*
+结束培训*/
+export function finishTraining(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.finishTraining,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+发起培训*/
+export function startTraining(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.startTraining,
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+/*
+工艺研发新增修改*/
+export function craftDevelopment(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.craftDevelopment,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/*
+获取工艺任务单*/
+export function getCraftTask(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getCraftTask,
+    method: 'get',
+    params: parameter
+  })
+}
 /*
 配置方案研发评审新增修改*/
 export function confPlanReview(parameter) {
