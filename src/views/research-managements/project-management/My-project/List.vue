@@ -92,23 +92,19 @@
 
           <span slot="action" slot-scope="text, record">
             <a type="primary" @click="toAdd('view', record)">查看</a>
-            <template v-if="audit === 1">
+            <template v-if="audit === 1 && record.showDealHandle === 1">
               <a-divider type="vertical" />
               <a type="primary" @click="toAdd('handle', record)">处理</a>
             </template>
 
             <template v-if="audit === 1 && record.showDesignHandle === 1">
               <a-divider type="vertical" />
-              <a type="primary" @click="toAdd('handle', record)">设计模块处理</a>
+              <a type="primary" @click="toAdd('design', record)">设计模块处理</a>
             </template>
           </span>
         </s-table>
       </a-col>
     </a-row>
-    <!-- <common-step-form ref="commonStepForm" @finish="search()" /> -->
-    <!-- <ApproveInfo ref="approveInfoCard" /> -->
-    <!-- <AddForm ref="addForm" @finish="search()" />
-    <Appform ref="appform" @finish="search()" /> -->
   </a-card>
 </template>
 
@@ -116,20 +112,13 @@
 import {
   listMyProjectAllInfo,
   pageDevelopmentgetDelete,
-  acceptDevelopmentProjectCheckApply,
   finishDevelopmentProjectCheckApply,
 } from '@/api/projectManagement'
 import { STable } from '@/components'
-// import AddForm from './module/AddForm'
-// import Appform from './module/appform'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 export default {
   name: 'DelayedPayment',
   components: {
-    // AddForm,
     STable,
-    // Appform,
-    // ApproveInfo,
   },
   data() {
     return {
@@ -227,28 +216,17 @@ export default {
   methods: {
     init() {},
     toAdd(type, record) {
-      this.$router.push({
-        name: 'project-management-My-handle',
-        params: { type: type, id: record.id, status: record.status, record: record },
-      })
-    },
-    //完结
-    confirmWithdraw(record) {
-      finishDevelopmentProjectCheckApply({ id: record.id }).then((res) => {
-        if (res.code === 200) {
-          this.$message.info(res.msg)
-          this.search()
-        }
-      })
-    },
-    // 列表删除
-    confirmDelete(record) {
-      pageDevelopmentgetDelete({ id: record.id }).then((res) => {
-        if (res.code === 200) {
-          this.$message.info(res.msg)
-          this.search()
-        }
-      })
+      if (type === 'design') {
+        this.$router.push({
+          name: 'project-management-My-handle',
+          params: { type: type, id: record.id, status: 12, record: record },
+        })
+      } else {
+        this.$router.push({
+          name: 'project-management-My-handle',
+          params: { type: type, id: record.id, status: record.status, record: record },
+        })
+      }
     },
     search(opt = {}) {
       this.queryParam = {
@@ -264,10 +242,6 @@ export default {
       }
       this.$refs.table.refresh(true)
     },
-    //审批流组件
-    // handleClick(record) {
-    //   this.$refs.approveInfoCard.init(record.instanceId)
-    // },
 
     paramClick(key) {
       if (key === '1') {

@@ -27,6 +27,18 @@
     <a-card :title="stabilitytitle" v-if="status === 7" :bordered="false" style="margin-top: 20px">
       <Stability ref="stability" :type="type" />
     </a-card>
+    <a-card :title="DesignModuleTitle" v-if="status === 12" :bordered="false" style="margin-top: 20px">
+      <DesignModule ref="stability" :type="type" />
+    </a-card>
+    <a-card :title="stabilitytitle" v-if="status === 15" :bordered="false" style="margin-top: 20px">
+      <Trialproduction ref="stability" :type="type" />
+    </a-card>
+    <a-card :title="Sampletitle" v-if="status === 17" :bordered="false" style="margin-top: 20px">
+      <Samples ref="stability" :type="type" />
+    </a-card>
+    <a-card :title="volumetitle" v-if="status === 18" :bordered="false" style="margin-top: 20px">
+      <Volume ref="stability" :type="type" />
+    </a-card>
   </a-spin>
 </template>
 <script>
@@ -34,7 +46,10 @@ import { getApproveChooseStageDetail } from '@/api/projectManagement'
 import Essential from '../../My-project/module/essential'
 import Feasibility from '../../My-project/module/Feasibility'
 import Stability from '../../My-project/module/stability'
-
+import Trialproduction from '../../My-project/module/Trialproduction'
+import Samples from '../../My-project/module/samples'
+import Volume from '../../My-project/module/volume'
+import DesignModule from '../../My-project/module/DesignModule'
 
 import moment from 'moment'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
@@ -44,7 +59,11 @@ export default {
   components: {
     Essential,
     Feasibility,
-    Stability
+    Stability,
+    Trialproduction,
+    Samples,
+    Volume,
+    DesignModule,
   },
   provide() {
     return {
@@ -52,6 +71,9 @@ export default {
     }
   },
   computed: {
+    DesignModuleTitle() {
+      return `设计模块（预计完成时间：${this.finishTime}）`
+    },
     Designtitle() {
       return `设计方案联合评审（预计完成时间：${this.finishTime}）`
     },
@@ -60,6 +82,15 @@ export default {
     },
     stabilitytitle() {
       return `稳定性测试（预计完成时间：${this.finishTime}）`
+    },
+    Trialtitle() {
+      return `小批量试生产（预计完成时间：${this.finishTime}）`
+    },
+    Sampletitle() {
+      return `样品展示 （预计完成时间：${this.finishTime}）`
+    },
+    volumetitle() {
+      return `批量生产&完结 （预计完成时间：${this.finishTime}）`
     },
     isView() {
       return this.type === 'view'
@@ -92,6 +123,10 @@ export default {
       developmentProjectDesignReview: {}, //设计方案联合评审
       FeasibilityData: {}, //可行性测试
       StabilityData: {}, //稳定性测试
+      TrialData: {}, //小批量生产
+      schemesData: {}, //样品展示
+      volumeData: {}, //批量生产完结
+      DesignData: {}, //设计模块处理
     }
   },
   watch: {
@@ -116,7 +151,11 @@ export default {
     init() {
       let that = this
       if (that.type === 'Approval' || that.type === 'view') {
-        getApproveChooseStageDetail({ projectId: that.$route.params.id, stageNum: that.status }).then((res) => {
+        getApproveChooseStageDetail({
+          projectId: that.$route.params.id,
+          stageNum: that.status,
+          serviceId: that.record.serviceId || undefined,
+        }).then((res) => {
           if (res.code === 200) {
             this.allInfo = res.data.allInfo
             if (that.status == 2 && res.data !== null) {
@@ -128,6 +167,19 @@ export default {
             if (that.status == 7 && res.data.detailInfo !== null) {
               this.StabilityData = res.data.detailInfo
             }
+            if (that.status == 15 && res.data.detailInfo !== null) {
+              this.TrialData = res.data.detailInfo
+            }
+            if (that.status == 17 && res.data.detailInfo !== null) {
+              this.schemesData = res.data.detailInfo
+            }
+            if (that.status == 18 && res.data.detailInfo !== null) {
+              this.volumeData = res.data.detailInfo
+            }
+            if (that.status == 12 && res.data.detailInfo !== null) {
+              this.DesignData = res.data.detailInfo
+            }
+
             this.finishTime = res.data.finishTime
           }
         })

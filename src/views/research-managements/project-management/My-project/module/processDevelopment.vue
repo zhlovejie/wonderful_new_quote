@@ -1,5 +1,5 @@
 <template>
-  <a-form-model ref="ruleForm" :model="form" class="routine-addform-wrapper-baseInnerData">
+  <a-form-model ref="ruleForm" :model="form" :rules="rules" class="routine-addform-wrapper-baseInnerData">
     <h4>工艺资料归档</h4>
     <a-table :columns="columns1" :dataSource="form.files" :pagination="false" size="small">
       <div slot="action" slot-scope="text, record, index">
@@ -19,33 +19,45 @@
     >
     <table class="custom-table custom-table-border">
       <h3>工艺任务</h3>
-      <tr>
+      <tr v-if="normalAddForm.ProcessData.craftTaskUrl !== null">
         <td>工艺研发任务单</td>
         <td>
-          <a @click="delSee(normalAddForm.ProcessData.taskUrl || '')">查看</a>
+          <a @click="delSee(normalAddForm.ProcessData.craftTaskUrl || '')">查看</a>
           <a-divider type="vertical" />
-          <a target="_blank" v-download="normalAddForm.ProcessData.taskUrl || ''">下载</a>
+          <a target="_blank" v-download="normalAddForm.ProcessData.craftTaskUrl || ''">下载</a>
         </td>
       </tr>
-      <tr>
+      <tr v-if="normalAddForm.ProcessData.mouldTaskUrl !== null">
         <td>摸具任务单任务单</td>
         <td>
-          <a @click="delSee(normalAddForm.ProcessData.taskUrl || '')">查看</a>
+          <a @click="delSee(normalAddForm.ProcessData.mouldTaskUrl || '')">查看</a>
           <a-divider type="vertical" />
-          <a target="_blank" v-download="normalAddForm.ProcessData.taskUrl || ''">下载</a>
+          <a target="_blank" v-download="normalAddForm.ProcessData.mouldTaskUrl || ''">下载</a>
         </td>
       </tr>
       <tr>
         <td>工艺路线</td>
         <td>
-          <a-form-model-item ref="craftId" prop="craftId">
-            <a-select :disabled="isResults" style="width: 300px" v-model="form.craftId">
-              <a-select-option v-for="item in routeList" :key="item.id" :value="item.id">{{
-                item.departmentName
-              }}</a-select-option>
-              <!-- <a-select-option :value="1">高配 </a-select-option>
-              <a-select-option :value="2">标配</a-select-option> -->
+          <a-form-model-item prop="craftId">
+            <a-select
+              v-if="!isproduction"
+              show-search
+              :value="form.craftCode"
+              placeholder="模糊搜索"
+              style="width: 100%"
+              :default-active-first-option="false"
+              :show-arrow="false"
+              :filter-option="false"
+              :not-found-content="bomFuzzySearch.fetching ? undefined : '未找到匹配项'"
+              @search="bomFuzzyAction"
+              @change="bomFuzzyHandleChange"
+            >
+              <a-spin v-if="bomFuzzySearch.fetching" slot="notFoundContent" size="small" />
+              <a-select-option v-for="item in bomFuzzySearch.list" :key="item.__key" :value="item.__key">
+                {{ item.__label }}
+              </a-select-option>
             </a-select>
+            <span v-else>{{ form.craftCode }}</span>
           </a-form-model-item>
         </td>
       </tr>
@@ -63,9 +75,12 @@
 </template>
 
 <script>
-import { getDealEverySaveTrial } from '@/api/projectManagement'
+import { craftDevelopment } from '@/api/projectManagement'
+//工艺路线模糊搜索
+import { craftRouteApprovePageList } from '@/api/craftRoute'
 import XdocView from './XdocView'
 import ToolBoxCommonUploadForm from './ToolBoxCommonUploadForm'
+const uuid = () => Math.random().toString(16).slice(2)
 export default {
   inject: ['normalAddForm'],
   components: {
@@ -78,11 +93,12 @@ export default {
       return (
         this.normalAddForm.isView ||
         this.normalAddForm.isApproval ||
-        (this.normalAddForm.isHandle && this.normalAddForm.status !== 4)
+        (this.normalAddForm.isHandle && this.normalAddForm.status !== 13)
       )
     },
   },
   data() {
+    this.bomFuzzyAction = this.$_.debounce(this.bomFuzzyAction, 800)
     return {
       columns1: [
         {
@@ -108,12 +124,20 @@ export default {
           scopedSlots: { customRender: 'action' },
         },
       ],
-      routeList: [],
+      bomFuzzySearch: {
+        list: [],
+        item: {},
+        fetching: false,
+      },
+      rules: {
+        craftId: [{ required: true, message: '请选择工艺路线' }],
+      },
       spinning: false,
       Noshow: false,
-      developmentProjectDesignReview: {},
       form: {
         files: [],
+        craftId: undefined,
+        craftCode: undefined,
       },
       queryOneData: {},
       details: {},
@@ -130,13 +154,42 @@ export default {
   },
   created() {},
   methods: {
+    async bomFuzzyAction(wd) {
+      const that = this
+      const _searchParam = {
+        current: 1,
+        size: 10,
+        materialCode: wd,
+      }
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true }
+      const result = await craftRouteApprovePageList({ status: 3 }).then((res) => {
+        const records = res.data.records.map((item) => {
+          item.__key = uuid()
+          item.__label = `${item.routeCode}(${item.routeName})`
+          item.__value = item.routeCode
+          item.routeCodeFormat = that.formatMaterialCode(item.routeCode, '.')
+          return item
+        })
+        return records
+      })
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: false, list: result }
+    },
+    bomFuzzyHandleChange(key) {
+      const that = this
+      const target = that.bomFuzzySearch.list.find((item) => item.__key === key)
+      console.log(target)
+      that.form = { ...that.form, craftId: target.id, craftCode: target.routeCode }
+      // , routeCode: target.routeCode, routeName: target.routeName
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, item: target }
+    },
     init() {
       let that = this
       if (that.queryOneData) {
         console.log(that.normalAddForm.ProcessData.developmentProjectProductTrialImproveVos)
         that.$nextTick(() => {
           that.details = {
-            files: that.normalAddForm.ProcessData.developmentProjectProductTrialImproveVos || [],
+            files: that.normalAddForm.ProcessData.files || [],
+            craftCode: that.normalAddForm.ProcessData.craftCode,
           }
           that.form = {
             ...that.details,
@@ -150,14 +203,17 @@ export default {
     validate() {
       let that = this
       if (this.form.files.length === 0) {
-        return this.$message.error('请上传产品试制资料')
+        return this.$message.error('请上传工艺资料归档')
       }
       let value = {
-        files: that.form.files,
-        projectId: that.normalAddForm.ProcessData.projectId,
-        id: that.normalAddForm.ProcessData.id,
+        files: that.form.files.map((i) => {
+          return { fileName: i.fileName, fileUrl: i.fileUrl }
+        }),
+        craftCode: that.form.craftCode,
+        craftId: that.form.craftId,
+        projectId: that.normalAddForm.allInfo.id,
       }
-      getDealEverySaveTrial(value)
+      craftDevelopment(value)
         .then((res) => {
           if (res.code === 200) {
             that.$message.info(res.msg)
@@ -168,25 +224,18 @@ export default {
         })
         .catch((err) => (that.spinning = false))
     },
-
-    // preservation(status) {
-    //   let that = this
-    //   let value = {}
-    //   that.validate()
-    //   if (that.details) {
-    //     value.id = this.normalAddForm.developmentProjectDesignReview.id
-    //   }
-    //   value.projectId = that.normalAddForm.allInfo.id
-    //   value.status = status
-    //   value.remark = that.developmentProjectDesignReview.remark
-    //   delete that.developmentProjectDesignReview.remark
-    //   that.developmentProjectDesignReview.nextReviewTime =
-    //     that.developmentProjectDesignReview.passStatus === '0'
-    //       ? moment(that.developmentProjectDesignReview.nextReviewTime).format('YYYY-MM-DD hh-mm-ss')
-    //       : undefined
-    //   value.developmentProjectDesignReviewHis = that.developmentProjectDesignReview
-
-    // },
+    formatMaterialCode(codeStr, joinSymbol = '') {
+      if (typeof codeStr !== 'string') {
+        console.warn(`${codeStr} is not string type..`)
+        return ''
+      }
+      let trimLeft = /^[0]*/g,
+        trimRight = /[0]*$/g
+      return codeStr
+        .split('.')
+        .map((s) => s.replace(trimLeft, ''))
+        .join(joinSymbol)
+    },
     //查看
     delSee(idurl) {
       this.$refs.xdocView.query(idurl)
@@ -194,10 +243,6 @@ export default {
     handleSaveOk(data) {
       this.form.files.push(data)
     },
-    // changeClient(e) {
-    //   this.Noshow = e.target.value === '0' ? true : false
-    //   this.$refs.passStatus.onFieldChange()
-    // },
     handleAction(type, record) {
       const that = this
       if (['add'].includes(type)) {
