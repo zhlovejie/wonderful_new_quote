@@ -19,7 +19,8 @@ export default { //产品报价管理
     icon: 'dollar',
     permission: ['permission']
   },
-  children: [{
+  children: [
+    {
       path: '/product-offer-management/product-config',
       name: 'pom-product-config',
       component: () => import('@/views/product-offer-management/product-config/List'),
@@ -245,6 +246,52 @@ export default { //产品报价管理
       component: () => import('@/views/product-offer-management/pricings/List'),
       meta: {
         title: '核价',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+
+
+    {
+      path: '/product-offer-management/opt-management',
+      name: 'product-offer-management-opt-management',
+      component: () => import('@/views/product-offer-management/opt-management/List'),
+      meta: {
+        title: '配置项管理',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/product-offer-management/control-system-options',
+      name: 'product-offer-management-control-system-options',
+      component: () => import('@/views/product-offer-management/control-system-options/List'),
+      meta: {
+        title: '中控系统配置',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/product-offer-management/product-options-management',
+      name: 'product-offer-management-product-options-management',
+      component: () => import('@/views/product-offer-management/product-options-management/List'),
+      meta: {
+        title: '产品配置管理',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/product-offer-management/product-offer-price',
+      name: 'product-offer-management-product-offer-price',
+      component: () => import('@/views/product-offer-management/product-offer-price/List'),
+      meta: {
+        title: '报价',
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
