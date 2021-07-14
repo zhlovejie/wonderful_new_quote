@@ -161,27 +161,29 @@ export default {
         this.normalAddForm.isView ||
         this.normalAddForm.isApproval ||
         (this.normalAddForm.isHandle && this.normalAddForm.status !== 7) ||
-        (this.normalAddForm.status === 7 && this.normalAddForm.schemeData.status === 2)
+        (this.normalAddForm.status === 7 && this.normalAddForm.StabilityData.status === 2)
       )
     },
     //稳定性测试测试结果显示问题
     testResults() {
       return (
-        this.normalAddForm.isHandle && this.normalAddForm.status === 7 && this.normalAddForm.schemeData.status === 2
+        this.normalAddForm.isHandle && this.normalAddForm.status === 7 && this.normalAddForm.StabilityData.status === 2
       )
     },
     //稳定性测试结果下载显示
     testResultsDownload() {
       return (
-        (this.normalAddForm.isView && this.normalAddForm.schemeData.status === 2) ||
-        (this.normalAddForm.isHandle && this.normalAddForm.status !== 7 && this.normalAddForm.schemeData.status === 2)
+        (this.normalAddForm.isView && this.normalAddForm.StabilityData.status === 2) ||
+        (this.normalAddForm.isHandle &&
+          this.normalAddForm.status !== 7 &&
+          this.normalAddForm.StabilityData.status === 2)
       )
     },
     //稳定性测试结果显示
     testResultsDow() {
       return (
-        (this.normalAddForm.isView && this.normalAddForm.schemeData.status === 2) ||
-        (this.normalAddForm.isHandle && this.normalAddForm.status === 7 && this.normalAddForm.schemeData.status === 2)
+        (this.normalAddForm.isView && this.normalAddForm.StabilityData.status === 2) ||
+        (this.normalAddForm.isHandle && this.normalAddForm.StabilityData.status === 2)
       )
     },
   },
@@ -267,7 +269,7 @@ export default {
   },
 
   watch: {
-    'normalAddForm.schemeData': function (newVal, oldVal) {
+    'normalAddForm.StabilityData': function (newVal, oldVal) {
       console.log(newVal, oldVal)
       if (newVal) {
         this.queryOneData = newVal
@@ -281,7 +283,7 @@ export default {
       let that = this
       let value = {}
       that.validate()
-      value.id = that.normalAddForm.schemeData.id
+      value.id = that.normalAddForm.StabilityData.id
       value.projectId = that.normalAddForm.allInfo.id
       value.developmentProjectStabilityTestResults = that.form.developmentProjectStabilityTestResults
       value.resultRemark = that.form.resultRemark
@@ -299,7 +301,7 @@ export default {
     downloadAction() {
       let that = this
       that.spinning = true
-      savaExportExcel({ testId: that.normalAddForm.schemeData.id })
+      savaExportExcel({ testId: that.normalAddForm.StabilityData.id })
         .then((res) => {
           that.spinning = false
           console.log(res)
@@ -387,17 +389,19 @@ export default {
     init() {
       const that = this
       if (that.queryOneData) {
-        that.dataSource = that.normalAddForm.schemeData.developmentProjectStabilityTestResults
+        that.dataSource = that.normalAddForm.StabilityData.developmentProjectStabilityTestResults
         that.$nextTick(() => {
           that.details = {
-            period: that.normalAddForm.schemeData.period,
+            period: that.normalAddForm.StabilityData.period,
             developmentProjectStabilityTestResults:
-              that.normalAddForm.schemeData.developmentProjectStabilityTestResults || [],
+              that.normalAddForm.StabilityData.developmentProjectStabilityTestResults || [],
             beginTime:
-              that.normalAddForm.schemeData.beginTime !== null ? moment(that.normalAddForm.schemeData.beginTime) : null,
-            contentRemark: that.normalAddForm.schemeData.contentRemark,
-            summary: that.normalAddForm.schemeData.summary,
-            resultRemark: that.normalAddForm.schemeData.resultRemark,
+              that.normalAddForm.StabilityData.beginTime !== null
+                ? moment(that.normalAddForm.StabilityData.beginTime)
+                : null,
+            contentRemark: that.normalAddForm.StabilityData.contentRemark,
+            summary: that.normalAddForm.StabilityData.summary,
+            resultRemark: that.normalAddForm.StabilityData.resultRemark,
           }
           that.form = {
             ...that.details,
@@ -426,8 +430,9 @@ export default {
       let value = {}
       that.validate()
       if (that.details) {
-        value.id = this.normalAddForm.schemeData.id
+        value.id = this.normalAddForm.StabilityData.id
       }
+      value.instanceId = this.normalAddForm.StabilityData.instanceId
       value.projectId = that.normalAddForm.allInfo.id
       value.status = status
       value.period = that.FeasibilityTest.period

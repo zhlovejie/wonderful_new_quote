@@ -137,7 +137,7 @@ export default {
       }
       let value = {
         developmentProjectProductTrialImproves: that.form.developmentProjectProductTrialImproves,
-        projectId: that.normalAddForm.ProductTrial.projectId,
+        projectId: that.normalAddForm.allInfo.id,
         id: that.normalAddForm.ProductTrial.id,
       }
       getDealEverySaveTrial(value)

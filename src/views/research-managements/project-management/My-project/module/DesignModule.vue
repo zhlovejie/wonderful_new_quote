@@ -290,7 +290,7 @@ export default {
 
     handleAction(type, record) {
       const that = this
-      if (['add'].includes(type)) {
+      if (['add', 'edit'].includes(type)) {
         that.$refs.toolBoxCommonUploadForm.query(type, record)
       } else if (type === 'del') {
         let that = this

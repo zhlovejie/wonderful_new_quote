@@ -30,7 +30,7 @@
       <Production v-if="status === 4 || Production" ref="Production" :type="type" />
     </a-card>
     <!-- 可行性测试 -->
-    <a-card :title="Feasibilitytitle" :bordered="false" v-if="status >= 6">
+    <a-card :title="Feasibilitytitle" :bordered="false" v-if="status >= 5">
       <a-button type="link" slot="extra" v-if="status !== 5 && !Feasibilitys" @click="information(5)">显示 </a-button>
       <a-button type="link" slot="extra" v-if="status !== 5 && Feasibilitys" @click="information(5)">收起</a-button>
       <Feasibility v-if="status === 5 || Feasibilitys" ref="Feasibility" :type="type" />

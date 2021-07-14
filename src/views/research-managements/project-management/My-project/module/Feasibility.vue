@@ -107,14 +107,13 @@
       <a-button type="primary" style="margin-right: 10px" icon="save" v-if="testResults" @click="resultsTest"
         >保存</a-button
       >
-      <a-button v-if="!testResults" @click="handleGo()">取消</a-button>
-      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="isFeasibility" @click="preservation(0)"
+      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="!isFeasibility" @click="preservation(0)"
         >保存</a-button
       >
       <a-button style="margin-right: 10px" type="primary" v-if="!isFeasibility" @click="preservation(1)"
         >提交审核</a-button
       >
-      <a-button v-if="!isFeasibility" @click="handleGo()">取消</a-button>
+      <a-button style="margin-right: 10px" v-if="!isFeasibility || testResults" @click="handleGo()">取消</a-button>
 
       <a-button key="back" icon="close" style="margin-right: 10px" v-if="normalAddForm.isApproval" @click="noPassAction"
         >不通过</a-button
@@ -433,6 +432,7 @@ export default {
         value.id = this.normalAddForm.FeasibilityData.id
       }
       value.projectId = that.normalAddForm.allInfo.id
+      value.instanceId = this.normalAddForm.FeasibilityData.instanceId
       value.status = status
       value.period = that.FeasibilityTest.period
       value.beginTime = moment(that.FeasibilityTest.beginTime).format('YYYY-MM-DD hh:mm:ss')
