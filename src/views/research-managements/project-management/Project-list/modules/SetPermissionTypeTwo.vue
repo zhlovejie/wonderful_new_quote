@@ -58,7 +58,8 @@
 <script>
 import {
   getAuthorityConfDetail,
-  saveAuthorityConf
+  saveAuthorityConf,
+  listProjectAllJoin
 } from '@/api/researchManagementByWzz'
 import { getListByText } from '@/api/workBox'
 function uuid() {
@@ -96,7 +97,16 @@ export default {
       that.detail = record
       that.visible = true
       that.spinning = true
-      that.userList = users
+
+      //人员列表
+      await listProjectAllJoin({ projectId: record.id }).then(res => {
+        that.userList = res.data.map(u => {
+          u.key = uuid()
+          return u
+        })
+      })
+
+      // that.userList = users
 
       that.fileTypes = await getListByText({ text: '研发管理-产品设计阶段权限' }).then((res) => {
         return res.data.records.map((v,idx) => {

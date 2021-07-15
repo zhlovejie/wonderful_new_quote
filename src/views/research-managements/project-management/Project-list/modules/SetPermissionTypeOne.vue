@@ -57,7 +57,7 @@
 </template>
 <script>
 import {
-  listProjectAllJoin,
+ awaitlistProjectAllJoin,
   listTrailAuthorityConf,
   saveProjectFileTrailAuthorityConf
 } from '@/api/researchManagementByWzz'
@@ -99,7 +99,16 @@ export default {
       that.detail = record
       that.visible = true
       that.spinning = true
-      that.userList = users
+
+      //人员列表
+      await listProjectAllJoin({ projectId: record.id }).then(res => {
+        that.userList = res.data.map(u => {
+          u.key = uuid()
+          return u
+        })
+      })
+
+      // that.userList = users
       that.fileTypes = fileTypes.map((v,idx) => {
         return {
           name:v,
@@ -110,7 +119,7 @@ export default {
         }
       })
       //人员列表
-      // await listProjectAllJoin({ projectId: record.id }).then(res => {
+      // awaitawaitlistProjectAllJoin({ projectId: record.id }).then(res => {
       //   that.userList = res.data.map(u => {
       //     u.key = uuid()
       //     return u
@@ -122,10 +131,10 @@ export default {
         let fileTypes = [...that.fileTypes]
         that.fileTypes = fileTypes.map(item => {
           let target = list.find(_item => _item.fileType === item.fileType)
-          if(target && Array.isArray(target.confListVoList)){
-            item.users = target.confListVoList.map(c => c.userId)
+          if(target && Array.isArray(target.confListVo)){
+            item.users = target.confListVo.map(c => c.userId)
             let permission = []
-            for(let [k,v] of Object.entries(target.confListVoList[0])){
+            for(let [k,v] of Object.entries(target.confListVo[0])){
               if(k.endsWith('Authority') && v === 1){
                 permission.push(k)
               }
