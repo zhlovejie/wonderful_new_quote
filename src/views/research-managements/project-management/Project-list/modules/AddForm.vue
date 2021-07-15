@@ -42,11 +42,12 @@
                   </a-form-model-item>
                 </td>
                 <td style="width:150px;">
-                  <span class="icon-required">项目类别(产品型号)</span>
+                  <span class="icon-required">
+                    {{ [1,2].includes(form.modelType) ? '产品型号' : '现产品型号' }}
+                  </span>
                 </td>
                 <td>
                   <a-form-model-item prop="materialCode">
-
                     <a-select
                       v-if="!isView"
                       show-search
@@ -77,6 +78,50 @@
                   </a-form-model-item>
                 </td>
               </tr>
+              <template v-if="[3,4].includes(form.modelType)">
+              <tr>
+                <td style="width:150px;">
+                  <span class="icon-required">
+                    {{ '原产品型号' }}
+                  </span>
+                </td>
+                <td colspan="3">
+                  <a-form-model-item prop="oldMaterialCode">
+
+                    <a-select
+                      v-if="!isView"
+                      show-search
+                      :value="form.oldMaterialCode"
+                      placeholder="模糊搜索"
+                      style="width: 100%"
+                      :default-active-first-option="false"
+                      :show-arrow="false"
+                      :filter-option="false"
+                      :not-found-content="bomFuzzySearch.fetching ? undefined : '未找到匹配项'"
+                      @search="bomFuzzyAction"
+                      @change="bomFuzzyHandleChange1"
+                    >
+                      <a-spin
+                        v-if="bomFuzzySearch.fetching"
+                        slot="notFoundContent"
+                        size="small"
+                      />
+                      <a-select-option
+                        v-for="item in bomFuzzySearch.list"
+                        :key="item.__key"
+                        :value="item.__key"
+                      >
+                        {{ item.__label }}
+                      </a-select-option>
+                    </a-select>
+                    <span v-else>{{form.materialCode}}</span>
+                  </a-form-model-item>
+                </td>
+              </tr>
+              </template>
+
+
+
               <tr>
                 <td style="width:150px;">
                   <span class="icon-required">项目编号</span>
@@ -171,6 +216,21 @@
           />
         </div>
 
+        <template v-if="form.projectStartJoinMap">
+        <div class="__hd">项目成员</div>
+        <div class="__bd">
+          <table class="custom-table custom-table-border">
+            <tr>
+              <th>部门</th>
+              <th>人员</th>
+            </tr>
+            <tr v-for="(k,v) in form.projectStartJoinMap">
+              <td>{{v}}</td>
+              <td>{{k.map(u => u.userName).join(',')}}</td>
+            </tr>
+          </table>
+        </div>
+        </template>
       </a-form-model>
     </a-spin>
   </a-modal>
@@ -307,28 +367,72 @@ export default {
         that.form = { ...that.form, stageList }
       }
     },
-    handleSubmit() {
+    async handleSubmit() {
       const that = this
       if(that.isView){
         that.handleCancel()
         return
       }
-      that.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
-          that.spinning = true
-          api({ ...that.form ,fileAddBoList:that.fileAddBoList})
-            .then(res => {
-              that.spinning = false
-              that.$message.info(res.msg)
-              that.$emit('finish')
+      let validated =  await that.formValidate()
+      if(validated){
+        const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
+        that.spinning = true
+        let result = await api({ ...that.form ,fileAddBoList:that.fileAddBoList})
+        .then(res => res)
+        .catch(err => {
+          console.log(err)
+          return err
+        })
+        that.spinning = false
+        if(result && result.code && result.msg){
+          that.$message.info(result.msg)
+          that.$emit('finish')
+
+          if(that.isEdit){
+            that.handleCancel()
+            return
+          }
+          that.$confirm({
+            title: '发起会议',
+            content: '是否需要发起会议？',
+            onOk() {
               that.handleCancel()
-            })
-            .catch(err => (that.spinning = false))
-        } else {
-          console.log('error submit!!')
-          return false
+              that.$nextTick(() => {
+                that.$router.push({ name: 'meetingManagementRecords' })
+              })
+            },
+            onCancel() {
+              that.handleCancel()
+            },
+          });
+        }else{
+          that.$message.info(result)
         }
+      }
+      // that.$refs.ruleForm.validate(valid => {
+      //   if (valid) {
+      //     const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
+      //     that.spinning = true
+      //     api({ ...that.form ,fileAddBoList:that.fileAddBoList})
+      //       .then(res => {
+      //         that.spinning = false
+      //         that.$message.info(res.msg)
+      //         that.$emit('finish')
+      //         that.handleCancel()
+      //       })
+      //       .catch(err => (that.spinning = false))
+      //   } else {
+      //     console.log('error submit!!')
+      //     return false
+      //   }
+      // })
+    },
+    formValidate(){
+      const that = this
+      return new Promise((resolve,reject) => {
+        that.$refs.ruleForm.validate(valid => {
+          resolve(!!valid)
+        })
       })
     },
     handleCancel() {
@@ -374,6 +478,17 @@ export default {
         materialCode: target.materialCode,
         materialName: target.materialName,
         projectCode: that.getProjectCode(target.materialCode, that.form.modelType)
+      }
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, item: target }
+    },
+    bomFuzzyHandleChange1(key) {
+      const that = this
+      const target = that.bomFuzzySearch.list.find(item => item.__key === key)
+      that.form = {
+        ...that.form,
+        oldMaterialLibId: target.id,
+        oldMaterialCode: target.materialCode,
+        oldMaterialName: target.materialName,
       }
       that.bomFuzzySearch = { ...that.bomFuzzySearch, item: target }
     },

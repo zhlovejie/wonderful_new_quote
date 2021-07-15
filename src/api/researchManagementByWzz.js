@@ -17,11 +17,41 @@ export function schemeNodeRelationDetail(parameter) {
   })
 }
 
+//模式详情查询(项目进程设置中所用)
+export function getSchemeNodeInfoDetailByProjectId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-stage-join/getSchemeNodeInfoDetailByProjectId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//查询项目进程设置信息(项目默认参与人的查询)
+export function getProjectStageProcessJoinDetal(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-stage-join/getProjectStageProcessJoinDetal',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //模式列表查询
 export function schemeNodeRelationList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/project/development-project-scheme-node-relation/listSchemeNodeRelation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//模式列表全部查询
+export function listAllSchemeNodeRelation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-scheme-node-relation/listAllSchemeNodeRelation',
     method: 'get',
     params: parameter
   })
@@ -172,6 +202,96 @@ export function changeProductChargeUser(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/project/development-project-all-info/changeProductChargeUser',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//立项
+export function addProjectAllJoin(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-all-info/addProjectAllJoin',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//通过会议编码查询会议记录详情接口
+export function getMeetingRecordDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-all-info/getMeetingRecordDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//新增项目进程设置信息 (项目进程设置)
+export function saveOrUpdateProjectAllInfoStage(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-stage-join/saveOrUpdateProjectAllInfoStage',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//查询立项的项目参与人
+export function listProjectAllJoin(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-all-info/listProjectAllJoin',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//查询项目进程详情信息（查询项目进度信息时所用）
+export function getProjectStageProcessDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-stage-join/getProjectStageProcessDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//资料输出权限列表查询 (项目进程配置 设置权限类型1)
+export function listTrailAuthorityConf(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-trail-authority-conf/listTrailAuthorityConf',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//新增资料输出权限 (项目进程配置 设置权限类型1)
+export function saveProjectFileTrailAuthorityConf(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-trail-authority-conf/saveProjectFileTrailAuthorityConf',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//查询设计模块文档权限配置明细(项目进程配置 设置权限类型2)
+export function getAuthorityConfDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-design-authority-conf/getAuthorityConfDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//新增或修改设计模块文档权限配置(项目进程配置 设置权限类型2)
+export function saveAuthorityConf(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-design-authority-conf/saveAuthorityConf',
     method: 'post',
     data: parameter
   })

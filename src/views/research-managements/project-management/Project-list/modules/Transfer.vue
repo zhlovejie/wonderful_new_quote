@@ -18,7 +18,7 @@
       >
         <a-form-model-item label="原项目负责人" >
           <span>
-            {{that.detail.chargeDepartmentName}}-{{that.detail.chargeUserName}}
+            {{detail.chargeDepartmentName}}-{{detail.chargeUserName}}
           </span>
         </a-form-model-item>
 
@@ -34,7 +34,7 @@
 </template>
 <script>
 
-import { changeProductChargeUser } from '@/api/researchManagementByWzz'
+import { listProjectAllDetail,changeProductChargeUser } from '@/api/researchManagementByWzz'
 import DepUserSelect from '@/components/CustomerList/DepUserSelect'
 
 export default {
@@ -43,13 +43,16 @@ export default {
   },
   data() {
     return {
-
       visible: false,
       spinning: false,
       form: {
 
       },
-      rules: {},
+      rules: {
+        chargeUserName:[
+          { required: true, message: '请选择新项目负责人' }
+        ]
+      },
       detail:{}
     }
   },
@@ -98,16 +101,20 @@ export default {
       that.$nextTick(() => (that.visible = false))
     },
     depUserChange(type, depId, userId,targetDep,targetUser) {
+      const that = this
       if(!(targetDep && targetUser)){
         return
       }
-      this.form = {
-        ...this.form,
+      that.form = {
+        ...that.form,
         chargeDepartmentId: depId,
         chargeDepartmentName:targetDep.departmentName,
         chargeUserId: userId ,
         chargeUserName:targetUser.trueName
       }
+      that.$nextTick(() => {
+        that.$refs.ruleForm.validate()
+      })
     }
   }
 }

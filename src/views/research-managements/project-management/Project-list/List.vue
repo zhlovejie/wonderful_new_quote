@@ -123,8 +123,9 @@
     </div>
     <AddForm key="k1" ref="addForm" @finish="searchAction" />
     <Transfer key="k2" ref="transfer" @finish="searchAction" />
-    Transfer
-    <!-- <ApproveInfo ref="approveInfoCard" /> -->
+    <MeetingAddForm ref="meetingAddForm" />
+    <StartProject ref="startProject" @finish="searchAction"/>
+    <SetProjectProcess ref="setProjectProcess" @finish="searchAction"/>
   </div>
 </template>
 
@@ -133,10 +134,15 @@
 import {
   listProjectAllPageList,
   listProjectAllDetail,
-  finishProjectStatus
+  finishProjectStatus,
+  getMeetingRecordDetail
 } from '@/api/researchManagementByWzz'
 import AddForm from './modules/AddForm'
 import Transfer from './modules/Transfer'
+import MeetingAddForm from '@/views/meeting-management/records/module/AddForm.vue'
+import StartProject from './modules/StartProject'
+import SetProjectProcess from './modules/SetProjectProcess'
+
 import moment from 'moment'
 const columns = [
   {
@@ -224,14 +230,14 @@ function makeProjectProcess() {
       id: idx + 1,
       text: v
     }
-  })
+  }).filter(item => item.id > 0)
 }
 
 
 export default {
   name: 'project-management-Project-list',
   components: {
-    AddForm,Transfer
+    AddForm,Transfer,MeetingAddForm,StartProject,SetProjectProcess
   },
   data() {
     return {
@@ -319,7 +325,7 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
-    doAction(actionType, record) {
+    async doAction(actionType, record) {
       let that = this
       if (['view','add','edit'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record)
@@ -333,10 +339,25 @@ export default {
         })
         return
       }else if (actionType === 'start') { //立项
-
+        that.$refs.startProject.query('start',record)
         return
       }else if(actionType === 'transfer'){
         that.$refs.transfer.query(actionType, record)
+      }else if(actionType === 'meetingRecord'){
+        let detail = await getMeetingRecordDetail({meetingNum:record.meetingCode})
+          .then(res => res.data)
+          .catch(err => {
+            return null
+          })
+        if(detail === null) {
+          that.$message.info(`通过会议编码查询会议记录详情接口失败 【meetingCode:${record.meetingCode}】`)
+          return
+        }
+        that.$refs.meetingAddForm.query('view',{...detail})
+        return
+      }else if(actionType === 'setProcess'){
+        that.$refs.setProjectProcess.query(actionType,record)
+        return
       }
       else {
         that.$message.info(`未知指令：${actionType}`)
@@ -361,7 +382,7 @@ export default {
       return this.projectDevelopmentModes[type].text
     },
     getStatus(type){
-      return this.projectProcesses[type].text
+      return this.projectProcesses[+type - 1].text
     }
   }
 }
