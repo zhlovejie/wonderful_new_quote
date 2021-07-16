@@ -79,8 +79,10 @@
       <a-button type="primary" style="margin-right: 10px" icon="save" v-if="!isDisabled" @click="preservation(0)"
         >保存</a-button
       >
-      <a-button type="primary" v-if="!isDisabled && !Noshow" @click="preservation(1)">提交审核</a-button>
-      <a-button style="margin-right: 10px" v-if="!isDisabled" @click="handleGo">取消</a-button>
+      <a-button type="primary" style="margin-right: 10px" v-if="!isDisabled && !Noshow" @click="preservation(1)"
+        >提交审核</a-button
+      >
+      <a-button v-if="!isDisabled" @click="handleGo">取消</a-button>
       <a-button key="back" icon="close" style="margin-right: 10px" v-if="normalAddForm.isApproval" @click="noPassAction"
         >不通过</a-button
       >
@@ -314,6 +316,7 @@ export default {
       that.validate()
       if (that.details) {
         value.id = this.normalAddForm.developmentProjectDesignReview.id
+        value.instanceId = this.normalAddForm.developmentProjectDesignReview.instanceId
       }
       value.projectId = that.normalAddForm.allInfo.id
       value.status = status

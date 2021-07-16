@@ -384,7 +384,7 @@ export default {
       if (selectedKeys[0] !== undefined) {
         parentId = selectedKeys[0]
       }
-      that.queryParam = { ...that.queryParam, id: +parentId === 0 ? undefined : parentId }
+      that.queryParam = { ...that.queryParam, id: +parentId === 0 ? 0 : parentId }
       that.parentId = parentId
       that.parentItem = { ...dataRef }
 

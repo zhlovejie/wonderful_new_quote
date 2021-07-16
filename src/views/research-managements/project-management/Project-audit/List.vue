@@ -108,8 +108,8 @@
               </template>
               <template v-if="record.approveStatus === 3 || record.approveStatus === 4">
                 <a-divider type="vertical" />
-                <a type="primary" @click="toAdd('handle', record)">修改</a>
-                <a-divider type="vertical" />
+                <!-- <a type="primary" @click="toAdd('handle', record)">修改</a>
+                <a-divider type="vertical" /> -->
                 <!-- <a type="primary" @click="toAdd('handle', record)">删除</a> -->
                 <a-popconfirm title="确认删除该条数据吗?" @confirm="() => toAdd('del', record)">
                   <a type="primary" href="javascript:;">删除</a>
