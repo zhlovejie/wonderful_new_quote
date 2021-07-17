@@ -57,7 +57,7 @@
 </template>
 <script>
 import {
- awaitlistProjectAllJoin,
+  listProjectAllJoin,
   listTrailAuthorityConf,
   saveProjectFileTrailAuthorityConf
 } from '@/api/researchManagementByWzz'
@@ -67,6 +67,7 @@ function uuid() {
     .toString(32)
     .slice(-10)
 }
+
 //2、 资料归档 3、 bom清单 4、 2d图纸 5、 3d图纸 6、可行性功能测试点 7、 产品标志与配色方案 8、配置方案
 const fileTypes = ['产品预估价','资料归档','bom清单','2d图纸','3d图纸','可行性功能测试点','产品标志与配色方案','配置方案']
 

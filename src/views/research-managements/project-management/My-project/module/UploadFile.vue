@@ -4,7 +4,7 @@
       name="file"
       :list-type="listType"
       :action="uploadUrl"
-      :multiple="$attrs.multiple || false"
+      :multiple="margeConfig.multiple || false"
       :beforeUpload="beforeUpload"
       :fileList="fileList"
       @preview="handlePreview"
@@ -36,7 +36,6 @@ function getBase64(file) {
 
 import { getUploadPath2 } from '@/api/common'
 export default {
-  name: 'uploadFile',
   props:['config'],
   data() {
     return {
@@ -46,6 +45,7 @@ export default {
       previewImage:'',
 
       margeConfig:{
+        multiple:false,
         maxFileCount:1,
         btn:{
           text:'上传',
@@ -72,7 +72,6 @@ export default {
         if(obj){
           this.margeConfig = Object.assign({},this.margeConfig,(obj || {}))
         }
-
       },
       immediate: true
     }
@@ -123,7 +122,7 @@ export default {
     handleChange(info) {
       const that = this
       let fileList = [...info.fileList]
-      fileList = fileList.slice(-3)
+      // fileList = fileList.slice(-3)
       fileList = fileList.map(file => {
         if (file.response) {
           if (file.response.code === 200) {
@@ -135,6 +134,7 @@ export default {
         return file
       })
       that.fileList = [...fileList]
+
       that.$emit('change',[...that.fileList])
     },
     getFiles() {

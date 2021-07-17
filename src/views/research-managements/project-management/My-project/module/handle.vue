@@ -23,12 +23,21 @@
       <a-button type="link" slot="extra" v-if="status !== 2 && essential" @click="information(2)">收起</a-button>
       <Essential v-if="status === 2 || essential" ref="essential" :type="type" />
     </a-card>
+
+    <!-- 试制资料输出 -->
+    <a-card :title="Process3Title" :bordered="false" style="margin-top: 20px" v-if="status >= 2">
+      <a-button type="link" slot="extra" v-if="status !== 3 && !Process3Toggle" @click="information(3)">显示 </a-button>
+      <a-button type="link" slot="extra" v-if="status !== 3 && Process3Toggle" @click="information(3)">收起</a-button>
+      <Process3 v-if="status === 3 || Process3Toggle" ref="essential" :type="type" />
+    </a-card>
+
     <!-- 产品试制 -->
     <a-card :title="productiontitle" :bordered="false" v-if="status >= 4">
       <a-button type="link" slot="extra" v-if="status !== 4 && !Production" @click="information(4)">显示 </a-button>
       <a-button type="link" slot="extra" v-if="status !== 4 && Production" @click="information(4)">收起</a-button>
       <Production v-if="status === 4 || Production" ref="Production" :type="type" />
     </a-card>
+
     <!-- 可行性测试 -->
     <a-card :title="Feasibilitytitle" :bordered="false" v-if="status >= 5">
       <a-button type="link" slot="extra" v-if="status !== 5 && !Feasibilitys" @click="information(5)">显示 </a-button>
@@ -121,7 +130,13 @@ import {
   getCraftTask,
   getPlan,
 } from '@/api/projectManagement'
+
+import {
+  getPersonTrailConfDetail
+} from '@/api/researchManagementByWzz'
+
 import Essential from './essential'
+import Process3 from './Process3'
 import Production from './production'
 import Feasibility from './Feasibility'
 import ResultsReview from './ResultsReview'
@@ -143,6 +158,7 @@ export default {
   name: 'BecomingForm',
   components: {
     Essential,
+    Process3,
     Production,
     Feasibility,
     ResultsReview,
@@ -168,6 +184,12 @@ export default {
     },
     Designtitle() {
       return `设计方案联合评审（预计完成时间：${this.finishTime}）`
+    },
+    Process3Title(){
+      return `试制资料输出（预计完成时间：${this.finishTime}）`
+    },
+    Process11Title(){
+      return `配置方案技术资料归档（预计完成时间：${this.finishTime}）`
     },
     productiontitle() {
       return `产品试制（预计完成时间：${this.finishTime}）`
@@ -221,6 +243,8 @@ export default {
   data() {
     return {
       essential: false,
+      Process3Toggle:false,
+      Process11Toggle:false,
       Design: false,
       Production: false,
       Feasibilitys: false,
@@ -242,6 +266,8 @@ export default {
       allInfo: {},
 
       developmentProjectDesignReview: {}, //设计方案联合评审
+      Process3Data:{},// 试制资料输出
+      Process11Data:{},// 配置方案技术资料归档
       ProductTrial: {}, //产品试制
       FeasibilityData: {}, //可行性测试
       ResultsData: {}, //可行性测试结果评审
@@ -339,6 +365,9 @@ export default {
           }
         )
       }
+
+
+      await that.information(3)
     },
     Plan() {
       getPlan({ projectId: this.$route.params.id }).then((res) => {
@@ -354,6 +383,12 @@ export default {
     information(type) {
       if (type === 2) {
         this.essential = !this.essential
+      }
+      if(type === 3){
+        this.Process3Toggle = !this.Process3Toggle
+      }
+      if(type === 11){
+        this.Process11Toggle = !this.Process11Toggle
       }
       if (type === 4) {
         this.Production = !this.Production
@@ -395,10 +430,23 @@ export default {
         this.volume = !this.volume
       }
 
+      if(type === 3){
+        getPersonTrailConfDetail({ projectId: this.$route.params.id}).then(res => {
+          this.Process3Data = res.data
+        })
+        return
+      }
+
       getDealEveryChooseStageDetail({ projectId: this.$route.params.id, stageNum: type }).then((res) => {
         if (res.code === 200) {
           if (type == 2 && res.data !== null) {
             this.developmentProjectDesignReview = res.data
+          }
+          if(type === 3 && res.data !== null){
+            this.Process3Data = res.data
+          }
+          if(type === 11 && res.data !== null){
+            this.Process11Data = res.data
           }
           if (type == 4 && res.data !== null) {
             this.ProductTrial = res.data

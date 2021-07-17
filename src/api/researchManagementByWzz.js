@@ -298,3 +298,57 @@ export function saveAuthorityConf(parameter) {
 }
 
 //---------------------项目列表(项目进度管理)-----------------------
+
+//---------------------我的项目处理(第三步试制资料)-----------------------
+
+//查询个人提交的试制资料审批单数据
+export function getPersonTrailConfDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-out/getPersonTrailConfDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//上传个人资料：保存或提交审核
+export function uploadFileTrailConfPerson(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-out/uploadFileTrailConfPerson',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//部门资料的提交审核
+export function uploadFileTrailConfDepartment(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-out/uploadFileTrailConfDepartment',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//试制资料的完结
+export function finishTrailFileStage(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-out/finishTrailFileStage',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//导入bom excel
+export function importBomExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-out/importBomExcel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//---------------------我的项目处理(第三步试制资料)-----------------------
