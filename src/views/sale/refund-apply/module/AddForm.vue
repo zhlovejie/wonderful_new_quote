@@ -40,23 +40,23 @@
               <template v-if="!isDisabled">
                 <a-form-item>
                   <!-- <a-button @click="qualificationsBorrowContractClickHandler">选择资质借用管理合同</a-button> -->
-                  <a-input 
-                    placeholder="选择资质借用管理合同"  
-                    read-only="read-only" 
+                  <a-input
+                    placeholder="选择资质借用管理合同"
+                    read-only="read-only"
                     :disabled="isEdit"
-                    @click="qualificationsBorrowContractClickHandler" 
-                    v-decorator="['borrowNum',{initialValue: detail.borrowNum}]" 
+                    @click="qualificationsBorrowContractClickHandler"
+                    v-decorator="['borrowNum', { initialValue: detail.borrowNum }]"
                   />
                 </a-form-item>
                 <a-form-item hidden>
-                  <a-input v-decorator="['infoId',{initialValue: detail.infoId}]" />
+                  <a-input v-decorator="['infoId', { initialValue: detail.infoId }]" />
                 </a-form-item>
                 <!-- <a-form-item hidden>
                   <a-input v-decorator="['borrowNum']" />
                 </a-form-item> -->
               </template>
               <template v-else>
-                {{detail.borrowNum}}
+                {{ detail.borrowNum }}
               </template>
             </td>
           </tr>
@@ -65,11 +65,15 @@
             <td style="width: 15%">协议</td>
             <td style="width: 35%">
               <a-form-item>
-                <a-input v-if="!isDisabled" :disabled="true" placeholder="自动带入"   v-decorator="['protocol',{initialValue: detail.protocol}]" />
-                <span v-else>{{detail.protocol}}</span>
+                <a-input
+                  v-if="!isDisabled"
+                  :disabled="true"
+                  placeholder="自动带入"
+                  v-decorator="['protocol', { initialValue: detail.protocol }]"
+                />
+                <span v-else>{{ detail.protocol }}</span>
               </a-form-item>
             </td>
-
 
             <td style="width: 15%">销售经理</td>
             <td style="width: 35%">
@@ -215,7 +219,7 @@
           <template v-if="isDisabled">
             <tr>
               <td colspan="4" style="padding: 0">
-                <table class="custom-table custom-table-border" style="margin: 20px -1px;">
+                <table class="custom-table custom-table-border" style="margin: 20px -1px">
                   <tr>
                     <th style="width: 15%">已付情况</th>
                     <th style="width: 35%">付款金额(元)</th>
@@ -235,7 +239,7 @@
           <template v-if="isAdd || isEdit">
             <tr>
               <td colspan="4" style="padding: 0">
-                <div style="margin: 20px -1px;">
+                <div style="margin: 20px -1px">
                   <table class="custom-table custom-table-border">
                     <tr>
                       <th style="width: 15%">已付情况</th>
@@ -371,7 +375,7 @@
               <div v-else>
                 <template v-if="detail.proofInvoiceUrl">
                   <img
-                    v-for="url in detail.proofInvoiceUrl.split(',').map((url) => decodeURIComponent(url))"
+                    v-for="url in detail.proofInvoiceUrl.split(',')"
                     :key="url"
                     :src="url"
                     @click="showImg(url)"
@@ -391,7 +395,10 @@
         <ImgView ref="imgView" />
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
-      <SelectQualificationsBorrowContract ref="selectQualificationsBorrowContract" @select="qualificationsBorrowContractSelectHandler" />
+      <SelectQualificationsBorrowContract
+        ref="selectQualificationsBorrowContract"
+        @select="qualificationsBorrowContractSelectHandler"
+      />
     </a-spin>
   </a-modal>
 </template>
@@ -430,11 +437,11 @@ export default {
     StatusView,
     UploadFile,
     ImgView,
-    SelectQualificationsBorrowContract
+    SelectQualificationsBorrowContract,
   },
   data() {
     return {
-      form: this.$form.createForm(this,{name:'refund-apply-addform'}),
+      form: this.$form.createForm(this, { name: 'refund-apply-addform' }),
       visible: false,
       actionType: 'add',
       opinion: '', //审批意见
@@ -502,7 +509,13 @@ export default {
           )
         )
       } else if (that.isApproval) {
-        btn.push(h('a-button', { key: 'no-pass', on: { click: that.noPassAction } ,props:{loading: that.spinning}}, '不通过'))
+        btn.push(
+          h(
+            'a-button',
+            { key: 'no-pass', on: { click: that.noPassAction }, props: { loading: that.spinning } },
+            '不通过'
+          )
+        )
         btn.push(
           h(
             'a-button',
@@ -523,15 +536,15 @@ export default {
     },
     async updateMoney() {
       let that = this
-      let thePaymentAmount = that.rebatesDetailsList.reduce((a, b) => a + (parseFloat(b.paymentAmount) || 0),0) || 0
+      let thePaymentAmount = that.rebatesDetailsList.reduce((a, b) => a + (parseFloat(b.paymentAmount) || 0), 0) || 0
       //console.log(`thePaymentAmount:${thePaymentAmount}`)
       let _amountCapital = '零'
-      if(thePaymentAmount > 0){
+      if (thePaymentAmount > 0) {
         _amountCapital = await turnTheCapital({ money: thePaymentAmount }).then((res) => res.data)
       }
 
       let amountCapital = _amountCapital
-      
+
       //console.log(`amountCapital:${amountCapital}`)
       that.form.setFieldsValue({
         thePaymentAmount,
@@ -570,7 +583,7 @@ export default {
       let files = that.$refs.uploadFile.getFiles()
       if (Array.isArray(files) && files.length > 0) {
         await that.form.setFieldsValue({
-          proofInvoiceUrl: files.map((f) => encodeURIComponent(f.url)).join(','),
+          proofInvoiceUrl: files.map((f) => f.url).join(','),
         })
       } else {
         that.$message.info('请上传发票凭证')
@@ -591,8 +604,8 @@ export default {
           }
           //for test
           //values.infoId = 1
-          
-          if(!values.infoId){
+
+          if (!values.infoId) {
             that.$message.info('请选择资质借用管理管理合同')
             return
           }
@@ -629,7 +642,7 @@ export default {
       that.actionType = type
       that.record = record || {}
       that.detail = {}
-      
+
       that.form.resetFields()
       await that.init()
       that.visible = true
@@ -642,12 +655,12 @@ export default {
       }
       //填充数据
       const _detail = await qualificationBorrowRebatesDetail({ id: that.record.id }).then((res) => res.data)
-      if(_detail.amountCapital === "0"){
-        _detail.amountCapital = "零"
+      if (_detail.amountCapital === '0') {
+        _detail.amountCapital = '零'
       }
       that.needOptions = { userId: _detail.userId }
       that.detail = _detail
-      that.rebatesDetailsList = (that.detail.rebatesDetailsList || []).map(item =>{
+      that.rebatesDetailsList = (that.detail.rebatesDetailsList || []).map((item) => {
         item.key = uuid()
         return item
       })
@@ -793,29 +806,29 @@ export default {
     showImg(url) {
       this.$refs.imgView.show(url)
     },
-    qualificationsBorrowContractSelectHandler(data){
+    qualificationsBorrowContractSelectHandler(data) {
       //console.log(data)
       const that = this
-      let {baseInfo,detailInfo,__agreeName} = data
-      let {customerName,customerId,salesmanName,userId} = baseInfo
-      let {maintenanceCost,paymentCount,paymentAmount} = detailInfo
+      let { baseInfo, detailInfo, __agreeName } = data
+      let { customerName, customerId, salesmanName, userId } = baseInfo
+      let { maintenanceCost, paymentCount, paymentAmount } = detailInfo
       //根据资质借用合同 填充数据
       that.form.setFieldsValue({
-        saleUserId:userId,
+        saleUserId: userId,
         customerId,
         customerName,
-        protocol:__agreeName, //协议名称
-        borrowNum:baseInfo.id, //资质借用编号
-        infoId:baseInfo.id,
-        paymentAmount:maintenanceCost || undefined , //总付款金额
+        protocol: __agreeName, //协议名称
+        borrowNum: baseInfo.id, //资质借用编号
+        infoId: baseInfo.id,
+        paymentAmount: maintenanceCost || undefined, //总付款金额
       })
       that.needOptions = { userId }
-      that.$refs.customerSelect && that.$refs.customerSelect.fill({id: customerId,name: customerName })
-      
+      that.$refs.customerSelect && that.$refs.customerSelect.fill({ id: customerId, name: customerName })
+
       //填充已付款情况
-      if(paymentCount && paymentCount > 0){
+      if (paymentCount && paymentCount > 0) {
         let rebatesDetailsList = [...that.rebatesDetailsList]
-        for(let i=0;i<paymentCount;i++){
+        for (let i = 0; i < paymentCount; i++) {
           rebatesDetailsList.push({
             key: uuid(),
             paymentAmount: paymentAmount || 0,
@@ -829,17 +842,17 @@ export default {
       //console.log(data.borrowId)
       //infoId
     },
-    qualificationsBorrowContractClickHandler(){
+    qualificationsBorrowContractClickHandler() {
       this.$refs.selectQualificationsBorrowContract.query({
         //返款单调用传 1，会过滤 完结的且未被返款单绑定的 资质借用管理合同列表
-        isRebates:1,
+        isRebates: 1,
         //type, //类型 1项目投标 2 项目经营
         //contractProperty, 合同属性 1 经销商合同 2代理商合同 3 战略合作协议
         //salemanId, //销售经理编号
         //customerName, //客户名称
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
