@@ -215,8 +215,9 @@ export default {
           priceC: _costPrice.toFixed(2),
         })
       } else {
+        let arr = parseInt(_costPrice)
         this.form.setFieldsValue({
-          priceC: Math.ceil(_costPrice / 10) * 10,
+          priceC: Math.ceil(arr / 10) * 10,
         })
       }
 
