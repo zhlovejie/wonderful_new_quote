@@ -158,6 +158,17 @@ export default { //研发管理
           },
         },
         {
+          path: '/research-managements/project-management/My-project/Project',
+          name: 'project-management-My-projectProgress',
+          component: () => import('@/views/research-managements/project-management/My-project/Project/projectProgress'),
+          meta: {
+            title: '项目进程',
+            keepAlive: true,
+            hidden: true,
+            permission: ['permission']
+          },
+        },
+        {
           path: '/research-managements/project-management/My-project/module',
           name: 'project-management-My-handle',
           component: () => import('@/views/research-managements/project-management/My-project/module/handle'),

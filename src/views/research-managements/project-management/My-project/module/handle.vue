@@ -348,7 +348,7 @@ export default {
 
     inits() {
       getCraftTask({ projectId: this.$route.params.id }).then((res) => {
-        this.ProcessData = res.data
+        this.ProcessData = res.data || {}
       })
     },
     information(type) {

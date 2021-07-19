@@ -56,6 +56,7 @@ const api = {
   submitTolist: '/designFileMeetingHis/list',
   startTrainings: '/fileDesignDivConf/startTraining',
   finishTrainings: '/fileDesignDivConf/finishTraining',
+  getProjectStageProcessDetail: '/project/development-project-stage-join/getProjectStageProcessDetail',
 
 
 
@@ -64,6 +65,19 @@ const api = {
 
 
 }
+
+
+/*
+项目进程*/
+export function getProjectStageProcessDetail(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.getProjectStageProcessDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+
 /*
 结束培训*/
 export function finishTrainings(parameter) {

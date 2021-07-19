@@ -19,7 +19,7 @@
     >
     <table class="custom-table custom-table-border">
       <h3>工艺任务</h3>
-      <tr v-if="normalAddForm.ProcessData.craftTaskUrl !== null">
+      <tr v-if="normalAddForm.ProcessData.craftTaskUrl">
         <td>工艺研发任务单</td>
         <td>
           <a @click="delSee(normalAddForm.ProcessData.craftTaskUrl || '')">查看</a>
@@ -27,7 +27,7 @@
           <a target="_blank" v-download="normalAddForm.ProcessData.craftTaskUrl || ''">下载</a>
         </td>
       </tr>
-      <tr v-if="normalAddForm.ProcessData.mouldTaskUrl !== null">
+      <tr v-if="normalAddForm.ProcessData.mouldTaskUrl">
         <td>摸具任务单任务单</td>
         <td>
           <a @click="delSee(normalAddForm.ProcessData.mouldTaskUrl || '')">查看</a>
@@ -161,6 +161,7 @@ export default {
         size: 10,
         materialCode: wd,
       }
+
       that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true }
       const result = await craftRouteApprovePageList({ status: 3 }).then((res) => {
         const records = res.data.records.map((item) => {
@@ -172,6 +173,7 @@ export default {
         })
         return records
       })
+
       that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: false, list: result }
     },
     bomFuzzyHandleChange(key) {
