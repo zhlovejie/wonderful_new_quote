@@ -100,7 +100,7 @@ export default {
         this.visible = false
       }
       await typeConfigDetail({ id: record.productTypeConfigId }).then((res) => {
-        this.code = res.data.code
+        this.code = res.data.isInt
         this.lowPriceInterval = res.data.lowPriceInterval
       })
       await intervalConfigDetailByName({ intervalValueName: this.lowPriceInterval }).then((res) => {
@@ -210,7 +210,7 @@ export default {
       let that = this
       // （成本价/0.750） *（1+税率）
       let _costPrice = (Number(val) / Number(this.profitValue)) * (1 + Number(that.record.taxRate) / 100)
-      if (that.code === 'pj') {
+      if (that.code === 1) {
         this.form.setFieldsValue({
           priceC: _costPrice.toFixed(2),
         })

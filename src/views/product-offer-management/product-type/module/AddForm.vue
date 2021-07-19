@@ -47,6 +47,20 @@
             </td>
           </tr>
           <tr>
+            <td class="requiredMark" style="width: 120px">是否取整</td>
+            <td colspan="6">
+              <a-form-item>
+                <a-radio-group
+                  :disabled="isView"
+                  v-decorator="['isInt', { rules: [{ required: true, message: '是否取整' }] }]"
+                >
+                  <a-radio :value="0">取整</a-radio>
+                  <a-radio :value="1">不取整</a-radio>
+                </a-radio-group>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
             <td class="requiredMark" style="width: 120px">底价</td>
             <td colspan="6">
               <a-form-item>
@@ -324,6 +338,7 @@ export default {
           typeName: res.data.typeName,
           taxRate: res.data.taxRate,
           lowPriceInterval: res.data.lowPriceInterval,
+          isInt: res.data.isInt,
         })
         that.typeConfigRangeList = res.data.typeConfigRangeList.map((item) => {
           return {
