@@ -107,7 +107,7 @@ export default {
       ]
 
       refs.map(item => {
-        that.$refs.[item.refName].query('view',that.$_.cloneDeep(item.data),{
+        that.$refs[item.refName].query('view',that.$_.cloneDeep(item.data),{
           optionsList:that.$_.cloneDeep(optionsList),
           treeData:that.$_.cloneDeep(treeData)
         })
