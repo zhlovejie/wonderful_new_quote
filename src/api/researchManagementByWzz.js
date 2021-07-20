@@ -351,4 +351,77 @@ export function importBomExcel(parameter) {
   })
 }
 
+//物料单详情（查看）
+export function getMaterialFormDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-material-form/getMaterialFormDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------我的项目处理(第三步试制资料)-----------------------
+
+//---------------------我的项目处理(第11步 研发项目管理-归档资料文件管理)-----------------------
+
+//查询个人提交的配置资料审批单数据
+export function getPersonTrailConfDetail_11(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-gather/getPersonTrailConfDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//导入bom excel
+export function importBomExcel_11(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-gather/importBomExcel',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//查看当前用户拥有的资料权限
+export function listProjectFileAuthority_11(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-gather/listProjectFileAuthority',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//部门资料的提交审核
+export function uploadFileTrailConfDepartment_11(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-gather/uploadFileTrailConfDepartment',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//上传个人资料：保存或提交审核
+export function uploadFileTrailConfPerson_11(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-gather/uploadFileTrailConfPerson',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//归档资料的完结
+export function finishGatherFileStage_11(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/project/development-project-file-gather/finishGatherFileStage',
+    method: 'post',
+    data: parameter
+  })
+}
+//---------------------我的项目处理(第11步 研发项目管理-归档资料文件管理)-----------------------

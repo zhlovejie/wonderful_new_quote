@@ -98,7 +98,7 @@
           <a-button @click="handleSubmit(5)">取消</a-button>
         </p>
         <XdocView ref="xdocView" />
-        <BomForm ref="bomForm" :status="3" @change="bomEditChange"/>
+        <BomForm ref="bomForm" :status="11" @change="bomEditChange"/>
       </a-form-model>
     </a-spin>
 </template>
@@ -109,9 +109,9 @@ import UploadBom from './UploadBom'
 import BomForm from './BomForm'
 import XdocView from './XdocView'
 import {
-  uploadFileTrailConfPerson,
-  uploadFileTrailConfDepartment,
-  finishTrailFileStage,
+  uploadFileTrailConfPerson_11,
+  uploadFileTrailConfDepartment_11,
+  finishGatherFileStage_11,
   getMaterialFormDetail as customGetMaterialFormDetail
 } from '@/api/researchManagementByWzz'
 
@@ -215,12 +215,12 @@ export default {
       return (
         this.normalAddForm.isView ||
         this.normalAddForm.isApproval ||
-        (this.normalAddForm.isHandle && this.normalAddForm.status !== 3)
+        (this.normalAddForm.isHandle && this.normalAddForm.status !== 11)
       )
     },
   },
   watch: {
-    'normalAddForm.Process3Data': function (newVal, oldVal) {
+    'normalAddForm.Process11Data': function (newVal, oldVal) {
       console.log(newVal, oldVal)
       const that = this
       if (newVal) {
@@ -228,16 +228,9 @@ export default {
         that.typeListVoList = newVal.typeListVoList.map(item => {
           item.__show = true
 
-          if(item.fileType === 1){//产品预估价
-            that.form = {
-              ...that.form,
-              predictPrice:item.predictPrice
-            }
-          }
-
           item.__spinning = false
           item.departmentVoList = item.departmentVoList.map(dep => {
-            if(item.fileType === 1 && Array.isArray(dep.personApplyDetailVoList) && dep.personApplyDetailVoList.length === 0){//产品预估价
+            if(item.fileType === 1 && ((Array.isArray(dep.personApplyDetailVoList) && dep.personApplyDetailVoList.length === 0) || dep.personApplyDetailVoList === null)){//产品预估价
               let __uuid = uuid()
               let __attrs = {
                 key:__uuid,uid:__uuid,__add:true,__del:false,__edit:false
@@ -252,13 +245,15 @@ export default {
                 }
               ]
             }else{
-              dep.personApplyDetailVoList = dep.personApplyDetailVoList.map(f => {
-                f.key = f.uid = uuid()
-                f.__add = false
-                f.__del = false
-                f.__edit = false
-                return f
-              })
+              dep.personApplyDetailVoList = Array.isArray(dep.personApplyDetailVoList)
+              ? dep.personApplyDetailVoList.map(f => {
+                  f.key = f.uid = uuid()
+                  f.__add = false
+                  f.__del = false
+                  f.__edit = false
+                  return f
+                })
+              : []
             }
             return dep
           })
@@ -310,10 +305,10 @@ export default {
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
           let api = {
-            1:uploadFileTrailConfPerson, //个人保存
-            2:uploadFileTrailConfPerson, //个人提交审批
-            3:uploadFileTrailConfDepartment,//部门提交审批
-            4:finishTrailFileStage //完结
+            1:uploadFileTrailConfPerson_11, //个人保存
+            2:uploadFileTrailConfPerson_11, //个人提交审批
+            3:uploadFileTrailConfDepartment_11,//部门提交审批
+            4:finishGatherFileStage_11 //完结
           }
           let params = {}
 

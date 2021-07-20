@@ -1,126 +1,135 @@
 <template>
   <a-spin :spinning="spinning">
-    <a-card title="项目信息" :bordered="false">
-      <a slot="extra" href="#" @click="handleGo()">返回</a>
-      <a-row :gutter="[32, 32]">
-        <a-col :span="8"
-          >项目开发模式：
-          {{
-            { 1: '自主研发新产品 ', 2: '客户定制新产品', 3: '产品研发改进', 4: '非常规产品开发' }[allInfo.modelType] ||
-            '未知'
-          }}</a-col
+    <div class="project-process-wrapper">
+      <a-card title="项目信息" :bordered="false">
+        <a slot="extra" href="#" @click="handleGo()">返回</a>
+        <a-row :gutter="[32, 32]">
+          <a-col :span="8"
+            >项目开发模式：
+            {{
+              { 1: '自主研发新产品 ', 2: '客户定制新产品', 3: '产品研发改进', 4: '非常规产品开发' }[allInfo.modelType] ||
+              '未知'
+            }}</a-col
+          >
+          <a-col :span="8"> 项目类别（产品型号）：{{ allInfo.materialCode }}</a-col>
+          <a-col :span="8"> 项目编号：{{ allInfo.projectCode }} </a-col>
+          <a-col :span="8"> 项目名称 ：{{ allInfo.projectName }} </a-col>
+          <a-col :span="8"> 项目总负责人：{{ allInfo.chargeUserName }} </a-col>
+          <a-col :span="8"> 研发总监：{{ allInfo.inspectorUserName }} </a-col>
+        </a-row>
+      </a-card>
+      <!-- 设计方案联合评审 -->
+      <a-card :title="Designtitle" :bordered="false" v-if="status >= 2">
+        <a-button type="link" slot="extra" v-if="status !== 2 && !essential" @click="information(2)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 2 && essential" @click="information(2)">收起</a-button>
+        <Essential v-if="status === 2 || essential" ref="essential" :type="type" />
+      </a-card>
+
+      <!-- 试制资料输出 -->
+      <a-card :title="Process3Title" :bordered="false" v-if="status >= 3">
+        <a-button type="link" slot="extra" v-if="status !== 3 && !Process3Toggle" @click="information(3)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 3 && Process3Toggle" @click="information(3)">收起</a-button>
+        <Process3 v-if="status === 3 || Process3Toggle" :type="type" />
+      </a-card>
+
+      <!-- 产品试制 -->
+      <a-card :title="productiontitle" :bordered="false" v-if="status >= 4">
+        <a-button type="link" slot="extra" v-if="status !== 4 && !Production" @click="information(4)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 4 && Production" @click="information(4)">收起</a-button>
+        <Production v-if="status === 4 || Production" ref="Production" :type="type" />
+      </a-card>
+
+      <!-- 可行性测试 -->
+      <a-card :title="Feasibilitytitle" :bordered="false" v-if="status >= 5">
+        <a-button type="link" slot="extra" v-if="status !== 5 && !Feasibilitys" @click="information(5)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 5 && Feasibilitys" @click="information(5)">收起</a-button>
+        <Feasibility v-if="status === 5 || Feasibilitys" ref="Feasibility" :type="type" />
+      </a-card>
+      <!-- 可行性测试结果评审 -->
+      <a-card :title="Resultstitle" :bordered="false" v-if="status >= 6">
+        <a-button type="link" slot="extra" v-if="status !== 6 && !Results" @click="information(6)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 6 && Results" @click="information(6)">收起</a-button>
+        <ResultsReview v-if="status === 6 || Results" ref="Results" :type="type" />
+      </a-card>
+      <!-- 稳定性测试 -->
+      <a-card :title="stabilitytitle" :bordered="false" v-if="status >= 7">
+        <a-button type="link" slot="extra" v-if="status !== 7 && !Stabilitys" @click="information(7)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 7 && Stabilitys" @click="information(7)">收起</a-button>
+        <Stability v-if="status === 7 || Stabilitys" ref="stability" :type="type" />
+      </a-card>
+      <!-- 稳定性测试结果评审 -->
+      <a-card :title="ReviewOfStabilitytitle" v-if="status >= 8" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 8 && !ReviewOfStabilitys" @click="information(8)"
+          >显示
+        </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 8 && ReviewOfStabilitys" @click="information(8)"
+          >收起</a-button
         >
-        <a-col :span="8"> 项目类别（产品型号）：{{ allInfo.materialCode }}</a-col>
-        <a-col :span="8"> 项目编号：{{ allInfo.projectCode }} </a-col>
-        <a-col :span="8"> 项目名称 ：{{ allInfo.projectName }} </a-col>
-        <a-col :span="8"> 项目总负责人：{{ allInfo.chargeUserName }} </a-col>
-        <a-col :span="8"> 研发总监：{{ allInfo.inspectorUserName }} </a-col>
-      </a-row>
-    </a-card>
-    <!-- 设计方案联合评审 -->
-    <a-card :title="Designtitle" :bordered="false" style="margin-top: 20px" v-if="status >= 2">
-      <a-button type="link" slot="extra" v-if="status !== 2 && !essential" @click="information(2)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 2 && essential" @click="information(2)">收起</a-button>
-      <Essential v-if="status === 2 || essential" ref="essential" :type="type" />
-    </a-card>
+        <ReviewOfStability v-if="status === 8 || ReviewOfStabilitys" ref="reviewOfStability" :type="type" />
+      </a-card>
 
-    <!-- 试制资料输出 -->
-    <a-card :title="Process3Title" :bordered="false" style="margin-top: 20px" v-if="status >= 2">
-      <a-button type="link" slot="extra" v-if="status !== 3 && !Process3Toggle" @click="information(3)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 3 && Process3Toggle" @click="information(3)">收起</a-button>
-      <Process3 v-if="status === 3 || Process3Toggle" ref="essential" :type="type" />
-    </a-card>
+      <!-- 配置方案研发评审 -->
+      <a-card :title="Schemetitile" v-if="status >= 10" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 10 && !schemes" @click="information(10)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 10 && schemes" @click="information(10)">收起</a-button>
+        <Scheme v-if="status === 10 || schemes" ref="scheme" :type="type" />
+      </a-card>
 
-    <!-- 产品试制 -->
-    <a-card :title="productiontitle" :bordered="false" v-if="status >= 4">
-      <a-button type="link" slot="extra" v-if="status !== 4 && !Production" @click="information(4)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 4 && Production" @click="information(4)">收起</a-button>
-      <Production v-if="status === 4 || Production" ref="Production" :type="type" />
-    </a-card>
+      <!-- 配置方案技术资料归档 -->
+      <a-card :title="Process11Title" :bordered="false" style="margin-top: 20px" v-if="status >= 11">
+        <a-button type="link" slot="extra" v-if="status !== 11 && !Process11Toggle" @click="information(11)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 11 && Process11Toggle" @click="information(11)">收起</a-button>
+        <Process11 v-if="status === 11 || Process11Toggle"  :type="type" />
+      </a-card>
 
-    <!-- 可行性测试 -->
-    <a-card :title="Feasibilitytitle" :bordered="false" v-if="status >= 5">
-      <a-button type="link" slot="extra" v-if="status !== 5 && !Feasibilitys" @click="information(5)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 5 && Feasibilitys" @click="information(5)">收起</a-button>
-      <Feasibility v-if="status === 5 || Feasibilitys" ref="Feasibility" :type="type" />
-    </a-card>
-    <!-- 可行性测试结果评审 -->
-    <a-card :title="Resultstitle" :bordered="false" v-if="status >= 6">
-      <a-button type="link" slot="extra" v-if="status !== 6 && !Results" @click="information(6)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 6 && Results" @click="information(6)">收起</a-button>
-      <ResultsReview v-if="status === 6 || Results" ref="Results" :type="type" />
-    </a-card>
-    <!-- 稳定性测试 -->
-    <a-card :title="stabilitytitle" :bordered="false" v-if="status >= 7">
-      <a-button type="link" slot="extra" v-if="status !== 7 && !Stabilitys" @click="information(7)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 7 && Stabilitys" @click="information(7)">收起</a-button>
-      <Stability v-if="status === 7 || Stabilitys" ref="stability" :type="type" />
-    </a-card>
-    <!-- 稳定性测试结果评审 -->
-    <a-card :title="ReviewOfStabilitytitle" v-if="status >= 8" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 8 && !ReviewOfStabilitys" @click="information(8)"
-        >显示
-      </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 8 && ReviewOfStabilitys" @click="information(8)"
-        >收起</a-button
-      >
-      <ReviewOfStability v-if="status === 8 || ReviewOfStabilitys" ref="reviewOfStability" :type="type" />
-    </a-card>
+      <!-- 设计模块 -->
+      <a-card :title="DesignModuleTitle" v-if="status >= 12" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 12 && !Design" @click="information(12)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 12 && Design" @click="information(12)">收起</a-button>
+        <DesignModule v-if="status === 12 || Design" ref="designModule" :type="type" @ok="init" />
+      </a-card>
 
-    <!-- 配置方案研发评审 -->
-    <a-card :title="Schemetitile" v-if="status >= 10" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 10 && !schemes" @click="information(10)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 10 && schemes" @click="information(10)">收起</a-button>
-      <Scheme v-if="status === 10 || schemes" ref="scheme" :type="type" />
-    </a-card>
+      <!-- 工艺研发 -->
+      <a-card :title="ProcessDevelopmenttitle" v-if="status >= 13" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 13 && !Process" @click="information(13)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 13 && Process" @click="information(13)">收起</a-button>
+        <ProcessDevelopment v-if="status === 13 || Process" ref="processDevelopment" :type="type" />
+      </a-card>
 
-    <!-- 设计模块 -->
-    <a-card :title="DesignModuleTitle" v-if="status >= 12" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 12 && !Design" @click="information(12)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 12 && Design" @click="information(12)">收起</a-button>
-      <DesignModule v-if="status === 12 || Design" ref="designModule" :type="type" @ok="init" />
-    </a-card>
+      <!-- 工艺下达 -->
+      <a-card :title="ProcessReleasetitle" v-if="status >= 14" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 14 && !ProcessRelease" @click="information(14)"
+          >显示
+        </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 14 && ProcessRelease" @click="information(14)">收起</a-button>
+        <ProcessRelease v-if="status === 14 || ProcessRelease" ref="processRelease" :type="type" />
+      </a-card>
+      <!-- 小批量生产 -->
+      <a-card :title="Trialtitle" v-if="status >= 15" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 15 && !Trial" @click="information(15)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 15 && Trial" @click="information(15)">收起</a-button>
+        <Trialproduction v-if="status === 15 || Trial" ref="trialproduction" :type="type" />
+      </a-card>
 
-    <!-- 工艺研发 -->
-    <a-card :title="ProcessDevelopmenttitle" v-if="status >= 13" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 13 && !Process" @click="information(13)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 13 && Process" @click="information(13)">收起</a-button>
-      <ProcessDevelopment v-if="status === 13 || Process" ref="processDevelopment" :type="type" />
-    </a-card>
-
-    <!-- 工艺下达 -->
-    <a-card :title="ProcessReleasetitle" v-if="status >= 14" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 14 && !ProcessRelease" @click="information(14)"
-        >显示
-      </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 14 && ProcessRelease" @click="information(14)">收起</a-button>
-      <ProcessRelease v-if="status === 14 || ProcessRelease" ref="processRelease" :type="type" />
-    </a-card>
-    <!-- 小批量生产 -->
-    <a-card :title="Trialtitle" v-if="status >= 15" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 15 && !Trial" @click="information(15)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 15 && Trial" @click="information(15)">收起</a-button>
-      <Trialproduction v-if="status === 15 || Trial" ref="trialproduction" :type="type" />
-    </a-card>
-
-    <!-- 小批量试生产评审 -->
-    <a-card :title="reviewtitle" v-if="status >= 16" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 16 && !review" @click="information(16)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 16 && review" @click="information(16)">收起</a-button>
-      <ProductionReview v-if="status === 16 || review" ref="productionReview" :type="type" />
-    </a-card>
-    <!-- 小批量试生产评审 -->
-    <a-card :title="Sampletitle" v-if="status >= 17" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 17 && !Samples" @click="information(17)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 17 && Samples" @click="information(17)">收起</a-button>
-      <Samples v-if="status === 17 || Samples" ref="sample" :type="type" />
-    </a-card>
-    <!-- 批量生产&完结 -->
-    <a-card :title="volumetitle" v-if="status >= 18" :bordered="false">
-      <a-button type="link" slot="extra" v-if="status !== 18 && !volume" @click="information(18)">显示 </a-button>
-      <a-button type="link" slot="extra" v-if="status !== 18 && volume" @click="information(18)">收起</a-button>
-      <Volume v-if="status === 18 || volume" ref="volume" :type="type" />
-    </a-card>
+      <!-- 小批量试生产评审 -->
+      <a-card :title="reviewtitle" v-if="status >= 16" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 16 && !review" @click="information(16)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 16 && review" @click="information(16)">收起</a-button>
+        <ProductionReview v-if="status === 16 || review" ref="productionReview" :type="type" />
+      </a-card>
+      <!-- 小批量试生产评审 -->
+      <a-card :title="Sampletitle" v-if="status >= 17" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 17 && !Samples" @click="information(17)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 17 && Samples" @click="information(17)">收起</a-button>
+        <Samples v-if="status === 17 || Samples" ref="sample" :type="type" />
+      </a-card>
+      <!-- 批量生产&完结 -->
+      <a-card :title="volumetitle" v-if="status >= 18" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 18 && !volume" @click="information(18)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 18 && volume" @click="information(18)">收起</a-button>
+        <Volume v-if="status === 18 || volume" ref="volume" :type="type" />
+      </a-card>
+    </div>
   </a-spin>
 </template>
 <script>
@@ -137,6 +146,7 @@ import {
 
 import Essential from './essential'
 import Process3 from './Process3'
+import Process11 from './Process11'
 import Production from './production'
 import Feasibility from './Feasibility'
 import ResultsReview from './ResultsReview'
@@ -159,6 +169,7 @@ export default {
   components: {
     Essential,
     Process3,
+    Process11,
     Production,
     Feasibility,
     ResultsReview,
@@ -311,8 +322,17 @@ export default {
           (res) => {
             if (res.code === 200) {
               that.allInfo = res.data.allInfo
+              that.finishTime = res.data.finishTime
               if (that.status === 2 && res.data.detailInfo !== null) {
                 that.developmentProjectDesignReview = res.data.detailInfo
+              }
+              if(that.status === 3 && res.data.detailInfo !== null){
+                this.Process3Data = res.data.detailInfo
+                return
+              }
+              if(that.status === 11 && res.data.detailInfo !== null){
+                this.Process11Data = res.data.detailInfo
+                return
               }
               if (that.status === 4 && res.data.detailInfo !== null) {
                 that.ProductTrial = res.data.detailInfo
@@ -335,13 +355,11 @@ export default {
               if (that.status === 12 && res.data.detailInfo !== null) {
                 that.DesignData = res.data.detailInfo
               }
-
               if (that.status === 13 && res.data.detailInfo !== null) {
                 that.ProcessData = res.data.detailInfo
               } else if (that.status === 13) {
                 that.inits()
               }
-
               if (that.status === 14 && res.data.detailInfo !== null) {
                 that.ProcessReleaseData = res.data.detailInfo
               }
@@ -359,15 +377,12 @@ export default {
               if (that.status === 18 && res.data.detailInfo !== null) {
                 that.volumeData = res.data.detailInfo
               }
-
-              that.finishTime = res.data.finishTime
             }
           }
         )
+
+        await that.information(that.status)
       }
-
-
-      await that.information(3)
     },
     Plan() {
       getPlan({ projectId: this.$route.params.id }).then((res) => {
@@ -430,12 +445,19 @@ export default {
         this.volume = !this.volume
       }
 
-      if(type === 3){
-        getPersonTrailConfDetail({ projectId: this.$route.params.id}).then(res => {
-          this.Process3Data = res.data
-        })
-        return
-      }
+      // if(type === 3){
+      //   getPersonTrailConfDetail({ projectId: this.$route.params.id}).then(res => {
+      //     this.Process3Data = res.data
+      //   })
+      //   return
+      // }
+
+      // if(type === 11){
+      //   getPersonTrailConfDetail({ projectId: this.$route.params.id}).then(res => {
+      //     this.Process11Data = res.data
+      //   })
+      //   return
+      // }
 
       getDealEveryChooseStageDetail({ projectId: this.$route.params.id, stageNum: type }).then((res) => {
         if (res.code === 200) {
@@ -541,4 +563,9 @@ export default {
 .ghost {
   background-color: rgba(250, 235, 215, 0.5);
 }
+
+.project-process-wrapper >>> .ant-card{
+  margin-bottom: 20px;
+}
 </style>
+

@@ -286,6 +286,12 @@ import { craftRouteApprovePageList } from '@/api/craftRoute'
 import ProcessRouteAddForm from '@/views/product-process-management/process-route/module/AddForm'
 import { materialFormAddOrUpdate, getMaterialFormDetail,approvalMaterialForm } from '@/api/bomManagement'
 
+
+
+import {
+  getMaterialFormDetail as customGetMaterialFormDetail
+} from '@/api/researchManagementByWzz'
+
 import moment from 'moment'
 
 const columnsDetail = [
@@ -456,6 +462,7 @@ export default {
         if (valid) {
           console.log(that.form)
           that.$emit('change',{bomData:that.form,extendsParams:that.extendsParams})
+          that.handleCancel()
           return
         } else {
           console.log('error submit!!')
@@ -470,6 +477,19 @@ export default {
       const that = this
       that.visible = true
       that.actionType = type
+
+      // that.spinning = true
+      // customGetMaterialFormDetail({id:bomData.id}).then(res => {
+      //   that.spinning = false
+      //   const data = res.data
+      //   data.formChildDetailList = data.detailListVo.map(item => {
+      //     return Object.assign({}, item, { key: uuid() })
+      //   })
+      //   that.form = res.data
+      // }).catch(err => {
+      //   that.spinning = false
+      // })
+
       that.form = bomData
       that.extendsParams = extendsParams
     },
