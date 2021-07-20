@@ -11,135 +11,133 @@
   >
     <a-spin :spinning="spinning">
       <div class="report-day-header">
-        <h2>{{headerTitle}}</h2>
-        <p style="text-align:right;">Q/XZWDF02-CP/011-A/O</p>
+        <h2>{{ headerTitle }}</h2>
+        <p style="text-align: right">Q/XZWDF02-CP/011-A/O</p>
       </div>
 
       <a-form :form="form">
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width:150px;">编号</td>
-            <td style="width:300px;">
-              <span>{{reportNum || ''}}</span>
+            <td style="width: 150px">编号</td>
+            <td style="width: 300px">
+              <span>{{ reportNum || '' }}</span>
             </td>
             <td>部门</td>
-            <td>{{departmentName}}</td>
+            <td>{{ departmentName }}</td>
           </tr>
           <tr>
             <td>岗位</td>
-            <td>{{stationName}}</td>
+            <td>{{ stationName }}</td>
             <td>姓名</td>
-            <td>{{trueName}}</td>
+            <td>{{ trueName }}</td>
           </tr>
         </table>
         <h3>今日工作内容</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <th style="width:150px;">序号</th>
-            <th>
-              <i class="wdf-required"></i>工作内容
-            </th>
-            <th style="width:100px;">
-              <i class="wdf-required"></i>工作进度(%)
-            </th>
-            <th style="width:70px;" v-if="!isView">操作</th>
+            <th style="width: 150px">序号</th>
+            <th><i class="wdf-required"></i>工作内容</th>
+            <th style="width: 100px"><i class="wdf-required"></i>工作进度(%)</th>
+            <th style="width: 70px" v-if="!isView">操作</th>
           </tr>
-          <tr v-for="(item ,index) in todayList" :key="index">
-            <td style="width:150px;">{{index + 1}}</td>
+          <tr v-for="(item, index) in todayList" :key="item._key">
+            <td style="width: 150px">{{ index + 1 }}</td>
             <td>
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
                   placeholder=""
                   :rows="2"
-                  v-decorator="[`todayList.${index}.content`, {initialValue:todayList[index].content, rules: [{ required: true, message: '输入工作内容' }] }]"
+                  @change="inputChange($event, 'todayList', item._key, 'content')"
+                  v-decorator="[
+                    `todayList.${index}.content`,
+                    { initialValue: item.content, rules: [{ required: true, message: '输入工作内容' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
-            <td style="width:100px;">
+            <td style="width: 100px">
               <a-form-item>
                 <a-input-number
                   :disabled="isView"
                   placeholder=""
-                  v-decorator="[`todayList.${index}.progress`, {initialValue:todayList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
+                  @change="inputChange($event, 'todayList', item._key, 'progress')"
+                  v-decorator="[
+                    `todayList.${index}.progress`,
+                    { initialValue: item.progress, rules: [{ required: true, message: '输入工作进度' }] },
+                  ]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
                 />
               </a-form-item>
             </td>
-            <td style="width:70px;" v-if="!isView">
+            <td style="width: 70px" v-if="!isView">
               <a-form-item>
-                <a href="javascript:void(0);" @click="delItem('todayList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('todayList', item._key)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button
-          v-if="!isView"
-          style="width:100%;"
-          type="dashed"
-          icon="plus"
-          @click="addItem('todayList')"
-        >添加今日工作内容</a-button>
+        <a-button v-if="!isView" style="width: 100%" type="dashed" icon="plus" @click="addItem('todayList')"
+          >添加今日工作内容</a-button
+        >
         <h3>明日工作计划</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <th style="width:150px;">序号</th>
+            <th style="width: 150px">序号</th>
             <th><i class="wdf-required"></i>明日工作计划</th>
-            <th style="width:100px;"><i class="wdf-required"></i>工作进度(%)</th>
-            <th style="width:70px;" v-if="!isView">操作</th>
+            <th style="width: 100px"><i class="wdf-required"></i>工作进度(%)</th>
+            <th style="width: 70px" v-if="!isView">操作</th>
           </tr>
-          <tr v-for="(item ,index) in planList" :key="index">
-            <td style="width:150px;">{{index + 1}}</td>
+          <tr v-for="(item, index) in planList" :key="item._key">
+            <td style="width: 150px">{{ index + 1 }}</td>
             <td>
               <a-form-item>
                 <a-textarea
                   :disabled="isView"
                   placeholder=""
                   :rows="2"
-                  v-decorator="[`planList.${index}.content`, {initialValue:planList[index].content, rules: [{ required: true, message: '输入工作内容' }] }]"
+                  @change="inputChange($event, 'planList', item._key, 'content')"
+                  v-decorator="[
+                    `planList.${index}.content`,
+                    { initialValue: item.content, rules: [{ required: true, message: '输入工作内容' }] },
+                  ]"
                 />
               </a-form-item>
             </td>
-            <td style="width:100px;">
+            <td style="width: 100px">
               <a-form-item>
                 <a-input-number
                   :disabled="isView"
                   placeholder=""
-                  v-decorator="[`planList.${index}.progress`, {initialValue:planList[index].progress,rules: [{ required: true, message: '输入工作进度' }] }]"
+                  @change="inputChange($event, 'planList', item._key, 'progress')"
+                  v-decorator="[
+                    `planList.${index}.progress`,
+                    { initialValue: item.progress, rules: [{ required: true, message: '输入工作进度' }] },
+                  ]"
                   :min="0"
                   :max="100"
                   style="width: 120px"
                 />
               </a-form-item>
             </td>
-            <td style="width:70px;" v-if="!isView">
+            <td style="width: 70px" v-if="!isView">
               <a-form-item>
-                <a href="javascript:void(0);" @click="delItem('planList',index)">删除</a>
+                <a href="javascript:void(0);" @click="delItem('planList', item._key)">删除</a>
               </a-form-item>
             </td>
           </tr>
         </table>
-        <a-button
-          v-if="!isView"
-          style="width:100%;"
-          type="dashed"
-          icon="plus"
-          @click="addItem('planList')"
-        >添加明日工作计划</a-button>
-        <table class="custom-table custom-table-border" style="margin:20px 0 0 0;">
+        <a-button v-if="!isView" style="width: 100%" type="dashed" icon="plus" @click="addItem('planList')"
+          >添加明日工作计划</a-button
+        >
+        <table class="custom-table custom-table-border" style="margin: 20px 0 0 0">
           <tr>
-            <th style="width:150px;">附件</th>
-            <td style="text-align:left;">
+            <th style="width: 150px">附件</th>
+            <td style="text-align: left">
               <div class="clearfix">
-                <a-upload
-                  name="file"
-                  :action="uploadPath"
-                  :multiple="true"
-                  :fileList="fileList"
-                  @change="handleChange"
-                >
+                <a-upload name="file" :action="uploadPath" :multiple="true" :fileList="fileList" @change="handleChange">
                   <a-button type="dashed" icon="upload" v-if="!isView">上传文件</a-button>
                 </a-upload>
               </div>
@@ -155,6 +153,7 @@ import { workReportSetDailyDetail, workReportSetDailySaveAndUpdate } from '@/api
 import moment from 'moment'
 import { mapGetters } from 'vuex'
 import { getUploadPath2 } from '@/api/common'
+let uuid = () => Math.random().toString(32).slice(-10)
 export default {
   name: 'AddForm',
   data() {
@@ -171,13 +170,13 @@ export default {
       todayList: [],
       planList: [],
       uploadPath: getUploadPath2(),
-      fileList: []
+      fileList: [],
     }
   },
   computed: {
     ...mapGetters(['userInfo']),
     modalTitle() {
-      return `${this.isView ? '查看' : (this.isAdd ? '新增' : '编辑')}日报`
+      return `${this.isView ? '查看' : this.isAdd ? '新增' : '编辑'}日报`
     },
     headerTitle() {
       if (this.isAdd) {
@@ -200,18 +199,28 @@ export default {
     },
     isAdd() {
       return this.type === 'add'
-    }
+    },
   },
   methods: {
+    inputChange(event, key, keys, field) {
+      let programme = [...this[key]]
+      let target = programme.find((item) => item._key === keys)
+      if (target) {
+        target[field] = event instanceof Event ? event.target.value : event
+        this[key] = [...programme]
+      }
+    },
     addItem(key) {
       this[key].push({
+        _key: uuid(),
         content: undefined,
-        progress: undefined
+        progress: undefined,
       })
     },
     delItem(key, index) {
       let _d = [...this[key]]
-      _d.splice(index, 1)
+      debugger
+      _d = _d.filter((i) => i._key !== index)
       this[key] = [..._d]
     },
     async query(type, record) {
@@ -225,7 +234,7 @@ export default {
       await that.initData()
 
       if (that.isView || that.isEdit) {
-        workReportSetDailyDetail({ id: that.record.id }).then(res => {
+        workReportSetDailyDetail({ id: that.record.id }).then((res) => {
           that.fillData(res.data)
         })
       } else {
@@ -258,7 +267,7 @@ export default {
             uid: String(index + 1),
             name: item.workUrl,
             status: 'done',
-            url: item.workUrl
+            url: item.workUrl,
           }
         })
       }
@@ -266,7 +275,7 @@ export default {
     handleSubmit() {
       let that = this
 
-      if(that.isView){
+      if (that.isView) {
         that.handleCancel()
         return
       }
@@ -296,7 +305,7 @@ export default {
           let annexList = that.fileList.map((item, index) => {
             return {
               orderNum: index + 1,
-              workUrl: item.url
+              workUrl: item.url,
             }
           })
 
@@ -313,7 +322,7 @@ export default {
           }
           that.spinning = true
           workReportSetDailySaveAndUpdate(_values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.handleCancel()
@@ -323,7 +332,7 @@ export default {
                 that.$message.warning(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               that.spinning = false
               that.$message.error('操作失败')
             })
@@ -343,15 +352,15 @@ export default {
     handleChange(info) {
       console.log(arguments)
       let fileList = [...info.fileList]
-      fileList = fileList.map(file => {
+      fileList = fileList.map((file) => {
         if (file.response && file.response.code === 200) {
           file.url = file.response.data
         }
         return file
       })
       this.fileList = fileList
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>
