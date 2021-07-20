@@ -7,8 +7,9 @@
           <a-col :span="8"
             >项目开发模式：
             {{
-              { 1: '自主研发新产品 ', 2: '客户定制新产品', 3: '产品研发改进', 4: '非常规产品开发' }[allInfo.modelType] ||
-              '未知'
+              { 1: '自主研发新产品 ', 2: '客户定制新产品', 3: '产品研发改进', 4: '非常规产品开发' }[
+                allInfo.modelType
+              ] || '未知'
             }}</a-col
           >
           <a-col :span="8"> 项目类别（产品型号）：{{ allInfo.materialCode }}</a-col>
@@ -27,7 +28,9 @@
 
       <!-- 试制资料输出 -->
       <a-card :title="Process3Title" :bordered="false" v-if="status >= 3">
-        <a-button type="link" slot="extra" v-if="status !== 3 && !Process3Toggle" @click="information(3)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 3 && !Process3Toggle" @click="information(3)"
+          >显示
+        </a-button>
         <a-button type="link" slot="extra" v-if="status !== 3 && Process3Toggle" @click="information(3)">收起</a-button>
         <Process3 v-if="status === 3 || Process3Toggle" :type="type" />
       </a-card>
@@ -67,7 +70,12 @@
         >
         <ReviewOfStability v-if="status === 8 || ReviewOfStabilitys" ref="reviewOfStability" :type="type" />
       </a-card>
-
+      <!-- 配置方案研发 -->
+      <a-card :title="developmenttitle" v-if="status >= 9" :bordered="false">
+        <a-button type="link" slot="extra" v-if="status !== 9 && !development" @click="information(9)">显示 </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 9 && development" @click="information(9)">收起</a-button>
+        <Process9 v-if="status === 9 || development" ref="scheme" :type="type" />
+      </a-card>
       <!-- 配置方案研发评审 -->
       <a-card :title="Schemetitile" v-if="status >= 10" :bordered="false">
         <a-button type="link" slot="extra" v-if="status !== 10 && !schemes" @click="information(10)">显示 </a-button>
@@ -77,9 +85,13 @@
 
       <!-- 配置方案技术资料归档 -->
       <a-card :title="Process11Title" :bordered="false" style="margin-top: 20px" v-if="status >= 11">
-        <a-button type="link" slot="extra" v-if="status !== 11 && !Process11Toggle" @click="information(11)">显示 </a-button>
-        <a-button type="link" slot="extra" v-if="status !== 11 && Process11Toggle" @click="information(11)">收起</a-button>
-        <Process11 v-if="status === 11 || Process11Toggle"  :type="type" />
+        <a-button type="link" slot="extra" v-if="status !== 11 && !Process11Toggle" @click="information(11)"
+          >显示
+        </a-button>
+        <a-button type="link" slot="extra" v-if="status !== 11 && Process11Toggle" @click="information(11)"
+          >收起</a-button
+        >
+        <Process11 v-if="status === 11 || Process11Toggle" :type="type" />
       </a-card>
 
       <!-- 设计模块 -->
@@ -101,7 +113,9 @@
         <a-button type="link" slot="extra" v-if="status !== 14 && !ProcessRelease" @click="information(14)"
           >显示
         </a-button>
-        <a-button type="link" slot="extra" v-if="status !== 14 && ProcessRelease" @click="information(14)">收起</a-button>
+        <a-button type="link" slot="extra" v-if="status !== 14 && ProcessRelease" @click="information(14)"
+          >收起</a-button
+        >
         <ProcessRelease v-if="status === 14 || ProcessRelease" ref="processRelease" :type="type" />
       </a-card>
       <!-- 小批量生产 -->
@@ -140,12 +154,11 @@ import {
   getPlan,
 } from '@/api/projectManagement'
 
-import {
-  getPersonTrailConfDetail
-} from '@/api/researchManagementByWzz'
+import { getPersonTrailConfDetail } from '@/api/researchManagementByWzz'
 
 import Essential from './essential'
 import Process3 from './Process3'
+import Process9 from './Process9'
 import Process11 from './Process11'
 import Production from './production'
 import Feasibility from './Feasibility'
@@ -170,6 +183,7 @@ export default {
     Essential,
     Process3,
     Process11,
+    Process9,
     Production,
     Feasibility,
     ResultsReview,
@@ -196,10 +210,10 @@ export default {
     Designtitle() {
       return `设计方案联合评审（预计完成时间：${this.finishTime}）`
     },
-    Process3Title(){
+    Process3Title() {
       return `试制资料输出（预计完成时间：${this.finishTime}）`
     },
-    Process11Title(){
+    Process11Title() {
       return `配置方案技术资料归档（预计完成时间：${this.finishTime}）`
     },
     productiontitle() {
@@ -219,6 +233,9 @@ export default {
     },
     Schemetitile() {
       return `配置方案研发评审（预计完成时间：${this.finishTime}）`
+    },
+    developmenttitle() {
+      return `配置方案研发（预计完成时间：${this.finishTime}）`
     },
     ProcessDevelopmenttitle() {
       return `工艺研发（预计完成时间：${this.finishTime}）`
@@ -254,8 +271,8 @@ export default {
   data() {
     return {
       essential: false,
-      Process3Toggle:false,
-      Process11Toggle:false,
+      Process3Toggle: false,
+      Process11Toggle: false,
       Design: false,
       Production: false,
       Feasibilitys: false,
@@ -268,6 +285,7 @@ export default {
       Process: false,
       Results: false,
       review: false,
+      development: false,
       ProcessRelease: false,
       finishTime: undefined,
       spinning: false,
@@ -277,8 +295,8 @@ export default {
       allInfo: {},
 
       developmentProjectDesignReview: {}, //设计方案联合评审
-      Process3Data:{},// 试制资料输出
-      Process11Data:{},// 配置方案技术资料归档
+      Process3Data: {}, // 试制资料输出
+      Process11Data: {}, // 配置方案技术资料归档
       ProductTrial: {}, //产品试制
       FeasibilityData: {}, //可行性测试
       ResultsData: {}, //可行性测试结果评审
@@ -292,6 +310,7 @@ export default {
       schemesData: {}, //样品展示
       volumeData: {}, //批量生产完结
       DesignData: {}, //设计模块处理
+      developmentData: {}, //配置方案研发
     }
   },
   watch: {
@@ -326,11 +345,11 @@ export default {
               if (that.status === 2 && res.data.detailInfo !== null) {
                 that.developmentProjectDesignReview = res.data.detailInfo
               }
-              if(that.status === 3 && res.data.detailInfo !== null){
+              if (that.status === 3 && res.data.detailInfo !== null) {
                 this.Process3Data = res.data.detailInfo
                 return
               }
-              if(that.status === 11 && res.data.detailInfo !== null){
+              if (that.status === 11 && res.data.detailInfo !== null) {
                 this.Process11Data = res.data.detailInfo
                 return
               }
@@ -349,6 +368,10 @@ export default {
               if (that.status === 8 && res.data.detailInfo !== null) {
                 that.ReviewOfStabilityData = res.data.detailInfo
               }
+              if (that.status === 9 && res.data.detailInfo !== null) {
+                that.developmentData = res.data.detailInfo
+              }
+
               if (that.status === 10 && res.data.detailInfo !== null) {
                 that.schemeData = res.data.detailInfo
               }
@@ -399,10 +422,10 @@ export default {
       if (type === 2) {
         this.essential = !this.essential
       }
-      if(type === 3){
+      if (type === 3) {
         this.Process3Toggle = !this.Process3Toggle
       }
-      if(type === 11){
+      if (type === 11) {
         this.Process11Toggle = !this.Process11Toggle
       }
       if (type === 4) {
@@ -420,6 +443,10 @@ export default {
       if (type === 8) {
         this.ReviewOfStabilitys = !this.ReviewOfStabilitys
       }
+      if (type === 9) {
+        this.development = !this.development
+      }
+
       if (type === 10) {
         this.schemes = !this.schemes
       }
@@ -464,10 +491,10 @@ export default {
           if (type == 2 && res.data !== null) {
             this.developmentProjectDesignReview = res.data
           }
-          if(type === 3 && res.data !== null){
+          if (type === 3 && res.data !== null) {
             this.Process3Data = res.data
           }
-          if(type === 11 && res.data !== null){
+          if (type === 11 && res.data !== null) {
             this.Process11Data = res.data
           }
           if (type == 4 && res.data !== null) {
@@ -484,6 +511,9 @@ export default {
           }
           if (type == 8 && res.data !== null) {
             this.ReviewOfStabilityData = res.data
+          }
+          if (type == 9 && res.data !== null) {
+            this.developmentData = res.data
           }
           if (type == 10 && res.data !== null) {
             this.schemeData = res.data
@@ -564,7 +594,7 @@ export default {
   background-color: rgba(250, 235, 215, 0.5);
 }
 
-.project-process-wrapper >>> .ant-card{
+.project-process-wrapper >>> .ant-card {
   margin-bottom: 20px;
 }
 </style>
