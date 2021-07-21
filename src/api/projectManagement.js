@@ -58,6 +58,7 @@ const api = {
   finishTrainings: '/fileDesignDivConf/finishTraining',
   getProjectStageProcessDetail: '/project/development-project-stage-join/getProjectStageProcessDetail',
   developmentSaveAndUpdate: '/project/development-project-conf-plan-model-task/saveAndUpdate',
+  findApprovedNodeList: '/common/findApprovedNodeList',
 
 
 
@@ -65,6 +66,18 @@ const api = {
 
 
 
+}
+
+
+
+//获取审批实例列表
+export function findApprovedNodeList(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.findApprovedNodeList,
+    method: 'get',
+    params: parameter
+  })
 }
 /*新增修改配置方案研发*/
 export function developmentSaveAndUpdate(parameter) {

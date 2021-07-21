@@ -104,13 +104,9 @@
                 <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => toAdd('withdraw', record)">
                   <a type="primary" href="javascript:;">撤回</a>
                 </a-popconfirm>
-                <!-- <a type="primary" @click="toAdd('view', record)">撤回</a> -->
               </template>
               <template v-if="record.approveStatus === 3 || record.approveStatus === 4">
                 <a-divider type="vertical" />
-                <!-- <a type="primary" @click="toAdd('handle', record)">修改</a>
-                <a-divider type="vertical" /> -->
-                <!-- <a type="primary" @click="toAdd('handle', record)">删除</a> -->
                 <a-popconfirm title="确认删除该条数据吗?" @confirm="() => toAdd('del', record)">
                   <a type="primary" href="javascript:;">删除</a>
                 </a-popconfirm>
@@ -124,44 +120,22 @@
             <template v-if="audit === 2">
               <a type="primary" @click="toAdd('view', record)">查看</a>
             </template>
-
-            <!-- <a type="primary" @click="toAdd('view', record)">查看</a>
-            <a-divider type="vertical" />
-            <a type="primary" @click="toAdd('handle', record)">处理</a> -->
-            <!-- <template v-if="['12', '13', '14', '15', '16', '17', '18'].includes(record.status)">
-              <a-divider type="vertical" />
-              <a type="primary" @click="toAdd('patent', record)">设计模块处理</a>
-            </template> -->
           </span>
         </s-table>
       </a-col>
     </a-row>
-    <!-- <common-step-form ref="commonStepForm" @finish="search()" /> -->
     <ApproveInfo ref="approveInfoCard" />
-    <!-- <AddForm ref="addForm" @finish="search()" />
-    <Appform ref="appform" @finish="search()" /> -->
   </a-card>
 </template>
 
 <script>
-import {
-  pageList,
-  withDrawProjectStageApply,
-  removeProjectStageApply,
-  // pageDevelopmentgetDelete,
-  // acceptDevelopmentProjectCheckApply,
-  // finishDevelopmentProjectCheckApply,
-} from '@/api/projectManagement'
+import { pageList, withDrawProjectStageApply, removeProjectStageApply } from '@/api/projectManagement'
 import { STable } from '@/components'
-// import AddForm from './module/AddForm'
-// import Appform from './module/appform'
-import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import ApproveInfo from './module/ApproveInfo'
 export default {
   name: 'DelayedPayment',
   components: {
-    // AddForm,
     STable,
-    // Appform,
     ApproveInfo,
   },
   data() {

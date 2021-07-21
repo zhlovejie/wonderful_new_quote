@@ -265,6 +265,7 @@ export default {
       meetingLenths: '',
       record: {},
       detail: {},
+      msg: '',
     }
   },
   computed: {
@@ -320,16 +321,15 @@ export default {
       await that.init()
 
       let result = await getMeetingRecordDetail({ meetingNum: that.record.meetingCode })
-        .then((res) => res.data)
+        .then((res) => {
+          if (res.code === 200) {
+            return res.data
+          } else {
+            that.visible = false
+            that.$message.error(res.msg)
+          }
+        })
         .catch((err) => null)
-
-      if (!result) {
-        setTimeout(function () {
-          that.visible = false
-          that.$message.info('获取会议详情信息失败。')
-        }, 500)
-        return
-      }
       if (that.isView) {
         that.detail = Object.assign({}, result)
         return
