@@ -319,7 +319,7 @@ export default {
       await that.form.resetFields()
       await that.init()
 
-      let result = await getMeetingRecordDetail({ id: that.record.nextMeetingCode })
+      let result = await getMeetingRecordDetail({ meetingNum: that.record.meetingCode })
         .then((res) => res.data)
         .catch((err) => null)
 
