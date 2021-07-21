@@ -152,7 +152,7 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-
+      that.personBoList = []
       that.spinning = true
       try{
         await that.initDepList()
@@ -281,8 +281,6 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          that.spinning = true
-
           let personBoList = that.personBoList.map(p => {
             return p.selectUsers.map(u => {
               return {
@@ -295,9 +293,9 @@ export default {
             })
           })
 
-
           let reviewTime = that.form.reviewTime
           reviewTime = reviewTime instanceof moment ? reviewTime.format('YYYY-MM-DD HH:mm') : reviewTime
+          that.spinning = true
           addProjectAllJoin({ ...that.form ,personBoList:personBoList.flat(2),reviewTime})
             .then(res => {
               that.spinning = false
@@ -305,7 +303,10 @@ export default {
               that.$emit('finish')
               that.handleCancel()
             })
-            .catch(err => (that.spinning = false))
+            .catch(err => {
+              console.log(err)
+              that.spinning = false
+            })
         } else {
           console.log('error submit!!')
           return false
