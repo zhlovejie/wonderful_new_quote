@@ -305,19 +305,36 @@ export default {
         return
       }
       if (type === 'withdraw') {
-        withDrawProjectStageApply({
-          id: record.id,
-          serviceId: record.serviceId,
-          stageNum: record.status,
-          projectId: record.projectId,
-        })
-          .then((res) => {
-            if (res.code === 200) {
-              this.$message.info(res.msg)
-              this.search()
-            }
+        if (record.status === 3 || record.status === 11) {
+          withDrawProjectStageApply({
+            id: record.id,
+            serviceId: record.serviceId,
+            stageNum: record.status,
+            projectId: record.projectId,
+            stageType: record.stageType,
           })
-          .catch((err) => this.$message.info(err))
+            .then((res) => {
+              if (res.code === 200) {
+                this.$message.info(res.msg)
+                this.search()
+              }
+            })
+            .catch((err) => this.$message.info(err))
+        } else {
+          withDrawProjectStageApply({
+            id: record.id,
+            serviceId: record.serviceId,
+            stageNum: record.status,
+            projectId: record.projectId,
+          })
+            .then((res) => {
+              if (res.code === 200) {
+                this.$message.info(res.msg)
+                this.search()
+              }
+            })
+            .catch((err) => this.$message.info(err))
+        }
 
         return
       }
