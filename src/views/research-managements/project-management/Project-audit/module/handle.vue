@@ -27,10 +27,13 @@
     <a-card :title="stabilitytitle" v-if="status === 7" :bordered="false" style="margin-top: 20px">
       <Stability ref="stability" :type="type" />
     </a-card>
+    <a-card :title="developmenttitle" v-if="status === 9" :bordered="false" style="margin-top: 20px">
+      <Process9 ref="stability" :type="type" />
+    </a-card>
     <a-card :title="DesignModuleTitle" v-if="status === 12" :bordered="false" style="margin-top: 20px">
       <DesignModule ref="stability" :type="type" />
     </a-card>
-    <a-card :title="stabilitytitle" v-if="status === 15" :bordered="false" style="margin-top: 20px">
+    <a-card :title="Trialtitle" v-if="status === 15" :bordered="false" style="margin-top: 20px">
       <Trialproduction ref="stability" :type="type" />
     </a-card>
     <a-card :title="Sampletitle" v-if="status === 17" :bordered="false" style="margin-top: 20px">
@@ -50,6 +53,7 @@ import Trialproduction from '../../My-project/module/Trialproduction'
 import Samples from '../../My-project/module/samples'
 import Volume from '../../My-project/module/volume'
 import DesignModule from '../../My-project/module/DesignModule'
+import Process9 from '../../My-project/module/Process9'
 
 import moment from 'moment'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
@@ -64,6 +68,7 @@ export default {
     Samples,
     Volume,
     DesignModule,
+    Process9,
   },
   provide() {
     return {
@@ -91,6 +96,9 @@ export default {
     },
     volumetitle() {
       return `批量生产&完结 （预计完成时间：${this.finishTime}）`
+    },
+    developmenttitle() {
+      return `配置方案研发（预计完成时间：${this.finishTime}）`
     },
     isView() {
       return this.type === 'view'
@@ -127,6 +135,7 @@ export default {
       schemesData: {}, //样品展示
       volumeData: {}, //批量生产完结
       DesignData: {}, //设计模块处理
+      developmentData: {}, //配置方案研发
     }
   },
   watch: {
@@ -178,6 +187,9 @@ export default {
             }
             if (that.status == 12 && res.data.detailInfo !== null) {
               this.DesignData = res.data.detailInfo
+            }
+            if (that.status == 9 && res.data.detailInfo !== null) {
+              this.developmentData = res.data.detailInfo
             }
 
             this.finishTime = res.data.finishTime

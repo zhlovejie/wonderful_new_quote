@@ -57,6 +57,7 @@ const api = {
   startTrainings: '/fileDesignDivConf/startTraining',
   finishTrainings: '/fileDesignDivConf/finishTraining',
   getProjectStageProcessDetail: '/project/development-project-stage-join/getProjectStageProcessDetail',
+  developmentSaveAndUpdate: '/project/development-project-conf-plan-model-task/saveAndUpdate',
 
 
 
@@ -65,7 +66,15 @@ const api = {
 
 
 }
-
+/*新增修改配置方案研发*/
+export function developmentSaveAndUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.developmentSaveAndUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
 
 /*
 项目进程*/

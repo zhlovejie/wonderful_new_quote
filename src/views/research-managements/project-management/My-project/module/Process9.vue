@@ -40,10 +40,10 @@
       </tr>
     </table>
     <div class="saveOk">
-      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="!isResults" @click="validate()"
+      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="!isResults" @click="validate(0)"
         >保存</a-button
       >
-      <a-button type="primary" style="margin-right: 10px" v-if="!isResults" @click="validate()">提交审核</a-button>
+      <a-button type="primary" style="margin-right: 10px" v-if="!isResults" @click="validate(1)">提交审核</a-button>
       <a-button style="margin-right: 10px" v-if="!isResults" @click="handleGo">取消</a-button>
       <a-button key="back" icon="close" style="margin-right: 10px" v-if="normalAddForm.isApproval" @click="noPassAction"
         >不通过</a-button
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { confPlanReview, approveProjectStageApply } from '@/api/projectManagement'
+import { developmentSaveAndUpdate, approveProjectStageApply } from '@/api/projectManagement'
 import { priceQuotedProductList } from '@/api/productOfferManagement'
 import XdocView from './XdocView'
 import Approval from './Approval'
@@ -87,6 +87,9 @@ export default {
         this.normalAddForm.isApproval ||
         (this.normalAddForm.isHandle && this.normalAddForm.status !== 9)
       )
+    },
+    Conference() {
+      return JSON.stringify(this.normalAddForm.developmentData) == '{}'
     },
   },
   data() {
@@ -192,27 +195,19 @@ export default {
       }
     },
     moment,
-    validate() {
+    validate(key) {
       if (this.form.developmentProjectConfPlanModelTaskFiles.length === 0) {
         return this.$message.error('请上摸具生产任务单')
       }
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          //   if (this.details) {
-          this.form.id = this.normalAddForm.developmentData.id || 0
-          //   }
+          if (!this.Conference) {
+            this.form.id = this.normalAddForm.developmentData.id || 0
+          }
           this.form.projectId = this.normalAddForm.allInfo.id
-          this.form.nextReviewTime =
-            this.form.reviewResult === 2 ? moment(this.form.nextReviewTime).format('YYYY-MM-DD hh:mm:ss') : undefined
-          this.form.developmentProjectConfPlanModelTaskFiles = this.form.developmentProjectConfPlanModelTaskFiles.map(
-            (i) => {
-              return {
-                fileName: i.fileName,
-                fileUrl: i.fileUrl,
-              }
-            }
-          )
-          confPlanReview(this.form)
+          this.form.status = key
+          this.form.developmentProjectConfPlanModelTaskFiles = this.form.developmentProjectConfPlanModelTaskFiles
+          developmentSaveAndUpdate(this.form)
             .then((res) => {
               if (res.code === 200) {
                 this.$message.info(res.msg)
