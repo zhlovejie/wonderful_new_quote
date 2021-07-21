@@ -101,8 +101,6 @@
               <a-divider type="vertical" />
               <a type="primary" @click="toAdd('design', record)">设计模块处理</a>
             </template>
-            <a-divider type="vertical" />
-            <a type="primary" @click="process(record)">项目进程</a>
           </span>
         </s-table>
       </a-col>
@@ -214,12 +212,6 @@ export default {
   },
   mounted() {},
   methods: {
-    process(record) {
-      this.$router.push({
-        name: 'project-management-My-projectProgress',
-        params: { record: record },
-      })
-    },
     toAdd(type, record) {
       if (type === 'design') {
         this.$router.push({
