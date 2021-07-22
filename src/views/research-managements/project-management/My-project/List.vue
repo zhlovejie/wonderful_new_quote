@@ -250,6 +250,7 @@ export default {
   mounted() {},
   methods: {
     toAdd(type, record) {
+      record.audit = this.audit
       if (type === 'design') {
         this.$router.push({
           name: 'project-management-My-handle',

@@ -481,20 +481,6 @@ export default {
         this.volume = !this.volume
       }
 
-      // if(type === 3){
-      //   getPersonTrailConfDetail({ projectId: this.$route.params.id}).then(res => {
-      //     this.Process3Data = res.data
-      //   })
-      //   return
-      // }
-
-      // if(type === 11){
-      //   getPersonTrailConfDetail({ projectId: this.$route.params.id}).then(res => {
-      //     this.Process11Data = res.data
-      //   })
-      //   return
-      // }
-
       getDealEveryChooseStageDetail({ projectId: this.$route.params.id, stageNum: type }).then((res) => {
         if (res.code === 200) {
           if (type == 2 && res.data !== null) {

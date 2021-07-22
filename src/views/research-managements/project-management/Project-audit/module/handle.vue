@@ -42,6 +42,12 @@
     <a-card :title="volumetitle" v-if="status === 18" :bordered="false" style="margin-top: 20px">
       <Volume ref="stability" :type="type" />
     </a-card>
+    <a-card :title="Process3Title" v-if="status === 3" :bordered="false" style="margin-top: 20px">
+      <Process3 ref="stability" :type="type" />
+    </a-card>
+    <a-card :title="Process11Title" v-if="status === 11" :bordered="false" style="margin-top: 20px">
+      <Process11 ref="stability" :type="type" />
+    </a-card>
   </a-spin>
 </template>
 <script>
@@ -54,6 +60,8 @@ import Samples from '../../My-project/module/samples'
 import Volume from '../../My-project/module/volume'
 import DesignModule from '../../My-project/module/DesignModule'
 import Process9 from '../../My-project/module/Process9'
+import Process3 from '../../My-project/module/Process3'
+import Process11 from '../../My-project/module/Process11'
 
 import moment from 'moment'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
@@ -69,6 +77,8 @@ export default {
     Volume,
     DesignModule,
     Process9,
+    Process3,
+    Process11,
   },
   provide() {
     return {
@@ -76,6 +86,12 @@ export default {
     }
   },
   computed: {
+    Process3Title() {
+      return `试制资料输出（预计完成时间：${this.finishTime}）`
+    },
+    Process11Title() {
+      return `配置方案技术资料归档（预计完成时间：${this.finishTime}）`
+    },
     DesignModuleTitle() {
       return `设计模块（预计完成时间：${this.finishTime}）`
     },
@@ -109,14 +125,6 @@ export default {
     isApproval() {
       return this.type === 'Approval'
     },
-    // isDisabled() {
-    //   //此状态下表单元素被禁用
-    //   return this.isView || this.isApproval
-    // },
-    // isFeasibility() {
-    //   //可行性测试
-    //   return this.isView || this.isApproval
-    // },
   },
   data() {
     return {
@@ -136,6 +144,8 @@ export default {
       volumeData: {}, //批量生产完结
       DesignData: {}, //设计模块处理
       developmentData: {}, //配置方案研发
+      Process3Data: {},
+      Process11Data: {},
     }
   },
   watch: {
@@ -170,6 +180,9 @@ export default {
             if (that.status == 2 && res.data !== null) {
               this.developmentProjectDesignReview = res.data.detailInfo
             }
+            if (that.status == 3 && res.data !== null) {
+              this.Process3Data = res.data.detailInfo
+            }
             if (that.status == 5 && res.data.detailInfo !== null) {
               this.FeasibilityData = res.data.detailInfo
             }
@@ -190,6 +203,9 @@ export default {
             }
             if (that.status == 9 && res.data.detailInfo !== null) {
               this.developmentData = res.data.detailInfo
+            }
+            if (that.status == 11 && res.data.detailInfo !== null) {
+              this.Process11Data = res.data.detailInfo
             }
 
             this.finishTime = res.data.finishTime

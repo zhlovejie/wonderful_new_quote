@@ -59,6 +59,7 @@ const api = {
   getProjectStageProcessDetail: '/project/development-project-stage-join/getProjectStageProcessDetail',
   developmentSaveAndUpdate: '/project/development-project-conf-plan-model-task/saveAndUpdate',
   findApprovedNodeList: '/common/findApprovedNodeList',
+  reverseAudit: '/project/development-project-all-info/reverseAudit',
 
 
 
@@ -69,7 +70,15 @@ const api = {
 }
 
 
-
+/*反审核*/
+export function reverseAudit(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.reverseAudit,
+    method: 'post',
+    data: parameter
+  })
+}
 //获取审批实例列表
 export function findApprovedNodeList(parameter) {
   return axios({

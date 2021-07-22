@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { pageList, withDrawProjectStageApply, removeProjectStageApply } from '@/api/projectManagement'
+import { pageList, withDrawProjectStageApply, removeProjectStageApply, reverseAudit } from '@/api/projectManagement'
 import { STable } from '@/components'
 import ApproveInfo from './module/ApproveInfo'
 function makeProjectDevelopmentMode() {
@@ -235,7 +235,18 @@ export default {
           key: 'chargeUserName',
           dataIndex: 'chargeUserName',
         },
-
+        {
+          align: 'center',
+          title: '提交人',
+          key: 'createdUserName',
+          dataIndex: 'createdUserName',
+        },
+        {
+          align: 'center',
+          title: '提交时间',
+          key: 'createdTime',
+          dataIndex: 'createdTime',
+        },
         {
           align: 'center',
           title: '项目进程',
@@ -281,6 +292,7 @@ export default {
     init() {},
     toAdd(type, record) {
       if (['view', 'Approval'].includes(type)) {
+        record.audit = this.audit
         this.$router.push({
           name: 'project-management-Project-audit-handle',
           params: { type: type, id: record.projectId, status: record.status, record: record },
