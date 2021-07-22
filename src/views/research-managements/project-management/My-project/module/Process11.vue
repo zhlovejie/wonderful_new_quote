@@ -96,9 +96,22 @@
           <a-button v-if="+queryOneData.finishStageButtonFlag === 1" type="danger" @click="handleSubmit(4)">完结当前节点</a-button>
           </template>
           <a-button @click="handleSubmit(5)">取消</a-button>
+          <a-button key="back" icon="close" style="margin-right: 10px" v-if="normalAddForm.isApproval" @click="noPassAction"
+            >不通过</a-button
+          >
+          <a-button
+            v-if="normalAddForm.isApproval"
+            key="submit"
+            type="primary"
+            icon="check"
+            :loading="spinning"
+            @click="passAction"
+            >通过</a-button
+          >
         </p>
         <XdocView ref="xdocView" />
         <BomForm ref="bomForm" :status="11" @change="bomEditChange"/>
+        <Approval ref="approval" @opinionChange="opinionChange" />
       </a-form-model>
     </a-spin>
 </template>
@@ -108,13 +121,14 @@ import UploadFile from './UploadFile'
 import UploadBom from './UploadBom'
 import BomForm from './BomForm'
 import XdocView from './XdocView'
+import Approval from './Approval'
 import {
   uploadFileTrailConfPerson_11,
   uploadFileTrailConfDepartment_11,
   finishGatherFileStage_11,
   getMaterialFormDetail as customGetMaterialFormDetail
 } from '@/api/researchManagementByWzz'
-
+import { approveProjectStageApply } from '@/api/projectManagement'
 function uuid() {
   return Math.random()
     .toString(32)
@@ -166,7 +180,7 @@ const columnsPredictPrice = [
 export default {
   inject: ['normalAddForm'],
   components: {
-    UploadFile,XdocView,UploadBom,BomForm
+    UploadFile,XdocView,UploadBom,BomForm,Approval
   },
   data() {
     return {
@@ -560,7 +574,42 @@ export default {
         ]
       })
       that.typeListVoList = typeListVoList
-    }
+    },
+
+    passAction(opt = {}) {
+      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion,
+      })
+    },
+    noPassAction() {
+      let that = this
+      that.$refs.approval.query()
+    },
+    submitAction(opt) {
+      let that = this
+      let values = Object.assign({}, opt || {}, {
+        projectId: that.normalAddForm.record.projectId,
+        id: that.normalAddForm.record.id,
+        serviceId: that.normalAddForm.record.serviceId,
+        stageNum: that.normalAddForm.record.status,
+      })
+      that.spinning = true
+      approveProjectStageApply(values)
+        .then((res) => {
+          if (res.code === 200) {
+            that.$message.info(res.msg)
+            that.$router.go(-1)
+          } else {
+            that.$message.error(res.msg)
+          }
+        })
+        .catch((err) => (that.spinning = false))
+    },
   }
 }
 </script>
