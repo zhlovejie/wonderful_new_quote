@@ -9,19 +9,18 @@
           <a-input v-model="projectName" placeholder="项目名称" style="width: 200px" :allowClear="true" />
         </a-form-item>
         <a-form-item>
-          <a-select style="width: 200px" placeholder="项目开发模式" v-model="modelType" :allowClear="true">
-            <a-select-option :value="0">待处理</a-select-option>
-            <a-select-option :value="1">已处理</a-select-option>
-            <a-select-option :value="2">处理中</a-select-option>
-            <a-select-option :value="3">完结</a-select-option>
+          <a-select v-model="modelType" placeholder="项目开发模式" allowClear style="width: 200px">
+            <a-select-option v-for="item in projectDevelopmentModes" :value="item.id" :key="item.id">{{
+              item.text
+            }}</a-select-option>
           </a-select>
         </a-form-item>
+
         <a-form-item>
-          <a-select style="width: 200px" placeholder="项目阶段" v-model="approvalStatusSelect" :allowClear="true">
-            <a-select-option :value="0">待处理</a-select-option>
-            <a-select-option :value="1">已处理</a-select-option>
-            <a-select-option :value="2">处理中</a-select-option>
-            <a-select-option :value="3">完结</a-select-option>
+          <a-select v-model="status" placeholder="项目进程" allowClear style="width: 200px">
+            <a-select-option v-for="item in projectProcesses" :value="item.id" :key="item.id">{{
+              item.text
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -29,9 +28,6 @@
             <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
           </template>
         </a-form-item>
-        <!-- <a-dropdown style="float: right">
-          <a-button type="primary" @click="toAdd('add', null)"> <a-icon type="plus" />新增 </a-button>
-        </a-dropdown> -->
       </a-form>
     </div>
     <a-row>
@@ -115,6 +111,44 @@ import {
   finishDevelopmentProjectCheckApply,
 } from '@/api/projectManagement'
 import { STable } from '@/components'
+function makeProjectDevelopmentMode() {
+  const arr = ['全部', '自主研发新产品', '客户定制新产品', '产品研发改进', '非常规产品开发']
+  return arr.map((v, idx) => {
+    return { id: idx, text: v }
+  })
+}
+
+function makeProjectProcess() {
+  const arr = [
+    '立项阶段',
+    '设计方案评审',
+    '试制资料输出',
+    '产品试制',
+    '可行性测试',
+    '可行性测试结果联合评审',
+    '稳定性测试',
+    '稳定性测试结果评审',
+    '配置方案研发',
+    '配置方案研发评审',
+    '配置方案技术资料归档',
+    '设计模块',
+    '工艺研发',
+    '工艺下达',
+    '小批量生产',
+    '小批量生产评审',
+    '样品展示',
+    '批量生产&完结',
+  ]
+  return arr
+    .map((v, idx) => {
+      return {
+        id: idx + 1,
+        text: v,
+      }
+    })
+    .filter((item) => item.id > 0)
+}
+
 export default {
   name: 'DelayedPayment',
   components: {
@@ -122,6 +156,8 @@ export default {
   },
   data() {
     return {
+      projectDevelopmentModes: Object.freeze(makeProjectDevelopmentMode()),
+      projectProcesses: Object.freeze(makeProjectProcess()),
       form: this.$form.createForm(this),
       queryParam: {
         handleSearchFlag: 1,
@@ -130,6 +166,7 @@ export default {
       projectCode: undefined,
       projectName: undefined,
       modelType: undefined,
+      status: undefined,
       recordResult: {},
       queryRecord: {},
       contractState: 0,
@@ -232,6 +269,8 @@ export default {
         patentName: this.patentName,
         projectCode: this.projectCode,
         projectName: this.projectName,
+        status: this.status,
+
         ...opt,
       }
       if (this.audit == 0) {
