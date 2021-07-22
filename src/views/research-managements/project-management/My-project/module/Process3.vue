@@ -185,7 +185,7 @@ const columns = [
   },
   {
     title: '提交人',
-    dataIndex: 'useName',
+    dataIndex: 'createdName',
   },
   {
     title: '提交时间',
@@ -496,7 +496,7 @@ export default {
               key: f.uid,
               uid: f.uid,
               fileUrl: f.url,
-              useName: that.userInfo.trueName,
+              createdName: that.userInfo.trueName,
               createdTime: moment(f.lastModified),
               status: 0,
               __add: true,
@@ -520,7 +520,7 @@ export default {
           key: _uuid,
           uid: _uuid,
           fileUrl: bomData.materialCode,
-          useName: bomData.useName || that.userInfo.trueName,
+          createdName: bomData.createdName || that.userInfo.trueName,
           createdTime: bomData.useTime,
           status: 0,
           fileType: 3,
