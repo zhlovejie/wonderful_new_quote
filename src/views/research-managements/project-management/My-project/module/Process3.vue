@@ -14,7 +14,7 @@
               <template v-if="!isDisabled">
                 <template v-if="item.fileType === 1"> </template>
                 <template v-else-if="item.fileType === 3">
-                  <UploadBom ref="uploadFile-items" @change="(data) => fileBomChange(item, data)" />
+                  <UploadBom ref="uploadFile-items" :status="3" @change="(data) => fileBomChange(item, data)" />
                   <a-divider type="vertical" />
                 </template>
                 <template v-else>

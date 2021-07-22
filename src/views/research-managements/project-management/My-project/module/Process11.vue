@@ -13,8 +13,8 @@
             <div style="float: right" class="__hd_title-actions">
               <template v-if="!isDisabled">
                 <template v-if="item.fileType === 1"> </template>
-                <template v-else-if="item.fileType === 3">
-                  <UploadBom ref="uploadFile-items" @change="(data) => fileBomChange(item, data)" />
+                <template v-else-if="item.fileType === 11">
+                  <UploadBom ref="uploadFile-items" :status="11" @change="(data) => fileBomChange(item, data)" />
                   <a-divider type="vertical" />
                 </template>
                 <template v-else>
@@ -73,7 +73,7 @@
               <div slot="action" slot-scope="text, record">
                 <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
                 <template v-if="!isDisabled">
-                  <template v-if="item.fileType === 3">
+                  <template v-if="item.fileType === 11">
                     <a-divider type="vertical" />
                     <a href="javascript:void(0);" @click="doAction('edit', idx, record)">修改</a>
                   </template>
