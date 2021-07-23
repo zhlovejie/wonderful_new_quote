@@ -421,9 +421,7 @@ export default {
                 confUploadDetailBoList: files,
               }
             } else {
-              params = {
-                projectId: that.normalAddForm.record.id,
-              }
+              params = `projectId=${that.normalAddForm.record.id} `
             }
           } catch (err) {
             console.log(err)
