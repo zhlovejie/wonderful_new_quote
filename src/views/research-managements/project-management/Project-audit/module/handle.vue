@@ -174,6 +174,7 @@ export default {
           projectId: that.$route.params.id,
           stageNum: that.status,
           serviceId: that.record.serviceId || undefined,
+          stageType: that.record.stageType || undefined,
         }).then((res) => {
           if (res.code === 200) {
             this.allInfo = res.data.allInfo
