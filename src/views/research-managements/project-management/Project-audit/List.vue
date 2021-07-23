@@ -65,6 +65,10 @@
               { 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知'
             }}</a>
           </div>
+          <div slot="stageType" slot-scope="text, record">
+            {{ { 1: '个人资料', 2: '部门资料' }[text] || '' }}
+          </div>
+
           <div slot="modelType" slot-scope="text, record">
             {{ { 1: '自主研发新产品', 2: '客户定制新需求', 3: '产品研发改进', 4: '非常规产品研发' }[text] || '未知' }}
           </div>
@@ -228,6 +232,14 @@ export default {
           title: '项目名称',
           dataIndex: 'projectName',
           key: 'projectName',
+        },
+
+        {
+          align: 'center',
+          title: '资料类型',
+          dataIndex: 'stageType',
+          key: 'stageType',
+          scopedSlots: { customRender: 'stageType' },
         },
         {
           align: 'center',
