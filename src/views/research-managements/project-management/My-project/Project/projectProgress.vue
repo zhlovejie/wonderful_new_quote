@@ -170,7 +170,6 @@ export default {
         if (res.code === 200) {
           that.details = res.data
           that.details.startTime = res.data.startTime.substring(0, 10)
-
           let react = res.data.stageDetailVoList.filter((item) => item.projectPeriod !== 1)
           that.stageDetailVoList = react.map((i) => {
             return {
