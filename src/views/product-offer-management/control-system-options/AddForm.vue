@@ -24,8 +24,8 @@
           <span v-else>{{form.configName}}</span>
         </a-form-model-item>
 
-        <OptionsSelect ref="optStand" modelTitle="标准配置" @change="nodes => optStandItems = nodes" @optChange="keys => filterKeys = keys" />
-        <OptionsSelect ref="optChoice" modelTitle="选择配置" :filterKeys="filterKeys" @change="nodes => optChoiceItems = nodes" />
+        <OptionsSelect title="标准配置" :actionType="type" v-model="standData" :filterKeys="standDataFilterKyes" />
+        <OptionsSelect title="选择配置" :actionType="type" v-model="choiceData" :filterKeys="choiceDataFilterKyes" />
 
         <a-form-model-item
           label="备注"
@@ -44,7 +44,6 @@
 </template>
 <script>
 import { priceQuotedZktListAddOrUpdate ,priceQuotedZktDetail} from '@/api/productOfferManagement'
-import { priceQuotedItemConfigSubList, priceQuotedItemConfigTreeList } from '@/api/productOfferManagement'
 import OptionsSelect from './OptionsSelect'
 export default {
   name: 'product-offer-management-opt-management_AddForm',
@@ -68,13 +67,14 @@ export default {
         ]
       },
       detail: {},
-
-      optStandItems:[], // 标配
-      optChoiceItems:[],// 选配
-      filterKeys:[],
-
-      optionsList:[],
-      treeData:[]
+      standData:{
+        keys:[],
+        treeData:[]
+      },
+      choiceData:{
+        keys:[],
+        treeData:[]
+      },
     }
   },
   created() {},
@@ -91,6 +91,15 @@ export default {
     },
     isView() {
       return this.type === 'view'
+    },
+    isDisabled(){
+      return this.isView
+    },
+    standDataFilterKyes(){
+      return [...this.choiceData.keys]
+    },
+    choiceDataFilterKyes(){
+      return [...this.standData.keys]
     }
   },
   methods: {
@@ -99,20 +108,33 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-      that.optStandItems = []
-      that.optChoiceItems = []
-      that.filterKeys = []
-      await Promise.all([that.fetchOptions(), that.fetchTree()])
+
+      that.standData = {
+        keys:[],
+        treeData:[]
+      }
+      that.choiceData = {
+        keys:[],
+        treeData:[]
+      }
+
       if(that.isView || that.isEdit){
         that.spinning = true
         await priceQuotedZktDetail({id:record.id}).then(res => {
           that.spinning = false
           let result = res.data
-          let nodes = that.addNodesKey(result.childrenList)
+          let nodes = that.checkedAndRequired2ConfigValue(result.childrenList)
           let optStandItems = nodes.filter(item => +item.configType === 0)
           let optChoiceItems = nodes.filter(item => +item.configType === 1)
-          that.optStandItems = optStandItems
-          that.optChoiceItems = optChoiceItems
+
+          that.standData = {
+            keys:optStandItems.map(node => node.itemConfigId),
+            treeData:optStandItems
+          }
+          that.choiceData = {
+            keys:optChoiceItems.map(node => node.itemConfigId),
+            treeData:optChoiceItems
+          }
 
           delete result.childrenList
           that.form = {...result}
@@ -121,25 +143,22 @@ export default {
           that.$message.error(err)
         })
       }
-
-      that.$nextTick(() => {
-        that.$refs.optStand.query(type,that.optStandItems,{optionsList:that.optionsList,treeData:that.treeData})
-        that.$refs.optChoice.query(type,that.optChoiceItems,{optionsList:that.optionsList,treeData:that.treeData})
-
-
-        that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
-      })
     },
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          let priceQuotedZktConfigList = [
-            ...that.addConfigType(that.optStandItems,0), //标配 0
-            ...that.addConfigType(that.optChoiceItems,1) //选配 1
-          ]
 
-          priceQuotedZktListAddOrUpdate({ ...that.form ,priceQuotedZktConfigList})
+          let standData = that.$_.cloneDeep(that.standData.treeData)
+          standData = that.configValue2CheckedAndRequired(standData)
+          standData = that.addConfigType(standData,0)
+          let choiceData = that.$_.cloneDeep(that.choiceData.treeData)
+          choiceData = that.configValue2CheckedAndRequired(choiceData)
+          choiceData = that.addConfigType(choiceData,1)
+
+          let params = {...that.form ,priceQuotedZktConfigList:[...standData,...choiceData]}
+
+          priceQuotedZktListAddOrUpdate(params)
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)
@@ -181,76 +200,54 @@ export default {
       }
       return nodes.map(n => f(n))
     },
-
-    fetchOptions() {
+    checkedAndRequired2ConfigValue(nodes) {
       const that = this
-      return priceQuotedItemConfigSubList(that.queryParam)
-        .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === 0 && item.itemConfigType !== 9)
-        })
-        .catch(err => {
-          that.$message.error(err)
-          that.optionsList = []
-        })
-    },
-    fetchTree() {
-      const that = this
-      return priceQuotedItemConfigTreeList()
-        .then(res => {
-          const root = {
-            id: 0,
-            key: 0,
-            configName: '配置项',
-            isLeaf: false,
-            parentConfigId: null,
-            childrenList: res.data.map(item => that.formatTreeData(item))
-          }
-
-          // 去除没有参数的分支
-          let shaking = (node) =>{
-            let f = (n) => {
-              if(!('childrenList' in n)){
-                n.childrenList = []
-              }
-              if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-                n.childrenList = n.childrenList.map(node => f(node)).filter(node => {
-                  return !(node.itemConfigType === 0 && node.childrenList.length === 0)
-                })
-              }
-              return n
-            }
-            return f(node)
-          }
-
-          that.treeData = shaking(root)
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
-        })
-    },
-    formatTreeData(item) {
-      const that = this
-      const obj = {}
-      obj.id = undefined
-      obj.configName = item.configName
-      obj.parentConfigId = item.parentConfigId || 0
-      obj.serialNumber = item.serialNumber
-      obj.itemConfigType = item.itemConfigType
-      obj.itemConfigId = item.id
-      obj.key = item.id
-
-      if (obj.itemConfigType === 1) {
-        obj.__checked = false
-        obj.configValue = undefined
-        obj.isChecked = -1
-        obj.isRequired = -1
+      const f = n => {
+        if (n.isRequired === 0 && n.isChecked === 0) {
+          n.configValue = 1
+        } else if (n.isRequired === 0 && n.isChecked === 1) {
+          n.configValue = 2
+        } else if (n.isRequired === 1 && n.isChecked === 0) {
+          n.configValue = 3
+        } else if (n.isRequired === 1 && n.isChecked === 1) {
+          n.configValue = 4
+        }
+        if(n.itemConfigType === 1){
+          n.__checked = true
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
       }
-
-      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
-        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
-      }
-      return obj
+      return nodes.map(n => f(n))
     },
+
+    configValue2CheckedAndRequired(nodes) {
+      const that = this
+      const f = n => {
+        if ('configValue' in n) {
+          if (+n.configValue === 1) {
+            n.isRequired = 0
+            n.isChecked = 0
+          } else if (+n.configValue === 2) {
+            n.isRequired = 0
+            n.isChecked = 1
+          } else if (+n.configValue === 3) {
+            n.isRequired = 1
+            n.isChecked = 0
+          } else if (+n.configValue === 4) {
+            n.isRequired = 1
+            n.isChecked = 1
+          }
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    }
   }
 }
 </script>

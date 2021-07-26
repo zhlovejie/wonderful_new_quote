@@ -63,10 +63,7 @@ export default {
         {title:'标配'},
         {title:'选配'},
         {title:'预览'},
-      ],
-      // step3,step4 数据源
-      optionsList: [],
-      treeData: [],
+      ]
     }
   },
   created() {},
@@ -83,7 +80,10 @@ export default {
     },
     isView() {
       return this.type === 'view'
-    }
+    },
+    isDisabled(){
+      return this.isView
+    },
   },
   methods: {
     query(type, record,{optionsList,treeData}) {
@@ -94,23 +94,20 @@ export default {
       that.spinning = false
       that.currentStep = 0
 
-      that.optionsList = optionsList
-      that.treeData = treeData
-
       if(that.isEdit){
         priceQuotedProductDetail({id:record.id}).then(res => {
           let data = res.data
           let step1 = []
           let step2 = data.childrenList.filter(item => item.configType === 2)
           let step3 = {
-            items:data.childrenList.filter(item => item.configType === 0),
+            items:that.checkedAndRequired2ConfigValue(data.childrenList.filter(item => item.configType === 0)),
             productName:data.productName,
             productTypeConfigId:data.productTypeConfigId,
             productTypeConfigName:data.productTypeConfigName,
             filterKeys:data.childrenList.filter(item => item.configType === 0).map(opt => opt.itemConfigId)
           }
           let step4 = {
-            items:data.childrenList.filter(item => item.configType === 1),
+            items:that.checkedAndRequired2ConfigValue(data.childrenList.filter(item => item.configType === 1)),
           }
 
           let obj ={...data,step1,step2,step3,step4 }
@@ -141,19 +138,20 @@ export default {
         productName:that.form.productName,
         productSeries:that.form.productSeries,
         productTypeConfigId:that.form.productTypeConfigId,
-        priceQuotedProductConfigList:[]
+        priceQuotedProductConfigList:[],
+        id:that.form.id
       }
 
       let priceQuotedProductConfigList = [
-        ...stands.items,
-        ...choices.items,
+        ...that.configValue2CheckedAndRequired(stands.items),
+        ...that.configValue2CheckedAndRequired(choices.items),
         ...controls.map(item => {
           return {
             configName:item.configName,
             configType:2,
-            itemConfigId:item.id,
-            isChecked:0,
-            isRequired:0,
+            // itemConfigId:item.itemConfigId,
+            itemConfigId:item.itemConfigId,
+            id:item.__id,
           }
         })
       ]
@@ -187,7 +185,54 @@ export default {
         that.currentStep = that.currentStep - 1
       }
     },
+    checkedAndRequired2ConfigValue(nodes) {
+      const that = this
+      const f = n => {
+        if (n.isRequired === 0 && n.isChecked === 0) {
+          n.configValue = 1
+        } else if (n.isRequired === 0 && n.isChecked === 1) {
+          n.configValue = 2
+        } else if (n.isRequired === 1 && n.isChecked === 0) {
+          n.configValue = 3
+        } else if (n.isRequired === 1 && n.isChecked === 1) {
+          n.configValue = 4
+        }
+        if(n.itemConfigType === 1){
+          n.__checked = true
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    },
 
+    configValue2CheckedAndRequired(nodes) {
+      const that = this
+      const f = n => {
+        if ('configValue' in n) {
+          if (+n.configValue === 1) {
+            n.isRequired = 0
+            n.isChecked = 0
+          } else if (+n.configValue === 2) {
+            n.isRequired = 0
+            n.isChecked = 1
+          } else if (+n.configValue === 3) {
+            n.isRequired = 1
+            n.isChecked = 0
+          } else if (+n.configValue === 4) {
+            n.isRequired = 1
+            n.isChecked = 1
+          }
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    }
   }
 }
 </script>

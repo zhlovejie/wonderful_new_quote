@@ -102,7 +102,7 @@
       @finish="finishHandler"
     />
     <StepView ref="stepView" />
-
+    <ChangeRecords ref="changeRecords" />
   </a-card>
 </template>
 
@@ -124,6 +124,7 @@ import {
 import AddForm from './AddForm.vue'
 import PriceForm from './PriceForm'
 import StepView from './StepView'
+import ChangeRecords from './ChangeRecords'
 const columns = [
   {
     align: 'center',
@@ -173,7 +174,8 @@ export default {
   components: {
     AddForm,
     PriceForm,
-    StepView
+    StepView,
+    ChangeRecords
   },
   data() {
     return {
@@ -242,7 +244,9 @@ export default {
         })
       } else if (type === 'price') {
         that.$refs.priceForm.query({ ...record })
-      } else if (type === 'record' || type === 'export') {
+      } else if (type === 'record') {
+        that.$refs.changeRecords.query({ id:record.id })
+      } else if (type === 'export') {
         that.$message.info('该功能正在开发中...')
       }
     },

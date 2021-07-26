@@ -11,8 +11,8 @@
         <p>中控型号：{{msg.controlType}}</p>
       </div>
       <p>
-        <OptionsSelect ref="optStand" modelTitle="标准配置" />
-        <OptionsSelect ref="optChoice" modelTitle="选择配置" />
+        <OptionsSelect title="标准配置" actionType="view" v-model="standData" :filterKeys="standDataFilterKyes" />
+        <OptionsSelect title="选择配置" actionType="view" v-model="choiceData" :filterKeys="choiceDataFilterKyes" />
       </p>
     </div>
     <p style="text-align:center;margin-top:20px;">
@@ -42,7 +42,17 @@ export default {
         productInfo:'',
         productType:'',
         controlType:''
-      }
+      },
+      standData:{
+        keys:[],
+        treeData:[]
+      },
+      standDataFilterKyes:[],
+      choiceData:{
+        keys:[],
+        treeData:[]
+      },
+      choiceDataFilterKyes:[]
     }
   },
   watch:{
@@ -90,9 +100,14 @@ export default {
       }
 
       that.$nextTick(() => {
-        let {optionsList,treeData} = that.addForm
-        that.$refs.optStand.query('view',stands.items,{optionsList,treeData})
-        that.$refs.optChoice.query('view',choices.items,{optionsList,treeData})
+        that.standData = {
+          keys:stands.items.map(node => node.itemConfigId),
+          treeData:stands.items
+        }
+        that.choiceData = {
+          keys:choices.items.map(node => node.itemConfigId),
+          treeData:choices.items
+        }
       })
 
       that.addForm.form = {

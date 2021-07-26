@@ -9,6 +9,17 @@
       :rules="rules"
     >
       <a-form-model-item
+        label="产品名称"
+        prop="productName"
+      >
+        <a-input
+          placeholder="产品名称"
+          v-model="form.productName"
+          allowClear
+          style="width: 280px"
+        />
+      </a-form-model-item>
+      <a-form-model-item
         label="产品类型"
         prop="productTypeConfigId"
       >
@@ -16,18 +27,14 @@
           placeholder="选择产品类型"
           v-model="form.productTypeConfigName"
           style="width: 280px"
-          read-only="read-only"
+          readonly="readonly"
           @click="openModel('productTypeSelect')"
         />
       </a-form-model-item>
+
     </a-form-model>
-    <OptionsSelect
-      key="optStand"
-      ref="optStand"
-      modelTitle="标准配置"
-      @change="nodes => optStandItems = nodes"
-      @optChange="keys => filterKeys = keys"
-    />
+    <OptionsSelect title="标准配置" v-model="standData" actionType="add" :filterKeys="standDataFilterKyes" />
+
     <p style="text-align:center;margin-top:20px;">
       <a-button
         type="primary"
@@ -51,7 +58,7 @@
 import OptionsSelect from '@/views/product-offer-management/control-system-options/OptionsSelect'
 import ProductTypeSelect from './ProductTypeSelect'
 export default {
-  components: { OptionsSelect,ProductTypeSelect},
+  components: { OptionsSelect ,ProductTypeSelect},
   inject:['addForm'],
   data() {
     return {
@@ -60,11 +67,17 @@ export default {
       spinning: false,
       treeData: [],
       detail: {},
-      optStandItems: [], // 标配
-      optChoiceItems: [], // 选配
-      filterKeys: [],
+      standData:{
+        keys:[],
+        treeData:[]
+      },
+      standDataFilterKyes:[],
+
       form:{},
       rules:{
+        productName:[
+          {required: true, message: '请输入产品名称', trigger: 'blur'}
+        ],
         productTypeConfigId:[
           {required: true, message: '请选择产品类型'}
         ]
@@ -73,7 +86,7 @@ export default {
   },
   computed:{
     btnNextDisabled(){
-      return this.optStandItems.length === 0
+      return this.standData.treeData.length === 0
     }
   },
   created() {
@@ -87,20 +100,15 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-      that.optStandItems = []
-      that.optChoiceItems = []
-      that.filterKeys = []
 
-      let {optionsList,treeData} = that.addForm
-      that.$refs.optStand.query(
-        type,
-        that.optStandItems,
-        {
-          optionsList:that.$_.cloneDeep(optionsList),
-          treeData:that.$_.cloneDeep(treeData),
+      if(type === 'edit'){
+        let treeData = that.addForm.form.step3
+        that.standData = {
+          keys:treeData.map(node => node.itemConfigId),
+          treeData : treeData
         }
-      )
-      that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
+      }
+
     },
     addConfigType(nodes, configType = 0) {
       const that = this
@@ -113,16 +121,12 @@ export default {
       }
       return nodes.map(n => f(n))
     },
-    addNodesKey(nodes) {
-      const that = this
-      const f = n => {
-        n.key = n.itemConfigId
-        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
-          n.childrenList = n.childrenList.map(node => f(node))
-        }
-        return n
-      }
-      return nodes.map(n => f(n))
+
+    openModel(refName){
+      this.$refs[refName].query()
+    },
+    productTypeSelectHandler(record){
+      this.form = {...this.form,productTypeConfigId:record.id,productTypeConfigName:record.typeName}
     },
     stepAction(type) {
       const that = this
@@ -130,33 +134,42 @@ export default {
         this.$refs.ruleForm.validate(valid => {
           if (valid) {
             const data = {
-              items: that.addConfigType(that.optStandItems, 0),
-              filterKeys: that.filterKeys
+              items: that.addConfigType(that.standData.treeData, 0),
+              productTypeConfigId:that.form.productTypeConfigId,
+              productTypeConfigName:that.form.productTypeConfigName
             }
             that.$emit('change', 'step3', 'next', data)
+
+            // 产品名称和产品类型
+            that.addForm.form = {
+              ...that.addForm.form,
+              productName:that.form.productName,
+              productTypeConfigId:that.form.productTypeConfigId,
+              productTypeConfigName:that.form.productTypeConfigName
+            }
           } else {
             console.log('error submit!!');
             return false;
           }
         });
 
-
       } else if (type === 'prev') {
         that.$emit('change', 'step3', 'prev', null)
       }
     },
-    openModel(refName){
-      this.$refs[refName].query()
-    },
-    productTypeSelectHandler(record){
+
+    fill(data){
       const that = this
-      let {id:productTypeConfigId,typeName:productTypeConfigName} = record
-      that.form = {...this.form,productTypeConfigId,productTypeConfigName}
-      that.addForm.form = {
-        ...that.addForm.form,
-        productTypeConfigId,
-        productTypeConfigName
+      let {items,productName,productTypeConfigId,productTypeConfigName,filterKeys} = this.addForm.form.step3
+      that.standData = {
+        keys:items.map(node => node.itemConfigId),
+        treeData:items
       }
+      that.filterKeys = filterKeys
+      that.form = {
+        productName,productTypeConfigId,productTypeConfigName
+      }
+      // that.query('edit')
     }
   }
 }

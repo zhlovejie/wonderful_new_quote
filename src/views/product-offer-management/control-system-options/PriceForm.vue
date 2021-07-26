@@ -66,7 +66,6 @@ export default {
   },
   methods: {
     async query(record) {
-      debugger
       const that = this
       that.record = record
       that.visible = true
