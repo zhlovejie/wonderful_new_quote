@@ -179,9 +179,7 @@ export default {
     testResultsDow() {
       return (
         (this.normalAddForm.isView && this.normalAddForm.FeasibilityData.status === 2) ||
-        (this.normalAddForm.isHandle &&
-          this.normalAddForm.status === 5 &&
-          this.normalAddForm.FeasibilityData.status === 2)
+        (this.normalAddForm.isHandle && this.normalAddForm.FeasibilityData.status === 2)
       )
     },
   },
