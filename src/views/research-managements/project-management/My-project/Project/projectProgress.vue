@@ -169,11 +169,13 @@ export default {
       await getProjectStageProcessDetail({ projectId: that.$route.params.record.id }).then((res) => {
         if (res.code === 200) {
           that.details = res.data
+          that.details.startTime = res.data.startTime.substring(0, 10)
+
           let react = res.data.stageDetailVoList.filter((item) => item.projectPeriod !== 1)
           that.stageDetailVoList = react.map((i) => {
             return {
               stageStatus: i.stageStatus,
-              finishTime: i.finishTime,
+              finishTime: i.finishTime.substring(0, 10),
               projectPeriod: i.projectPeriod,
               getList: [
                 {

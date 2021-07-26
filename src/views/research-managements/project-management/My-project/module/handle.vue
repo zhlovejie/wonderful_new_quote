@@ -350,7 +350,7 @@ export default {
               that.spinning = false
               that.allInfo = res.data.allInfo
               that.stageNums = res.data.allInfo.stageNums.split(',')
-              that.finishTime = res.data.finishTime
+              that.finishTime = res.data.finishTime.substring(0, 10)
               if (that.status === 2 && res.data.detailInfo !== null) {
                 that.developmentProjectDesignReview = res.data.detailInfo
               }

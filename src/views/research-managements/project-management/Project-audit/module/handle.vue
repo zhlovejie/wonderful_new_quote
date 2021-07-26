@@ -209,7 +209,7 @@ export default {
               this.Process11Data = res.data.detailInfo
             }
 
-            this.finishTime = res.data.finishTime
+            this.finishTime = res.data.finishTime.substring(0, 10)
           }
         })
       }
