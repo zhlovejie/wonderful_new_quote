@@ -28,7 +28,7 @@
                 <td>
                   <a-form-model-item prop="modelType">
                     <a-select
-                      v-if="!isView"
+                      v-if="!isDisabled"
                       v-model="form.modelType"
                       style="width:100%;"
                     >
@@ -49,7 +49,7 @@
                 <td>
                   <a-form-model-item prop="materialCode">
                     <a-select
-                      v-if="!isView"
+                      v-if="!isDisabled"
                       show-search
                       :value="form.materialCode"
                       placeholder="模糊搜索"
@@ -89,7 +89,7 @@
                   <a-form-model-item prop="oldMaterialCode">
 
                     <a-select
-                      v-if="!isView"
+                      v-if="!isDisabled"
                       show-search
                       :value="form.oldMaterialCode"
                       placeholder="模糊搜索"
@@ -136,7 +136,7 @@
                 </td>
                 <td>
                   <a-form-model-item prop="projectName">
-                    <a-input v-if="!isView" v-model="form.projectName" />
+                    <a-input v-if="!isDisabled" v-model="form.projectName" />
                     <span v-else>{{form.projectName}}</span>
                   </a-form-model-item>
                 </td>
@@ -148,7 +148,7 @@
                 <td>
                   <a-form-model-item prop="chargeDepartmentId">
                     <DepUserSelect
-                      v-if="!isView"
+                      v-if="!isDisabled"
                       @change="(...args) => depUserChange('charge',...args)"
                       :depId="form.chargeDepartmentId"
                       :userId="form.chargeUserId"
@@ -162,7 +162,7 @@
                 <td>
                   <a-form-model-item ref="inspectorDepartmentId">
                     <DepUserSelect
-                      v-if="!isView"
+                      v-if="!isDisabled"
                       @change="(...args) => depUserChange('inspector',...args)"
                       :depId="form.inspectorDepartmentId"
                       :userId="form.inspectorUserId"
@@ -182,7 +182,7 @@
             prop="demandDesc"
           >
             <a-input
-              v-if="!isView"
+              v-if="!isDisabled"
               v-model="form.demandDesc"
               type="textarea"
             />
@@ -194,7 +194,7 @@
             prop="confScheme"
           >
             <a-input
-              v-if="!isView"
+              v-if="!isDisabled"
               v-model="form.confScheme"
               type="textarea"
             />
@@ -203,34 +203,96 @@
         </div>
         <div class="__hd">项目文件</div>
         <div class="__bd">
-          <Files ref="files" :disabled="isView" @change="(files) => uploadChange(1,files)"/>
+          <Files ref="files" :disabled="isDisabled" @change="(files) => uploadChange(1,files)"/>
         </div>
 
         <div class="__hd">项目图片</div>
         <div class="__bd">
           <UploadFile
             ref="uploadFile"
-            :disabled="isView"
+            :disabled="isDisabled"
             :config="uploadConfig3"
             @change="(files) => uploadChange(2,files)"
           />
         </div>
 
-        <template v-if="form.projectStartJoinMap">
-        <div class="__hd">项目成员</div>
-        <div class="__bd">
-          <table class="custom-table custom-table-border">
-            <tr>
-              <th>部门</th>
-              <th>人员</th>
-            </tr>
-            <tr v-for="(k,v) in form.projectStartJoinMap">
-              <td>{{v}}</td>
-              <td>{{k.map(u => u.userName).join(',')}}</td>
-            </tr>
-          </table>
-        </div>
+        <template v-if="isView && form.projectStartJoinMap">
+          <div class="__hd">项目成员</div>
+          <div class="__bd">
+            <table class="custom-table custom-table-border">
+              <tr>
+                <th>部门</th>
+                <th>人员</th>
+              </tr>
+              <tr v-for="(k,v) in form.projectStartJoinMap">
+                <td>{{v}}</td>
+                <td>{{k.map(u => u.userName).join(',')}}</td>
+              </tr>
+            </table>
+          </div>
         </template>
+
+        <template v-if="isEditUsers && form.projectStartJoinMap">
+          <div class="__hd">
+            <span>项目组成员</span>
+            <a-button
+              type="link"
+              style="float:right;"
+              @click="personListAction('add',null)"
+            >新增</a-button>
+          </div>
+          <div class="__bd">
+            <table class="custom-table custom-table-border">
+              <tr>
+                <th>部门</th>
+                <th>人员</th>
+                <th>操作</th>
+              </tr>
+              <tr
+                v-for="person in personBoList"
+                :key="person.key"
+              >
+                <td style="width:200px;">
+                  <a-select
+                    :value="person.selectDep ? person.selectDep.id : undefined"
+                    :disabled="!!person.disabled"
+                    style="width:100%;"
+                    placeholder="选择部门"
+                    @change="e => depChangeHandler(e,person)"
+                  >
+                    <a-select-option
+                      v-for="item in person.depList"
+                      :key="item.id"
+                      :value="item.id"
+                    >{{item.departmentName}}</a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-select
+                    :value="person.selectUsers ? person.selectUsers.map(u => u.id) : []"
+                    :disabled="!!person.disabled"
+                    style="width:100%;"
+                    placeholder="选择人员"
+                    mode="multiple"
+                    @change="e => userChangeHandler(e,person)"
+                  >
+                    <a-select-option
+                      v-for="item in person.userList"
+                      :key="item.id"
+                      :value="item.id"
+                    >{{item.trueName}}</a-select-option>
+                  </a-select>
+                </td>
+                <td style="width:100px;">
+                  <a-button :disabled="!!person.disabled" @click="personListAction('del',person)">删除</a-button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </template>
+
+
+
       </a-form-model>
     </a-spin>
   </a-modal>
@@ -239,10 +301,23 @@
 import moment from 'moment'
 import { productMaterialInfoPageList } from '@/api/routineMaterial'
 
-import { listProjectAllDetail, listProjectAllAdd, listProjectAllUpdate } from '@/api/researchManagementByWzz'
+import {
+  listProjectAllDetail,
+  listProjectAllAdd,
+  listProjectAllUpdate ,
+  addProjectAllJoin
+} from '@/api/researchManagementByWzz'
+
 import DepUserSelect from '@/components/CustomerList/DepUserSelect'
 import UploadFile from './UploadFile'
 import Files from './Files'
+
+import {
+  departmentList, //所有部门
+  getStationList, //获取部门下面的岗位
+  getUserByDep //获取人员
+} from '@/api/systemSetting'
+
 
 function uuid() {
   return Math.random()
@@ -287,7 +362,10 @@ export default {
         fileType: 'img',
         enablePreview: true
       },
-      fileAddBoList:[]
+      fileAddBoList:[],
+
+      personBoList: [],
+      depList: []
     }
   },
   created() {},
@@ -300,10 +378,16 @@ export default {
       return this.type === 'add'
     },
     isEdit() {
-      return this.type === 'edit'
+      return this.type === 'edit' && +this.form.status === 1
     },
     isView() {
       return this.type === 'view'
+    },
+    isDisabled(){
+      return this.isView || this.isEditUsers
+    },
+    isEditUsers(){ // 只能修改参与人，不能修改项目其他内容
+      return this.type === 'edit' && +this.form.status > 1
     }
   },
   methods: {
@@ -355,6 +439,13 @@ export default {
             console.log(err)
 
           })
+
+        if(that.isEditUsers){ // 填充项目参与人员 ， 可修改
+          that.spinning = true
+          await that.initDepList()
+          await that.fillUsers(that.form.projectStartJoinMap)
+          that.spinning = false
+        }
       }
     },
     doAction(type, item) {
@@ -373,6 +464,49 @@ export default {
         that.handleCancel()
         return
       }
+
+      if(that.isEditUsers){
+        let personBoList = that.personBoList.map(p => {
+          return p.selectUsers.map(u => {
+            return {
+              departmentId:p.selectDep.id,
+              departmentName:p.selectDep.departmentName,
+              departmentType:p.selectDep.type,
+              userId:u.id,
+              userName:u.trueName
+            }
+          })
+        })
+        let others = {
+          id:that.form.id,
+          chargeDepartmentId:that.form.chargeDepartmentId,
+          chargeDepartmentName:that.form.chargeDepartmentName,
+          chargeUserId:that.form.chargeUserId,
+          chargeUserName:that.form.chargeUserName,
+          inspectorDepartmentId:that.form.inspectorDepartmentId,
+          inspectorDepartmentName:that.form.inspectorDepartmentName,
+          inspectorUserId:that.form.inspectorUserId,
+          inspectorUserName:that.form.inspectorUserName,
+          reviewTime:that.form.reviewTime,
+          startTime:that.form.startTime
+        }
+        let params = {
+          id:that.form.id,
+          personBoList:personBoList.flat(Infinity),
+          ...others
+        }
+        addProjectAllJoin(params).then(res => {
+          that.spinning = true
+          that.$message.info(res.msg)
+          that.handleCancel()
+        }).catch(err => {
+          that.spinning = false
+          that.$message.info(res.err)
+        })
+        return
+      }
+
+
       let validated =  await that.formValidate()
       if(validated){
         const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
@@ -534,32 +668,102 @@ export default {
       }
       return _txt
     },
+
+    personListAction(type, record) {
+      const that = this
+      let personBoList = [...that.personBoList]
+      if (type === 'add') {
+        personBoList.push({
+          key: uuid(),
+          depList: that.depList,
+          selectDep:null,
+          userList: [],
+          selectUsers: []
+        })
+      } else if (type === 'del') {
+        personBoList = personBoList.filter(item => item.key !== record.key)
+      }
+      that.personBoList = personBoList
+    },
+    initDepList() {
+      //部门  id,departmentName
+      return departmentList().then(res => (this.depList = res.data))
+    },
+    initUserList(depId) {
+      //人员 id,trueName
+      if (!depId) {
+        this.userList = []
+        return
+      }
+      return getUserByDep({ departmentId: depId }).then(res => res.data)
+    },
+    async depChangeHandler(depId, record) {
+      const that = this
+      const personBoList = [...that.personBoList]
+      const target = personBoList.find(item => item.key === record.key)
+      const userList = await that.initUserList(depId)
+      target.selectDep = {...record.depList.find(dep => dep.id === depId)}
+      target.userList = userList
+      that.personBoList = personBoList
+    },
+    userChangeHandler(users, record) {
+      const that = this
+      const personBoList = [...that.personBoList]
+      const target = personBoList.find(item => item.key === record.key)
+      target.selectUsers = record.userList.filter(user => users.includes(user.id))
+      that.personBoList = personBoList
+    },
+    async fillUsers(usersMap){
+      const that = this
+      let personBoList = [...that.personBoList]
+
+      for(let [k,v] of Object.entries(usersMap)){
+        if(Array.isArray(v) && v.length > 0){
+          let departmentId = v[0].departmentId
+          let departmentName = v[0].departmentName
+          let userList = await that.initUserList(departmentId)
+          let selectUsers = v.map(u => {
+            return { id:u.userId,trueName:u.userName }
+          })
+          personBoList.push({
+            key: uuid(),
+            depList: that.depList,
+            selectDep:{id:departmentId,departmentName},
+            userList,
+            selectUsers,
+            disabled:false
+          })
+        }
+      }
+
+      that.personBoList = personBoList
+    }
   }
 }
 </script>
 
 <style scoped>
-.addform-wrapper >>> .ant-form-item {
-  display: flex;
-  margin: 0;
-}
-.addform-wrapper >>> .ant-form-item .ant-form-item-label {
-  width: auto;
-  text-align: left;
-}
-.addform-wrapper >>> .ant-form-item .ant-form-item-control-wrapper {
-  flex: 1;
-}
-.custom-table-border th,
-.custom-table-border td {
-  padding: 5px;
-}
+  .addform-wrapper >>> .ant-form-item {
+    display: flex;
+    margin: 0;
+  }
+  .addform-wrapper >>> .ant-form-item .ant-form-item-label {
+    width: auto;
+    text-align: left;
+  }
+  .addform-wrapper >>> .ant-form-item .ant-form-item-control-wrapper {
+    flex: 1;
+  }
+  .custom-table-border th,
+  .custom-table-border td {
+    padding: 5px;
+  }
 
-.__hd {
-  font-size: 125%;
-  line-height: 40px;
-  border-bottom: 1px solid #e8e8e8;
-  margin-bottom: 10px;
-}
+  .__hd {
+    font-size: 125%;
+    line-height: 40px;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 10px;
+  }
 </style>
 
