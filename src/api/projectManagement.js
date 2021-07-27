@@ -35,7 +35,13 @@ const api = {
   getDealEverySaveTrial: '/project/development-project-product-trial/saveTrial',
   savaAndUpdate: '/project/development-project-feasibility-test/savaAndUpdate',
   savaExportExcel: '/project/development-project-feasibility-test-result/exportExcel',
+  exportExcelApproval: '/project/development-project-feasibility-test-result/exportExcelApproval',
   updateTestesult: '/project/development-project-feasibility-test/updateTestesult',
+
+  stabilitysavaExportExcel: '/project/development-project-stability-test/exportExcel',
+  stabilityexportExcelApproval: '/project/development-project-stability-test/exportExcelApproval',
+
+
   reviewSaveAndUpdate: '/project/development-project-feasibility-test-review/saveAndUpdate',
   stabilitySaveAndUpdate: '/project/development-project-stability-test/saveAndUpdate',
   stabilityupdateTestesult: '/project/development-project-stability-test/updateTestesult',
@@ -353,6 +359,37 @@ export function savaExportExcel(parameter) {
     params: parameter
   })
 }
+/**下载测试结果报告*/
+export function exportExcelApproval(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.exportExcelApproval,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+/**稳定行下载测试报告*/
+export function stabilitysavaExportExcel(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.stabilitysavaExportExcel,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+/**稳定性下载测试结果报告*/
+export function stabilityexportExcelApproval(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.stabilityexportExcelApproval,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
 /*
 可行性新增或修改*/
 export function savaAndUpdate(parameter) {

@@ -59,7 +59,7 @@
       <h4 style="float：left;    display: inline-block;">测试结果</h4>
       <div class="action-wrapper" style="float: right;margin-bottom：10px ;">
         <template v-if="testResultsDownload">
-          <a-button type="link" @click="downloadAction">下载测试结果报告</a-button>
+          <a-button type="link" @click="downloadActionApp">下载测试结果报告</a-button>
         </template>
       </div>
       <a-table
@@ -136,7 +136,13 @@
 </template>
 
 <script>
-import { savaAndUpdate, approveProjectStageApply, savaExportExcel, updateTestesult } from '@/api/projectManagement'
+import {
+  savaAndUpdate,
+  approveProjectStageApply,
+  savaExportExcel,
+  updateTestesult,
+  exportExcelApproval,
+} from '@/api/projectManagement'
 import XdocView from './XdocView'
 import Approval from './Approval'
 import FeasibilityForm from './FeasibilityForm'
@@ -312,7 +318,58 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download = `测试结果.xls`
+              a.download = `可行性测试报告.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => (that.spinning = true))
+    },
+    downloadActionApp() {
+      let that = this
+      that.spinning = true
+      exportExcelApproval({ testId: that.normalAddForm.FeasibilityData.id })
+        .then((res) => {
+          that.spinning = false
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `可行性测试结果报告.xls`
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
