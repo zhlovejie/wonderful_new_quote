@@ -95,9 +95,11 @@ export default {
       that.spinning = true
 
       //人员列表
-      let userList = await listProjectAllJoin({ projectId: record.id }).then(res => {
-        return res.data
-      })
+      // let userList = await listProjectAllJoin({ projectId: record.id }).then(res => {
+      //   return res.data
+      // })
+
+      let userList = users
 
       that.fileTypes = fileTypes.map((v,idx) => {
         return {

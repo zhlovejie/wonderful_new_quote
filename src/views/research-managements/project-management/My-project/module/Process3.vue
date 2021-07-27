@@ -84,8 +84,13 @@
                     <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
                   </template>
 
-                  <template v-if="+item.updateAuthority === 1">
+                  <template v-if="item.fileType === 3 && +item.updateAuthority === 1">
                     <a href="javascript:void(0);" @click="doAction('edit', idx, record)">修改</a>
+                  </template>
+
+                  <!-- 新增的文件可以删除 -->
+                  <template v-if="record.__add">
+                    <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
                   </template>
                 </template>
                 <template v-else>
@@ -452,6 +457,7 @@ export default {
             .then((res) => {
               that.spinning = false
               that.$message.info(res.msg)
+
               that.$router.go(-1)
             })
             .catch((err) => (that.spinning = false))

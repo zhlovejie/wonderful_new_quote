@@ -146,7 +146,7 @@
                   <span class="icon-required">项目总负责人</span>
                 </td>
                 <td>
-                  <a-form-model-item prop="chargeDepartmentId">
+                  <a-form-model-item prop="chargeUserId">
                     <DepUserSelect
                       v-if="!isDisabled"
                       @change="(...args) => depUserChange('charge',...args)"
@@ -160,7 +160,7 @@
                   <span class="icon-required">研发总监</span>
                 </td>
                 <td>
-                  <a-form-model-item ref="inspectorDepartmentId">
+                  <a-form-model-item prop="inspectorUserId">
                     <DepUserSelect
                       v-if="!isDisabled"
                       @change="(...args) => depUserChange('inspector',...args)"
@@ -201,12 +201,16 @@
             <span v-else>{{form.confScheme}}</span>
           </a-form-model-item>
         </div>
-        <div class="__hd">项目文件</div>
+        <div class="__hd">
+          <span class="icon-required">项目文件</span>
+        </div>
         <div class="__bd">
           <Files ref="files" :disabled="isDisabled" @change="(files) => uploadChange(1,files)"/>
         </div>
 
-        <div class="__hd">项目图片</div>
+        <div class="__hd">
+          <span class="icon-required">项目图片</span>
+        </div>
         <div class="__bd">
           <UploadFile
             ref="uploadFile"
@@ -356,7 +360,16 @@ export default {
       form: {
         modelType: 1
       },
-      rules: {},
+      rules: {
+        modelType: [{ required: true, message: '请选择项目开发模式' }],
+        materialCode: [{ required: true, message: '请输入产品型号' }],
+        oldMaterialCode: [{ required: true, message: '请输入原产品型号' }],
+        projectName: [{ required: true, message: '请输入项目名称' }],
+        chargeUserId:[{ required: true, message: '请选择项目总负责人' }],
+        inspectorUserId:[{ required: true, message: '请选择研发总监' }],
+        demandDesc:[{ required: true, message: '请输入项目需求描述' }],
+        confScheme:[{ required: true, message: '请输入项目配置方案' }],
+      },
       uploadConfig3: {
         maxFileCount: 3,
         fileType: 'img',
@@ -396,7 +409,9 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-
+      that.form = {
+        modelType: 1
+      }
       if (!this.isAdd) {
         that.spinning = true
         await listProjectAllDetail({ projectId: record.id })
@@ -509,6 +524,17 @@ export default {
 
       let validated =  await that.formValidate()
       if(validated){
+        let hasFiles = that.fileAddBoList.filter(f => +f.fileType === 1).length > 0
+        let hasImgs = that.fileAddBoList.filter(f => +f.fileType === 2).length > 0
+        if(!hasFiles){
+          that.$message.info('请上传项目文件');
+          return
+        }
+        if(!hasImgs){
+          that.$message.info('请上传项目图片');
+          return
+        }
+
         const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
         that.spinning = true
         let result = await api({ ...that.form ,fileAddBoList:that.fileAddBoList})
@@ -542,6 +568,8 @@ export default {
         }else{
           that.$message.info(result)
         }
+      }else{
+
       }
       // that.$refs.ruleForm.validate(valid => {
       //   if (valid) {
@@ -764,6 +792,16 @@ export default {
     line-height: 40px;
     border-bottom: 1px solid #e8e8e8;
     margin-bottom: 10px;
+  }
+
+  .icon-required::before {
+    display: inline-block;
+    margin-right: 4px;
+    color: #f5222d;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: '*';
   }
 </style>
 

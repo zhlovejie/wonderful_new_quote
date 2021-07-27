@@ -89,9 +89,11 @@ export default {
       that.spinning = true
 
       //人员列表
-      let userList = await listProjectAllJoin({ projectId: record.id }).then(res => {
-        return res.data
-      })
+      // let userList = await listProjectAllJoin({ projectId: record.id }).then(res => {
+      //   return res.data
+      // })
+
+      let userList = users
 
       that.fileTypes = await getListByText({ text: '研发管理-产品设计阶段权限' }).then((res) => {
         return res.data.records.map((v,idx) => {
