@@ -33,7 +33,7 @@
                 <td style="width:400px;">
                   <a-checkbox-group
                     :value="u.__permission"
-                    :options="optionsCheckbox"
+                    :options="item.fileType > 1 ? optionsCheckbox : optionsCheckbox1"
                     @change="e => permissionChange(item,idx,e)"
                   />
                 </td>
@@ -81,6 +81,9 @@ export default {
         { label: '删除', value: 'removeAuthority' },
         { label: '修改', value: 'updateAuthority' },
         { label: '上传', value: 'uploadAuthority' },
+      ],
+      optionsCheckbox1:[
+        { label: '修改', value: 'updateAuthority' },
       ]
     }
   },

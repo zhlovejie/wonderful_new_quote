@@ -39,17 +39,23 @@
               <th>权限设置</th>
               <th>预计完成时间</th>
             </tr>
-            <tr v-for="(item,idx) in processList" :key="item.key">
+            <tr v-for="(item,idx) in form.processList" :key="item.key">
               <td style="width:50px;">{{idx + 1}}</td>
               <td style="width:200px;">{{item.projectPeriodName}}</td>
               <td >
+                <a-form-model-item
+                  :prop="`processList.${idx}.stageDetailJoinBoList`"
+                  :rules="{
+                    required: true,
+                    message: '请选择参与人员'
+                  }"
+                >
                 <a-select
                   style="width:100%;"
                   placeholder="选择人员"
                   mode="multiple"
                   @change="users => userSelectChange(users,item)"
                   v-model="item.stageDetailJoinBoList"
-
                   :disabled="item.projectPeriod < detail.status"
                 >
                   <a-select-option
@@ -58,6 +64,7 @@
                     :value="item.userId"
                   >{{item.departmentName}}-{{item.userName}}</a-select-option>
                 </a-select>
+                </a-form-model-item>
               </td>
               <td style="width:100px;">
                 <a-button
@@ -70,7 +77,13 @@
               </td>
               <td style="width:200px;">
                 <!-- {{finishTime}} -->
-                <a-form-model-item >
+                <a-form-model-item
+                  :prop="`processList.${idx}.finishTimeInstance`"
+                  :rules="{
+                    required: true,
+                    message: '请选择预计完成时间',
+                  }"
+                >
                   <a-date-picker :disabled="item.projectPeriod < detail.status" v-model="item.finishTimeInstance" />
                 </a-form-model-item>
               </td>
@@ -121,7 +134,9 @@ export default {
       type:'add',
       visible: false,
       spinning: false,
-      form: {},
+      form: {
+        processList:[]
+      },
       rules: {
         // inspectorUserName: [{ required: true, message: '请选择研发总监' }],
         // chargeUserName: [{ required: true, message: '请选择项目总负责人' }],
@@ -130,7 +145,6 @@ export default {
       detail: {},
       tags:[],
       selectKeys:[],
-      processList:[],
       depList:[],
       userList:[],
 
@@ -155,8 +169,7 @@ export default {
       const that = this
       that.detail = record
       that.visible = true
-      that.processList = []
-      that.form = {...that.form,projectId:record.id}
+      that.form = {...that.form,processList:[],projectId:record.id}
       that.spinning = true
 
       that.selectKeys = []
@@ -184,13 +197,14 @@ export default {
 
         if(that.isEdit){
           that.selectKeys = nodeInfoList.map(node => node.id)
-          that.processList = stageDetailVoList.map(node => {
+          let processList = stageDetailVoList.map(node => {
             node.key = uuid()
             node.projectPeriodName = that.getProjectPeriodName(node.projectPeriod)
             node.stageDetailJoinBoList = node.stageDetailJoinBoList.map(u => u.userId)
             node.finishTimeInstance = node.finishTime ? moment(node.finishTime) : null
             return node
           })
+          that.form = {...that.form,processList}
         }
       })
 
@@ -200,24 +214,23 @@ export default {
     async optionsCheckboxChange(keys) {
       const that = this
       if(keys.length === 0){
-        that.processList = []
+        that.form = {...that.form,processList:[]}
         return
       }
-      let processList = [...that.processList]
-
       that.spinning = true
       getProjectStageProcessJoinDetal({
         projectId:that.detail.id,
         chooseNodeNums:keys.join(',')
       }).then(res => {
         that.spinning = false
-        that.processList = res.data.stageDetailVoList.map(node => {
+        let processList = res.data.stageDetailVoList.map(node => {
           node.key = uuid()
           node.projectPeriodName = that.getProjectPeriodName(node.projectPeriod)
           node.stageDetailJoinBoList = node.stageDetailJoinBoList.map(u => u.userId)
           node.finishTimeInstance = node.finishTime ? moment(node.finishTime) : null
           return node
         })
+        that.form = {...that.form,processList}
       }).catch(err => {
         that.spinning = false
         console.log(err)
@@ -252,10 +265,11 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
+          let processList = that.form.processList
           let nodeIds = that.selectKeys.join(',');
           let projectId = that.detail.id;
-          let projectPeriods = that.processList.map(item => item.projectPeriod).join(',');
-          let stageDetailBoList =  that.processList.map(item => {
+          let projectPeriods = processList.map(item => item.projectPeriod).join(',');
+          let stageDetailBoList = processList.map(item => {
             let obj = {}
             let _realityFinishTime = item.finishTimeInstance.format('YYYY-MM-DD')
             obj.realityFinishTime = obj.finishTime = _realityFinishTime

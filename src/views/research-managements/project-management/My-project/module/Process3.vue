@@ -12,18 +12,20 @@
             <span class="__hd_title">{{ getFileTypeName(item.fileType) }}</span>
             <div style="float: right" class="__hd_title-actions">
               <template v-if="!isDisabled">
-                <template v-if="item.fileType === 1"> </template>
-                <template v-else-if="item.fileType === 3">
-                  <UploadBom ref="uploadFile-items" :status="3" @change="(data) => fileBomChange(item, data)" />
-                  <a-divider type="vertical" />
-                </template>
-                <template v-else>
-                  <UploadFile
-                    ref="uploadFile-items"
-                    :config="uploadFileConfig"
-                    @change="(files) => fileChange(item, files)"
-                  />
-                  <a-divider type="vertical" />
+                <template v-if="item.authorityVo && +item.authorityVo.uploadAuthority === 1">
+                  <template v-if="item.fileType === 1"> </template>
+                  <template v-else-if="item.fileType === 3">
+                    <UploadBom ref="uploadFile-items" :status="3" @change="(data) => fileBomChange(item, data)" />
+                    <a-divider type="vertical" />
+                  </template>
+                  <template v-else>
+                    <UploadFile
+                      ref="uploadFile-items"
+                      :config="uploadFileConfig"
+                      @change="(files) => fileChange(item, files)"
+                    />
+                    <a-divider type="vertical" />
+                  </template>
                 </template>
               </template>
               <a-button type="link" @click="() => fileTypeToggle(item)">{{ item.__show ? '隐藏' : '显示' }}</a-button>
@@ -49,7 +51,7 @@
               size="small"
             >
               <div slot="predictPrice" slot-scope="text, record, index">
-                <template v-if="!isDisabled">
+                <template v-if="!isDisabled && +item.predictPrice === 1">
                   <a-input-number
                     :value="record.predictPrice"
                     :min="0"
@@ -71,17 +73,25 @@
                 <span>{{ getFileStatus(text || 0) }}</span>
               </div>
               <div slot="action" slot-scope="text, record">
-                <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
+
                 <template v-if="!isDisabled">
-                  <template v-if="item.fileType === 3">
-                    <a-divider type="vertical" />
+                  <template v-if="+item.findAuthority === 1">
+                    <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
+                    <a href="javascript:void(0);" v-download="record.fileUrl">下载</a>
+                  </template>
+
+                  <template v-if="+item.removeAuthority === 1">
+                    <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
+                  </template>
+
+                  <template v-if="+item.updateAuthority === 1">
                     <a href="javascript:void(0);" @click="doAction('edit', idx, record)">修改</a>
                   </template>
-                  <a-divider type="vertical" />
-                  <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
                 </template>
-                <a-divider type="vertical" />
-                <a href="javascript:void(0);" v-download="record.fileUrl">下载</a>
+                <template v-else>
+                  <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
+                </template>
+
               </div>
             </a-table>
           </div>
