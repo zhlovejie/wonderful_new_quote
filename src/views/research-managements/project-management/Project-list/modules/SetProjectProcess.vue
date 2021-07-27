@@ -205,10 +205,12 @@ export default {
       }
       let processList = [...that.processList]
 
+      that.spinning = true
       getProjectStageProcessJoinDetal({
         projectId:that.detail.id,
         chooseNodeNums:keys.join(',')
       }).then(res => {
+        that.spinning = false
         that.processList = res.data.stageDetailVoList.map(node => {
           node.key = uuid()
           node.projectPeriodName = that.getProjectPeriodName(node.projectPeriod)
@@ -216,6 +218,9 @@ export default {
           node.finishTimeInstance = node.finishTime ? moment(node.finishTime) : null
           return node
         })
+      }).catch(err => {
+        that.spinning = false
+        console.log(err)
       })
     },
     getProjectPeriodName(type){
