@@ -2,19 +2,13 @@
   <!--  <div>-->
   <!--    <script style="width: 40vw;height: 30vh;margin: 0 auto;" id="container" name="content" type="text/plain">这里写你的初始化内容</script>-->
   <!--  </div>-->
-  <div class="main" style="position: relative;">
+  <div class="main" style="position: relative">
     <div class="android-qrcode-wrapper" v-if="qrText.length > 0">
       <vue-qr :text="qrText" :size="200"></vue-qr>
-      <p style="text-align:center;">扫一扫&nbsp;&nbsp;下载万德福云</p>
+      <p style="text-align: center">扫一扫&nbsp;&nbsp;下载万德福云</p>
     </div>
-    
-    <a-form
-      id="formLogin"
-      class="user-layout-login"
-      ref="formLogin"
-      :form="form"
-      @submit="handleSubmit"
-    >
+
+    <a-form id="formLogin" class="user-layout-login" ref="formLogin" :form="form" @submit="handleSubmit">
       <a-tabs
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
@@ -26,7 +20,10 @@
               size="large"
               type="text"
               placeholder="账号为手机号"
-              v-decorator="['username', {rules: [{ required: true, pattern: /^1\d{10}$/, message: '请输入正确的手机号' }]}]"
+              v-decorator="[
+                'username',
+                { rules: [{ required: true, pattern: /^1\d{10}$/, message: '请输入正确的手机号' }] },
+              ]"
             >
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
@@ -38,10 +35,7 @@
               type="password"
               autocomplete="false"
               placeholder="密码"
-              v-decorator="[
-                'password',
-                {rules: [{ required: true, message: '请输入密码' }]}
-              ]"
+              v-decorator="['password', { rules: [{ required: true, message: '请输入密码' }] }]"
             >
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
@@ -54,10 +48,7 @@
                 type="text"
                 placeholder="请输入验证码"
                 style="width: 120px"
-                v-decorator="[
-                    'code',
-                    {rules: [{ required: true, max: 4,message: '请输入验证码' }]}
-                  ]"
+                v-decorator="['code', { rules: [{ required: true, max: 4, message: '请输入验证码' }] }]"
               />
               <img
                 v-if="showImg"
@@ -78,22 +69,22 @@
               size="large"
               type="text"
               placeholder="手机号"
-              v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }]}]"
+              v-decorator="[
+                'mobile',
+                { rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }] },
+              ]"
             >
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
           <a-form-item>
             <div class="form-group">
-              <a-button type="primary" :disabled="buttonDisable" @click="getCode(2)">{{buttonText}}</a-button>
+              <a-button type="primary" :disabled="buttonDisable" @click="getCode(2)">{{ buttonText }}</a-button>
               <a-input
                 type="text"
                 placeholder="请输入验证码"
                 style="width: 120px"
-                v-decorator="[
-                    'mobileCode',
-                    {rules: [{ required: true, max:4,message: '请输入验证码' }]}
-                  ]"
+                v-decorator="['mobileCode', { rules: [{ required: true, max: 4, message: '请输入验证码' }] }]"
               />
             </div>
           </a-form-item>
@@ -101,7 +92,9 @@
       </a-tabs>
 
       <a-form-item>
-        <a-checkbox v-decorator="['rememberMe',{ initialValue: false, valuePropName: 'checked' }]">自动登录</a-checkbox>
+        <a-checkbox v-decorator="['rememberMe', { initialValue: false, valuePropName: 'checked' }]"
+          >自动登录</a-checkbox
+        >
         <!--        <router-link-->
         <!--          :to="{ name: 'recover', params: { user: 'aaa'} }"-->
         <!--          class="forge-password"-->
@@ -109,7 +102,7 @@
         <!--        >忘记密码</router-link>-->
       </a-form-item>
 
-      <a-form-item style="margin-top:24px">
+      <a-form-item style="margin-top: 24px">
         <a-button
           size="large"
           type="primary"
@@ -117,7 +110,8 @@
           class="login-button"
           :loading="state.loginBtn"
           :disabled="state.loginBtn"
-        >登&nbsp;&nbsp;录</a-button>
+          >登&nbsp;&nbsp;录</a-button
+        >
       </a-form-item>
     </a-form>
 
@@ -145,9 +139,9 @@ export default {
   components: {
     AFormItem,
     //TwoStepCaptcha,
-    VueQr
+    VueQr,
   },
-  data () {
+  data() {
     return {
       customActiveKey: 'tab1',
       loginBtn: false,
@@ -161,7 +155,7 @@ export default {
         loginBtn: false,
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
-        smsSendBtn: false
+        smsSendBtn: false,
       },
       value: '',
       imgSrc: null,
@@ -170,7 +164,7 @@ export default {
       buttonText: '获取验证码',
       buttonDisable: false,
       totalTime: 60, // 验证码发送倒计时
-      qrText:'' //安卓版本生成二维码地址
+      qrText: 'http://106.14.194.64/cloud_new/wdfgs/index.html', //安卓版本生成二维码地址
     }
   },
   // created() {
@@ -183,20 +177,20 @@ export default {
   //     })
   //   // this.requiredTwoStepCaptcha = true
   // },
-  mounted () {
+  mounted() {
     let that = this
     this.getCode(1)
 
-    getAndroidQRCode().then(res =>{
-      that.qrText = res.data.downloadUrl
-    }).catch(err =>{
-      that.qrText = ''
-    })
+    // getAndroidQRCode().then(res =>{
+    //   that.qrText = res.data.downloadUrl
+    // }).catch(err =>{
+    //   that.qrText = ''
+    // })
   },
   methods: {
     // ...mapActions(['Login', 'Logout']),
     ...mapActions(['Login']),
-    handleTabClick (key) {
+    handleTabClick(key) {
       if (key === 'tab2') {
         this.showImg = false
       } else {
@@ -204,18 +198,18 @@ export default {
       }
       this.customActiveKey = key
     },
-    handleSubmit (e) {
+    handleSubmit(e) {
       e.preventDefault()
       const {
         form: { validateFields },
         state,
-        customActiveKey
+        customActiveKey,
       } = this
       state.loginBtn = true
       const validateFieldsKey = customActiveKey === 'tab1' ? ['username', 'password', 'code'] : ['mobile', 'mobileCode']
       this.form.validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
-          if ( customActiveKey === 'tab2') {
+          if (customActiveKey === 'tab2') {
             values.code = values.mobileCode
             values.username = values.mobile
           }
@@ -225,7 +219,7 @@ export default {
             code: values.code,
             token: this.token,
             loginWay: customActiveKey,
-            type: 1
+            type: 1,
           }
           this.Login(loginParams)
             .then((res) => {
@@ -238,7 +232,7 @@ export default {
                 this.$message.error(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               this.requestFailed(err)
             })
             .finally(() => {
@@ -251,46 +245,52 @@ export default {
         }
       })
     },
-    stepCaptchaSuccess () {
+    stepCaptchaSuccess() {
       this.loginSuccess()
     },
-    stepCaptchaCancel () {
+    stepCaptchaCancel() {
       this.Logout().then(() => {
         this.loginBtn = false
         this.stepCaptchaVisible = false
       })
     },
-    loginSuccess (res) {
+    loginSuccess(res) {
       this.$router.push({ name: 'Workplace' })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({
           message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
+          description: `${timeFix()}，欢迎回来`,
         })
       }, 1000)
     },
-    requestFailed (err) {
+    requestFailed(err) {
       this.$notification['error']({
         message: '错误',
         description: '请求出现错误，请稍后再试!',
-        duration: 4
+        duration: 4,
       })
     },
-    getCode (type) {
-      if (type === 1) { // 账号密码登录的验证码
-        turingNumber({ type: type}).then((res) => {
-          if ( res.code === 200 ) {
-            this.imgSrc = res.data.img
-            this.token = res.data.token
-          } else {
-            this.$message.error(res.msg)
-          }
-        }).catch(() => {
-          console.error('获取验证码失败')
-        })
-      } else if (type === 2) { // 短信验证登录的验证码
-        const { form: { validateFields } } = this
+    getCode(type) {
+      if (type === 1) {
+        // 账号密码登录的验证码
+        turingNumber({ type: type })
+          .then((res) => {
+            if (res.code === 200) {
+              this.imgSrc = res.data.img
+              this.token = res.data.token
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+          .catch(() => {
+            console.error('获取验证码失败')
+          })
+      } else if (type === 2) {
+        // 短信验证登录的验证码
+        const {
+          form: { validateFields },
+        } = this
         const validateFieldsKey = ['mobile'] // 只需要验证手机号是否输入正确
         validateFields(validateFieldsKey, { force: true }, (err, values) => {
           if (!err) {
@@ -303,29 +303,30 @@ export default {
                 window.clearInterval(clock) // 停止执行
                 this.buttonText = '重新发送验证码'
                 this.totalTime = 60
-                this.buttonDisable = false  //这里重新开启
+                this.buttonDisable = false //这里重新开启
               }
-            },1000) // 每秒执行
+            }, 1000) // 每秒执行
             const params = {
               username: values.mobile,
-              type: type
+              type: type,
             }
-            turingNumber(params).then((res) => {
-              if ( res.code === 200 ) {
-                this.token = res.data.token
-              } else {
-                this.$message.error(res.msg)
-              }
-            }).catch(() => {
-              console.error('获取验证码失败')
-            })
+            turingNumber(params)
+              .then((res) => {
+                if (res.code === 200) {
+                  this.token = res.data.token
+                } else {
+                  this.$message.error(res.msg)
+                }
+              })
+              .catch(() => {
+                console.error('获取验证码失败')
+              })
           }
         })
       }
-    }
-  }
+    },
+  },
 }
-
 </script>
 
 <style lang="less" scoped>
@@ -404,7 +405,7 @@ export default {
   cursor: pointer;
 }
 
-.android-qrcode-wrapper{
+.android-qrcode-wrapper {
   background-color: #fff;
   position: absolute;
   left: 125%;
