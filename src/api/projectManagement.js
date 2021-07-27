@@ -346,7 +346,7 @@ export function updateTestesult(parameter) {
 /**下载测试报告*/
 export function savaExportExcel(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: api.savaExportExcel,
     method: 'get',
     responseType: 'blob',

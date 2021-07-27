@@ -34,6 +34,7 @@
               }}</a-select-option>
             </a-select>
           </a-form-model-item>
+          <a v-if="form.confPlanId" @click="ViewSee()">查看</a>
         </td>
         <td>分类</td>
         <td>PROE结构图</td>
@@ -60,6 +61,7 @@
     </div>
 
     <XdocView ref="xdocView" />
+    <StepView ref="StepView" />
     <ToolBoxCommonUploadForm ref="toolBoxCommonUploadForm" @ok="handleSaveOk" />
     <Approval ref="approval" @opinionChange="opinionChange" />
   </a-form-model>
@@ -71,6 +73,7 @@ import { priceQuotedProductList } from '@/api/productOfferManagement'
 import XdocView from './XdocView'
 import Approval from './Approval'
 import ToolBoxCommonUploadForm from './ToolBoxCommonUploadForm'
+import StepView from '../../../../product-offer-management/product-options-management/StepView'
 import moment from 'moment'
 export default {
   inject: ['normalAddForm'],
@@ -78,6 +81,7 @@ export default {
     XdocView,
     ToolBoxCommonUploadForm,
     Approval,
+    StepView,
   },
   computed: {
     isResults() {
@@ -195,6 +199,11 @@ export default {
       }
     },
     moment,
+    //查看配置方案
+    ViewSee() {
+      let that = this
+      let react = that.priceQuoted.find((item) => item.id === that.form.confPlanId)
+    },
     validate(key) {
       if (this.form.developmentProjectConfPlanModelTaskFiles.length === 0) {
         return this.$message.error('请上摸具生产任务单')
