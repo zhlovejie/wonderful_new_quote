@@ -3,7 +3,7 @@
     <h4>设计资料</h4>
     <a-table :columns="columns1" :dataSource="form.DesignDataHisFiles" :pagination="false" size="small">
       <div slot="action" slot-scope="text, record, index">
-        <template v-if="normalAddForm.isApproval || record.author.findAuthority === 1">
+        <template v-if="normalAddForm.isApproval || normalAddForm.isView || record.author.findAuthority === 1">
           <a @click="delSee(record.fileUrl)">查看</a>
           <a-divider type="vertical" />
           <a target="_blank" v-download="record.fileUrl">下载</a>
@@ -26,11 +26,24 @@
       </div>
     </a-table>
     <div class="saveOk">
-      <a-button type="primary" style="margin-right: 10px" v-if="!isDisabled && !Noshow" @click="preservation()"
+      <a-button
+        type="primary"
+        style="margin-right: 10px"
+        v-if="
+          !isDisabled &&
+          !Noshow &&
+          normalAddForm.DesignData[0].approveStatus === 1 &&
+          normalAddForm.DesignData[0].author.uploadAuthority === 1
+        "
+        @click="preservation()"
         >提交审核</a-button
       >
 
-      <a-button type="primary" style="margin-right: 10px" v-if="!isDisabled && !istrain" @click="training()"
+      <a-button
+        type="primary"
+        style="margin-right: 10px"
+        v-if="isDisabled && !istrain && canTraining"
+        @click="training()"
         >发起培训</a-button
       >
       <a-button type="primary" style="margin-right: 10px" v-if="!isDisabled && istrain" @click="Endtraining()"
@@ -94,7 +107,7 @@ export default {
       return (
         this.normalAddForm.isView ||
         this.normalAddForm.isApproval ||
-        (this.normalAddForm.isHandle && this.normalAddForm.status !== 2)
+        (this.normalAddForm.isHandle && this.normalAddForm.status !== 12)
       )
     },
     Conference() {
@@ -169,6 +182,7 @@ export default {
       },
       queryOneData: {},
       details: {},
+      canTraining: undefined,
     }
   },
   watch: {
@@ -218,7 +232,10 @@ export default {
     init() {
       const that = this
       if (that.queryOneData) {
-        submitTolist({ projectId: that.normalAddForm.allInfo.id }).then((res) => (that.dataSource = res.data))
+        submitTolist({ projectId: that.normalAddForm.allInfo.id }).then((res) => {
+          that.dataSource = res.data.list
+          that.canTraining = res.data.canTraining
+        })
         that.$nextTick(() => {
           that.details = {
             DesignDataHisFiles: that.normalAddForm.DesignData,
