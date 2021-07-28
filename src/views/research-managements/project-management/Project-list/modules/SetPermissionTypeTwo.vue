@@ -16,7 +16,7 @@
         :rules="rules"
         class="addform-wrapper"
       >
-        <div class="file-type-item" v-for="(item,idx) in fileTypes" :key="idx">
+        <div class="file-type-item" v-for="(item,idx) in fileTypes" :key="item.key">
           <div class="__hd">
             <span>{{item.name}}</span>
           </div>
@@ -26,25 +26,15 @@
                 <th>参与人员</th>
                 <th>操作权限</th>
               </tr>
-              <tr>
+              <tr v-for="(u,idx) in item.users" :key="u.key">
                 <td>
-                  <a-select
-                    style="width:100%;"
-                    placeholder="选择人员"
-                    mode="multiple"
-                    v-model="item.users"
-                  >
-                    <a-select-option
-                      v-for="(item,idx) in userList"
-                      :key="item.userId"
-                      :value="item.userId"
-                    >{{item.departmentName}}-{{item.userName}}</a-select-option>
-                  </a-select>
+                  {{u.departmentName}}-{{u.userName}}
                 </td>
                 <td style="width:400px;">
                   <a-checkbox-group
-                    v-model="item.permission"
+                    :value="u.__permission"
                     :options="optionsCheckbox"
+                    @change="e => permissionChange(item,idx,e)"
                   />
                 </td>
               </tr>
@@ -57,9 +47,9 @@
 </template>
 <script>
 import {
+  listProjectAllJoin,
   getAuthorityConfDetail,
-  saveAuthorityConf,
-  listProjectAllJoin
+  saveAuthorityConf
 } from '@/api/researchManagementByWzz'
 import { getListByText } from '@/api/workBox'
 function uuid() {
@@ -99,14 +89,11 @@ export default {
       that.spinning = true
 
       //人员列表
-      await listProjectAllJoin({ projectId: record.id }).then(res => {
-        that.userList = res.data.map(u => {
-          u.key = uuid()
-          return u
-        })
-      })
+      // let userList = await listProjectAllJoin({ projectId: record.id }).then(res => {
+      //   return res.data
+      // })
 
-      // that.userList = users
+      let userList = users
 
       that.fileTypes = await getListByText({ text: '研发管理-产品设计阶段权限' }).then((res) => {
         return res.data.records.map((v,idx) => {
@@ -114,35 +101,39 @@ export default {
             name:v.text,
             key:uuid(),
             fileType:v.id,
-            users:[],
-            permission:[]
+            users:userList.map(u => {
+              return {...u,key:uuid(),__permission:[]}
+            })
           }
         })
       })
 
       await getAuthorityConfDetail({projectId:record.id}).then(res => {
-        let list = res.data.confListVo
-        let fileTypes = [...that.fileTypes]
-        that.fileTypes = fileTypes.map(item => {
-          let target = list.find(_item => _item.fileDicId === item.fileType)
-          if(target && Array.isArray(target.authorityConfVoList)){
-            item.users = target.authorityConfVoList.map(c => c.userId)
-            if(target.authorityConfVoList.length > 0){
-              let permission = []
-              for(let [k,v] of Object.entries(target.authorityConfVoList[0])){
-                if(k.endsWith('Authority') && v === 1){
-                  permission.push(k)
-                }
-              }
-              item.permission = permission
-            }else{
-              item.permission = []
-            }
-          }
-          return item
-        })
-      })
+        let data = res.data.confListVo
+        if(!(Array.isArray(data) && data.length > 0)){
+          return
+        }
 
+        let fileTypes = [...that.fileTypes]
+        let permission = ['findAuthority','removeAuthority','updateAuthority','uploadAuthority']
+        data.map(item => {
+          let {fileDicId,authorityConfVoList} = item
+          let target = fileTypes.find(f => f.fileType === fileDicId)
+          let targetUsers = target.users
+
+          authorityConfVoList.map(u => {
+            let targetUser = targetUsers.find(usr => usr.userId === u.userId)
+            let __permission = []
+            permission.map(k => {
+              if(+u[k] === 1){
+                __permission.push(k)
+              }
+            })
+            targetUser.__permission = __permission
+          })
+        })
+        that.fileTypes = fileTypes
+      })
       that.spinning = false
     },
 
@@ -151,36 +142,25 @@ export default {
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
           that.spinning = true
-
-          let confListBo =that.fileTypes.map(item => {
-            let arr = []
-            let permission = ['findAuthority','removeAuthority','updateAuthority','uploadAuthority']
-            let permissionObj = {}
-            permission.map(k => {
-              permissionObj[k] = item.permission.includes(k) ? 1 : 0
-            })
-
-            that.userList
-            .filter(u => item.users.includes(u.userId))
-            .map(u => {
-              arr.push({
-                ...u,
-                ...permissionObj
+          let permission = ['findAuthority','removeAuthority','updateAuthority','uploadAuthority']
+          let userList = that.fileTypes.map(item => {
+            let obj = {}
+            obj.fileDicId = item.fileType
+            obj.fileDicName = item.name
+            obj.authorityConfBoList = item.users.filter(u => u.__permission.length > 0).map(u => {
+                permission.map(k => {
+                  u[k] = u.__permission.includes(k) ? 1 : 0
+                })
+                return u
               })
-            })
-
-            return {
-              authorityConfBoList:arr,
-              fileDicId:item.fileType,
-              fileDicName:item.name
-            }
+            return obj
           })
 
           let params = {
             projectId:that.detail.id,
-            confListBo
+            confListBo:userList
           }
-          console.log(params)
+
           saveAuthorityConf(params)
             .then(res => {
               that.spinning = false
@@ -200,6 +180,16 @@ export default {
       that.$refs.ruleForm.resetFields()
       that.form = {}
       that.$nextTick(() => (that.visible = false))
+    },
+    permissionChange(record,userIdx,permissionKeys){
+      const that = this
+      let fileTypes = [...that.fileTypes]
+      let target = fileTypes.find(f => f.key === record.key)
+      if(target){
+        let targetUser = target.users[userIdx]
+        targetUser.__permission = [...permissionKeys]
+        that.fileTypes = fileTypes
+      }
     }
   }
 }

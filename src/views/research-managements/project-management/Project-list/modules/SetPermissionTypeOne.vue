@@ -16,7 +16,7 @@
         :rules="rules"
         class="addform-wrapper"
       >
-        <div class="file-type-item" v-for="(item,idx) in fileTypes" :key="idx">
+        <div class="file-type-item" v-for="(item,idx) in fileTypes" :key="item.key">
           <div class="__hd">
             <span>{{item.name}}</span>
           </div>
@@ -26,25 +26,15 @@
                 <th>参与人员</th>
                 <th>操作权限</th>
               </tr>
-              <tr>
+              <tr v-for="(u,idx) in item.users" :key="u.key">
                 <td>
-                  <a-select
-                    style="width:100%;"
-                    placeholder="选择人员"
-                    mode="multiple"
-                    v-model="item.users"
-                  >
-                    <a-select-option
-                      v-for="(item,idx) in userList"
-                      :key="item.userId"
-                      :value="item.userId"
-                    >{{item.departmentName}}-{{item.userName}}</a-select-option>
-                  </a-select>
+                  {{u.departmentName}}-{{u.userName}}
                 </td>
                 <td style="width:400px;">
                   <a-checkbox-group
-                    v-model="item.permission"
-                    :options="optionsCheckbox"
+                    :value="u.__permission"
+                    :options="item.fileType > 1 ? optionsCheckbox : optionsCheckbox1"
+                    @change="e => permissionChange(item,idx,e)"
                   />
                 </td>
               </tr>
@@ -91,6 +81,10 @@ export default {
         { label: '删除', value: 'removeAuthority' },
         { label: '修改', value: 'updateAuthority' },
         { label: '上传', value: 'uploadAuthority' },
+      ],
+      optionsCheckbox1:[
+        { label: '录入', value: 'uploadAuthority' },
+        { label: '修改', value: 'updateAuthority' },
       ]
     }
   },
@@ -102,48 +96,42 @@ export default {
       that.spinning = true
 
       //人员列表
-      await listProjectAllJoin({ projectId: record.id }).then(res => {
-        that.userList = res.data.map(u => {
-          u.key = uuid()
-          return u
-        })
-      })
+      // let userList = await listProjectAllJoin({ projectId: record.id }).then(res => {
+      //   return res.data
+      // })
 
-      // that.userList = users
+      let userList = users
+
       that.fileTypes = fileTypes.map((v,idx) => {
         return {
           name:v,
           key:uuid(),
           fileType:idx + 1,
-          users:[],
-          permission:[]
+          users:userList.map(u => {
+            return {...u,key:uuid(),__permission:[]}
+          })
         }
       })
-      //人员列表
-      // awaitawaitlistProjectAllJoin({ projectId: record.id }).then(res => {
-      //   that.userList = res.data.map(u => {
-      //     u.key = uuid()
-      //     return u
-      //   })
-      // })
 
       await listTrailAuthorityConf({projectId:record.id}).then(res => {
-        let list = res.data
         let fileTypes = [...that.fileTypes]
-        that.fileTypes = fileTypes.map(item => {
-          let target = list.find(_item => _item.fileType === item.fileType)
-          if(target && Array.isArray(target.confListVo)){
-            item.users = target.confListVo.map(c => c.userId)
-            let permission = []
-            for(let [k,v] of Object.entries(target.confListVo[0])){
-              if(k.endsWith('Authority') && v === 1){
-                permission.push(k)
+        let permission = ['findAuthority','removeAuthority','updateAuthority','uploadAuthority']
+        res.data.map(item => {
+          let target = fileTypes.find(f => f.fileType === item.fileType)
+          let users = target.users
+          let userList = item.confListVo
+          userList.map(u => {
+            let __permission = []
+            permission.map(k => {
+              if(+u[k] === 1){
+                __permission.push(k)
               }
-            }
-            item.permission = permission
-          }
-          return item
+            })
+            let _u = users.find(usr => usr.userId === u.userId)
+            _u.__permission = __permission
+          })
         })
+        that.fileTypes = fileTypes
       })
 
       that.spinning = false
@@ -154,33 +142,21 @@ export default {
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
           that.spinning = true
-
+          let permission = ['findAuthority','removeAuthority','updateAuthority','uploadAuthority']
           let userList = that.fileTypes.map(item => {
-            let arr = []
-            let permission = ['findAuthority','removeAuthority','updateAuthority','uploadAuthority']
-            let permissionObj = {}
-            permission.map(k => {
-              permissionObj[k] = item.permission.includes(k) ? 1 : 0
-            })
-
-            that.userList
-            .filter(u => item.users.includes(u.userId))
-            .map(u => {
-              arr.push({
-                ...u,
-                ...permissionObj,
-                fileType:item.fileType
+            return item.users.filter(u => u.__permission.length > 0).map(u => {
+                permission.map(k => {
+                  u[k] = u.__permission.includes(k) ? 1 : 0
+                })
+                u.fileType = item.fileType
+                return u
               })
-            })
-
-            return arr
           })
 
           let params = {
             projectId:that.detail.id,
             confListBo:userList.flat(2)
           }
-          console.log(params)
           saveProjectFileTrailAuthorityConf(params)
             .then(res => {
               that.spinning = false
@@ -200,6 +176,16 @@ export default {
       that.$refs.ruleForm.resetFields()
       that.form = {}
       that.$nextTick(() => (that.visible = false))
+    },
+    permissionChange(record,userIdx,permissionKeys){
+      const that = this
+      let fileTypes = [...that.fileTypes]
+      let target = fileTypes.find(f => f.key === record.key)
+      if(target){
+        let targetUser = target.users[userIdx]
+        targetUser.__permission = [...permissionKeys]
+        that.fileTypes = fileTypes
+      }
     }
   }
 }
