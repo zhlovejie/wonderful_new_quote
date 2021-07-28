@@ -155,7 +155,6 @@ export default {
       that.personBoList = []
       that.spinning = true
       try{
-        await that.initDepList()
         await listProjectAllDetail({ projectId: record.id })
           .then(res => {
             that.detail = { ...res.data }
@@ -187,10 +186,17 @@ export default {
           })
           .catch(err => {
             console.log(err)
+            that.$message.info(err)
           })
 
         let personBoList = [...that.personBoList]
-        const userList1 = await that.initUserList(that.form.chargeDepartmentId)
+
+        let [userList1,userList2] = await Promise.all([
+          that.initUserList(that.form.chargeDepartmentId),
+          that.initUserList(that.form.inspectorDepartmentId),
+          that.initDepList()
+        ])
+
         personBoList.push({
           key: uuid(),
           depList: that.depList,
@@ -207,25 +213,28 @@ export default {
           ],
           disabled:true
         })
-        const userList2 = await that.initUserList(that.form.inspectorDepartmentId)
-        personBoList.push({
-          key: uuid(),
-          depList: that.depList,
-          selectDep:{
-            id:that.form.inspectorDepartmentId,
-            departmentName:that.form.inspectorDepartmentName
-          },
-          userList: userList2,
-          selectUsers: [
-            {
-              id:that.form.inspectorUserId,
-              trueName:that.form.inspectorUserName,
-            }
-          ],
-          disabled:true
-        })
+        if(that.form.inspectorUserId !== that.form.chargeUserId){
+          personBoList.push({
+            key: uuid(),
+            depList: that.depList,
+            selectDep:{
+              id:that.form.inspectorDepartmentId,
+              departmentName:that.form.inspectorDepartmentName
+            },
+            userList: userList2,
+            selectUsers: [
+              {
+                id:that.form.inspectorUserId,
+                trueName:that.form.inspectorUserName,
+              }
+            ],
+            disabled:true
+          })
+        }
+
         that.personBoList = personBoList
       }catch(err){
+        console.log(err)
         that.spinning = false
         that.$message.info(err)
       }
@@ -342,7 +351,7 @@ export default {
         }
       }
       that.$nextTick(() => {
-        that.$refs.ruleForm.validate()
+        that.$refs.ruleForm && that.$refs.ruleForm.validate()
       })
     }
   }

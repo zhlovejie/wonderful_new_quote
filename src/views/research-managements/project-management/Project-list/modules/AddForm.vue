@@ -523,7 +523,10 @@ export default {
 
 
       let validated =  await that.formValidate()
-      if(validated){
+      if(!validated){
+        return
+      }
+
         let hasFiles = that.fileAddBoList.filter(f => +f.fileType === 1).length > 0
         let hasImgs = that.fileAddBoList.filter(f => +f.fileType === 2).length > 0
         if(!hasFiles){
@@ -537,15 +540,23 @@ export default {
 
         const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
         that.spinning = true
-        let result = await api({ ...that.form ,fileAddBoList:that.fileAddBoList})
-        .then(res => res)
-        .catch(err => {
-          console.log(err)
-          return err
-        })
+        let result = null
+        try{
+          result = await api({ ...that.form ,fileAddBoList:that.fileAddBoList})
+          .then(res => res)
+          .catch(err => {
+            that.$message.info(err)
+            return null
+          })
+        }catch(err){
+          that.$message.info(err)
+        }
         that.spinning = false
         if(result && result.code && result.msg){
           that.$message.info(result.msg)
+          if(+result.code !== 200){
+            return
+          }
           that.$emit('finish')
 
           if(that.isEdit){
@@ -568,26 +579,8 @@ export default {
         }else{
           that.$message.info(result)
         }
-      }else{
 
-      }
-      // that.$refs.ruleForm.validate(valid => {
-      //   if (valid) {
-      //     const api = that.isAdd ? listProjectAllAdd : listProjectAllUpdate
-      //     that.spinning = true
-      //     api({ ...that.form ,fileAddBoList:that.fileAddBoList})
-      //       .then(res => {
-      //         that.spinning = false
-      //         that.$message.info(res.msg)
-      //         that.$emit('finish')
-      //         that.handleCancel()
-      //       })
-      //       .catch(err => (that.spinning = false))
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
+
     },
     formValidate(){
       const that = this

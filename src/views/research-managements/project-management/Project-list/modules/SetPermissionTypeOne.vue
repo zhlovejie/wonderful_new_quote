@@ -83,6 +83,7 @@ export default {
         { label: '上传', value: 'uploadAuthority' },
       ],
       optionsCheckbox1:[
+        { label: '录入', value: 'uploadAuthority' },
         { label: '修改', value: 'updateAuthority' },
       ]
     }

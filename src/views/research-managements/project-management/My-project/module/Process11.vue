@@ -51,7 +51,7 @@
               size="small"
             >
               <div slot="predictPrice" slot-scope="text, record, index">
-                <template v-if="!isDisabled && +item.predictPrice === 1">
+                <template v-if="!isDisabled && (+record.updateAuthority === 1 || +item.authorityVo.uploadAuthority === 1)">
                   <a-input-number
                     :value="record.predictPrice"
                     :min="0"
@@ -73,29 +73,26 @@
                 <span>{{ getFileStatus(text || 0) }}</span>
               </div>
               <div slot="action" slot-scope="text, record">
+                <div class="__btns-action-wrapper">
+                  <template v-if="!isDisabled">
+                    <template v-if="record.findAuthority === 1 || record.__add">
+                      <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
+                      <a href="javascript:void(0);" v-download="record.fileUrl">下载</a>
+                    </template>
 
-                <template v-if="!isDisabled">
-                  <template v-if="+item.findAuthority === 1">
+                    <template v-if="record.removeAuthority === 1 || record.__add">
+                      <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
+                    </template>
+
+                    <template v-if="item.fileType === 3 && (record.updateAuthority === 1 || record.__add)">
+                      <a href="javascript:void(0);" @click="doAction('edit', idx, record)">修改</a>
+                    </template>
+
+                  </template>
+                  <template v-else>
                     <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
-                    <a href="javascript:void(0);" v-download="record.fileUrl">下载</a>
                   </template>
-
-                  <template v-if="+item.removeAuthority === 1">
-                    <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
-                  </template>
-
-                  <template v-if="item.fileType === 11 && +item.updateAuthority === 1">
-                    <a href="javascript:void(0);" @click="doAction('edit', idx, record)">修改</a>
-                  </template>
-
-                  <!-- 新增的文件可以删除 -->
-                  <template v-if="record.__add">
-                    <a href="javascript:void(0);" @click="doAction('del', idx, record)">删除</a>
-                  </template>
-                </template>
-                <template v-else>
-                  <a href="javascript:void(0);" @click="doAction('view', idx, record)">查看</a>
-                </template>
+                </div>
               </div>
             </a-table>
           </div>
@@ -347,7 +344,7 @@ export default {
     },
     async init() {
       const that = this
-      that.spinning = true
+      // that.spinning = true
       if (!('typeListVoList' in that.queryOneData)) {
         return
       }
@@ -373,9 +370,9 @@ export default {
         })
       })
 
-      setTimeout(function () {
-        that.spinning = false
-      }, 1500)
+      // setTimeout(function () {
+      //   that.spinning = false
+      // }, 1500)
     },
     getFileTypeName(type) {
       return fileTypes[type]
@@ -446,9 +443,14 @@ export default {
             .then((res) => {
               that.spinning = false
               that.$message.info(res.msg)
-              that.$router.go(-1)
+              if(+res.code === 200){
+                that.$router.go(-1)
+              }
             })
-            .catch((err) => (that.spinning = false))
+            .catch((err) => {
+              that.$message.info(err)
+              that.spinning = false
+            })
         } else {
           console.log('error submit!!')
           return false
