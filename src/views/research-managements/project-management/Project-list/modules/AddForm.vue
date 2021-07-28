@@ -456,6 +456,7 @@ export default {
           })
 
         if(that.isEditUsers){ // 填充项目参与人员 ， 可修改
+          that.personBoList = []
           that.spinning = true
           await that.initDepList()
           await that.fillUsers(that.form.projectStartJoinMap)
@@ -510,8 +511,9 @@ export default {
           personBoList:personBoList.flat(Infinity),
           ...others
         }
+        that.spinning = true
         addProjectAllJoin(params).then(res => {
-          that.spinning = true
+          that.spinning = false
           that.$message.info(res.msg)
           that.handleCancel()
         }).catch(err => {
@@ -757,7 +759,7 @@ export default {
         }
       }
 
-      that.personBoList = personBoList
+      that.personBoList = personBoList.sort(p => p.selectDep.id)
     }
   }
 }
