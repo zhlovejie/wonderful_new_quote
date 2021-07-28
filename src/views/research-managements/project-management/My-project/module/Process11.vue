@@ -502,7 +502,7 @@ export default {
               uid: f.uid,
               fileUrl: f.url,
               userName: that.userInfo.trueName,
-              createdTime: moment(f.lastModified),
+              createdTime: moment().format('YYYY-MM-DD HH:mm:ss'),
               status: 0,
               __add: true,
             }
@@ -526,7 +526,7 @@ export default {
           uid: _uuid,
           fileUrl: bomData.materialCode,
           userName: that.userInfo.trueName,
-          createdTime: bomData.useTime,
+          createdTime: bomData.createdTime,
           status: 0,
           fileType: 3,
           __add: true,
