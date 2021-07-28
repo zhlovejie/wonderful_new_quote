@@ -42,11 +42,15 @@
       <a-button
         type="primary"
         style="margin-right: 10px"
-        v-if="isDisabled && !istrain && canTraining"
+        v-if="isDisabled && !istrain && canTraining && normalAddForm.record.audit === 2"
         @click="training()"
         >发起培训</a-button
       >
-      <a-button type="primary" style="margin-right: 10px" v-if="!isDisabled && istrain" @click="Endtraining()"
+      <a-button
+        type="primary"
+        style="margin-right: 10px"
+        v-if="!isDisabled && istrain && normalAddForm.record.audit === 2"
+        @click="Endtraining()"
         >结束培训</a-button
       >
       <a-button v-if="!isDisabled" @click="handleGo">取消</a-button>
