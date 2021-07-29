@@ -15,12 +15,13 @@
                 <template v-if="item.authorityVo && +item.authorityVo.uploadAuthority === 1">
                   <template v-if="item.fileType === 1"> </template>
                   <template v-else-if="item.fileType === 3">
-                    <UploadBom ref="uploadFile-items" :status="3" @change="(data) => fileBomChange(item, data)" />
+                    <UploadBom ref="uploadFile-items" :fileType="item.fileType" :status="3" @change="(data) => fileBomChange(item, data)" />
                     <a-divider type="vertical" />
                   </template>
                   <template v-else>
                     <UploadFile
                       ref="uploadFile-items"
+                      :fileType="item.fileType"
                       :config="uploadFileConfig"
                       @change="(files) => fileChange(item, files)"
                     />
@@ -360,9 +361,10 @@ export default {
       }
 
       that.$nextTick(() => {
+        let instance = that.$refs['uploadFile-items']
         that.typeListVoList.map((item, idx) => {
-          let arr = []
-          if (item.fileType !== 1) {
+          if (item.fileType > 1) {
+            let arr = []
             item.departmentVoList.map((dep) => {
               dep.personApplyDetailVoList.map((f) => {
                 arr.push({
@@ -372,17 +374,14 @@ export default {
                 })
               })
             })
-          }
-          let instance = that.$refs['uploadFile-items']
-          if (arr.length > 0 && instance) {
-            instance[idx] && instance[idx].setFiles && instance[idx].setFiles(arr)
+            if (arr.length > 0 && instance) {
+              let targetRef = instance.find(r => r.$attrs.fileType === item.fileType)
+              targetRef && targetRef.setFiles && targetRef.setFiles(arr)
+            }
           }
         })
       })
 
-      // setTimeout(function () {
-      //   that.spinning = false
-      // }, 1500)
     },
     getFileTypeName(type) {
       return fileTypes[type]

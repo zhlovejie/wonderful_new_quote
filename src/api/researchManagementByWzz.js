@@ -424,4 +424,14 @@ export function finishGatherFileStage_11(parameter) {
     data: parameter
   })
 }
+
+//物料单详情（查看）
+export function getMaterialFormDetail11(parameter) {
+  return axios({
+    baseURL,
+    url: '/project/development-project-gather-material-form/getMaterialFormDetail',
+    method: 'get',
+    params: parameter
+  })
+}
 //---------------------我的项目处理(第11步 研发项目管理-归档资料文件管理)-----------------------

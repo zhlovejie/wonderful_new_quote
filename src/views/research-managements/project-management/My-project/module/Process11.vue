@@ -14,13 +14,14 @@
               <template v-if="!isDisabled">
                 <template v-if="item.authorityVo && +item.authorityVo.uploadAuthority === 1">
                   <template v-if="item.fileType === 1"> </template>
-                  <template v-else-if="item.fileType === 11">
-                    <UploadBom ref="uploadFile-items" :status="11" @change="(data) => fileBomChange(item, data)" />
+                  <template v-else-if="item.fileType === 3">
+                    <UploadBom ref="uploadFile-items" :fileType="item.fileType"  :status="11" @change="(data) => fileBomChange(item, data)" />
                     <a-divider type="vertical" />
                   </template>
                   <template v-else>
                     <UploadFile
                       ref="uploadFile-items"
+                      :fileType="item.fileType"
                       :config="uploadFileConfig"
                       @change="(files) => fileChange(item, files)"
                     />
@@ -160,7 +161,7 @@ import {
   uploadFileTrailConfPerson_11,
   uploadFileTrailConfDepartment_11,
   finishGatherFileStage_11,
-  getMaterialFormDetail as customGetMaterialFormDetail,
+  getMaterialFormDetail11 as customGetMaterialFormDetail,
 } from '@/api/researchManagementByWzz'
 import { approveProjectStageApply, reverseAudit } from '@/api/projectManagement'
 function uuid() {
@@ -350,9 +351,10 @@ export default {
       }
 
       that.$nextTick(() => {
+        let instance = that.$refs['uploadFile-items']
         that.typeListVoList.map((item, idx) => {
-          let arr = []
-          if (item.fileType !== 1) {
+          if (item.fileType > 1) {
+            let arr = []
             item.departmentVoList.map((dep) => {
               dep.personApplyDetailVoList.map((f) => {
                 arr.push({
@@ -362,10 +364,10 @@ export default {
                 })
               })
             })
-          }
-          let instance = that.$refs['uploadFile-items']
-          if (arr.length > 0 && instance) {
-            instance[idx].setFiles && instance[idx].setFiles(arr)
+            if (arr.length > 0 && instance) {
+              let targetRef = instance.find(r => r.$attrs.fileType === item.fileType)
+              targetRef && targetRef.setFiles && targetRef.setFiles(arr)
+            }
           }
         })
       })
@@ -722,6 +724,10 @@ export default {
 }
 .btn-action-wrapper .ant-btn {
   margin: 5px;
+}
+
+.__btns-action-wrapper > a{
+  margin: 0 7px;
 }
 </style>
 
