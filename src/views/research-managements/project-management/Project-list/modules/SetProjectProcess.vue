@@ -354,7 +354,7 @@ export default {
         let users = that.userList.filter(u => item.stageDetailJoinBoList.includes(u.userId))
         that.$refs.setPermissionTypeOne.query({...that.detail},{...item},[...users])
         return
-      }else if(step === 13){
+      }else if(step === 12){
         let users = that.userList.filter(u => item.stageDetailJoinBoList.includes(u.userId))
         that.$refs.setPermissionTypeTwo.query({...that.detail},{...item},[...users])
         return
