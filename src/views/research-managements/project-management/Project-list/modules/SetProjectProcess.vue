@@ -69,7 +69,7 @@
               <td style="width:100px;">
                 <a-button
                   type="link"
-                  v-if="[3,11,13].includes(item.projectPeriod)"
+                  v-if="[3,11,12].includes(item.projectPeriod)"
                   :disabled="item.projectPeriod < detail.status"
                   @click="setPermission(item)"
                 >权限设置</a-button>

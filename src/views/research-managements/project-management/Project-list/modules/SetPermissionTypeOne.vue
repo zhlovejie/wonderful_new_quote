@@ -33,7 +33,7 @@
                 <td style="width:400px;">
                   <a-checkbox-group
                     :value="u.__permission"
-                    :options="item.fileType > 1 ? optionsCheckbox : optionsCheckbox1"
+                    :options="item.fileType === 1 ? optionsCheckbox1 : (item.fileType === 3 ? optionsCheckbox3 : optionsCheckboxOthers)"
                     @change="e => permissionChange(item,idx,e)"
                   />
                 </td>
@@ -76,7 +76,7 @@ export default {
       detail: {},
       fileTypes:[],
       userList:[],
-      optionsCheckbox:[
+      optionsCheckbox3:[
         { label: '查看/下载', value: 'findAuthority' },
         { label: '删除', value: 'removeAuthority' },
         { label: '修改', value: 'updateAuthority' },
@@ -85,7 +85,12 @@ export default {
       optionsCheckbox1:[
         { label: '录入', value: 'uploadAuthority' },
         { label: '修改', value: 'updateAuthority' },
-      ]
+      ],
+      optionsCheckboxOthers:[
+        { label: '查看/下载', value: 'findAuthority' },
+        { label: '删除', value: 'removeAuthority' },
+        { label: '上传', value: 'uploadAuthority' },
+      ],
     }
   },
   methods: {
