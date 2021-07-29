@@ -139,7 +139,9 @@ import {
 } from '@/api/researchManagementByWzz'
 import AddForm from './modules/AddForm'
 import Transfer from './modules/Transfer'
-import MeetingAddForm from '@/views/meeting-management/records/module/AddForm.vue'
+// import MeetingAddForm from '@/views/meeting-management/records/module/AddForm.vue'
+import MeetingAddForm from './modules/MeetingView'
+
 import StartProject from './modules/StartProject'
 import SetProjectProcess from './modules/SetProjectProcess'
 
