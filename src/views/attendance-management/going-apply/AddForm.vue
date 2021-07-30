@@ -28,6 +28,7 @@
                 <a-date-picker
                   v-if="!isDisabled"
                   :format="dateFormat"
+                  :disabled-date="disabledStartDate"
                   :show-time="showTime"
                   v-decorator="[
                     'startTime',
@@ -52,7 +53,7 @@
                 <a-date-picker
                   v-if="!isDisabled"
                   :format="dateFormat"
-                  :disabled-date="disabledDate"
+                  :disabled-date="disabledEndDate"
                   :show-time="showTime"
                   v-decorator="[
                     'endTime',
@@ -211,14 +212,17 @@ export default {
       let that = this
       carInfoListWithoutPage().then((res) => (that.carList = res.data))
     },
-    disabledDate(current) {
-      //debugger
+    disabledStartDate(current){
+      return current.valueOf() < moment().startOf('days').valueOf()
+    },
+    disabledEndDate(current) {
       let that = this
       let startTime = that.form.getFieldValue('startTime')
-      if (startTime instanceof moment && this.holidayTarget !== null && this.holidayTarget.legalDuration > 0) {
-        return current <= startTime || current >= startTime.clone().add(+this.holidayTarget.legalDuration, 'days')
+      if(!startTime){
+        return current.valueOf() < moment().startOf('days').valueOf()
+      }else{
+        return current.valueOf() < startTime.clone().startOf('days').valueOf()
       }
-      return false
     },
 
     datePickerChange() {
@@ -284,6 +288,17 @@ export default {
 
       this.form.validateFields((err, values) => {
         if (!err) {
+          let case1 = values.startTime.valueOf() < moment().valueOf()
+          let case3 = values.startTime.valueOf() >= values.endTime.valueOf()
+          if(case1){
+            that.$message.info('外出开始时间不得早于当前时间')
+            return
+          }
+          if(case3){
+            that.$message.info('外出结束时间不得早于开始时间')
+            return
+          }
+
           values.startTime = values.startTime.format('YYYY-MM-DD HH:mm:ss')
           values.endTime = values.endTime.format('YYYY-MM-DD HH:mm:ss')
           values.duration = that.leaveTime

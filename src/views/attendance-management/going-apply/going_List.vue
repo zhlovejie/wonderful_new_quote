@@ -1,13 +1,26 @@
 <template>
   <!-- 外出申请 -->
-  <div class="wdf-custom-wrapper" id="attendance-over-time-apply">
+  <div
+    class="wdf-custom-wrapper"
+    id="attendance-over-time-apply"
+  >
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input placeholder="员工名模糊查询" v-model="searchParam.userName" allowClear style="width: 200px" />
+          <a-input
+            placeholder="员工名模糊查询"
+            v-model="searchParam.userName"
+            allowClear
+            style="width: 200px"
+          />
         </a-form-item>
         <a-form-item v-if="activeKey === 0">
-          <a-select placeholder="选择审批状态" v-model="searchParam.status" :allowClear="true" style="width: 200px">
+          <a-select
+            placeholder="选择审批状态"
+            v-model="searchParam.status"
+            :allowClear="true"
+            style="width: 200px"
+          >
             <a-select-option :value="1">待审批</a-select-option>
             <a-select-option :value="2">通过</a-select-option>
             <a-select-option :value="3">不通过</a-select-option>
@@ -15,20 +28,43 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-range-picker v-model="sDate" @change="rangePickerChange" style="width: 220px" :allowClear="true" />
+          <a-range-picker
+            v-model="sDate"
+            @change="rangePickerChange"
+            style="width: 220px"
+            :allowClear="true"
+          />
         </a-form-item>
         <a-form-item>
-          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+          <a-button
+            class="a-button"
+            type="primary"
+            icon="search"
+            @click="searchAction({ current: 1 })"
+          >查询</a-button>
         </a-form-item>
-        <div class="action-wrapper" style="float: right" v-if="$auth('going:add')">
+        <div
+          class="action-wrapper"
+          style="float: right"
+          v-if="$auth('going:add')"
+        >
           <a-form-item>
-            <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
+            <a-button
+              type="primary"
+              icon="plus"
+              @click="doAction('add', null)"
+            >新增</a-button>
           </a-form-item>
         </div>
       </a-form>
     </div>
 
-    <a-alert message="外出规则" type="warning" show-icon style="margin-top: 10px">
+    <a-alert
+      message="外出规则"
+      type="warning"
+      show-icon
+      style="margin-top: 10px"
+    >
       <div slot="description">
         <div>1）上班时间因公外出，员工提交申请，仅限本市范围内。</div>
         <div>2）外出申请需要提前提交，外出开始时间不得早于当前时间（无法补交）。</div>
@@ -37,11 +73,24 @@
     </a-alert>
 
     <div class="main-wrapper">
-      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="我的" key="0" />
+      <a-tabs
+        :activeKey="String(activeKey)"
+        defaultActiveKey="0"
+        @change="tabChange"
+      >
+        <a-tab-pane
+          tab="我的"
+          key="0"
+        />
         <template v-if="$auth('going:approval')">
-          <a-tab-pane tab="待我审批" key="1" />
-          <a-tab-pane tab="我已审批" key="2" />
+          <a-tab-pane
+            tab="待我审批"
+            key="1"
+          />
+          <a-tab-pane
+            tab="我已审批"
+            key="2"
+          />
         </template>
       </a-tabs>
       <a-table
@@ -52,39 +101,75 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <div slot="order" slot-scope="text, record, index">
+        <div
+          slot="order"
+          slot-scope="text, record, index"
+        >
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="editContent" slot-scope="text, record">
-          <a href="javascript:void(0);" @click="doAction('editView', record)">查看</a>
+        <div
+          slot="editContent"
+          slot-scope="text, record"
+        >
+          <a
+            href="javascript:void(0);"
+            @click="doAction('editView', record)"
+          >查看</a>
         </div>
-        <div slot="status" slot-scope="text, record">
-          <a href="javascript:void(0);" @click="approvalPreview(record)">
+        <div
+          slot="status"
+          slot-scope="text, record"
+        >
+          <a
+            href="javascript:void(0);"
+            @click="approvalPreview(record)"
+          >
             {{ { 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知' }}
           </a>
         </div>
-        <div slot="userName" slot-scope="text, record">
+        <div
+          slot="userName"
+          slot-scope="text, record"
+        >
           {{ record.createdName }}
         </div>
 
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
+        <div
+          class="action-btns"
+          slot="action"
+          slot-scope="text, record"
+        >
+          <a
+            type="primary"
+            @click="doAction('view', record)"
+          >查看</a>
           <template v-if="+activeKey === 1">
             <a-divider type="vertical" />
-            <a type="primary" @click="doAction('approval', record)">审批</a>
+            <a
+              type="primary"
+              @click="doAction('approval', record)"
+            >审批</a>
           </template>
 
           <template v-if="activeKey === 0">
             <template v-if="record.status === 1 && record.createdId === userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
-                <a type="primary" href="javascript:;">撤销</a>
-              </a-popconfirm>
+              <a
+                  type="primary"
+                  href="javascript:;"
+                  @click="doAction('withdraw', record)"
+                >撤销</a>
             </template>
             <template v-if="(record.status === 3 || record.status === 4) && record.createdId === userInfo.id">
               <a-divider type="vertical" />
-              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-                <a type="primary" href="javascript:;">删除</a>
+              <a-popconfirm
+                title="确认删除该条数据吗?"
+                @confirm="() => doAction('del', record)"
+              >
+                <a
+                  type="primary"
+                  href="javascript:;"
+                >删除</a>
               </a-popconfirm>
             </template>
           </template>
@@ -92,7 +177,10 @@
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
-    <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
+    <AddForm
+      ref="addForm"
+      @finish="searchAction({ current: 1 })"
+    />
   </div>
 </template>
 
@@ -108,47 +196,47 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' },
+    scopedSlots: { customRender: 'order' }
   },
   {
     align: 'center',
     title: '人员',
-    scopedSlots: { customRender: 'userName' },
+    scopedSlots: { customRender: 'userName' }
   },
   {
     align: 'center',
     title: '开始时间',
-    dataIndex: 'startTime',
+    dataIndex: 'startTime'
   },
   {
     align: 'center',
     title: '结束时间',
-    dataIndex: 'endTime',
+    dataIndex: 'endTime'
   },
   {
     align: 'center',
     title: '时长(小时)',
-    dataIndex: 'duration',
+    dataIndex: 'duration'
   },
   {
     align: 'center',
     title: '审批状态',
     dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
+    scopedSlots: { customRender: 'status' }
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
+    scopedSlots: { customRender: 'action' }
+  }
 ]
 
 export default {
   name: 'attendance-rule-list-edit',
   components: {
     AddForm,
-    ApproveInfo,
+    ApproveInfo
   },
   data() {
     return {
@@ -159,31 +247,31 @@ export default {
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `时长合计：${this.duration}小时 `, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        showTotal: total => `时长合计：${this.duration}小时 `, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction())
       },
       loading: false,
       searchParam: {},
       sDate: [undefined, undefined],
       activeKey: 0,
       bindEnterFn: null,
-      userInfo: this.$store.getters.userInfo, // 当前登录人
+      userInfo: this.$store.getters.userInfo // 当前登录人
     }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
+      handler: function(to, from) {
         if (to.name === 'attendance-going-apply') {
           this.init()
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   mounted() {
-    let that = this
-    let ele = document.querySelector('#attendance-over-time-apply')
-    that.bindEnterFn = (event) => {
+    const that = this
+    const ele = document.querySelector('#attendance-over-time-apply')
+    that.bindEnterFn = event => {
       if (event.type === 'keyup' && event.keyCode === 13) {
         //Enter
         that.searchAction()
@@ -196,22 +284,22 @@ export default {
   methods: {
     moment,
     init() {
-      let that = this
+      const that = this
       that.searchParam.searchStatus = that.activeKey
       //   let queue = []
       //   queue.push(task1)
       that.searchAction()
     },
     searchAction(opt = {}) {
-      let that = this
-      let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
+      const that = this
+      const _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination1 }, opt)
       console.log('执行搜索...', _searchParam)
-      going_Tiem(_searchParam).then((res) => {
+      going_Tiem(_searchParam).then(res => {
         this.duration = res.data
       })
       that.loading = true
       going_list(_searchParam)
-        .then((res) => {
+        .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -224,7 +312,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch((err) => (that.loading = false))
+        .catch(err => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -233,27 +321,40 @@ export default {
       this.searchAction()
     },
     doAction(actionType, record) {
-      let that = this
+      const that = this
       if (['view', 'add', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
         going_delete(`id= ${record.id}`)
-          .then((res) => {
+          .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
           })
-          .catch((err) => {
+          .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        going_cancel(`id= ${record.id}`)
-          .then((res) => {
-            that.$message.info(res.msg)
-            that.searchAction()
-          })
-          .catch((err) => {
-            that.$message.info(`错误：${err.message}`)
-          })
+
+        that.$confirm({
+          title: '注意',
+          content: h => <div style="color:red;">外出开始时间不得早于当前时间，撤销后无法重新提交，请谨慎操作！</div>,
+          okText: '确定撤销',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            going_cancel(`id= ${record.id}`)
+              .then(res => {
+                that.$message.info(res.msg)
+                that.searchAction()
+              })
+              .catch(err => {
+                that.$message.info(`错误：${err.message}`)
+              })
+          },
+          onCancel() {
+            console.log('Cancel');
+          }
+        });
       }
     },
     tabChange(tagKey) {
@@ -274,13 +375,13 @@ export default {
           this.searchParam.endTime = undefined
         }
       }
-    },
+    }
   },
   beforeDestroy() {
-    let that = this
-    let ele = document.querySelector('#attendance-over-time-apply')
+    const that = this
+    const ele = document.querySelector('#attendance-over-time-apply')
     ele && that.bindEnterFn && ele.removeEventListener('keyup', that.bindEnterFn)
-  },
+  }
 }
 </script>
 
