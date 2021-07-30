@@ -33,7 +33,7 @@
                     style="width: 165px; margin-right: 10px"
                     placeholder="选择部门"
                     @change="depChangeHandler"
-                    v-decorator="['departmentId', { rules: [{ required: true, message: '选择部门' }] }]"
+                    v-decorator="['chargePersonDepartmentId', { rules: [{ required: true, message: '选择部门' }] }]"
                   >
                     <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
                       item.departmentName
@@ -54,7 +54,7 @@
                 </a-form-item>
               </div>
               <span v-if="isView">
-                <a-form-item>{{ detail.departmentName }}-{{ detail.chargePersonName }}</a-form-item>
+                <a-form-item>{{ detail.chargePersonDepartmentName }}-{{ detail.chargePersonName }}</a-form-item>
               </span>
             </td>
             <td class="wdf-column">会议名称</td>
@@ -157,7 +157,8 @@
                   </a-form-item>
                   <a-form-item>
                     <a-select
-                      style="width: 150px; margin-right: 10px" placeholder="选择人员"
+                      style="width: 150px; margin-right: 10px"
+                      placeholder="选择人员"
                       mode="multiple"
                       :allowClear="true"
                       @change="personChange"
@@ -217,7 +218,9 @@
                   <td>{{ item.userName }}</td>
                   <td>
                     <span v-if="item.signStatus === 1">{{ item.signTime }}</span>
-                    <span style="color: red" v-else>{{ {1:'已签到',2:'未签到',3:'考勤请假',4:'会议请假',5:'其它'}[item.signStatus] }}</span>
+                    <span style="color: red" v-else>{{
+                      { 1: '已签到', 2: '未签到', 3: '考勤请假', 4: '会议请假', 5: '其它' }[item.signStatus]
+                    }}</span>
                   </td>
                 </tr>
               </table>
@@ -308,6 +311,7 @@ export default {
           let endTime = values.endTime.format('HH:mm')
           values.beginTime = `${meetingDate} ${beginTime}:00`
           values.endTime = `${meetingDate} ${endTime}:00`
+          values.departmentId = that.record.chargePersonDepartmentId
           delete values.meetingDate
           values.oaMeetingJoinList = that.oaMeetingJoinList.map((item) => {
             return {
@@ -319,12 +323,16 @@ export default {
           that.spinning = true
           meetingRecordSaveOrUpdate(values)
             .then((res) => {
-              that.spinning = false
-              console.log(res)
-              that.form.resetFields() // 清空表
-              that.visible = false
-              that.$message.info(res.msg)
-              that.$emit('finish')
+              if (res.code === 200) {
+                that.spinning = false
+                console.log(res)
+                that.form.resetFields() // 清空表
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('finish')
+              } else {
+                that.$message.error(res.msg)
+              }
             })
             .catch((err) => (that.spinning = false))
         }
@@ -346,14 +354,14 @@ export default {
 
       //填充数据
       if (that.isStart) {
-        await that.depChangeHandler(that.record.departmentId)
+        await that.depChangeHandler(that.record.chargePersonDepartmentId)
         await that.depChangeHandler1(that.record.departmentId)
 
         let obj = {
           eventId: that.record.eventId,
           meetingNum: that.record.meetingNum,
           typeDicName: that.record.typeDicName,
-          departmentId: +that.record.departmentId,
+          chargePersonDepartmentId: +that.record.chargePersonDepartmentId,
           chargePersonId: +that.record.chargePersonId,
           name: that.record.name,
           checkFlag: that.record.checkFlag,
@@ -439,11 +447,11 @@ export default {
         }
 
         let oaMeetingJoinList = [...that.oaMeetingJoinList]
-        that.currentPerson.map(id =>{
-          let _u = oaMeetingJoinList.find(usr => +usr.id === +id)
-          if(!_u){
+        that.currentPerson.map((id) => {
+          let _u = oaMeetingJoinList.find((usr) => +usr.id === +id)
+          if (!_u) {
             let target = that.personJoinList.find((usr) => +usr.id === +id)
-            oaMeetingJoinList.push({ ...target,_key: makeUUID() })
+            oaMeetingJoinList.push({ ...target, _key: makeUUID() })
           }
         })
 
