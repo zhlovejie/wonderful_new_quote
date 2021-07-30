@@ -104,15 +104,13 @@
       </table>
     </div>
     <div class="saveOk">
-      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="testResults" @click="resultsTest"
+      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="testResults" @click="validate(3)"
         >保存</a-button
       >
-      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="!isFeasibility" @click="preservation(0)"
+      <a-button type="primary" style="margin-right: 10px" icon="save" v-if="!isFeasibility" @click="validate(0)"
         >保存</a-button
       >
-      <a-button style="margin-right: 10px" type="primary" v-if="!isFeasibility" @click="preservation(1)"
-        >提交审核</a-button
-      >
+      <a-button style="margin-right: 10px" type="primary" v-if="!isFeasibility" @click="validate(1)">提交审核</a-button>
       <a-button style="margin-right: 10px" v-if="!isFeasibility || testResults" @click="handleGo()">取消</a-button>
 
       <a-button key="back" icon="close" style="margin-right: 10px" v-if="normalAddForm.isApproval" @click="noPassAction"
@@ -283,7 +281,6 @@ export default {
     resultsTest() {
       let that = this
       let value = {}
-      that.validate()
       value.id = that.normalAddForm.FeasibilityData.id
       value.projectId = that.normalAddForm.allInfo.id
       value.developmentProjectFeasibilityTestResults = that.form.developmentProjectFeasibilityTestResults
@@ -464,13 +461,18 @@ export default {
       }
     },
     moment,
-    validate() {
+    validate(opt) {
       if (this.form.developmentProjectFeasibilityTestResults.length === 0) {
         return this.$message.error('请上传评审文件')
       }
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.FeasibilityTest = this.form
+          if (opt === 3) {
+            this.resultsTest()
+          } else if (opt === 0 || opt === 1) {
+            this.preservation(opt)
+          }
         } else {
           console.log('error submit!!')
           return false
@@ -482,7 +484,6 @@ export default {
     preservation(status) {
       let that = this
       let value = {}
-      that.validate()
       if (that.details) {
         value.id = this.normalAddForm.FeasibilityData.id
       }
