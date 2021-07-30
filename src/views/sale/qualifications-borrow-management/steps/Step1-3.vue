@@ -513,7 +513,6 @@ export default {
       await that.init()
 
       if (that.isAdd) {
-        debugger
         if(record){
           if (record.salesArea) {
             let _arr = record.salesArea.split(';')
@@ -534,7 +533,7 @@ export default {
           }else{
             that.haveDeposit = true
           }
-          
+
           that.$refs.customerSelect &&
             that.$refs.customerSelect.fill({
               id: that.detail.customerId,

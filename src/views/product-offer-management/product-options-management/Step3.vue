@@ -33,13 +33,8 @@
       </a-form-model-item>
 
     </a-form-model>
-    <OptionsSelect
-      key="optStand"
-      ref="optStand"
-      modelTitle="标准配置"
-      @change="nodes => optStandItems = nodes"
-      @optChange="keys => filterKeys = keys"
-    />
+    <OptionsSelect title="标准配置" :actionType="addForm.type" v-model="standData" :filterKeys="standDataFilterKyes" />
+
     <p style="text-align:center;margin-top:20px;">
       <a-button
         type="primary"
@@ -72,11 +67,11 @@ export default {
       spinning: false,
       treeData: [],
       detail: {},
-      optStandItems: [], // 标配
-      optChoiceItems: [], // 选配
-      filterKeys: [],
-      optionsList: [],
-      treeData: [],
+      standData:{
+        keys:[],
+        treeData:[]
+      },
+      standDataFilterKyes:[],
       productTypeConfigId:1,
 
       form:{},
@@ -92,7 +87,7 @@ export default {
   },
   computed:{
     btnNextDisabled(){
-      return this.optStandItems.length === 0
+      return this.standData.treeData.length === 0
     }
   },
   created() {
@@ -106,36 +101,20 @@ export default {
       that.type = type
       that.detail = {}
       that.visible = true
-      that.optStandItems = []
-      that.optChoiceItems = []
-      that.filterKeys = []
-      that.optionsList = that.addForm.optionsList
-      that.treeData = that.addForm.treeData
 
       if(type === 'edit'){
-        let {items} = that.addForm.form.step3
-        that.optStandItems = that.addNodesKey(items)
+        let treeData = that.addForm.form.step3
+        that.standData = {
+          keys:treeData.map(node => node.itemConfigId),
+          treeData : treeData
+        }
       }
-      that.$nextTick(() => {
-        that.$refs.optStand.query(type, that.optStandItems, { optionsList: that.optionsList, treeData: that.treeData })
-        that.filterKeys = that.optStandItems.map(opt => opt.itemConfigId)
-      })
+
     },
     addConfigType(nodes, configType = 0) {
       const that = this
       const f = n => {
         n.configType = configType
-        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
-          n.childrenList = n.childrenList.map(node => f(node))
-        }
-        return n
-      }
-      return nodes.map(n => f(n))
-    },
-    addNodesKey(nodes) {
-      const that = this
-      const f = n => {
-        n.key = n.itemConfigId
         if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
           n.childrenList = n.childrenList.map(node => f(node))
         }
@@ -156,8 +135,7 @@ export default {
         this.$refs.ruleForm.validate(valid => {
           if (valid) {
             const data = {
-              items: that.addConfigType(that.optStandItems, 0),
-              filterKeys: that.filterKeys,
+              items: that.addConfigType(that.standData.treeData, 0),
               productTypeConfigId:that.productTypeConfigId
             }
             that.$emit('change', 'step3', 'next', data)
@@ -178,15 +156,19 @@ export default {
         that.$emit('change', 'step3', 'prev', null)
       }
     },
+
     fill(data){
       const that = this
       let {items,productName,productTypeConfigId,productTypeConfigName,filterKeys} = this.addForm.form.step3
-      that.optStandItems = that.addNodesKey(items)
+      that.standData = {
+        keys:items.map(node => node.itemConfigId),
+        treeData:items
+      }
       that.filterKeys = filterKeys
       that.form = {
         productName,productTypeConfigId,productTypeConfigName
       }
-      that.query('edit')
+      // that.query('edit')
     }
   }
 }

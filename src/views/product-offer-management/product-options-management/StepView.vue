@@ -18,14 +18,8 @@
           <p>中控型号：{{msg.controlType}}</p>
         </div>
         <p>
-          <OptionsSelect
-            ref="optStand"
-            modelTitle="标准配置"
-          />
-          <OptionsSelect
-            ref="optChoice"
-            modelTitle="选择配置"
-          />
+          <OptionsSelect title="标准配置" actionType="view" v-model="standData" :filterKeys="standDataFilterKyes" />
+          <OptionsSelect title="选择配置" actionType="view" v-model="choiceData" :filterKeys="choiceDataFilterKyes" />
         </p>
       </div>
     </a-spin>
@@ -48,9 +42,16 @@ export default {
       visible: false,
       spinning: false,
       form: {},
-      // step3,step4 数据源
-      optionsList: [],
-      treeData: [],
+      standData:{
+        keys:[],
+        treeData:[]
+      },
+      standDataFilterKyes:[],
+      choiceData:{
+        keys:[],
+        treeData:[]
+      },
+      choiceDataFilterKyes:[],
       msg : {
         productInfo:'',
         productType:'',
@@ -73,9 +74,6 @@ export default {
       that.spinning = false
       that.currentStep = 0
 
-      that.optionsList = optionsList
-      that.treeData = treeData
-
       priceQuotedProductDetail({ id: record.id }).then(res => {
         const data = res.data
         const step1 = []
@@ -84,8 +82,7 @@ export default {
           items: data.childrenList.filter(item => item.configType === 0),
           productName: data.productName,
           productTypeConfigId: data.productTypeConfigId,
-          productTypeConfigName: data.productTypeConfigName,
-          filterKeys: data.childrenList.filter(item => item.configType === 0).map(opt => opt.itemConfigId)
+          productTypeConfigName: data.productTypeConfigName
         }
         const step4 = {
           items: data.childrenList.filter(item => item.configType === 1)
@@ -135,10 +132,63 @@ export default {
       }
 
       that.$nextTick(() => {
-        let [optionsList,treeData] = [that.optionsList,that.treeData]
-        that.$refs.optStand.query('view', stands.items, { optionsList, treeData })
-        that.$refs.optChoice.query('view', choices.items, { optionsList, treeData })
+        that.standData = {
+          keys:stands.items.map(node => node.itemConfigId),
+          treeData:that.checkedAndRequired2ConfigValue(stands.items)
+        }
+        that.choiceData = {
+          keys:choices.items.map(node => node.itemConfigId),
+          treeData:that.checkedAndRequired2ConfigValue(choices.items)
+        }
       })
+    },
+    checkedAndRequired2ConfigValue(nodes) {
+      const that = this
+      const f = n => {
+        if (n.isRequired === 0 && n.isChecked === 0) {
+          n.configValue = 1
+        } else if (n.isRequired === 0 && n.isChecked === 1) {
+          n.configValue = 2
+        } else if (n.isRequired === 1 && n.isChecked === 0) {
+          n.configValue = 3
+        } else if (n.isRequired === 1 && n.isChecked === 1) {
+          n.configValue = 4
+        }
+        if(n.itemConfigType === 1){
+          n.__checked = true
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
+    },
+
+    configValue2CheckedAndRequired(nodes) {
+      const that = this
+      const f = n => {
+        if ('configValue' in n) {
+          if (+n.configValue === 1) {
+            n.isRequired = 0
+            n.isChecked = 0
+          } else if (+n.configValue === 2) {
+            n.isRequired = 0
+            n.isChecked = 1
+          } else if (+n.configValue === 3) {
+            n.isRequired = 1
+            n.isChecked = 0
+          } else if (+n.configValue === 4) {
+            n.isRequired = 1
+            n.isChecked = 1
+          }
+        }
+        if (Array.isArray(n.childrenList) && n.childrenList.length > 0) {
+          n.childrenList = n.childrenList.map(node => f(node))
+        }
+        return n
+      }
+      return nodes.map(n => f(n))
     }
   }
 }

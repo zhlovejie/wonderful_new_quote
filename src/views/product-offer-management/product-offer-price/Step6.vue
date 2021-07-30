@@ -9,27 +9,15 @@
         <p>产品型号：{{msg.productType}}</p>
         <p>产品类型：{{msg.productTypeConfigName}}</p>
       </div>
-      <p>
-      <OptionsSelect
-        ref="optControlStand"
-        modelTitle="中控-标准配置"
-      />
-      <OptionsSelect
-        ref="optControlChoice"
-        modelTitle="中控-选择配置"
-      />
+      <p v-if="hasControl">
+        <OptionsSelect title="中控-标准配置" v-model="controlStandData" actionType="view" :filterKeys="[]" />
+        <OptionsSelect title="中控-选择配置" v-model="controlChoiceData" actionType="view" :filterKeys="[]" />
       </p>
       <p>
-        <OptionsSelect
-          ref="optStand"
-          modelTitle="标准配置"
-        />
+        <OptionsSelect title="标准配置" v-model="standData" actionType="view" :filterKeys="[]" />
       </p>
       <p>
-        <OptionsSelect
-          ref="optChoice"
-          modelTitle="选择配置"
-        />
+        <OptionsSelect title="选择配置" v-model="choiceData" actionType="view" :filterKeys="[]" />
       </p>
     </div>
     <p style="text-align:center;margin-top:20px;">
@@ -60,7 +48,25 @@ export default {
         productInfo:'',
         productType:'',
         controlType:''
-      }
+      },
+      hasControl:false,
+      controlStandData: {
+        keys:[],
+        treeData:[]
+      },
+      controlChoiceData :{
+        keys:[],
+        treeData:[]
+      },
+      standData: {
+        keys:[],
+        treeData:[]
+      },
+      choiceData :{
+        keys:[],
+        treeData:[]
+      },
+
     }
   },
   watch:{
@@ -98,20 +104,14 @@ export default {
         productTypeConfigName
       }
 
-      let {optionsList,treeData} = that.addForm
-      let refs = [
-        {refName:'optControlStand',data:controls.optStandItems},
-        {refName:'optControlChoice',data:controls.optChoiceItems},
-        {refName:'optStand',data:stands.items},
-        {refName:'optChoice',data:choices.items }
-      ]
+      let {controlItem,standData,choiceData} = controls
+      that.hasControl = !!controlItem
+      that.controlStandData = {keys:[],treeData:standData}
+      that.controlChoiceData = {keys:[],treeData:choiceData}
 
-      refs.map(item => {
-        that.$refs[item.refName].query('view',that.$_.cloneDeep(item.data),{
-          optionsList:that.$_.cloneDeep(optionsList),
-          treeData:that.$_.cloneDeep(treeData)
-        })
-      })
+      that.standData = {keys:[],treeData:stands.items}
+      that.choiceData = {keys:[],treeData:choices.items}
+
     },
     stepAction(type) {
       const that = this

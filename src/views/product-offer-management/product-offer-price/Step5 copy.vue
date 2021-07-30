@@ -53,7 +53,7 @@
   </a-card>
 </template>
 <script>
-import { priceAdjustProductQuoteDownload, productEvaluation ,costPricePricing} from '@/api/productOfferManagement'
+import { priceAdjustProductQuoteDownload, productEvaluation } from '@/api/productOfferManagement'
 import { typeConfigDetail } from '@/api/productOfferManagement'
 const innerColumns = [
   {
@@ -110,8 +110,6 @@ export default {
       innerColumns,
       dataSource:[],
       expandedRowKeys: [],
-      sumPrice:0,
-      productTypeConfigId:0,
     }
   },
   watch:{
@@ -130,25 +128,32 @@ export default {
       const that = this
 
       let {
+        step1:productsPath,
         step2:controls,
         step3:stands,
         step4:choices,
+        productSeries,
+        productName,
         productTypeConfigId,
+        productTypeConfigName
       } = that.addForm.form
-      let arr = []
-      let { controlItem,standData,choiceData } = controls
-      arr.push(...[standData,choiceData,stands.items,choices.items])
-      that.sumPrice = arr.reduce((calc,item) => {
-        let arr = that.getNodes(item).map(n => parseFloat(n.price) || 0)
-        let sum = arr.reduce((a,b) => {
-          return a + (parseFloat(b) || 0)
-        },0)
-        calc += sum
-        return calc
-      },0)
-      that.productTypeConfigId = productTypeConfigId
-      that.expandedRowKeys = []
-      that.assessment(that.productTypeConfigId,that.sumPrice)
+
+      let {optStandItems,optChoiceItems} = controls
+
+      let items = [optStandItems,optChoiceItems,stands.items,choices.items]
+      let {allOptionsList} = that.addForm
+
+      let allNodes = items.map(nodes => that.getNodes(nodes)).flat(Infinity)
+      let result = allNodes.map(node => {
+        let target = allOptionsList.find(opt => opt.id === node.itemConfigId)
+        if(target){
+          return Number(target.price) || 0
+        }
+        return 0
+      })
+      that.sumPrice = result.reduce((p1,p2) => p1 + p2 ,0)
+
+      that.assessment(productTypeConfigId,that.sumPrice)
     },
     stepAction(type) {
       const that = this
@@ -163,10 +168,10 @@ export default {
       const that = this
       if (expanded) {
         that.expandedRowKeys = [...that.expandedRowKeys, record.key]
-        costPricePricing({
+        productEvaluation({
           rangeId: record.rangeId,
-          productTypeConfigId: that.productTypeConfigId,
-          costPrice: that.sumPrice,
+          id: that.productTypeConfigId,
+          sumPrice: that.sumPrice,
         }).then((res) => {
           if (res.code === 200) {
             let react = that.dataSource.find((item) => item.key === record.key)
@@ -189,20 +194,20 @@ export default {
       }
     },
     assessment(id,sumPrice) {
-      const that = this
-      costPricePricing({ productTypeConfigId:id, costPrice:sumPrice }).then((res) => {
+      productEvaluation({ id, sumPrice }).then((res) => {
         if (res.code === 200) {
-          that.dataSource = res.data.map((item, index) => {
+          this.dataSource = res.data.map((item, index) => {
             item.key = index + 1
             item.innerData = []
             return item
           })
-          // that.expandedRowKeys = that.dataSource.map((item) => item.key) || []
+          this.expandedRowKeys = that.dataSource.map((item) => item.key) || []
         } else {
-          that.$message.error(res.msg)
+          this.$message.error(res.msg)
         }
       })
     },
+
     getNodes(nodes) {
       let arr = []
       const f = n => {
@@ -215,6 +220,7 @@ export default {
         return n
       };
       nodes.map(n => f(n))
+
       return arr
     },
   }

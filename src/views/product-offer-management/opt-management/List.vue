@@ -65,7 +65,7 @@
             </a-form-item>
             <a-form-item v-if="$auth('quotedItem:pricing')">
               <a-button
-                :disabled="!canUse"
+                :disabled="!canPriceUser"
                 type="primary"
                 @click="doAction('price', null)"
               >核价</a-button>
@@ -245,6 +245,9 @@ export default {
     canUse() {
       return this.selectedRows.length > 0
     },
+    canPriceUser(){
+      return this.selectedRows.filter(item => item.itemConfigType === 1).length > 0
+    },
     treeSelectedKeys() {
       return [String(this.parentId)]
     }
@@ -320,7 +323,7 @@ export default {
           // if (that.parentId === -1) {
           //   that.parentItem = root
           // }
-          console.log(JSON.stringify(that.orgTree))
+          // console.log(JSON.stringify(that.orgTree))
         })
         .catch(err => {
           that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
@@ -417,7 +420,7 @@ export default {
         that.$message.info('功能正在开发中...')
         return
       } else if (type === 'price') {
-        const rows = that.selectedRows.map(r => Object.assign({}, r))
+        const rows = that.selectedRows.map(r => Object.assign({}, r)).filter(item => item.itemConfigType === 1)
         that.$refs.priceForm.query(rows)
       } else {
         const m = {

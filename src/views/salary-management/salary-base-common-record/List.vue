@@ -275,7 +275,6 @@ export default {
                   console.log('JSON.parse error...', e.target.result)
                 }
                 if (_res !== null) {
-                  debugger
                   that.fileList = []
                   console.log(_res.msg)
                   if (_res.msg === '操作成功') {

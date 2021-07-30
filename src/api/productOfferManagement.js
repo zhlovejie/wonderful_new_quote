@@ -627,6 +627,27 @@ export function priceQuotedProductSetPrice(parameter) {
     data: parameter
   })
 }
+
+/**全部列表 */
+export function priceQuotedZktListAll(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-zkt/priceQuotedZktList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**修改记录 */
+export function productUpdateRecordList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/priceQuote/price-quoted-product-update-record/productUpdateRecordList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /* 产品配置管理 END*/
 
 /* 报价 */
