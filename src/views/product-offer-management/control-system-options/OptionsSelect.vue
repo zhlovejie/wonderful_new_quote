@@ -169,16 +169,13 @@ export default {
   },
   watch: {
     data() {
-      console.log('watch data called...')
       this.init()
     },
     filterKeys() {
-      console.log('watch filterKeys called...')
       this.init()
     }
   },
   created() {
-    console.log('hooks created called...')
     this.isSearch = false
     this.init()
   },
@@ -188,7 +185,6 @@ export default {
       if (!that.treeDataCache) {
         await Promise.all([
           that.fetchTree().then(data => {
-            console.log('fetchTree called...')
             that.treeData = data.childrenList || []
             that.treeDataCache = [...that.treeData]
           })
@@ -200,7 +196,6 @@ export default {
       // watch 部分
       // debugger
       const { treeData, keys } = that.data
-      console.log(that.$attrs.title)
       if (that.isSearch) {
         const configName = that.queryParam.configName || ''
         that.treeData = that.$_.cloneDeep(that.treeDataCache)

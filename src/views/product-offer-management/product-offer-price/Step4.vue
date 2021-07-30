@@ -41,7 +41,7 @@ export default {
   watch:{
     'addForm.currentStep':{
       handler(val, oldVal){
-        if(this.addForm.isAdd && val === 3 && val > oldVal){
+        if(this.addForm.isPrice && val === 3 && val > oldVal){
           this.query('add')
         }
       },
@@ -63,12 +63,9 @@ export default {
       that.detail = {}
       that.visible = true
 
-      if(type === 'edit'){
-        let {items} = this.addForm.form.step4
-        that.choiceData = {
-          keys:items.map(node => node.itemConfigId),
-          treeData:items
-        }
+      {
+        let {items} = that.addForm.form.step3
+        that.choiceDataFilterKyes = items.map(item => item.itemConfigId)
       }
     },
 

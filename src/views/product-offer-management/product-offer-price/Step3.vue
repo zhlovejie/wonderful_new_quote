@@ -101,14 +101,11 @@ export default {
       that.detail = {}
       that.visible = true
 
-      if(type === 'edit'){
-        let treeData = that.addForm.form.step3
-        that.standData = {
-          keys:treeData.map(node => node.itemConfigId),
-          treeData : treeData
-        }
-      }
-
+      that.standData = {
+        keys:[],
+        treeData:[]
+      },
+      that.standDataFilterKyes = []
     },
     addConfigType(nodes, configType = 0) {
       const that = this

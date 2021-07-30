@@ -159,12 +159,11 @@ export default {
 
     fill(data){
       const that = this
-      let {items,productName,productTypeConfigId,productTypeConfigName,filterKeys} = this.addForm.form.step3
+      let {items,productName,productTypeConfigId,productTypeConfigName} = this.addForm.form.step3
       that.standData = {
         keys:items.map(node => node.itemConfigId),
         treeData:items
       }
-      that.filterKeys = filterKeys
       that.form = {
         productName,productTypeConfigId,productTypeConfigName
       }

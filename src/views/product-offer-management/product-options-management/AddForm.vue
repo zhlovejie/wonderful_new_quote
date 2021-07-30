@@ -114,11 +114,12 @@ export default {
           delete obj.childrenList
           that.form = obj
 
-          let steps = ['step1','step2','step3','step4','step5']
-
-          steps.map(c => {
-            let ref = that.$refs[c]
-            ref && ref.fill && ref.fill()
+          that.$nextTick(() => {
+            let steps = ['step1','step2','step3','step4','step5']
+            steps.map(c => {
+              let ref = that.$refs[c]
+              ref && ref.fill && ref.fill()
+            })
           })
 
         })

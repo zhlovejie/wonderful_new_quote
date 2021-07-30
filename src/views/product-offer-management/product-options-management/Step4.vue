@@ -41,8 +41,13 @@ export default {
   watch:{
     'addForm.currentStep':{
       handler(val, oldVal){
-        if(this.addForm.isAdd && val === 3 && val > oldVal){
-          this.query('add')
+        if(val === 3 && val > oldVal){
+          if(this.addForm.isAdd){
+            this.query('add')
+          }else if(this.addForm.isEdit){
+            this.query('edit')
+          }
+
         }
       },
       deep:true
@@ -58,6 +63,7 @@ export default {
   },
   methods: {
     async query(type) {
+
       const that = this
       that.type = type
       that.detail = {}
@@ -69,6 +75,11 @@ export default {
           keys:items.map(node => node.itemConfigId),
           treeData:items
         }
+      }
+
+      {
+        let {items} = that.addForm.form.step3
+        that.choiceDataFilterKyes = items.map(item => item.itemConfigId)
       }
     },
 

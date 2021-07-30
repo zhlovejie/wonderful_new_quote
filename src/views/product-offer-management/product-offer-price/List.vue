@@ -87,6 +87,9 @@ export default {
     },
     isView() {
       return this.type === 'view'
+    },
+    isPrice(){
+      return this.type === 'price'
     }
   },
   methods: {
@@ -96,11 +99,14 @@ export default {
     },
     query() {
       const that = this
-      let steps = ['step2','step3','step4']
-      steps.map(c => {
-        let ref = that.$refs[c]
-        ref && ref.query('price')
-      })
+      // that.$nextTick(() => {
+      //   let steps = ['step2','step3','step4']
+      //   steps.map(c => {
+      //     let ref = that.$refs[c]
+      //     debugger
+      //     ref && ref.query('price')
+      //   })
+      // })
     },
     stepChangeHander(name,stepType,data){
       const that = this
