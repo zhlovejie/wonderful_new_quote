@@ -274,9 +274,9 @@ export default {
 
         ...opt,
       }
-      if (this.audit == 0) {
-        this.queryParam['status'] = this.approvalStatusSelect
-      }
+      // if (this.audit == 0) {
+      //   this.queryParam['status'] = this.approvalStatusSelect
+      // }
       this.$refs.table.refresh(true)
     },
 

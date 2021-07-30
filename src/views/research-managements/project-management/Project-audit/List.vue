@@ -370,12 +370,13 @@ export default {
         patentName: this.patentName,
         projectCode: this.projectCode,
         projectName: this.projectName,
+        status: this.status,
 
         ...opt,
       }
-      if (this.audit == 0) {
-        this.queryParam['status'] = this.status
-      }
+      // if (this.audit == 0) {
+      //   this.queryParam['status'] = this.status
+      // }
       this.$refs.table.refresh(true)
     },
     //审批流组件

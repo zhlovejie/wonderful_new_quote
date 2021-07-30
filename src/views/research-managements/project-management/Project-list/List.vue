@@ -14,7 +14,7 @@
         </a-form-item>
 
         <a-form-item>
-          <a-select v-model="searchParam.modelType" placeholder="项目开发模式" style="width: 200px">
+          <a-select v-model="searchParam.modelType" placeholder="项目开发模式" allowClear style="width: 200px">
             <a-select-option v-for="item in projectDevelopmentModes" :value="item.id" :key="item.id">{{
               item.text
             }}</a-select-option>
@@ -22,7 +22,7 @@
         </a-form-item>
 
         <a-form-item>
-          <a-select v-model="searchParam.status" placeholder="项目进程" style="width: 200px">
+          <a-select v-model="searchParam.status" placeholder="项目进程" allowClear style="width: 200px">
             <a-select-option v-for="item in projectProcesses" :value="item.id" :key="item.id">{{
               item.text
             }}</a-select-option>
