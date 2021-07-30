@@ -34,7 +34,9 @@
               }}</a-select-option>
             </a-select>
           </a-form-model-item>
-          <a v-if="form.confPlanId" @click="ViewSee()">查看</a>
+        </td>
+        <td v-if="form.confPlanId">
+          <a @click="ViewSee()">查看</a>
         </td>
         <td>分类</td>
         <td>PROE结构图</td>
@@ -203,6 +205,7 @@ export default {
     ViewSee() {
       let that = this
       let react = that.priceQuoted.find((item) => item.id === that.form.confPlanId)
+      that.$refs.StepView.query('view', { ...react })
     },
     validate(key) {
       if (this.form.developmentProjectConfPlanModelTaskFiles.length === 0) {

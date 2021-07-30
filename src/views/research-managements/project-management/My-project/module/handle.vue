@@ -409,6 +409,9 @@ export default {
               if (that.status === 18 && res.data.detailInfo !== null) {
                 that.volumeData = res.data.detailInfo
               }
+            } else {
+              this.$message.error(res.msg)
+              this.handleGo()
             }
           }
         )
