@@ -227,12 +227,10 @@ export default {
     async doAction(type, record) {
       const that = this
       if (['add', 'edit'].includes(type)) {
-        await Promise.all([that.fetchOptions(), that.fetchTree()])
-        that.$refs.addForm.query(type, { ...record },{optionsList:that.optionsList,treeData:that.treeData})
+        that.$refs.addForm.query(type, { ...record })
         return
       }else if (['view'].includes(type)) {
-        await Promise.all([that.fetchOptions(), that.fetchTree()])
-        that.$refs.stepView.query(type, { ...record },{optionsList:that.optionsList,treeData:that.treeData})
+        that.$refs.stepView.query(type, { ...record })
         return
       }
       else if (type === 'del') {
@@ -255,74 +253,7 @@ export default {
       that.$nextTick(() => {
         that.search()
       })
-    },
-    fetchOptions() {
-      const that = this
-      return priceQuotedItemConfigSubList(that.queryParam)
-        .then(res => {
-          that.optionsList = res.data.filter(item => item.parentConfigId === 0 && item.itemConfigType !== 9)
-        })
-        .catch(err => {
-          that.$message.error(err)
-          that.optionsList = []
-        })
-    },
-    fetchTree() {
-      const that = this
-      return priceQuotedItemConfigTreeList()
-        .then(res => {
-          const root = {
-            id: 0,
-            key: 0,
-            configName: '配置项',
-            isLeaf: false,
-            parentConfigId: null,
-            childrenList: res.data.map(item => that.formatTreeData(item))
-          }
-          // 去除没有参数的分支
-          let shaking = (node) =>{
-            let f = (n) => {
-              if(!('childrenList' in n)){
-                n.childrenList = []
-              }
-              if(Array.isArray(n.childrenList) && n.childrenList.length > 0){
-                n.childrenList = n.childrenList.map(node => f(node)).filter(node => {
-                  return !(node.itemConfigType === 0 && node.childrenList.length === 0)
-                })
-              }
-              return n
-            }
-            return f(node)
-          }
-          that.treeData = shaking(root)
-        })
-        .catch(err => {
-          that.$message.error(`调用接口[priceQuotedItemConfigTreeList]时发生错误，错误信息:${err}`)
-        })
-    },
-    formatTreeData(item) {
-      const that = this
-      const obj = {}
-      obj.id = undefined
-      obj.configName = item.configName
-      obj.parentConfigId = item.parentConfigId || 0
-      obj.serialNumber = item.serialNumber
-      obj.itemConfigType = item.itemConfigType
-      obj.itemConfigId = item.id
-      obj.key = item.id
-
-      if (obj.itemConfigType === 1) {
-        obj.__checked = false
-        obj.configValue = undefined
-        obj.isChecked = -1
-        obj.isRequired = -1
-      }
-
-      if (Array.isArray(item.quotedItemConfigTreeVOList) && item.quotedItemConfigTreeVOList.length > 0) {
-        obj.childrenList = item.quotedItemConfigTreeVOList.map(v => that.formatTreeData(v))
-      }
-      return obj
-    },
+    }
   }
 }
 </script>

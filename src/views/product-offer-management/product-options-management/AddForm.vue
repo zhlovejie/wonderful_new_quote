@@ -86,7 +86,7 @@ export default {
     },
   },
   methods: {
-    query(type, record,{optionsList,treeData}) {
+    query(type, record) {
       const that = this
       that.type = type
       that.detail = {}
