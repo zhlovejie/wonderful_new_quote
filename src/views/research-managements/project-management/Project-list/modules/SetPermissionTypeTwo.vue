@@ -33,7 +33,7 @@
                 <td style="width:400px;">
                   <a-checkbox-group
                     :value="u.__permission"
-                    :options="optionsCheckbox"
+                    :options="item.fileType === 1 ? optionsCheckbox1 : (item.fileType === 3 ? optionsCheckbox3 : optionsCheckboxOthers)"
                     @change="e => permissionChange(item,idx,e)"
                   />
                 </td>
@@ -73,12 +73,22 @@ export default {
       detail: {},
       fileTypes:[],
       userList:[],
-      optionsCheckbox:[
+      optionsCheckbox3:[
         { label: '查看/下载', value: 'findAuthority' },
         { label: '删除', value: 'removeAuthority' },
         { label: '修改', value: 'updateAuthority' },
         { label: '上传', value: 'uploadAuthority' },
-      ]
+      ],
+      optionsCheckbox1:[
+        { label: '查看', value: 'findAuthority' },
+        { label: '录入', value: 'uploadAuthority' },
+        { label: '修改', value: 'updateAuthority' },
+      ],
+      optionsCheckboxOthers:[
+        { label: '查看/下载', value: 'findAuthority' },
+        { label: '删除', value: 'removeAuthority' },
+        { label: '上传', value: 'uploadAuthority' },
+      ],
     }
   },
   methods: {
@@ -123,13 +133,15 @@ export default {
 
           authorityConfVoList.map(u => {
             let targetUser = targetUsers.find(usr => usr.userId === u.userId)
-            let __permission = []
-            permission.map(k => {
-              if(+u[k] === 1){
-                __permission.push(k)
-              }
-            })
-            targetUser.__permission = __permission
+            if(targetUser){
+              let __permission = []
+              permission.map(k => {
+                if(+u[k] === 1){
+                  __permission.push(k)
+                }
+              })
+              targetUser.__permission = __permission
+            }
           })
         })
         that.fileTypes = fileTypes

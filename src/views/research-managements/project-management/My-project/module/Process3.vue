@@ -218,9 +218,17 @@ const columns = [
 const columnsPredictPrice = [
   {
     title: '产品预估价',
-    width: '70px',
+    width: '300px',
     dataIndex: 'predictPrice',
     scopedSlots: { customRender: 'predictPrice' },
+  },
+  {
+    title: '提交人',
+    dataIndex: 'userName',
+  },
+  {
+    title: '提交时间',
+    dataIndex: 'createdTime',
   },
 ]
 
@@ -648,9 +656,11 @@ export default {
       let target = typeListVoList[idx]
       target.departmentVoList.map((dep) => {
         let f = dep.personApplyDetailVoList.find((f) => f.uid === record.uid)
-        f.__edit = true
-        f.predictPrice = v
-        dep.personApplyDetailVoList = [...dep.personApplyDetailVoList.filter((f) => f.uid !== record.uid), f]
+        if(f){
+          f.__edit = true
+          f.predictPrice = v
+          dep.personApplyDetailVoList = [...dep.personApplyDetailVoList.filter((f) => f.uid !== record.uid), f]
+        }
       })
       that.typeListVoList = typeListVoList
     },

@@ -196,13 +196,14 @@ export default {
           that.initUserList(that.form.inspectorDepartmentId),
           that.initDepList()
         ])
-
+        let targetChargeDepartment = that.depList.find(dep => dep.id === that.form.chargeDepartmentId)
         personBoList.push({
           key: uuid(),
           depList: that.depList,
           selectDep:{
-            id:that.form.chargeDepartmentId,
-            departmentName:that.form.chargeDepartmentName
+            id:targetChargeDepartment.id,
+            departmentName:targetChargeDepartment.departmentName,
+            departmentType:targetChargeDepartment.type
           },
           userList: userList1,
           selectUsers: [
@@ -214,12 +215,14 @@ export default {
           disabled:true
         })
         if(that.form.inspectorUserId !== that.form.chargeUserId){
+          let targetInspectorDepartment = that.depList.find(dep => dep.id === that.form.inspectorDepartmentId)
           personBoList.push({
             key: uuid(),
             depList: that.depList,
             selectDep:{
-              id:that.form.inspectorDepartmentId,
-              departmentName:that.form.inspectorDepartmentName
+              id:targetInspectorDepartment.id,
+              departmentName:targetInspectorDepartment.departmentName,
+              departmentType:targetInspectorDepartment.type
             },
             userList: userList2,
             selectUsers: [
@@ -295,7 +298,7 @@ export default {
               return {
                 departmentId:p.selectDep.id,
                 departmentName:p.selectDep.departmentName,
-                departmentType:p.selectDep.type,
+                departmentType:p.selectDep.departmentType,
                 userId:u.id,
                 userName:u.trueName
               }
@@ -304,6 +307,8 @@ export default {
 
           let reviewTime = that.form.reviewTime
           reviewTime = reviewTime instanceof moment ? reviewTime.format('YYYY-MM-DD HH:mm') : reviewTime
+
+          console.log(JSON.stringify({ ...that.form ,personBoList:personBoList.flat(2),reviewTime}))
           that.spinning = true
           addProjectAllJoin({ ...that.form ,personBoList:personBoList.flat(2),reviewTime})
             .then(res => {
@@ -351,7 +356,11 @@ export default {
         }
       }
       that.$nextTick(() => {
-        that.$refs.ruleForm && that.$refs.ruleForm.validate()
+        try{
+          that.$refs.ruleForm && that.$refs.ruleForm.validate()
+        }catch(err){
+          console.log(err)
+        }
       })
     }
   }
