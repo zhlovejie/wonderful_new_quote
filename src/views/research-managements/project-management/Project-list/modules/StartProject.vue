@@ -203,7 +203,7 @@ export default {
           selectDep:{
             id:targetChargeDepartment.id,
             departmentName:targetChargeDepartment.departmentName,
-            departmentType:targetChargeDepartment.type
+            type:targetChargeDepartment.type
           },
           userList: userList1,
           selectUsers: [
@@ -222,7 +222,7 @@ export default {
             selectDep:{
               id:targetInspectorDepartment.id,
               departmentName:targetInspectorDepartment.departmentName,
-              departmentType:targetInspectorDepartment.type
+              type:targetInspectorDepartment.type
             },
             userList: userList2,
             selectUsers: [
@@ -298,7 +298,7 @@ export default {
               return {
                 departmentId:p.selectDep.id,
                 departmentName:p.selectDep.departmentName,
-                departmentType:p.selectDep.departmentType,
+                departmentType:p.selectDep.type,
                 userId:u.id,
                 userName:u.trueName
               }
@@ -308,7 +308,6 @@ export default {
           let reviewTime = that.form.reviewTime
           reviewTime = reviewTime instanceof moment ? reviewTime.format('YYYY-MM-DD HH:mm') : reviewTime
 
-          console.log(JSON.stringify({ ...that.form ,personBoList:personBoList.flat(2),reviewTime}))
           that.spinning = true
           addProjectAllJoin({ ...that.form ,personBoList:personBoList.flat(2),reviewTime})
             .then(res => {
