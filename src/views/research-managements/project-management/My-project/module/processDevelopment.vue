@@ -214,6 +214,8 @@ export default {
         craftCode: that.form.craftCode,
         craftId: that.form.craftId,
         projectId: that.normalAddForm.allInfo.id,
+        craftTaskUrl: that.normalAddForm.ProcessData.craftTaskUrl,
+        mouldTaskUrl: that.mouldTaskUrl.ProcessData.mouldTaskUrl,
       }
       craftDevelopment(value)
         .then((res) => {
