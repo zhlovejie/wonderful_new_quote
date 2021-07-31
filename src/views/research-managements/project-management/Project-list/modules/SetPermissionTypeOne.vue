@@ -83,6 +83,7 @@ export default {
         { label: '上传', value: 'uploadAuthority' },
       ],
       optionsCheckbox1:[
+        { label: '查看', value: 'findAuthority' },
         { label: '录入', value: 'uploadAuthority' },
         { label: '修改', value: 'updateAuthority' },
       ],
@@ -133,7 +134,9 @@ export default {
               }
             })
             let _u = users.find(usr => usr.userId === u.userId)
-            _u.__permission = __permission
+            if(_u){
+              _u.__permission = __permission
+            }
           })
         })
         that.fileTypes = fileTypes

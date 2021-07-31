@@ -487,7 +487,7 @@ export default {
             return {
               departmentId:p.selectDep.id,
               departmentName:p.selectDep.departmentName,
-              departmentType:p.selectDep.type,
+              departmentType:p.selectDep.departmentType,
               userId:u.id,
               userName:u.trueName
             }
@@ -744,6 +744,7 @@ export default {
         if(Array.isArray(v) && v.length > 0){
           let departmentId = v[0].departmentId
           let departmentName = v[0].departmentName
+          let departmentType = v[0].departmentType
           let userList = await that.initUserList(departmentId)
           let selectUsers = v.map(u => {
             return { id:u.userId,trueName:u.userName }
@@ -751,7 +752,7 @@ export default {
           personBoList.push({
             key: uuid(),
             depList: that.depList,
-            selectDep:{id:departmentId,departmentName},
+            selectDep:{id:departmentId,departmentName,departmentType},
             userList,
             selectUsers,
             disabled:false
