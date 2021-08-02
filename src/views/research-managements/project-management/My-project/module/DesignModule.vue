@@ -42,14 +42,14 @@
       <a-button
         type="primary"
         style="margin-right: 10px"
-        v-if="isDisabled && istrain && canTraining && normalAddForm.record.audit === 2"
+        v-if="isDesign && trainer && istrain && canTraining"
         @click="training()"
         >发起培训</a-button
       >
       <a-button
         type="primary"
         style="margin-right: 10px"
-        v-if="isDisabled && istrain && !canTraining && normalAddForm.record.audit === 2"
+        v-if="isDesign && trainer && istrain && !canTraining"
         @click="Endtraining()"
         >结束培训</a-button
       >
@@ -113,6 +113,9 @@ export default {
         this.normalAddForm.isApproval ||
         (this.normalAddForm.isHandle && this.normalAddForm.status !== 12)
       )
+    },
+    isDesign() {
+      return this.normalAddForm.isDesign
     },
     Conference() {
       //会议记录显示
@@ -181,6 +184,8 @@ export default {
       dataSource: [],
       Noshow: false,
       DesignData: {},
+      trainer: undefined,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       form: {
         DesignDataHisFiles: [],
       },
@@ -239,6 +244,7 @@ export default {
         submitTolist({ projectId: that.normalAddForm.allInfo.id }).then((res) => {
           that.dataSource = res.data.list
           that.canTraining = res.data.canTraining
+          that.trainer = res.data.trainer
         })
         that.$nextTick(() => {
           that.details = {
