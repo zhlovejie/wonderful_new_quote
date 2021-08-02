@@ -42,14 +42,14 @@
       <a-button
         type="primary"
         style="margin-right: 10px"
-        v-if="isDisabled && !istrain && canTraining && normalAddForm.record.audit === 2"
+        v-if="isDisabled && istrain && canTraining && normalAddForm.record.audit === 2"
         @click="training()"
         >发起培训</a-button
       >
       <a-button
         type="primary"
         style="margin-right: 10px"
-        v-if="!isDisabled && istrain && normalAddForm.record.audit === 2"
+        v-if="isDisabled && istrain && !canTraining && normalAddForm.record.audit === 2"
         @click="Endtraining()"
         >结束培训</a-button
       >
@@ -120,7 +120,7 @@ export default {
     },
 
     istrain() {
-      return this.dataSource.length !== 0 && this.dataSource[0].endTime === null
+      return (this.dataSource.length === 0 && this.canTraining !== false) || this.dataSource.length !== 0
     },
   },
   data() {
