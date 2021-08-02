@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="900"
+    :width="1200"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -21,6 +21,12 @@
 
     <a-spin :spinning="spinning">
       <a-form-model ref="ruleForm" :model="form" :rules="rules" class="bom-management-wrapper" layout="inline">
+        <a-form-model-item label="供应商属性">
+          <a-select placeholder="供应商属性" v-model="form.supplierType" :allowClear="true" style="width: 250px">
+            <a-select-option :value="0">物料供应商</a-select-option>
+            <a-select-option :value="1">委外加工商</a-select-option>
+          </a-select></a-form-model-item
+        >
         <div class="card-item">
           <div class="__hd">选择供应商物料（非必填）</div>
           <div class="__bd">
@@ -42,10 +48,23 @@
                   {{ item.__label }}
                 </a-select-option>
               </a-select>
+              <a-button key="submit" type="primary" style="margin-left: 10px" :loading="spinning" @click="brandAdd"
+                >新增</a-button
+              >
             </a-form-model-item>
           </div>
         </div>
         <a-form-model-item label="已选物料">(品牌及型号非必填) </a-form-model-item>
+        <table class="custom-table custom-table-border">
+          <tr v-for="(item, index) in brandList" :key="index">
+            <td>{{ item.materialName }}{{ item.materialCode }}</td>
+            <td>{{ item.materialCode }}</td>
+            <td>
+              <a-button @click="Addmodel" style="margin-right: 10px">添加品牌型号</a-button>
+              <a-button @click="modelDel(index)">删除</a-button>
+            </td>
+          </tr>
+        </table>
       </a-form-model>
 
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -72,9 +91,11 @@ export default {
       remark: '',
       visible: false,
       spinning: false,
+      brandList: [],
       form: {
         replaceMaterialItem: '', // 替换物料
         materialItem: {},
+        supplierType: undefined,
       },
       type: 'view',
       record: {},
@@ -119,6 +140,22 @@ export default {
   created() {},
   methods: {
     moment,
+    brandAdd() {
+      console.log('新增')
+      let that = this
+      if (JSON.stringify(that.form.materialItem) !== '{}') {
+        that.brandList.push(that.form.materialItem)
+      } else {
+        that.$message.info('请先选择供应物料')
+      }
+    },
+    Addmodel() {
+      //添加品牌型号
+    },
+    modelDel(index) {
+      //删除品牌型号
+      this.brandList.splice(index, 1)
+    },
     async allMaterialFuzzySearchAction(wd) {
       const that = this
       const _searchParam = {
@@ -284,6 +321,7 @@ export default {
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;
+  border: none;
 }
 
 .custom-table >>> .custom-table {
