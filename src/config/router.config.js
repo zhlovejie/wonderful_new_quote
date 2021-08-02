@@ -34,6 +34,7 @@ import materialRuleManagement from '@/router/router-material-rule-management'
 
 import productProcessManagement from '@/router/router-product-process-management'
 import bomManagement from '@/router/router-bom-management'
+import supplier from '@/router/router-supplier'
 
 const __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
@@ -58,6 +59,7 @@ const __ROUTER_MAP__ = [
   materialRuleManagement, //物料管理
   productProcessManagement, //工艺管理
   bomManagement, //BOM管理
+  supplier, //供应商管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
