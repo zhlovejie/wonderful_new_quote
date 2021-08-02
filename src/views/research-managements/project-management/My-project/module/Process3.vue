@@ -53,7 +53,7 @@
             >
               <div slot="predictPrice" slot-scope="text, record, index">
                 <!-- <template v-if="!isDisabled && +item.predictPrice === 1"> -->
-                <template v-if="!isDisabled && (+record.updateAuthority === 1 || +item.authorityVo.uploadAuthority === 1)">
+                <template v-if="!isDisabled && (+record.updateAuthority === 1 || (item.authorityVo && +item.authorityVo.uploadAuthority === 1))">
                   <a-input-number
                     :value="record.predictPrice"
                     :min="0"

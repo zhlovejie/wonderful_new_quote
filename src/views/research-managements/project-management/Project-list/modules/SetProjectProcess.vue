@@ -287,7 +287,7 @@ export default {
             stageDetailBoList
           };
 
-          console.log(params)
+          // console.log(params)
           that.spinning = true
           saveOrUpdateProjectAllInfoStage(params)
             .then(res => {
