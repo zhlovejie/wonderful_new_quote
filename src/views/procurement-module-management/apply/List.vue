@@ -1,0 +1,402 @@
+<template>
+  <a-card :bordered="false">
+    <a-spin :spinning="spinning">
+      <div class="search-wrapper">
+        <a-form layout="inline">
+          <a-form-item>
+            <a-input
+              placeholder="需求单号、物料代码、物料名称模糊查询"
+              v-model="queryParam.keyword"
+              allowClear
+              style="width: 300px"
+            />
+          </a-form-item>
+          <a-form-item label="部门">
+            <DepartmentSelect
+              style="width: 150px"
+              allowClear
+              :depId.sync="queryParam.applyDepId"
+            />
+          </a-form-item>
+          <a-form-item label="需求类型">
+            <CommonDictionarySelect
+              style="width: 150px"
+              allowClear
+              :text="'采购模块-需求类型'"
+              :dictionaryId.sync="queryParam.requestType"
+            />
+          </a-form-item>
+          <a-form-item label="紧急程度">
+            <a-select
+              style="width: 150px"
+              v-model="queryParam.urgencyDegree"
+            >
+              <a-select-option :value="1">一般</a-select-option>
+              <a-select-option :value="2">加急</a-select-option>
+              <a-select-option :value="3">特急</a-select-option>
+            </a-select>
+          </a-form-item>
+
+          <!-- <a-form-item label="查询类型" >
+          <a-select style="width: 150px" v-model="queryParam.queryType">
+            <a-select-option :value="1">全部</a-select-option>
+            <a-select-option :value="2">待审批</a-select-option>
+            <a-select-option :value="3">已审批</a-select-option>
+            <a-select-option :value="4">待抢单</a-select-option>
+            <a-select-option :value="5">已派单</a-select-option>
+          </a-select>
+        </a-form-item> -->
+          <a-form-item>
+            <a-button
+              type="primary"
+              icon="search"
+              @click="search({ current: 1 })"
+            >查询</a-button>
+          </a-form-item>
+
+          <a-form-item style="float:right;">
+            <a-button
+              type="primary"
+              icon="plus"
+              @click="doAction('add',null)"
+            >新增</a-button>
+          </a-form-item>
+        </a-form>
+      </div>
+
+      <div class="main-wrapper">
+        <a-tabs
+          :activeKey="activeKey"
+          :defaultActiveKey="1"
+          @change="tabChange"
+        >
+          <a-tab-pane
+            tab="全部"
+            :key="1"
+          />
+          <a-tab-pane
+            tab="待审批"
+            :key="2"
+          />
+          <a-tab-pane
+            tab="已审批"
+            :key="3"
+          />
+        </a-tabs>
+        <a-table
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="pagination"
+          :loading="loading"
+          @change="handleTableChange"
+          :customRow="customRowFunction"
+          :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+        >
+          <div
+            slot="order"
+            slot-scope="text, record, index"
+          >
+            {{index + 1}}
+          </div>
+          <div
+            slot="urgencyDegree"
+            slot-scope="text, record, index"
+          >
+            {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+          </div>
+          <div
+            slot="action"
+            slot-scope="text, record, index"
+          >
+            <a @click="doAction('view',record)">查看</a>
+            <a-divider type="vertical" />
+            <a @click="doAction('edit',record)">编辑</a>
+            <a-divider type="vertical" />
+            <a @click="doAction('del',record)">删除</a>
+            <a-divider type="vertical" />
+            <a @click="doAction('approval',record)">审批</a>
+          </div>
+
+          <div
+            slot="materialName"
+            slot-scope="text, record, index"
+          >
+            <a-popover
+              :title="text"
+              trigger="hover"
+            >
+              <template slot="content">
+                <p>物料名称：{{record.materialName}}</p>
+                <p>物料代码：{{record.materialCode}}</p>
+                <p>规格型号：{{record.materialModelType}}</p>
+                <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
+              </template>
+              <a
+                href="javascript:void(0);"
+                @click="doAction('materialView',record)"
+              >
+                {{text}}
+              </a>
+            </a-popover>
+          </div>
+
+          <div
+            slot="requestNum"
+            slot-scope="text, record, index"
+          >
+            <a-button
+              type="link"
+              @click="doAction('changeQty',record)"
+            >{{text}}</a-button>
+          </div>
+
+          <template
+            slot="footer"
+            slot-scope="text"
+          >
+            <a-button
+              :disabled="!btnOneEnabled"
+              @click="doAction('changeQty',{...selectedRows[0]})"
+            >调整需求数量</a-button>
+            <a-button
+              :disabled="!btnOneEnabled"
+              @click="doAction('cancel',{...selectedRows[0]})"
+              style="margin:0 10px;"
+            >取消申请</a-button>
+            <a-button
+              :disabled="!btnMulEnabled"
+              @click="doAction('approval',[...selectedRows])"
+            >批量审核</a-button>
+          </template>
+
+        </a-table>
+      </div>
+      <AddForm ref="addForm" />
+      <MaterialView
+        :key="normalAddFormKeyCount"
+        ref="materialView"
+      />
+    </a-spin>
+  </a-card>
+</template>
+
+<script>
+import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
+import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
+import AddForm from './AddForm'
+import MaterialView from '@/views/material-management/library/module/NormalAddForm'
+import { requestApplyPageList, requestApplyDelete } from '@/api/procurementModuleManagement'
+
+const columns = [
+  {
+    title: '序号',
+    scopedSlots: { customRender: 'order' }
+  },
+  {
+    title: '采购需求单号',
+    dataIndex: 'requestApplyNum'
+  },
+  {
+    title: '物料名称',
+    dataIndex: 'materialName',
+    scopedSlots: { customRender: 'materialName' }
+  },
+  {
+    title: '需求类型',
+    dataIndex: 'requestTypeText'
+  },
+  {
+    title: '关联单号',
+    dataIndex: 'relatedNum'
+  },
+  {
+    title: '紧急程度',
+    dataIndex: 'urgencyDegree',
+    scopedSlots: { customRender: 'urgencyDegree' }
+  },
+  {
+    title: '需求数量',
+    dataIndex: 'requestNum',
+    scopedSlots: { customRender: 'requestNum' }
+  },
+  {
+    title: '需求日期',
+    dataIndex: 'requestTime'
+  },
+  {
+    title: '申请人',
+    dataIndex: 'proposerName'
+  },
+  {
+    title: '申请原因',
+    dataIndex: 'reason'
+  },
+  {
+    title: '备注',
+    dataIndex: 'remark'
+  },
+  {
+    title: '制单人',
+    dataIndex: 'createdName'
+  },
+  {
+    title: '制单时间',
+    dataIndex: 'createdTime'
+  },
+  {
+    title: '操作',
+    scopedSlots: { customRender: 'action' }
+  }
+]
+
+export default {
+  name: 'procurement-module-management-apply',
+  components: {
+    DepartmentSelect,
+    CommonDictionarySelect,
+    AddForm,
+    MaterialView
+  },
+  data() {
+    return {
+      dataSource: [],
+      loading: false,
+      queryParam: {},
+      activeKey: 1,
+      columns,
+      selectedRowKeys: [],
+      selectedRows: [],
+
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
+        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: this.onShowSizeChangeHandler
+      },
+      spinning: false,
+      normalAddFormKeyCount: 1
+    }
+  },
+  computed: {
+    btnOneEnabled() {
+      return this.selectedRows.length === 1
+    },
+    btnMulEnabled() {
+      return this.selectedRows.length > 0
+    }
+  },
+  watch: {
+    $route: {
+      handler: function(to, from) {
+        if (to.name === 'procurement-module-management-apply') {
+          this.init()
+        }
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    init() {
+      const that = this
+      that.tabChange(that.activeKey)
+    },
+    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
+    search(params = {}) {
+      const that = this
+      that.selectedRowKeys = []
+      that.selectedRows = []
+
+      const paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10
+      }
+      const _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      that.loading = true
+      requestApplyPageList(_searchParam)
+        .then(res => {
+          that.loading = false
+          that.dataSource = res.data.records.map((item, index) => {
+            item.key = index + 1
+            item.requestTime = item.requestTime.slice(0, -3)
+            return item
+          })
+          //设置数据总条数
+          const pagination = { ...that.pagination }
+          pagination.total = res.data.total || 0
+          pagination.current = res.data.current || 1
+          that.pagination = pagination
+
+          //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
+          //刷新也不显示数据
+          const { current, pages } = res.data
+          if (+pages > 0 && +current > +pages) {
+            that.pagination = { ...pagination, current: pages }
+            that.search()
+          }
+        })
+        .catch(err => {
+          that.loading = false
+          console.log(err)
+        })
+    },
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination = { ...this.pagination, current: pagination.current }
+      this.search()
+    },
+    onShowSizeChangeHandler(current, pageSize) {
+      this.pagination = { ...this.pagination, current, pageSize }
+    },
+    tabChange(tagKey) {
+      this.activeKey = +tagKey
+      this.queryParam = { ...this.queryParam, queryType: this.activeKey }
+      this.selectedRowKeys = []
+      this.selectedRows = []
+      this.search({ current: 1 })
+    },
+    customRowFunction(record) {
+      const that = this
+      const __from = +that.type === 1 ? 'normal' : 'product'
+      const { materialId } = record
+      return {
+        on: {
+          dblclick: event => {
+            console.log(record)
+          }
+        }
+      }
+    },
+    doAction(type, record) {
+      const that = this
+      if (['add','edit', 'view', 'approval'].includes(type)) {
+        that.$refs['addForm'].query(type, { ...record })
+      } else if (type === 'del') {
+        requestApplyDelete(`id=${record.id}`)
+          .then(res => {
+            that.$message.info(res.msg)
+            if (+res.code === 200) {
+              that.search()
+            }
+          })
+          .catch(err => {
+            console.error(err)
+            that.$message.error(err)
+          })
+      } else if (type === 'materialView') {
+        that.normalAddFormKeyCount++
+        that.$nextTick(() => {
+          that.$refs['materialView'].query('view', {
+            id: record.materialId,
+            __from: 'normal'
+          })
+        })
+      }
+    }
+  }
+}
+</script>
+
