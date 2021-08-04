@@ -24,7 +24,7 @@
           <tr>
             <td class="wdf-column">会议负责人</td>
             <td>
-                <a-form-item>{{ detail.departmentName }}-{{ detail.chargePersonName }}</a-form-item>
+              <a-form-item>{{ detail.departmentName }}-{{ detail.chargePersonName }}</a-form-item>
             </td>
             <td class="wdf-column">会议名称</td>
             <td style="width: 35%">
@@ -36,9 +36,9 @@
           <tr>
             <td class="wdf-column">会议时间</td>
             <td>
-                <a-form-item>
-                  <span>{{ detail.meetingTimeStr }}</span>
-                </a-form-item>
+              <a-form-item>
+                <span>{{ detail.meetingTimeStr }}</span>
+              </a-form-item>
             </td>
             <td class="wdf-column">会议时长</td>
             <td style="width: 35%">
@@ -109,10 +109,18 @@
                   <td>{{ item.userName }}</td>
                   <td>
                     <span v-if="item.signStatus === 1">{{ item.signTime }}</span>
-                    <span style="color: red" v-else>{{ {1:'已签到',2:'未签到',3:'考勤请假',4:'会议请假',5:'其它'}[item.signStatus] }}</span>
+                    <span style="color: red" v-else>{{
+                      { 1: '已签到', 2: '未签到', 3: '考勤请假', 4: '会议请假', 5: '其它' }[item.signStatus]
+                    }}</span>
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
+          <tr v-if="detail.recordUrl !== null">
+            <td class="wdf-column">会议纪要</td>
+            <td colspan="3">
+              <a @click="delSee(detail.recordUrl)">查看</a>
             </td>
           </tr>
         </table>
@@ -174,8 +182,8 @@ export default {
       that.record = record || {}
       that.oaMeetingJoinList = []
       that.detail = Object.assign({}, record)
-    }
-  }
+    },
+  },
 }
 </script>
 
