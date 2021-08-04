@@ -209,8 +209,9 @@
                     :allowClear="true"
                     style="width: 290px"
                   >
-                    <a-select-option :value="0">现款现货</a-select-option>
-                    <a-select-option :value="1">帐期结算</a-select-option>
+                    <a-select-option v-for="item in Position" :key="item.id" :value="item.id">{{
+                      item.text
+                    }}</a-select-option>
                   </a-select></a-form-model-item
                 >
               </a-col>
@@ -222,8 +223,9 @@
                     :allowClear="true"
                     style="width: 280px"
                   >
-                    <a-select-option :value="0">现款现货</a-select-option>
-                    <a-select-option :value="1">帐期结算</a-select-option>
+                    <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
+                      item.text
+                    }}</a-select-option>
                   </a-select></a-form-model-item
                 >
               </a-col>
@@ -245,7 +247,6 @@
             </a-row>
             <div v-if="form.settlementMode === 0" class="form wdf-form">
               <a-row class="wdf-row">
-                <!-- <a-col class="col-border" :span="4">结算方式及付款比列</a-col> -->
                 <a-col class :span="20">
                   <a-row type="flex" align="middle">
                     <!-- 预付款 -->
@@ -259,21 +260,25 @@
                           </a-form-model-item>
                         </a-col>
                         <a-col :span="8">
-                          <a-form-model-item>
+                          <a-form-model-item ref="padvanceProportion" prop="padvanceProportion">
                             <a-input-number
-                              placeholder="填入数字"
-                              v-decorator="[
-                                'convention.4.number',
-                                { initialValue: 30, rules: [{ required: false, message: '填写进度款' }] },
-                              ]"
                               :min="0"
                               :max="100"
                               :precision="0"
+                              placeholder="填入数字"
+                              v-model="form.padvanceProportion"
+                              :allowClear="true"
+                              @blur="
+                                () => {
+                                  $refs.padvanceProportion.onFieldBlur()
+                                }
+                              "
                               style="width: 200px"
                             />
-                            <span> %</span>
-                          </a-form-model-item>
+                            <span> %</span></a-form-model-item
+                          >
                         </a-col>
+                        <a-col :span="9"></a-col>
                       </a-row>
                     </a-col>
                     <!-- 预付款 END-->
@@ -282,30 +287,31 @@
                       <a-row type="flex" justify="space-around" align="middle">
                         <a-col :span="4" :offset="1">
                           <a-form-model-item>
-                            <a-checkbox
-                              @change="checkboxChange"
-                              v-decorator="['convention.2.selected', { initialValue: false, valuePropName: 'checked' }]"
-                            >
-                              <span class="checkbox-innerspan mar-l0">提货款</span>
-                            </a-checkbox>
+                            <a-checkbox-group v-model="c2">
+                              <a-checkbox :value="2" name="type" @change="checkboxChange"> 提货款 </a-checkbox>
+                            </a-checkbox-group>
                           </a-form-model-item>
                         </a-col>
                         <a-col :span="8">
-                          <a-form-model-item>
+                          <a-form-model-item ref="ccommodityProportion" prop="ccommodityProportion">
                             <a-input-number
-                              placeholder="填入数字"
-                              v-decorator="[
-                                'convention.2.number',
-                                { initialValue: 0, rules: [{ required: false, message: '填写进度款' }] },
-                              ]"
                               :min="0"
                               :max="100"
                               :precision="0"
+                              placeholder="填入数字"
+                              v-model="form.ccommodityProportion"
+                              :allowClear="true"
+                              @blur="
+                                () => {
+                                  $refs.ccommodityProportion.onFieldBlur()
+                                }
+                              "
                               style="width: 200px"
                             />
-                            <span> %</span>
-                          </a-form-model-item>
+                            <span> %</span></a-form-model-item
+                          >
                         </a-col>
+                        <a-col :span="9"></a-col>
                       </a-row>
                     </a-col>
                     <!-- 提货款 END-->
@@ -316,87 +322,191 @@
                       <a-row type="flex" justify="space-around" align="middle">
                         <a-col :span="4" :offset="1">
                           <a-form-model-item>
-                            <a-checkbox
-                              @change="checkboxChange"
-                              v-decorator="['convention.5.selected', { initialValue: false, valuePropName: 'checked' }]"
-                            >
-                              <span class="checkbox-innerspan mar-l0">验收款</span>
-                            </a-checkbox>
+                            <a-checkbox-group v-model="c3">
+                              <a-checkbox :value="3" name="type" @change="checkboxChange"> 验收款 </a-checkbox>
+                            </a-checkbox-group>
                           </a-form-model-item>
                         </a-col>
                         <a-col :span="8">
-                          <a-form-model-item>
+                          <a-form-model-item ref="ccollectProportion" prop="ccollectProportion">
                             <a-input-number
-                              placeholder="填入数字"
-                              v-decorator="[
-                                'convention.5.number',
-                                { initialValue: 0, rules: [{ required: true, message: '填写提货款' }] },
-                              ]"
                               :min="0"
                               :max="100"
                               :precision="0"
+                              placeholder="填入数字"
+                              v-model="form.ccollectProportion"
+                              :allowClear="true"
+                              @blur="
+                                () => {
+                                  $refs.ccollectProportion.onFieldBlur()
+                                }
+                              "
                               style="width: 200px"
                             />
-                            <span> %</span>
-                          </a-form-model-item>
+                            <span> %</span></a-form-model-item
+                          >
+                        </a-col>
+                        <a-col :span="9">
+                          <a-form-model-item ref="ccollectProportion" prop="ccollectProportion">
+                            <span>到货后 </span>
+                            <a-input-number
+                              :min="0"
+                              :max="100"
+                              :precision="0"
+                              placeholder="填入数字"
+                              v-model="form.ccollectProportion"
+                              :allowClear="true"
+                              @blur="
+                                () => {
+                                  $refs.ccollectProportion.onFieldBlur()
+                                }
+                              "
+                              style="width: 200px"
+                            />
+                            <span> 天</span></a-form-model-item
+                          >
                         </a-col>
                       </a-row>
                     </a-col>
-                    <!-- 提货款 END-->
                     <!-- 质保金 -->
                     <a-col :span="20">
                       <a-row type="flex" justify="space-around" align="middle">
                         <a-col :span="4" :offset="1">
                           <a-form-model-item>
-                            <a-checkbox
-                              @change="checkboxChange"
-                              v-decorator="['convention.3.selected', { initialValue: false, valuePropName: 'checked' }]"
-                            >
-                              <span class="checkbox-innerspan mar-l0">质保金</span>
-                            </a-checkbox>
+                            <a-checkbox-group v-model="c4">
+                              <a-checkbox :value="4" name="type" @change="checkboxChange"> 验收款 </a-checkbox>
+                            </a-checkbox-group>
                           </a-form-model-item>
                         </a-col>
                         <a-col :span="8">
-                          <a-form-model-item>
+                          <a-form-model-item ref="warrantyProportion" prop="warrantyProportion">
                             <a-input-number
-                              placeholder="填入数字"
-                              v-decorator="[
-                                'convention.3.number',
-                                { initialValue: 0, rules: [{ required: true, message: '填写验收款' }] },
-                              ]"
                               :min="0"
                               :max="100"
                               :precision="0"
+                              placeholder="填入数字"
+                              v-model="form.warrantyProportion"
+                              :allowClear="true"
+                              @blur="
+                                () => {
+                                  $refs.warrantyProportion.onFieldBlur()
+                                }
+                              "
                               style="width: 200px"
                             />
-                            <span> %</span>
-                          </a-form-model-item>
+                            <span> %</span></a-form-model-item
+                          >
                         </a-col>
+                        <a-col :span="9"></a-col>
                       </a-row>
                     </a-col>
                     <!-- 验收款 END-->
                   </a-row>
                 </a-col>
               </a-row>
-              <!-- <a-row :gutter="[16, 24]">
-                <a-col :span="">
-                  <a-form-model-item ref="salesmanName" label="预付款" prop="salesmanName">
-                    <a-input
-                      placeholder="请输入业务员姓名"
-                      v-model="form.salesmanName"
-                      :allowClear="true"
-                      @blur="
-                        () => {
-                          $refs.salesmanName.onFieldBlur()
-                        }
-                      "
-                      style="width: 270px"
-                  /></a-form-model-item>
-                </a-col>
-              </a-row> -->
-              <!-- 预付款 -->
             </div>
-            <div v-else>付款周期</div>
+            <div v-else>
+              <a-row class="wdf-row" style="margin-top: 30px">
+                <a-col :span="20">
+                  <a-row type="flex" justify="space-around" align="middle">
+                    <a-col :span="9">
+                      <a-form-model-item ref="paymentCycleId" prop="paymentCycleId">
+                        <span>票到付款周期 </span>
+                        <a-select
+                          placeholder="选择天数"
+                          v-model="form.paymentCycleId"
+                          :allowClear="true"
+                          style="width: 200px"
+                        >
+                          <a-select-option v-for="item in Payment" :key="item.id" :value="item.id">{{
+                            item.text
+                          }}</a-select-option>
+                        </a-select>
+                        <span> 天</span></a-form-model-item
+                      >
+                    </a-col>
+                  </a-row>
+                </a-col>
+              </a-row>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item">
+          <div class="__hd">付款资料</div>
+          <div class="__bd">
+            <a-row :gutter="[16, 24]">
+              <a-col :span="12">
+                <a-form-model-item ref="cfullName" label="公司全称" prop="cfullName">
+                  <a-input
+                    placeholder="请输入公司全称"
+                    v-model="form.cfullName"
+                    :allowClear="true"
+                    @blur="
+                      () => {
+                        $refs.cfullName.onFieldBlur()
+                      }
+                    "
+                    style="width: 380px"
+                /></a-form-model-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-model-item ref="taxpayerNumber" label="纳税人识别号" prop="taxpayerNumber">
+                  <a-input
+                    placeholder="请输入纳税人识别号"
+                    v-model="form.taxpayerNumber"
+                    :allowClear="true"
+                    @blur="
+                      () => {
+                        $refs.taxpayerNumber.onFieldBlur()
+                      }
+                    "
+                    style="width: 250px"
+                /></a-form-model-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="[16, 24]">
+              <a-col :span="12">
+                <a-form-model-item ref="bankName" label="开户行+卡号" prop="bankName">
+                  <a-input
+                    placeholder="请输入开户行"
+                    v-model="form.bankName"
+                    :allowClear="true"
+                    @blur="
+                      () => {
+                        $refs.bankName.onFieldBlur()
+                      }
+                    "
+                    style="width: 170px"
+                /></a-form-model-item>
+                <a-form-model-item ref="cardNumber" prop="cardNumber">
+                  <a-input
+                    placeholder="请输入银行卡号"
+                    v-model="form.cardNumber"
+                    :allowClear="true"
+                    @blur="
+                      () => {
+                        $refs.cardNumber.onFieldBlur()
+                      }
+                    "
+                    style="width: 170px"
+                /></a-form-model-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-model-item ref="fcontactMode" label="财务联系方式" prop="fcontactMode">
+                  <a-input
+                    placeholder="请输入财务主管的手机号"
+                    v-model="form.fcontactMode"
+                    :allowClear="true"
+                    @blur="
+                      () => {
+                        $refs.fcontactMode.onFieldBlur()
+                      }
+                    "
+                    style="width: 250px"
+                /></a-form-model-item>
+              </a-col>
+            </a-row>
           </div>
         </div>
       </a-form-model>
@@ -413,6 +523,7 @@ import { other_addAndUpdate, other_approval, other_detail } from '@/api/bonus_ma
 import Approval from './Approval'
 import BrandFrom from './BrandFrom'
 import moment from 'moment'
+import { queryCode } from '@/api/workBox'
 
 let uuid = () => Math.random().toString(32).slice(-10)
 
@@ -428,6 +539,9 @@ export default {
       remark: '',
       visible: false,
       spinning: false,
+      Warehouse: [], //诚信级别
+      Position: [], //成立年限
+      Payment: [], //付款周期
       brandList: [],
       c1: [], //预付款
       c2: [], //提货款
@@ -436,6 +550,10 @@ export default {
       form: {
         replaceMaterialItem: '', // 替换物料
         materialItem: {},
+        padvanceProportion: 30, // 预付款
+        ccommodityProportion: undefined, //提货款
+        ccollectProportion: undefined,
+        warrantyProportion: undefined, //质量保证金
         supplierType: undefined,
         platformType: undefined,
         platformName: undefined,
@@ -449,10 +567,22 @@ export default {
         settlementMode: 0,
         sincerityLevelId: undefined,
         establishYearId: undefined,
+        paymentCycleId: undefined,
+        cfullName: undefined,
+        taxpayerNumber: undefined,
+        bankName: undefined,
+        cardNumber: undefined,
+        fcontactMode: undefined,
       },
       type: 'view',
       record: {},
       rules: {
+        fcontactMode: [{ required: true, message: '请输入财务主管手机号', trigger: 'blur' }],
+        cardNumber: [{ required: true, message: '请输入银行卡号', trigger: 'blur' }],
+        bankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }],
+        taxpayerNumber: [{ required: true, message: '请输入纳税人识别号', trigger: 'blur' }],
+        cfullName: [{ required: true, message: '请输入公司全称', trigger: 'blur' }],
+        paymentCycleId: [{ required: true, message: '请选择付款周期', trigger: 'change' }],
         salesmanWeChat: [{ required: true, message: '请输入业务员微信号', trigger: 'blur' }],
         salesmanPhone: [{ required: true, message: '请输入业务员手机号', trigger: 'blur' }],
         salesmanName: [{ required: true, message: '请输入业务员名称', trigger: 'blur' }],
@@ -508,65 +638,30 @@ export default {
   methods: {
     moment,
     checkboxChange(event) {
-      console.log(event.target.value)
-      this.$nextTick(() => this.autoFill())
-    },
-    autoFill() {
-      this.autoFillAction(true)
-    },
-    autoFillAction(isNormal = true) {
-      //自动补全 100%
       let that = this
-      // // const { convention } = this.form.getFieldsValue()
-      // let target = convention
-      // let targetKey = 'convention'
-      // let localKey = 'c'
-      // let money = that.queryOneData.totalAmount
-      // target = target.map((item, index) => {
-      //   if (item && index >= 1) {
-      //     item.__dateKey__ = `${localKey}${index}` //内部数据用
-      //     item.__formKey__ = `${targetKey}.${index}.number` //显示用
-      //   }
-      //   return item
-      // })
-      // // debugger
-
-      // //是否选择了 质保金和预付款
-      // let rateSelected = target.filter((item, index) => item.selected && (index === 1 || index === 4))
-      // //是否选择了 进度款、提货款、验收款
-      // let currentSelectIsNotRate = target.filter((item, index) => item && item.selected && [2, 3, 5].includes(index))
-      // if (rateSelected.length > 0 && currentSelectIsNotRate.length > 0) {
-      //   //剩余比例
-      //   let _rate = 100
-      //   let _oneSelected = currentSelectIsNotRate.length === 1
-      //   _rate = rateSelected.reduce((rate, item) => rate - item.number, _rate)
-      //   //减去用户填写的比例外 剩下的可分配比例
-      //   _rate = _oneSelected
-      //     ? _rate
-      //     : currentSelectIsNotRate.reduce((rate, item) => (item.number > 0 ? rate - item.number : rate), _rate)
-
-      //   let _rate_tmp = _rate
-      //   if (_rate_tmp <= 0) return //无比例可分
-
-      //   let _result = _oneSelected
-      //     ? currentSelectIsNotRate
-      //     : currentSelectIsNotRate.filter((item) => item.number === undefined || item.number === 0)
-      //   if (_result.length <= 0) return
-      //   let _avg = parseInt(_rate_tmp / _result.length)
-      //   let obj = {}
-      //   _result.map((item, index, arr) => {
-      //     let _last = index === arr.length - 1
-      //     if (!_last) {
-      //       _rate_tmp = _rate_tmp - _avg
-      //     }
-      //     let _ss = _last ? _rate_tmp : _avg
-
-      //     obj[item.__formKey__] = _ss
-      //     this[item.__dateKey__] = this._calculateAmount(_ss, money)
-      //   })
-
-      // Object.keys(obj).length > 0 && this.form.setFieldsValue(obj)
-      // }
+      let react = event.target.value
+      debugger
+      if (react === 2) {
+        that.form.ccommodityProportion =
+          100 -
+          ((Number(that.form.padvanceProportion) || 0) +
+            (Number(that.form.ccollectProportion) || 0) +
+            (Number(that.form.warrantyProportion) || 0))
+      }
+      if (react === 3) {
+        that.form.ccollectProportion =
+          100 -
+          ((Number(that.form.padvanceProportion) || 0) +
+            (Number(that.form.ccommodityProportion) || 0) +
+            (Number(that.form.warrantyProportion) || 0))
+      }
+      if (react === 4) {
+        that.form.warrantyProportion =
+          100 -
+          ((Number(that.form.padvanceProportion) || 0) +
+            (Number(that.form.ccollectProportion) || 0) +
+            (Number(that.form.ccommodityProportion) || 0))
+      }
     },
     brandChange(data) {
       console.log(data)
@@ -637,6 +732,22 @@ export default {
       that.visible = true
       that.type = type
       that.record = record
+      queryCode({ code: 'sincerity_0' })
+        .then((res) => {
+          that.Warehouse = res.data
+        })
+        .catch((err) => (that.loading = false))
+      queryCode({ code: 'Years_01' })
+        .then((res) => {
+          that.Position = res.data
+        })
+        .catch((err) => (that.loading = false))
+      queryCode({ code: 'period_0' })
+        .then((res) => {
+          that.Payment = res.data
+        })
+        .catch((err) => (that.loading = false))
+
       if (type !== 'add') {
         let detail = await other_detail({ id: record.id }).then((res) => res.data)
         await Promise.all([
@@ -753,7 +864,9 @@ export default {
 .custom-table {
   margin-bottom: 0;
 }
-
+.wdf-row {
+  border: 1px solid #ddd;
+}
 .custom-table-border th,
 .custom-table-border td {
   padding: 5px 10px;
@@ -830,21 +943,5 @@ export default {
 
 .mar-l0 {
   margin-left: 0;
-}
-
-.date {
-  width: 120px;
-}
-
-.select-prop {
-  width: 80px;
-}
-
-.row-in-col {
-  padding: 16px 0 8px;
-}
-
-.item-select {
-  display: inline-block;
 }
 </style>
