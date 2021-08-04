@@ -124,6 +124,7 @@
             </td>
           </tr>
         </table>
+        <XdocView ref="xdocView" />
       </a-form>
     </a-spin>
   </a-modal>
@@ -131,9 +132,9 @@
 
 <script>
 import moment from 'moment'
-
+import XdocView from './XdocView'
 export default {
-  components: {},
+  components: { XdocView },
   data() {
     return {
       meetingAddrList: [],
@@ -170,6 +171,10 @@ export default {
     moment: moment,
     async handleOk() {
       this.handleCancel()
+    },
+    //查看
+    delSee(idurl) {
+      this.$refs.xdocView.query(idurl)
     },
     handleCancel() {
       this.form.resetFields()
