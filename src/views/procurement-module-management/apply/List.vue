@@ -104,6 +104,16 @@
           >
             {{ {1:'一般',2:'加急',3:'特急'}[text] }}
           </div>
+
+          <div
+            slot="approveStatus"
+            slot-scope="text, record, index"
+          >
+            <a href="javascript:void(0);" @click="approvalPreview(record)">
+              {{ {1:'待审批',2:'通过',3:'不通过',4:'已撤销',5:'已驳回'}[text] || '未知状态' }}
+            </a>
+          </div>
+
           <div
             slot="action"
             slot-scope="text, record, index"
@@ -112,7 +122,9 @@
             <a-divider type="vertical" />
             <a @click="doAction('edit',record)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="doAction('del',record)">删除</a>
+            <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+                <a href="javascript:;">删除</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
             <a @click="doAction('approval',record)">审批</a>
           </div>
@@ -154,28 +166,36 @@
             slot="footer"
             slot-scope="text"
           >
-            <a-button
-              :disabled="!btnOneEnabled"
-              @click="doAction('changeQty',{...selectedRows[0]})"
-            >调整需求数量</a-button>
-            <a-button
-              :disabled="!btnOneEnabled"
-              @click="doAction('cancel',{...selectedRows[0]})"
-              style="margin:0 10px;"
-            >取消申请</a-button>
-            <a-button
-              :disabled="!btnMulEnabled"
-              @click="doAction('approval',[...selectedRows])"
-            >批量审核</a-button>
+            <div class="__table-footer-action-wrapper">
+              <a-button
+                :disabled="!btnOneEnabled"
+                @click="doAction('changeQty',{...selectedRows[0]})"
+              >调整需求数量</a-button>
+              <a-button
+                :disabled="!btnMulEnabled"
+                @click="doAction('cancel',{...selectedRows[0]})"
+              >取消申请</a-button>
+              <a-button
+                :disabled="!btnMulEnabled"
+                @click="doAction('batchApproval',[...selectedRows])"
+              >批量审核</a-button>
+              <a-button
+                :disabled="!btnMulEnabled"
+                @click="doAction('batchDel',[...selectedRows])"
+              >批量删除</a-button>
+            </div>
           </template>
+
 
         </a-table>
       </div>
-      <AddForm ref="addForm" />
+      <AddForm ref="addForm" @finished="() => search()" />
+      <ChangeQtyForm ref="changeQtyForm" @finished="() => search()" />
       <MaterialView
         :key="normalAddFormKeyCount"
         ref="materialView"
       />
+      <ApproveInfo ref="approveInfoCard" />
     </a-spin>
   </a-card>
 </template>
@@ -184,8 +204,15 @@
 import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import AddForm from './AddForm'
+import ChangeQtyForm from './ChangeQtyForm'
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
-import { requestApplyPageList, requestApplyDelete } from '@/api/procurementModuleManagement'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import {
+  requestApplyPageList,
+  requestApplyDelete ,
+  requestApplyApproval,
+  requestApplyRevocation
+} from '@/api/procurementModuleManagement'
 
 const columns = [
   {
@@ -232,6 +259,11 @@ const columns = [
     dataIndex: 'reason'
   },
   {
+    title: '审批状态',
+    dataIndex: 'approveStatus',
+    scopedSlots: { customRender: 'approveStatus' }
+  },
+  {
     title: '备注',
     dataIndex: 'remark'
   },
@@ -255,7 +287,9 @@ export default {
     DepartmentSelect,
     CommonDictionarySelect,
     AddForm,
-    MaterialView
+    MaterialView,
+    ChangeQtyForm,
+    ApproveInfo
   },
   data() {
     return {
@@ -370,7 +404,37 @@ export default {
         }
       }
     },
-    doAction(type, record) {
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    async betachAction({promiseList,type}){
+      const that = this
+      let result = await Promise.all(promiseList)
+      let msgQueue = []
+      result.map(res => {
+        if(res.out.code !== 200){
+          msgQueue.push(that.$createElement('p',{style:{'color':'red'}},`采购需求单号：${res.in.requestApplyNum} 物料名称：${res.in.materialName} 执行${type}操作失败！错误信息：${res.out.msg}`))
+        }
+      })
+      if(msgQueue.length > 0){
+        that.selectedRowKeys = []
+        that.selectedRows = []
+        that.$warning({
+          title: '提示信息',
+          content: h => h('div',msgQueue),
+          onOk() {
+            console.log('OK');
+          }
+        });
+      }else{
+        that.$message.info('操作成功')
+        that.selectedRowKeys = []
+        that.selectedRows = []
+        that.search()
+      }
+      return
+    },
+    async doAction(type, record) {
       const that = this
       if (['add','edit', 'view', 'approval'].includes(type)) {
         that.$refs['addForm'].query(type, { ...record })
@@ -394,9 +458,49 @@ export default {
             __from: 'normal'
           })
         })
+      } else if(type ==='changeQty'){
+        that.$refs['changeQtyForm'].query({ ...record })
+        return
+      }else if(type === 'cancel'){
+        let promiseList = that.selectedRows.map(row => {
+          return requestApplyRevocation({id:row.id}).then(res => {
+            return {
+              in:{...row},
+              out:res
+            }
+          })
+        })
+        that.betachAction({promiseList,type:'取消申请'})
+        return
+      }else if(type === 'batchApproval'){
+        let promiseList = that.selectedRows.map(row => {
+          return requestApplyApproval({ isAdopt: 0, opinion: '通过' ,approveId:row.id}).then(res => {
+            return {
+              in:{...row},
+              out:res
+            }
+          })
+        })
+        that.betachAction({promiseList,type:'审核'})
+        return
+      }else if(type === 'batchDel'){
+        let promiseList = that.selectedRows.map(row => {
+          return requestApplyDelete(`id=${row.id}`).then(res => {
+            return {
+              in:{...row},
+              out:res
+            }
+          })
+        })
+        that.betachAction({promiseList,type:'删除'})
+        return
       }
     }
   }
 }
 </script>
-
+<style scoped>
+.__table-footer-action-wrapper > *{
+  margin-right: 10px;
+}
+</style>

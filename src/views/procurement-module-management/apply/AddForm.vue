@@ -233,16 +233,18 @@
     </a-spin>
     <!--选择销售订单-->
     <ChoiceOrderFactory ref="choiceOrderFactory" @change="contractChange" />
+    <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
 </template>
 <script>
 //物料代码模糊搜索
 import { routineMaterialInfoPageList ,productMaterialInfoPageList} from '@/api/routineMaterial'
-
+import Approval from './Approval'
 import {
   requestApplyDetail,
   requestApplyAdd,
   requestApplyUpdate,
+  requestApplyApproval
 } from '@/api/procurementModuleManagement'
 
 import DepartmentUserCascade from '@/components/CustomerList/DepartmentUserCascade'
@@ -305,7 +307,8 @@ export default {
   components:{
     DepartmentUserCascade,
     CommonDictionarySelect,
-    ChoiceOrderFactory
+    ChoiceOrderFactory,
+    Approval
   },
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
@@ -395,20 +398,20 @@ export default {
           )
         )
       } else if (that.isApproval) {
-        // btn.push(
-        //   h(
-        //     'a-button',
-        //     { key: 'no-pass', on: { click: that.noPassAction }, props: { loading: that.spinning } },
-        //     '不通过'
-        //   )
-        // )
-        // btn.push(
-        //   h(
-        //     'a-button',
-        //     { key: 'pass', on: { click: that.passAction }, props: { type: 'primary', loading: that.spinning } },
-        //     '通过'
-        //   )
-        // )
+        btn.push(
+          h(
+            'a-button',
+            { key: 'no-pass', on: { click: that.noPassAction }, props: { loading: that.spinning } },
+            '不通过'
+          )
+        )
+        btn.push(
+          h(
+            'a-button',
+            { key: 'pass', on: { click: that.passAction }, props: { type: 'primary', loading: that.spinning } },
+            '通过'
+          )
+        )
       }
       return btn
     }
@@ -612,6 +615,39 @@ export default {
       let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
       return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
     },
+    //审批部分
+    submitAction(opt) {
+      const that = this
+      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
+      that.spinning = true
+      requestApplyApproval(values)
+        .then((res) => {
+          that.spinning = false
+          that.$message.info(res.msg)
+          if(+ res.code === 200){
+            that.handleCancel()
+            that.$emit('finished')
+          }
+        })
+        .catch((err) => {
+          that.spinning = false
+          console.log(err)
+        })
+    },
+    passAction(opt = {}) {
+      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+    },
+    noPassAction() {
+      this.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion,
+      })
+    },
+    //审批部分
   }
 }
 </script>

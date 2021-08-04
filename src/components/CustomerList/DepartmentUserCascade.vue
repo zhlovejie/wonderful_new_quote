@@ -46,7 +46,7 @@ import {
 } from '@/api/systemSetting'
 
 export default {
-  name: "DepartmentUserCascade",
+  name: 'DepartmentUserCascade',
   props: {
     info: {
       type: Object,
@@ -57,73 +57,69 @@ export default {
     return {
       depList: [],
       userList: [],
-      depListLoaded:false
-    };
+      depListLoaded: false
+    }
   },
-  computed:{
-    selfInfo:{
-      get(){
-        return {...this.info}
+  computed: {
+    selfInfo: {
+      get() {
+        return { ...this.info }
       },
-      set(){
-
+      set() {}
+    }
+  },
+  watch: {
+    info: {
+      handler() {
+        this.init()
       }
     }
   },
-  watch:{
-    info:{
-      handler(){
-        this.init()
-      },
-      immediate:true
-    }
+  created() {
+    const that = this
+    that.depList = []
+    that.userList = []
+    that.initDepartment()
+    that.init()
   },
   methods: {
-    init(){
-      const that = this;
-      that.depList = []
-      that.userList = []
-      let {depId,userId} = that.selfInfo
-      console.log(JSON.stringify(that.selfInfo))
-      if(depId && userId){
-        that.initDepartment()
-        debugger
-        let hasUser = that.userList.find(u => u.id === userId)
-        !hasUser && that.initUsers(depId)
+    init() {
+      const that = this
+      const { depId, userId } = that.selfInfo
+      if (depId && userId) {
+        that.initUsers(depId)
       }
     },
     initDepartment() {
       const that = this
-      if(!that.depListLoaded){
-        that.depListLoaded = true
-        departmentList().then(res => {
-          that.depList = res.data
-        });
-      }
+      departmentList().then(res => {
+        that.depList = res.data
+      })
     },
-    initUsers(depId){ //人员 id,trueName
+    initUsers(depId) {
+      //人员 id,trueName
       const that = this
       that.userList = []
-      if(!depId){
+      if (!depId) {
         return
       }
-      getUserByDep({ departmentId: depId }).then(res => that.userList = res.data)
+      getUserByDep({ departmentId: depId }).then(res => (that.userList = res.data))
     },
     depChange(depId) {
       const that = this
-      let target = that.depList.find(dep => dep.id === depId)
+      const target = that.depList.find(dep => dep.id === depId)
       that.initUsers(depId)
-      that.$emit('update:info',{depId,depName:target.departmentName,userId:undefined,userName:undefined})
+      that.$emit('update:info', { depId, depName: target.departmentName, userId: undefined, userName: undefined })
     },
-    userChange(userId){
+    userChange(userId) {
       const that = this
-      let target = that.userList.find(u => u.id === userId)
+      const target = that.userList.find(u => u.id === userId)
       that.$nextTick(() => {
-        that.$emit('update:info',{...that.selfInfo,userId,userName:target.trueName})
+        that.$emit('update:info', { ...that.selfInfo, userId, userName: target.trueName })
       })
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
