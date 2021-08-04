@@ -143,7 +143,7 @@
               </tr>
               <tr>
                 <td style="width:150px;">
-                  <span class="icon-required">项目总负责人</span>
+                  <span >项目总负责人</span>
                 </td>
                 <td>
                   <a-form-model-item prop="chargeUserId">
@@ -157,7 +157,7 @@
                   </a-form-model-item>
                 </td>
                 <td style="width:150px;">
-                  <span class="icon-required">研发总监</span>
+                  <span >研发总监</span>
                 </td>
                 <td>
                   <a-form-model-item prop="inspectorUserId">
@@ -365,8 +365,8 @@ export default {
         materialCode: [{ required: true, message: '请输入产品型号' }],
         oldMaterialCode: [{ required: true, message: '请输入原产品型号' }],
         projectName: [{ required: true, message: '请输入项目名称' }],
-        chargeUserId:[{ required: true, message: '请选择项目总负责人' }],
-        inspectorUserId:[{ required: true, message: '请选择研发总监' }],
+        // chargeUserId:[{ required: true, message: '请选择项目总负责人' }],
+        // inspectorUserId:[{ required: true, message: '请选择研发总监' }],
         demandDesc:[{ required: true, message: '请输入项目需求描述' }],
         confScheme:[{ required: true, message: '请输入项目配置方案' }],
       },
@@ -685,7 +685,8 @@ export default {
     getModelType(type){
       let _txt = ''
       try{
-        _txt = this.projectDevelopmentModes[type].text
+        let target = this.projectDevelopmentModes.find(item => +item.id === +type)
+        _txt = target.text
       }catch(err){
         console.log(err)
       }

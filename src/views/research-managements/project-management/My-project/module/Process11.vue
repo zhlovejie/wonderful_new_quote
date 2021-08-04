@@ -103,7 +103,7 @@
 
       <p class="btn-action-wrapper">
         <template v-if="!isDisabled">
-          <a-button type="primary" @click="handleSubmit(1)">保存</a-button>
+          <a-button type="primary" v-if="+queryOneData.approvePersonButtonFlag === 1" @click="handleSubmit(1)">保存</a-button>
           <a-button v-if="+queryOneData.approvePersonButtonFlag === 1" type="primary" @click="handleSubmit(2)"
             >个人资料提交审核</a-button
           >
@@ -191,6 +191,7 @@ const columns = [
     title: '资料名称',
     dataIndex: 'fileUrl',
     scopedSlots: { customRender: 'fileUrl' },
+    width: '500px',
   },
   {
     title: '提交人',
@@ -214,7 +215,7 @@ const columns = [
 const columnsPredictPrice = [
   {
     title: '产品预估价',
-    width: '300px',
+    width: '570px',
     dataIndex: 'predictPrice',
     scopedSlots: { customRender: 'predictPrice' },
   },
@@ -291,10 +292,13 @@ export default {
 
           item.__spinning = false
           item.departmentVoList = item.departmentVoList.map((dep) => {
+            //没有数据，有新增权限，默认添加一条空数据
             if (
               item.fileType === 1 &&
               ((Array.isArray(dep.personApplyDetailVoList) && dep.personApplyDetailVoList.length === 0) ||
-                dep.personApplyDetailVoList === null)
+                dep.personApplyDetailVoList === null) &&
+              item.authorityVo &&
+              item.authorityVo.uploadAuthority === 1
             ) {
               //产品预估价
               let __uuid = uuid()
@@ -312,6 +316,8 @@ export default {
                   fileType: 1,
                   operationStatus: 1,
                   predictPrice: undefined,
+                  userName:that.userInfo.trueName,
+                  createdTime:moment().format('YYYY-MM-DD HH:mm:ss')
                 },
               ]
             } else {
