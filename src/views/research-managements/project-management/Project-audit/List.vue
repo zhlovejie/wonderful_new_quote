@@ -108,12 +108,12 @@
                   <a type="primary" href="javascript:;">撤回</a>
                 </a-popconfirm>
               </template>
-              <template v-if="record.approveStatus === 3 || record.approveStatus === 4">
+              <!-- <template v-if="record.approveStatus === 3 || record.approveStatus === 4">
                 <a-divider type="vertical" />
                 <a-popconfirm title="确认删除该条数据吗?" @confirm="() => toAdd('del', record)">
                   <a type="primary" href="javascript:;">删除</a>
                 </a-popconfirm>
-              </template>
+              </template> -->
             </template>
 
             <template v-if="audit === 1">
@@ -307,7 +307,7 @@ export default {
         record.audit = this.audit
         this.$router.push({
           name: 'project-management-Project-audit-handle',
-          params: { type: type, id: record.projectId, status: record.status, record: record },
+          params: { type: type, id: record.projectId, status: record.status, record: record, statustype: 1 },
         })
         return
       }

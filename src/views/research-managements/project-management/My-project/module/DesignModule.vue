@@ -2,6 +2,15 @@
   <a-form-model ref="ruleForm" :model="form" class="routine-addform-wrapper-baseInnerData">
     <h4>设计资料</h4>
     <a-table :columns="columns1" :dataSource="form.DesignDataHisFiles" :pagination="false" size="small">
+      <div slot="approveStatus" slot-scope="text">
+        {{
+          {
+            1: '待审批',
+            2: '审批中，',
+            3: '审批通过',
+          }[text] || '未知'
+        }}
+      </div>
       <div slot="action" slot-scope="text, record, index">
         <template v-if="normalAddForm.isApproval || normalAddForm.isView || record.author.findAuthority === 1">
           <a @click="delSee(record.fileUrl)">查看</a>
@@ -172,7 +181,12 @@ export default {
           title: '提交时间',
           dataIndex: 'fileCreatedTime',
         },
-
+        {
+          align: 'center',
+          title: '审核状态',
+          dataIndex: 'approveStatus',
+          scopedSlots: { customRender: 'approveStatus' },
+        },
         {
           align: 'center',
           title: '操作',

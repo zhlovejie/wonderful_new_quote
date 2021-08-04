@@ -55,7 +55,7 @@
         </td>
       </tr>
     </table>
-    <div v-if="testResultsDow" style="margin-top: 20px">
+    <div v-if="testResultsDow && !normalAddForm.isViewType" style="margin-top: 20px">
       <h4 style="float：left;    display: inline-block;">测试结果</h4>
       <div class="action-wrapper" style="float: right;margin-bottom：10px ;">
         <template v-if="testResultsDownload">

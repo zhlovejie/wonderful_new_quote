@@ -125,6 +125,9 @@ export default {
     isApproval() {
       return this.type === 'Approval'
     },
+    isViewType() {
+      return this.statustype === 1
+    },
   },
   data() {
     return {
@@ -133,6 +136,7 @@ export default {
       spinning: false,
       status: undefined,
       type: undefined,
+      statustype: undefined,
       record: {},
       allInfo: {},
 
@@ -156,6 +160,7 @@ export default {
           that.status = that.$route.params.status
           that.type = that.$route.params.type
           that.record = that.$route.params.record
+          that.statustype = that.$route.params.statustype
           that.init()
         } else {
           this.$router.go(-1)

@@ -226,7 +226,14 @@
               </table>
             </td>
           </tr>
+          <tr v-if="detail.recordUrl !== null">
+            <td class="wdf-column">会议纪要</td>
+            <td colspan="3">
+              <a @click="delSee(detail.recordUrl)">查看</a>
+            </td>
+          </tr>
         </table>
+        <XdocView ref="xdocView" />
       </a-form>
     </a-spin>
   </a-modal>
@@ -244,12 +251,16 @@ import { getDictionaryList } from '@/api/workBox'
 
 import { getMeetingRecordDetail } from '@/api/projectManagement'
 import moment from 'moment'
+import XdocView from './XdocView'
+
 function makeUUID() {
   return Math.random().toString(32).slice(-10)
 }
 export default {
   name: 'AddForm',
-  components: {},
+  components: {
+    XdocView,
+  },
   data() {
     return {
       meetingAddrList: [],
@@ -373,6 +384,10 @@ export default {
     },
     openSystemUsers(decoratorKey) {
       this.$refs.systemUserSelect.query(decoratorKey)
+    },
+    //查看
+    delSee(idurl) {
+      this.$refs.xdocView.query(idurl)
     },
 
     resetValues() {
