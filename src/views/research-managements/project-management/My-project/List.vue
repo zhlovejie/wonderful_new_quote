@@ -60,7 +60,7 @@
             {{ { 1: '自主研发新产品', 2: '客户定制新需求', 3: '产品研发改进', 4: '非常规产品研发' }[text] || '未知' }}
           </div>
           <div slot="status" slot-scope="text, record">
-            <a>
+            <a @click="process(record)">
               {{
                 {
                   1: '立项阶段',
@@ -254,12 +254,12 @@ export default {
       if (type === 'design') {
         this.$router.push({
           name: 'project-management-My-handle',
-          params: { type: type, id: record.id, status: 12, record: record },
+          params: { type: type, id: record.id, status: 12, record: record, statustype: 0 },
         })
       } else {
         this.$router.push({
           name: 'project-management-My-handle',
-          params: { type: type, id: record.id, status: record.status, record: record },
+          params: { type: type, id: record.id, status: record.status, record: record, statustype: 0 },
         })
       }
     },
@@ -279,7 +279,12 @@ export default {
       // }
       this.$refs.table.refresh(true)
     },
-
+    process(record) {
+      this.$router.push({
+        name: 'project-management-My-projectProgress',
+        params: { record: record },
+      })
+    },
     paramClick(key) {
       if (key === '1') {
         this.audit = 1
