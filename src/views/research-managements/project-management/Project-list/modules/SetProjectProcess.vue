@@ -70,7 +70,7 @@
                 <a-button
                   type="link"
                   v-if="[3,11,12].includes(item.projectPeriod)"
-                  :disabled="item.projectPeriod < detail.status"
+                  :disabled="item.projectPeriod < detail.status && item.projectPeriod !== 12"
                   @click="setPermission(item)"
                 >权限设置</a-button>
                 <span v-else>-</span>
