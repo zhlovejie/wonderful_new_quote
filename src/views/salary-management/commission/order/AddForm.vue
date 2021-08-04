@@ -18,7 +18,9 @@
             <tr>
               <th>序号</th>
               <th>产品名称</th>
+              <th>产品类型</th>
               <th>产品销售额(去税去运费)</th>
+              <th>成本价</th>
               <th>利润值</th>
               <th>提成比率系数</th>
 
@@ -39,7 +41,9 @@
               <tr v-for="(product, idx) in item.contractProductPercentageDetailLastVoList" :key="product.id">
                 <td>{{ idx + 1 }}</td>
                 <td>{{ product.productName }}</td>
+                <td>{{ product.productConfigName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
+                <td>{{ product.costPrice | moneyFormatNumber}}</td>
                 <td>{{ product.profitValue }}</td>
                 <td>{{ product.percentageRatio }}</td>
 
@@ -74,7 +78,9 @@
             <tr>
               <th>序号</th>
               <th>产品名称</th>
+              <th>产品类型</th>
               <th>产品销售额(去税去运费)</th>
+              <th>成本价</th>
               <th>利润值</th>
               <th>提成比率系数</th>
               <th colspan="4">提成</th>
@@ -94,7 +100,9 @@
               <tr v-for="(product, idx) in item.contractProductPercentageDetailLastVoList" :key="product.id">
                 <td>{{ idx + 1 }}</td>
                 <td>{{ product.productName }}</td>
+                <td>{{ product.productConfigName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
+                <td>{{ product.costPrice | moneyFormatNumber}}</td>
                 <td>{{ product.profitValue }}</td>
                 <td>{{ product.percentageRatio }}</td>
                 <td colspan="4">
