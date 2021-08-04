@@ -143,7 +143,8 @@ export default {
       },
       detail: {},
       personBoList: [],
-      depList: []
+      depList: [],
+      hasRootPerson:true
     }
   },
   methods: {
@@ -154,6 +155,7 @@ export default {
       that.visible = true
       that.personBoList = []
       that.spinning = true
+      that.hasRootPerson = true
       try{
         await listProjectAllDetail({ projectId: record.id })
           .then(res => {
@@ -169,6 +171,7 @@ export default {
               chargeUserId,
               chargeUserName
             } = that.detail
+            that.hasRootPerson = !!(inspectorDepartmentId && chargeDepartmentId)
 
             that.form = {
               ...that.form,
@@ -188,13 +191,16 @@ export default {
             console.log(err)
             that.$message.info(err)
           })
-
+        that.initDepList()
+        if(!(that.form.chargeDepartmentId && that.form.inspectorDepartmentId)){
+          that.spinning = false
+          return
+        }
         let personBoList = [...that.personBoList]
 
         let [userList1,userList2] = await Promise.all([
           that.initUserList(that.form.chargeDepartmentId),
-          that.initUserList(that.form.inspectorDepartmentId),
-          that.initDepList()
+          that.initUserList(that.form.inspectorDepartmentId)
         ])
         let targetChargeDepartment = that.depList.find(dep => dep.id === that.form.chargeDepartmentId)
         personBoList.push({
@@ -305,11 +311,60 @@ export default {
             })
           })
 
+          //新建项目时 没选择项目负责人和项目总监的情况，这里必须手选，添加到人员列表
+          if(!that.hasRootPerson){
+            let arr = []
+            let {
+              inspectorDepartmentId,
+              inspectorDepartmentName,
+              inspectorDepartmentType,
+              inspectorUserId,
+              inspectorUserName,
+
+              chargeDepartmentId,
+              chargeDepartmentName,
+              chargeDepartmentType,
+              chargeUserId,
+              chargeUserName,
+
+            } = that.form
+            arr.push({
+              departmentId:inspectorDepartmentId,
+              departmentName:inspectorDepartmentName,
+              departmentType:inspectorDepartmentType,
+              userId:inspectorUserId,
+              userName:inspectorUserName
+            })
+            // 项目负责人和项目总监 是否同一个人
+            if(inspectorUserId !== chargeUserId){
+              arr.push({
+                departmentId:chargeDepartmentId,
+                departmentName:chargeDepartmentName,
+                departmentType:chargeDepartmentType,
+                userId:chargeUserId,
+                userName:chargeUserName
+              })
+            }
+            personBoList.push(arr)
+          }
+
+          //去除重复人员
+          personBoList = that.flatten(personBoList)
+          let keys = [...new Set([...personBoList.map(p => p.userId)])]
+          let ps = []
+          keys.map(userId => {
+            let u = personBoList.find(u => u.userId === userId)
+            if(u){
+              ps.push({...u})
+            }
+          })
+          //去除重复人员 END
+
           let reviewTime = that.form.reviewTime
           reviewTime = reviewTime instanceof moment ? reviewTime.format('YYYY-MM-DD HH:mm') : reviewTime
 
           that.spinning = true
-          addProjectAllJoin({ ...that.form ,personBoList:personBoList.flat(2),reviewTime})
+          addProjectAllJoin({ ...that.form ,personBoList:ps,reviewTime})
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)
@@ -342,6 +397,7 @@ export default {
           ...that.form,
           inspectorDepartmentId: depId,
           inspectorDepartmentName: targetDep.departmentName,
+          inspectorDepartmentType: targetDep.type,
           inspectorUserId: userId,
           inspectorUserName: targetUser.trueName
         }
@@ -350,6 +406,7 @@ export default {
           ...that.form,
           chargeDepartmentId: depId,
           chargeDepartmentName: targetDep.departmentName,
+          chargeDepartmentType: targetDep.type,
           chargeUserId: userId,
           chargeUserName: targetUser.trueName
         }
@@ -361,6 +418,16 @@ export default {
           console.log(err)
         }
       })
+    },
+    flatten(array) {
+      var flattend = [];
+      (function flat(array) {
+        array.forEach(function(el) {
+          if (Array.isArray(el)) flat(el);
+          else flattend.push(el);
+        });
+      })(array);
+      return flattend;
     }
   }
 }
