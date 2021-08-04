@@ -419,6 +419,45 @@ function handleWindowPrint (ele, title) {
   border:none;
 }
 
+
+
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper {
+
+}
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper .opt-config-tree-item:first-child {
+  margin-top: 0;
+}
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper .opt-config-tree-item {
+  position: relative;
+  margin-top: -1px;
+  display: flex;
+}
+
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper .opt-config-tree-item .opt-config-tree-item-order{
+  border: 1px solid #e8e8e8;
+  padding: 0 20px;
+  margin-right: -1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow:hidden;
+}
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper table table {
+  margin: -2px;
+  width: calc(100% + 4px);
+  overflow:hidden;
+}
+#product-offer-management-product-offer-price-print .opt-config-tree-wrapper table td {
+  border: 1px solid #e8e8e8;
+  padding:0;
+  margin:0;
+}
+
     </style>
   `
   oIframe.contentDocument.body.innerHTML = document.querySelector(ele).outerHTML

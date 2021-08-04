@@ -304,7 +304,6 @@ export default {
       if (!that.isAdd) {
         driverAuthorityDetail({ id: that.record.id }).then((res) => {
           that.detail = { ...res.data }
-          debugger
           let arr = (res.data.licenseUrl || '').split(',')
           that.fileList = arr.map((item) => {
             return {
