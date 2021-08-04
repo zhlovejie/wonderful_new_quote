@@ -509,6 +509,29 @@
             </a-row>
           </div>
         </div>
+        <div class="card-item">
+          <div class="__hd">合作协议</div>
+          <div class="__bd">
+            <table>
+              <tr>
+                <td>合作协议（非必填）</td>
+                <td>
+                  <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '合作协议')" />
+                </td>
+              </tr>
+              <tr>
+                <td>保密协议</td>
+                <td>
+                  <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '保密协议')" />
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="card-item">
+          <div class="__hd">质检报告</div>
+          <div class="__bd"></div>
+        </div>
       </a-form-model>
 
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -522,6 +545,7 @@ import { routineMaterialInfoPageList } from '@/api/routineMaterial'
 import { other_addAndUpdate, other_approval, other_detail } from '@/api/bonus_management'
 import Approval from './Approval'
 import BrandFrom from './BrandFrom'
+import UploadFile from './UploadFile'
 import moment from 'moment'
 import { queryCode } from '@/api/workBox'
 
@@ -530,8 +554,9 @@ let uuid = () => Math.random().toString(32).slice(-10)
 export default {
   name: 'BecomingForm',
   components: {
-    Approval: Approval,
-    BrandFrom: BrandFrom,
+    Approval,
+    BrandFrom,
+    UploadFile,
   },
   data() {
     this.allMaterialFuzzySearchAction = this.$_.debounce(this.allMaterialFuzzySearchAction, 800)
@@ -573,6 +598,7 @@ export default {
         bankName: undefined,
         cardNumber: undefined,
         fcontactMode: undefined,
+        cooperationAgreement: undefined,
       },
       type: 'view',
       record: {},
@@ -637,6 +663,15 @@ export default {
   created() {},
   methods: {
     moment,
+    fileChange(fileList, type) {
+      const that = this
+      if (type === '合作协议') {
+        that.form.cooperationAgreement = fileList
+      }
+      if (type === '保密协议') {
+        that.form.secrecyAgreement = fileList
+      }
+    },
     checkboxChange(event) {
       let that = this
       let react = event.target.value
