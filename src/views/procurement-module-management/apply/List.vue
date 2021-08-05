@@ -11,24 +11,28 @@
               style="width: 300px"
             />
           </a-form-item>
-          <a-form-item label="部门">
+          <a-form-item>
             <DepartmentSelect
+              placeholder="部门"
               style="width: 150px"
               allowClear
               :depId.sync="queryParam.applyDepId"
             />
           </a-form-item>
-          <a-form-item label="需求类型">
+          <a-form-item>
             <CommonDictionarySelect
+              placeholder="需求类型"
               style="width: 150px"
               allowClear
               :text="'采购模块-需求类型'"
               :dictionaryId.sync="queryParam.requestType"
             />
           </a-form-item>
-          <a-form-item label="紧急程度">
+          <a-form-item>
             <a-select
+              placeholder="紧急程度"
               style="width: 150px"
+              allowClear
               v-model="queryParam.urgencyDegree"
             >
               <a-select-option :value="1">一般</a-select-option>
@@ -37,15 +41,13 @@
             </a-select>
           </a-form-item>
 
-          <!-- <a-form-item label="查询类型" >
-          <a-select style="width: 150px" v-model="queryParam.queryType">
-            <a-select-option :value="1">全部</a-select-option>
-            <a-select-option :value="2">待审批</a-select-option>
-            <a-select-option :value="3">已审批</a-select-option>
-            <a-select-option :value="4">待抢单</a-select-option>
-            <a-select-option :value="5">已派单</a-select-option>
-          </a-select>
-        </a-form-item> -->
+          <!-- <a-form-item v-if="+activeKey === 3">
+            <a-select placeholder="审核结果" style="width: 150px" allowClear v-model="queryParam.result">
+              <a-select-option :value="1">通过</a-select-option>
+              <a-select-option :value="2">不通过</a-select-option>
+              <a-select-option :value="3">被驳回</a-select-option>
+            </a-select>
+          </a-form-item> -->
           <a-form-item>
             <a-button
               type="primary"
@@ -67,20 +69,26 @@
       <div class="main-wrapper">
         <a-tabs
           :activeKey="activeKey"
-          :defaultActiveKey="1"
+          :defaultActiveKey="activeKey"
           @change="tabChange"
         >
+          <template v-if="$auth('requestApply:all')">
           <a-tab-pane
             tab="全部"
             :key="1"
           />
+          </template>
           <a-tab-pane
             tab="待审批"
             :key="2"
           />
           <a-tab-pane
-            tab="已审批"
-            :key="3"
+            tab="通过"
+            :key="4"
+          />
+          <a-tab-pane
+            tab="不通过"
+            :key="5"
           />
         </a-tabs>
         <a-table
@@ -90,7 +98,7 @@
           :loading="loading"
           @change="handleTableChange"
           :customRow="customRowFunction"
-          :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          :rowSelection="+activeKey === 1 ? null : { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
         >
           <div
             slot="order"
@@ -118,15 +126,29 @@
             slot="action"
             slot-scope="text, record, index"
           >
-            <a @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('edit',record)">编辑</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
-                <a href="javascript:;">删除</a>
-            </a-popconfirm>
-            <a-divider type="vertical" />
-            <a @click="doAction('approval',record)">审批</a>
+            <template v-if="+activeKey === 2">
+              <a @click="doAction('view',record)">查看</a>
+              <a-divider type="vertical" />
+              <a @click="doAction('edit',record)">编辑</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+                  <a href="javascript:;">删除</a>
+              </a-popconfirm>
+              <a-divider type="vertical" />
+              <a @click="doAction('approval',record)">审批</a>
+            </template>
+
+            <template v-if="+activeKey === 5">
+              <a @click="doAction('edit',record)">编辑</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+                  <a href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
+
+            <template v-if="+activeKey === 1 || +activeKey === 4">
+              <a @click="doAction('view',record)">查看</a>
+            </template>
           </div>
 
           <div
@@ -162,27 +184,53 @@
             >{{text}}</a-button>
           </div>
 
+          <div
+            slot="proposerName"
+            slot-scope="text, record, index"
+          >
+            {{record.applyDepName}}/{{record.proposerName}}
+          </div>
+
           <template
             slot="footer"
             slot-scope="text"
           >
             <div class="__table-footer-action-wrapper">
-              <a-button
-                :disabled="!btnOneEnabled"
-                @click="doAction('changeQty',{...selectedRows[0]})"
-              >调整需求数量</a-button>
-              <a-button
-                :disabled="!btnMulEnabled"
-                @click="doAction('cancel',{...selectedRows[0]})"
-              >取消申请</a-button>
-              <a-button
-                :disabled="!btnMulEnabled"
-                @click="doAction('batchApproval',[...selectedRows])"
-              >批量审核</a-button>
-              <a-button
-                :disabled="!btnMulEnabled"
-                @click="doAction('batchDel',[...selectedRows])"
-              >批量删除</a-button>
+              <template v-if="+activeKey === 2">
+                <a-button
+                  :disabled="!btnOneEnabled"
+                  @click="doAction('changeQty',{...selectedRows[0]})"
+                >调整需求数量</a-button>
+                <a-button
+                  :disabled="!btnMulEnabled"
+                  @click="doAction('cancel',{...selectedRows[0]})"
+                >取消申请</a-button>
+                <a-button
+                  :disabled="!btnMulEnabled"
+                  @click="doAction('batchApproval',[...selectedRows])"
+                >批量审核</a-button>
+              </template>
+              <template v-if="+activeKey === 4">
+                <a-button
+                  :disabled="!btnMulEnabled"
+                  @click="doAction('cancel',{...selectedRows[0]})"
+                >取消申请</a-button>
+              </template>
+
+              <template v-if="+activeKey === 5">
+                <a-button
+                  :disabled="!btnOneEnabled"
+                  @click="doAction('changeQty',{...selectedRows[0]})"
+                >调整需求数量</a-button>
+                <a-button
+                  :disabled="!btnMulEnabled"
+                  @click="doAction('batchDel',[...selectedRows])"
+                >批量删除</a-button>
+                <a-button
+                  :disabled="!btnMulEnabled"
+                  @click="doAction('batchApproval',[...selectedRows])"
+                >批量审核</a-button>
+              </template>
             </div>
           </template>
 
@@ -252,7 +300,8 @@ const columns = [
   },
   {
     title: '申请人',
-    dataIndex: 'proposerName'
+    dataIndex: 'proposerName',
+    scopedSlots: { customRender: 'proposerName' }
   },
   {
     title: '申请原因',
@@ -296,7 +345,7 @@ export default {
       dataSource: [],
       loading: false,
       queryParam: {},
-      activeKey: 1,
+      activeKey: 2,
       columns,
       selectedRowKeys: [],
       selectedRows: [],
@@ -387,7 +436,17 @@ export default {
     },
     tabChange(tagKey) {
       this.activeKey = +tagKey
-      this.queryParam = { ...this.queryParam, queryType: this.activeKey }
+      let queryParam = { ...this.queryParam, queryType: this.activeKey }
+      if(+tagKey === 4){
+        queryParam.queryType = 3
+        queryParam.result = 1
+      }else if(+tagKey === 5){
+        queryParam.queryType = 3
+        queryParam.result = 2
+      }else{
+        queryParam.result = undefined
+      }
+      this.queryParam = queryParam
       this.selectedRowKeys = []
       this.selectedRows = []
       this.search({ current: 1 })

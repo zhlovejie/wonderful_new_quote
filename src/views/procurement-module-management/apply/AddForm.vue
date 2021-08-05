@@ -142,7 +142,7 @@
               <span v-else>{{record.requestApplyNum}}</span>
             </div>
             <div slot="action" slot-scope="text, record, index">
-              <template v-if="!isDisabled">
+              <template v-if="isAdd">
                 <a href="javascript:void(0);" @click="materialAction('del',record)">删除</a>
               </template>
 
@@ -214,7 +214,7 @@
             type="dashed"
             icon="plus"
             @click="materialAction('add')"
-            v-if="!isDisabled && form.requestType && form.relatedNum"
+            v-if="(isAdd) && form.requestType && form.relatedNum"
           >新增需求物料</a-button>
         </div>
       </div>
