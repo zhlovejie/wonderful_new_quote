@@ -70,11 +70,11 @@
               <td >
                 <a-form-model-item prop="requestType" v-if="!isDisabled">
                 <CommonDictionarySelect
+                  ref="requestType"
                   style="width: 360px"
                   allowClear
                   :text="'采购模块-需求类型'"
                   :dictionaryId.sync="form.requestType"
-                  @selected="requestTypeSelectedHandler"
                 />
                 </a-form-model-item>
                 <span v-else>
@@ -96,9 +96,13 @@
 
                 <a-form-model-item prop="relatedNum" v-if="!isDisabled">
                   <a-select style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
-                    <a-select-option :value="1">测试1</a-select-option>
-                    <a-select-option :value="2">测试2</a-select-option>
-                    <a-select-option :value="3">测试3</a-select-option>
+                    <a-select-option
+                      v-for="item in relatedNumList"
+                      :key="item.id"
+                      :value="item.id"
+                    >
+                    {{item.label}}
+                    </a-select-option>
                   </a-select>
                 </a-form-model-item>
                 <span v-else>
@@ -118,7 +122,7 @@
                     style="width:360px;"
                   />
                 </a-form-model-item>
-                <span v-else>{{detail.requestTime}}</span>
+                <span v-else>{{detail.requestTime instanceof moment ? detail.requestTime.format('YYYY-MM-DD HH:mm:ss') : detail.requestTime}}</span>
               </td>
             </tr>
           </table>
@@ -187,9 +191,12 @@
                   :min="0"
                   :step="1"
                   :precision="0"
+                  @change="v => requestNumChange(v,record)"
                 />
               </a-form-model-item>
-              <span v-else>{{record.requestNum}}</span>
+              <span v-else>
+                {{record.requestNum}}
+              </span>
             </div>
             <div slot="requestTime" slot-scope="text, record, index">
               <a-form-model-item v-if="!isDisabled">
@@ -201,12 +208,17 @@
                   placeholder="需求日期"
                 />
               </a-form-model-item>
-              <span v-else>{{record.requestTime}}</span>
+              <span v-else>
+                {{record.requestTime instanceof moment ? record.requestTime.format('YYYY-MM-DD HH:mm:ss') : record.requestTime}}
+              </span>
             </div>
             <div slot="mainUnit" slot-scope="text, record, index">
               {{ {1:'支',2:'把',3:'件'}[text] }}
             </div>
 
+            <div slot="inventory" slot-scope="text, record, index">
+              <span :style="{'color': +record.unsafetyInventory === 1 ? 'red' : ''}">{{text}}</span>
+            </div>
 
           </a-table>
           <a-button
@@ -214,7 +226,7 @@
             type="dashed"
             icon="plus"
             @click="materialAction('add')"
-            v-if="(isAdd) && form.requestType && form.relatedNum"
+            v-if="(isAdd) && form.requestType && form.relatedNum && form.requestTime"
           >新增需求物料</a-button>
         </div>
       </div>
@@ -237,6 +249,7 @@
   </a-modal>
 </template>
 <script>
+import moment from 'moment'
 //物料代码模糊搜索
 import { routineMaterialInfoPageList ,productMaterialInfoPageList} from '@/api/routineMaterial'
 import Approval from './Approval'
@@ -267,7 +280,7 @@ const columns = [
   },
   {
     title: '关联单号',
-    dataIndex: 'relatedNum',
+    dataIndex: 'relatedNumText',
   },
   {
     title: '物料代码',
@@ -286,6 +299,7 @@ const columns = [
   {
     title: '当前库存',
     dataIndex: 'inventory',
+    scopedSlots: { customRender: 'inventory' }
   },
   {
     title: '需求数量',
@@ -342,12 +356,16 @@ export default {
       detail: {},
       userInfo: this.$store.getters.userInfo, // 当前登录人
       dataSource:[],
-      requestTypeSelected:{},
       materialFuzzySearch: {
         list: [],
         item: {},
         fetching: false
       },
+      relatedNumList:[
+        {id:1,label:'测试关联订单1',orderId:1},
+        {id:2,label:'测试关联订单2',orderId:2},
+        {id:3,label:'测试关联订单3',orderId:3},
+      ]
     }
   },
   created() {},
@@ -391,7 +409,7 @@ export default {
             'a-button',
             {
               key: 'submit',
-              on: { click: () => that.handleSubmit() },
+              on: { click: () => that.handleSubmit(that.isAdd ? 1 : 2) },
               props: { type: 'primary', loading: that.spinning }
             },
             '提交'
@@ -417,11 +435,24 @@ export default {
     }
   },
   methods: {
+    moment,
     async query(type, record) {
       const that = this
       that.type = type
       that.detail = {}
+      that.form = {}
+      that.dataSource = []
       that.visible = true
+      if(that.isAdd){
+        that.form = {
+          applyUser:{
+            depId:that.userInfo.departmentId,
+            depName:that.userInfo.departmentName,
+            userId:that.userInfo.id,
+            userName:that.userInfo.trueName
+          }
+        }
+      }
       if(!that.isAdd){
         let result = await requestApplyDetail({id:record.id}).then(res => res.data)
         that.detail = result
@@ -432,19 +463,22 @@ export default {
             depName:result.applyDepName,
             userId:result.proposerId,
             userName:result.proposerName
-          }
+          },
+          requestTime:moment(result.requestTime)
         }
         that.dataSource = [
           {
             key:that._uuid(),
             ...that.detail,
             mainUnit:that.detail.unit,
-            inventory:that.detail.inventory || 0
+            inventory:that.detail.inventory || 0,
+            requestTime:moment(that.detail.requestTime),
+            unsafetyInventory:that.detail.requestNum > that.detail.inventory ? 1 : 2,
           }
         ]
       }
     },
-    handleSubmit() {
+    handleSubmit(saveType=1) {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
@@ -465,19 +499,32 @@ export default {
             arr.push({
               ...baseInfo,
               ..._item,
-              saveType:1
+              saveType:saveType
             })
           })
           console.log(arr)
+          that.spinning = true
+
+          let api = that.isEdit ? requestApplyUpdate : requestApplyAdd
 
           const result = await Promise.all(arr.map(item => {
-            return requestApplyAdd(item).then(res => {
+            return api(item).then(res => {
               console.log(res)
               return res
             })
-          }))
+          })).catch(err => {
+            that.spinning = false
+            that.$message.info(err)
+            return null
+          })
+          that.spinning = false
 
           console.log(result)
+          if(result !== null){
+              that.$message.info('操作成功')
+              that.$emit('finish')
+              that.handleCancel()
+          }
 
           // priceQuotedZktListAddOrUpdate(params)
           //   .then(res => {
@@ -506,25 +553,27 @@ export default {
       const that = this
       let dataSource = [...that.dataSource]
       if(type === 'add'){
+        let {requestType,relatedNum,requestTime} = that.form
+        let relatedNumItem = that.relatedNumList.find(item => item.id === relatedNum)
+        let requestTypeItem = that.$refs['requestType'].getTarget()
+        that.form = {...that.form,relatedNumText:relatedNumItem.label,requestTypeText:requestTypeItem.text}
         dataSource.push({
           key:that._uuid(),
-          relatedId:1,
-          relatedNum:'XSHTtest001',
-          requestType:'802',
-          requestTypeText:'销售订单需求',
-          unsafetyInventory:2,
-          materialId:1,
-          requestNum:0,
-          inventory:0
+          relatedId:relatedNumItem.orderId,
+          relatedNum:relatedNum,
+          relatedNumText:relatedNumItem.label,
+          requestType:requestType,
+          requestTypeText:requestTypeItem.text,
+          unsafetyInventory:2, //是否大于安全库存：1是，2否
+          materialId:undefined,
+          requestNum:0,//需求数量
+          inventory:0, //安全库存
+          requestTime
         })
         that.dataSource = dataSource
       }else if(type === 'del'){
         that.dataSource = dataSource.filter(item => item.key !== record.key)
       }
-    },
-    requestTypeSelectedHandler(item){
-      console.log(item)
-      this.requestTypeSelected = item
     },
     contractChange(result) {
       let that = this
@@ -570,8 +619,10 @@ export default {
       )
       let result = []
       if(isFilter){
-        //显示 常规和成品的 自制和委外件，
-        result = [...res[0],...res[1]].filter(item => [1,3].includes(+item.materialSource))
+        //显示 常规和成品的 自制和委外件，有规格型号的
+        result = [...res[0],...res[1]].filter(item => {
+          return [1,3].includes(+item.materialSource) && typeof item.specification === 'string' && item.specification.length > 0
+        })
       }else{
         //显示 常规件 ，不过滤
         result = [...res[0]]
@@ -603,6 +654,7 @@ export default {
       target.mainUnit = material.mainUnit
       target.specification = 'specification' in material  ? (material.specification || material.specifications) : '无'
       target.materialCode = material.materialCodeFormat
+      target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
       that.dataSource = dataSource
 
       that.materialFuzzySearch = { ...that.materialFuzzySearch, item: {...material} }
@@ -615,18 +667,47 @@ export default {
       let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
       return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
     },
+    requestNumChange(v,record){
+      const that = this
+      let dataSource = [...that.dataSource]
+      let target = dataSource.find(item => item.key === record.key)
+      target.requestNum = v
+      target.unsafetyInventory = +v > +target.inventory ? 1 : 2
+
+      if(target.unsafetyInventory === 1){
+        let msg = `物料【${target.materialName}】的安全库存为【${target.inventory}】，本次采购需求量已超安全库存，确认需求超量采购吗？`
+        that.$confirm({
+          title: '安全库存提示',
+          content: h => {
+            return h('div',{style:{color:'red'}},msg)
+          },
+          onOk() {
+            that.dataSource = dataSource
+          },
+          onCancel() {
+            target.requestNum = 0
+            target.unsafetyInventory = 2
+            that.dataSource = dataSource
+          }
+        });
+      }else{
+        that.dataSource = dataSource
+      }
+
+
+    },
     //审批部分
     submitAction(opt) {
       const that = this
-      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
+      let values = Object.assign({}, opt || {}, { approveId: that.detail.id })
       that.spinning = true
       requestApplyApproval(values)
         .then((res) => {
           that.spinning = false
           that.$message.info(res.msg)
           if(+ res.code === 200){
+            that.$emit('finish')
             that.handleCancel()
-            that.$emit('finished')
           }
         })
         .catch((err) => {
@@ -655,6 +736,9 @@ export default {
 <style scoped>
 .card-item {
   margin-bottom: 20px;
+}
+.card-item:last-child{
+  margin-bottom: 0;
 }
 .__hd {
   font-weight: 700;

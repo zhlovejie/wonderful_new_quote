@@ -99,6 +99,7 @@
           @change="handleTableChange"
           :customRow="customRowFunction"
           :rowSelection="+activeKey === 1 ? null : { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          :scroll="{ x: 2400 }"
         >
           <div
             slot="order"
@@ -178,10 +179,13 @@
             slot="requestNum"
             slot-scope="text, record, index"
           >
-            <a-button
-              type="link"
-              @click="doAction('changeQty',record)"
-            >{{text}}</a-button>
+            <template v-if="+record.approveStatus === 1">
+              <a-button
+                type="link"
+                @click="doAction('changeQty',record)"
+              >{{text}}</a-button>
+            </template>
+            <template v-else>{{text}}</template>
           </div>
 
           <div
@@ -190,6 +194,32 @@
           >
             {{record.applyDepName}}/{{record.proposerName}}
           </div>
+
+          <div
+            slot="reason"
+            slot-scope="text, record, index"
+          >
+            <a-tooltip v-if="String(text).length > 15">
+              <template slot="title">{{text}}</template>
+              {{ String(text).slice(0,15) }}...
+            </a-tooltip>
+            <span v-else>{{text}}</span>
+          </div>
+
+          <div
+            slot="remark"
+            slot-scope="text, record, index"
+          >
+            <a-tooltip v-if="String(text).length > 15">
+              <template slot="title">{{text}}</template>
+              {{ String(text).slice(0,15) }}...
+            </a-tooltip>
+            <span v-else>{{text}}</span>
+          </div>
+
+
+
+
 
           <template
             slot="footer"
@@ -237,8 +267,8 @@
 
         </a-table>
       </div>
-      <AddForm ref="addForm" @finished="() => search()" />
-      <ChangeQtyForm ref="changeQtyForm" @finished="() => search()" />
+      <AddForm ref="addForm" @finish="() => search()" />
+      <ChangeQtyForm ref="changeQtyForm" @finish="() => search()" />
       <MaterialView
         :key="normalAddFormKeyCount"
         ref="materialView"
@@ -265,7 +295,8 @@ import {
 const columns = [
   {
     title: '序号',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
+    width:80
   },
   {
     title: '采购需求单号',
@@ -287,7 +318,8 @@ const columns = [
   {
     title: '紧急程度',
     dataIndex: 'urgencyDegree',
-    scopedSlots: { customRender: 'urgencyDegree' }
+    scopedSlots: { customRender: 'urgencyDegree' },
+    width:120
   },
   {
     title: '需求数量',
@@ -301,32 +333,41 @@ const columns = [
   {
     title: '申请人',
     dataIndex: 'proposerName',
-    scopedSlots: { customRender: 'proposerName' }
+    scopedSlots: { customRender: 'proposerName' },
+    width:200
   },
   {
     title: '申请原因',
-    dataIndex: 'reason'
+    dataIndex: 'reason',
+    width:200,
+    scopedSlots: { customRender: 'reason' }
   },
   {
     title: '审批状态',
     dataIndex: 'approveStatus',
-    scopedSlots: { customRender: 'approveStatus' }
+    scopedSlots: { customRender: 'approveStatus' },
+    width:120
   },
   {
     title: '备注',
-    dataIndex: 'remark'
+    dataIndex: 'remark',
+    width:200,
+    scopedSlots: { customRender: 'remark' }
   },
   {
     title: '制单人',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
+    width:120
   },
   {
     title: '制单时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
+    width:200
   },
   {
     title: '操作',
-    scopedSlots: { customRender: 'action' }
+    scopedSlots: { customRender: 'action' },
+    fixed: 'right',
   }
 ]
 

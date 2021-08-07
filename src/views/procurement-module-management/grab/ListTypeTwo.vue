@@ -1,103 +1,109 @@
 <template>
-  <a-table
-    :columns="columns"
-    :dataSource="dataSource"
-    :pagination="pagination"
-    :loading="loading"
-    @change="handleTableChange"
-    :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
-    :scroll="{ x: 3000 }"
-  >
-    <div
-      slot="order"
-      slot-scope="text, record, index"
+  <div>
+    <a-table
+      :columns="columns"
+      :dataSource="dataSource"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
+      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :scroll="{ x: 3000 }"
     >
-      {{index + 1}}
-    </div>
-    <div
-      slot="urgencyDegree"
-      slot-scope="text, record, index"
-    >
-      {{ {1:'一般',2:'加急',3:'特急'}[text] }}
-    </div>
-
-    <div
-      slot="action"
-      slot-scope="text, record, index"
-    >
-      <a @click="doAction('view',record)">查看</a>
-      <a-divider type="vertical" />
-      <a @click="doAction('objection',record)">提交异议</a>
-    </div>
-
-    <div
-      slot="materialName"
-      slot-scope="text, record, index"
-    >
-      <a-popover
-        :title="text"
-        trigger="hover"
+      <div
+        slot="order"
+        slot-scope="text, record, index"
       >
-        <template slot="content">
-          <p>物料名称：{{record.materialName}}</p>
-          <p>物料代码：{{record.materialCode}}</p>
-          <p>规格型号：{{record.materialModelType}}</p>
-          <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
-        </template>
-        <a
-          href="javascript:void(0);"
-          @click="doAction('materialView',record)"
+        {{index + 1}}
+      </div>
+      <div
+        slot="urgencyDegree"
+        slot-scope="text, record, index"
+      >
+        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+      </div>
+
+      <div
+        slot="action"
+        slot-scope="text, record, index"
+      >
+        <a @click="doAction('view',record)">查看</a>
+        <a-divider type="vertical" />
+        <a @click="doAction('offer',record)">提交异议</a>
+      </div>
+
+      <div
+        slot="materialName"
+        slot-scope="text, record, index"
+      >
+        <a-popover
+          :title="text"
+          trigger="hover"
         >
-          {{text}}
-        </a>
-      </a-popover>
-    </div>
+          <template slot="content">
+            <p>物料名称：{{record.materialName}}</p>
+            <p>物料代码：{{record.materialCode}}</p>
+            <p>规格型号：{{record.materialModelType}}</p>
+            <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
+          </template>
+          <a
+            href="javascript:void(0);"
+            @click="doAction('materialView',record)"
+          >
+            {{text}}
+          </a>
+        </a-popover>
+      </div>
 
-    <div
-      slot="nakedPrice"
-      slot-scope="text, record, index"
-    >
-      {{ {1:'含税运',2:'含税不含运'}[text] }}
-    </div>
+      <div
+        slot="nakedPrice"
+        slot-scope="text, record, index"
+      >
+        {{ {1:'含税运',2:'含税不含运'}[text] }}
+      </div>
 
-    <div
-      slot="newPrice"
-      slot-scope="text, record, index"
-    >
-      {{ newPrice | moneyFormatNumber }}
-    </div>
+      <div
+        slot="newPrice"
+        slot-scope="text, record, index"
+      >
+        {{ text | moneyFormatNumber }}
+      </div>
 
-    <div
-      slot="createdName"
-      slot-scope="text, record, index"
-    >
-      {{record.createdDepName}}/{{ record.createdName }}
-    </div>
+      <div
+        slot="createdName"
+        slot-scope="text, record, index"
+      >
+        {{record.createdDepName}}/{{ record.createdName }}
+      </div>
 
+      <template
+        slot="footer"
+        slot-scope="text"
+      >
+      </template>
 
-
-    <template
-      slot="footer"
-      slot-scope="text"
-    >
-    </template>
-
-  </a-table>
+    </a-table>
+    <OfferPriceForm
+      ref="offerPriceForm"
+      @finished="() => search()"
+    />
+    <OfferPriceView ref="offerPriceView" @finished="() => search()"/>
+  </div>
 </template>
 
 <script>
 import { quotationPublicPageList } from '@/api/procurementModuleManagement'
-
+import OfferPriceForm from './OfferPriceForm'
+import OfferPriceView from './OfferPriceView'
 const columns = [
   {
     title: '序号',
     scopedSlots: { customRender: 'order' },
-    fixed: 'left',
+    fixed: 'left'
   },
   {
     title: '采购需求单号',
     dataIndex: 'requestApplyNum',
-    fixed: 'left',
+    fixed: 'left'
   },
   {
     title: '物料名称',
@@ -136,11 +142,11 @@ const columns = [
     scopedSlots: { customRender: 'newPrice' }
   },
   {
-    title: '物料税率',
+    title: '物料税率(%)',
     dataIndex: 'materialRate'
   },
   {
-    title: '运费税率',
+    title: '运费税率(%)',
     dataIndex: 'freightRate'
   },
   {
@@ -148,11 +154,11 @@ const columns = [
     dataIndex: 'lowestNum'
   },
   {
-    title: '交货周期',
+    title: '交货周期(天)',
     dataIndex: 'deliveryCycle'
   },
   {
-    title: '保质期',
+    title: '保质期(天)',
     dataIndex: 'shelfLife'
   },
   {
@@ -167,16 +173,17 @@ const columns = [
   {
     title: '操作',
     scopedSlots: { customRender: 'action' },
-    fixed: 'right',
+    fixed: 'right'
   }
 ]
 
 export default {
-  props:['queryParam'],
+  props: ['queryParam'],
+  components: { OfferPriceForm, OfferPriceView },
   data() {
     return {
       columns,
-      loading:false,
+      loading: false,
       dataSource: [],
       pagination: {
         current: 1,
@@ -191,13 +198,13 @@ export default {
       queryParamCustom: {}
     }
   },
-  watch:{
-    queryParam:{
-      handler(s){
+  watch: {
+    queryParam: {
+      handler(s) {
         console.log(arguments)
         this.queryParamCustom = { ...this.queryParam, ...s }
       },
-      immediate:true
+      immediate: true
     }
   },
   computed: {
@@ -261,8 +268,11 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-      } else if (type === 'ask') {
+        that.$refs.offerPriceView.query('view', record)
+        return
       } else if (type === 'offer') {
+        that.$refs.offerPriceForm.query('add', record)
+        return
       }
     }
   }

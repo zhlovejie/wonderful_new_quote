@@ -1,94 +1,123 @@
 <template>
   <div class="grab-list-type-wrapper grab-list-type-1">
-  <a-table
-    :columns="columns"
-    :dataSource="dataSource"
-    :pagination="pagination"
-    :loading="loading"
-    @change="handleTableChange"
-    :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
-  >
-    <div
-      slot="order"
-      slot-scope="text, record, index"
+    <a-table
+      :columns="columns"
+      :dataSource="dataSource"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
+      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :scroll="{ x: 2400 }"
     >
-      {{index + 1}}
-    </div>
-    <div
-      slot="urgencyDegree"
-      slot-scope="text, record, index"
-    >
-      {{ {1:'一般',2:'加急',3:'特急'}[text] }}
-    </div>
-
-    <div
-      slot="action"
-      slot-scope="text, record, index"
-    >
-      <a @click="doAction('view',record)">查看</a>
-      <a-divider type="vertical" />
-      <a @click="doAction('ask',record)">询价</a>
-      <a-divider type="vertical" />
-      <a @click="doAction('offer',record)">报价</a>
-      <template v-if="$attrs.tagKey === 2">
-      <a-divider type="vertical" />
-      <a @click="doAction('reOrder',record)">重派</a>
-      </template>
-    </div>
-
-    <div
-      slot="materialName"
-      slot-scope="text, record, index"
-    >
-      <a-popover
-        :title="text"
-        trigger="hover"
+      <div
+        slot="order"
+        slot-scope="text, record, index"
       >
-        <template slot="content">
-          <p>物料名称：{{record.materialName}}</p>
-          <p>物料代码：{{record.materialCode}}</p>
-          <p>规格型号：{{record.materialModelType}}</p>
-          <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
-        </template>
-        <a
-          href="javascript:void(0);"
-          @click="doAction('materialView',record)"
+        {{index + 1}}
+      </div>
+      <div
+        slot="urgencyDegree"
+        slot-scope="text, record, index"
+      >
+        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+      </div>
+
+      <div
+        slot="action"
+        slot-scope="text, record, index"
+      >
+        <a @click="doAction('view',record)">查看</a>
+        <a-divider type="vertical" />
+        <a @click="doAction('ask',record)">询价</a>
+        <a-divider type="vertical" />
+        <a @click="doAction('offer',record)">报价</a>
+      </div>
+
+      <div
+        slot="materialName"
+        slot-scope="text, record, index"
+      >
+        <a-popover
+          :title="text"
+          trigger="hover"
         >
-          {{text}}
-        </a>
-      </a-popover>
-    </div>
-    <div
-      slot="proposerName"
-      slot-scope="text, record, index"
-    >
-      {{record.applyDepName}}/{{record.proposerName}}
-    </div>
+          <template slot="content">
+            <p>物料名称：{{record.materialName}}</p>
+            <p>物料代码：{{record.materialCode}}</p>
+            <p>规格型号：{{record.materialModelType}}</p>
+            <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
+          </template>
+          <a
+            href="javascript:void(0);"
+            @click="doAction('materialView',record)"
+          >
+            {{text}}
+          </a>
+        </a-popover>
+      </div>
+      <div
+        slot="proposerName"
+        slot-scope="text, record, index"
+      >
+        {{record.applyDepName}}/{{record.proposerName}}
+      </div>
 
+      <div
+        slot="reason"
+        slot-scope="text, record, index"
+      >
+        <a-tooltip v-if="String(text).length > 15">
+          <template slot="title">{{text}}</template>
+          {{ String(text).slice(0,15) }}...
+        </a-tooltip>
+        <span v-else>{{text}}</span>
+      </div>
 
-    <template
-      slot="footer"
-      slot-scope="text"
-    >
-    </template>
+      <div
+        slot="remark"
+        slot-scope="text, record, index"
+      >
+        <a-tooltip v-if="String(text).length > 15">
+          <template slot="title">{{text}}</template>
+          {{ String(text).slice(0,15) }}...
+        </a-tooltip>
+        <span v-else>{{text}}</span>
+      </div>
 
-  </a-table>
-  <AskPriceForm ref="askPriceForm" @finished="() => search()" />
+      <template
+        slot="footer"
+        slot-scope="text"
+      >
+      </template>
+
+    </a-table>
+    <AskPriceForm
+      ref="askPriceForm"
+      @finished="() => search()"
+    />
+    <OfferPriceForm
+      ref="offerPriceForm"
+      @finished="() => search()"
+    />
+    <ApplyView ref="applyView" @finished="() => search()"/>
   </div>
 </template>
 
 <script>
 import { requestApplyPageList } from '@/api/procurementModuleManagement'
 import AskPriceForm from './AskPriceForm'
-
+import OfferPriceForm from './OfferPriceForm'
+import ApplyView from '../apply/AddForm'
 export default {
-  props:['queryParam'],
-  components:{
-    AskPriceForm
+  props: ['queryParam'],
+  components: {
+    AskPriceForm,
+    OfferPriceForm,
+    ApplyView
   },
   data() {
     return {
-      loading:false,
+      loading: false,
       dataSource: [],
       pagination: {
         current: 1,
@@ -103,13 +132,13 @@ export default {
       queryParamCustom: {}
     }
   },
-  watch:{
-    queryParam:{
-      handler(s){
+  watch: {
+    queryParam: {
+      handler(s) {
         console.log(arguments)
         this.queryParamCustom = { ...this.queryParam, ...s }
       },
-      immediate:true
+      immediate: true
     }
   },
   computed: {
@@ -119,11 +148,12 @@ export default {
     btnMulEnabled() {
       return this.selectedRows.length > 0
     },
-    columns(){
-      let baseColumns = [
+    columns() {
+      const baseColumns = [
         {
           title: '序号',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
+          width: 80
         },
         {
           title: '采购需求单号',
@@ -145,7 +175,8 @@ export default {
         {
           title: '紧急程度',
           dataIndex: 'urgencyDegree',
-          scopedSlots: { customRender: 'urgencyDegree' }
+          scopedSlots: { customRender: 'urgencyDegree' },
+          width: 120
         },
         {
           title: '需求数量',
@@ -158,48 +189,55 @@ export default {
         {
           title: '申请人',
           dataIndex: 'proposerName',
-          scopedSlots: { customRender: 'proposerName' }
+          scopedSlots: { customRender: 'proposerName' },
+          width: 200
         },
         {
           title: '申请原因',
-          dataIndex: 'reason'
+          dataIndex: 'reason',
+          scopedSlots: { customRender: 'reason' },
+          width: 200
         },
         {
           title: '备注',
-          dataIndex: 'remark'
+          dataIndex: 'remark',
+          scopedSlots: { customRender: 'remark' },
+          width: 200
         }
       ]
 
-      let m = {
-        1:[
-            ...baseColumns,
-            {
-              title: '制单人',
-              dataIndex: 'createdName'
-            },
-            {
-              title: '制单时间',
-              dataIndex: 'createdTime'
-            },
-            {
-              title: '操作',
-              scopedSlots: { customRender: 'action' }
-            }
-          ],
-        2:[
+      const m = {
+        1: [
           ...baseColumns,
-            {
-              title: '领单部门',
-              dataIndex: 'createdName'
-            },
-            {
-              title: '领单时间',
-              dataIndex: 'createdTime'
-            },
-            {
-              title: '操作',
-              scopedSlots: { customRender: 'action' }
-            }
+          {
+            title: '制单人',
+            dataIndex: 'createdName'
+          },
+          {
+            title: '制单时间',
+            dataIndex: 'createdTime'
+          },
+          {
+            title: '操作',
+            scopedSlots: { customRender: 'action' },
+            fixed: 'right'
+          }
+        ],
+        2: [
+          ...baseColumns,
+          {
+            title: '领单部门',
+            dataIndex: 'receiveDepName'
+          },
+          {
+            title: '领单时间',
+            dataIndex: 'receiveTime'
+          },
+          {
+            title: '操作',
+            scopedSlots: { customRender: 'action' },
+            fixed: 'right'
+          }
         ]
       }
       return m[this.$attrs.tagKey]
@@ -258,10 +296,11 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
+        that.$refs.applyView.query('view', record)
       } else if (type === 'ask') {
         that.$refs.askPriceForm.query(record)
-        return
       } else if (type === 'offer') {
+        that.$refs.offerPriceForm.query(record)
       }
     }
   }

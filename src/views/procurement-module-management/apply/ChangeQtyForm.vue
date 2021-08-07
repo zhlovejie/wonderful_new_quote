@@ -122,7 +122,8 @@ export default {
           }).then(res => {
             that.$message.info(res.msg)
             if(res.code === 200){
-              that.$emit('finished')
+              that.$emit('finish')
+              that.handleCancel()
             }
           })
         } else {

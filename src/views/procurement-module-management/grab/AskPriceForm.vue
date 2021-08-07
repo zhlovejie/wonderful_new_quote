@@ -32,7 +32,7 @@
             style="width:100%;"
             :min="0"
             :step="1"
-            :precision="2"
+            :precision="0"
           />
         </a-form-model-item>
         <a-form-model-item  label="品牌型号" prop="model">
@@ -114,8 +114,6 @@
             :min="0"
             :step="1"
             :precision="0"
-            :formatter="value => `${value}%`"
-            :parser="value => value.replace('%', '')"
           />
         </a-form-model-item>
         <a-form-model-item  label="交货周期" prop="deliveryCycle">
@@ -123,7 +121,8 @@
             placeholder="交货周期"
             v-model="form.deliveryCycle"
             style="width:100%;"
-            :min="30"
+            :min="0"
+            :max="30"
             :step="1"
             :precision="0"
             :formatter="value => `${value}天`"
@@ -135,8 +134,7 @@
             placeholder="保质期"
             v-model="form.shelfLife"
             style="width:100%;"
-            :min="1"
-            :max="180"
+            :min="180"
             :step="1"
             :precision="0"
             :formatter="value => `${value}天`"
@@ -148,10 +146,10 @@
       <a-card :bordered="cardBordered" title="发送至">
         <a-form-model-item label="供应商" prop="supplierId">
           <a-select v-model="form.supplierId" placeholder="选择供应商">
-            <a-select-option value="test1">
+            <a-select-option :value="1">
               测试供应商1
             </a-select-option>
-            <a-select-option value="test2">
+            <a-select-option :value="2">
               测试供应商1
             </a-select-option>
           </a-select>
@@ -172,10 +170,32 @@ export default {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
-
+        packageCount:0,
+        model:'',
+        invoiceType:1,
+        nakedPrice:1,
+        newPrice:0,
+        materialRate:0,
+        freightRate:0,
+        lowestNum:1,
+        deliveryCycle:30,
+        shelfLife:180,
+        supplierId:undefined,
+        email:undefined
       },
       rules: {
-        desc: [{ required: true, message: 'Please input activity form', trigger: 'blur' }],
+        packageCount:[{ required: true, message: '请输入包装内数量' }],
+        model:[{ required: true, message: '请输入品牌型号' }],
+        invoiceType:[{ required: true, message: '请选择发票类型' }],
+        nakedPrice:[{ required: true, message: '请输入裸价标准' }],
+        newPrice:[{ required: true, message: '请输入最新报价' }],
+        materialRate:[{ required: true, message: '请输入物料税率' }],
+        freightRate:[{ required: true, message: '请输入运费税率' }],
+        lowestNum:[{ required: true, message: '请输入最低采购数量' }],
+        deliveryCycle:[{ required: true, message: '请输入交货周期' }],
+        shelfLife:[{ required: true, message: '请输入保质期' }],
+        supplierId:[{ required: true, message: '请选择供应商' }],
+        email:[{ required: true, message: '请输入邮箱信息' }],
       },
       cardBordered:true,
       visible:false,
@@ -208,13 +228,12 @@ export default {
       const that = this
       that.record = {...record}
       that.visible = true
-
+      that.form = {...that.form,requestId:that.record.id,materialId:that.record.materialId}
     },
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          alert('submit!');
           that.spinning = true
           enquiryAdd({...that.form}).then(res => {
             that.spinning = false
@@ -247,6 +266,9 @@ export default {
 <style scoped>
 .ask-price-form-wrapper >>> .ant-card{
   margin-bottom: 20px;
+}
+.ask-price-form-wrapper >>> .ant-card:last-child{
+  margin-bottom: 0;
 }
 .ask-price-form-wrapper >>> .ant-card .ant-card-body{
   padding: 10px 0;

@@ -41,6 +41,11 @@ export default {
       this.$emit("update:dictionaryId", dictionaryId);
       let target = this.dataSource.find(item => item.id === dictionaryId)
       this.$emit("selected",{...target})
+    },
+    getTarget(){
+      let {dataSource,dictionaryId} = this
+      let target = dataSource.find(item => item.id === dictionaryId)
+      return target ? {...target} : null
     }
   }
 };
