@@ -12,7 +12,7 @@
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
-        :loading="loading" 
+        :loading="loading"
         @change="handleTableChange"
       >
         <div slot="order" slot-scope="text, record, index">
@@ -34,7 +34,7 @@
         </div>
 
 
-        
+
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <template v-if="isProductFunctionIntroduction">
@@ -166,7 +166,11 @@ export default {
     },
     searchAction(opt){
       let that = this
-      let _searchParam = Object.assign({},{...this.searchParam},{...this.pagination},opt || {})
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10
+      }
+      let _searchParam = Object.assign({},{...this.searchParam},paginationParam,opt || {})
       console.log('执行搜索...',_searchParam)
       that.loading = true
       priceAdjustItemConfigList(_searchParam).then(res => {
