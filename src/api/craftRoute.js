@@ -5,7 +5,7 @@ import {
 import system from '@/config/defaultSettings'
 
 //const materialBaseUrl = system.materialBaseUrl
-const materialBaseUrl = system.baseURL
+const materialBaseUrl = system.materialBaseUrl
 
 // 工艺路线----------------------------------------
 
@@ -211,92 +211,92 @@ export function craftRouteProcessDeleteByRoute(routeId) {
 }
 
 
-export function __craftRouteExport(type,params) {
+export function __craftRouteExport(type, params) {
   const m = {
-    1:'/routineMaterialInfo/exportList', //常规物料
-    2:'/productMaterialInfo/exportList'  //成品物料
+    1: '/routineMaterialInfo/exportList', //常规物料
+    2: '/productMaterialInfo/exportList' //成品物料
   }
   let fileName = type === 1 ? '常规物料库' : '成品物料库'
   let url = `${materialBaseUrl}${m[type]}?${params}`
   return axios({
-    url: url,
-    method: 'get',
-    responseType: 'blob'
-  }).then((res) => {
-    console.log(res)
-    if (res instanceof Blob) {
-      const isFile = res.type === 'application/vnd.ms-excel'
-      const isJson = res.type === 'application/json'
-      if (isFile) {
-        //返回文件 则下载
-        const objectUrl = URL.createObjectURL(res)
-        const a = document.createElement('a')
-        document.body.appendChild(a)
-        a.style = 'display: none'
-        a.href = objectUrl
-        a.download = `${fileName}.xls`
-        a.click()
-        document.body.removeChild(a)
-        return {
-          code: 200,
-          msg: '下载成功'
-        }
-      } else if (isJson) {
-        //返回json处理
-        return new Promise(resolve => {
-          var reader = new FileReader()
-          reader.onload = function (e) {
-            let _res = null
-            try {
-              _res = JSON.parse(e.target.result)
-            } catch (err) {
-              _res = null
-            }
-            if (_res !== null) {
-              if (_res.code == 500) {
-                resolve({
-                  code: 500,
-                  msg: _res.msg
-                })
+      url: url,
+      method: 'get',
+      responseType: 'blob'
+    }).then((res) => {
+      console.log(res)
+      if (res instanceof Blob) {
+        const isFile = res.type === 'application/vnd.ms-excel'
+        const isJson = res.type === 'application/json'
+        if (isFile) {
+          //返回文件 则下载
+          const objectUrl = URL.createObjectURL(res)
+          const a = document.createElement('a')
+          document.body.appendChild(a)
+          a.style = 'display: none'
+          a.href = objectUrl
+          a.download = `${fileName}.xls`
+          a.click()
+          document.body.removeChild(a)
+          return {
+            code: 200,
+            msg: '下载成功'
+          }
+        } else if (isJson) {
+          //返回json处理
+          return new Promise(resolve => {
+            var reader = new FileReader()
+            reader.onload = function (e) {
+              let _res = null
+              try {
+                _res = JSON.parse(e.target.result)
+              } catch (err) {
+                _res = null
+              }
+              if (_res !== null) {
+                if (_res.code == 500) {
+                  resolve({
+                    code: 500,
+                    msg: _res.msg
+                  })
+                } else {
+                  resolve({
+                    code: 200,
+                    msg: '下载成功'
+                  })
+                }
               } else {
                 resolve({
-                  code: 200,
-                  msg: '下载成功'
+                  code: 500,
+                  msg: `json解析出错 e.target.result：${e.target.result}`
                 })
               }
-            } else {
+            }
+            try {
+              reader.readAsText(res)
+            } catch (err) {
               resolve({
                 code: 500,
-                msg: `json解析出错 e.target.result：${e.target.result}`
+                msg: err.message
               })
             }
+          })
+        } else {
+          return {
+            code: 500,
+            msg: `不支持的类型:${res}`
           }
-          try {
-            reader.readAsText(res)
-          } catch (err) {
-            resolve({
-              code: 500,
-              msg: err.message
-            })
-          }
-        })
+        }
       } else {
         return {
           code: 500,
-          msg: `不支持的类型:${res}`
+          msg: `返回数据不是Blob类型:${typeof res}`
         }
       }
-    } else {
+    })
+    .catch((err) => {
       return {
         code: 500,
-        msg: `返回数据不是Blob类型:${typeof res}`
+        msg: `请求出错：${err.message}`
       }
-    }
-  })
-  .catch((err) => {
-    return {
-      code: 500,
-      msg: `请求出错：${err.message}`
-    }
-  })
+    })
 }

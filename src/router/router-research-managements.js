@@ -116,6 +116,120 @@ export default { //研发管理
           },
         }
       ]
+    },
+    {
+      path: '/research-managements/project-management',
+      name: 'research-managements-project-management',
+      component: RouteView,
+      meta: {
+        title: '项目管理',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: [{
+          path: '/research-managements/project-management/Project-node',
+          name: 'project-management-Project-node',
+          component: () => import('@/views/research-managements/project-management/Project-node/List'),
+          meta: {
+            title: '项目节点关联项配置',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Project-selection',
+          name: 'project-management-Project-selection',
+          component: () => import('@/views/research-managements/project-management/Project-selection/List'),
+          meta: {
+            title: '项目节点选项配置',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Project-list',
+          name: 'project-management-Project-list',
+          component: () => import('@/views/research-managements/project-management/Project-list/List'),
+          meta: {
+            title: '项目列表',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/My-project/Project',
+          name: 'project-management-My-projectProgress',
+          component: () => import('@/views/research-managements/project-management/My-project/Project/projectProgress'),
+          meta: {
+            title: '项目进程',
+            keepAlive: true,
+            hidden: true,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/My-project/module',
+          name: 'project-management-My-handle',
+          component: () => import('@/views/research-managements/project-management/My-project/module/handle'),
+          meta: {
+            title: '我的项目',
+            keepAlive: true,
+            hidden: true,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/My-project',
+          name: 'project-management-My-project',
+          component: () => import('@/views/research-managements/project-management/My-project/List'),
+          meta: {
+            title: '我的项目',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Project-audit/module',
+          name: 'project-management-Project-audit-handle',
+          component: () => import('@/views/research-managements/project-management/Project-audit/module/handle'),
+          meta: {
+            title: '项目审核',
+            keepAlive: true,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Project-audit',
+          name: 'project-management-Project-audit',
+          component: () => import('@/views/research-managements/project-management/Project-audit/List'),
+          meta: {
+            title: '项目审核',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Project-patent',
+          name: 'project-management-Project-patent',
+          component: () => import('@/views/research-managements/project-management/Project-patent/List'),
+          meta: {
+            title: '项目专利',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/research-managements/project-management/Inspection-report',
+          name: 'project-management-Inspection-report',
+          component: () => import('@/views/research-managements/project-management/Inspection-report/List'),
+          meta: {
+            title: '检验报告',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }
+      ]
     }
   ]
 }

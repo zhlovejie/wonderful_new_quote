@@ -164,7 +164,7 @@ export default {
       buttonText: '获取验证码',
       buttonDisable: false,
       totalTime: 60, // 验证码发送倒计时
-      qrText: 'http://106.14.194.64/cloud_new/wdfgs/index.html', //安卓版本生成二维码地址
+      qrText: 'http://106.14.194.64:8992/appIndex/index.html', //安卓版本生成二维码地址
     }
   },
   // created() {
