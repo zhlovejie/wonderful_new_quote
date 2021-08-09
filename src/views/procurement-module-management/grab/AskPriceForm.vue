@@ -25,23 +25,56 @@
         <a-form-model-item label="规格型号">
           <span>{{record.materialModelType}}</span>
         </a-form-model-item>
-        <a-form-model-item  label="包装方式"  prop="packageCount">
-          <a-input-number
-            v-model="form.packageCount"
-            placeholder="包装内数量"
-            style="width:100%;"
-            :min="0"
-            :step="1"
-            :precision="0"
-          />
+
+        <a-form-model-item
+            label="包装方式"
+            prop="packageType"
+          >
+            <a-row>
+              <a-col :span="11">
+                <a-input
+                  v-model="form.packageType"
+                  placeholder="包装类型"
+                />
+              </a-col>
+              <a-col
+                :span="11"
+                :offset="2"
+              >
+                <a-input-number
+                  v-model="form.packageCount"
+                  placeholder="包装内数量"
+                  style="width:100%;"
+                  :min="0"
+                  :step="1"
+                  :precision="0"
+                />
+              </a-col>
+            </a-row>
         </a-form-model-item>
-        <a-form-model-item  label="品牌型号" prop="model">
-          <a-input v-model="form.model" placeholder="品牌型号">
-            <a-tooltip slot="suffix" title="限制品牌型号">
-              <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
-            </a-tooltip>
-          </a-input>
-        </a-form-model-item>
+        <a-form-model-item
+            label="品牌/型号"
+            prop="modelName"
+          >
+            <a-row>
+              <a-col :span="11">
+                <a-input
+                  v-model="form.modelName"
+                  placeholder="品牌"
+                />
+              </a-col>
+              <a-col
+                :span="11"
+                :offset="2"
+              >
+                <a-input
+                  v-model="form.modelType"
+                  placeholder="型号"
+                />
+              </a-col>
+            </a-row>
+
+          </a-form-model-item>
       </a-card>
 
       <a-card :bordered="cardBordered">
@@ -170,7 +203,7 @@ export default {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
-        packageCount:0,
+        packageCount:undefined,
         model:'',
         invoiceType:1,
         nakedPrice:1,
@@ -184,8 +217,10 @@ export default {
         email:undefined
       },
       rules: {
+        packageType:[{ required: true, message: '请输入包装类型' }],
         packageCount:[{ required: true, message: '请输入包装内数量' }],
-        model:[{ required: true, message: '请输入品牌型号' }],
+        modelName:[{ required: true, message: '请输入品牌' }],
+        modelType:[{ required: true, message: '请输入品牌型号' }],
         invoiceType:[{ required: true, message: '请选择发票类型' }],
         nakedPrice:[{ required: true, message: '请输入裸价标准' }],
         newPrice:[{ required: true, message: '请输入最新报价' }],
@@ -228,14 +263,21 @@ export default {
       const that = this
       that.record = {...record}
       that.visible = true
-      that.form = {...that.form,requestId:that.record.id,materialId:that.record.materialId}
+      that.form = {
+        ...that.form,
+        requestId:that.record.id,
+        materialId:that.record.materialId,
+        materialName:that.record.materialName,
+        materialModelType:that.record.materialModelType
+      }
     },
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
+          const { modelName, modelType } = that.form
           that.spinning = true
-          enquiryAdd({...that.form}).then(res => {
+          enquiryAdd({ ...that.form, model: `${modelName}-${modelType}` }).then(res => {
             that.spinning = false
             that.$message.info(res.msg)
             if(res.code === 200){

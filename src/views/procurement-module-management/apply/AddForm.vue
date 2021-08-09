@@ -226,7 +226,7 @@
             type="dashed"
             icon="plus"
             @click="materialAction('add')"
-            v-if="(isAdd) && form.requestType && form.relatedNum && form.requestTime"
+            v-if="(isAdd) "
           >新增需求物料</a-button>
         </div>
       </div>
@@ -347,7 +347,7 @@ export default {
           { required: true, message: '请选择需求类型' },
         ],
         relatedNum:[
-          { required: true, message: '请选择关联单号' },
+          { required: false, message: '请选择关联单号' },
         ],
         requestTime:[
           { required: true, message: '请选择需求日期' },
@@ -556,12 +556,16 @@ export default {
         let {requestType,relatedNum,requestTime} = that.form
         let relatedNumItem = that.relatedNumList.find(item => item.id === relatedNum)
         let requestTypeItem = that.$refs['requestType'].getTarget()
-        that.form = {...that.form,relatedNumText:relatedNumItem.label,requestTypeText:requestTypeItem.text}
+        that.form = {
+          ...that.form,
+          relatedNumText:relatedNumItem ? relatedNumItem.label : undefined,
+          requestTypeText:requestTypeItem.text
+        }
         dataSource.push({
           key:that._uuid(),
-          relatedId:relatedNumItem.orderId,
+          relatedId:relatedNumItem ? relatedNumItem.orderId : undefined,
           relatedNum:relatedNum,
-          relatedNumText:relatedNumItem.label,
+          relatedNumText:relatedNumItem ? relatedNumItem.label : undefined,
           requestType:requestType,
           requestTypeText:requestTypeItem.text,
           unsafetyInventory:2, //是否大于安全库存：1是，2否

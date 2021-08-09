@@ -304,7 +304,7 @@ export default {
       wrapperCol: { span: 18 },
       form: {
         hasSupplier: 1,
-        packageCount: 0,
+        packageCount: undefined,
         model: '',
         invoiceType: 1,
         nakedPrice: 1,
@@ -320,8 +320,12 @@ export default {
         source: 1
       },
       rules: {
+        lastPrice:[{ required: true, message: '请输入最新采购单价' }],
+        settlementMode:[{ required: true, message: '请选择结算方式' }],
+        packageType: [{ required: true, message: '请输入包装类型' }],
         packageCount: [{ required: true, message: '请输入包装内数量' }],
-        model: [{ required: true, message: '请输入品牌型号' }],
+        modelName: [{ required: true, message: '请输入品牌' }],
+        modelType: [{ required: true, message: '请输入品牌型号' }],
         invoiceType: [{ required: true, message: '请选择发票类型' }],
         nakedPrice: [{ required: true, message: '请输入裸价标准' }],
         newPrice: [{ required: true, message: '请输入最新报价' }],
@@ -331,6 +335,7 @@ export default {
         deliveryCycle: [{ required: true, message: '请输入交货周期' }],
         shelfLife: [{ required: true, message: '请输入保质期' }],
         supplierId: [{ required: true, message: '请选择供应商' }],
+        supplierName: [{ required: true, message: '请输入供应商名称' }],
         email: [{ required: true, message: '请输入邮箱信息' }]
       },
       cardBordered: true,

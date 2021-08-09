@@ -163,3 +163,46 @@ export function enquiryAdd(parameter) {
   })
 }
 /**采购询价单 END*/
+
+
+/**采购单 */
+/**详情 */
+export function orderDetail(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/order',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**新增 */
+export function orderAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/order',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+/**根据物料id获取该物料最新采购价 */
+export function getOrderLastPrice(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/order/getLastPrice',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**分页列表 */
+export function orderPageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/order/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**采购单 END*/

@@ -1,5 +1,5 @@
 <template>
-  <div class="grab-list-type-wrapper grab-list-type-1">
+  <div>
     <a-table
       :columns="columns"
       :dataSource="dataSource"
@@ -7,7 +7,7 @@
       :loading="loading"
       @change="handleTableChange"
       :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
-      :scroll="{ x: 2400 }"
+      :scroll="{ x: 3000 }"
     >
       <div
         slot="order"
@@ -16,10 +16,11 @@
         {{index + 1}}
       </div>
       <div
-        slot="urgencyDegree"
+        slot="storageStatus"
         slot-scope="text, record, index"
       >
-        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+        <!-- 入库状态：1未入库，2部分入库，3全部入库 -->
+        {{ {1:'未入库',2:'部分入库',3:'全部入库'}[text] }}
       </div>
 
       <div
@@ -28,9 +29,9 @@
       >
         <a @click="doAction('view',record)">查看</a>
         <a-divider type="vertical" />
-        <a @click="doAction('ask',record)">询价</a>
+        <a @click="doAction('saveMaterial',record)">收料</a>
         <a-divider type="vertical" />
-        <a @click="doAction('offer',record)">报价</a>
+        <a @click="doAction('takeGoods',record)">提货</a>
       </div>
 
       <div
@@ -55,34 +56,57 @@
           </a>
         </a-popover>
       </div>
+
       <div
-        slot="proposerName"
+        slot="urgencyDegree"
         slot-scope="text, record, index"
       >
-        {{record.applyDepName}}/{{record.proposerName}}
+        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
       </div>
 
       <div
-        slot="reason"
+        slot="nakedPrice"
         slot-scope="text, record, index"
       >
-        <a-tooltip v-if="String(text).length > 15">
-          <template slot="title">{{text}}</template>
-          {{ String(text).slice(0,15) }}...
-        </a-tooltip>
-        <span v-else>{{text}}</span>
+        {{ {1:'含税运',2:'含税不含运'}[text] }}
       </div>
 
       <div
-        slot="remark"
+        slot="orderPrice"
         slot-scope="text, record, index"
       >
-        <a-tooltip v-if="String(text).length > 15">
-          <template slot="title">{{text}}</template>
-          {{ String(text).slice(0,15) }}...
-        </a-tooltip>
-        <span v-else>{{text}}</span>
+        {{ text | moneyFormatNumber }}
       </div>
+      <div
+        slot="quotationPrice"
+        slot-scope="text, record, index"
+      >
+        {{ text | moneyFormatNumber }}
+      </div>
+
+      <div
+        slot="totalPrice"
+        slot-scope="text, record, index"
+      >
+        {{ (record.orderPrice * record.requestNum) | moneyFormatNumber }}
+      </div>
+
+      <div
+        slot="storageQuantity"
+        slot-scope="text, record, index"
+      >
+        {{ text || 0 }}
+      </div>
+
+      <div
+        slot="backQuantity"
+        slot-scope="text, record, index"
+      >
+        {{ text || 0 }}
+      </div>
+
+
+
 
       <template
         slot="footer"
@@ -91,32 +115,113 @@
       </template>
 
     </a-table>
-    <AskPriceForm
-      ref="askPriceForm"
-      @finished="() => search()"
-    />
-    <OfferPriceForm
-      ref="offerPriceForm"
-      @finished="() => search()"
-    />
-    <ApplyView ref="applyView" @finished="() => search()"/>
   </div>
 </template>
 
 <script>
-import { requestApplyPageList } from '@/api/procurementModuleManagement'
-import AskPriceForm from './AskPriceForm'
-import OfferPriceForm from './OfferPriceForm'
-import ApplyView from '../apply/AddForm'
+import { orderPageList } from '@/api/procurementModuleManagement'
+
+const columns = [
+  {
+    title: '序号',
+    scopedSlots: { customRender: 'order' },
+    fixed: 'left'
+  },
+  {
+    title: '采购单号',
+    dataIndex: 'orderNum',
+    fixed: 'left'
+  },
+  {
+    title: '采购需求单号',
+    dataIndex: 'requestApplyNum',
+    fixed: 'left'
+  },
+  {
+    title: '物料名称',
+    dataIndex: 'materialName',
+    scopedSlots: { customRender: 'materialName' }
+  },
+  {
+    title: '需求类型',
+    dataIndex: 'requestTypeText'
+  },
+  {
+    title: '紧急程度',
+    dataIndex: 'urgencyDegree',
+    scopedSlots: { customRender: 'urgencyDegree' }
+  },
+  {
+    title: '需求数量',
+    dataIndex: 'requestNum'
+  },
+  {
+    title: '需求日期',
+    dataIndex: 'requestTime',
+    width:200
+  },
+  {
+    title: '供应商名称',
+    dataIndex: 'supplierName'
+  },
+  {
+    title: '抢单报价',
+    dataIndex: 'quotationPrice',
+    scopedSlots: { customRender: 'quotationPrice' }
+  },
+  {
+    title: '采购单价',
+    dataIndex: 'orderPrice',
+    scopedSlots: { customRender: 'orderPrice' }
+  },
+  {
+    title: '订单金额',
+    scopedSlots: { customRender: 'totalPrice' }
+  },
+  {
+    title: '预计到货时间',
+    dataIndex: 'deliveryDate',
+    width:200
+  },
+  {
+    title: '入库状态',
+    dataIndex: 'storageStatus',
+    scopedSlots: { customRender: 'storageStatus' }
+  },
+  {
+    title: '入库数量',
+    dataIndex: 'storageQuantity',
+    scopedSlots: { customRender: 'storageQuantity' }
+  },
+  {
+    title: '退货数量',
+    dataIndex: 'backQuantity',
+    scopedSlots: { customRender: 'backQuantity' }
+  },
+  {
+    title: '采购人',
+    dataIndex: 'createdName'
+  },
+  {
+    title: '采购时间',
+    dataIndex: 'createdTime',
+    width:200
+  },
+  {
+    title: '操作',
+    scopedSlots: { customRender: 'action' },
+    fixed: 'right'
+  }
+]
+
 export default {
   props: ['queryParam'],
   components: {
-    AskPriceForm,
-    OfferPriceForm,
-    ApplyView
-  },
+
+   },
   data() {
     return {
+      columns,
       loading: false,
       dataSource: [],
       pagination: {
@@ -147,100 +252,6 @@ export default {
     },
     btnMulEnabled() {
       return this.selectedRows.length > 0
-    },
-    columns() {
-      const baseColumns = [
-        {
-          title: '序号',
-          scopedSlots: { customRender: 'order' },
-          width: 80
-        },
-        {
-          title: '采购需求单号',
-          dataIndex: 'requestApplyNum'
-        },
-        {
-          title: '物料名称',
-          dataIndex: 'materialName',
-          scopedSlots: { customRender: 'materialName' }
-        },
-        {
-          title: '需求类型',
-          dataIndex: 'requestTypeText'
-        },
-        {
-          title: '关联单号',
-          dataIndex: 'relatedNum'
-        },
-        {
-          title: '紧急程度',
-          dataIndex: 'urgencyDegree',
-          scopedSlots: { customRender: 'urgencyDegree' },
-          width: 120
-        },
-        {
-          title: '需求数量',
-          dataIndex: 'requestNum'
-        },
-        {
-          title: '需求日期',
-          dataIndex: 'requestTime'
-        },
-        {
-          title: '申请人',
-          dataIndex: 'proposerName',
-          scopedSlots: { customRender: 'proposerName' },
-          width: 200
-        },
-        {
-          title: '申请原因',
-          dataIndex: 'reason',
-          scopedSlots: { customRender: 'reason' },
-          width: 200
-        },
-        {
-          title: '备注',
-          dataIndex: 'remark',
-          scopedSlots: { customRender: 'remark' },
-          width: 200
-        }
-      ]
-
-      const m = {
-        1: [
-          ...baseColumns,
-          {
-            title: '制单人',
-            dataIndex: 'createdName'
-          },
-          {
-            title: '制单时间',
-            dataIndex: 'createdTime'
-          },
-          {
-            title: '操作',
-            scopedSlots: { customRender: 'action' },
-            fixed: 'right'
-          }
-        ],
-        2: [
-          ...baseColumns,
-          {
-            title: '领单部门',
-            dataIndex: 'receiveDepName'
-          },
-          {
-            title: '领单时间',
-            dataIndex: 'receiveTime'
-          },
-          {
-            title: '操作',
-            scopedSlots: { customRender: 'action' },
-            fixed: 'right'
-          }
-        ]
-      }
-      return m[this.$attrs.tagKey]
     }
   },
   methods: {
@@ -259,7 +270,7 @@ export default {
       }
       const _searchParam = Object.assign({}, { ...that.queryParamCustom }, paginationParam, params)
       that.loading = true
-      requestApplyPageList(_searchParam)
+      orderPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -296,11 +307,11 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-        that.$refs.applyView.query('view', record)
-      } else if (type === 'ask') {
-        that.$refs.askPriceForm.query(record)
+        that.$refs.offerPriceView.query('view', record)
+        return
       } else if (type === 'offer') {
-        that.$refs.offerPriceForm.query('add',record)
+        that.$refs.offerPriceForm.query('add', record)
+        return
       }
     }
   }
