@@ -5,7 +5,7 @@
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
-    :maskClosable="false" 
+    :maskClosable="false"
   >
     <!-- 产品配置表 -->
     <div class="customer-list-wrapper">
@@ -37,8 +37,8 @@
           :columns="columns"
           :dataSource="dataSource"
           :pagination="pagination"
-          :loading="loading" 
-          @change="handleTableChange" 
+          :loading="loading"
+          @change="handleTableChange"
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           size="small"
         >
@@ -135,7 +135,11 @@ export default {
     },
     searchAction(opt){
       let that = this
-      let _searchParam = Object.assign({},{...this.searchParam},{...this.extendSearchParam},{...this.pagination},opt || {})
+      let paginationParam = {
+        current: that.pagination.current || 1,
+        size: that.pagination.pageSize || 10
+      }
+      let _searchParam = Object.assign({},{...this.searchParam},{...this.extendSearchParam},paginationParam,opt || {})
       console.log('执行搜索...',_searchParam)
       that.loading = true
       priceAdjustItemConfigList(_searchParam).then(res => {
@@ -163,7 +167,7 @@ export default {
           obj[item.key] = true
         }
         return accr
-      },[]) 
+      },[])
 
       that.selectedRecord = all.filter(item =>that.selectedRowKeys.includes(item.key))
     },
@@ -196,7 +200,7 @@ export default {
       let {key,searchParam,selected} = opt
       that.inputKey = key
       that.visible = true
-      that.pagination.current = 1  
+      that.pagination.current = 1
       that.extendSearchParam = Object.assign({},(searchParam || {}))
       that.selectedRowKeys = selected.map(item => item.key)
       that.selectedRecord = selected.map(item => Object.assign({},item))
