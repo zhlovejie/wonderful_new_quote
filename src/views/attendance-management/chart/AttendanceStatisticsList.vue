@@ -155,6 +155,12 @@ const columns = [
   },
   {
     align: 'center',
+    title: '缺卡（h）',
+    dataIndex: 'noCardHours',
+    key: 'noCardHours',
+  },
+  {
+    align: 'center',
     title: '迟到（h）',
     dataIndex: 'laterHours',
     key: 'laterHours',
