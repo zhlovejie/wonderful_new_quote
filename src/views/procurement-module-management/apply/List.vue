@@ -98,7 +98,7 @@
           :loading="loading"
           @change="handleTableChange"
           :customRow="customRowFunction"
-          :rowSelection="+activeKey === 1 ? null : { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          :rowSelection="1 ? null : { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
           :scroll="{ x: 2400 }"
         >
           <div
@@ -127,15 +127,33 @@
             slot="action"
             slot-scope="text, record, index"
           >
-            <template v-if="+activeKey === 2">
+
+            <template v-if="+activeKey === 1">
               <a @click="doAction('view',record)">查看</a>
-              <a-divider type="vertical" />
-              <a @click="doAction('edit',record)">编辑</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
-                  <a href="javascript:;">删除</a>
-              </a-popconfirm>
-              <a-divider type="vertical" />
+              <!--待审批 -->
+              <template v-if="+record.approveStatus === 1">
+                <a-divider type="vertical" />
+                <a @click="doAction('cancel',record)">取消申请</a>
+              </template>
+
+              <!--通过 -->
+              <!-- <template v-if="+record.approveStatus === 2">
+                <a-divider type="vertical" />
+                <a @click="doAction('approval',record)">审批</a>
+              </template> -->
+
+              <!--3不通过，4已经撤销，5已被驳回 -->
+              <template v-if="[3,4,5].includes(+record.approveStatus)">
+                <a-divider type="vertical" />
+                <a @click="doAction('edit',record)">编辑</a>
+                <a-divider type="vertical" />
+                <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
+                    <a href="javascript:;">删除</a>
+                </a-popconfirm>
+              </template>
+            </template>
+
+            <template v-if="+activeKey === 2">
               <a @click="doAction('approval',record)">审批</a>
             </template>
 
@@ -145,10 +163,6 @@
               <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
                   <a href="javascript:;">删除</a>
               </a-popconfirm>
-            </template>
-
-            <template v-if="+activeKey === 1 || +activeKey === 4">
-              <a @click="doAction('view',record)">查看</a>
             </template>
           </div>
 
@@ -221,7 +235,7 @@
 
 
 
-          <template
+          <!-- <template
             slot="footer"
             slot-scope="text"
           >
@@ -262,7 +276,7 @@
                 >批量审核</a-button>
               </template>
             </div>
-          </template>
+          </template> -->
 
 
         </a-table>
@@ -386,7 +400,7 @@ export default {
       dataSource: [],
       loading: false,
       queryParam: {},
-      activeKey: 2,
+      activeKey: 1,
       columns,
       selectedRowKeys: [],
       selectedRows: [],
@@ -538,6 +552,7 @@ export default {
       const that = this
       if (['add','edit', 'view', 'approval'].includes(type)) {
         that.$refs['addForm'].query(type, { ...record })
+        return
       } else if (type === 'del') {
         requestApplyDelete(`id=${record.id}`)
           .then(res => {
@@ -550,6 +565,7 @@ export default {
             console.error(err)
             that.$message.error(err)
           })
+          return
       } else if (type === 'materialView') {
         that.normalAddFormKeyCount++
         that.$nextTick(() => {
@@ -558,12 +574,14 @@ export default {
             __from: 'normal'
           })
         })
+        return
       } else if(type ==='changeQty'){
         that.$refs['changeQtyForm'].query({ ...record })
         return
       }else if(type === 'cancel'){
+        that.selectedRows = [record]
         let promiseList = that.selectedRows.map(row => {
-          return requestApplyRevocation({id:row.id}).then(res => {
+          return requestApplyRevocation(`id=${row.id}`).then(res => {
             return {
               in:{...row},
               out:res
@@ -573,6 +591,7 @@ export default {
         that.betachAction({promiseList,type:'取消申请'})
         return
       }else if(type === 'batchApproval'){
+        that.selectedRows = [record]
         let promiseList = that.selectedRows.map(row => {
           return requestApplyApproval({ isAdopt: 0, opinion: '通过' ,approveId:row.id}).then(res => {
             return {
@@ -584,6 +603,7 @@ export default {
         that.betachAction({promiseList,type:'审核'})
         return
       }else if(type === 'batchDel'){
+        that.selectedRows = [record]
         let promiseList = that.selectedRows.map(row => {
           return requestApplyDelete(`id=${row.id}`).then(res => {
             return {

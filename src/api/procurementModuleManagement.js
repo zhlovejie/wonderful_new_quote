@@ -206,3 +206,14 @@ export function orderPageList(parameter) {
   })
 }
 /**采购单 END*/
+
+/**报价异常信息接口 */
+export function quotationExceptionAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/quotationException',
+    method: 'POST',
+    data: parameter
+  })
+}
+/**报价异常信息接口 END*/

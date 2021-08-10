@@ -6,7 +6,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1?null :{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 3000 }"
     >
       <div
@@ -35,11 +35,21 @@
         <template v-if="record.approveStatus === 2">
           <a @click="doAction('view',record)">查看</a>
         </template>
-        <template v-if="record.approveStatus === 3">
+        <template v-if="record.approveStatus === 3 || record.approveStatus === 4">
           <a @click="doAction('view',record)">查看</a>
           <a-divider type="vertical" />
           <a @click="doAction('offer',record)">报价</a>
         </template>
+        <template v-if="record.approveStatus === 5">
+          <a @click="doAction('view',record)">查看</a>
+          <a-divider type="vertical" />
+          <a @click="doAction('chuli',record)">处理</a>
+        </template>
+        <template v-if="record.approveStatus === 6">
+          <a @click="doAction('view',record)">查看</a>
+        </template>
+
+        <!-- <a @click="doAction('chuli',record)">处理</a> -->
       </div>
 
       <div
@@ -107,7 +117,8 @@
       @finished="() => search()"
     />
     <OfferPriceView ref="offerPriceView" @finish="() => search()"/>
-      <ApproveInfo ref="approveInfoCard" />
+    <ApproveInfo ref="approveInfoCard" @finish="() => search()"/>
+    <ExceptionForm ref="exceptionForm" @finish="() => search()"/>
   </div>
 </template>
 
@@ -116,6 +127,7 @@ import { quotationPageList } from '@/api/procurementModuleManagement'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OfferPriceForm from './OfferPriceForm'
 import OfferPriceView from './OfferPriceView'
+import ExceptionForm from './ExceptionForm'
 const columns = [
   {
     title: '序号',
@@ -212,7 +224,8 @@ export default {
   components: {
     OfferPriceForm,
     OfferPriceView,
-    ApproveInfo
+    ApproveInfo,
+    ExceptionForm
   },
   data() {
     return {
@@ -308,10 +321,13 @@ export default {
         that.$refs.offerPriceView.query('view', record)
         return
       } else if (type === 'offer') {
-        that.$refs.offerPriceForm.query('add', record)
+        that.$refs.offerPriceForm.query('add', {...record,source:3})
         return
       }else if(type === 'approval'){
         that.$refs.offerPriceView.query('approval', record)
+        return
+      }else if(type === 'chuli'){
+        that.$refs.exceptionForm.query(record)
         return
       }
     }

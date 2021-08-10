@@ -115,11 +115,10 @@ export default {
       const that = this
       that.$refs['ruleForm'].validate(valid => {
         if (valid) {
-          requestApplyChangeNum({
-            id:that.record.id,
-            num:that.form.num,
-            unsafetyInventory:that.msg.length > 0 ? 1 : 2
-          }).then(res => {
+          let id = that.record.id
+          let num = that.form.num
+          let unsafetyInventory = that.msg.length > 0 ? 1 : 2
+          requestApplyChangeNum(`id=${id}&num=${num}&unsafetyInventory=${unsafetyInventory}`).then(res => {
             that.$message.info(res.msg)
             if(res.code === 200){
               that.$emit('finish')

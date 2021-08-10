@@ -6,7 +6,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1?null:{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 2400 }"
     >
       <div
@@ -300,7 +300,8 @@ export default {
       } else if (type === 'ask') {
         that.$refs.askPriceForm.query(record)
       } else if (type === 'offer') {
-        that.$refs.offerPriceForm.query('add',record)
+        let source = +that.$attrs.tagKey
+        that.$refs.offerPriceForm.query('add',{...record,source})
       }
     }
   }

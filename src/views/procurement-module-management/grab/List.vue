@@ -62,6 +62,8 @@
           <a-tab-pane tab="待审核" :key="4" />
           <a-tab-pane tab="通过" :key="5" />
           <a-tab-pane tab="不通过" :key="6" />
+          <a-tab-pane tab="待处理报价异常单" :key="7" />
+          <a-tab-pane tab="已处理报价异常单" :key="8" />
         </a-tabs>
 
         <template v-if="[1,2].includes(activeKey)">
@@ -70,7 +72,7 @@
         <template v-if="[3].includes(activeKey)">
           <ListTypeTwo ref="ref_table" :queryParam="queryParamCustom" :tagKey="activeKey"/>
         </template>
-        <template v-if="[4,5,6].includes(activeKey)">
+        <template v-if="[4,5,6,7,8].includes(activeKey)">
           <ListTypeThree ref="ref_table" :queryParam="queryParamCustom" :tagKey="activeKey"/>
         </template>
       </div>
@@ -104,7 +106,7 @@ export default {
       let k = this.activeKey
       let case1 = [1,2].includes(k)
       let case2 = [3].includes(k)
-      let case3 = [4,5,6].includes(k)
+      let case3 = [4,5,6,7,8].includes(k)
 
       let extendsParams = {current:1}
       if(case1){
@@ -131,15 +133,33 @@ export default {
         let m = {
           4:{//待审批
             queryType:2,
-            result:undefined
+            result:undefined,
+            exceptionResult:undefined,
+            forOrder:2
           },
           5:{//通过
             queryType:3,
-            result:1
+            result:1,
+            exceptionResult:undefined,
+            forOrder:2
           },
           6:{//不通过
             queryType:3,
-            result:2
+            result:2,
+            exceptionResult:undefined,
+            forOrder:2
+          },
+          7:{
+            queryType:3,
+            result:3,
+            exceptionResult:5,
+            forOrder:2
+          },
+          8:{
+            queryType:3,
+            result:3,
+            exceptionResult:6,
+            forOrder:2
           }
         }
         extendsParams = {...extendsParams,...m[k]}

@@ -397,7 +397,8 @@ export default {
         requestId: that.record.id,
         materialId: that.record.materialId,
         materialName: that.record.materialName,
-        materialModelType: that.record.materialModelType
+        materialModelType: that.record.materialModelType,
+        source:record.source
       }
       if (!that.isAdd) {
         const [d1, d2] = Promise.all([

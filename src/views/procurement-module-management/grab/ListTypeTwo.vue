@@ -6,7 +6,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1? null :{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 3000 }"
     >
       <div
