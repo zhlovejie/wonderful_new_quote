@@ -134,14 +134,14 @@ const columns = [
   {
     align: 'center',
     title: '部门',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    dataIndex: 'department.departmentName',
+    key: 'department.departmentName',
   },
   {
     align: 'center',
     title: '岗位',
-    dataIndex: 'stationName',
-    key: 'stationName',
+    dataIndex: 'station.stationName',
+    key: 'station.stationName',
   },
   {
     align: 'center',
