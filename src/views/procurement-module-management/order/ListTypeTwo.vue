@@ -6,7 +6,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1?null:{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 3000 }"
     >
       <div
@@ -104,10 +104,6 @@
       >
         {{ text || 0 }}
       </div>
-
-
-
-
       <template
         slot="footer"
         slot-scope="text"
@@ -115,12 +111,25 @@
       </template>
 
     </a-table>
+    <OrderFormView ref="orderFormView" />
+    <ReceiveMaterial
+      ref="receiveMaterial"
+      @finish="() => search()"
+    />
+    <TakeGoods
+      ref="takeGoods"
+      @finish="() => search()"
+    />
+    <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
   </div>
 </template>
 
 <script>
+import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import { orderPageList } from '@/api/procurementModuleManagement'
-
+import OrderFormView from './OrderFormView'
+import ReceiveMaterial from './ReceiveMaterial'
+import TakeGoods from './TakeGoods'
 const columns = [
   {
     title: '序号',
@@ -158,7 +167,7 @@ const columns = [
   {
     title: '需求日期',
     dataIndex: 'requestTime',
-    width:200
+    width: 200
   },
   {
     title: '供应商名称',
@@ -181,7 +190,7 @@ const columns = [
   {
     title: '预计到货时间',
     dataIndex: 'deliveryDate',
-    width:200
+    width: 200
   },
   {
     title: '入库状态',
@@ -205,7 +214,7 @@ const columns = [
   {
     title: '采购时间',
     dataIndex: 'createdTime',
-    width:200
+    width: 200
   },
   {
     title: '操作',
@@ -217,8 +226,11 @@ const columns = [
 export default {
   props: ['queryParam'],
   components: {
-
-   },
+    OrderFormView,
+    ReceiveMaterial,
+    TakeGoods,
+    MaterialView
+  },
   data() {
     return {
       columns,
@@ -234,7 +246,8 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: [],
-      queryParamCustom: {}
+      queryParamCustom: {},
+      normalAddFormKeyCount: 1
     }
   },
   watch: {
@@ -307,10 +320,28 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-        that.$refs.offerPriceView.query('view', record)
-        return
-      } else if (type === 'offer') {
-        that.$refs.offerPriceForm.query('add', record)
+        that.$refs.orderFormView.query('view', record)
+      } else if (type === 'saveMaterial') {
+        //收料
+        that.$refs.receiveMaterial.query('saveMaterial', record)
+      } else if (type === 'takeGoods') {
+        //提货
+        that.$refs.takeGoods.query('takeGoods', record)
+      } else if (type === 'materialView') {
+        if(!record.materialId){
+          that.$message.info('物料编号未定义');
+          return
+        }
+        that.normalAddFormKeyCount++
+        let reg = /^[0-9\.]+$/g
+        let isNormal = reg.test(record.materialCode)
+        let __from = isNormal ? 'normal' : 'product'
+        that.$nextTick(() => {
+          that.$refs['materialView'].query('view', {
+            id: record.materialId,
+            __from
+          })
+        })
         return
       }
     }

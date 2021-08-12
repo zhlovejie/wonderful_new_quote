@@ -100,10 +100,12 @@
       @finished="() => search()"
     />
     <ApplyView ref="applyView" @finished="() => search()"/>
+    <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
   </div>
 </template>
 
 <script>
+import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import { requestApplyPageList } from '@/api/procurementModuleManagement'
 import AskPriceForm from './AskPriceForm'
 import OfferPriceForm from './OfferPriceForm'
@@ -113,7 +115,8 @@ export default {
   components: {
     AskPriceForm,
     OfferPriceForm,
-    ApplyView
+    ApplyView,
+    MaterialView
   },
   data() {
     return {
@@ -129,7 +132,8 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: [],
-      queryParamCustom: {}
+      queryParamCustom: {},
+      normalAddFormKeyCount: 1
     }
   },
   watch: {
@@ -302,6 +306,22 @@ export default {
       } else if (type === 'offer') {
         let source = +that.$attrs.tagKey
         that.$refs.offerPriceForm.query('add',{...record,source})
+      } else if (type === 'materialView') {
+        if(!record.materialId){
+          that.$message.info('物料编号未定义');
+          return
+        }
+        that.normalAddFormKeyCount++
+        let reg = /^[0-9\.]+$/g
+        let isNormal = reg.test(record.materialCode)
+        let __from = isNormal ? 'normal' : 'product'
+        that.$nextTick(() => {
+          that.$refs['materialView'].query('view', {
+            id: record.materialId,
+            __from
+          })
+        })
+        return
       }
     }
   }

@@ -119,10 +119,12 @@
     <OfferPriceView ref="offerPriceView" @finish="() => search()"/>
     <ApproveInfo ref="approveInfoCard" @finish="() => search()"/>
     <ExceptionForm ref="exceptionForm" @finish="() => search()"/>
+      <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
   </div>
 </template>
 
 <script>
+import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import { quotationPageList } from '@/api/procurementModuleManagement'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OfferPriceForm from './OfferPriceForm'
@@ -225,7 +227,8 @@ export default {
     OfferPriceForm,
     OfferPriceView,
     ApproveInfo,
-    ExceptionForm
+    ExceptionForm,
+    MaterialView
   },
   data() {
     return {
@@ -242,7 +245,8 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: [],
-      queryParamCustom: {}
+      queryParamCustom: {},
+      normalAddFormKeyCount: 1
     }
   },
   watch: {
@@ -328,6 +332,22 @@ export default {
         return
       }else if(type === 'chuli'){
         that.$refs.exceptionForm.query(record)
+        return
+      } else if (type === 'materialView') {
+        if(!record.materialId){
+          that.$message.info('物料编号未定义');
+          return
+        }
+        that.normalAddFormKeyCount++
+        let reg = /^[0-9\.]+$/g
+        let isNormal = reg.test(record.materialCode)
+        let __from = isNormal ? 'normal' : 'product'
+        that.$nextTick(() => {
+          that.$refs['materialView'].query('view', {
+            id: record.materialId,
+            __from
+          })
+        })
         return
       }
     }

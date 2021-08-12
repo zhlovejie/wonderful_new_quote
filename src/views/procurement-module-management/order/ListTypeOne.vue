@@ -6,7 +6,7 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1?null:{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 3000 }"
     >
       <div
@@ -92,13 +92,13 @@
 
     </a-table>
     <OfferPriceView ref="offerPriceView" @finish="() => search()"/>
-      <OrderForm ref="orderForm" @finish="() => search()"/>
-
-
+    <OrderForm ref="orderForm" @finish="() => search()"/>
+    <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
   </div>
 </template>
 
 <script>
+import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import { quotationPageList } from '@/api/procurementModuleManagement'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OfferPriceView from '../grab/OfferPriceView'
@@ -198,7 +198,8 @@ export default {
   props: ['queryParam'],
   components: {
     OfferPriceView,
-    OrderForm
+    OrderForm,
+    MaterialView
   },
   data() {
     return {
@@ -215,7 +216,8 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: [],
-      queryParamCustom: {}
+      queryParamCustom: {},
+      normalAddFormKeyCount: 1
     }
   },
   watch: {
@@ -295,6 +297,22 @@ export default {
         return
       } else if (type === 'offer') {
         that.$refs.orderForm.query('add', record)
+        return
+      } else if (type === 'materialView') {
+        if(!record.materialId){
+          that.$message.info('物料编号未定义');
+          return
+        }
+        that.normalAddFormKeyCount++
+        let reg = /^[0-9\.]+$/g
+        let isNormal = reg.test(record.materialCode)
+        let __from = isNormal ? 'normal' : 'product'
+        that.$nextTick(() => {
+          that.$refs['materialView'].query('view', {
+            id: record.materialId,
+            __from
+          })
+        })
         return
       }
     }

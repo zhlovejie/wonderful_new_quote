@@ -205,7 +205,7 @@
   </a-modal>
 </template>
 <script>
-import { orderAdd, quotationDetail, quotationDetailForUpdate } from '@/api/procurementModuleManagement'
+import { orderAdd, quotationDetail, quotationDetailForUpdate,getOrderLastPrice } from '@/api/procurementModuleManagement'
 import UploadFile from './UploadFile'
 import moment from 'moment'
 export default {
@@ -308,6 +308,11 @@ export default {
         // detail = {...detail,...d2}
         that.detail = d2
         that.requestApply = requestApply
+
+        //根据物料id获取该物料最新采购价  目前尚未使用
+        await getOrderLastPrice({materialId:requestApply.materialId}).then(res => {
+          console.log(res.data)
+        })
 
         that.form = {
           ...that.form,

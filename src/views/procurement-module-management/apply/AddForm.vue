@@ -226,7 +226,7 @@
             type="dashed"
             icon="plus"
             @click="materialAction('add')"
-            v-if="(isAdd) "
+            v-if="(isAdd) && form.requestType"
           >新增需求物料</a-button>
         </div>
       </div>
@@ -599,7 +599,7 @@ export default {
       const that = this
       const _searchParam = {
         current: 1,
-        size: 10,
+        size: 50,
         materialCode: wd
       }
       that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
@@ -632,6 +632,7 @@ export default {
         result = [...res[0]]
       }
       // console.log(res)
+      result = result.slice(0,10)
       result = result.map((item, index) => {
           item.__key = that._uuid()
           item.__value = item.materialName

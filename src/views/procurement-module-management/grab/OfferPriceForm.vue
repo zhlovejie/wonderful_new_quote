@@ -295,7 +295,13 @@
   </a-modal>
 </template>
 <script>
-import { quotationAdd, quotationDetail, quotationDetailForUpdate } from '@/api/procurementModuleManagement'
+import {
+  quotationAdd,
+  quotationDetail,
+  quotationDetailForUpdate ,
+  quotationSupplierList,
+  quotationCheckSupplier
+} from '@/api/procurementModuleManagement'
 export default {
   data() {
     return {
@@ -343,7 +349,8 @@ export default {
       spinning: false,
       record: {},
       detail: {},
-      detailUpdate: {}
+      detailUpdate: {},
+      supplierList:[]
     }
   },
   computed: {
@@ -420,6 +427,16 @@ export default {
         }
         that.detail = d1
         that.detailUpdate = d2
+
+      }else{
+        //判断供应商是否有采购某一物料的资格，返回true为有资格
+        // quotationCheckSupplier({supplierId:d2.supplierId,materialId:d2.materialId}).then(res => {
+
+        // })
+        //根据物料查询相应的供应商列表
+        quotationSupplierList({materialId:that.record.materialId}).then(res => {
+          that.supplierList = res.data
+        })
       }
     },
     handleSubmit() {

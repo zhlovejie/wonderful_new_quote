@@ -150,6 +150,25 @@ const materialBaseUrl = system.materialBaseUrl
       params: parameter
     })
   }
+
+  //根据物料查询相应的供应商列表
+  export function quotationSupplierList(parameter) {
+    return axios({
+      baseURL: materialBaseUrl,
+      url: '/quotation/supplierList',
+      method: 'GET',
+      params: parameter
+    })
+  }
+  //判断供应商是否有采购某一物料的资格，返回true为有资格
+  export function quotationCheckSupplier(parameter) {
+    return axios({
+      baseURL: materialBaseUrl,
+      url: '/quotation/checkSupplier',
+      method: 'GET',
+      params: parameter
+    })
+  }
 /**采购报价单 END*/
 
 
@@ -217,3 +236,77 @@ export function quotationExceptionAdd(parameter) {
   })
 }
 /**报价异常信息接口 END*/
+
+
+/**收料管理 */
+
+//申请收料
+export function receiveAdd(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receive',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+//新增收料单申请
+export function receiveAddApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receive/addReceive',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+//提货单列表查询
+export function receivePageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/receive/listReceive',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+//批量更新收料单数量
+export function updateReceiveNum(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/receive/updateReceiveNum',
+    method: 'POST',
+    data: parameter
+  })
+}
+/**收料管理 END*/
+
+/**提货单管理 */
+//新增提货单申请
+export function pickUpAddApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/pickUp/addPickUp',
+    method: 'POST',
+    data: parameter
+  })
+}
+//提货单列表查询
+export function pickUpPageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/pickUp/listPickUp',
+    method: 'GET',
+    params: parameter
+  })
+}
+//添加提货单运费申请
+export function updatePickUpFreigh(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/pickUp/updatePickUpFreigh',
+    method: 'POST',
+    data: parameter
+  })
+}
+/**提货单管理 END*/

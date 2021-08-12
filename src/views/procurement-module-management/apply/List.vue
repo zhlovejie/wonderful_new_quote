@@ -147,9 +147,7 @@
                 <a-divider type="vertical" />
                 <a @click="doAction('edit',record)">编辑</a>
                 <a-divider type="vertical" />
-                <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
-                    <a href="javascript:;">删除</a>
-                </a-popconfirm>
+                <a @click="doAction('del',record)">删除</a>
               </template>
             </template>
 
@@ -157,12 +155,14 @@
               <a @click="doAction('approval',record)">审批</a>
             </template>
 
+            <template v-if="+activeKey === 4">
+              <a @click="doAction('view',record)">查看</a>
+            </template>
+
             <template v-if="+activeKey === 5">
               <a @click="doAction('edit',record)">编辑</a>
               <a-divider type="vertical" />
-              <a-popconfirm title="删除后无法恢复，请谨慎操作，确认删除该条数据吗?" @confirm="() => doAction('del',record)">
-                  <a href="javascript:;">删除</a>
-              </a-popconfirm>
+              <a @click="doAction('del',record)">删除</a>
             </template>
           </div>
 
@@ -299,6 +299,8 @@ import AddForm from './AddForm'
 import ChangeQtyForm from './ChangeQtyForm'
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+
+
 import {
   requestApplyPageList,
   requestApplyDelete ,
@@ -548,30 +550,61 @@ export default {
       }
       return
     },
+    confirmModel(opt){
+      const that = this
+      let {title,content,success,attrs} = opt
+      that.$confirm({
+        title: title || '提示',
+        content: h => {
+          return h('div',null,content)
+        },
+        onOk() {
+          success && success()
+        },
+        onCancel() {
+        },
+        ...(attrs || {})
+      })
+      return
+    },
     async doAction(type, record) {
       const that = this
       if (['add','edit', 'view', 'approval'].includes(type)) {
         that.$refs['addForm'].query(type, { ...record })
         return
       } else if (type === 'del') {
-        requestApplyDelete(`id=${record.id}`)
-          .then(res => {
-            that.$message.info(res.msg)
-            if (+res.code === 200) {
-              that.search()
-            }
-          })
-          .catch(err => {
-            console.error(err)
-            that.$message.error(err)
-          })
-          return
+        that.confirmModel({
+          content:'删除后无法恢复，请谨慎操作，确认删除该条数据吗?',
+          success:() => {
+            requestApplyDelete(`id=${record.id}`)
+            .then(res => {
+              that.$message.info(res.msg)
+              if (+res.code === 200) {
+                that.search()
+              }
+            })
+            .catch(err => {
+              console.error(err)
+              that.$message.error(err)
+            })
+            return
+          }
+        })
+        return
+
       } else if (type === 'materialView') {
+        if(!record.materialId){
+          that.$message.info('物料编号未定义');
+          return
+        }
         that.normalAddFormKeyCount++
+        let reg = /^[0-9\.]+$/g
+        let isNormal = reg.test(record.materialCode)
+        let __from = isNormal ? 'normal' : 'product'
         that.$nextTick(() => {
           that.$refs['materialView'].query('view', {
             id: record.materialId,
-            __from: 'normal'
+            __from
           })
         })
         return
@@ -579,16 +612,22 @@ export default {
         that.$refs['changeQtyForm'].query({ ...record })
         return
       }else if(type === 'cancel'){
-        that.selectedRows = [record]
-        let promiseList = that.selectedRows.map(row => {
-          return requestApplyRevocation(`id=${row.id}`).then(res => {
-            return {
-              in:{...row},
-              out:res
-            }
-          })
+        that.confirmModel({
+          content:'取消申请后，需求单将在不通过列表中出现，你可编辑数据后重新提交审核。确认执行取消操作吗?',
+          success:() => {
+            that.selectedRows = [record]
+            let promiseList = that.selectedRows.map(row => {
+              return requestApplyRevocation(`id=${row.id}`).then(res => {
+                return {
+                  in:{...row},
+                  out:res
+                }
+              })
+            })
+            that.betachAction({promiseList,type:'取消申请'})
+            return
+          }
         })
-        that.betachAction({promiseList,type:'取消申请'})
         return
       }else if(type === 'batchApproval'){
         that.selectedRows = [record]
