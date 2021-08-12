@@ -91,7 +91,7 @@
 
       <tr>
         <td>
-          <span class="icon-required">物料图片</span>
+          <span>物料图片</span>
         </td>
         <td colspan="3">
           <template v-if="normalAddForm.isAdd || normalAddForm.isEdit">
@@ -243,18 +243,24 @@ export default {
     validate() {
       const that = this
       return new Promise((resolve, reject) => {
-        let { materialPhoto1, materialPhoto2, materialPhoto3 } = that.materialDiagram
-        if (materialPhoto1 || materialPhoto2 || materialPhoto3) {
           let id = that.normalAddForm.getId()
           resolve({
             ...that.materialDiagram,
             materialQrCode: that.normalAddForm.submitParams.materialQrCode,
             id
           })
-        } else {
-          that.$message.info('图形数据未上传物料图片')
-          resolve(null)
-        }
+        // let { materialPhoto1, materialPhoto2, materialPhoto3 } = that.materialDiagram
+        // if (materialPhoto1 || materialPhoto2 || materialPhoto3) {
+        //   let id = that.normalAddForm.getId()
+        //   resolve({
+        //     ...that.materialDiagram,
+        //     materialQrCode: that.normalAddForm.submitParams.materialQrCode,
+        //     id
+        //   })
+        // } else {
+        //   that.$message.info('图形数据未上传物料图片')
+        //   resolve(null)
+        // }
       })
     },
     showImg(url) {

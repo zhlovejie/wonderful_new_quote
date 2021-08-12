@@ -160,7 +160,7 @@
             </a-form-model-item>
           </td>
           <td>
-            <span class="icon-required">预估重量</span>
+            <span>预估重量</span>
           </td>
           <td>
             <a-form-model-item
@@ -196,7 +196,7 @@
               </a-form-model-item>
             </td>
           </template>
-          <td>原K3物料代码</td>
+          <td class="icon-required">原K3物料代码</td>
           <td :colspan="normalAddForm.isNormal ? 1 : 3">
             <a-form-model-item
               ref="k3Code"
@@ -258,7 +258,7 @@ export default {
         mainUnit: [{ required: true, message: '请选择主计量单位' }],
         subUnit: [{ required: true, message: '请选择辅计量单位' }],
         conversionRate: [{ required: true, message: '请输入换算率' }],
-        estimateWeight: [{ required: true, message: '请输入预估重量' }],
+        k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         needCheck:[{ required: true, message: '请选择是否需要送检' }]
       }
     }
