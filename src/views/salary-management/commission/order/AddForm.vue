@@ -17,6 +17,7 @@
           <thead>
             <tr>
               <th>序号</th>
+              <th>产品代码</th>
               <th>产品名称</th>
               <th>产品类型</th>
               <th>产品销售额(去税去运费)</th>
@@ -40,6 +41,7 @@
             >
               <tr v-for="(product, idx) in item.contractProductPercentageDetailLastVoList" :key="product.id">
                 <td>{{ idx + 1 }}</td>
+                <td>{{ product.productMattleCode }}</td>
                 <td>{{ product.productName }}</td>
                 <td>{{ product.productConfigName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
@@ -77,6 +79,7 @@
           <thead>
             <tr>
               <th>序号</th>
+              <th>产品代码</th>
               <th>产品名称</th>
               <th>产品类型</th>
               <th>产品销售额(去税去运费)</th>
@@ -99,6 +102,7 @@
             >
               <tr v-for="(product, idx) in item.contractProductPercentageDetailLastVoList" :key="product.id">
                 <td>{{ idx + 1 }}</td>
+                <td>{{ product.productMattleCode }}</td>
                 <td>{{ product.productName }}</td>
                 <td>{{ product.productConfigName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
