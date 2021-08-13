@@ -118,7 +118,7 @@ export default {
       console.log(record)
       let that = this
       that.todayList = []
-      that.todayList = that.$_.cloneDeep(record.manageBrands)
+      that.todayList = that.$_.cloneDeep(record)
       that.visible = true
     },
     userAction(model, type) {

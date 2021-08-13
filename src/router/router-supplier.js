@@ -31,6 +31,17 @@ export default { //供应商管理
         permission: ['permission']
       },
     },
+    {
+      path: '/supplier/list/modules',
+      name: 'Supplierdetails',
+      component: () => import('@/views/supplier/modules/details'),
+      meta: {
+        title: '供应商详情',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
 
   ]
 }
