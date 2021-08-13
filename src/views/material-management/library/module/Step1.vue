@@ -40,8 +40,9 @@
           placeholder="请选择"
           :allowClear="true"
           :filter-option="filterOption"
+          @search="(w) => searchHandler(w,item)"
         >
-          <a-select-option v-for="sub in item.subList" :key="sub.id" :value="sub.id">
+          <a-select-option v-for="sub in item.searchList" :key="sub.id" :value="sub.id">
             {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
         </a-select>
@@ -354,77 +355,24 @@ export default {
     },
     initSpecifications(node){
       const that = this
+      that.spinning = true
       routineMaterialRulePageTwoTierTreeList({ parentId: node.value }).then(res => {
-        console.log(res)
+        that.spinning = false
+        // console.log(res)
         if(!res || res.code !== 200){
           that.$message.info(`获取节点【名称：${node.title}-编号：${node.value}】的规格数据失败！`)
           return
         }
-        /*
-        {
-          "code": 200,
-          "msg": "操作成功",
-          "data": [
-            {
-              "id": 8889,
-              "parentId": 8888,
-              "ruleName": "材质",
-              "code": "001",
-              "newRuleName": "材质",
-              "codeLength": 3,
-              "newCodeLength": 3,
-              "isSpecification": 1,
-              "subList": [
-                {
-                  "id": 8893,
-                  "parentId": 8889,
-                  "ruleName": "塑料",
-                  "code": "001",
-                  "newRuleName": "塑料",
-                  "codeLength": 3,
-                  "newCodeLength": 3,
-                  "isSpecification": 1,
-                  "subList": null
-                }
-              ]
-            }
-          }
-         */
-        // let list = res.data
-
         //加载为规格型号的数据
-        that.form = {...that.form,specificationsList:res.data.filter(item => item.isSpecification === 1)}
-        // isSpecification
-
-        // let textureTarget = list.find(item => String(item.newRuleName).includes('材质') || String(item.ruleName).includes('材质'))
-        // let thicknessTarget = list.find(item => String(item.newRuleName).includes('厚度') || String(item.ruleName).includes('厚度'))
-        // let widthTarget = list.find(item => String(item.newRuleName).includes('宽度') || String(item.ruleName).includes('宽度'))
-        // let lengthTarget = list.find(item => String(item.newRuleName).includes('长度') || String(item.ruleName).includes('长度'))
-
-        // let textureList = textureTarget ? (textureTarget.subList || []) : []
-        // let thicknessList = thicknessTarget ? (thicknessTarget.subList || []) : []
-        // let widthList = widthTarget ? (widthTarget.subList || []) : []
-        // let lengthList = lengthTarget ? (lengthTarget.subList || []) : [];
-        // (
-        //   [textureList,thicknessList,widthList,lengthList].forEach(list => {
-        //     if(list.length > 0){
-        //       list.forEach(item => {
-        //         item.fullName = `${(item.newRuleName || item.ruleName)}(${item.code})`
-        //       })
-        //     }else{
-        //       // list.push({
-        //       //   id:-1,
-        //       //   code:0,
-        //       //   fullName:'未配置'
-        //       // })
-        //     }
-        //   })
-        // );
-        // // debugger
-        // that.textureList = textureList
-        // that.thicknessList = thicknessList
-        // that.widthList = widthList
-        // that.lengthList = lengthList
+        let specificationsList = res.data.filter(item => item.isSpecification === 1)
+        specificationsList = specificationsList.map(item => {
+          item.searchList = item.subList.slice(0,50)
+          return item
+        })
+        that.form = {...that.form,specificationsList}
+      }).catch(err => {
+        that.spinning = false
+        that.$message.info(err)
       })
     },
     onLoadData(treeNode) {
@@ -469,6 +417,24 @@ export default {
         option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       );
     },
+    //a-select 组件加载数据多时严重影响性能，此处优化搜索显示
+    searchHandler(w,item){
+      const that = this
+      let specificationsList = that.form.specificationsList
+      let target = specificationsList.find(_item => _item.id === item.id)
+      if(target){
+        let list = target.subList.filter(n => {
+          let ruleName = n.newRuleName || n.ruleName
+          let label = `${ruleName}(${n.code})`
+          return label.includes(w)
+        })
+        if(list.length > 20){
+          list = list.slice(0,20)
+        }
+        target.searchList = [...list]
+        that.form = {...that.form,specificationsList}
+      }
+    }
   }
 }
 </script>
