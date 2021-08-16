@@ -1170,7 +1170,7 @@
                             <a-form-model-item>
                               <a-checkbox-group v-model="c4">
                                 <a-checkbox :value="4" :disabled="isEdit" name="type" @change="checkboxChange">
-                                  验收款
+                                  质保金
                                 </a-checkbox>
                               </a-checkbox-group>
                             </a-form-model-item>
