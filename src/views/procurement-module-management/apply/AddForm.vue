@@ -521,7 +521,12 @@ export default {
 
           console.log(result)
           if(result !== null){
-              that.$message.info('操作成功')
+              let msg = ''
+              result.filter(res => res.code !== 200).map(res => {
+                msg += `${res.msg}`
+              })
+              msg = msg || '操作成功'
+              that.$message.info(msg)
               that.$emit('finish')
               that.handleCancel()
           }

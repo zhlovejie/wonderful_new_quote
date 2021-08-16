@@ -72,12 +72,12 @@
           :defaultActiveKey="activeKey"
           @change="tabChange"
         >
-          <template v-if="$auth('requestApply:all')">
+          <!-- <template v-if="$auth('requestApply:all')"> -->
           <a-tab-pane
             tab="全部"
             :key="1"
           />
-          </template>
+
           <a-tab-pane
             tab="待审批"
             :key="2"
@@ -131,7 +131,7 @@
             <template v-if="+activeKey === 1">
               <a @click="doAction('view',record)">查看</a>
               <!--待审批 -->
-              <template v-if="+record.approveStatus === 1">
+              <template v-if="+record.approveStatus === 1 && +record.createdId === +userInfo.id">
                 <a-divider type="vertical" />
                 <a @click="doAction('cancel',record)">取消申请</a>
               </template>
@@ -143,7 +143,7 @@
               </template> -->
 
               <!--3不通过，4已经撤销，5已被驳回 -->
-              <template v-if="[3,4,5].includes(+record.approveStatus)">
+              <template v-if="[3,4,5].includes(+record.approveStatus) && +record.createdId === +userInfo.id">
                 <a-divider type="vertical" />
                 <a @click="doAction('edit',record)">编辑</a>
                 <a-divider type="vertical" />
@@ -159,7 +159,7 @@
               <a @click="doAction('view',record)">查看</a>
             </template>
 
-            <template v-if="+activeKey === 5">
+            <template v-if="+activeKey === 5 && +record.createdId === +userInfo.id">
               <a @click="doAction('edit',record)">编辑</a>
               <a-divider type="vertical" />
               <a @click="doAction('del',record)">删除</a>
@@ -416,7 +416,8 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler
       },
       spinning: false,
-      normalAddFormKeyCount: 1
+      normalAddFormKeyCount: 1,
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
