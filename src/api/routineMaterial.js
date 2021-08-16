@@ -5,6 +5,381 @@ import system from '@/config/defaultSettings'
 
 const materialBaseUrl = system.materialBaseUrl
 
+
+
+/** 供应商报价新增修改  */
+export function getSupplierOfferUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/manageSupplierOffer/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 供应商报价详情  */
+export function getSupplierOffer(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/manageSupplierOffer/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//质保期交货期
+export function DeliveryApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeWarrantyDelivery/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//裸价标准审批
+export function NakedPriceApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeNakedPrice/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//物料税率
+export function TaxRateApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeTaxRate/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//最大采购量审批
+export function MaxPurchaseApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeMaxPurchase/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//品牌审批
+export function BrandApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeBrand/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//发票审批
+export function InvoiceApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeInvoice/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//包装审批
+export function PackApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changePack/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+//供应商审批
+export function SupplierApproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeSupplier/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 质保期详情  */
+export function getDetailDelivery(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeWarrantyDelivery/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 裸价标准详情  */
+export function getDetailNakedPrice(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeNakedPrice/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 最大采购量  */
+export function getDetailMaxPurchase(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeMaxPurchase/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 税率详情*/
+export function getDetailTaxRate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeTaxRate/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 发票类型详情*/
+export function getDetailInvoice(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeInvoice/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 包装方式详情*/
+export function getDetailPack(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changePack/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+/** 品牌详情*/
+export function getDetailBrand(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeBrand/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/** 供应商详情*/
+export function getDetailSupplier(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeSupplier/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+/** 变更 审批列表*/
+export function getchange(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/change/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**质保 变更历史 */
+export function getDelivery(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeWarrantyDelivery/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**裸价价格变更历史 */
+export function getNakedPrice(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeNakedPrice/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**最大采购变更历史 */
+export function getMaxPurchase(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeMaxPurchase/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**税率变更历史 */
+export function getTaxRate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeTaxRate/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**发票类型变更历史 */
+export function getInvoice(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeInvoice/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**品牌变更历史 */
+export function getBrand(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeBrand/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**包装方式变更历史 */
+export function getPack(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changePack/page',
+    method: 'get',
+    params: parameter
+  })
+}
+/**供应商变更历史 */
+export function getSupplier(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeSupplier/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//品牌型号新增和修改
+export function BrandUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeBrand/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//品牌型号新增和修改
+export function MaxPurchaseUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeMaxPurchase/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+//税率新增和修改
+export function DeliveryUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeWarrantyDelivery/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//税率新增和修改
+export function TaxRateUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeTaxRate/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//发票类型新增和修改
+export function InvoiceUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeInvoice/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//裸价标准新增和修改
+export function NakedUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeNakedPrice/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
+//包装方式新增和修改
+export function changePackUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changePack/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//供应商新增和修改
+export function SupplierUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/changeSupplier/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+/**根据物料查询采购要求 */
+export function getBuyRequirement(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/buyRequirement/getBuyRequirement',
+    method: 'get',
+    params: parameter
+  })
+}
+//新增和修改
+export function listManageSaveAndUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/buyRequirement/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+/**供应商型号 */
+export function listManageBrandModel(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/manageSupplier/listManageBrandModel',
+    method: 'get',
+    params: parameter
+  })
+}
+/**供应商品牌 */
+export function listManageBrand(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/manageSupplier/listManageBrand',
+    method: 'get',
+    params: parameter
+  })
+}
+/**供应商列表 */
+export function listManageSupplier(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/manageSupplier/listManageSupplier',
+    method: 'get',
+    params: parameter
+  })
+}
 // 常规物料规则----------------------------------------
 /**新增常规物料规则接口 */
 export function routineMaterialRuleAdd(parameter) {
@@ -77,7 +452,7 @@ export function routineMaterialRuleStartUsing(parameter) {
 }
 
 /**列表 常规物料规则接口 */
- export function routineMaterialRulePageList(parameter) {
+export function routineMaterialRulePageList(parameter) {
   return axios({
     baseURL: materialBaseUrl,
     url: '/routineMaterialRule/list',
@@ -180,7 +555,7 @@ export function productMaterialRuleStartUsing(parameter) {
 }
 
 /**列表 成品物料规则接口 */
- export function productMaterialRulePageList(parameter) {
+export function productMaterialRulePageList(parameter) {
   return axios({
     baseURL: materialBaseUrl,
     url: '/productMaterialRule/list',
@@ -335,7 +710,7 @@ export function routineMaterialInfoCheckName(parameter) {
  * @description 根据所选列表导出
  * @param ids 所选的物料id
  */
- export function routineMaterialInfoExportList(parameter) {
+export function routineMaterialInfoExportList(parameter) {
   return axios({
     baseURL: materialBaseUrl,
     url: `/routineMaterialInfo/exportList?${parameter}`,
@@ -531,7 +906,7 @@ export function productMaterialInfoCheckName(parameter) {
  * @description 根据所选列表导出
  * @param ids 所选的物料id
  */
- export function productMaterialInfoExportList(parameter) {
+export function productMaterialInfoExportList(parameter) {
   return axios({
     baseURL: materialBaseUrl,
     url: `/productMaterialInfo/exportList?${parameter}`,
@@ -608,92 +983,92 @@ export function productMaterialInfoGetCode(parameter) {
 }
 /* ---------成品物料库基本接口--END---------------------------- */
 
-export function __MaterialInfoExport(type,params) {
+export function __MaterialInfoExport(type, params) {
   const m = {
-    1:'/routineMaterialInfo/exportList', //常规物料
-    2:'/productMaterialInfo/exportList'  //成品物料
+    1: '/routineMaterialInfo/exportList', //常规物料
+    2: '/productMaterialInfo/exportList' //成品物料
   }
   let fileName = type === 1 ? '常规物料库' : '成品物料库'
   let url = `${materialBaseUrl}${m[type]}?${params}`
   return axios({
-    url: url,
-    method: 'get',
-    responseType: 'blob'
-  }).then((res) => {
-    console.log(res)
-    if (res instanceof Blob) {
-      const isFile = res.type === 'application/vnd.ms-excel'
-      const isJson = res.type === 'application/json'
-      if (isFile) {
-        //返回文件 则下载
-        const objectUrl = URL.createObjectURL(res)
-        const a = document.createElement('a')
-        document.body.appendChild(a)
-        a.style = 'display: none'
-        a.href = objectUrl
-        a.download = `${fileName}.xls`
-        a.click()
-        document.body.removeChild(a)
-        return {
-          code: 200,
-          msg: '下载成功'
-        }
-      } else if (isJson) {
-        //返回json处理
-        return new Promise(resolve => {
-          var reader = new FileReader()
-          reader.onload = function (e) {
-            let _res = null
-            try {
-              _res = JSON.parse(e.target.result)
-            } catch (err) {
-              _res = null
-            }
-            if (_res !== null) {
-              if (_res.code == 500) {
-                resolve({
-                  code: 500,
-                  msg: _res.msg
-                })
+      url: url,
+      method: 'get',
+      responseType: 'blob'
+    }).then((res) => {
+      console.log(res)
+      if (res instanceof Blob) {
+        const isFile = res.type === 'application/vnd.ms-excel'
+        const isJson = res.type === 'application/json'
+        if (isFile) {
+          //返回文件 则下载
+          const objectUrl = URL.createObjectURL(res)
+          const a = document.createElement('a')
+          document.body.appendChild(a)
+          a.style = 'display: none'
+          a.href = objectUrl
+          a.download = `${fileName}.xls`
+          a.click()
+          document.body.removeChild(a)
+          return {
+            code: 200,
+            msg: '下载成功'
+          }
+        } else if (isJson) {
+          //返回json处理
+          return new Promise(resolve => {
+            var reader = new FileReader()
+            reader.onload = function (e) {
+              let _res = null
+              try {
+                _res = JSON.parse(e.target.result)
+              } catch (err) {
+                _res = null
+              }
+              if (_res !== null) {
+                if (_res.code == 500) {
+                  resolve({
+                    code: 500,
+                    msg: _res.msg
+                  })
+                } else {
+                  resolve({
+                    code: 200,
+                    msg: '下载成功'
+                  })
+                }
               } else {
                 resolve({
-                  code: 200,
-                  msg: '下载成功'
+                  code: 500,
+                  msg: `json解析出错 e.target.result：${e.target.result}`
                 })
               }
-            } else {
+            }
+            try {
+              reader.readAsText(res)
+            } catch (err) {
               resolve({
                 code: 500,
-                msg: `json解析出错 e.target.result：${e.target.result}`
+                msg: err.message
               })
             }
+          })
+        } else {
+          return {
+            code: 500,
+            msg: `不支持的类型:${res}`
           }
-          try {
-            reader.readAsText(res)
-          } catch (err) {
-            resolve({
-              code: 500,
-              msg: err.message
-            })
-          }
-        })
+        }
       } else {
         return {
           code: 500,
-          msg: `不支持的类型:${res}`
+          msg: `返回数据不是Blob类型:${typeof res}`
         }
       }
-    } else {
+    })
+    .catch((err) => {
       return {
         code: 500,
-        msg: `返回数据不是Blob类型:${typeof res}`
+        msg: `请求出错：${err.message}`
       }
-    }
-  })
-  .catch((err) => {
-    return {
-      code: 500,
-      msg: `请求出错：${err.message}`
-    }
-  })
+    })
 }

@@ -26,7 +26,7 @@ export function devFileUploadPath() {
  * 研发专用文件删除接口
  * @returns
  */
- export function devDelPath() {
+export function devDelPath() {
   return api.devDelPath
 }
 
@@ -85,6 +85,15 @@ export function findApprovedNodeList(parameter) {
   })
 }
 
+//获取供应商审批实例列表
+export function findApprovedNodeListdep(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/common/findApprovedNodeDeptList',
+    method: 'get',
+    params: parameter
+  })
+}
 export function customUpload(fileData) {
   return axios({
     baseURL: system.baseURL,
@@ -201,4 +210,3 @@ export function userUpdatePassWord(params) {
     data: params
   })
 }
-
