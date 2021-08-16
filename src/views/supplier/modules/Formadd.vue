@@ -1748,7 +1748,7 @@ export default {
               let react = that.$refs.UploadF.Throw()
               let hasImgs = react.length > 0
               if (!hasImgs) {
-                that.$message.info('请上传项目图片')
+                that.$message.error('请上传营业执照')
                 return
               } else {
                 that.form.licenseUrl = react.map((i) => i.url).toString(',')
