@@ -1,34 +1,40 @@
 <template>
-  <div class="adjust-apply-list-wrapper">
-    <div class="main-wrapper">
-      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="基本信息" key="0"> <Step1 ref="step1" /> </a-tab-pane>
-        <a-tab-pane tab="物料采购要求" key="1"><Step2 ref="step2" /> </a-tab-pane>
-        <a-tab-pane tab="物料采购记录" key="2"> <Step3 ref="step3" /></a-tab-pane>
-        <a-tab-pane tab="物料采购信息" key="3"><Step4 ref="step4" /> </a-tab-pane>
-        <a-tab-pane tab="物料供应商" key="4"><Step5 ref="step5" /> </a-tab-pane>
+  <div>
+    <div v-if="isAdd">
+      <template v-if="isNormal">
+        <StepOne v-if="step === 1" @change="stepOneChange" />
+      </template>
+      <template v-if="isProduct">
+        <StepProduct v-if="step === 1" @change="stepOneChange" />
+      </template>
 
-        <a-button @click="goback" slot="tabBarExtraContent"> 返回 </a-button>
-      </a-tabs>
+      <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
+    <div v-else-if="isView || isEdit">
+      <StepTwo @change="stepTwoChange" />
+    </div>
+    <div v-else></div>
   </div>
 </template>
-<script>
-// import Step1 from './step1'
-import Step1 from './material1'
-import Step2 from './material2'
-import Step3 from './material3'
-import Step4 from './material4'
-import Step5 from './material5'
 
+<script>
+import StepOne from './Step1'
+import StepTwo from './Step2'
+import StepProduct from './StepProduct'
+import {
+  routineMaterialInfo,
+  routineMaterialAccessory,
+  productMaterialAccessory,
+  productMaterialInfo,
+} from '@/api/routineMaterial'
+// const modalTitleMap = { add: '新增', view: '查看', edit: '修改', loading: '加载中...' }
+let uuid = () => Math.random().toString(32).slice(-10)
 export default {
-  name: 'NoticeList',
+  name: 'material-rule-management-library-normal-AddForm',
   components: {
-    Step1,
-    Step2,
-    Step3,
-    Step4,
-    Step5,
+    StepOne,
+    StepTwo,
+    StepProduct,
   },
   provide() {
     return {
@@ -37,21 +43,43 @@ export default {
   },
   data() {
     return {
+      type: 'loading',
       visible: false,
-      activeKey: 0,
+      spinning: false,
+      step: 1,
+      detail: {},
+      submitParams: {},
       record: {},
-      userInfo: this.$store.getters.userInfo, // 当前登录人
-      loading: false,
+      selectNode: {},
     }
   },
-  computed: {},
+  computed: {
+    // modalTitle() {
+    //   return modalTitleMap[this.type]
+    // },
+    isView() {
+      return this.type === 'view'
+    },
+    isAdd() {
+      return this.type === 'add'
+    },
+    isEdit() {
+      return this.type === 'edit'
+    },
+    isNormal() {
+      return this.detail.__from === 'normal'
+    },
+    isProduct() {
+      return this.detail.__from === 'product'
+    },
+  },
   watch: {
     $route: {
       handler: function (to, from) {
         if (to.name === 'material-rule-details' && this.$route.params.id !== undefined) {
           let that = this
           that.record = this.$route.params
-          that.init()
+          that.query('view', this.$route.params)
         } else {
           this.$router.go(-1)
         }
@@ -60,57 +88,71 @@ export default {
     },
   },
   methods: {
-    init() {
-      this.$nextTick(() => {
-        this.$refs.step1.query('view', this.record)
+    uuid,
+    async query(type, record) {
+      const that = this
+      //that.type = type
+      //   that.visible = true
+      that.detail = { ...record }
+
+      that.selectNode = { ...that.detail.__selectItem }
+
+      let isAdd = type === 'add'
+      let isEdit = type === 'edit'
+      let isView = type === 'view'
+      if (isAdd) {
+      } else if (isView || isEdit) {
+        let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
+        let accessory = await __APIAccessory({ materialId: record.id }).then((res) => res.data)
+
+        let __APIInfo = that.isNormal ? routineMaterialInfo : productMaterialInfo
+        let result = await __APIInfo({ id: record.id }).then((res) => res.data)
+
+        that.submitParams = {
+          ...result,
+          accessory,
+        }
+      }
+      that.$nextTick(() => {
+        that.type = type
       })
     },
-    goback() {
-      this.$router.go(-1)
+    stepOneChange({ __action__, values }) {
+      const that = this
+      if (__action__ === 'nextStep') {
+        that.submitParams = { ...that.submitParams, ...values }
+        that.step = 2
+      } else if (__action__ === 'close') {
+        that.visible = false
+      } else {
+        console.error(`未知命令：`, arguments)
+      }
     },
-    tabChange(tagKey) {
-      this.activeKey = parseInt(tagKey)
-      if (tagKey === '0') {
-        this.$refs.step1.query('view', this.record)
-      }
-      if (tagKey === '1') {
-        this.$nextTick(() => {
-          this.$refs.step2.query(this.record)
-        })
-      }
-      if (tagKey === '2') {
-        this.$nextTick(() => {
-          this.$refs.step3.init(this.record)
-        })
-      }
-      if (tagKey === '3') {
-        this.$nextTick(() => {
-          this.$refs.step4.init(this.record)
-        })
-      }
-      if (tagKey === '4') {
-        this.$nextTick(() => {
-          this.$refs.step5.init(this.record)
-        })
-      }
-      if (tagKey === '5') {
-        this.$nextTick(() => {
-          // this.$refs.step6.init(this.record)
-        })
-      }
+    stepTwoChange() {
+      this.handleCancel()
+      this.$emit('finish')
+    },
+    handleSubmit() {
+      this.handleCancel()
+    },
+    handleCancel() {
+      const that = this
+      that.step = 1
+      that.detail = {}
+      that.submitParams = {}
+      that.$nextTick(() => {
+        that.visible = false
+      })
+    },
+    getSelectNode() {
+      return this.selectNode
+    },
+    getId() {
+      return this.detail.id
     },
   },
 }
 </script>
+
 <style scoped>
-.adjust-apply-list-wrapper {
-  background-color: #fff;
-  padding: 10px 20px;
-}
-.topName {
-  top: 230px !important;
-}
-.main-wrapper {
-  margin-top: 20px;
-}
 </style>

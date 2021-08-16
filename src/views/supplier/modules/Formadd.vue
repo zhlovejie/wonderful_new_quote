@@ -9,7 +9,7 @@
     :confirmLoading="spinning"
   >
     <template slot="footer">
-      <template v-if="isApproval">
+      <template v-if="isEdit">
         <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
         <a-button class="a-button" type="primary" icon="check" @click="passAction()">通过</a-button>
       </template>
@@ -276,7 +276,7 @@
                     <a-date-picker
                       v-model="form.endTime"
                       show-time
-                      :disabled="isEdit || isEditSalary"
+                      :disabled="form.endTime !== undefined && !isAdd ? true : false"
                       type="date"
                       placeholder="请选择最后交易时间"
                       style="width: 255px"
@@ -1022,7 +1022,7 @@
                     <a-date-picker
                       v-model="form.endTime"
                       show-time
-                      :disabled="isEdit || isEditSalary"
+                      :disabled="form.endTime !== undefined && !isAdd ? true : false"
                       type="date"
                       placeholder="请选择最后交易时间"
                       style="width: 255px"
@@ -1493,9 +1493,9 @@ export default {
       //审核
       return this.type === 'edit'
     },
-    isApproval() {
-      //通过不通过
-      return this.type === 'edit'
+    isAdd() {
+      //新增
+      return this.type === 'add'
     },
     isEditSalary() {
       //修改
@@ -1716,7 +1716,7 @@ export default {
             that.c4 = detail.warrantyType === 0 ? [] : [detail.warrantyType]
           }
           that.form = { ...that.form, ...detail }
-          this.form.endTime = moment(this.form.endTime)
+          this.form.endTime = this.form.endTime ? moment(this.form.endTime) : undefined
           that.brandList = detail.manageSupplierMaterials
           if (detail.supplierScale === 1) {
             let _sp = detail.licenseUrl.split(',')
@@ -1748,7 +1748,7 @@ export default {
               let react = that.$refs.UploadF.Throw()
               let hasImgs = react.length > 0
               if (!hasImgs) {
-                that.$message.info('请上传项目图片')
+                that.$message.error('请上传营业执照')
                 return
               } else {
                 that.form.licenseUrl = react.map((i) => i.url).toString(',')
