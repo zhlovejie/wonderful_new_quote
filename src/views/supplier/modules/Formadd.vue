@@ -462,7 +462,7 @@
                   <a-col :span="20">
                     <a-row type="flex" justify="space-around" align="middle">
                       <a-col :span="9">
-                        <a-form-model-item ref="paymentCycleId" prop="paymentCycleId">
+                        <a-form-model-item prop="paymentCycleId">
                           <span>票到付款周期 </span>
                           <a-select
                             :disabled="isEdit"
@@ -1208,7 +1208,7 @@
                   <a-col :span="20">
                     <a-row type="flex" justify="space-around" align="middle">
                       <a-col :span="9">
-                        <a-form-model-item ref="paymentCycleId" prop="paymentCycleId">
+                        <a-form-model-item prop="paymentCycleId">
                           <span>票到付款周期 </span>
                           <a-select
                             placeholder="选择天数"
@@ -1688,7 +1688,11 @@ export default {
       that.c3 = []
       that.c4 = []
       that.record = record
-
+      await queryCode({ code: 'period_0' })
+        .then((res) => {
+          that.Payment = res.data
+        })
+        .catch((err) => (that.loading = false))
       await queryCode({ code: 'sincerity_0' })
         .then((res) => {
           that.Warehouse = res.data
@@ -1699,15 +1703,12 @@ export default {
           that.Position = res.data
         })
         .catch((err) => (that.loading = false))
-      await queryCode({ code: 'period_0' })
-        .then((res) => {
-          that.Payment = res.data
-        })
-        .catch((err) => (that.loading = false))
+
       that.$refs.UploadF.empty()
       if (type !== 'add') {
         let detail = await getDetail({ id: record.id }).then((res) => res.data)
         that.$nextTick(() => {
+          detail.paymentCycleId = Number(detail.paymentCycleId)
           if (detail.settlementMode === 0) {
             that.c1 = detail.padvanceType === 0 ? [] : [detail.padvanceType]
             that.c2 = detail.ccommodityType === 0 ? [] : [detail.ccommodityType]

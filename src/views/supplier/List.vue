@@ -2,14 +2,16 @@
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-select
-        style="width: 200px; margin-right: 10px"
+        style="width: 280px; margin-right: 10px"
         placeholder="供应商物料"
         :allowClear="true"
-        v-model="queryParam.departmentId"
+        show-search
+        :filter-option="filterOption"
+        v-model="queryParam.materialIdName"
       >
-        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
-          item.departmentName
-        }}</a-select-option>
+        <a-select-option v-for="item in depList" :key="item.id" :value="item.id"
+          >{{ item.materialName }} {{ item.materialCode }}</a-select-option
+        >
       </a-select>
 
       <a-select
@@ -165,7 +167,7 @@
   </div>
 </template>
 <script>
-import { departmentList } from '@/api/systemSetting'
+import { routineMaterialInfoPageList } from '@/api/routineMaterial'
 import {
   manageSupplier,
   SupplierRevocation,
@@ -231,6 +233,13 @@ const columns = [
   },
   {
     align: 'center',
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
+  },
+  {
+    align: 'center',
     title: '创建人',
     dataIndex: 'createdName',
     key: 'createdName',
@@ -241,13 +250,7 @@ const columns = [
     dataIndex: 'createdTime',
     key: 'createdTime',
   },
-  {
-    align: 'center',
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-  },
+
   {
     align: 'center',
     title: '操作',
@@ -624,9 +627,11 @@ export default {
     init() {
       let that = this
       that.searchAction()
-      departmentList().then((res) => (this.depList = res.data))
+      routineMaterialInfoPageList({ current: 1, size: 10000 }).then((res) => (this.depList = res.data.records))
     },
-
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
     // 删除
     confirmDelete(record) {
       let that = this
