@@ -274,7 +274,7 @@ export default {
         that.$refs.offerPriceView.query('view', record)
         return
       } else if (type === 'offer') {
-        that.$refs.offerPriceForm.query('add', record)
+        that.$refs.offerPriceForm.query('add', {...record,source:1})
         return
       } else if (type === 'materialView') {
         if(!record.materialId){

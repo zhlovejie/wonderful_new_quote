@@ -45,13 +45,19 @@
               <a-select
                 v-model="form.supplierId"
                 placeholder="选择供应商"
+                @change="supplierChangeHandler"
               >
-                <a-select-option :value="1">
+              <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
+                {{item.name}}
+              </a-select-option>
+
+
+                <!-- <a-select-option :value="1">
                   测试供应商1
                 </a-select-option>
                 <a-select-option :value="2">
                   测试供应商1
-                </a-select-option>
+                </a-select-option> -->
               </a-select>
             </a-form-model-item>
           </template>
@@ -401,7 +407,7 @@ export default {
       that.visible = true
       that.form = {
         ...that.form,
-        requestId: that.record.id,
+        requestId: that.record.requestId || that.record.id,
         materialId: that.record.materialId,
         materialName: that.record.materialName,
         materialModelType: that.record.materialModelType,
@@ -445,7 +451,9 @@ export default {
         if (valid) {
           that.spinning = true
           const { modelName, modelType } = that.form
-
+          if(+that.form.source === 3){
+            that.form = {...that.form,lastId:that.record.id}
+          }
           quotationAdd({ ...that.form, model: `${modelName}-${modelType}` })
             .then(res => {
               that.spinning = false
@@ -471,6 +479,19 @@ export default {
     handleCancel() {
       this.resetForm()
       this.visible = false
+    },
+    supplierChangeHandler(v){
+      const that = this
+
+      let supplierList = [...that.supplierList]
+      let target = supplierList.find(item => +item.id === +v)
+      if(target){
+        that.form = {...that.form,supplierName:target.name}
+      }
+      //判断供应商是否有采购某一物料的资格，返回true为有资格
+      // quotationCheckSupplier({supplierId:v,materialId:that.record.materialId}).then(res => {
+      //   console.log(res)
+      // })
     }
   }
 }

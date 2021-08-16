@@ -581,7 +581,19 @@ export default {
         })
         that.dataSource = dataSource
       }else if(type === 'del'){
-        that.dataSource = dataSource.filter(item => item.key !== record.key)
+        that.$confirm({
+          title: '删除提示',
+          content: h => {
+            return h('div',{style:{color:'red'}},'删除后无法恢复，请谨慎操作。')
+          },
+          onOk() {
+            that.dataSource = dataSource.filter(item => item.key !== record.key)
+          },
+          onCancel() {
+
+          }
+        });
+        return
       }
     },
     contractChange(result) {
