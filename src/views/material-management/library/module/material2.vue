@@ -17,7 +17,9 @@
           <tr>
             <td style="width: 155px">指定供应商</td>
             <td>
-              <a-button type="link" @click="historys('supplier')"> {{ Details.supplierName }} </a-button>
+              <a-button type="link" @click="historys('supplier')">
+                {{ Details.supplierName === '' ? '供应商不限' : Details.supplierName }}
+              </a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('supplier')"
                   >变更指定工供应商
