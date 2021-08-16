@@ -225,7 +225,7 @@ export default {
         newPrice: [{ required: true, message: '请输入最新报价' }],
         deliveryDate: [{ required: true, message: '请选择预计到货日期' }],
         amount: [{ required: true, message: '请输入采购总金额' }],
-        fileUrl: [{ required: true, message: '请上传采购合同' }],
+        // fileUrl: [{ required: true, message: '请上传采购合同' }],
       },
       cardBordered: true,
       visible: false,

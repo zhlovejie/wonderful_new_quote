@@ -217,20 +217,7 @@ export default {
         email:undefined
       },
       rules: {
-        packageType:[{ required: true, message: '请输入包装类型' }],
-        packageCount:[{ required: true, message: '请输入包装内数量' }],
-        modelName:[{ required: true, message: '请输入品牌' }],
-        modelType:[{ required: true, message: '请输入品牌型号' }],
-        invoiceType:[{ required: true, message: '请选择发票类型' }],
-        nakedPrice:[{ required: true, message: '请输入裸价标准' }],
-        newPrice:[{ required: true, message: '请输入最新报价' }],
-        materialRate:[{ required: true, message: '请输入物料税率' }],
-        freightRate:[{ required: true, message: '请输入运费税率' }],
-        lowestNum:[{ required: true, message: '请输入最低采购数量' }],
-        deliveryCycle:[{ required: true, message: '请输入交货周期' }],
-        shelfLife:[{ required: true, message: '请输入保质期' }],
-        supplierId:[{ required: true, message: '请选择供应商' }],
-        email:[{ required: true, message: '请输入邮箱信息' }],
+
       },
       cardBordered:true,
       visible:false,

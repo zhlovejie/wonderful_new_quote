@@ -82,7 +82,7 @@
                 </span>
               </td>
             </tr>
-            <tr>
+            <tr >
               <td style="width:150px;">关联单号</td>
               <td >
                 <!-- <a-form-model-item prop="relatedNum">
@@ -94,7 +94,7 @@
                   />
                 </a-form-model-item> -->
 
-                <a-form-model-item prop="relatedNum" v-if="!isDisabled">
+                <a-form-model-item prop="relatedNum" v-if="!isDisabled && isRelatedSellOrder">
                   <a-select style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
                     <a-select-option
                       v-for="item in relatedNumList"
@@ -106,7 +106,7 @@
                   </a-select>
                 </a-form-model-item>
                 <span v-else>
-                  {{detail.relatedNum}}
+                  {{detail.relatedNum || '无'}}
                 </span>
               </td>
             </tr>
@@ -237,6 +237,8 @@
             <tr>
               <td style="width:150px;">制单人</td>
               <td >{{detail.createdName || userInfo.trueName}}</td>
+              <td style="width:150px;">制单时间</td>
+              <td >{{detail.createdTime}}</td>
             </tr>
           </table>
         </div>
@@ -252,6 +254,7 @@
 import moment from 'moment'
 //物料代码模糊搜索
 import { routineMaterialInfoPageList ,productMaterialInfoPageList} from '@/api/routineMaterial'
+import { getBuyRequirement } from '@/api/routineMaterial'
 import Approval from './Approval'
 import {
   requestApplyDetail,
@@ -326,6 +329,7 @@ export default {
   },
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
+    this.requestNumChange = this.$_.debounce(this.requestNumChange, 800)
     return {
       type: 'add',
       visible: false,
@@ -432,6 +436,16 @@ export default {
         )
       }
       return btn
+    },
+    isRelatedSellOrder(){ //需求 销售订单需要管理 单号
+      const that = this
+      let {requestType,relatedNum,requestTime} = that.form
+      let relatedNumItem = that.relatedNumList.find(item => item.id === relatedNum)
+      if(that.$refs['requestType']){
+        let requestTypeItem = that.$refs['requestType'].getTarget()
+        return requestTypeItem && requestTypeItem.text && requestTypeItem.text.includes('销售订单')
+      }
+      return false
     }
   },
   methods: {
@@ -666,9 +680,21 @@ export default {
 
       that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: false, list: result }
     },
-    materialFuzzyHandleChange(key,record) {
+    async materialFuzzyHandleChange(key,record) {
       const that = this
       const material = that.materialFuzzySearch.list.find(item => item.materialCodeFormat === key)
+
+      let materialRequirement = await getBuyRequirement({ materialId: material.id })
+        .then((res) => res.data)
+        .catch(err => {
+          console.log(err)
+          return {}
+        })
+
+      if(!materialRequirement.pageNum){
+        that.$message.info(`物料【${material.materialName}】未设置最大采购量`)
+      }
+
       let dataSource = [...that.dataSource]
       let target = dataSource.find(item => item.key === record.key)
       target.materialId = material.id
@@ -677,6 +703,7 @@ export default {
       target.specification = 'specification' in material  ? (material.specification || material.specifications) : '无'
       target.materialCode = material.materialCodeFormat
       target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
+      target.__maxBuyNumber = +materialRequirement.pageNum
       that.dataSource = dataSource
 
       that.materialFuzzySearch = { ...that.materialFuzzySearch, item: {...material} }
@@ -694,10 +721,10 @@ export default {
       let dataSource = [...that.dataSource]
       let target = dataSource.find(item => item.key === record.key)
       target.requestNum = v
-      target.unsafetyInventory = +v > +target.inventory ? 1 : 2
+      target.unsafetyInventory = +v > +target.__maxBuyNumber ? 1 : 2
 
       if(target.unsafetyInventory === 1){
-        let msg = `物料【${target.materialName}】的安全库存为【${target.inventory}】，本次采购需求量已超安全库存，确认需求超量采购吗？`
+        let msg = `物料【${target.materialName}】的安全库存为【${target.__maxBuyNumber}】，本次采购需求量已超安全库存，确认需求超量采购吗？`
         that.$confirm({
           title: '安全库存提示',
           content: h => {
