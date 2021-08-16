@@ -21,11 +21,21 @@ const api = {
   listManageSupplierOfferLog: '/manageSupplierOffer/listManageSupplierOfferLog',
   listManageapproval: '/manageSupplier/approval',
   materialSuplierEnable: '/manageSupplier/materialSuplierEnable',
+  materialenable: '/manageSupplier/enable',
 
 
 
 }
 
+// 物料供应商
+export function materialenable(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.materialenable,
+    method: 'post',
+    data: parameter
+  })
+}
 
 // 物料供应商列表
 export function materialSuplierEnable(parameter) {

@@ -109,6 +109,11 @@
               <a-divider type="vertical" /> -->
               <a type="primary" @click="process(record)">详情</a>
             </template>
+            <template v-if="record.status === 2 && $auth('supplier:enable')">
+              <a-divider type="vertical" />
+              <a type="primary" v-if="record.type === 0" @click="Enable(record, 1)">启用</a>
+              <a type="primary" v-if="record.type === 1" @click="Enable(record, 0)">禁用</a>
+            </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('supplier:Withdraw')">
@@ -174,6 +179,7 @@ import {
   importExcelMax,
   importExcelMin,
   getdelete,
+  materialenable,
 } from '@/api/supplier'
 import AddForm from './modules/Formadd'
 import ApproveInfo from './modules/ApproveInfo'
@@ -316,6 +322,13 @@ export default {
       this.$router.push({
         name: 'Supplierdetails',
         params: { record: record, id: record.id },
+      })
+    },
+    Enable(record, type) {
+      let that = this
+      materialenable({ id: record.id, type: type }).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
       })
     },
     //小供应商导入
