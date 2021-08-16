@@ -58,6 +58,9 @@
               <a-button key="submit" type="primary" style="margin-left: 10px" :loading="spinning" @click="brandAdd"
                 >新增</a-button
               >
+              <a-button key="submits" type="primary" style="margin-left: 10px" :loading="spinning" @click="materialAdd"
+                >分类新增</a-button
+              >
             </a-form-model-item>
           </div>
         </div>
@@ -267,6 +270,18 @@
                       <a-select-option :value="1">帐期结算</a-select-option>
                     </a-select></a-form-model-item
                   >
+                </a-col>
+                <a-col :span="12">
+                  <a-form-model-item label="最后交易时间" prop="endTime">
+                    <a-date-picker
+                      v-model="form.endTime"
+                      show-time
+                      :disabled="isEdit || isEditSalary"
+                      type="date"
+                      placeholder="请选择最后交易时间"
+                      style="width: 255px"
+                    />
+                  </a-form-model-item>
                 </a-col>
               </a-row>
               <div v-if="form.settlementMode === 0" class="form wdf-form">
@@ -1002,6 +1017,18 @@
                     </a-select></a-form-model-item
                   >
                 </a-col>
+                <a-col :span="12">
+                  <a-form-model-item label="最后交易时间" prop="endTime">
+                    <a-date-picker
+                      v-model="form.endTime"
+                      show-time
+                      :disabled="isEdit || isEditSalary"
+                      type="date"
+                      placeholder="请选择最后交易时间"
+                      style="width: 255px"
+                    />
+                  </a-form-model-item>
+                </a-col>
               </a-row>
               <div v-if="form.settlementMode === 0" class="form wdf-form">
                 <a-row class="wdf-row">
@@ -1311,6 +1338,7 @@
 
       <Approval ref="approval" @opinionChange="opinionChange" />
       <BrandFrom ref="brandFrom" @brandChange="brandChange" />
+      <MaterialAdd ref="materialAdd" @filet="materialChange" />
     </a-spin>
   </a-modal>
 </template>
@@ -1320,6 +1348,8 @@ import { routineMaterialInfoPageList } from '@/api/routineMaterial'
 import { saveAndUpdate, getDetail, listManageapproval } from '@/api/supplier'
 import Approval from './Approval'
 import BrandFrom from './BrandFrom'
+import MaterialAdd from './materialAdd'
+
 import UploadFile from './UploadFile'
 import UploadF from './UploadF'
 import moment from 'moment'
@@ -1334,6 +1364,7 @@ export default {
     BrandFrom,
     UploadFile,
     UploadF,
+    MaterialAdd,
   },
   data() {
     this.allMaterialFuzzySearchAction = this.$_.debounce(this.allMaterialFuzzySearchAction, 800)
@@ -1401,10 +1432,12 @@ export default {
         supplierEmail: undefined,
         arrivalDay: undefined,
         lpersonName: undefined,
+        endTime: undefined,
       },
       type: 'view',
       record: {},
       rules: {
+        endTime: [{ required: true, message: '请选择最后交易时间', trigger: 'change' }],
         lpersonName: [{ required: true, message: '请输入公司法人', trigger: 'blur' }],
         supplierEmail: [{ required: true, message: '请输入企业邮箱', trigger: 'blur' }],
         officialPhone: [{ required: true, message: '请输入企业电话', trigger: 'blur' }],
@@ -1578,14 +1611,21 @@ export default {
       let react = this.brandList.find((i) => i.materialId === this.records.materialId)
       react.manageBrands = [...data]
     },
+    materialChange(data) {
+      let that = this
+      that.brandList = [...that.brandList, ...data]
+    },
     brandAdd() {
-      console.log('新增')
       let that = this
       if (JSON.stringify(that.Brandform.materialItem) !== '{}') {
         that.brandList.push(that.Brandform.materialItem)
       } else {
         that.$message.info('请先选择供应物料')
       }
+    },
+    //选择物料分类
+    materialAdd() {
+      this.$refs.materialAdd.init()
     },
     Addmodel(record) {
       //添加品牌型号
@@ -1675,6 +1715,7 @@ export default {
             that.c4 = detail.warrantyType === 0 ? [] : [detail.warrantyType]
           }
           that.form = { ...that.form, ...detail }
+          this.form.endTime = moment(this.form.endTime)
           that.brandList = detail.manageSupplierMaterials
           if (detail.supplierScale === 1) {
             let _sp = detail.licenseUrl.split(',')
@@ -1752,6 +1793,7 @@ export default {
             that.form.establishYear = spt2.text
 
             that.form.manageSupplierMaterials = that.brandList
+            that.form.endTime = moment(that.form.endTime).format('YYYY-DD-MM hh:mm:ss')
             if (that.type === 'edit-salary') {
               that.form.id = that.record.id
             }

@@ -20,9 +20,21 @@ const api = {
   listQualityInspectionRecord: '/manageSupplier/listQualityInspectionRecord',
   listManageSupplierOfferLog: '/manageSupplierOffer/listManageSupplierOfferLog',
   listManageapproval: '/manageSupplier/approval',
+  materialSuplierEnable: '/manageSupplier/materialSuplierEnable',
 
 
 
+}
+
+
+// 物料供应商列表
+export function materialSuplierEnable(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.materialSuplierEnable,
+    method: 'get',
+    params: parameter
+  })
 }
 
 //供应商审批

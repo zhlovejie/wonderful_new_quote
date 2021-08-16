@@ -5,8 +5,8 @@
         <a-tab-pane tab="基本信息" key="0"> <Step1 ref="step1" /> </a-tab-pane>
         <a-tab-pane tab="物料采购要求" key="1"><Step2 ref="step2" /> </a-tab-pane>
         <a-tab-pane tab="物料采购记录" key="2"> <Step3 ref="step3" /></a-tab-pane>
-        <a-tab-pane tab="物料采购信息" key="3"> </a-tab-pane>
-        <a-tab-pane tab="物料供应商" key="4"> </a-tab-pane>
+        <a-tab-pane tab="物料采购信息" key="3"><Step4 ref="step4" /> </a-tab-pane>
+        <a-tab-pane tab="物料供应商" key="4"><Step5 ref="step5" /> </a-tab-pane>
 
         <a-button @click="goback" slot="tabBarExtraContent"> 返回 </a-button>
       </a-tabs>
@@ -18,20 +18,17 @@
 import Step1 from './material1'
 import Step2 from './material2'
 import Step3 from './material3'
-// import Step4 from './step4'
-// import Step5 from './step5'
-// import Step6 from './step6'
+import Step4 from './material4'
+import Step5 from './material5'
 
 export default {
   name: 'NoticeList',
   components: {
-    // Step1,
     Step1,
     Step2,
     Step3,
-    // Step4,
-    // Step5,
-    // Step6,
+    Step4,
+    Step5,
   },
   provide() {
     return {
@@ -88,12 +85,12 @@ export default {
       }
       if (tagKey === '3') {
         this.$nextTick(() => {
-          // this.$refs.step4.init(this.record)
+          this.$refs.step4.init(this.record)
         })
       }
       if (tagKey === '4') {
         this.$nextTick(() => {
-          // this.$refs.step5.init(this.record)
+          this.$refs.step5.init(this.record)
         })
       }
       if (tagKey === '5') {
