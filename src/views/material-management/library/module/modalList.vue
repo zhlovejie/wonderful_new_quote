@@ -16,6 +16,9 @@
         }}</span>
         <span v-if="isPacking">{{ record.packName }}/包内数量{{ record.packNum }}</span>
       </div>
+      <div slot="status" slot-scope="text, record">
+        {{ getStateText(text) }}
+      </div>
       <div slot="afterType" slot-scope="text, record, index">
         <span v-if="isStandard">{{ record.ctype === 0 ? '含运费' : '不含运费' }}</span>
         <span v-if="isStock">{{ record.cnumber }}</span>
@@ -83,6 +86,7 @@ const priewColumns = [
     title: '审批状态',
     key: 'status',
     dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
   },
 ]
 
@@ -184,6 +188,16 @@ export default {
     },
     setModel(type = 'show') {
       this.visible = String(type) === 'show' ? true : false
+    },
+    getStateText(state) {
+      let stateMap = {
+        0: '待提交',
+        1: '待审批',
+        2: '通过',
+        3: '不通过',
+        4: '已撤回',
+      }
+      return stateMap[state] || `未知状态:${state}`
     },
   },
 }
