@@ -23,3 +23,10 @@ Vue.use(VueStorage, config.storageOptions)
 Vue.use(VueClipboard)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
+
+function uuid(){
+  let u = () => Math.random().toString(32).slice(-10)
+  return `${u()}-${u()}-${u()}-${u()}`
+}
+
+Vue.prototype._uuid = uuid
