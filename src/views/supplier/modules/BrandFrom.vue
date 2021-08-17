@@ -134,6 +134,7 @@ export default {
           ...target.manageBrandModels,
           Object.assign({}, { modelName: model.modelName }, { keys: makeUUID() }),
         ]
+        model.modelName = null
       } else if (type === 'reset') {
         target.manageBrandModels = []
       }

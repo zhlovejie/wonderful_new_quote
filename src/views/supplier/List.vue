@@ -124,9 +124,7 @@
                 </a-popconfirm>
               </template>
             </template>
-            <template
-              v-if="$auth('supplier:edit-salary') && record.status !== 1 && +record.deptId === +userInfo.departmentId"
-            >
+            <template v-if="$auth('supplier:edit-salary') && record.status !== 1 && +record.deptType === 1">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary', record)">修改</a>
               <a-divider type="vertical" />
