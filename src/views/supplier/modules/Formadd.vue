@@ -196,7 +196,7 @@
               <a-row :gutter="[16, 24]">
                 <a-col :span="12">
                   <a-form-model-item ref="salesmanPhone" label="业务员手机号" prop="salesmanPhone">
-                    <a-input
+                    <a-input-number
                       placeholder="请输入业务员手机号"
                       :disabled="isEdit"
                       v-model="form.salesmanPhone"
@@ -550,7 +550,7 @@
                 </a-col>
                 <a-col :span="12">
                   <a-form-model-item ref="fcontactMode" label="财务联系方式" prop="fcontactMode">
-                    <a-input
+                    <a-input-number
                       placeholder="请输入财务主管的手机号"
                       v-model="form.fcontactMode"
                       :disabled="isEdit"
@@ -703,7 +703,7 @@
               <a-row :gutter="[16, 24]">
                 <a-col :span="12">
                   <a-form-model-item ref="salesmanPhone" label="业务员手机号" prop="salesmanPhone">
-                    <a-input
+                    <a-input-number
                       placeholder="请输入业务员手机号"
                       v-model="form.salesmanPhone"
                       :disabled="isEdit"
@@ -773,7 +773,7 @@
                 </a-col>
                 <a-col :span="12">
                   <a-form-model-item ref="asalePhone" label="售后手机号" prop="asalePhone">
-                    <a-input
+                    <a-input-number
                       placeholder="请输入售后手机号"
                       v-model="form.asalePhone"
                       :disabled="isEdit"
@@ -956,7 +956,7 @@
                 </a-col>
                 <a-col :span="12">
                   <a-form-model-item ref="fcontactMode" label="财务联系方式" prop="fcontactMode">
-                    <a-input
+                    <a-input-number
                       placeholder="请输入财务主管的手机号"
                       v-model="form.fcontactMode"
                       :disabled="isEdit"
@@ -1170,7 +1170,7 @@
                             <a-form-model-item>
                               <a-checkbox-group v-model="c4">
                                 <a-checkbox :value="4" :disabled="isEdit" name="type" @change="checkboxChange">
-                                  验收款
+                                  质保金
                                 </a-checkbox>
                               </a-checkbox-group>
                             </a-form-model-item>
@@ -1444,18 +1444,27 @@ export default {
         belongPlatformName: [{ required: true, message: '请输入所在平台名称', trigger: 'blur' }],
         asaleWeChat: [{ required: true, message: '请输入售后微信号', trigger: 'blur' }],
         asaleJob: [{ required: true, message: '请输入售后职务', trigger: 'blur' }],
-        asalePhone: [{ required: true, message: '请输入售后手机号', trigger: 'blur' }],
+        asalePhone: [
+          { required: true, message: '请输入售后手机号', trigger: 'blur' },
+          { pattern: /^1\d{10}$/, message: '请输入正确的手机号码' },
+        ],
         asaleName: [{ required: true, message: '请输入售后姓名', trigger: 'blur' }],
         salesmanIdentity: [{ required: true, message: '请输入业务员身份证信息', trigger: 'blur' }],
         salesmanJob: [{ required: true, message: '请输入业务员职务', trigger: 'blur' }],
-        fcontactMode: [{ required: true, message: '请输入财务主管手机号', trigger: 'blur' }],
+        fcontactMode: [
+          { required: true, message: '请输入财务主管手机号', trigger: 'blur' },
+          { pattern: /^1\d{10}$/, message: '请输入正确的手机号码' },
+        ],
         cardNumber: [{ required: true, message: '请输入银行卡号', trigger: 'blur' }],
         bankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }],
         taxpayerNumber: [{ required: true, message: '请输入纳税人识别号', trigger: 'blur' }],
         cfullName: [{ required: true, message: '请输入公司全称', trigger: 'blur' }],
         paymentCycleId: [{ required: true, message: '请选择付款周期', trigger: 'change' }],
         salesmanWeChat: [{ required: true, message: '请输入业务员微信号', trigger: 'blur' }],
-        salesmanPhone: [{ required: true, message: '请输入业务员手机号', trigger: 'blur' }],
+        salesmanPhone: [
+          { required: true, message: '请输入业务员手机号', trigger: 'blur' },
+          { pattern: /^1\d{10}$/, message: '请输入正确的手机号码' },
+        ],
         salesmanName: [{ required: true, message: '请输入业务员名称', trigger: 'blur' }],
         pcontactMode: [{ required: true, message: '请输入平台联系方式', trigger: 'blur' }],
         pshopName: [{ required: true, message: '请输入平台店铺名称', trigger: 'blur' }],

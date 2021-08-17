@@ -125,11 +125,7 @@
               </template>
             </template>
             <template
-              v-if="
-                $auth('supplier:edit-salary') &&
-                (record.status === 3 || record.status === 4 || record.status === 0) &&
-                +record.createdId === +userInfo.id
-              "
+              v-if="$auth('supplier:edit-salary') && record.status !== 1 && +record.deptId === +userInfo.departmentId"
             >
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary', record)">修改</a>
