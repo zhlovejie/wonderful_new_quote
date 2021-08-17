@@ -1763,7 +1763,21 @@ export default {
                 that.form.licenseUrl = react.map((i) => i.url).toString(',')
               }
             }
+            if (that.form.settlementMode == 0) {
+              let ishas =
+                (Number(that.form.padvanceProportion) || 0) +
+                  (Number(that.form.ccollectProportion) || 0) +
+                  (Number(that.form.ccommodityProportion) || 0) +
+                  (Number(that.form.warrantyProportion) || 0) ===
+                100
+                  ? true
+                  : false
 
+              if (!ishas) {
+                that.$message.error('结算方式必须等于100')
+                return
+              }
+            }
             if (that.form.settlementMode == 0) {
               that.form.padvanceType = that.c1.length === 0 ? 0 : that.c1.join()
               that.form.ccommodityType = that.c2.length === 0 ? 0 : that.c2.join()
