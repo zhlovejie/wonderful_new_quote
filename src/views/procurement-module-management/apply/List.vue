@@ -152,6 +152,8 @@
             </template>
 
             <template v-if="+activeKey === 2">
+              <a @click="doAction('view',record)">查看</a>
+              <a-divider type="vertical" />
               <a @click="doAction('approval',record)">审批</a>
             </template>
 

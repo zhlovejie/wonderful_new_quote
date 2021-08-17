@@ -139,7 +139,6 @@ export default {
   watch: {
     queryParam: {
       handler(s) {
-        console.log(arguments)
         this.queryParamCustom = { ...this.queryParam, ...s }
       },
       immediate: true

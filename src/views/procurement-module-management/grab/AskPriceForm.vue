@@ -178,14 +178,15 @@
 
       <a-card :bordered="cardBordered" title="发送至">
         <a-form-model-item label="供应商" prop="supplierId">
-          <a-select v-model="form.supplierId" placeholder="选择供应商">
-            <a-select-option :value="1">
-              测试供应商1
-            </a-select-option>
-            <a-select-option :value="2">
-              测试供应商1
+          <a-select
+            v-model="form.supplierId"
+            placeholder="选择供应商"
+          >
+            <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
+              {{item.supplierName}}
             </a-select-option>
           </a-select>
+
         </a-form-model-item>
         <a-form-model-item  label="邮箱信息" prop="email">
           <a-input v-model="form.email" placeholder="邮箱信息" />
@@ -196,14 +197,17 @@
 </a-modal>
 </template>
 <script>
-import { enquiryAdd } from '@/api/procurementModuleManagement'
+import { enquiryAdd,quotationSupplierList } from '@/api/procurementModuleManagement'
 export default {
   data() {
     return {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
-        packageCount:undefined,
+        packageType:'个',
+        packageCount:20,
+        modelName:'',
+        modelType:'',
         model:'',
         invoiceType:1,
         nakedPrice:1,
@@ -217,12 +221,13 @@ export default {
         email:undefined
       },
       rules: {
-
+        email:[{ required: true, message: '请输入邮箱信息' }],
       },
       cardBordered:true,
       visible:false,
       spinning:false,
-      record:{}
+      record:{},
+      supplierList:[]
     };
   },
   computed:{
@@ -257,6 +262,12 @@ export default {
         materialName:that.record.materialName,
         materialModelType:that.record.materialModelType
       }
+
+      //根据物料查询相应的供应商列表
+        quotationSupplierList({materialId:that.record.materialId}).then(res => {
+          that.supplierList = res.data
+        })
+
     },
     handleSubmit() {
       const that = this

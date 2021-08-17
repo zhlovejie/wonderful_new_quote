@@ -48,7 +48,7 @@
                 @change="supplierChangeHandler"
               >
               <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
-                {{item.name}}
+                {{item.supplierName}}
               </a-select-option>
 
 

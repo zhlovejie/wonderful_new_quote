@@ -468,7 +468,14 @@ export default {
         }
       }
       if(!that.isAdd){
-        let result = await requestApplyDetail({id:record.id}).then(res => res.data)
+        let result = await requestApplyDetail({id:record.id}).then(res => res.data).catch(err => {
+          console.log(err)
+          return null
+        })
+        if(!result){
+          that.$message.info('采购申请单详情接口【/requestApply】报错，请联系管理员')
+          return
+        }
         that.detail = result
         that.form = {
           ...result,
@@ -691,6 +698,10 @@ export default {
           return {}
         })
 
+      if(!materialRequirement){
+        materialRequirement = {}
+      }
+
       if(!materialRequirement.pageNum){
         that.$message.info(`物料【${material.materialName}】未设置最大采购量`)
       }
@@ -703,7 +714,7 @@ export default {
       target.specification = 'specification' in material  ? (material.specification || material.specifications) : '无'
       target.materialCode = material.materialCodeFormat
       target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
-      target.__maxBuyNumber = +materialRequirement.pageNum
+      target.__maxBuyNumber = materialRequirement.pageNum || 0
       that.dataSource = dataSource
 
       that.materialFuzzySearch = { ...that.materialFuzzySearch, item: {...material} }
