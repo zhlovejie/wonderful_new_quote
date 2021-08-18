@@ -116,7 +116,7 @@
               <a type="primary" v-if="record.type === 0" @click="Enable(record, 1)">启用</a>
               <a type="primary" v-if="record.type === 1" @click="Enable(record, 0)">禁用</a>
             </template>
-            <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
+            <template v-if="record.status === 1">
               <a-divider type="vertical" />
               <template v-if="$auth('supplier:Withdraw')">
                 <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
@@ -161,7 +161,7 @@
         <p>第{{ item.rowNum }}行 {{ item.msg }}</p>
       </div>
     </a-modal>
-    <AddForm ref="addForm" @finish="searchAction()" />
+    <AddForm ref="addForm" :key="normalAddFormKeyCount" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
@@ -273,6 +273,7 @@ export default {
       fileList: [],
       fileLists: [],
       iserror: {},
+      normalAddFormKeyCount: 1,
       uploading: false,
       aceptFileTypes: [
         '.xls',
@@ -702,7 +703,12 @@ export default {
     },
 
     doAction(type, record) {
-      this.$refs.addForm.query(type, record)
+      this.normalAddFormKeyCount++
+
+      this.$nextTick(() => {
+        this.$refs['addForm'].query(type, record)
+      })
+      // this.$refs.addForm.query(type, record)
       //this.$message.info('功能尚未实现...')
     },
     tabChange(tagKey) {

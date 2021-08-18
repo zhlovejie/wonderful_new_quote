@@ -340,7 +340,7 @@ export default {
       that.form.validateFields((err, values) => {
         if (!err) {
           // console.log(values)
-
+          values.supplierId = values.supplierId.filter((i) => i !== 0)
           if (values.supplierId.length > 0) {
             let reat = this.supplierList.filter((i) => values.supplierId.includes(i.id))
             values.supplierName = reat.map((i) => i.scompanyName).join(',')
@@ -378,15 +378,15 @@ export default {
     },
     depChangeHandler(depId) {
       //人员 id,trueName
-      if (depId.length > 1) {
-        let reat = depId.filter((i) => i !== 0)
-      }
+
+      let reat = depId.filter((i) => i !== 0)
+
       if (!depId) {
         this.brandList = []
         this.modelList = []
         return
       }
-      this.depidType = depId.toString()
+      this.depidType = reat.toString()
       //品牌
       listManageBrand({ materialId: this.record.id, supplierId: this.depidType }).then(
         (res) => (this.brandList = res.data)

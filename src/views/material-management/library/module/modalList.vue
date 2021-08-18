@@ -175,8 +175,19 @@ export default {
         Warranty: getDelivery,
         delivery: getDelivery,
       }
+
+      let react = {
+        requirementId: record.id,
+        searchStatus: 0,
+      }
+      if (this.isWarranty) {
+        react.type = 1
+      }
+      if (this.isDelivery) {
+        react.type = 2
+      }
       // 供应商
-      api[type]({ requirementId: record.id, searchStatus: 0 })
+      api[type](react)
         .then((res) => {
           this.priewData = res.data.records
           this.loading = false

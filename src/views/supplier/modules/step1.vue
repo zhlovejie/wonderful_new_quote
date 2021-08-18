@@ -43,10 +43,10 @@
               item.manageBrands.map((u) => u.brandName + '/' + u.manageBrandModels.map((i) => i.modelName)).join(',')
             }}
           </td>
-          <td>
-            <a-button @click="Addmodel(item)" style="margin-right: 10px">添加品牌型号</a-button>
-            <!-- <a-button @click="modelDel(index)">删除</a-button> -->
-          </td>
+          <!-- <td> -->
+          <!-- <a-button @click="Addmodel(item)"  style="margin-right: 10px">添加品牌型号</a-button> -->
+          <!-- <a-button @click="modelDel(index)">删除</a-button> -->
+          <!-- </td> -->
         </tr>
       </table>
 
@@ -525,7 +525,7 @@
                 <td v-if="form.cooperationAgreement">
                   <a @click="delSee(form.cooperationAgreement)">查看</a>
                   <a-divider type="vertical" />
-                  <a target="_blank" v-download="foem.cooperationAgreement">下载</a>
+                  <a target="_blank" v-download="form.cooperationAgreement">下载</a>
                 </td>
               </tr>
               <tr>
@@ -533,7 +533,7 @@
                 <td v-if="form.secrecyAgreement">
                   <a @click="delSee(form.secrecyAgreement)">查看</a>
                   <a-divider type="vertical" />
-                  <a target="_blank" v-download="foem.secrecyAgreement">下载</a>
+                  <a target="_blank" v-download="form.secrecyAgreement">下载</a>
                 </td>
               </tr>
             </table>
@@ -1236,6 +1236,7 @@
       </div>
     </a-form-model>
     <BrandFrom ref="brandFrom" @brandChange="brandChange" />
+    <XdocView ref="xdocView" />
   </a-spin>
 </template>
 <script>
@@ -1244,6 +1245,7 @@ import { getDetail } from '@/api/supplier'
 import BrandFrom from './BrandFrom'
 import UploadFile from './UploadFile'
 import UploadF from './UploadF'
+import XdocView from './XdocView'
 import moment from 'moment'
 import { queryCode } from '@/api/workBox'
 
@@ -1256,6 +1258,7 @@ export default {
     BrandFrom,
     UploadFile,
     UploadF,
+    XdocView,
   },
   data() {
     // this.allMaterialFuzzySearchAction = this.$_.debounce(this.allMaterialFuzzySearchAction, 800)
@@ -1369,6 +1372,10 @@ export default {
   created() {},
   methods: {
     moment,
+    //查看
+    delSee(idurl) {
+      this.$refs.xdocView.query(idurl)
+    },
     uploadChange(fileType, fileList) {
       let fileAddBoList = [...(this.fileAddBoList || [])]
       let files = fileAddBoList.filter((f) => f.fileType !== fileType)
@@ -1386,29 +1393,6 @@ export default {
     },
     checkboxChange(event) {
       let that = this
-      let react = event.target.value
-      debugger
-      if (react === 2) {
-        that.form.ccommodityProportion =
-          100 -
-          ((Number(that.form.padvanceProportion) || 0) +
-            (Number(that.form.ccollectProportion) || 0) +
-            (Number(that.form.warrantyProportion) || 0))
-      }
-      if (react === 3) {
-        that.form.ccollectProportion =
-          100 -
-          ((Number(that.form.padvanceProportion) || 0) +
-            (Number(that.form.ccommodityProportion) || 0) +
-            (Number(that.form.warrantyProportion) || 0))
-      }
-      if (react === 4) {
-        that.form.warrantyProportion =
-          100 -
-          ((Number(that.form.padvanceProportion) || 0) +
-            (Number(that.form.ccollectProportion) || 0) +
-            (Number(that.form.ccommodityProportion) || 0))
-      }
     },
     brandChange(data) {
       console.log(data)
@@ -1442,7 +1426,7 @@ export default {
         .catch((err) => (that.loading = false))
       that.$refs.UploadF.empty()
       let detail = await getDetail({ id: record.id }).then((res) => res.data)
-
+      detail.paymentCycleId = Number(detail.paymentCycleId)
       if (detail.settlementMode === 0) {
         that.c1 = detail.padvanceType === 0 ? [] : [detail.padvanceType]
         that.c2 = detail.ccommodityType === 0 ? [] : [detail.ccommodityType]

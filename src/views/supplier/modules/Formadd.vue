@@ -399,7 +399,7 @@
                               <span>到货后 </span>
                               <a-input-number
                                 :min="0"
-                                :max="100"
+                                :max="180"
                                 :disabled="isEdit"
                                 :precision="0"
                                 placeholder="填入数字"
@@ -578,7 +578,7 @@
                   <td v-if="form.cooperationAgreement">
                     <a @click="delSee(form.cooperationAgreement)">查看</a>
                     <a-divider type="vertical" />
-                    <a target="_blank" v-download="foem.cooperationAgreement">下载</a>
+                    <a target="_blank" v-download="form.cooperationAgreement">下载</a>
                   </td>
                 </tr>
                 <tr>
@@ -589,7 +589,7 @@
                   <td v-if="form.secrecyAgreement">
                     <a @click="delSee(form.secrecyAgreement)">查看</a>
                     <a-divider type="vertical" />
-                    <a target="_blank" v-download="foem.secrecyAgreement">下载</a>
+                    <a target="_blank" v-download="form.secrecyAgreement">下载</a>
                   </td>
                 </tr>
               </table>
@@ -1145,7 +1145,7 @@
                               <span>到货后 </span>
                               <a-input-number
                                 :min="0"
-                                :max="100"
+                                :max="180"
                                 :disabled="isEdit"
                                 :precision="0"
                                 placeholder="填入数字"
@@ -1339,6 +1339,7 @@
       <Approval ref="approval" @opinionChange="opinionChange" />
       <BrandFrom ref="brandFrom" @brandChange="brandChange" />
       <MaterialAdd ref="materialAdd" @filet="materialChange" />
+      <XdocView ref="xdocView" />
     </a-spin>
   </a-modal>
 </template>
@@ -1349,7 +1350,7 @@ import { saveAndUpdate, getDetail, listManageapproval } from '@/api/supplier'
 import Approval from './Approval'
 import BrandFrom from './BrandFrom'
 import MaterialAdd from './materialAdd'
-
+import XdocView from './XdocView'
 import UploadFile from './UploadFile'
 import UploadF from './UploadF'
 import moment from 'moment'
@@ -1361,6 +1362,7 @@ export default {
   name: 'BecomingForm',
   components: {
     Approval,
+    XdocView,
     BrandFrom,
     UploadFile,
     UploadF,
@@ -1437,6 +1439,7 @@ export default {
       type: 'view',
       record: {},
       rules: {
+        arrivalDay: [{ required: true, message: '请输入到货后多少天', trigger: 'blur' }],
         endTime: [{ required: true, message: '请选择最后交易时间', trigger: 'change' }],
         lpersonName: [{ required: true, message: '请输入公司法人', trigger: 'blur' }],
         supplierEmail: [{ required: true, message: '请输入企业邮箱', trigger: 'blur' }],
@@ -1517,6 +1520,9 @@ export default {
   created() {},
   methods: {
     moment,
+    delSee(idurl) {
+      this.$refs.xdocView.query(idurl)
+    },
     uploadChange(fileType, fileList) {
       let fileAddBoList = [...(this.fileAddBoList || [])]
       let files = fileAddBoList.filter((f) => f.fileType !== fileType)
@@ -1566,55 +1572,7 @@ export default {
     quality(fileList, type) {
       type.qualityReportUrl = fileList
     },
-    checkboxChange(event) {
-      let that = this
-      let react = event.target.value
-      if (react === 1) {
-        if (this.c1.length === 0) {
-          that.form.padvanceProportion =
-            100 -
-            ((Number(that.form.ccommodityProportion) || 0) +
-              (Number(that.form.ccollectProportion) || 0) +
-              (Number(that.form.warrantyProportion) || 0))
-        } else {
-          that.form.padvanceProportion = undefined
-        }
-      }
-      if (react === 2) {
-        if (this.c2.length === 0) {
-          that.form.ccommodityProportion =
-            100 -
-            ((Number(that.form.padvanceProportion) || 0) +
-              (Number(that.form.ccollectProportion) || 0) +
-              (Number(that.form.warrantyProportion) || 0))
-        } else {
-          that.form.ccommodityProportion = undefined
-        }
-      }
-
-      if (react === 3) {
-        if (this.c3.length === 0) {
-          that.form.ccollectProportion =
-            100 -
-            ((Number(that.form.padvanceProportion) || 0) +
-              (Number(that.form.ccommodityProportion) || 0) +
-              (Number(that.form.warrantyProportion) || 0))
-        } else {
-          that.form.ccollectProportion = undefined
-        }
-      }
-      if (react === 4) {
-        if (this.c4.length === 0) {
-          that.form.warrantyProportion =
-            100 -
-            ((Number(that.form.padvanceProportion) || 0) +
-              (Number(that.form.ccollectProportion) || 0) +
-              (Number(that.form.ccommodityProportion) || 0))
-        } else {
-          that.form.warrantyProportion = undefined
-        }
-      }
-    },
+    checkboxChange(event) {},
     brandChange(data) {
       console.log(data)
       let react = this.brandList.find((i) => i.materialId === this.records.materialId)
@@ -1651,7 +1609,7 @@ export default {
       const _searchParam = {
         current: 1,
         size: 50,
-        materialCode: wd,
+        materialCodeName: wd,
       }
       that.allMaterialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
       const res = await Promise.all([
@@ -1778,14 +1736,20 @@ export default {
                 return
               }
             }
+            if (that.form.settlementMode === 1) {
+              let spt3 = that.Payment.find((i) => +i.id === +that.form.paymentCycleId)
+              that.form.paymentCycle = spt3.text
+              that.form.padvanceType = 0
+              that.form.ccommodityType = 0
+              that.form.ccollectType = 0
+              that.form.warrantyType = 0
+            }
+
             if (that.form.settlementMode == 0) {
               that.form.padvanceType = that.c1.length === 0 ? 0 : that.c1.join()
               that.form.ccommodityType = that.c2.length === 0 ? 0 : that.c2.join()
               that.form.ccollectType = that.c3.length === 0 ? 0 : that.c3.join()
               that.form.warrantyType = that.c4.length === 0 ? 0 : that.c4.join()
-            } else {
-              let spt3 = that.Payment.find((i) => +i.id === +that.form.paymentCycleId)
-              that.form.paymentCycle = spt3.text
             }
 
             that.brandList = that.brandList.map((item) => {

@@ -33,7 +33,7 @@
                     item.scompanyName
                   }}</a-select-option>
                 </a-select>
-                <span v-else>{{ Details.csupplierName }}</span>
+                <span v-else>{{ Details.csupplierName === '' ? '无限' : Details.csupplierName }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -477,8 +477,10 @@ export default {
             values.packId = this.Details.packMethodId || undefined
             values.packName = this.Details.packMethod || undefined
             values.packNum = this.Details.pageNum || undefined
-            let arr = this.Warehouse.find((i) => i.id === values.cpackId)
-            values.cpackName = arr.text
+            if (values.cpackId !== 0) {
+              let arr = this.Warehouse.find((i) => i.id === values.cpackId)
+              values.cpackName = arr.text
+            }
           }
           //   裸价价格
           if (this.isStandard) {

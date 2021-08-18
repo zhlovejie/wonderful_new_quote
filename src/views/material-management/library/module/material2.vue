@@ -9,7 +9,7 @@
           <a-button type="primary" @click="Procurements()">设置采购要求 </a-button>
         </template>
       </a-result>
-      <MaterFrom key="k1" ref="materFrom" @finish="query" />
+      <MaterFrom key="k1" ref="materFrom" @finish="query(record)" />
     </div>
     <div v-else>
       <a-spin :spinning="spinning">

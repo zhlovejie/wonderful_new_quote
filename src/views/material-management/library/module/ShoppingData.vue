@@ -40,6 +40,9 @@ export default {
     }
   },
   computed: {},
+  created() {
+    this.tabChange('1')
+  },
 
   methods: {
     tabChange(tagKey) {
