@@ -100,7 +100,7 @@
             <td>物料发票类型</td>
             <td>
               <a-button type="link" @click="historys('invoice')">
-                {{ Details.invoiceType === 0 ? '无限' : Details.invoiceType === 1 ? '增值税专用发票' : '普通发票' }}
+                {{ Details.invoiceType === 0 ? '不限' : Details.invoiceType === 1 ? '增值税专用发票' : '普通发票' }}
               </a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('invoice')">变更发票类型 </a-button>

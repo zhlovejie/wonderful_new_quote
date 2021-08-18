@@ -14,7 +14,7 @@
         <span v-if="isInvoice">{{
           record.type === 0 ? '无限' : record.type === 1 ? '增值税专用发票' : '普通发票'
         }}</span>
-        <span v-if="isPacking">{{ record.packName }}/包内数量{{ record.packNum }}</span>
+        <span v-if="isPacking">{{ record.packName }}/{{ record.cpackName }}内数量{{ record.packNum }}</span>
       </div>
       <div slot="status" slot-scope="text, record">
         {{ getStateText(text) }}
@@ -28,7 +28,7 @@
         <span v-if="isInvoice">{{
           record.ctype === 0 ? '无限' : record.ctype === 1 ? '增值税专用发票' : '普通发票'
         }}</span>
-        <span v-if="isPacking">{{ record.cpackName }}/包内数量{{ record.cpackNum }}</span>
+        <span v-if="isPacking">{{ record.cpackName }}/{{ record.cpackName }}内数量{{ record.cpackNum }}</span>
       </div>
     </a-table>
   </a-modal>

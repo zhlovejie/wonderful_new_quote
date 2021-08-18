@@ -136,6 +136,8 @@ export default {
       let paginationParam = {
         current: 1,
         size: 100,
+        auditStatus: 3,
+        isForbidden: 2,
       }
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
