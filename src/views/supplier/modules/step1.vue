@@ -7,37 +7,15 @@
           <a-select-option :value="1">委外加工商</a-select-option>
         </a-select></a-form-model-item
       >
-      <div class="card-item">
-        <!-- <div class="__hd">选择供应商物料（非必填）</div> -->
-        <!-- <div class="__bd">
-          <a-form-model-item>
-            <a-select
-              style="width: 450px"
-              show-search
-              :value="Brandform.materialItem.__label"
-              placeholder="模糊搜索"
-              :default-active-first-option="false"
-              :show-arrow="false"
-              :filter-option="false"
-              :not-found-content="allMaterialFuzzySearch.fetching ? undefined : '未找到匹配项'"
-              @search="allMaterialFuzzySearchAction"
-              @change="(key) => allMaterialFuzzySearchActionChange(key, record)"
-            >
-              <a-spin v-if="allMaterialFuzzySearch.fetching" slot="notFoundContent" size="small" />
-              <a-select-option v-for="item in allMaterialFuzzySearch.list" :key="item.__key" :value="item.__key">
-                {{ item.__label }}
-              </a-select-option>
-            </a-select>
-            <a-button key="submit" type="primary" style="margin-left: 10px"  :loading="spinning" @click="brandAdd"
-              >新增</a-button
-            >
-          </a-form-model-item>
-        </div> -->
-      </div>
+      <div class="card-item"></div>
       <a-form-model-item label="已选物料">(品牌及型号非必填) </a-form-model-item>
-      <table class="custom-table custom-table-border">
+      <table v-if="brandList.length > 0" class="custom-table custom-table-border">
+        <tr>
+          <th>已选物料名称及物料代码</th>
+          <th>品牌型号</th>
+        </tr>
         <tr v-for="(item, index) in brandList" :key="index">
-          <td>{{ item.materialName }}{{ item.materialCode }}</td>
+          <td>{{ item.materialName }}({{ item.materialCode }})</td>
           <td>
             {{
               item.manageBrands.map((u) => u.brandName + '/' + u.manageBrandModels.map((i) => i.modelName)).join(',')

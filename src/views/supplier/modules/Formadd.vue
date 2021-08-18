@@ -1610,6 +1610,8 @@ export default {
         current: 1,
         size: 50,
         materialCodeName: wd,
+        auditStatus: 3,
+        isForbidden: 2,
       }
       that.allMaterialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
       const res = await Promise.all([
