@@ -170,7 +170,7 @@
             slot="mainUnit"
             slot-scope="text, record, index"
           >
-            {{ {1:'支',2:'把',3:'件'}[text] }}
+            {{ {1:'支',2:'把',3:'件'}[text] || text }}
           </div>
           <div
             slot="specifications"

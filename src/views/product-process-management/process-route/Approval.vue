@@ -66,7 +66,7 @@
             </a-tooltip>
           </div>
           <div slot="materialCommonCaculatorUnit" slot-scope="text, record, index">
-            {{ { 1: '支', 2: '把', 3: '件' }[text] }}
+            {{ {1:'支',2:'把',3:'件'}[text] || text }}
           </div>
           <div slot="defaultStatus" slot-scope="text, record, index">
             <span>{{ { 1: '是', 0: '否' }[text] }}</span>

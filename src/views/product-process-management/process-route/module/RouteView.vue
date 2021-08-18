@@ -105,7 +105,7 @@
                 <td>主计量单位</td>
                 <td>
                   <a-form-model-item>
-                    {{ {1:'支',2:'把',3:'件'}[materialInfo.mainUnit] }}
+                    {{ {1:'支',2:'把',3:'件'}[materialInfo.mainUnit] || materialInfo.mainUnit }}
                   </a-form-model-item>
                 </td>
                 <td>缺省状态</td>

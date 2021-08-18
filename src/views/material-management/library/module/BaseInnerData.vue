@@ -104,9 +104,13 @@
                 placeholder="请选择主计量单位"
                 :allowClear="true"
               >
-                <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
+                <a-select-option
+                  v-for="item in materialUnitList"
+                  :key="item.text"
+                  :value="item.text"
+                >
+                {{item.text}}
+                </a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -121,9 +125,13 @@
                 placeholder="请选择辅计量单位"
                 :allowClear="true"
               >
-                <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
+                <a-select-option
+                  v-for="item in materialUnitList"
+                  :key="item.text"
+                  :value="item.text"
+                >
+                {{item.text}}
+                </a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -231,6 +239,7 @@
   </a-form-model>
 </template>
 <script>
+import { getDictionary } from '@/api/common'
 export default {
   name: 'BaseInnerData',
   inject: ['normalAddForm'],
@@ -260,7 +269,8 @@ export default {
         conversionRate: [{ required: true, message: '请输入换算率' }],
         k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         needCheck:[{ required: true, message: '请选择是否需要送检' }]
-      }
+      },
+      materialUnitList:[], //物料计量单位
     }
   },
   created() {
@@ -275,6 +285,10 @@ export default {
         }
       })
     }
+
+    getDictionary({ text: '物料计量单位' }).then((res) => {
+      that.materialUnitList = res.data
+    })
   },
   methods: {
     validate() {

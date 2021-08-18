@@ -38,9 +38,13 @@
         <a-col :span="12">
           <a-form-item label="主计量单位">
             <a-select v-decorator="['mainUnit']" placeholder="主计量单位">
-              <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
+              <a-select-option
+                v-for="item in materialUnitList"
+                :key="item.text"
+                :value="item.text"
+              >
+              {{item.text}}
+              </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -88,6 +92,7 @@
 </template>
 <script>
 import SpecificationSearch from './SpecificationSearch'
+import { getDictionary } from '@/api/common'
 export default {
   name: 'searchForm',
   components: {SpecificationSearch},
@@ -99,6 +104,7 @@ export default {
       detail:{},
 
       specification:undefined, //规格型号
+      materialUnitList:[]
     }
   },
   computed:{
@@ -111,8 +117,12 @@ export default {
   },
   methods: {
     query(record) {
-      this.detail = { ...record }
-      this.visible = true
+      const that = this
+      that.detail = { ...record }
+      getDictionary({ text: '物料计量单位' }).then((res) => {
+        that.materialUnitList = res.data
+      })
+      that.visible = true
     },
     handleCancel() {
       this.visible = false

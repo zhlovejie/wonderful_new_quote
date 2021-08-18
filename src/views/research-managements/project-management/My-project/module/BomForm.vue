@@ -65,7 +65,7 @@
                 <td>辅计量单位</td>
                 <td>
                   <a-form-model-item>
-                    {{ {1:'支',2:'把',3:'件'}[form.materialUnit] }}
+                    {{ {1:'支',2:'把',3:'件'}[form.materialUnit] || form.materialUnit }}
                   </a-form-model-item>
                 </td>
                 <td>规格型号</td>
