@@ -316,10 +316,9 @@ export default {
         buyRequirementBrandModels: react,
       })
     },
-    async Procurement(type) {
-      await this.handleOk(2)
-      // this.$refs.modal.query(type)
-      await this.$refs.modal.query(type, this.record, null)
+    Procurement(type) {
+      this.handleOk(2)
+      this.$refs.modal.query(type, this.record, null)
     },
     async handlePreview(file) {
       if (!file.url && !file.preview) {
@@ -340,7 +339,9 @@ export default {
       that.form.validateFields((err, values) => {
         if (!err) {
           // console.log(values)
-          values.supplierId = values.supplierId.filter((i) => i !== 0)
+          if (values.supplierId.length > 0) {
+            values.supplierId = values.supplierId.filter((i) => i !== 0)
+          }
           if (values.supplierId.length > 0) {
             let reat = this.supplierList.filter((i) => values.supplierId.includes(i.id))
             values.supplierName = reat.map((i) => i.scompanyName).join(',')

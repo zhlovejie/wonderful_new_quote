@@ -24,11 +24,11 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <template>
+          <template v-if="$auth('mould:editHistory')">
             <a type="primary" @click="doAction('view', record)">查看报价历史</a>
-          </template>
-          <template v-if="$auth('mould:edit')">
             <a-divider type="vertical" />
+          </template>
+          <template v-if="recordType.deptType === 1">
             <a type="primary" @click="doAction('add', record)">更新报价</a>
           </template>
         </div>
@@ -133,6 +133,7 @@ export default {
       Position: [],
       loading: false,
       record: {},
+      recordType: {},
       pagination: {
         current: 1,
         pageSize: 10,
@@ -147,7 +148,9 @@ export default {
   methods: {
     init(record) {
       const that = this
+      console.log(record)
       this.record = record
+      this.recordType = record
       that.searchAction()
     },
     searchAction(opt = {}) {

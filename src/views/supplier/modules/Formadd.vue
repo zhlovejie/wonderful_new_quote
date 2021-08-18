@@ -1322,7 +1322,7 @@
             <table class="custom-table custom-table-border">
               <tr v-for="(item, index) in brandList" :key="index">
                 <td v-if="item.needCheck === '1'">{{ item.materialName }}{{ item.materialCode }}</td>
-                <td v-if="item.needCheck === '1'">
+                <td v-if="item.needCheck === '1' && !isEdit">
                   <UploadFile ref="uploadFile" @change="(fileList) => quality(fileList, item)" />
                 </td>
                 <td v-if="item.qualityReportUrl">

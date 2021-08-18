@@ -113,8 +113,12 @@
             </template>
             <template v-if="record.status === 2 && $auth('supplier:enable')">
               <a-divider type="vertical" />
-              <a type="primary" v-if="record.type === 0" @click="Enable(record, 1)">启用</a>
-              <a type="primary" v-if="record.type === 1" @click="Enable(record, 0)">禁用</a>
+              <a-popconfirm title="是否确定启用" ok-text="确定" cancel-text="取消" @confirm="Enable(record, 1)">
+                <a type="primary" v-if="record.type === 0">启用</a>
+              </a-popconfirm>
+              <a-popconfirm title="是否确定禁用" ok-text="确定" cancel-text="取消" @confirm="Enable(record, 0)">
+                <a type="primary" v-if="record.type === 1">禁用</a>
+              </a-popconfirm>
             </template>
             <template v-if="record.status === 1">
               <a-divider type="vertical" />
@@ -635,7 +639,9 @@ export default {
     init() {
       let that = this
       that.searchAction()
-      routineMaterialInfoPageList({ current: 1, size: 10000 }).then((res) => (this.depList = res.data.records))
+      routineMaterialInfoPageList({ current: 1, size: 10000, auditStatus: 3, isForbidden: 2 }).then(
+        (res) => (this.depList = res.data.records)
+      )
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
