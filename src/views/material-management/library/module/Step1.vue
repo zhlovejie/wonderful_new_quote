@@ -53,6 +53,7 @@
       <a-button
         type="primary"
         @click="onSubmit"
+        :disabled="disabledStepButton"
       >
         下一步
       </a-button>
@@ -114,7 +115,13 @@ export default {
     }
   },
   computed:{
-
+    disabledStepButton(){
+      const that = this
+      let {parentId,specificationsList} = that.form
+      let case1 = String(parentId) === '0'
+      let case2 = specificationsList && specificationsList.length === 0
+      return case1 || case2
+    }
   },
   created() {
     this.$nextTick(() => this.init())
@@ -133,9 +140,13 @@ export default {
         that.treeData = __treeData
         that.dataList = that.generateList(that.treeData)
 
-        let __selectItem = that.normalAddForm.getSelectNode()
-        that.form = { ...that.form, parentId: __selectItem.key }
-        that.initSpecifications({...__selectItem})
+        if(that.normalAddForm.stepOneCacheData.cached){
+          that.form = that.$_.cloneDeep(that.normalAddForm.stepOneCacheData.form)
+        }else{
+          let __selectItem = that.normalAddForm.getSelectNode()
+          that.form = { ...that.form, parentId: __selectItem.key }
+          that.initSpecifications({...__selectItem})
+        }
       }
     },
     async qrChangeHandler(dataUrl,id){
@@ -251,6 +262,7 @@ export default {
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let ruleId = that.form.parentId
+
           let materialName = that.getNode(ruleId).title
           //成品物料库 物料代码不显示点
           let materialCode = that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
@@ -296,6 +308,11 @@ export default {
             // width:widthText,
             // length:lengthText
             specification:that.getSpecification()
+          }
+
+          that.normalAddForm.stepOneCacheData = {
+            cached:true,
+            form:that.$_.cloneDeep(that.form)
           }
 
           that.$emit('change', { __action__: 'nextStep', values: params })

@@ -74,7 +74,9 @@ export default {
       step: 1,
       detail: {},
       submitParams: {},
-      selectNode: {}
+      selectNode: {},
+      stepOneCacheData:{},
+      stepTwoCacheData:{},
     }
   },
   computed: {
@@ -104,7 +106,8 @@ export default {
       //that.type = type
       that.visible = true
       that.detail = { ...record }
-
+      that.stepOneCacheData = {}
+      that.stepTwoCacheData = {}
       that.selectNode = { ...that.detail.__selectItem }
 
       let isAdd = type === 'add'
@@ -138,9 +141,14 @@ export default {
         console.error(`未知命令：`, arguments)
       }
     },
-    stepTwoChange() {
-      this.handleCancel()
-      this.$emit('finish')
+    stepTwoChange(type) {
+      const that = this
+      if(type === 'ok'){
+        that.handleCancel()
+        that.$emit('finish')
+      }else if(type === 'prevStep'){
+        that.step = 1
+      }
     },
     handleSubmit() {
       this.handleCancel()
@@ -150,6 +158,8 @@ export default {
       that.step = 1
       that.detail = {}
       that.submitParams = {}
+      that.stepOneCacheData = {}
+      that.stepTwoCacheData = {}
       that.$nextTick(() => {
         that.visible = false
       })

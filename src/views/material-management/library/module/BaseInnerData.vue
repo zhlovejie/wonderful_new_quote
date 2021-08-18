@@ -20,7 +20,7 @@
               <a-input
                 v-model="form.materialCode"
                 placeholder="系统生成"
-                :disabled="!normalAddForm.isAdd"
+                disabled="disabled"
               />
             </a-form-model-item>
           </td>
@@ -160,7 +160,7 @@
             </a-form-model-item>
           </td>
           <td>
-            <span>预估重量</span>
+            <span>预估重量(克)</span>
           </td>
           <td>
             <a-form-model-item

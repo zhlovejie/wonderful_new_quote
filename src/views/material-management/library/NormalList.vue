@@ -114,7 +114,7 @@
                 :disabled="!canUse"
                 type="primary"
                 @click="doAction('approval', null)"
-              >审核</a-button>
+              >提交审核</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterial:annulAudit')">
               <a-button
@@ -201,6 +201,13 @@
           >
             {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
           </a>
+
+          <div
+            slot="useStatus"
+            slot-scope="text, record, index"
+          >
+            {{ {1:'使用中',2:'未使用',3:'逐步淘汰',4:'已淘汰'}[text] }}
+          </div>
         </a-table>
       </div>
     </div>
@@ -262,6 +269,12 @@ const columns = [
     title: '主计量单位',
     dataIndex: 'mainUnit',
     scopedSlots: { customRender: 'mainUnit' }
+  },
+  {
+    align: 'center',
+    title: '使用状态',
+    dataIndex: 'useStatus',
+    scopedSlots: { customRender: 'useStatus' }
   },
   {
     align: 'center',
@@ -659,7 +672,7 @@ export default {
           approval: {
             api: routineMaterialInfoAudit,
             title: '审核',
-            tpl: names => `确定要审核项目${names}吗？`
+            tpl: names => `确定要提交审核项目${names}吗？`
           },
           unapproval: {
             api: routineMaterialInfoAnnulAudit,
