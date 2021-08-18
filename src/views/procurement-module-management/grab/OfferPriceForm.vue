@@ -486,7 +486,7 @@ export default {
       let supplierList = [...that.supplierList]
       let target = supplierList.find(item => +item.id === +v)
       if(target){
-        that.form = {...that.form,supplierName:target.name}
+        that.form = {...that.form,supplierName:target.supplierName}
       }
       //判断供应商是否有采购某一物料的资格，返回true为有资格
       // quotationCheckSupplier({supplierId:v,materialId:that.record.materialId}).then(res => {
