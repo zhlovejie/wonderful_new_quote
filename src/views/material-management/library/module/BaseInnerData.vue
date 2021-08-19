@@ -142,7 +142,7 @@
             <span style="margin-left:5px;">
               <a-tooltip>
                 <template slot="title">
-                  换算率 = 辅计量单位 / 主计量单位
+                  换算率是一个主计量单位等于多少个辅计量单位
                 </template>
                 <span class="icon-required">换算率</span>
                 <a-icon
