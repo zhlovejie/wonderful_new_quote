@@ -170,7 +170,6 @@
                   :disabled="isDisabled"
                   placeholder="输入交货周期"
                   :min="0"
-                  :max="(Details.buyRequirement && Details.buyRequirement.maxDelivery) || 30"
                   step="1"
                   style="width: 80%"
                   v-decorator="['deliveryCycle', { rules: [{ required: true, message: '请输入交货周期!' }] }]"
@@ -186,7 +185,6 @@
                 <a-input-number
                   :disabled="isDisabled"
                   placeholder="输入质保期"
-                  :min="(Details.buyRequirement && Details.buyRequirement.minWarranty) || 180"
                   step="1"
                   style="width: 80%"
                   v-decorator="['shelfLife', { rules: [{ required: true, message: '请输入质保期!' }] }]"
@@ -286,6 +284,16 @@ export default {
       }
       that.form.validateFields((err, values) => {
         if (!err) {
+          if (values.deliveryCycle > (that.Details.buyRequirement && that.Details.buyRequirement.maxDelivery) || 30) {
+            return this.$message.error(
+              `交货周期不能大于${(that.Details.buyRequirement && that.Details.buyRequirement.maxDelivery) || 30}天`
+            )
+          }
+          if (values.shelfLife > (that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180) {
+            return this.$message.error(
+              `质保期不能大于${(that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180}天`
+            )
+          }
           if (this.Details.buyRequirement.packMethod) {
             values.packageType = this.Details.buyRequirement.packMethod
             values.packageCount = this.Details.buyRequirement.pageNum

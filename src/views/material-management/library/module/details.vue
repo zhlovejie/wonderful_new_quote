@@ -11,7 +11,7 @@
       <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
     <div v-else-if="isView || isEdit">
-      <StepTwo @change="stepTwoChange" />
+      <StepTwo :ShowReturnButton="true" @change="stepTwoChange" />
     </div>
     <div v-else></div>
   </div>

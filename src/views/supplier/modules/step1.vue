@@ -68,6 +68,9 @@
               <a-select-option :value="1">一般规模</a-select-option>
             </a-select></a-form-model-item
           >
+          <a-form-model-item>
+            <a-button v-if="form.supplierScale === 0" @click="transformation" type="primary"> 供应商转换 </a-button>
+          </a-form-model-item>
           <div>
             <a-icon type="question-circle" style="margin-left: 5px; font-size：30px; color: #1890ff" />
             供应规模说明：累计采购金额10000及以下，单笔采购5000元及以下供应商为小规模供应商,其他均为一般供应商
@@ -1213,6 +1216,7 @@
         </div>
       </div>
     </a-form-model>
+    <AddForm ref="addForm" :key="normalAddFormKeyCount" @finish="goback()" />
     <BrandFrom ref="brandFrom" @brandChange="brandChange" />
     <XdocView ref="xdocView" />
   </a-spin>
@@ -1221,6 +1225,7 @@
 //物料代码模糊搜索
 import { getDetail } from '@/api/supplier'
 import BrandFrom from './BrandFrom'
+import AddForm from './Formadd'
 import UploadFile from './UploadFile'
 import UploadF from './UploadF'
 import XdocView from './XdocView'
@@ -1237,6 +1242,7 @@ export default {
     UploadFile,
     UploadF,
     XdocView,
+    AddForm,
   },
   data() {
     // this.allMaterialFuzzySearchAction = this.$_.debounce(this.allMaterialFuzzySearchAction, 800)
@@ -1247,6 +1253,7 @@ export default {
         fileType: 'img',
         enablePreview: true,
       },
+      normalAddFormKeyCount: 1,
       remark: '',
       visible: false,
       spinning: false,
@@ -1350,6 +1357,15 @@ export default {
   created() {},
   methods: {
     moment,
+    goback() {
+      this.$router.go(-1)
+    },
+    transformation() {
+      this.normalAddFormKeyCount++
+      this.$nextTick(() => {
+        this.$refs['addForm'].query('mation', this.record)
+      })
+    },
     //查看
     delSee(idurl) {
       this.$refs.xdocView.query(idurl)

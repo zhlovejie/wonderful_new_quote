@@ -13,7 +13,9 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="packageType" slot-scope="text, record, index">
-          <span>{{ record.packageType }},数量：{{ record.packageCount }}</span>
+          <span
+            >{{ record.packageType }}{{ record.packageCount !== null ? ',数量' : '' }}{{ record.packageCount }}</span
+          >
         </div>
 
         <div slot="invoiceType" slot-scope="text, record, index">

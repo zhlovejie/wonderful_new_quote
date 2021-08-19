@@ -13,29 +13,18 @@
   >
     <div v-if="isAdd">
       <template v-if="isNormal">
-      <StepOne
-        v-if="step === 1"
-        @change="stepOneChange"
-      />
+        <StepOne v-if="step === 1" @change="stepOneChange" />
       </template>
       <template v-if="isProduct">
-        <StepProduct
-        v-if="step === 1"
-        @change="stepOneChange"
-      />
+        <StepProduct v-if="step === 1" @change="stepOneChange" />
       </template>
 
-      <StepTwo
-        v-if="step === 2"
-        @change="stepTwoChange"
-      />
+      <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
     <div v-else-if="isView || isEdit">
       <StepTwo @change="stepTwoChange" />
     </div>
-    <div v-else>
-
-    </div>
+    <div v-else></div>
   </a-modal>
 </template>
 
@@ -45,25 +34,22 @@ import StepTwo from './Step2'
 import StepProduct from './StepProduct'
 import {
   routineMaterialInfo,
-  routineMaterialAccessory ,
+  routineMaterialAccessory,
   productMaterialAccessory,
-  productMaterialInfo
+  productMaterialInfo,
 } from '@/api/routineMaterial'
 const modalTitleMap = { add: '新增', view: '查看', edit: '修改', loading: '加载中...' }
-let uuid = () =>
-  Math.random()
-    .toString(32)
-    .slice(-10)
+let uuid = () => Math.random().toString(32).slice(-10)
 export default {
   name: 'material-rule-management-library-normal-AddForm',
   components: {
     StepOne,
     StepTwo,
-    StepProduct
+    StepProduct,
   },
   provide() {
     return {
-      normalAddForm: this
+      normalAddForm: this,
     }
   },
   data() {
@@ -74,7 +60,8 @@ export default {
       step: 1,
       detail: {},
       submitParams: {},
-      selectNode: {}
+      selectNode: {},
+      record: {},
     }
   },
   computed: {
@@ -90,12 +77,12 @@ export default {
     isEdit() {
       return this.type === 'edit'
     },
-    isNormal(){
+    isNormal() {
       return this.detail.__from === 'normal'
     },
-    isProduct(){
+    isProduct() {
       return this.detail.__from === 'product'
-    }
+    },
   },
   methods: {
     uuid,
@@ -104,7 +91,7 @@ export default {
       //that.type = type
       that.visible = true
       that.detail = { ...record }
-
+      that.record = record
       that.selectNode = { ...that.detail.__selectItem }
 
       let isAdd = type === 'add'
@@ -113,14 +100,14 @@ export default {
       if (isAdd) {
       } else if (isView || isEdit) {
         let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
-        let accessory = await __APIAccessory({ materialId: record.id }).then(res => res.data)
+        let accessory = await __APIAccessory({ materialId: record.id }).then((res) => res.data)
 
         let __APIInfo = that.isNormal ? routineMaterialInfo : productMaterialInfo
-        let result = await __APIInfo({ id: record.id }).then(res => res.data)
+        let result = await __APIInfo({ id: record.id }).then((res) => res.data)
 
         that.submitParams = {
           ...result,
-          accessory
+          accessory,
         }
       }
       that.$nextTick(() => {
@@ -159,8 +146,8 @@ export default {
     },
     getId() {
       return this.detail.id
-    }
-  }
+    },
+  },
 }
 </script>
 

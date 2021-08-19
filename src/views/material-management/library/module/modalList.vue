@@ -7,7 +7,7 @@
       <div slot="beforeType" slot-scope="text, record, index">
         <span v-if="isStandard">{{ record.type === 0 ? '含运费' : '不含运费' }}</span>
         <span v-if="isStock">{{ record.number }}</span>
-        <span v-if="isTaxRate">{{ record.taxRate }}</span>
+        <span v-if="isTaxRate">{{ record.taxRate }}%</span>
         <span v-if="isSupplier">{{ record.supplierName }}</span>
 
         <span v-if="isbrand">{{ record.bmName }}</span>
@@ -15,6 +15,7 @@
           record.type === 0 ? '无限' : record.type === 1 ? '增值税专用发票' : '普通发票'
         }}</span>
         <span v-if="isPacking">{{ record.packName }}/{{ record.cpackName }}内数量{{ record.packNum }}</span>
+        <span v-if="isWarranty || isDelivery">{{ record.number }}天</span>
       </div>
       <div slot="status" slot-scope="text, record">
         {{ getStateText(text) }}
@@ -22,13 +23,14 @@
       <div slot="afterType" slot-scope="text, record, index">
         <span v-if="isStandard">{{ record.ctype === 0 ? '含运费' : '不含运费' }}</span>
         <span v-if="isStock">{{ record.cnumber }}</span>
-        <span v-if="isTaxRate">{{ record.ctaxRate }}</span>
+        <span v-if="isTaxRate">{{ record.ctaxRate }}%</span>
         <span v-if="isSupplier">{{ record.csupplierName }}</span>
         <span v-if="isbrand">{{ record.cbmName }}</span>
         <span v-if="isInvoice">{{
           record.ctype === 0 ? '无限' : record.ctype === 1 ? '增值税专用发票' : '普通发票'
         }}</span>
         <span v-if="isPacking">{{ record.cpackName }}/{{ record.cpackName }}内数量{{ record.cpackNum }}</span>
+        <span v-if="isWarranty || isDelivery">{{ record.cnumber }}天</span>
       </div>
     </a-table>
   </a-modal>

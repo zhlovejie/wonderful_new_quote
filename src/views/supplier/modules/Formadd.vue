@@ -179,17 +179,21 @@
                   /></a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                  <a-form-model-item ref="pcontactMode" label="平台联系方式" prop="pcontactMode">
+                  <a-form-model-item
+                    ref="pcontactMode"
+                    label="平台联系方式"
+                    prop="pcontactMode"
+                    :rules="{
+                      required: true,
+                      message: '请输入平台联系方式',
+                      trigger: 'blur',
+                    }"
+                  >
                     <a-input
                       :disabled="isEdit"
                       placeholder="请输入平台联系方式"
                       v-model="form.pcontactMode"
                       :allowClear="true"
-                      @blur="
-                        () => {
-                          $refs.pcontactMode.onFieldBlur()
-                        }
-                      "
                       style="width: 250px" /></a-form-model-item
                 ></a-col>
               </a-row>
@@ -895,7 +899,16 @@
             <div class="__bd">
               <a-row :gutter="[16, 24]">
                 <a-col :span="12">
-                  <a-form-model-item ref="cfullName" label="公司全称" prop="cfullName">
+                  <a-form-model-item
+                    ref="cfullName"
+                    label="公司全称"
+                    prop="cfullName"
+                    :rules="{
+                      required: true,
+                      message: '请输入公司全称',
+                      trigger: 'blur',
+                    }"
+                  >
                     <a-input
                       placeholder="请输入公司全称"
                       v-model="form.cfullName"
@@ -910,47 +923,58 @@
                   /></a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                  <a-form-model-item ref="taxpayerNumber" label="纳税人识别号" prop="taxpayerNumber">
+                  <a-form-model-item
+                    ref="taxpayerNumber"
+                    label="纳税人识别号"
+                    prop="taxpayerNumber"
+                    :rules="{
+                      required: true,
+                      message: '请输入纳税人识别号',
+                      trigger: 'blur',
+                    }"
+                  >
                     <a-input
                       placeholder="请输入纳税人识别号"
                       v-model="form.taxpayerNumber"
                       :disabled="isEdit"
                       :allowClear="true"
-                      @blur="
-                        () => {
-                          $refs.taxpayerNumber.onFieldBlur()
-                        }
-                      "
                       style="width: 250px"
                   /></a-form-model-item>
                 </a-col>
               </a-row>
               <a-row :gutter="[16, 24]">
                 <a-col :span="12">
-                  <a-form-model-item ref="bankName" label="开户行+卡号" prop="bankName">
+                  <a-form-model-item
+                    ref="bankName"
+                    label="开户行+卡号"
+                    prop="bankName"
+                    :rules="{
+                      required: true,
+                      message: '请输入开户行',
+                      trigger: 'blur',
+                    }"
+                  >
                     <a-input
                       placeholder="请输入开户行"
                       v-model="form.bankName"
                       :disabled="isEdit"
                       :allowClear="true"
-                      @blur="
-                        () => {
-                          $refs.bankName.onFieldBlur()
-                        }
-                      "
                       style="width: 170px"
                   /></a-form-model-item>
-                  <a-form-model-item ref="cardNumber" prop="cardNumber">
+                  <a-form-model-item
+                    ref="cardNumber"
+                    prop="cardNumber"
+                    :rules="{
+                      required: true,
+                      message: '请输入银行卡号',
+                      trigger: 'blur',
+                    }"
+                  >
                     <a-input
                       placeholder="请输入银行卡号"
                       v-model="form.cardNumber"
                       :disabled="isEdit"
                       :allowClear="true"
-                      @blur="
-                        () => {
-                          $refs.cardNumber.onFieldBlur()
-                        }
-                      "
                       style="width: 170px"
                   /></a-form-model-item>
                 </a-col>
@@ -1442,26 +1466,16 @@ export default {
         arrivalDay: [{ required: true, message: '请输入到货后多少天', trigger: 'blur' }],
         endTime: [{ required: true, message: '请选择最后交易时间', trigger: 'change' }],
         lpersonName: [{ required: true, message: '请输入公司法人', trigger: 'blur' }],
-        supplierEmail: [{ required: true, message: '请输入企业邮箱', trigger: 'blur' }],
+        supplierEmail: [{ required: false, message: '请输入企业邮箱', trigger: 'blur' }],
         officialPhone: [{ required: true, message: '请输入企业电话', trigger: 'blur' }],
-        belongPlatformName: [{ required: true, message: '请输入所在平台名称', trigger: 'blur' }],
-        asaleWeChat: [{ required: true, message: '请输入售后微信号', trigger: 'blur' }],
-        asaleJob: [{ required: true, message: '请输入售后职务', trigger: 'blur' }],
-        asalePhone: [
-          { required: true, message: '请输入售后手机号', trigger: 'blur' },
-          { pattern: /^1\d{10}$/, message: '请输入正确的手机号码' },
-        ],
-        asaleName: [{ required: true, message: '请输入售后姓名', trigger: 'blur' }],
-        salesmanIdentity: [{ required: true, message: '请输入业务员身份证信息', trigger: 'blur' }],
+        belongPlatformName: [{ required: false, message: '请输入所在平台名称', trigger: 'blur' }],
+        asaleWeChat: [{ required: false, message: '请输入售后微信号', trigger: 'blur' }],
+        asaleJob: [{ required: false, message: '请输入售后职务', trigger: 'blur' }],
+        asalePhone: [{ required: false, message: '请输入售后手机号', trigger: 'blur' }],
+        asaleName: [{ required: false, message: '请输入售后姓名', trigger: 'blur' }],
+        salesmanIdentity: [{ required: false, message: '请输入业务员身份证信息', trigger: 'blur' }],
         salesmanJob: [{ required: true, message: '请输入业务员职务', trigger: 'blur' }],
-        fcontactMode: [
-          { required: true, message: '请输入财务主管手机号', trigger: 'blur' },
-          { pattern: /^1\d{10}$/, message: '请输入正确的手机号码' },
-        ],
-        cardNumber: [{ required: true, message: '请输入银行卡号', trigger: 'blur' }],
-        bankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }],
-        taxpayerNumber: [{ required: true, message: '请输入纳税人识别号', trigger: 'blur' }],
-        cfullName: [{ required: true, message: '请输入公司全称', trigger: 'blur' }],
+        fcontactMode: [{ required: false, message: '请输入财务主管手机号', trigger: 'blur' }],
         paymentCycleId: [{ required: true, message: '请选择付款周期', trigger: 'change' }],
         salesmanWeChat: [{ required: true, message: '请输入业务员微信号', trigger: 'blur' }],
         salesmanPhone: [
@@ -1469,7 +1483,7 @@ export default {
           { pattern: /^1\d{10}$/, message: '请输入正确的手机号码' },
         ],
         salesmanName: [{ required: true, message: '请输入业务员名称', trigger: 'blur' }],
-        pcontactMode: [{ required: true, message: '请输入平台联系方式', trigger: 'blur' }],
+        // pcontactMode: [{ required: false, message: '请输入平台联系方式', trigger: 'blur' }],
         pshopName: [{ required: true, message: '请输入平台店铺名称', trigger: 'blur' }],
         scompanyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
         platformName: [{ required: true, message: '请输入交易平台名称', trigger: 'blur' }],
@@ -1511,7 +1525,7 @@ export default {
     },
     isEditSalary() {
       //修改
-      return this.type === 'edit-salary'
+      return this.type === 'edit-salary' || this.type === 'mation'
     },
     isDisabled() {
       return this.isView || this.isEdit || this.isView5
@@ -1678,15 +1692,6 @@ export default {
         let detail = await getDetail({ id: record.id }).then((res) => res.data)
         that.$nextTick(() => {
           detail.paymentCycleId = Number(detail.paymentCycleId)
-          if (detail.settlementMode === 0) {
-            that.c1 = detail.padvanceType === 0 ? [] : [detail.padvanceType]
-            that.c2 = detail.ccommodityType === 0 ? [] : [detail.ccommodityType]
-            that.c3 = detail.ccollectType === 0 ? [] : [detail.ccollectType]
-            that.c4 = detail.warrantyType === 0 ? [] : [detail.warrantyType]
-          }
-          that.form = { ...that.form, ...detail }
-          this.form.endTime = this.form.endTime ? moment(this.form.endTime) : undefined
-          that.brandList = detail.manageSupplierMaterials
           if (detail.supplierScale === 1) {
             let _sp = detail.licenseUrl.split(',')
             that.$refs.UploadF.setFiles(
@@ -1702,6 +1707,18 @@ export default {
               })
             )
           }
+          if (detail.settlementMode === 0) {
+            that.c1 = detail.padvanceType === 0 ? [] : [detail.padvanceType]
+            that.c2 = detail.ccommodityType === 0 ? [] : [detail.ccommodityType]
+            that.c3 = detail.ccollectType === 0 ? [] : [detail.ccollectType]
+            that.c4 = detail.warrantyType === 0 ? [] : [detail.warrantyType]
+          }
+          if (this.type === 'mation') {
+            detail.supplierScale = 1
+          }
+          that.form = { ...that.form, ...detail }
+          this.form.endTime = this.form.endTime ? moment(this.form.endTime) : undefined
+          that.brandList = detail.manageSupplierMaterials
         })
       }
     },
@@ -1784,10 +1801,10 @@ export default {
 
             that.form.manageSupplierMaterials = that.brandList
             that.form.endTime = moment(that.form.endTime).format('YYYY-DD-MM hh:mm:ss')
-            if (that.type === 'edit-salary') {
+            if (that.type === 'edit-salary' || that.type === 'mation') {
               that.form.id = that.record.id
             }
-            if (that.type === 'add' || that.type === 'edit-salary') {
+            if (that.type === 'add' || that.type === 'edit-salary' || that.type === 'mation') {
               that.spinning = true
               saveAndUpdate(this.form)
                 .then((res) => {

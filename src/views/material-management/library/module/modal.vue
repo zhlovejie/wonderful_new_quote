@@ -237,7 +237,7 @@
                   style="width: 100%"
                   v-decorator="['cnumber']"
                 />
-                <span v-else>{{ Details.cnumber }} </span>
+                <span v-else>{{ Details.cnumber }}天 </span>
               </a-form-item>
             </td>
           </tr>
@@ -406,10 +406,6 @@ export default {
           await listManageBrand({ materialId: that.Details.materialId, supplierId: that.Details.supplierId }).then(
             (res) => (that.brandList = res.data)
           )
-          //型号
-          await listManageBrandModel({ materialId: that.Details.materialId, supplierId: that.Details.supplierId }).then(
-            (res) => (that.modelList = res.data)
-          )
         }
       } else {
         let api = {
@@ -435,8 +431,14 @@ export default {
       }
     },
     depChange(depId) {
-      this.userList = []
-      // this.initUserList(depId)
+      this.modelList = []
+      this.modList = []
+      //型号
+      listManageBrandModel({
+        materialId: this.Details.materialId,
+        supplierId: this.Details.supplierId,
+        brandId: depId,
+      }).then((res) => (this.modelList = res.data))
     },
     handleOk() {
       if (this.isView) {

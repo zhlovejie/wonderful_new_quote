@@ -360,9 +360,9 @@ export default {
               that.spinning = false
               if (type === 1) {
                 this.visible = false
+                that.$emit('finish')
               }
               that.$message.info(res.msg)
-              that.$emit('finish')
             })
             .catch((err) => (that.spinning = false))
         }

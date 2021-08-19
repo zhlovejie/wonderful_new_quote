@@ -8,7 +8,9 @@
             <a-tab-pane tab="工艺资料" :key="2" />
             <a-tab-pane tab="采购资料" :key="3" />
             <a-tab-pane tab="附件" :key="4" />
-            <a-button @click="goback" slot="tabBarExtraContent"> 返回 </a-button>
+            <a-button v-if="$attrs.ShowReturnButton || false" @click="goback" slot="tabBarExtraContent">
+              返回
+            </a-button>
           </a-tabs>
           <!-- 基本资料 -->
           <div v-show="activeKey === 1">
@@ -69,6 +71,7 @@ export default {
       spinning: false,
     }
   },
+
   methods: {
     goback() {
       this.$router.go(-1)
