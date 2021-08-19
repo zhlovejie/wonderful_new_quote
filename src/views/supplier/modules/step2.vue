@@ -95,7 +95,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '物料税率',
+    title: '物料税率(%)',
     dataIndex: 'materialRate',
   },
   {
@@ -105,12 +105,12 @@ const columns = [
   },
   {
     align: 'center',
-    title: '交货周期',
+    title: '交货周期(天)',
     dataIndex: 'deliveryCycle',
   },
   {
     align: 'center',
-    title: '保质期',
+    title: '保质期(天)',
     dataIndex: 'shelfLife',
   },
   {

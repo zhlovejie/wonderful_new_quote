@@ -151,7 +151,7 @@
             </td>
           </tr>
           <tr>
-            <td>物料税率</td>
+            <td>物料税率(%)</td>
             <td>
               <a-form-item style="width: 40%; float: left">
                 <a-select v-decorator="['taxRate', { initialValue: 3 }]" allowClear :disabled="isDisabled">
@@ -188,7 +188,7 @@
             </td>
           </tr>
           <tr>
-            <td>最短质保期</td>
+            <td>最短质保期(天)</td>
             <td>
               <a-form-item style="width: 40%; float: left">
                 <a-input-number
@@ -206,7 +206,7 @@
             </td>
           </tr>
           <tr>
-            <td>最长交货期</td>
+            <td>最长交货期(天)</td>
             <td>
               <a-form-item style="width: 40%; float: left">
                 <a-input-number

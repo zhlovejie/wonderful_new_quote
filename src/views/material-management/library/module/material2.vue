@@ -108,9 +108,9 @@
             </td>
           </tr>
           <tr>
-            <td>物料税率</td>
+            <td>物料税率(%)</td>
             <td>
-              <a-button type="link" @click="historys('taxRate')"> {{ Details.taxRate }}%</a-button>
+              <a-button type="link" @click="historys('taxRate')"> {{ Details.taxRate }}</a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('taxRate')">变更物料税率</a-button>
               </span>
@@ -126,18 +126,18 @@
             </td>
           </tr>
           <tr>
-            <td>最短质保期</td>
+            <td>最短质保期(天)</td>
             <td>
-              <a-button type="link" @click="historys('Warranty')"> {{ Details.minWarranty }} 天</a-button>
+              <a-button type="link" @click="historys('Warranty')"> {{ Details.minWarranty }} </a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('Warranty')">变更质保期</a-button>
               </span>
             </td>
           </tr>
           <tr>
-            <td>最长交货期</td>
+            <td>最长交货期(天)</td>
             <td>
-              <a-button type="link" @click="historys('delivery')"> {{ Details.maxDelivery }} 天</a-button>
+              <a-button type="link" @click="historys('delivery')"> {{ Details.maxDelivery }}</a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('delivery')">变更交货期</a-button>
               </span>

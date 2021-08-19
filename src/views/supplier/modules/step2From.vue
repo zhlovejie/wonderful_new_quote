@@ -133,7 +133,7 @@
             <td v-else></td>
           </tr>
           <tr>
-            <td>运费税率</td>
+            <td>运费税率(%)</td>
             <td>
               <a-form-item style="width: 49%; float: left">
                 <a-input-number
@@ -163,7 +163,7 @@
             </td>
           </tr>
           <tr>
-            <td>交货周期</td>
+            <td>交货周期(天)</td>
             <td>
               <a-form-item style="width: 50%; float: left">
                 <a-input-number
@@ -171,25 +171,23 @@
                   placeholder="输入交货周期"
                   :min="0"
                   step="1"
-                  style="width: 80%"
+                  style="width: 100%"
                   v-decorator="['deliveryCycle', { rules: [{ required: true, message: '请输入交货周期!' }] }]"
                 />
-                天
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>质保期</td>
+            <td>质保期(天)</td>
             <td>
               <a-form-item style="width: 50%; float: left">
                 <a-input-number
                   :disabled="isDisabled"
                   placeholder="输入质保期"
                   step="1"
-                  style="width: 80%"
+                  style="width: 100%"
                   v-decorator="['shelfLife', { rules: [{ required: true, message: '请输入质保期!' }] }]"
                 />
-                天
               </a-form-item>
             </td>
           </tr>

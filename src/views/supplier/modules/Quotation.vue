@@ -1,6 +1,13 @@
 <template>
-  <a-modal title="物料报价维护历史记录" v-model="visible" :width="1500" :footer="null" :maskClosable="false">
-    <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="true" :loading="loading">
+  <a-modal title="物料报价维护历史记录" v-model="visible" :width="1300" :footer="null" :maskClosable="false">
+    <a-table
+      :columns="priewColumns"
+      rowKey="id"
+      :dataSource="priewData"
+      :pagination="true"
+      :loading="loading"
+      :scroll="{ x: 2000 }"
+    >
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
       </div>
@@ -82,13 +89,13 @@ const priewColumns = [
   },
   {
     align: 'center',
-    title: '物料税率',
+    title: '物料税率(%)',
     key: 'materialRate',
     dataIndex: 'materialRate',
   },
   {
     align: 'center',
-    title: '运费税率',
+    title: '运费税率(%)',
     key: 'freightRate',
     dataIndex: 'freightRate',
   },
@@ -100,13 +107,13 @@ const priewColumns = [
   },
   {
     align: 'center',
-    title: '交货周期',
+    title: '交货周期(天)',
     key: 'deliveryCycle',
     dataIndex: 'deliveryCycle',
   },
   {
     align: 'center',
-    title: '保质期',
+    title: '保质期(天)',
     key: 'shelfLife',
     dataIndex: 'shelfLife',
   },
@@ -127,6 +134,8 @@ const priewColumns = [
     title: '创建时间',
     key: 'createdTime',
     dataIndex: 'createdTime',
+    fixed: 'right',
+    width: 150,
   },
 ]
 

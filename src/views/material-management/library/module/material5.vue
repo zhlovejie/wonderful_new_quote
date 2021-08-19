@@ -32,28 +32,6 @@
               <a-divider type="vertical" /> -->
             <a type="primary" @click="process(record)">详情</a>
           </template>
-          <!-- <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
-            <a-divider type="vertical" />
-            <template v-if="$auth('supplier:Withdraw')">
-              <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
-                <a type="primary">撤回</a>
-              </a-popconfirm>
-            </template>
-          </template>
-          <template
-            v-if="
-              $auth('supplier:edit-salary') &&
-              (record.status === 3 || record.status === 4 || record.status === 0) &&
-              +record.createdId === +userInfo.id
-            "
-          >
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('edit-salary', record)">修改</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
-              <a type="primary">删除</a>
-            </a-popconfirm>
-          </template> -->
         </div>
       </a-table>
     </div>
@@ -152,7 +130,7 @@ export default {
       columns: columns,
       record: {},
       dataSource: [],
-      pagination1: {},
+      pagination1: { current: 1 },
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
