@@ -31,6 +31,8 @@
         <a @click="doAction('ask',record)">询价</a>
         <a-divider type="vertical" />
         <a @click="doAction('offer',record)">报价</a>
+        <a-divider type="vertical" />
+        <a @click="doAction('reject',record)">驳回</a>
       </div>
 
       <div
@@ -101,6 +103,7 @@
     />
     <ApplyView ref="applyView" @finished="() => search()"/>
     <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
+    <RejectForm ref="rejectForm" @finished="() => search()"/>
   </div>
 </template>
 
@@ -110,13 +113,15 @@ import { requestApplyPageList } from '@/api/procurementModuleManagement'
 import AskPriceForm from './AskPriceForm'
 import OfferPriceForm from './OfferPriceForm'
 import ApplyView from '../apply/AddForm'
+import RejectForm from './RejectForm'
 export default {
   props: ['queryParam'],
   components: {
     AskPriceForm,
     OfferPriceForm,
     ApplyView,
-    MaterialView
+    MaterialView,
+    RejectForm
   },
   data() {
     return {
@@ -320,6 +325,9 @@ export default {
             __from
           })
         })
+        return
+      } else if(type === 'reject'){
+        that.$refs.rejectForm.query({requestId:record.id})
         return
       }
     }

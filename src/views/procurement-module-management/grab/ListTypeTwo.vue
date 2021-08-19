@@ -29,6 +29,8 @@
         <a @click="doAction('view',record)">查看</a>
         <a-divider type="vertical" />
         <a @click="doAction('offer',record)">提交异议</a>
+        <!-- <a-divider type="vertical" />
+        <a @click="doAction('reject',record)">驳回</a> -->
       </div>
 
       <div
@@ -88,6 +90,7 @@
     />
     <OfferPriceView ref="offerPriceView" @finished="() => search()"/>
     <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
+    <RejectForm ref="rejectForm" @finished="() => search()"/>
   </div>
 </template>
 
@@ -96,6 +99,7 @@ import MaterialView from '@/views/material-management/library/module/NormalAddFo
 import { quotationPublicPageList } from '@/api/procurementModuleManagement'
 import OfferPriceForm from './OfferPriceForm'
 import OfferPriceView from './OfferPriceView'
+import RejectForm from './RejectForm'
 const columns = [
   {
     title: '序号',
@@ -181,7 +185,7 @@ const columns = [
 
 export default {
   props: ['queryParam'],
-  components: { OfferPriceForm, OfferPriceView,MaterialView },
+  components: { OfferPriceForm, OfferPriceView,MaterialView,RejectForm },
   data() {
     return {
       columns,
@@ -291,6 +295,9 @@ export default {
             __from
           })
         })
+        return
+      }else if(type === 'reject'){
+        that.$refs.rejectForm.query({requestId:record.requestId})
         return
       }
     }

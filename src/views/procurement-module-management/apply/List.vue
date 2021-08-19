@@ -137,10 +137,10 @@
               </template>
 
               <!--通过 -->
-              <!-- <template v-if="+record.approveStatus === 2">
-                <a-divider type="vertical" />
-                <a @click="doAction('approval',record)">审批</a>
-              </template> -->
+              <template v-if="+record.approveStatus === 2">
+                <!-- <a-divider type="vertical" />
+                <a @click="doAction('reject',record)">驳回</a> -->
+              </template>
 
               <!--3不通过，4已经撤销，5已被驳回 -->
               <template v-if="[3,4,5].includes(+record.approveStatus) && +record.createdId === +userInfo.id">
@@ -159,6 +159,8 @@
 
             <template v-if="+activeKey === 4">
               <a @click="doAction('view',record)">查看</a>
+              <!-- <a-divider type="vertical" />
+              <a @click="doAction('reject',record)">驳回</a> -->
             </template>
 
             <template v-if="+activeKey === 5 && +record.createdId === +userInfo.id">
@@ -290,6 +292,7 @@
         ref="materialView"
       />
       <ApproveInfo ref="approveInfoCard" />
+      <RejectForm ref="rejectForm" @finished="() => search()"/>
     </a-spin>
   </a-card>
 </template>
@@ -301,7 +304,7 @@ import AddForm from './AddForm'
 import ChangeQtyForm from './ChangeQtyForm'
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-
+import RejectForm from '../grab/RejectForm'
 
 import {
   requestApplyPageList,
@@ -397,7 +400,8 @@ export default {
     AddForm,
     MaterialView,
     ChangeQtyForm,
-    ApproveInfo
+    ApproveInfo,
+    RejectForm
   },
   data() {
     return {
@@ -655,6 +659,9 @@ export default {
           })
         })
         that.betachAction({promiseList,type:'删除'})
+        return
+      }else if(type === 'reject'){
+        that.$refs.rejectForm.query({requestId:record.id})
         return
       }
     }

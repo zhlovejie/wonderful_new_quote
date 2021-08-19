@@ -169,6 +169,16 @@ const materialBaseUrl = system.materialBaseUrl
       params: parameter
     })
   }
+
+  //获取最新采购单价
+  export function lastOrderPrice(parameter) {
+    return axios({
+      baseURL: materialBaseUrl,
+      url: '/quotation/lastOrderPrice',
+      method: 'GET',
+      params: parameter
+    })
+  }
 /**采购报价单 END*/
 
 
@@ -237,6 +247,15 @@ export function quotationExceptionAdd(parameter) {
 }
 /**报价异常信息接口 END*/
 
+/** 采购管理-采购需求驳回接口 */
+export function quotationReject(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/reject',
+    method: 'POST',
+    data: parameter
+  })
+}
 
 /**收料管理 */
 
@@ -310,3 +329,6 @@ export function updatePickUpFreigh(parameter) {
   })
 }
 /**提货单管理 END*/
+
+
+

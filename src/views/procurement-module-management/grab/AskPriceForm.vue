@@ -32,10 +32,13 @@
           >
             <a-row>
               <a-col :span="11">
-                <a-input
-                  v-model="form.packageType"
-                  placeholder="包装类型"
-                />
+                <a-select style="width:100%;" allowClear v-model="form.packageType" placeholder="包装类型">
+                  <a-select-option
+                    v-for="item in packingType"
+                    :key="item.text"
+                    :value="item.text"
+                  >{{item.text}}</a-select-option>
+                </a-select>
               </a-col>
               <a-col
                 :span="11"
@@ -197,6 +200,7 @@
 </a-modal>
 </template>
 <script>
+import { getDictionary } from '@/api/common'
 import { enquiryAdd,quotationSupplierList } from '@/api/procurementModuleManagement'
 export default {
   data() {
@@ -204,8 +208,8 @@ export default {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
-        packageType:'个',
-        packageCount:20,
+        packageType:'箱',
+        packageCount:0,
         modelName:'',
         modelType:'',
         model:'',
@@ -227,7 +231,8 @@ export default {
       visible:false,
       spinning:false,
       record:{},
-      supplierList:[]
+      supplierList:[],
+      packingType:[]
     };
   },
   computed:{
@@ -264,9 +269,11 @@ export default {
       }
 
       //根据物料查询相应的供应商列表
-        quotationSupplierList({materialId:that.record.materialId}).then(res => {
-          that.supplierList = res.data
-        })
+      quotationSupplierList({materialId:that.record.materialId}).then(res => {
+        that.supplierList = res.data
+      })
+
+      getDictionary({ text: '采购包装类型' }).then(res => (that.packingType = res.data))
 
     },
     handleSubmit() {

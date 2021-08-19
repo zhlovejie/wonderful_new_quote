@@ -76,7 +76,8 @@
               <tr>
                 <td style="width:150px;">最新采购单价</td>
                 <td>
-                  <a-form-model-item prop="lastPrice">
+                  {{`${form.lastPrice}元`}}
+                  <!-- <a-form-model-item prop="lastPrice">
                     <a-input-number
                       placeholder="最新采购单价"
                       v-model="form.lastPrice"
@@ -87,7 +88,7 @@
                       :formatter="value => `${value}元`"
                       :parser="value => value.replace('元', '')"
                     />
-                  </a-form-model-item>
+                  </a-form-model-item> -->
                 </td>
               </tr>
               <tr>
@@ -221,7 +222,7 @@ export default {
 
       },
       rules: {
-        lastPrice:[{ required: true, message: '请输入最新采购单价' }],
+        // lastPrice:[{ required: true, message: '请输入最新采购单价' }],
         newPrice: [{ required: true, message: '请输入最新报价' }],
         deliveryDate: [{ required: true, message: '请选择预计到货日期' }],
         amount: [{ required: true, message: '请输入采购总金额' }],
@@ -310,15 +311,23 @@ export default {
         that.requestApply = requestApply
 
         //根据物料id获取该物料最新采购价  目前尚未使用
-        await getOrderLastPrice({materialId:requestApply.materialId}).then(res => {
-          console.log(res.data)
+        let newLastPrice = await getOrderLastPrice({materialId:requestApply.materialId}).then(res => {
+          if(res && res.code === 200){
+            return res.data || 0
+          }else{
+            that.$message.info(`获取物料最新采购单价失败:${res.msg}`)
+            return 0
+          }
+        }).catch(err => {
+          that.$message.info(`获取物料最新采购单价失败:${err}`)
+          return 0
         })
 
         that.form = {
           ...that.form,
           requestId: requestApply.id,
           materialId:requestApply.materialId,
-          lastPrice:d2.lastPrice,
+          lastPrice:newLastPrice,
           newPrice:d2.newPrice,
           packMethod:d2.packageType,
           pageNum:d2.packageCount,
@@ -326,7 +335,7 @@ export default {
           supplierName:d2.supplierName,
           quotationId:d2.id,
           deliveryDate:moment(d2.modifyTime).add('days',+d2.deliveryCycle),
-          amount:d2.lastPrice / d2.packageCount * requestApply.requestNum
+          amount: requestApply.requestNum * newLastPrice
         }
 
     },

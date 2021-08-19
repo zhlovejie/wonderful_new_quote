@@ -89,10 +89,13 @@
           >
             <a-row>
               <a-col :span="11">
-                <a-input
-                  v-model="form.packageType"
-                  placeholder="包装类型"
-                />
+                <a-select style="width:100%;" allowClear v-model="form.packageType" placeholder="包装类型">
+                  <a-select-option
+                    v-for="item in packingType"
+                    :key="item.text"
+                    :value="item.text"
+                  >{{item.text}}</a-select-option>
+                </a-select>
               </a-col>
               <a-col
                 :span="11"
@@ -137,7 +140,8 @@
             label="最新采购单价"
             prop="lastPrice"
           >
-            <a-input-number
+            {{`${form.lastPrice} 元`}}
+            <!-- <a-input-number
               placeholder="最新采购单价"
               v-model="form.lastPrice"
               style="width:100%;"
@@ -146,7 +150,7 @@
               :precision="2"
               :formatter="value => `${value}元`"
               :parser="value => value.replace('元', '')"
-            />
+            /> -->
           </a-form-model-item>
         </a-card>
 
@@ -306,8 +310,10 @@ import {
   quotationDetail,
   quotationDetailForUpdate ,
   quotationSupplierList,
-  quotationCheckSupplier
+  quotationCheckSupplier,
+  getOrderLastPrice
 } from '@/api/procurementModuleManagement'
+import { getDictionary } from '@/api/common'
 export default {
   data() {
     return {
@@ -332,7 +338,7 @@ export default {
         source: 1
       },
       rules: {
-        lastPrice:[{ required: true, message: '请输入最新采购单价' }],
+        // lastPrice:[{ required: true, message: '请输入最新采购单价' }],
         settlementMode:[{ required: true, message: '请选择结算方式' }],
         packageType: [{ required: true, message: '请输入包装类型' }],
         packageCount: [{ required: true, message: '请输入包装内数量' }],
@@ -356,7 +362,8 @@ export default {
       record: {},
       detail: {},
       detailUpdate: {},
-      supplierList:[]
+      supplierList:[],
+      packingType:[]
     }
   },
   computed: {
@@ -439,10 +446,27 @@ export default {
         // quotationCheckSupplier({supplierId:d2.supplierId,materialId:d2.materialId}).then(res => {
 
         // })
+
+        getDictionary({ text: '采购包装类型' }).then(res => (that.packingType = res.data))
         //根据物料查询相应的供应商列表
         quotationSupplierList({materialId:that.record.materialId}).then(res => {
           that.supplierList = res.data
         })
+
+        //根据物料id获取该物料最新采购价  目前尚未使用
+        let newLastPrice = await getOrderLastPrice({materialId:that.record.materialId}).then(res => {
+          if(res && res.code === 200){
+            return res.data || 0
+          }else{
+            that.$message.info(`获取物料最新采购单价失败:${res.msg}`)
+            return 0
+          }
+        }).catch(err => {
+          that.$message.info(`获取物料最新采购单价失败:${err}`)
+          return 0
+        })
+
+        that.form = {...that.form,lastPrice:newLastPrice}
       }
     },
     handleSubmit() {

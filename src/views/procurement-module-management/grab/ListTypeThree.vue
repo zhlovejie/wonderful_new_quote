@@ -49,6 +49,8 @@
           <a @click="doAction('view',record)">查看</a>
         </template>
 
+        <!-- <a-divider type="vertical" />
+        <a @click="doAction('reject',record)">驳回</a> -->
         <!-- <a @click="doAction('chuli',record)">处理</a> -->
       </div>
 
@@ -119,7 +121,8 @@
     <OfferPriceView ref="offerPriceView" @finish="() => search()"/>
     <ApproveInfo ref="approveInfoCard" @finish="() => search()"/>
     <ExceptionForm ref="exceptionForm" @finish="() => search()"/>
-      <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
+    <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
+    <RejectForm ref="rejectForm" @finished="() => search()"/>
   </div>
 </template>
 
@@ -130,6 +133,7 @@ import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OfferPriceForm from './OfferPriceForm'
 import OfferPriceView from './OfferPriceView'
 import ExceptionForm from './ExceptionForm'
+import RejectForm from './RejectForm'
 const columns = [
   {
     title: '序号',
@@ -228,7 +232,8 @@ export default {
     OfferPriceView,
     ApproveInfo,
     ExceptionForm,
-    MaterialView
+    MaterialView,
+    RejectForm
   },
   data() {
     return {
@@ -348,6 +353,9 @@ export default {
             __from
           })
         })
+        return
+      }else if(type === 'reject'){
+        that.$refs.rejectForm.query({requestId:record.requestId})
         return
       }
     }
