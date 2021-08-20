@@ -94,8 +94,8 @@
                   />
                 </a-form-model-item> -->
 
-                <a-form-model-item prop="relatedNum" v-if="!isDisabled && isRelatedSellOrder">
-                  <a-select style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
+                <a-form-model-item prop="relatedNum" v-if="!isDisabled">
+                  <a-select v-if="isRelatedSellOrder" style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
                     <a-select-option
                       v-for="item in relatedNumList"
                       :key="item.id"
@@ -238,7 +238,21 @@
               <td style="width:150px;">制单人</td>
               <td >{{detail.createdName || userInfo.trueName}}</td>
               <td style="width:150px;">制单时间</td>
-              <td >{{detail.createdTime}}</td>
+              <td style="width:260px;">{{detail.createdTime}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-item" v-if="isDisabled && Array.isArray(detail.rejects) && detail.rejects.length > 0">
+        <div class="__hd">驳回记录</div>
+        <div class="__bd">
+          <table class="custom-table custom-table-border">
+            <tr v-for="item in detail.rejects" :key="item.createdTime">
+              <td style="width:150px;">驳回理由</td>
+              <td >{{detail.reason }}</td>
+              <td style="width:150px;">驳回人/驳回时间</td>
+              <td style="width:260px;">{{detail.createdName}}/{{detail.createdTime}}</td>
             </tr>
           </table>
         </div>
@@ -503,27 +517,30 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
-          // console.log(that.form,that.dataSource)
           let {depId,depName,userId,userName} = that.form.applyUser
+          let {applyUser,reason,remark,requestType,relatedNum,requestTime} = that.form
           let baseInfo = {
-            ...that.form,
+            reason,
+            remark,
+            requestType,
+            relatedNum,
+            // requestTime,
             applyDepId:depId,
             applyDepName:depName,
             proposerId:userId,
             proposerName:userName
           }
-          delete baseInfo.applyUser
           let arr = []
           that.dataSource.map(item => {
-            let _item = {...item}
-            _item.requestTime = _item.requestTime.format('YYYY-MM-DD HH:mm:ss')
-            arr.push({
+            let param = {
+              ...item,
               ...baseInfo,
-              ..._item,
               saveType:saveType
-            })
+            }
+            param.requestTime = param.requestTime.format('YYYY-MM-DD HH:mm:ss')
+            arr.push(param)
           })
-          console.log(arr)
+
           that.spinning = true
 
           let api = that.isEdit ? requestApplyUpdate : requestApplyAdd

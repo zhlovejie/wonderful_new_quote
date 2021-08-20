@@ -11,122 +11,299 @@
   >
     <a-spin :spinning="spinning">
       <ApplyView ref="applyView" />
-      <template v-if="detail.details && Array.isArray(detail.details)">
-        <div class="__hd">报价信息</div>
-        <a-table
-          :columns="columns"
-          :dataSource="detail.details"
-          :pagination="false"
+      <template v-if="detail.detail">
+        <div class="__hd">抢单/领单信息</div>
+        <a-card
+          title="详情"
           size="small"
         >
-          <div
-            slot="nakedPrice"
-            slot-scope="text, record, index"
-          >
-            {{ {1:'含税运',2:'含税不含运'}[text] }}
-          </div>
-          <div
-            slot="newPrice"
-            slot-scope="text, record, index"
-          >
-            {{ text | moneyFormatNumber }}
-          </div>
-          <div
-            slot="materialRate"
-            slot-scope="text, record, index"
-          >
-            {{ `${text}%` }}
-          </div>
-          <div
-            slot="freightRate"
-            slot-scope="text, record, index"
-          >
-            {{ `${text}%` }}
-          </div>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >供应商名称：</a-col>
+            <a-col :span="8">{{`${detail.detail.supplierName}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >结算方式：</a-col>
+            <a-col :span="8">{{`${{0:'现款现货',1:'账期结算'}[detail.detail.settlementMode]}`}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >物料名称：</a-col>
+            <a-col :span="8">{{`${detail.materialName}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >发票类型：</a-col>
+            <a-col :span="8">{{`${{1:'不限',2:'增值税专用发票',3:'普通发票'}[detail.detail.invoiceType]}`}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >规格型号：</a-col>
+            <a-col :span="8">{{`${detail.detail.materialModelType}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >裸价标准：</a-col>
+            <a-col :span="8">{{`${{0:'含税运',1:'含税不含运'}[detail.detail.nakedPrice]}`}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >包装方式：</a-col>
+            <a-col :span="8">{{`${detail.detail.packageType}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >最新报价：</a-col>
+            <a-col :span="8">{{`${detail.detail.newPrice}` | moneyFormatNumber}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >品牌型号：</a-col>
+            <a-col :span="8">{{`${detail.detail.model}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >物料税率：</a-col>
+            <a-col :span="8">{{`${detail.detail.materialRate} %`}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >最新采购单价：</a-col>
+            <a-col :span="8">{{`${detail.detail.lastPrice}` | moneyFormatNumber}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >运费税率：</a-col>
+            <a-col :span="8">{{`${detail.detail.freightRate} %`}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >最低采购数量：</a-col>
+            <a-col :span="8">{{`${detail.detail.lowestNum}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >交货周期：</a-col>
+            <a-col :span="8">{{`${detail.detail.deliveryCycle} 天`}}</a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >保质期：</a-col>
+            <a-col :span="8">{{`${detail.detail.shelfLife} 天`}}</a-col>
+            <a-col :span="4"></a-col>
+            <a-col :span="8"></a-col>
+          </a-row>
+          <a-row :gutter="[16,16]">
+            <a-col
+              :span="4"
+              class="lbl"
+            >报价人：</a-col>
+            <a-col :span="8">{{`${detail.detail.createdDepName}/${detail.detail.createdName}`}}</a-col>
+            <a-col
+              :span="4"
+              class="lbl"
+            >报价时间：</a-col>
+            <a-col :span="8">{{`${detail.detail.createdTime}`}}</a-col>
+          </a-row>
+        </a-card>
+        <a-card
+          title="异常信息"
+          size="small"
+          v-if="detail.detail.exception"
+        >
+          <table>
+            <!-- <tr>
+              <td>抢单报价</td>
+              <td>报价单价</td>
+              <td>{{`${detail.detail.newPrice}` | moneyFormatNumber}}</td>
+              <td>报价人</td>
+              <td>{{`${detail.detail.createdDepName} / ${detail.detail.createdName}`}}</td>
+              <td>报价时间</td>
+              <td>{{`${detail.detail.createdTime}`}}</td>
+            </tr> -->
+            <tr>
+              <td>最新报价</td>
+              <td>报价单价</td>
+              <td>{{`${detail.detail.exception.newPrice}` | moneyFormatNumber}}</td>
+              <td>报价人</td>
+              <td>{{`${detail.detail.exception.npDepName} / ${detail.detail.exception.npCreater}`}}</td>
+              <td>报价时间</td>
+              <td>{{`${detail.detail.exception.npCreateTime}`}}</td>
+            </tr>
+          </table>
 
-          <div
-            slot="deliveryCycle"
-            slot-scope="text, record, index"
-          >
-            {{ `${text}天` }}
-          </div>
-          <div
-            slot="shelfLife"
-            slot-scope="text, record, index"
-          >
-            {{ `${text}天` }}
-          </div>
-          <div
-            slot="createdDepName"
-            slot-scope="text, record, index"
-          >
-            <span>{{ `${record.createdDepName}/${record.createdName}` }}</span>
-          </div>
+          <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[detail.detail.exception.disposeType] }`}}</p>
+          <p>抢单时长：{{`${detail.detail.exception.grabTime} 分钟`}} 公示时长：{{`${detail.detail.exception.publicityTime} 分钟`}}</p>
+          <p>处理理由：{{`${detail.detail.exception.reason}`}}</p>
+          <p>处理人：{{`${detail.detail.exception.processor}`}} 处理时间：{{`${detail.detail.exception.reason}`}}</p>
+        </a-card>
+      </template>
 
-          <div
-            slot="extendsDetail"
-            slot-scope="text, record, index"
+      <template v-if="Array.isArray(detail.objections) && detail.objections.length > 0">
+        <div class="__hd">异议信息</div>
+        <div
+          v-for="(item,idx) in detail.objections"
+          :key="item.id"
+        >
+          <a-card
+            :title=" `异议信息${idx + 1}` "
+            size="small"
           >
-            <a-popover trigger="click" placement="left">
-              <template slot="content">
-                <a-card
-                  title="报价详情"
-                  size="small"
-                  style="width:320px"
-                >
-                  <p>供应商：{{`${record.supplierName}`}}</p>
-                  <p>规格型号：{{`${record.materialModelType}`}}</p>
-                  <p>包装方式：{{`${record.packageType}`}}</p>
-                  <p>品牌型号：{{`${record.model}`}}</p>
-                  <p>最新采购单价：{{`${record.lastPrice}` | moneyFormatNumber}}</p>
-                  <p>结算方式：{{`${{0:'现款现货',1:'账期结算'}[record.settlementMode]}`}}</p>
-                  <p>发票类型：{{`${{1:'不限',2:'增值税专用发票',3:'普通发票'}[record.invoiceType]}`}}</p>
-                  <p>裸价标准：{{`${{0:'含税运',1:'含税不含运'}[record.nakedPrice]}`}}</p>
-                  <p>最新报价：{{`${record.newPrice}` | moneyFormatNumber}}</p>
-                  <p>物料税率：{{`${record.materialRate} %`}}</p>
-                  <p>运费税率：{{`${record.freightRate} %`}}</p>
-                  <p>最低采购数量：{{`${record.lowestNum}`}}</p>
-                  <p>交货周期：{{`${record.deliveryCycle} 天`}}</p>
-                  <p>保质期：{{`${record.shelfLife} 天`}}</p>
-                </a-card>
-                <a-card
-                  title="异常信息"
-                  size="small"
-                  style="width:320px"
-                  v-if="record.exception"
-                >
-                  <table>
-                    <tr>
-                      <td>抢单报价</td>
-                      <td>报价单价</td>
-                      <td>{{`${record.newPrice}` | moneyFormatNumber}}</td>
-                      <td>报价人</td>
-                      <td>{{`${record.createdDepName} / ${record.createdName}`}}</td>
-                      <td>报价时间</td>
-                      <td>{{`${record.createdTime}`}}</td>
-                    </tr>
-                    <tr>
-                      <td>最新报价</td>
-                      <td>报价单价</td>
-                      <td>{{`${record.exception.newPrice}` | moneyFormatNumber}}</td>
-                      <td>报价人</td>
-                      <td>{{`${record.exception.npDepName} / ${record.exception.npCreater}`}}</td>
-                      <td>报价时间</td>
-                      <td>{{`${record.exception.npCreateTime}`}}</td>
-                    </tr>
-                  </table>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >供应商名称：</a-col>
+              <a-col :span="8">{{`${item.supplierName}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >结算方式：</a-col>
+              <a-col :span="8">{{`${{0:'现款现货',1:'账期结算'}[item.settlementMode]}`}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >物料名称：</a-col>
+              <a-col :span="8">{{`${detail.materialName}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >发票类型：</a-col>
+              <a-col :span="8">{{`${{1:'不限',2:'增值税专用发票',3:'普通发票'}[item.invoiceType]}`}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >规格型号：</a-col>
+              <a-col :span="8">{{`${item.materialModelType}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >裸价标准：</a-col>
+              <a-col :span="8">{{`${{0:'含税运',1:'含税不含运'}[item.nakedPrice]}`}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >包装方式：</a-col>
+              <a-col :span="8">{{`${item.packageType}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >最新报价：</a-col>
+              <a-col :span="8">{{`${item.newPrice}` | moneyFormatNumber}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >品牌型号：</a-col>
+              <a-col :span="8">{{`${item.model}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >物料税率：</a-col>
+              <a-col :span="8">{{`${item.materialRate} %`}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >最新采购单价：</a-col>
+              <a-col :span="8">{{`${item.lastPrice}` | moneyFormatNumber}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >运费税率：</a-col>
+              <a-col :span="8">{{`${item.freightRate} %`}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >最低采购数量：</a-col>
+              <a-col :span="8">{{`${item.lowestNum}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >交货周期：</a-col>
+              <a-col :span="8">{{`${item.deliveryCycle} 天`}}</a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >保质期：</a-col>
+              <a-col :span="8">{{`${item.shelfLife} 天`}}</a-col>
+              <a-col :span="4"></a-col>
+              <a-col :span="8"></a-col>
+            </a-row>
+            <a-row :gutter="[16,16]">
+              <a-col
+                :span="4"
+                class="lbl"
+              >异议人：</a-col>
+              <a-col :span="8">{{`${item.createdDepName}/${item.createdName}`}}</a-col>
+              <a-col
+                :span="4"
+                class="lbl"
+              >异议时间：</a-col>
+              <a-col :span="8">{{`${item.createdTime}`}}</a-col>
+            </a-row>
+          </a-card>
+          <a-card
+            title="异常信息"
+            size="small"
+            v-if="item.exception"
+          >
+            <table>
+              <!-- <tr>
+                <td>抢单报价</td>
+                <td>报价单价</td>
+                <td>{{`${detail.detail.newPrice}` | moneyFormatNumber}}</td>
+                <td>报价人</td>
+                <td>{{`${detail.detail.createdDepName} / ${detail.detail.createdName}`}}</td>
+                <td>报价时间</td>
+                <td>{{`${detail.detail.createdTime}`}}</td>
+              </tr> -->
+              <tr>
+                <td>最新报价</td>
+                <td>报价单价</td>
+                <td>{{`${item.exception.newPrice}` | moneyFormatNumber}}</td>
+                <td>报价人</td>
+                <td>{{`${item.exception.npDepName} / ${item.exception.npCreater}`}}</td>
+                <td>报价时间</td>
+                <td>{{`${item.exception.npCreateTime}`}}</td>
+              </tr>
+            </table>
 
-                  <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[record.exception.disposeType] }`}}</p>
-                  <p>抢单时长：{{`${record.exception.grabTime} 分钟`}} 公示时长：{{`${record.exception.publicityTime} 分钟`}}</p>
-                  <p>处理理由：{{`${record.exception.reason}`}}</p>
-                  <p>处理人：{{`${record.exception.processor}`}} 处理时间：{{`${record.exception.reason}`}}</p>
-                </a-card>
-              </template>
-              <a href="javascript:void(0);">详情信息</a>
-            </a-popover>
-          </div>
-
-        </a-table>
+            <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[item.exception.disposeType] }`}}</p>
+            <p>抢单时长：{{`${item.exception.grabTime} 分钟`}} 公示时长：{{`${item.exception.publicityTime} 分钟`}}</p>
+            <p>处理理由：{{`${item.exception.reason}`}}</p>
+            <p>处理人：{{`${item.exception.processor}`}} </p>
+          </a-card>
+        </div>
       </template>
 
       <template v-if="detail.history && Array.isArray(detail.history)">
@@ -176,8 +353,12 @@
           </div>
         </a-table>
       </template>
+
     </a-spin>
-    <Approval ref="approval" @opinionChange="opinionChange" />
+    <Approval
+      ref="approval"
+      @opinionChange="opinionChange"
+    />
   </a-modal>
 </template>
 <script>
@@ -190,55 +371,6 @@ import {
 
 import ApplyView from '../apply/ApplyView'
 import Approval from '../apply/Approval'
-const columns = [
-  {
-    title: '供应商',
-    dataIndex: 'supplierName'
-  },
-  {
-    title: '裸价标准',
-    dataIndex: 'nakedPrice',
-    scopedSlots: { customRender: 'nakedPrice' }
-  },
-  {
-    title: '最新报价',
-    dataIndex: 'newPrice',
-    scopedSlots: { customRender: 'newPrice' }
-  },
-  {
-    title: '物料税率',
-    dataIndex: 'materialRate',
-    scopedSlots: { customRender: 'materialRate' }
-  },
-  {
-    title: '运费税率',
-    dataIndex: 'freightRate',
-    scopedSlots: { customRender: 'freightRate' }
-  },
-  {
-    title: '最低采购数量',
-    dataIndex: 'lowestNum'
-  },
-  {
-    title: '交货周期',
-    dataIndex: 'deliveryCycle',
-    scopedSlots: { customRender: 'deliveryCycle' }
-  },
-  {
-    title: '保质期',
-    dataIndex: 'shelfLife',
-    scopedSlots: { customRender: 'shelfLife' }
-  },
-  {
-    title: '报价人',
-    dataIndex: 'createdDepName',
-    scopedSlots: { customRender: 'createdDepName' }
-  },
-  {
-    title: '详情',
-    scopedSlots: { customRender: 'extendsDetail' }
-  }
-]
 
 const columnsHistory = [
   {
@@ -288,7 +420,6 @@ export default {
   },
   data() {
     return {
-      columns,
       columnsHistory,
       cardBordered: true,
       visible: false,
@@ -332,7 +463,7 @@ export default {
       const btn = []
       if (that.isView) {
         return null
-      }  else if (that.isApproval) {
+      } else if (that.isApproval) {
         btn.push(
           h(
             'a-button',
@@ -379,7 +510,7 @@ export default {
       that.detailUpdate = d2
 
       that.$nextTick(() => {
-        that.$refs.applyView.query({ id: that.detail.requestApply.id })
+        that.$refs.applyView.query({ id: that.detail.raId })
       })
     },
     handleSubmit() {
@@ -414,18 +545,18 @@ export default {
     //审批部分
     submitAction(opt) {
       const that = this
-      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
+      const values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
       quotationApproval(values)
-        .then((res) => {
+        .then(res => {
           that.spinning = false
           that.$message.info(res.msg)
-          if(+ res.code === 200){
+          if (+res.code === 200) {
             that.$emit('finish')
             that.handleCancel()
           }
         })
-        .catch((err) => {
+        .catch(err => {
           that.spinning = false
           console.log(err)
         })
@@ -440,9 +571,9 @@ export default {
       //审批意见
       this.submitAction({
         isAdopt: 1,
-        opinion: opinion,
+        opinion: opinion
       })
-    },
+    }
     //审批部分
   }
 }
@@ -455,4 +586,9 @@ export default {
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;
 }
+.lbl {
+  color: #999;
+  text-align: right;
+}
 </style>
+
