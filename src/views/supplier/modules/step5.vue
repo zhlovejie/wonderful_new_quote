@@ -1,7 +1,7 @@
 <template>
   <!-- 质检记录 -->
   <div class="product-process-management_workshop-management">
-    <div class="main-wrapper">
+    <!-- <div class="main-wrapper">
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -16,7 +16,7 @@
           <span>{{ text === 1 ? '一般' : text === 2 ? '加急' : '特级' }}</span>
         </div>
       </a-table>
-    </div>
+    </div> -->
   </div>
 </template>
 
