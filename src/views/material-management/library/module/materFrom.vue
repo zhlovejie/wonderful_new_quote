@@ -16,8 +16,9 @@
             <td>
               <a-form-item style="width: 40%; float: left">
                 <a-select
-                  v-decorator="['supplierId', { initialValue: 0 }]"
+                  v-decorator="['supplierId']"
                   mode="multiple"
+                  placeholder="请选择供应"
                   @change="depChangeHandler"
                   allowClear
                   :disabled="isDisabled"
@@ -37,22 +38,28 @@
             <td>指定品牌及型号</td>
             <td>
               <a-form-item style="width: 25%; float: left">
-                <a-select v-model="brand" @change="depChange" allowClear :disabled="isDisabled">
+                <a-select
+                  v-model="brand"
+                  @change="depChange"
+                  allowClear
+                  placeholder="请选择品牌"
+                  :disabled="isDisabled"
+                >
                   <a-select-option :value="0">不限品牌</a-select-option>
                   <a-select-option v-for="item in brandList" :key="item.id" :value="item.id">{{
                     item.brandName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item style="width: 25%; float: left">
-                <a-select allowClear v-model="modList" :disabled="isDisabled" mode="multiple">
+              <a-form-item v-if="brand !== 0 && brand !== undefined && brand !== ''" style="width: 25%; float: left">
+                <a-select placeholder="请选择型号" allowClear v-model="modList" :disabled="isDisabled" mode="multiple">
                   <a-select-option :value="0">不限型号</a-select-option>
                   <a-select-option v-for="item in modelList" :key="item.id" :value="item.id">{{
                     item.modelName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item style="width: 10%; float: left">
+              <a-form-item style="width: 10%; float: left" v-if="brand !== 0 && brand !== undefined && brand !== ''">
                 <a-button type="primary" @click="Procureadd()">新增</a-button>
               </a-form-item>
 
@@ -308,12 +315,20 @@ export default {
       this.buyRequirementBrands = this.buyRequirementBrands.filter((i) => i.brandId !== index)
     },
     Procureadd() {
-      let react = this.modelList.filter((i) => this.modList.includes(i.id))
+      let arrs = []
+      let ret = this.modList.toString()
+      if (ret === '0') {
+        arrs = [...this.modelList]
+      } else {
+        let as = this.modelList.filter((i) => this.modList.includes(i.id))
+        arrs = [...as]
+      }
+
       let arr = this.brandList.find((u) => u.id === this.brand)
       this.buyRequirementBrands.push({
         brandName: arr.brandName,
         brandId: arr.id,
-        buyRequirementBrandModels: react,
+        buyRequirementBrandModels: arrs,
       })
     },
     Procurement(type) {
@@ -339,10 +354,10 @@ export default {
       that.form.validateFields((err, values) => {
         if (!err) {
           // console.log(values)
-          if (values.supplierId.length > 0) {
+          if (values.supplierId && values.supplierId.length > 0) {
             values.supplierId = values.supplierId.filter((i) => i !== 0)
           }
-          if (values.supplierId.length > 0) {
+          if (values.supplierId && values.supplierId.length > 0) {
             let reat = this.supplierList.filter((i) => values.supplierId.includes(i.id))
             values.supplierName = reat.map((i) => i.scompanyName).join(',')
           }
@@ -351,7 +366,7 @@ export default {
             values.packMethod = arr.text
           }
 
-          values.supplierId = values.supplierId.toString() || undefined
+          values.supplierId = (values.supplierId && values.supplierId.toString()) || '0'
           values.buyRequirementBrands = that.buyRequirementBrands || []
           values.materialId = that.record.id
           that.spinning = true
@@ -371,6 +386,7 @@ export default {
     handleCancel() {
       this.fileList = []
       this.qrcodeUrl = ''
+      this.$emit('finish')
       this.form.resetFields() // 清空表
       this.$nextTick(() => (this.visible = false))
     },
@@ -378,27 +394,22 @@ export default {
       this.previewVisible = false
     },
     depChangeHandler(depId) {
-      //人员 id,trueName
-
+      console.log(depId)
+      this.brandList = []
       let reat = depId.filter((i) => i !== 0)
-
-      if (!depId) {
-        this.brandList = []
-        this.modelList = []
-        return
-      }
-      this.depidType = reat.toString()
+      this.depidType = reat.toString() || undefined
       //品牌
-      listManageBrand({ materialId: this.record.id, supplierId: this.depidType }).then(
-        (res) => (this.brandList = res.data)
-      )
+      if (depId.length > 0) {
+        listManageBrand({ materialId: this.record.id, supplierId: this.depidType || 0 }).then(
+          (res) => (this.brandList = res.data)
+        )
+      }
     },
     depChange(depId) {
       this.userList = []
+      this.modList = []
       //型号
-      listManageBrandModel({ materialId: this.record.id, supplierId: this.depidType, brandId: depId }).then(
-        (res) => (this.modelList = res.data)
-      )
+      listManageBrandModel({ materialId: this.record.id, brandId: depId }).then((res) => (this.modelList = res.data))
     },
     async query(type, record = {}) {
       let that = this

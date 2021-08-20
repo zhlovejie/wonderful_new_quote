@@ -170,7 +170,7 @@
   </div>
 </template>
 <script>
-import { routineMaterialInfoPageList } from '@/api/routineMaterial'
+import { routineMaterialInfoList } from '@/api/routineMaterial'
 import {
   manageSupplier,
   SupplierRevocation,
@@ -639,9 +639,7 @@ export default {
     init() {
       let that = this
       that.searchAction()
-      routineMaterialInfoPageList({ current: 1, size: 10000, auditStatus: 3, isForbidden: 2 }).then(
-        (res) => (this.depList = res.data.records)
-      )
+      routineMaterialInfoList({ auditStatus: 3, isForbidden: 2 }).then((res) => (this.depList = res.data))
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0

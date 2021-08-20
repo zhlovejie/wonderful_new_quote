@@ -502,7 +502,7 @@
           <div class="__bd">
             <table>
               <tr>
-                <td>合作协议（非必填）</td>
+                <td>合作协议</td>
                 <td v-if="form.cooperationAgreement">
                   <a @click="delSee(form.cooperationAgreement)">查看</a>
                   <a-divider type="vertical" />
@@ -1140,7 +1140,7 @@
           <div class="__bd">
             <table>
               <tr>
-                <td>物流协议（非必签）</td>
+                <td>物流协议</td>
                 <td v-if="form.logisticsAgreement">
                   <a @click="delSee(form.logisticsAgreement)">查看</a>
                   <a-divider type="vertical" />
@@ -1148,7 +1148,7 @@
                 </td>
               </tr>
               <tr>
-                <td>技术协议（非必签）</td>
+                <td>技术协议</td>
                 <td v-if="form.technologyAgreement">
                   <a @click="delSee(form.technologyAgreement)">查看</a>
                   <a-divider type="vertical" />
@@ -1156,7 +1156,7 @@
                 </td>
               </tr>
               <tr>
-                <td>质量保证协议（非必签）</td>
+                <td>质量保证协议</td>
                 <td v-if="form.qensureAgreement">
                   <a @click="delSee(form.qensureAgreement)">查看</a>
                   <a-divider type="vertical" />
@@ -1164,7 +1164,7 @@
                 </td>
               </tr>
               <tr>
-                <td>战略合作协议（非必签）</td>
+                <td>战略合作协议</td>
                 <td v-if="form.scooperationAgreement">
                   <a @click="delSee(form.scooperationAgreement)">查看</a>
                   <a-divider type="vertical" />
@@ -1172,7 +1172,7 @@
                 </td>
               </tr>
               <tr>
-                <td>价格协议（非必签）</td>
+                <td>价格协议</td>
                 <td v-if="form.priceAgreement">
                   <a @click="delSee(form.priceAgreement)">查看</a>
                   <a-divider type="vertical" />
