@@ -109,7 +109,7 @@
           </tr>
 
           <tr>
-            <td>最新报价</td>
+            <td>最新报价(元)</td>
             <td>
               <a-form-item style="width: 50%; float: left">
                 <a-input-number
@@ -118,10 +118,9 @@
                   placeholder="输入最新报价"
                   :precision="2"
                   step="1"
-                  style="width: 80%"
+                  style="width: 100%"
                   v-decorator="['newPrice', { rules: [{ required: true, message: '请输入最新报价!' }] }]"
                 />
-                元
               </a-form-item>
             </td>
           </tr>
@@ -135,13 +134,13 @@
           <tr>
             <td>运费税率(%)</td>
             <td>
-              <a-form-item style="width: 49%; float: left">
+              <a-form-item style="width: 50%; float: left">
                 <a-input-number
                   :disabled="isDisabled"
                   :min="0"
                   placeholder="输入百分比"
                   step="1"
-                  style="width: 80%"
+                  style="width: 100%"
                   v-decorator="['freightRate', { rules: [{ required: true, message: '请输入百分比!' }] }]"
                 />
               </a-form-item>
@@ -150,13 +149,13 @@
           <tr>
             <td>最低采购数量</td>
             <td>
-              <a-form-item style="width: 49%; float: left">
+              <a-form-item style="width: 50%; float: left">
                 <a-input-number
                   :disabled="isDisabled"
                   :min="0"
                   placeholder="输入最低采购数量"
                   step="1"
-                  style="width: 80%"
+                  style="width: 100%"
                   v-decorator="['lowestNum', { rules: [{ required: true, message: '请输入最低采购数量!' }] }]"
                 />
               </a-form-item>
@@ -282,12 +281,22 @@ export default {
       }
       that.form.validateFields((err, values) => {
         if (!err) {
-          if (values.deliveryCycle > (that.Details.buyRequirement && that.Details.buyRequirement.maxDelivery) || 30) {
+          if (
+            (that.Details.buyRequirement &&
+              that.Details.buyRequirement.maxDelivery &&
+              values.deliveryCycle > that.Details.buyRequirement.maxDelivery) ||
+            values.deliveryCycle > 30
+          ) {
             return this.$message.error(
               `交货周期不能大于${(that.Details.buyRequirement && that.Details.buyRequirement.maxDelivery) || 30}天`
             )
           }
-          if (values.shelfLife > (that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180) {
+          if (
+            (that.Details.buyRequirement &&
+              that.Details.buyRequirement.minWarranty &&
+              values.shelfLife > that.Details.buyRequirement.minWarranty) ||
+            values.shelfLife > 180
+          ) {
             return this.$message.error(
               `质保期不能大于${(that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180}天`
             )

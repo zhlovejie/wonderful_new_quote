@@ -575,7 +575,7 @@
             <div class="__bd">
               <table>
                 <tr>
-                  <td>合作协议（非必填）</td>
+                  <td>合作协议</td>
                   <td v-if="!isEdit">
                     <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '合作协议')" />
                   </td>
@@ -1259,7 +1259,7 @@
             <div class="__bd">
               <table>
                 <tr>
-                  <td>物流协议（非必签）</td>
+                  <td>物流协议</td>
                   <td v-if="!isEdit">
                     <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '物流协议')" />
                   </td>
@@ -1270,7 +1270,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>技术协议（非必签）</td>
+                  <td>技术协议</td>
                   <td v-if="!isEdit">
                     <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '技术协议')" />
                   </td>
@@ -1281,7 +1281,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>质量保证协议（非必签）</td>
+                  <td>质量保证协议</td>
                   <td v-if="!isEdit">
                     <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '质量保证协议')" />
                   </td>
@@ -1292,7 +1292,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>战略合作协议（非必签）</td>
+                  <td>战略合作协议</td>
                   <td v-if="!isEdit">
                     <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '战略合作协议')" />
                   </td>
@@ -1303,7 +1303,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>价格协议（非必签）</td>
+                  <td>价格协议</td>
                   <td v-if="!isEdit">
                     <UploadFile ref="uploadFile" @change="(fileList) => fileChange(fileList, '价格协议')" />
                   </td>
@@ -1692,7 +1692,7 @@ export default {
         let detail = await getDetail({ id: record.id }).then((res) => res.data)
         that.$nextTick(() => {
           detail.paymentCycleId = Number(detail.paymentCycleId)
-          if (detail.supplierScale === 1) {
+          if (detail.supplierScale === 1 && detail.licenseUrl !== null) {
             let _sp = detail.licenseUrl.split(',')
             that.$refs.UploadF.setFiles(
               _sp.map((i, index) => {
@@ -1730,22 +1730,23 @@ export default {
       } else {
         this.$refs.ruleForm.validate((valid) => {
           if (valid) {
-            if (that.form.supplierScale == 1) {
+            let params = { ...that.form }
+            if (params.supplierScale == 1) {
               let react = that.$refs.UploadF.Throw()
               let hasImgs = react.length > 0
               if (!hasImgs) {
                 that.$message.error('请上传营业执照')
                 return
               } else {
-                that.form.licenseUrl = react.map((i) => i.url).toString(',')
+                params.licenseUrl = react.map((i) => i.url).toString(',')
               }
             }
-            if (that.form.settlementMode == 0) {
+            if (params.settlementMode == 0) {
               let ishas =
-                (Number(that.form.padvanceProportion) || 0) +
-                  (Number(that.form.ccollectProportion) || 0) +
-                  (Number(that.form.ccommodityProportion) || 0) +
-                  (Number(that.form.warrantyProportion) || 0) ===
+                (Number(params.padvanceProportion) || 0) +
+                  (Number(params.ccollectProportion) || 0) +
+                  (Number(params.ccommodityProportion) || 0) +
+                  (Number(params.warrantyProportion) || 0) ===
                 100
                   ? true
                   : false
@@ -1755,20 +1756,20 @@ export default {
                 return
               }
             }
-            if (that.form.settlementMode === 1) {
-              let spt3 = that.Payment.find((i) => +i.id === +that.form.paymentCycleId)
-              that.form.paymentCycle = spt3.text
-              that.form.padvanceType = 0
-              that.form.ccommodityType = 0
-              that.form.ccollectType = 0
-              that.form.warrantyType = 0
+            if (params.settlementMode === 1) {
+              let spt3 = that.Payment.find((i) => +i.id === +params.paymentCycleId)
+              params.paymentCycle = spt3.text
+              params.padvanceType = 0
+              params.ccommodityType = 0
+              params.ccollectType = 0
+              params.warrantyType = 0
             }
 
-            if (that.form.settlementMode == 0) {
-              that.form.padvanceType = that.c1.length === 0 ? 0 : that.c1.join()
-              that.form.ccommodityType = that.c2.length === 0 ? 0 : that.c2.join()
-              that.form.ccollectType = that.c3.length === 0 ? 0 : that.c3.join()
-              that.form.warrantyType = that.c4.length === 0 ? 0 : that.c4.join()
+            if (params.settlementMode == 0) {
+              params.padvanceType = that.c1.length === 0 ? 0 : that.c1.join()
+              params.ccommodityType = that.c2.length === 0 ? 0 : that.c2.join()
+              params.ccollectType = that.c3.length === 0 ? 0 : that.c3.join()
+              params.warrantyType = that.c4.length === 0 ? 0 : that.c4.join()
             }
 
             that.brandList = that.brandList.map((item) => {
@@ -1792,21 +1793,21 @@ export default {
                   }) || [],
               }
             })
-            that.form.status = type
-            let spt1 = that.Warehouse.find((i) => i.id === that.form.sincerityLevelId)
-            that.form.sincerityLevel = spt1.text
+            params.status = type
+            let spt1 = that.Warehouse.find((i) => i.id === params.sincerityLevelId)
+            params.sincerityLevel = spt1.text
 
-            let spt2 = that.Position.find((i) => i.id === that.form.establishYearId)
-            that.form.establishYear = spt2.text
+            let spt2 = that.Position.find((i) => i.id === params.establishYearId)
+            params.establishYear = spt2.text
 
-            that.form.manageSupplierMaterials = that.brandList
-            that.form.endTime = moment(that.form.endTime).format('YYYY-DD-MM hh:mm:ss')
+            params.manageSupplierMaterials = that.brandList
+            params.endTime = moment(that.endTime).format('YYYY-DD-MM hh:mm:ss')
             if (that.type === 'edit-salary' || that.type === 'mation') {
-              that.form.id = that.record.id
+              params.id = that.record.id
             }
             if (that.type === 'add' || that.type === 'edit-salary' || that.type === 'mation') {
               that.spinning = true
-              saveAndUpdate(this.form)
+              saveAndUpdate(params)
                 .then((res) => {
                   if (res.code === 200) {
                     this.visible = false

@@ -736,6 +736,15 @@ export function routineMaterialInfoStartUsing(parameter) {
   })
 }
 /**列表  */
+export function routineMaterialInfoList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialInfo/list',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**列表  */
 export function routineMaterialInfoPageList(parameter) {
   return axios({
     baseURL: materialBaseUrl,

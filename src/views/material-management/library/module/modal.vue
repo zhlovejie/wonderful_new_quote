@@ -16,7 +16,7 @@
           <!-- 供应商 -->
           <tr v-if="isSupplier">
             <td>当前供应商</td>
-            <td>{{ Details.supplierId === '0' ? '无限' : Details.supplierName }}</td>
+            <td>{{ Details.supplierId === '0' ? '不限供应商' : Details.supplierName }}</td>
           </tr>
           <tr v-if="isSupplier">
             <td>申请变更为</td>
@@ -33,7 +33,7 @@
                     item.scompanyName
                   }}</a-select-option>
                 </a-select>
-                <span v-else>{{ Details.csupplierName === '' ? '无限' : Details.csupplierName }}</span>
+                <span v-else>{{ Details.csupplierName === '' ? '不限' : Details.csupplierName }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -42,9 +42,10 @@
             <td>当前品牌</td>
             <td v-if="!isDisabled">
               {{
-                Details.buyRequirementBrands.length == 0
+                Details.buyRequirementBrands && Details.buyRequirementBrands.length == 0
                   ? '品牌型号不限'
-                  : Details.buyRequirementBrands
+                  : Details.buyRequirementBrands &&
+                    Details.buyRequirementBrands
                       .map((u) => u.brandName + '/' + u.buyRequirementBrandModels.map((i) => i.modelName))
                       .join(',')
               }}
@@ -57,22 +58,22 @@
             <td>申请变更为</td>
             <td v-if="!isDisabled">
               <a-form-item style="width: 40%; float: left">
-                <a-select v-model="brand" @change="depChange" allowClear>
+                <a-select v-model="brand" placeholder="请选择品牌" @change="depChange" allowClear>
                   <a-select-option :value="0">不限品牌</a-select-option>
                   <a-select-option v-for="item in brandList" :key="item.id" :value="item.id">{{
                     item.brandName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item style="width: 40%; float: left">
-                <a-select allowClear v-model="modList" mode="multiple">
+              <a-form-item v-if="brand !== 0 && brand !== undefined && brand !== ''" style="width: 40%; float: left">
+                <a-select allowClear placeholder="请选择型号" v-model="modList" mode="multiple">
                   <a-select-option :value="0">不限型号</a-select-option>
                   <a-select-option v-for="item in modelList" :key="item.id" :value="item.id">{{
                     item.modelName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item style="width: 10%; float: left">
+              <a-form-item style="width: 10%; float: left" v-if="brand !== 0 && brand !== undefined && brand !== ''">
                 <a-button type="primary" @click="Procureadd()">新增</a-button>
               </a-form-item>
             </td>
@@ -153,9 +154,9 @@
           <tr v-if="isInvoice">
             <td>当前类型</td>
             <td v-if="!isDisabled">
-              {{ Details.invoiceType === 0 ? '无限' : Details.invoiceType === 1 ? '增值税专用发票' : '普通发票' }}
+              {{ Details.invoiceType === 0 ? '不限' : Details.invoiceType === 1 ? '增值税专用发票' : '普通发票' }}
             </td>
-            <td v-else>{{ Details.type === 0 ? '无限' : Details.type === 1 ? '增值税专用发票' : '普通发票' }}</td>
+            <td v-else>{{ Details.type === 0 ? '不限' : Details.type === 1 ? '增值税专用发票' : '普通发票' }}</td>
           </tr>
           <tr v-if="isInvoice">
             <td>申请变更为</td>
@@ -167,7 +168,7 @@
                   <a-select-option :value="2">普通发票</a-select-option>
                 </a-select>
                 <span v-else>{{
-                  Details.ctype === 0 ? '无限' : Details.ctype === 1 ? '增值税专用发票' : '普通发票'
+                  Details.ctype === 0 ? '不限' : Details.ctype === 1 ? '增值税专用发票' : '普通发票'
                 }}</span>
               </a-form-item>
             </td>
@@ -377,13 +378,23 @@ export default {
     },
   },
   methods: {
+    procuerDelete(index) {
+      this.buyRequirementBrands = this.buyRequirementBrands.filter((i) => i.brandId !== index)
+    },
     Procureadd() {
-      let react = this.modelList.filter((i) => this.modList.includes(i.id))
+      let arrs = []
+      let ret = this.modList.toString()
+      if (ret === '0') {
+        arrs = [...this.modelList]
+      } else {
+        let as = this.modelList.filter((i) => this.modList.includes(i.id))
+        arrs = [...as]
+      }
       let arr = this.brandList.find((u) => u.id === this.brand)
       this.buyRequirementBrands.push({
         brandName: arr.brandName,
         brandId: arr.id,
-        changeBrandModelInfos: react,
+        changeBrandModelInfos: arrs,
       })
     },
 
@@ -436,7 +447,6 @@ export default {
       //型号
       listManageBrandModel({
         materialId: this.Details.materialId,
-        supplierId: this.Details.supplierId,
         brandId: depId,
       }).then((res) => (this.modelList = res.data))
     },
@@ -453,10 +463,13 @@ export default {
             // 供应商
             values.supplierId = this.Details.supplierId
             values.supplierName = this.Details.supplierName
-
-            let reat = this.supplierList.filter((i) => values.csupplierId.includes(i.id))
-            values.csupplierName = reat.map((i) => i.scompanyName).join(',')
-            values.csupplierId = values.csupplierId.toString() || undefined
+            if (values.csupplierId && values.csupplierId.length > 0) {
+              let reat = this.supplierList.filter((i) => values.csupplierId.includes(i.id))
+              values.csupplierName = reat.map((i) => i.scompanyName).join(',')
+            }
+            // let reat = this.supplierList.filter((i) => values.csupplierId.includes(i.id))
+            // values.csupplierName = reat.map((i) => i.scompanyName).join(',')
+            values.csupplierId = (values.csupplierId && values.csupplierId.toString()) || '0'
           }
           //品牌型号
           if (this.isbrand) {
@@ -525,6 +538,7 @@ export default {
                 this.visible = false
                 that.$message.info(res.msg)
                 this.$emit('filts')
+                this.buyRequirementBrands = []
               } else {
                 this.$message.error(res.msg)
               }
@@ -535,6 +549,8 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.buyRequirementBrands = []
+      this.$emit('filts')
     },
     submitAction(opt) {
       let that = this

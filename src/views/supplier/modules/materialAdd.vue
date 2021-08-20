@@ -23,7 +23,7 @@
   </a-modal>
 </template>
 <script>
-import { routineMaterialInfoTwoTierTreeList, routineMaterialInfoPageList } from '@/api/routineMaterial'
+import { routineMaterialInfoTwoTierTreeList, routineMaterialInfoList } from '@/api/routineMaterial'
 import moment from 'moment'
 export default {
   components: {},
@@ -134,20 +134,18 @@ export default {
     search(params = {}) {
       const that = this
       let paginationParam = {
-        current: 1,
-        size: 100,
         auditStatus: 3,
         isForbidden: 2,
       }
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
-      routineMaterialInfoPageList(_searchParam)
+      routineMaterialInfoList(_searchParam)
         .then((res) => {
           that.loading = false
-          if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
+          if (!(res && res.data && res.data && Array.isArray(res.data))) {
             return
           }
-          that.dataSource = res.data.records
+          that.dataSource = res.data
         })
         .catch((err) => {
           console.error(err)
