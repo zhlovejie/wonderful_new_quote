@@ -90,6 +90,13 @@
       >
         {{ text | moneyFormatNumber }}
       </div>
+      <div
+        slot="nowPrice"
+        slot-scope="text, record, index"
+      >
+        <span style="color:red;">{{ text | moneyFormatNumber }}</span>
+      </div>
+
 
       <div
         slot="createdName"
@@ -178,9 +185,14 @@ const columns = [
     scopedSlots: { customRender: 'nakedPrice' }
   },
   {
-    title: '最新报价',
+    title: '抢单报价',
     dataIndex: 'newPrice',
     scopedSlots: { customRender: 'newPrice' }
+  },
+  {
+    title: '最新报价',
+    dataIndex: 'nowPrice',
+    scopedSlots: { customRender: 'nowPrice' }
   },
   {
     title: '物料税率(%)',
@@ -237,7 +249,6 @@ export default {
   },
   data() {
     return {
-      columns,
       loading: false,
       dataSource: [],
       pagination: {
@@ -269,6 +280,13 @@ export default {
     },
     btnMulEnabled() {
       return this.selectedRows.length > 0
+    },
+    columns(){
+      // let tagKey = +this.$$attrs.tagKey
+      // if(tagKey === 7 || tagKey === 8){
+
+      // }
+      return columns
     }
   },
   methods: {

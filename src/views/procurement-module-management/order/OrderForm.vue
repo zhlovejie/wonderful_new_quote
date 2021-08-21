@@ -18,30 +18,26 @@
         :wrapper-col="wrapperCol"
         class="ask-price-form-wrapper"
       >
-        <h3>采购单号{{requestApply.requestApplyNum}}</h3>
+        <h3>采购单号{{detail.requestApplyNum}}</h3>
         <div class="card-item">
           <div class="__hd">采购需求详情</div>
           <div class="__bd">
             <table class="custom-table custom-table-border">
               <tr>
-                <td style="width:150px;">需求单号</td>
-                <td >
-                  {{requestApply.requestApplyNum}}
-                </td>
                 <td style="width:150px;">物料名称</td>
-                <td >{{requestApply.materialName}}</td>
+                <td colspan="3">{{detail.materialName}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">需求数量</td>
-                <td >{{requestApply.requestNum}}</td>
+                <td >{{detail.requestNum}}</td>
                 <td style="width:150px;">需求日期</td>
-                <td >{{requestApply.requestTime}}</td>
+                <td >{{detail.requestTime}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">需求部门</td>
-                <td>{{requestApply.applyDepName}}</td>
+                <td>{{detail.applyDepName}}</td>
                 <td style="width:150px;">申请人</td>
-                <td>{{requestApply.proposerName}}</td>
+                <td>{{detail.proposerName}}</td>
               </tr>
             </table>
           </div>
@@ -54,7 +50,7 @@
               <tr>
                 <td style="width:150px;">供应商名称</td>
                 <td colspan="3">
-                  {{detail.supplierName}}
+                  {{detail.detail && detail.detail.supplierName}}
                 </td>
               </tr>
               <tr>
@@ -63,15 +59,15 @@
               </tr>
               <tr>
                 <td style="width:150px;">规格型号</td>
-                <td colspan="3">{{detail.materialModelType}}</td>
+                <td colspan="3">{{detail.detail.materialModelType}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">包装方式</td>
-                <td>{{detail.packageCount}}/{{detail.packageType}}</td>
+                <td>{{detail.detail.packageCount}}/{{detail.detail.packageType}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">品牌型号</td>
-                <td>{{detail.model}}</td>
+                <td>{{detail.detail.model}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">最新采购单价</td>
@@ -93,15 +89,15 @@
               </tr>
               <tr>
                 <td style="width:150px;">结算方式</td>
-                <td>{{ {0:'现款现货',1:'账期结算'}[detail.settlementMode] }}</td>
+                <td>{{ {0:'现款现货',1:'账期结算'}[detail.detail.settlementMode] }}</td>
               </tr>
               <tr>
                 <td style="width:150px;">发票类型</td>
-                <td>{{  {1:'不限',2:'增值税专用发票',3:'普通发票'}[detail.invoiceType]}}</td>
+                <td>{{  {1:'不限',2:'增值税专用发票',3:'普通发票'}[detail.detail.invoiceType]}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">裸价标准</td>
-                <td>{{ {1:'含税运',2:'含税不含运'}[detail.nakedPrice] }}</td>
+                <td>{{ {1:'含税运',2:'含税不含运'}[detail.detail.nakedPrice] }}</td>
               </tr>
               <tr>
                 <td style="width:150px;">最新报价</td>
@@ -122,23 +118,23 @@
               </tr>
               <tr>
                 <td style="width:150px;">物料税率</td>
-                <td>{{`${detail.materialRate}%`}}</td>
+                <td>{{`${detail.detail.materialRate}%`}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">运费税率</td>
-                <td>{{`${detail.freightRate}%`}}</td>
+                <td>{{`${detail.detail.freightRate}%`}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">最低采购数量</td>
-                <td>{{detail.lowestNum}}</td>
+                <td>{{detail.detail.lowestNum}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">交货周期</td>
-                <td>{{`${detail.deliveryCycle}天`}}</td>
+                <td>{{`${detail.detail.deliveryCycle}天`}}</td>
               </tr>
               <tr>
                 <td style="width:150px;">保质期</td>
-                <td>{{`${detail.shelfLife}天`}}</td>
+                <td>{{`${detail.detail.shelfLife}天`}}</td>
               </tr>
             </table>
           </div>
@@ -207,6 +203,7 @@
 </template>
 <script>
 import { orderAdd, quotationDetail, quotationDetailForUpdate,getOrderLastPrice } from '@/api/procurementModuleManagement'
+
 import UploadFile from './UploadFile'
 import moment from 'moment'
 export default {
@@ -232,11 +229,16 @@ export default {
       visible: false,
       spinning: false,
       record: {},
-      requestApply: {},
-      detail: {},
+      detail: {
+        detail:{},
+        objections:[],
+        history:[]
+      },
+      detailUpdate:{},
       uploadConfig: {
         maxFileCount: 1
       },
+      materialRequirement:{}, //物料要求
     }
   },
   computed: {
@@ -281,6 +283,7 @@ export default {
   },
   methods: {
     async query(type, record) {
+      debugger
       const that = this
       that.type = type
       that.record = { ...record }
@@ -299,19 +302,19 @@ export default {
               that.$message.error(err)
               return null
             })
+
         ])
         console.log(d1,d2)
         if (d1 === null || d2 === null) {
           return
         }
-        let { details,history,requestApply} = d1
-        // let detail = Array.isArray(details) && details.length > 0 ? details[details.length - 1] : {}
-        // detail = {...detail,...d2}
-        that.detail = d2
-        that.requestApply = requestApply
+
+        that.detail = d1
+        that.detailUpdate = d2
+
 
         //根据物料id获取该物料最新采购价  目前尚未使用
-        let newLastPrice = await getOrderLastPrice({materialId:requestApply.materialId}).then(res => {
+        let newLastPrice = await getOrderLastPrice({materialId:that.detail.materialId}).then(res => {
           if(res && res.code === 200){
             return res.data || 0
           }else{
@@ -325,8 +328,8 @@ export default {
 
         that.form = {
           ...that.form,
-          requestId: requestApply.id,
-          materialId:requestApply.materialId,
+          requestId: that.detail.raId,
+          materialId:that.detail.materialId,
           lastPrice:newLastPrice,
           newPrice:d2.newPrice,
           packMethod:d2.packageType,
@@ -335,7 +338,7 @@ export default {
           supplierName:d2.supplierName,
           quotationId:d2.id,
           deliveryDate:moment(d2.modifyTime).add('days',+d2.deliveryCycle),
-          amount: requestApply.requestNum * newLastPrice
+          amount: that.detail.requestNum * newLastPrice
         }
 
     },
