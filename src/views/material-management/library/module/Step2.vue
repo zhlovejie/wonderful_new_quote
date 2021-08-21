@@ -51,7 +51,6 @@
         v-if="normalAddForm.isAdd || normalAddForm.isEdit"
       >
         <a-button
-          v-if="normalAddForm.isAdd"
           type="primary"
           @click="() => onSubmit(1)"
         >
@@ -94,7 +93,6 @@ import {
 } from '@/api/routineMaterial'
 
 export default {
-  name: 'material-rule-management-library-normal-step2',
   inject: ['normalAddForm'],
   components: {
     BaseData,

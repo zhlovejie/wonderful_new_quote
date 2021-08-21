@@ -11,7 +11,7 @@
     :footer="null"
     :forceRender="true"
   >
-    <div v-if="isAdd">
+    <div v-if="isAdd || isEdit">
       <template v-if="isNormal">
       <StepOne
         v-if="step === 1"
@@ -30,7 +30,7 @@
         @change="stepTwoChange"
       />
     </div>
-    <div v-else-if="isView || isEdit">
+    <div v-else-if="isView ">
       <StepTwo @change="stepTwoChange" />
     </div>
     <div v-else>
@@ -114,7 +114,9 @@ export default {
       let isEdit = type === 'edit'
       let isView = type === 'view'
       if (isAdd) {
+        that.step = 1
       } else if (isView || isEdit) {
+        that.step = 2
         let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
         let accessory = await __APIAccessory({ materialId: record.id }).then(res => res.data)
 
@@ -142,6 +144,7 @@ export default {
       }
     },
     stepTwoChange(type) {
+      debugger
       const that = this
       if(type === 'ok'){
         that.handleCancel()

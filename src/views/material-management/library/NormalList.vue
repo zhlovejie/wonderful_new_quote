@@ -19,7 +19,6 @@
             :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
-            :defaultExpandAll="true"
             @select="handleClick"
             :expandedKeys="expandedKeys"
             :autoExpandParent="autoExpandParent"
@@ -61,6 +60,15 @@
               />
             </a-form-item>
             <a-form-item>
+              <a-input
+                placeholder="原K3物料代码"
+                v-model="queryParam.k3Code"
+                allowClear
+                style="width: 150px"
+              />
+            </a-form-item>
+
+            <a-form-item>
               <a-button
                 type="primary"
                 icon="search"
@@ -82,7 +90,7 @@
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:edit')">
               <a-button
-                :disabled="!canEdit"
+
                 type="primary"
                 @click="doAction('edit', null)"
               >修改</a-button>
@@ -241,11 +249,16 @@ import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import SearchForm from './module/SearchForm'
 
 const columns = [
+  // {
+  //   align: 'center',
+  //   title: '物料代码',
+  //   dataIndex: 'materialCode',
+  //   scopedSlots: { customRender: 'materialCode' }
+  // },
   {
     align: 'center',
-    title: '物料代码',
-    dataIndex: 'materialCode',
-    scopedSlots: { customRender: 'materialCode' }
+    title: '原K3物料代码',
+    dataIndex: 'k3Code',
   },
   {
     align: 'center',
@@ -280,6 +293,11 @@ const columns = [
     align: 'center',
     title: '录入人',
     dataIndex: 'createdName'
+  },
+  {
+    align: 'center',
+    title: '录入时间',
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
@@ -385,6 +403,7 @@ export default {
   },
   methods: {
     onExpand(expandedKeys) {
+      console.log(arguments)
       this.expandedKeys = expandedKeys
       this.autoExpandParent = false
     },
@@ -505,6 +524,8 @@ export default {
           that.orgTree = [root]
           that.dataList = that.generateList(that.orgTree)
 
+          that.expandedKeys = ['0']
+
           if (String(that.parentId) === '0') {
             that.parentItem = root
           }
@@ -581,6 +602,7 @@ export default {
       let ruleName = item.newRuleName || item.ruleName
       let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
       obj.title = `${ruleName}${showCode}`
+      obj.sourceTitle = ruleName
 
       obj.value = String(item.id)
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)

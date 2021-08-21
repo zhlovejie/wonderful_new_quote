@@ -262,8 +262,9 @@ export default {
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let ruleId = that.form.parentId
-
-          let materialName = that.getNode(ruleId).title
+          debugger
+          let dddd = that.getNode(ruleId)
+          let materialName = that.getNode(ruleId).sourceTitle
           //成品物料库 物料代码不显示点
           let materialCode = that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
           // 去除物料代码的0
@@ -417,6 +418,7 @@ export default {
       let obj = {}
       obj.key = String(item.id)
       obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      obj.sourceTitle = item.newRuleName || item.ruleName
       obj.value = String(item.id)
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId

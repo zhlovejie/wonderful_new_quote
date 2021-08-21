@@ -34,7 +34,7 @@
             >
               <a-input
                 v-model="form.materialName"
-                :disabled="!normalAddForm.isAdd"
+                :disabled="normalAddForm.isView"
               />
             </a-form-model-item>
           </td>
@@ -280,7 +280,7 @@ export default {
       that.$nextTick(() => {
         that.form = {
           ...that.form,
-          useStatus:1,
+          useStatus:2,
           needCheck:2
         }
       })
