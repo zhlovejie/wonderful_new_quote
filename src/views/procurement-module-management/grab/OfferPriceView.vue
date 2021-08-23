@@ -128,31 +128,49 @@
           size="small"
           v-if="detail.detail.exception"
         >
-          <table>
-            <!-- <tr>
-              <td>抢单报价</td>
-              <td>报价单价</td>
-              <td>{{`${detail.detail.newPrice}` | moneyFormatNumber}}</td>
-              <td>报价人</td>
-              <td>{{`${detail.detail.createdDepName} / ${detail.detail.createdName}`}}</td>
-              <td>报价时间</td>
-              <td>{{`${detail.detail.createdTime}`}}</td>
-            </tr> -->
-            <tr>
-              <td>最新报价</td>
-              <td>报价单价</td>
-              <td>{{`${detail.detail.exception.newPrice}` | moneyFormatNumber}}</td>
-              <td>报价人</td>
-              <td>{{`${detail.detail.exception.npDepName} / ${detail.detail.exception.npCreater}`}}</td>
-              <td>报价时间</td>
-              <td>{{`${detail.detail.exception.npCreateTime}`}}</td>
-            </tr>
-          </table>
+          <a-row :gutter="[16,16]">
+            <a-col :span="6">
+              <p>报价单价：{{`${detail.detail.exception.newPrice}` | moneyFormatNumber}}</p>
+            </a-col>
+            <a-col :span="6">
+              <p>报价部门：{{`${detail.detail.exception.npDepName}`}}</p>
+            </a-col>
+            <a-col :span="6">
+              <p>报价人：{{`${detail.detail.exception.npCreater}`}}</p>
+            </a-col>
+            <a-col :span="6">
+              <p>报价时间：{{`${detail.detail.exception.npCreateTime}`}}</p>
+            </a-col>
+          </a-row>
 
-          <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[detail.detail.exception.disposeType] }`}}</p>
-          <p>抢单时长：{{`${detail.detail.exception.grabTime} 分钟`}} 公示时长：{{`${detail.detail.exception.publicityTime} 分钟`}}</p>
-          <p>处理理由：{{`${detail.detail.exception.reason}`}}</p>
-          <p>处理人：{{`${detail.detail.exception.processor}`}} 处理时间：{{`${detail.detail.exception.reason}`}}</p>
+          <a-row :gutter="[16,16]" v-if="detail.detail.exception.disposeType">
+            <a-col :span="6">
+              <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[detail.detail.exception.disposeType] }`}}</p>
+            </a-col>
+            <template v-if="+detail.detail.exception.disposeType === 1">
+              <a-col :span="6">
+                <p>抢单时长：{{`${detail.detail.exception.grabTime} 分钟`}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>公示时长：{{`${detail.detail.exception.publicityTime} 分钟`}}</p>
+              </a-col>
+            </template>
+
+            <a-col :span="24">
+              <p>处理理由：{{`${detail.detail.exception.reason}`}}</p>
+            </a-col>
+            <a-col :span="6">
+              <p>处理人：{{`${detail.detail.exception.processor}`}}</p>
+            </a-col>
+            <a-col :span="6">
+              <p>处理时间：{{`${detail.detail.exception.createdTime || '无'}`}}</p>
+            </a-col>
+          </a-row>
+          <a-row v-else :gutter="[16,16]">
+            <a-col :span="24">
+              <p style="color:red;">该异常尚未处理</p>
+            </a-col>
+          </a-row>
         </a-card>
       </template>
 
@@ -277,31 +295,49 @@
             size="small"
             v-if="item.exception"
           >
-            <table>
-              <!-- <tr>
-                <td>抢单报价</td>
-                <td>报价单价</td>
-                <td>{{`${detail.detail.newPrice}` | moneyFormatNumber}}</td>
-                <td>报价人</td>
-                <td>{{`${detail.detail.createdDepName} / ${detail.detail.createdName}`}}</td>
-                <td>报价时间</td>
-                <td>{{`${detail.detail.createdTime}`}}</td>
-              </tr> -->
-              <tr>
-                <td>最新报价</td>
-                <td>报价单价</td>
-                <td>{{`${item.exception.newPrice}` | moneyFormatNumber}}</td>
-                <td>报价人</td>
-                <td>{{`${item.exception.npDepName} / ${item.exception.npCreater}`}}</td>
-                <td>报价时间</td>
-                <td>{{`${item.exception.npCreateTime}`}}</td>
-              </tr>
-            </table>
 
-            <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[item.exception.disposeType] }`}}</p>
-            <p>抢单时长：{{`${item.exception.grabTime} 分钟`}} 公示时长：{{`${item.exception.publicityTime} 分钟`}}</p>
-            <p>处理理由：{{`${item.exception.reason}`}}</p>
-            <p>处理人：{{`${item.exception.processor}`}} </p>
+            <a-row :gutter="[16,16]">
+              <a-col :span="6">
+                <p>报价单价：{{`${item.exception.newPrice}` | moneyFormatNumber}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>报价部门：{{`${item.exception.npDepName}`}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>报价人：{{`${item.exception.npCreater}`}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>报价时间：{{`${item.exception.npCreateTime}`}}</p>
+              </a-col>
+            </a-row>
+
+            <a-row :gutter="[16,16]" v-if="item.exception.disposeType">
+              <a-col :span="6">
+                <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[item.exception.disposeType] }`}}</p>
+              </a-col>
+              <template v-if="+item.exception.disposeType === 1">
+              <a-col :span="6">
+                <p>抢单时长：{{`${item.exception.grabTime} 分钟`}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>公示时长：{{`${item.exception.publicityTime} 分钟`}}</p>
+              </a-col>
+              </template>
+              <a-col :span="24">
+                <p>处理理由：{{`${item.exception.reason}`}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>处理人：{{`${item.exception.processor}`}}</p>
+              </a-col>
+              <a-col :span="6">
+                <p>处理时间：{{`${item.exception.createdTime || '无'}`}}</p>
+              </a-col>
+            </a-row>
+            <a-row v-else :gutter="[16,16]">
+              <a-col :span="24">
+                <p style="color:red;">该异常尚未处理</p>
+              </a-col>
+            </a-row>
           </a-card>
         </div>
       </template>
@@ -589,6 +625,10 @@ export default {
 .lbl {
   color: #999;
   text-align: right;
+}
+p{
+  margin: 0;
+  padding: 0;
 }
 </style>
 

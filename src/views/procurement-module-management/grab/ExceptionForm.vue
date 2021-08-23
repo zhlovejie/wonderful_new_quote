@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="报价异常单处理异常"
+    title="报价异常单处理"
     :width="650"
     :visible="visible"
     :destroyOnClose="true"
@@ -132,8 +132,8 @@ export default {
         that.spinning = false
         that.detail = res.data
 
-        if(that.detail.exception){
-          that.form = {...that.form,id:that.detail.exception.id}
+        if(that.detail.detail.exception){
+          that.form = {...that.form,id:that.detail.detail.exception.id}
         }else{
           console.error('that.detail.exception is not exists.')
         }

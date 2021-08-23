@@ -50,14 +50,6 @@
               <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
                 {{item.supplierName}}
               </a-select-option>
-
-
-                <!-- <a-select-option :value="1">
-                  测试供应商1
-                </a-select-option>
-                <a-select-option :value="2">
-                  测试供应商1
-                </a-select-option> -->
               </a-select>
             </a-form-model-item>
           </template>
@@ -89,7 +81,13 @@
           >
             <a-row>
               <a-col :span="11">
-                <a-select style="width:100%;" allowClear v-model="form.packageType" placeholder="包装类型">
+                <a-select
+                  style="width:100%;"
+                  allowClear
+                  v-model="form.packageType"
+                  placeholder="包装类型"
+                  :disabled="form.packageType"
+                >
                   <a-select-option
                     v-for="item in packingType"
                     :key="item.text"
@@ -108,6 +106,7 @@
                   :min="0"
                   :step="1"
                   :precision="0"
+                  :disabled="form.packageCount"
                 />
               </a-col>
             </a-row>
@@ -313,6 +312,8 @@ import {
   quotationCheckSupplier,
   getOrderLastPrice
 } from '@/api/procurementModuleManagement'
+import { getBuyRequirement } from '@/api/routineMaterial'
+import { getSupplierOffer } from '@/api/routineMaterial'
 import { getDictionary } from '@/api/common'
 export default {
   data() {
@@ -321,21 +322,22 @@ export default {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
-        hasSupplier: 1,
-        packageCount: undefined,
-        model: '',
-        invoiceType: 1,
-        nakedPrice: 1,
-        newPrice: 0,
-        materialRate: 0,
-        freightRate: 0,
-        lowestNum: 1,
-        deliveryCycle: 30,
-        shelfLife: 180,
-        supplierId: undefined,
-        email: undefined,
-        supplierName: undefined,
-        source: 1
+        // hasSupplier: 1,
+        // packageCount: undefined,
+        // model: '',
+        // invoiceType: 1,
+        // nakedPrice: 1,
+        // newPrice: 0,
+        // materialRate: 0,
+        // freightRate: 0,
+        // lowestNum: 1,
+        // deliveryCycle: 30,
+        // shelfLife: 180,
+        // supplierId: undefined,
+        // email: undefined,
+        // supplierName: undefined,
+        source: 1,
+
       },
       rules: {
         // lastPrice:[{ required: true, message: '请输入最新采购单价' }],
@@ -363,14 +365,15 @@ export default {
       detail: {},
       detailUpdate: {},
       supplierList:[],
-      packingType:[]
+      packingType:[],
+      materialRequirement:{},
     }
   },
   computed: {
     modalTitle() {
       const type = this.type
       const t = type === 'add' ? '新增' : type === 'edit' ? '修改' : type === 'view' ? '查看' : '审批'
-      return `${t}物料报价单`
+      return `${t}报价单`
     },
     isAdd() {
       return this.type === 'add'
@@ -404,7 +407,8 @@ export default {
         )
       )
       return btn
-    }
+    },
+
   },
   methods: {
     async query(type, record) {
@@ -451,7 +455,24 @@ export default {
         //根据物料查询相应的供应商列表
         quotationSupplierList({materialId:that.record.materialId}).then(res => {
           that.supplierList = res.data
+          that.form = {
+            ...that.form,
+            hasSupplier:that.supplierList.length > 0 ? 1 : 2
+          }
         })
+
+        let materialRequirement = await getBuyRequirement({ materialId: that.record.materialId })
+        .then(res => res.data)
+        .catch(err => {
+          console.log(err)
+          return null
+        })
+        //getSupplierOffer({ materialId: type.materialId, supplierId: record.id })
+
+        if(materialRequirement === null){
+          let msg = `物料名称：${that.record.materialName} 要求获取失败`
+          that.$message.error(msg);
+        }
 
         //根据物料id获取该物料最新采购价  目前尚未使用
         let newLastPrice = await getOrderLastPrice({materialId:that.record.materialId}).then(res => {
@@ -465,8 +486,29 @@ export default {
           that.$message.info(`获取物料最新采购单价失败:${err}`)
           return 0
         })
-
-        that.form = {...that.form,lastPrice:newLastPrice}
+        if(materialRequirement){
+          materialRequirement.
+          that.form = {
+            ...that.form,
+            // supplierId:materialRequirement.supplierId,
+            lastPrice:newLastPrice,
+            invoiceType:materialRequirement.invoiceType, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
+            deliveryCycle:materialRequirement.maxDelivery,//交货期
+            lowestNum:materialRequirement.maxPurchase,//采购量
+            shelfLife:materialRequirement.minWarranty,//最短质保期
+            nakedPrice:materialRequirement.nakedPrice,//裸价的标准(0为含运费，1为不含运费)
+            packageType:materialRequirement.packMethod,//包装方式
+            // packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
+            packageCount:materialRequirement.pageNum,//包内数量
+            newPrice:materialRequirement.price,//最新采购价格
+            materialRate:materialRequirement.taxRate,//物料税率
+          }
+        }else{
+          that.form = {
+            ...that.form,
+            lastPrice:newLastPrice,
+          }
+        }
       }
     },
     handleSubmit() {

@@ -112,7 +112,8 @@ export default {
       let extendsParams = {current:1}
       if(case1){
         // forOrder 是否为待采购列表：1是，2否
-        extendsParams = {...extendsParams,queryType:3,result:1,storageStatus:undefined,forOrder:1}
+        // extendsParams = {...extendsParams,queryType:3,result:1,storageStatus:undefined,forOrder:1}
+        extendsParams = {...extendsParams,queryType:undefined,result:undefined,storageStatus:undefined,forOrder:1}
       }else if(case2){
         extendsParams = {...extendsParams}
       }

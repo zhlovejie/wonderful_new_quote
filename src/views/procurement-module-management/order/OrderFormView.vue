@@ -121,6 +121,7 @@
               <tr>
                 <td style="width:150px;">合同条款</td>
                 <td>
+                  <div v-if="detail.fileUrl">
                   <a
                     href="javascript:void(0);"
                     @click="docView(detail.fileUrl)"
@@ -130,6 +131,8 @@
                     style="margin-left:20px;"
                     v-download="detail.fileUrl"
                   >下载合同</a>
+                  </div>
+                  <div v-else>未上传合同信息</div>
                 </td>
               </tr>
             </table>
