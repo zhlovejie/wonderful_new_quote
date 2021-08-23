@@ -53,6 +53,7 @@
         <a-button
           type="primary"
           @click="() => onSubmit(1)"
+          v-if="normalAddForm.isAdd"
         >
           上一步
         </a-button>

@@ -447,9 +447,9 @@ export default {
           let label = `${ruleName}(${n.code})`
           return label.includes(w)
         })
-        if(list.length > 20){
-          list = list.slice(0,20)
-        }
+
+        list = list.slice(0,400)
+
         target.searchList = [...list]
         that.form = {...that.form,specificationsList}
       }
