@@ -103,11 +103,40 @@
             <td v-else>{{ Details.packNum }}</td>
           </tr>
           <tr v-if="isPacking">
-            <td>申请变更为</td>
+            <td>当前是否固定包装</td>
+            <td v-if="!isDisabled">
+              {{ Details.packType === 1 ? '固定包装方式' : '不固定包装方式' }}
+            </td>
+            <td v-else>{{ Details.packType === 1 ? '固定包装方式' : '不固定包装方式' }}</td>
+          </tr>
+          <tr v-if="isPacking">
+            <td>变更固定模式</td>
             <td>
               <a-form-item style="width: 100%; float: left">
-                <a-select v-if="!isDisabled" v-decorator="['cpackId', { initialValue: 0 }]" allowClear>
-                  <a-select-option :value="0">不限方式</a-select-option>
+                <a-radio-group
+                  v-if="!isDisabled"
+                  v-decorator="[
+                    'cpackType',
+                    { initialValue: 1, rules: [{ required: true, message: '请输入变更固定模式' }] },
+                  ]"
+                  @change="packTypeChange"
+                >
+                  <a-radio :value="1"> 固定包装方式 </a-radio>
+                  <a-radio :value="2"> 不固定包装方式 </a-radio>
+                </a-radio-group>
+                <span v-else>{{ Details.cpackType === 1 ? '固定包装方式' : '不固定包装方式' }} </span>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr v-if="isPacking && packShow">
+            <td>变更包装方式</td>
+            <td>
+              <a-form-item style="width: 100%; float: left">
+                <a-select
+                  v-if="!isDisabled"
+                  v-decorator="['cpackId', { rules: [{ required: true, message: '请输入变更包装方式' }] }]"
+                  allowClear
+                >
                   <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
                     item.text
                   }}</a-select-option>
@@ -116,18 +145,17 @@
               </a-form-item>
             </td>
           </tr>
-          <tr v-if="isPacking">
-            <td>包内变更数量</td>
+          <tr v-if="isPacking && packShow">
+            <td>变更包内变更数量</td>
             <td>
               <a-form-item style="width: 100%; float: left">
                 <a-input-number
                   v-if="!isDisabled"
                   placeholder="输入每组包装内物料数量"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['cpackNum']"
+                  v-decorator="['cpackNum', { rules: [{ required: true, message: '请输入变更数量' }] }]"
                 />
                 <span v-else>
                   {{ Details.cpackNum }}
@@ -138,16 +166,16 @@
           <!-- 裸价标准 -->
           <tr v-if="isStandard">
             <td>当前类型</td>
-            <td v-if="!isDisabled">{{ Details.nakedPrice === 0 ? '含税运' : '不含税运' }}</td>
+            <td v-if="!isDisabled">{{ Details.nakedPrice === 1 ? '含税运' : '不含税运' }}</td>
             <td v-else>
-              {{ Details.type === 0 ? '含税运' : '不含税运' }}
+              {{ Details.type === 1 ? '含税运' : '不含税运' }}
             </td>
           </tr>
           <tr v-if="isStandard">
             <td>申请变更为</td>
-            <td v-if="!isDisabled">{{ Details.nakedPrice === 0 ? '不含税运' : '含税运' }}</td>
+            <td v-if="!isDisabled">{{ Details.nakedPrice === 1 ? '不含税运' : '含税运' }}</td>
             <td v-else>
-              {{ Details.type === 0 ? '不含税运' : '含税运' }}
+              {{ Details.type === 1 ? '不含税运' : '含税运' }}
             </td>
           </tr>
           <!-- 发票类型 -->
@@ -162,7 +190,11 @@
             <td>申请变更为</td>
             <td>
               <a-form-item style="width: 100%; float: left">
-                <a-select v-if="!isDisabled" v-decorator="['ctype', { initialValue: 0 }]" allowClear>
+                <a-select
+                  v-if="!isDisabled"
+                  v-decorator="['ctype', { initialValue: 0, rules: [{ required: true, message: '请选择发票类型' }] }]"
+                  allowClear
+                >
                   <a-select-option :value="0">不限</a-select-option>
                   <a-select-option :value="1">增值税专用发票</a-select-option>
                   <a-select-option :value="2">普通发票</a-select-option>
@@ -183,7 +215,14 @@
             <td>申请变更为</td>
             <td>
               <a-form-item style="width: 100%; float: left">
-                <a-select v-if="!isDisabled" v-decorator="['ctaxRate', { initialValue: 3 }]" allowClear>
+                <a-select
+                  v-if="!isDisabled"
+                  v-decorator="[
+                    'ctaxRate',
+                    { initialValue: 3, rules: [{ required: true, message: '请选择变更税率' }] },
+                  ]"
+                  allowClear
+                >
                   <a-select-option :value="0">0%</a-select-option>
                   <a-select-option :value="1">1%</a-select-option>
                   <a-select-option :value="3">3%</a-select-option>
@@ -209,10 +248,9 @@
                 <a-input-number
                   v-if="!isDisabled"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['cnumber']"
+                  v-decorator="['cnumber', { rules: [{ required: true, message: '请输入变更数量' }] }]"
                 />
                 <span v-else>{{ Details.cnumber }}</span>
               </a-form-item>
@@ -221,23 +259,23 @@
           <!-- 变更 质保期 交货期 -->
           <tr v-if="isWarranty || isDelivery">
             <td>当前期限</td>
-            <td v-if="isWarranty && !isDisabled">{{ Details.minWarranty }}</td>
-            <td v-else-if="isWarranty && Details.type === 1">质保期天数 {{ Details.number }}</td>
-            <td v-if="isDelivery && !isDisabled">{{ Details.maxDelivery }}</td>
-            <td v-else-if="isDelivery && Details.type === 2">交货期 {{ Details.number }}天数</td>
+            <td v-if="isWarranty && !isDisabled">质保期{{ Details.minWarranty }}天</td>
+            <td v-else-if="isWarranty && Details.type === 1">质保期 {{ Details.number }}天</td>
+            <td v-if="isDelivery && !isDisabled">交货期{{ Details.maxDelivery }}天</td>
+            <td v-else-if="isDelivery && Details.type === 2">交货期 {{ Details.number }}天</td>
           </tr>
           <tr v-if="isWarranty || isDelivery">
-            <td>申请变更为</td>
+            <td>申请变更(天)</td>
             <td>
               <a-form-item style="width: 100%; float: left">
                 <a-input-number
                   v-if="!isDisabled"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['cnumber']"
+                  v-decorator="['cnumber', { rules: [{ required: true, message: '请输入变更天数' }] }]"
                 />
+
                 <span v-else>{{ Details.cnumber }}天 </span>
               </a-form-item>
             </td>
@@ -296,6 +334,7 @@ export default {
 
   data() {
     return {
+      packShow: true,
       loading: false,
       visible: false,
       spinning: false,
@@ -378,6 +417,10 @@ export default {
     },
   },
   methods: {
+    packTypeChange(e) {
+      let react = e.target.value
+      this.packShow = react === 2 ? false : true
+    },
     procuerDelete(index) {
       this.buyRequirementBrands = this.buyRequirementBrands.filter((i) => i.brandId !== index)
     },
@@ -391,11 +434,17 @@ export default {
         arrs = [...as]
       }
       let arr = this.brandList.find((u) => u.id === this.brand)
-      this.buyRequirementBrands.push({
-        brandName: arr.brandName,
-        brandId: arr.id,
-        changeBrandModelInfos: arrs,
-      })
+      let reacts = this.buyRequirementBrands.every((u) => u.brandName !== arr.brandName)
+      if (reacts) {
+        this.buyRequirementBrands.push({
+          brandName: arr.brandName,
+          brandId: arr.id,
+          changeBrandModelInfos: arrs,
+        })
+      } else {
+        this.$message.error('此品牌已添加')
+      }
+      this.modList = []
     },
 
     async query(type, record, view) {
@@ -492,7 +541,8 @@ export default {
             values.packId = this.Details.packMethodId || undefined
             values.packName = this.Details.packMethod || undefined
             values.packNum = this.Details.pageNum || undefined
-            if (values.cpackId !== 0) {
+            values.packType = this.Details.packType || undefined
+            if (values.cpackId !== 0 && values.cpackType === 1) {
               let arr = this.Warehouse.find((i) => i.id === values.cpackId)
               values.cpackName = arr.text
             }
@@ -500,7 +550,7 @@ export default {
           //   裸价价格
           if (this.isStandard) {
             values.type = this.Details.nakedPrice
-            values.ctype = this.Details.nakedPrice === 0 ? 1 : 0
+            values.ctype = this.Details.nakedPrice === 1 ? 2 : 1
           }
           //发票类型
           if (this.isInvoice) {

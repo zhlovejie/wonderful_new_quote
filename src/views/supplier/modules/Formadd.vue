@@ -70,7 +70,7 @@
             <td>{{ item.materialName }}{{ item.materialCode }}</td>
             <td>
               {{
-                item.manageBrands.map((u) => u.brandName + '/' + u.manageBrandModels.map((i) => i.modelName)).join(',')
+                item.manageBrands.map((u) => u.brandName + ':' + u.manageBrandModels.map((i) => i.modelName)).join('/')
               }}
             </td>
             <td>
@@ -230,30 +230,30 @@
               </a-row>
               <a-row :gutter="[16, 24]">
                 <a-col :span="12">
-                  <a-form-model-item label="成立年限" prop="establishYearId">
+                  <a-form-model-item label="成立年限" prop="establishYear">
                     <a-select
                       placeholder="选择成立年限"
                       :disabled="isEdit"
-                      v-model="form.establishYearId"
+                      v-model="form.establishYear"
                       :allowClear="true"
                       style="width: 290px"
                     >
-                      <a-select-option v-for="item in Position" :key="item.id" :value="item.id">{{
+                      <a-select-option v-for="item in Position" :key="item.id" :value="item.text">{{
                         item.text
                       }}</a-select-option>
                     </a-select></a-form-model-item
                   >
                 </a-col>
                 <a-col :span="12">
-                  <a-form-model-item label="诚信级别" prop="sincerityLevelId">
+                  <a-form-model-item label="诚信级别" prop="sincerityLevel">
                     <a-select
                       placeholder="选择诚信级别"
                       :disabled="isEdit"
-                      v-model="form.sincerityLevelId"
+                      v-model="form.sincerityLevel"
                       :allowClear="true"
                       style="width: 280px"
                     >
-                      <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
+                      <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.text">{{
                         item.text
                       }}</a-select-option>
                     </a-select></a-form-model-item
@@ -399,7 +399,7 @@
                             >
                           </a-col>
                           <a-col :span="9">
-                            <a-form-model-item ref="arrivalDay" prop="arrivalDay">
+                            <a-form-model-item v-if="c3.length !== 0" ref="arrivalDay" prop="arrivalDay">
                               <span>到货后 </span>
                               <a-input-number
                                 :min="0"
@@ -656,7 +656,7 @@
               </a-row>
               <a-row :gutter="[16, 24]">
                 <a-col :span="24">
-                  <div class="__hd">营业执照</div>
+                  <div class="__hd">营业执照 （必填）</div>
                   <div class="__bd">
                     <UploadF
                       ref="UploadF"
@@ -996,30 +996,30 @@
               </a-row>
               <a-row :gutter="[16, 24]">
                 <a-col :span="12">
-                  <a-form-model-item label="成立年限" prop="establishYearId">
+                  <a-form-model-item label="成立年限" prop="establishYear">
                     <a-select
                       placeholder="选择成立年限"
-                      v-model="form.establishYearId"
+                      v-model="form.establishYear"
                       :disabled="isEdit"
                       :allowClear="true"
                       style="width: 290px"
                     >
-                      <a-select-option v-for="item in Position" :key="item.id" :value="item.id">{{
+                      <a-select-option v-for="item in Position" :key="item.id" :value="item.text">{{
                         item.text
                       }}</a-select-option>
                     </a-select></a-form-model-item
                   >
                 </a-col>
                 <a-col :span="12">
-                  <a-form-model-item label="诚信级别" prop="sincerityLevelId">
+                  <a-form-model-item label="诚信级别" prop="sincerityLevel">
                     <a-select
                       placeholder="选择诚信级别"
-                      v-model="form.sincerityLevelId"
+                      v-model="form.sincerityLevel"
                       :disabled="isEdit"
                       :allowClear="true"
                       style="width: 280px"
                     >
-                      <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
+                      <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.text">{{
                         item.text
                       }}</a-select-option>
                     </a-select></a-form-model-item
@@ -1165,7 +1165,7 @@
                             >
                           </a-col>
                           <a-col :span="9">
-                            <a-form-model-item ref="arrivalDay" prop="arrivalDay">
+                            <a-form-model-item v-if="c3.length !== 0" ref="arrivalDay" prop="arrivalDay">
                               <span>到货后 </span>
                               <a-input-number
                                 :min="0"
@@ -1421,7 +1421,7 @@ export default {
         ccommodityProportion: undefined, //提货款
         ccollectProportion: undefined,
         warrantyProportion: undefined, //质量保证金
-        supplierType: undefined,
+        supplierType: 0,
         platformType: undefined,
         platformName: undefined,
         supplierScale: 0,
@@ -1432,8 +1432,8 @@ export default {
         salesmanPhone: undefined,
         salesmanWeChat: undefined,
         settlementMode: 0,
-        sincerityLevelId: undefined,
-        establishYearId: undefined,
+        sincerityLevel: undefined,
+        establishYear: undefined,
         paymentCycleId: undefined,
         cfullName: undefined,
         taxpayerNumber: undefined,
@@ -1490,8 +1490,8 @@ export default {
         platformType: [{ required: true, message: '请选择是否为平台', trigger: 'change' }],
         supplierScale: [{ required: true, message: '选择供应商规模', trigger: 'change' }],
         settlementMode: [{ required: true, message: '选择结算方式', trigger: 'change' }],
-        sincerityLevelId: [{ required: true, message: '选择诚信级别', trigger: 'change' }],
-        establishYearId: [{ required: true, message: '选择成立年限', trigger: 'change' }],
+        sincerityLevel: [{ required: true, message: '选择诚信级别', trigger: 'change' }],
+        establishYear: [{ required: true, message: '选择成立年限', trigger: 'change' }],
       },
       records: {},
       allMaterialFuzzySearch: {
@@ -1664,7 +1664,9 @@ export default {
       that.allMaterialFuzzySearch = { ...that.allMaterialFuzzySearch, list: [] }
       that.visible = true
       that.type = type
-      that.form = {}
+      that.form = {
+        supplierType: 0,
+      }
       that.brandList = []
       that.c1 = []
       that.c2 = []
@@ -1752,7 +1754,7 @@ export default {
                   : false
 
               if (!ishas) {
-                that.$message.error('结算方式必须等于100')
+                that.$message.error('已选结算方式付款比例总和应为100%')
                 return
               }
             }
@@ -1794,11 +1796,10 @@ export default {
               }
             })
             params.status = type
-            let spt1 = that.Warehouse.find((i) => i.id === params.sincerityLevelId)
-            params.sincerityLevel = spt1.text
-
-            let spt2 = that.Position.find((i) => i.id === params.establishYearId)
-            params.establishYear = spt2.text
+            let spt1 = that.Warehouse.find((i) => i.text === params.sincerityLevel)
+            params.sincerityLevelId = spt1.id
+            let spt2 = that.Position.find((i) => i.text === params.establishYear)
+            params.establishYearId = spt2.id
 
             params.manageSupplierMaterials = that.brandList
             params.endTime = moment(that.endTime).format('YYYY-DD-MM hh:mm:ss')

@@ -186,6 +186,18 @@ export function getchange(parameter) {
     params: parameter
   })
 }
+/** 变更批量审批*/
+export function approvalChange(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/change/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+
 /**质保 变更历史 */
 export function getDelivery(parameter) {
   return axios({

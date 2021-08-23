@@ -11,6 +11,22 @@
       </a-select>
 
       <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+      <template v-if="activeKey === 1 && $auth('salaryDetails:PassAction')">
+        <a-button
+          :disabled="selectedRows.length === 0"
+          style="position: relative; top: -1px; margin-left: 10px"
+          type="primary"
+          @click="passAction"
+          >通过</a-button
+        >
+        <a-button
+          :disabled="selectedRows.length === 0"
+          style="position: relative; top: -1px; margin-left: 10px"
+          type="primary"
+          @click="noPassAction"
+          >不通过</a-button
+        >
+      </template>
     </div>
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -26,6 +42,9 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        :rowSelection="
+          activeKey === 1 ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
+        "
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -69,15 +88,17 @@
       </a-table>
       <ApproveInfo ref="approveInfoCard" />
       <Modal ref="modal" @files="searchAction"></Modal>
+      <Approval ref="approval" @opinionChange="opinionChange" />
     </div>
   </div>
 </template>
 
 <script>
-import { getchange } from '@/api/routineMaterial'
+import { getchange, approvalChange } from '@/api/routineMaterial'
 
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import Modal from '../module/modal'
+import Approval from './Approval'
 
 const columns = [
   {
@@ -104,7 +125,18 @@ const columns = [
     dataIndex: 'type',
     scopedSlots: { customRender: 'type' },
   },
-
+  {
+    align: 'center',
+    title: '变更前',
+    dataIndex: 'changeStart',
+    // scopedSlots: { customRender: 'beforeType' },
+  },
+  {
+    align: 'center',
+    title: '变更后',
+    dataIndex: 'changeEnd',
+    // scopedSlots: { customRender: 'afterType' },
+  },
   {
     align: 'center',
     title: '审核状态',
@@ -135,9 +167,12 @@ export default {
   components: {
     ApproveInfo,
     Modal,
+    Approval,
   },
   data() {
     return {
+      selectedRowKeys: [],
+      selectedRows: [],
       columns: columns,
       dataSource: [],
       assetTypeList: [],
@@ -162,6 +197,10 @@ export default {
     },
   },
   methods: {
+    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
     init() {
       let that = this
       //   let task1 = getDictionaryList({ parentId: 532 }).then((res) => (that.assetTypeList = res.data))
@@ -169,6 +208,8 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
+      that.selectedRowKeys = []
+      that.selectedRows = []
       let _searchParam = Object.assign({}, { ...this.searchParam }, { ...this.pagination }, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
@@ -223,6 +264,44 @@ export default {
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    //批量审批
+    submitAction(opt) {
+      let that = this
+      that.spinning = true
+      approvalChange(opt)
+        .then((res) => {
+          that.spinning = false
+          // that.$message.info('提示： 批量审批请手动点击搜索查询')
+          that.searchAction()
+          // that.$emit('finish')
+        })
+        .catch((err) => (that.spinning = false))
+    },
+
+    passAction(opt = {}) {
+      const that = this
+      const ids = that.selectedRows.map((item) => {
+        return {
+          purchaseChangeId: item.purchaseChangeId,
+          type: item.type,
+        }
+      })
+      this.submitAction({ changeApprovalListVos: ids, commonApprovalVO: { isAdopt: 0, opinion: '通过' } })
+    },
+    noPassAction() {
+      this.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      const that = this
+      const ids = that.selectedRows.map((item) => {
+        return {
+          purchaseChangeId: item.purchaseChangeId,
+          type: item.type,
+        }
+      })
+      this.submitAction({ changeApprovalListVos: ids, commonApprovalVO: { isAdopt: 1, opinion: opinion } })
     },
   },
 }

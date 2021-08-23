@@ -14,7 +14,10 @@
         <span v-if="isInvoice">{{
           record.type === 0 ? '无限' : record.type === 1 ? '增值税专用发票' : '普通发票'
         }}</span>
-        <span v-if="isPacking">{{ record.packName }}/{{ record.cpackName }}内数量{{ record.packNum }}</span>
+        <span v-if="isPacking && record.packType === 1">
+          固定包装方式 {{ record.packName }}/{{ record.packName }}内数量{{ record.packNum }}</span
+        >
+        <span v-if="isPacking && record.packType === 2">不固定包装方式</span>
         <span v-if="isWarranty || isDelivery">{{ record.number }}天</span>
       </div>
       <div slot="status" slot-scope="text, record">
@@ -29,7 +32,10 @@
         <span v-if="isInvoice">{{
           record.ctype === 0 ? '无限' : record.ctype === 1 ? '增值税专用发票' : '普通发票'
         }}</span>
-        <span v-if="isPacking">{{ record.cpackName }}/{{ record.cpackName }}内数量{{ record.cpackNum }}</span>
+        <span v-if="isPacking && record.cpackType === 1">
+          固定包装方式 {{ record.cpackName }}/{{ record.cpackName }}内数量{{ record.cpackNum }}</span
+        >
+        <span v-if="isPacking && record.cpackType === 2">不固定包装方式</span>
         <span v-if="isWarranty || isDelivery">{{ record.cnumber }}天</span>
       </div>
     </a-table>

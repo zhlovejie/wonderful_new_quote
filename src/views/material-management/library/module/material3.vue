@@ -1,6 +1,6 @@
 <template>
   <div class="wdf-custom-wrapper" id="attendance-abnormal-events">
-    <div class="search-wrapper">
+    <!-- <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
           <a-range-picker v-model="sDate" @change="rangePickerChange" style="width: 220px" :allowClear="true" />
@@ -52,7 +52,7 @@
           </template>
         </div>
       </a-table>
-    </div>
+    </div> -->
     <!-- <DoForm ref="doForm" @finish="searchAction({ current: 1 })" /> -->
   </div>
 </template>

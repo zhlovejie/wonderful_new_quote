@@ -19,10 +19,12 @@
         </div>
 
         <div slot="invoiceType" slot-scope="text, record, index">
-          <span>{{ text === 0 ? '不限' : text === 1 ? '增值税专用发票' : text === 2 ? '普通发票' : '' }}</span>
+          <span>{{
+            record.invoiceType === 0 ? '不限' : text === 1 ? '增值税专用发票' : text === 2 ? '普通发票' : ''
+          }}</span>
         </div>
         <div slot="nakedPrice" slot-scope="text, record, index">
-          <span>{{ text === 0 ? '含税运' : text === 1 ? '含税不含运' : '' }}</span>
+          <span>{{ text === 1 ? '含税运' : text === 2 ? '含税不含运' : '' }}</span>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -57,6 +59,11 @@ const columns = [
     align: 'center',
     title: '物料名称',
     dataIndex: 'materialName',
+  },
+  {
+    align: 'center',
+    title: '物料代码',
+    dataIndex: 'materialCode',
   },
   {
     align: 'center',

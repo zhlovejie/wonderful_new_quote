@@ -30,7 +30,7 @@
                 </a-select>
               </a-form-item>
               <a-form-item style="width: 20%; float: right">
-                <a-button type="primary" @click="Procurement('supplier')">变更指定工供应商 </a-button>
+                <!-- <a-button type="primary" @click="Procurement('supplier')">变更指定工供应商 </a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -64,7 +64,7 @@
               </a-form-item>
 
               <a-form-item style="width: 18%; float: right">
-                <a-button type="primary" @click="Procurement('brand')">变更指定品牌 </a-button>
+                <!-- <a-button type="primary" @click="Procurement('brand')">变更指定品牌 </a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -78,30 +78,33 @@
             <td>是否固定包装</td>
             <td>
               <a-form-item style="width: 60%; float: left">
-                <a-radio-group v-decorator="['packType', { initialValue: 1 }]">
+                <a-radio-group v-decorator="['packType', { initialValue: 1 }]" @change="packTypeChange">
                   <a-radio :value="1"> 固定包装方式 </a-radio>
                   <a-radio :value="2"> 不固定包装方式 </a-radio>
                 </a-radio-group>
               </a-form-item>
             </td>
           </tr>
-          <tr>
+          <tr v-if="packShow">
             <td>包装方式</td>
             <td>
               <a-form-item style="width: 40%; float: left">
-                <a-select v-decorator="['packMethodId', { initialValue: 0 }]" allowClear :disabled="isDisabled">
-                  <a-select-option :value="0">不限方式</a-select-option>
+                <a-select
+                  v-decorator="['packMethodId', { rules: [{ required: true, message: '请选择包装方式' }] }]"
+                  allowClear
+                  :disabled="isDisabled"
+                >
                   <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.id">{{
                     item.text
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item style="width: 13%; float: right">
-                <a-button type="primary" @click="Procurement('packing')">变更包装 </a-button>
+                <!-- <a-button type="primary" @click="Procurement('packing')">变更包装 </a-button> -->
               </a-form-item>
             </td>
           </tr>
-          <tr>
+          <tr v-if="packShow">
             <td>包内数量</td>
             <td>
               <a-form-item style="width: 40%; float: left">
@@ -109,10 +112,9 @@
                   placeholder="输入每组包装内物料数量"
                   :disabled="isDisabled"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['pageNum']"
+                  v-decorator="['pageNum', { rules: [{ required: true, message: '请输入每组包装内物料数量' }] }]"
                 />
               </a-form-item>
             </td>
@@ -132,13 +134,18 @@
             <td>裸价的标准</td>
             <td>
               <a-form-item style="width: 40%; float: left">
-                <a-radio-group v-decorator="['nakedPrice', { initialValue: 0 }]">
-                  <a-radio :value="0"> 含运税 </a-radio>
-                  <a-radio :value="1"> 含税不含运</a-radio>
+                <a-radio-group
+                  v-decorator="[
+                    'nakedPrice',
+                    { initialValue: 1, rules: [{ required: true, message: '请选择裸价的标准' }] },
+                  ]"
+                >
+                  <a-radio :value="1"> 含运税 </a-radio>
+                  <a-radio :value="2"> 含税不含运</a-radio>
                 </a-radio-group>
               </a-form-item>
               <a-form-item style="width: 18%; float: right">
-                <a-button type="primary" @click="Procurement('standard')">变更裸价的标准 </a-button>
+                <!-- <a-button type="primary" @click="Procurement('standard')">变更裸价的标准 </a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -146,14 +153,21 @@
             <td>物料发票类型</td>
             <td>
               <a-form-item style="width: 40%; float: left">
-                <a-select v-decorator="['invoiceType', { initialValue: 0 }]" allowClear :disabled="isDisabled">
+                <a-select
+                  v-decorator="[
+                    'invoiceType',
+                    { initialValue: 0, rules: [{ required: true, message: '请选择物料发票类型' }] },
+                  ]"
+                  allowClear
+                  :disabled="isDisabled"
+                >
                   <a-select-option :value="0">不限</a-select-option>
                   <a-select-option :value="1">增值税专用发票</a-select-option>
                   <a-select-option :value="2">普通发票</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item style="width: 17%; float: right">
-                <a-button type="primary" @click="Procurement('invoice')">变更发票类型 </a-button>
+                <!-- <a-button type="primary" @click="Procurement('invoice')">变更发票类型 </a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -161,7 +175,11 @@
             <td>物料税率(%)</td>
             <td>
               <a-form-item style="width: 40%; float: left">
-                <a-select v-decorator="['taxRate', { initialValue: 3 }]" allowClear :disabled="isDisabled">
+                <a-select
+                  v-decorator="['taxRate', { initialValue: 3, rules: [{ required: true, message: '请选择物料税率' }] }]"
+                  allowClear
+                  :disabled="isDisabled"
+                >
                   <a-select-option :value="0">0%</a-select-option>
                   <a-select-option :value="1">1%</a-select-option>
                   <a-select-option :value="3">3%</a-select-option>
@@ -172,7 +190,7 @@
                 </a-select>
               </a-form-item>
               <a-form-item style="width: 17%; float: right">
-                <a-button type="primary" @click="Procurement('taxRate')">变更物料税率</a-button>
+                <!-- <a-button type="primary" @click="Procurement('taxRate')">变更物料税率</a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -183,14 +201,13 @@
                 <a-input-number
                   :disabled="isDisabled"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['maxPurchase']"
+                  v-decorator="['maxPurchase', { rules: [{ required: true, message: '请输入安全库存' }] }]"
                 />
               </a-form-item>
               <a-form-item style="width: 17%; float: right">
-                <a-button type="primary" @click="Procurement('stock')">变更安全库存</a-button>
+                <!-- <a-button type="primary" @click="Procurement('stock')">变更安全库存</a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -201,14 +218,13 @@
                 <a-input-number
                   :disabled="isDisabled"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['minWarranty']"
+                  v-decorator="['minWarranty', { rules: [{ required: true, message: '请输入最短质保期' }] }]"
                 />
               </a-form-item>
               <a-form-item style="width: 16%; float: right">
-                <a-button type="primary" @click="Procurement('Warranty')">变更质保期</a-button>
+                <!-- <a-button type="primary" @click="Procurement('Warranty')">变更质保期</a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -219,14 +235,13 @@
                 <a-input-number
                   :disabled="isDisabled"
                   :min="0"
-                  :precision="2"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['maxDelivery']"
+                  v-decorator="['maxDelivery', { rules: [{ required: true, message: '请输入最长交货期' }] }]"
                 />
               </a-form-item>
               <a-form-item style="width: 16%; float: right">
-                <a-button type="primary" @click="Procurement('delivery')">变更交货期</a-button>
+                <!-- <a-button type="primary" @click="Procurement('delivery')">变更交货期</a-button> -->
               </a-form-item>
             </td>
           </tr>
@@ -255,6 +270,7 @@ export default {
   data() {
     return {
       visible: false,
+      packShow: true,
       actionType: 'view',
       spinning: false,
       depidType: '',
@@ -311,10 +327,15 @@ export default {
   },
   methods: {
     moment,
+    packTypeChange(e) {
+      let react = e.target.value
+      this.packShow = react === 2 ? false : true
+    },
     procuerDelete(index) {
       this.buyRequirementBrands = this.buyRequirementBrands.filter((i) => i.brandId !== index)
     },
     Procureadd() {
+      buyRequirementBrands
       let arrs = []
       let ret = this.modList.toString()
       if (ret === '0') {
@@ -325,11 +346,18 @@ export default {
       }
 
       let arr = this.brandList.find((u) => u.id === this.brand)
-      this.buyRequirementBrands.push({
-        brandName: arr.brandName,
-        brandId: arr.id,
-        buyRequirementBrandModels: arrs,
-      })
+      let reacts = this.buyRequirementBrands.every((u) => u.brandName !== arr.brandName)
+      if (reacts) {
+        this.buyRequirementBrands.push({
+          brandName: arr.brandName,
+          brandId: arr.id,
+          buyRequirementBrandModels: arrs,
+        })
+      } else {
+        this.$message.error('此品牌已添加')
+      }
+
+      this.modList = []
     },
     Procurement(type) {
       this.handleOk(2)

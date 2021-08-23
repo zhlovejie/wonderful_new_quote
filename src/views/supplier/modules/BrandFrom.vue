@@ -116,6 +116,10 @@ export default {
     },
     query(record) {
       console.log(record)
+      record = record.map((item, index) => {
+        item._key = makeUUID()
+        return item
+      })
       let that = this
       that.todayList = []
       that.todayList = that.$_.cloneDeep(record)

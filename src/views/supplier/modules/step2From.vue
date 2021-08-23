@@ -3,11 +3,28 @@
     title="新增供应商供货信息"
     :width="1000"
     :visible="visible"
-    :footer="footer"
     @cancel="handleCancel"
     :maskClosable="false"
     :destroyOnClose="true"
   >
+    <template slot="footer">
+      <template>
+        <a-button key="back" @click="handleCancel">取消</a-button>
+
+        <template v-if="Details.buyRequirement && Details.buyRequirement.taxRate">
+          <a-popconfirm ok-text="确定满足并提交" cancel-text="取消" @confirm="handleOk">
+            <template slot="title">
+              <p>提示</p>
+              <p>本物料报价维护信息含有不可编辑的采</p>
+              <p>购要求信息，请仔细检查是否可供应</p>
+            </template>
+            <a-button key="submit" type="primary" :loading="spinning">确定</a-button>
+          </a-popconfirm>
+        </template>
+        <a-button v-else key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
+      </template>
+    </template>
+
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
@@ -21,17 +38,21 @@
           </tr>
           <tr>
             <td>包装方式</td>
-            <td v-if="Details.buyRequirement && Details.buyRequirement.packMethod">
+            <td
+              v-if="
+                Details.buyRequirement && Details.buyRequirement.packMethod && Details.buyRequirement.packType === 1
+              "
+            >
               {{ Details.buyRequirement.packMethod }} {{ Details.buyRequirement.pageNum }}
             </td>
             <td v-else>
               <a-form-item style="width: 50%; float: left">
                 <a-select
+                  placeholder="请选择包装方式"
                   v-decorator="['packageType', { rules: [{ required: true, message: '请输入包装方式!' }] }]"
                   allowClear
                   :disabled="isDisabled"
                 >
-                  <a-select-option :value="0">不限方式</a-select-option>
                   <a-select-option v-for="item in Warehouse" :key="item.id" :value="item.text">{{
                     item.text
                   }}</a-select-option>
@@ -60,7 +81,7 @@
             </td>
             <td v-else>
               <a-form-item style="width: 80%; float: left">
-                {{ manageBrands.map((u) => u.brandName + '/' + u.manageBrandModels.map((i) => i.modelName)).join(',') }}
+                {{ manageBrands.map((u) => u.brandName + ':' + u.manageBrandModels.map((i) => i.modelName)).join('/') }}
               </a-form-item>
               <a-form-item style="width: 18%; float: right">
                 <a-button type="primary" @click="Addmodel()">添加品牌 </a-button>
@@ -77,7 +98,7 @@
           </tr>
           <tr>
             <td>结算方式</td>
-            <td>{{ recordType.settlementMode === 0 ? '现看现货' : '账期结算' }}</td>
+            <td>{{ recordType.settlementMode === 0 ? '现款现货' : '账期结算' }}</td>
           </tr>
           <tr>
             <td>发票类型</td>
@@ -92,20 +113,47 @@
                   : ''
               }}
             </td>
-            <td v-else></td>
+            <td v-else>
+              <a-form-item style="width: 50%; float: left">
+                <a-select
+                  style="width: 100%"
+                  placeholder="请选择发票类型"
+                  v-decorator="['invoiceType', { rules: [{ required: true, message: '请选择发票类型!' }] }]"
+                  allowClear
+                  :disabled="isDisabled"
+                >
+                  <a-select-option :value="0">不限方式</a-select-option>
+                  <a-select-option :value="1">增值税专用发票</a-select-option>
+                  <a-select-option :value="2">普通发票</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
           </tr>
           <tr>
             <td>裸价的标准</td>
             <td v-if="Details.buyRequirement && Details.buyRequirement.nakedPrice !== null">
               {{
-                Details.buyRequirement.nakedPrice === 0
+                Details.buyRequirement.nakedPrice === 1
                   ? '含运费'
-                  : Details.buyRequirement.nakedPrice === 1
+                  : Details.buyRequirement.nakedPrice === 2
                   ? '不含运费'
                   : ''
               }}
             </td>
-            <td v-else></td>
+            <td v-else>
+              <a-form-item style="width: 50%; float: left">
+                <a-select
+                  style="width: 100%"
+                  placeholder="请选择裸价标准"
+                  v-decorator="['nakedPrice', { rules: [{ required: true, message: '请选择裸价的标准!' }] }]"
+                  allowClear
+                  :disabled="isDisabled"
+                >
+                  <a-select-option :value="1">含税运</a-select-option>
+                  <a-select-option :value="2">含税不含运</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
           </tr>
 
           <tr>
@@ -129,7 +177,27 @@
             <td v-if="Details.buyRequirement && Details.buyRequirement.taxRate">
               {{ Details.buyRequirement.taxRate }}%
             </td>
-            <td v-else></td>
+            <td v-else>
+              <a-form-item style="width: 50%; float: left">
+                <a-select
+                  v-decorator="[
+                    'materialRate',
+                    { initialValue: 3, rules: [{ required: true, message: '请选择物料税率' }] },
+                  ]"
+                  allowClear
+                  style="width: 100%"
+                  :disabled="isDisabled"
+                >
+                  <a-select-option :value="0">0%</a-select-option>
+                  <a-select-option :value="1">1%</a-select-option>
+                  <a-select-option :value="3">3%</a-select-option>
+                  <a-select-option :value="6">6%</a-select-option>
+                  <a-select-option :value="9">9%</a-select-option>
+                  <a-select-option :value="11">11%</a-select-option>
+                  <a-select-option :value="13">13%</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
           </tr>
           <tr>
             <td>运费税率(%)</td>
@@ -242,25 +310,6 @@ export default {
     isDisabled() {
       return this.isView || this.isApproval
     },
-    footer() {
-      let that = this
-      const h = that.$createElement
-      let btn = []
-      btn.push(h('a-button', { key: 'cancel', on: { click: that.handleCancel } }, '取消'))
-      btn.push(
-        h(
-          'a-button',
-          {
-            key: 'submit',
-            on: { click: () => that.handleOk() },
-            props: { type: 'primary', loading: that.spinning },
-          },
-          '提交'
-        )
-      )
-
-      return btn
-    },
   },
   methods: {
     moment,
@@ -294,11 +343,11 @@ export default {
           if (
             (that.Details.buyRequirement &&
               that.Details.buyRequirement.minWarranty &&
-              values.shelfLife > that.Details.buyRequirement.minWarranty) ||
-            values.shelfLife > 180
+              values.shelfLife < that.Details.buyRequirement.minWarranty) ||
+            values.shelfLife < 180
           ) {
             return this.$message.error(
-              `质保期不能大于${(that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180}天`
+              `质保期不能小于${(that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180}天`
             )
           }
           if (this.Details.buyRequirement.packMethod) {
@@ -308,11 +357,11 @@ export default {
           if (that.Details.buyRequirement.buyRequirementBrands.length > 0) {
             values.manageBrands = that.Details.buyRequirement.buyRequirementBrands
           } else {
+            values.type = 1
             values.manageBrands =
               this.manageBrands.map((u) => {
                 return {
                   brandName: u.brandName,
-                  type: 1,
                   manageBrandModels:
                     u.manageBrandModels.map((i) => {
                       return {
@@ -326,13 +375,11 @@ export default {
           values.materialName = this.recordType.materialName
           values.materialModelType = this.recordType.materialModelType
           values.settlementMode = this.recordType.settlementMode
-          values.invoiceType = this.Details.buyRequirement.invoiceType
-          values.nakedPrice = this.Details.buyRequirement.nakedPrice
-          values.materialRate = this.Details.buyRequirement.taxRate
           values.materialId = this.recordType.materialId
           values.supplierId = this.record.id
-
-          console.log(values)
+          values.nakedPrice = values.nakedPrice ? values.nakedPrice : this.Details.buyRequirement.nakedPrice
+          values.invoiceType = values.invoiceType ? values.invoiceType : this.Details.buyRequirement.invoiceType
+          values.materialRate = values.materialRate ? values.materialRate : this.Details.buyRequirement.taxRate
 
           that.spinning = true
           getSupplierOfferUpdate(values)
@@ -369,6 +416,9 @@ export default {
             packageType: res.data.packageType,
             packageCount: res.data.packageCount,
             newPrice: res.data.newPrice,
+            nakedPrice: res.data.nakedPrice,
+            invoiceType: res.data.invoiceType,
+            materialRate: res.data.materialRate,
             freightRate: res.data.freightRate,
             lowestNum: res.data.lowestNum,
             deliveryCycle: res.data.deliveryCycle || res.data.buyRequirement.maxDelivery,

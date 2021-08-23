@@ -1429,7 +1429,7 @@ export default {
       }
       that.form = { ...that.form, ...detail }
       that.brandList = detail.manageSupplierMaterials
-      if (detail.supplierScale === 1) {
+      if (detail.licenseUrl && detail.supplierScale === 1) {
         let _sp = detail.licenseUrl.split(',')
         that.$refs.UploadF.setFiles(
           _sp.map((i, index) => {

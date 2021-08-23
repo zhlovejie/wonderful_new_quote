@@ -2,7 +2,7 @@
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
       <a-select
-        style="width: 280px; margin-right: 10px"
+        style="width: 240px; margin-right: 10px"
         placeholder="供应商物料"
         :allowClear="true"
         show-search
@@ -45,19 +45,28 @@
         placeholder="请输入供应商名称/编号关键词"
         v-model="queryParam.salesmanNameCode"
         allowClear
-        style="width: 200px; margin-right: 10px"
+        style="width: 150px; margin-right: 10px"
       />
       <a-select
         placeholder="审核状态"
         v-model="queryParam.status"
         :allowClear="true"
-        style="width: 200px; margin-right: 10px"
+        style="width: 150px; margin-right: 10px"
       >
         <a-select-option :value="0">待提交</a-select-option>
         <a-select-option :value="1">待审批</a-select-option>
         <a-select-option :value="2">通过</a-select-option>
         <a-select-option :value="3">不通过</a-select-option>
         <a-select-option :value="4">已撤回</a-select-option>
+      </a-select>
+      <a-select
+        placeholder="状态"
+        v-model="queryParam.type"
+        :allowClear="true"
+        style="width: 150px; margin-right: 10px"
+      >
+        <a-select-option :value="1">启用</a-select-option>
+        <a-select-option :value="0">禁用</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -99,6 +108,10 @@
         <div slot="supplierScale" slot-scope="text, record, index">
           <span v-if="text === 0">小规模</span>
           <span v-if="text === 1">一般规模 </span>
+        </div>
+        <div slot="type" slot-scope="text, record, index">
+          <span v-if="record.type === 1">启用中</span>
+          <span v-if="record.type === 0">已禁用</span>
         </div>
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
@@ -242,6 +255,14 @@ const columns = [
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
   },
+  {
+    align: 'center',
+    title: '状态',
+    key: 'type',
+    dataIndex: 'type',
+    scopedSlots: { customRender: 'type' },
+  },
+
   {
     align: 'center',
     title: '创建人',

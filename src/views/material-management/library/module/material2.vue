@@ -49,20 +49,23 @@
           <tr>
             <td>是否固定包装</td>
             <td>
-              {{ Details.packType === 1 ? '固定包装方式' : '不固定包装方式' }}
-              <span style="float: right; width: 15%">&ensp;&ensp; </span>
-            </td>
-          </tr>
-          <tr>
-            <td>包装方式</td>
-            <td>
-              <a-button type="link" @click="historys('packing')"> {{ Details.packMethod }}</a-button>
+              <a-button type="link" @click="historys('packing')">{{
+                Details.packType === 1 ? '固定包装方式' : '不固定包装方式'
+              }}</a-button>
+
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('packing')">变更包装 </a-button>
               </span>
             </td>
           </tr>
-          <tr>
+          <tr v-if="Details.packType === 1">
+            <td>包装方式</td>
+            <td>
+              {{ Details.packMethod }}
+              <span style="float: right; width: 15%">&ensp;&ensp; </span>
+            </td>
+          </tr>
+          <tr v-if="Details.packType === 1">
             <td>包内数量</td>
             <td>
               {{ Details.pageNum }}
@@ -87,7 +90,7 @@
             <td>裸价的标准</td>
             <td>
               <a-button type="link" @click="historys('standard')">
-                {{ Details.nakedPrice === 0 ? '含运费' : '不含运费' }}
+                {{ Details.nakedPrice === 1 ? '含运费' : '不含运费' }}
               </a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('standard')"
