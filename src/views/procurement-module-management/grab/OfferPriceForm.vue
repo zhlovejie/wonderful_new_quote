@@ -45,6 +45,7 @@
               <a-select
                 v-model="form.supplierId"
                 placeholder="选择供应商"
+                allowClear
                 @change="supplierChangeHandler"
               >
               <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
@@ -86,7 +87,6 @@
                   allowClear
                   v-model="form.packageType"
                   placeholder="包装类型"
-                  :disabled="form.packageType"
                 >
                   <a-select-option
                     v-for="item in packingType"
@@ -106,7 +106,6 @@
                   :min="0"
                   :step="1"
                   :precision="0"
-                  :disabled="form.packageCount"
                 />
               </a-col>
             </a-row>
@@ -116,7 +115,23 @@
             label="品牌/型号"
             prop="modelName"
           >
-            <a-row>
+          <template v-if="Array.isArray(form.manageBrands) && form.manageBrands.length > 0">
+            <a-row v-for="(b,idx) in form.manageBrands" :key="b.id">
+              <a-col :span="24">
+                  <span>{{b.brandName}}</span>
+                  <span style="margin:0 5px;">/</span>
+                  <span>{{b.buyRequirementBrandModels.map(sub => sub.modelName).join(',')}}</span>
+              </a-col>
+            </a-row>
+
+            </template>
+            <template v-else>
+              <span>该物料需求下暂未设置品牌</span>
+            </template>
+
+
+            <!-- <a-row>
+
               <a-col :span="11">
                 <a-input
                   v-model="form.modelName"
@@ -132,7 +147,7 @@
                   placeholder="型号"
                 />
               </a-col>
-            </a-row>
+            </a-row> -->
 
           </a-form-model-item>
           <a-form-model-item
@@ -337,15 +352,14 @@ export default {
         // email: undefined,
         // supplierName: undefined,
         source: 1,
-
       },
       rules: {
         // lastPrice:[{ required: true, message: '请输入最新采购单价' }],
         settlementMode:[{ required: true, message: '请选择结算方式' }],
         packageType: [{ required: true, message: '请输入包装类型' }],
         packageCount: [{ required: true, message: '请输入包装内数量' }],
-        modelName: [{ required: true, message: '请输入品牌' }],
-        modelType: [{ required: true, message: '请输入品牌型号' }],
+        //modelName: [{ required: true, message: '请输入品牌' }],
+        //modelType: [{ required: true, message: '请输入品牌型号' }],
         invoiceType: [{ required: true, message: '请选择发票类型' }],
         nakedPrice: [{ required: true, message: '请输入裸价标准' }],
         newPrice: [{ required: true, message: '请输入最新报价' }],
@@ -367,6 +381,7 @@ export default {
       supplierList:[],
       packingType:[],
       materialRequirement:{},
+      supplierRequirement:{}
     }
   },
   computed: {
@@ -455,6 +470,9 @@ export default {
         //根据物料查询相应的供应商列表
         quotationSupplierList({materialId:that.record.materialId}).then(res => {
           that.supplierList = res.data
+          if(that.supplierList.length === 0){
+            that.$message.info(`暂无物料【${that.record.materialName}】的供应商信息`)
+          }
           that.form = {
             ...that.form,
             hasSupplier:that.supplierList.length > 0 ? 1 : 2
@@ -465,14 +483,15 @@ export default {
         .then(res => res.data)
         .catch(err => {
           console.log(err)
-          return null
+          return {}
         })
-        //getSupplierOffer({ materialId: type.materialId, supplierId: record.id })
 
-        if(materialRequirement === null){
-          let msg = `物料名称：${that.record.materialName} 要求获取失败`
-          that.$message.error(msg);
-        }
+        that.materialRequirement = materialRequirement
+
+        // if(materialRequirement === null){
+        //   let msg = `物料名称：${that.record.materialName} 要求获取失败`
+        //   that.$message.error(msg);
+        // }
 
         //根据物料id获取该物料最新采购价  目前尚未使用
         let newLastPrice = await getOrderLastPrice({materialId:that.record.materialId}).then(res => {
@@ -487,11 +506,11 @@ export default {
           return 0
         })
         if(materialRequirement){
-          materialRequirement.
+
           that.form = {
             ...that.form,
             // supplierId:materialRequirement.supplierId,
-            lastPrice:newLastPrice,
+            lastPrice:newLastPrice || 0,
             invoiceType:materialRequirement.invoiceType, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
             deliveryCycle:materialRequirement.maxDelivery,//交货期
             lowestNum:materialRequirement.maxPurchase,//采购量
@@ -500,8 +519,9 @@ export default {
             packageType:materialRequirement.packMethod,//包装方式
             // packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
             packageCount:materialRequirement.pageNum,//包内数量
-            newPrice:materialRequirement.price,//最新采购价格
-            materialRate:materialRequirement.taxRate,//物料税率
+            newPrice:materialRequirement.price ,//最新采购价格
+            materialRate:materialRequirement.taxRate ,//物料税率
+            manageBrands:materialRequirement.buyRequirementBrands || [],
           }
         }else{
           that.form = {
@@ -554,10 +574,24 @@ export default {
       if(target){
         that.form = {...that.form,supplierName:target.supplierName}
       }
+
+      getSupplierOffer({ materialId: that.record.materialId, supplierId: v }).then(res => {
+        console.log(res)
+        that.supplierRequirement = res.data
+      })
+
       //判断供应商是否有采购某一物料的资格，返回true为有资格
       // quotationCheckSupplier({supplierId:v,materialId:that.record.materialId}).then(res => {
       //   console.log(res)
       // })
+    },
+    validateMaterialRequiredAndSupplierRequired(){
+      const that = this
+      let supplierRequirement = {...that.supplierRequirement}
+      let {buyRequirement ,supplierId,materialId,packageType,packageCount,lastPrice,settlementMode,invoiceType,
+        nakedPrice,newPrice,materialRate,freightRate,lowestNum,deliveryCycle,shelfLife
+      } = supplierRequirement
+      return true
     }
   }
 }

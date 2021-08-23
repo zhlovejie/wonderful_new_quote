@@ -59,8 +59,21 @@
             label="品牌/型号"
             prop="modelName"
           >
-            <a-row>
-              <a-col :span="11">
+            <template v-if="Array.isArray(form.manageBrands) && form.manageBrands.length > 0">
+            <a-row v-for="(b,idx) in form.manageBrands" :key="b.id">
+              <a-col :span="24">
+                  <span>{{b.brandName}}</span>
+                  <span style="margin:0 5px;">/</span>
+                  <span>{{b.buyRequirementBrandModels.map(sub => sub.modelName).join(',')}}</span>
+              </a-col>
+            </a-row>
+
+            </template>
+            <template v-else>
+              <span>该物料需求下暂未设置品牌</span>
+            </template>
+
+              <!-- <a-col :span="11">
                 <a-input
                   v-model="form.modelName"
                   placeholder="品牌"
@@ -75,7 +88,7 @@
                   placeholder="型号"
                 />
               </a-col>
-            </a-row>
+            </a-row> -->
 
           </a-form-model-item>
       </a-card>
@@ -184,6 +197,8 @@
           <a-select
             v-model="form.supplierId"
             placeholder="选择供应商"
+            allowClear
+            @change="supplierChangeHandler"
           >
             <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
               {{item.supplierName}}
@@ -202,26 +217,13 @@
 <script>
 import { getDictionary } from '@/api/common'
 import { enquiryAdd,quotationSupplierList } from '@/api/procurementModuleManagement'
+import { getBuyRequirement } from '@/api/routineMaterial'
 export default {
   data() {
     return {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
-        packageType:'箱',
-        packageCount:0,
-        modelName:'',
-        modelType:'',
-        model:'',
-        invoiceType:1,
-        nakedPrice:1,
-        newPrice:0,
-        materialRate:0,
-        freightRate:0,
-        lowestNum:1,
-        deliveryCycle:30,
-        shelfLife:180,
-        supplierId:undefined,
         email:undefined
       },
       rules: {
@@ -256,25 +258,63 @@ export default {
     }
   },
   methods: {
-    query(record){
+    async query(record){
       const that = this
       that.record = {...record}
       that.visible = true
-      that.form = {
-        ...that.form,
-        requestId:that.record.id,
-        materialId:that.record.materialId,
-        materialName:that.record.materialName,
-        materialModelType:that.record.materialModelType
-      }
+      that.form = {}
+
+      let materialRequirement = await getBuyRequirement({ materialId: that.record.materialId })
+        .then(res => res.data)
+        .catch(err => {
+          console.log(err)
+          return null
+        })
+
+
+        if(materialRequirement === null){
+          let msg = `物料名称：${that.record.materialName} 要求获取失败`
+          that.$message.error(msg);
+          return
+        }
+
+        that.form = {
+            requestId:that.record.id,
+            materialId:that.record.materialId,
+            materialName:that.record.materialName,
+            materialModelType:that.record.materialModelType,
+            // supplierId:materialRequirement.supplierId,
+            lastPrice:materialRequirement.price || 0,
+            invoiceType:materialRequirement.invoiceType, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
+            deliveryCycle:materialRequirement.maxDelivery,//交货期
+            lowestNum:materialRequirement.maxPurchase,//采购量
+            shelfLife:materialRequirement.minWarranty,//最短质保期
+            nakedPrice:materialRequirement.nakedPrice,//裸价的标准(0为含运费，1为不含运费)
+            packageType:materialRequirement.packMethod,//包装方式
+            // packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
+            packageCount:materialRequirement.pageNum,//包内数量
+            newPrice:materialRequirement.price || 0,//最新采购价格
+            materialRate:materialRequirement.taxRate,//物料税率
+
+            manageBrands:materialRequirement.buyRequirementBrands || [],
+            freightRate:0
+          }
 
       //根据物料查询相应的供应商列表
       quotationSupplierList({materialId:that.record.materialId}).then(res => {
         that.supplierList = res.data
+        if(that.supplierList.length === 0){
+          that.$message.info(`暂无物料【${that.record.materialName}】的供应商信息`)
+        }
       })
 
       getDictionary({ text: '采购包装类型' }).then(res => (that.packingType = res.data))
 
+    },
+    formatBrands(list){
+      // list.map(item => {
+      //   return `品牌：【${item.brandName}】 型号：【${item.buyRequirementBrandModels.map(sub => sub.modelName).join(',') }】`
+      // })
     },
     handleSubmit() {
       const that = this
@@ -305,6 +345,25 @@ export default {
     handleCancel(){
       this.resetForm()
       this.visible = false
+    },
+    async supplierChangeHandler(v){
+      const that = this
+
+      let supplierList = [...that.supplierList]
+      let target = supplierList.find(item => +item.id === +v)
+      if(target){
+        if(!target.supplierEmail){
+          that.$message.info('该供应商暂无提供邮箱信息，请手动输入。')
+        }
+        that.form = {...that.form,supplierName:target.supplierName,email:target.supplierEmail || undefined}
+      }
+
+
+
+      //判断供应商是否有采购某一物料的资格，返回true为有资格
+      // quotationCheckSupplier({supplierId:v,materialId:that.record.materialId}).then(res => {
+      //   console.log(res)
+      // })
     }
   },
 };

@@ -282,10 +282,20 @@ export default {
       return this.selectedRows.length > 0
     },
     columns(){
-      // let tagKey = +this.$$attrs.tagKey
-      // if(tagKey === 7 || tagKey === 8){
+      let tagKey = +this.$attrs.tagKey
+      if(tagKey === 7 || tagKey === 8){
+        let _columns = [...columns]
 
-      // }
+        let c1 = _columns.find(c => c.dataIndex === 'createdName')
+        let c2 = _columns.find(c => c.dataIndex === 'createdTime')
+        if(c1){
+          c1.title = '抢单报价人'
+        }
+        if(c2){
+          c2.title = '抢单报价时间'
+        }
+        return _columns
+      }
       return columns
     }
   },

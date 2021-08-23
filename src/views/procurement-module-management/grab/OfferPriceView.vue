@@ -130,16 +130,16 @@
         >
           <a-row :gutter="[16,16]">
             <a-col :span="6">
-              <p>报价单价：{{`${detail.detail.exception.newPrice}` | moneyFormatNumber}}</p>
+              <p>抢单报价单价：{{`${detail.detail.exception.newPrice}` | moneyFormatNumber}}</p>
             </a-col>
             <a-col :span="6">
-              <p>报价部门：{{`${detail.detail.exception.npDepName}`}}</p>
+              <p>抢单报价部门：{{`${detail.detail.exception.npDepName}`}}</p>
             </a-col>
             <a-col :span="6">
-              <p>报价人：{{`${detail.detail.exception.npCreater}`}}</p>
+              <p>抢单报价人：{{`${detail.detail.exception.npCreater}`}}</p>
             </a-col>
             <a-col :span="6">
-              <p>报价时间：{{`${detail.detail.exception.npCreateTime}`}}</p>
+              <p>抢单报价时间：{{`${detail.detail.exception.npCreateTime}`}}</p>
             </a-col>
           </a-row>
 
