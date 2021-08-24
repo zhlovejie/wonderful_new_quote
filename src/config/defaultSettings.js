@@ -27,11 +27,11 @@ export default {
   //  baseURL:'http://106.14.194.64/cloud_new',
 
   // baseURL: 'http://192.168.13.253/oa',
-  baseURL: 'http://192.168.13.170:9995/cloud_development',
+  baseURL: 'http://192.168.13.22:9995/cloud_development',
   // baseURL: 'http://192.168.13.170:9996/cloud_development',
   // baseURL:'http://192.168.13.3:8999/oa',
 
-  materialBaseUrl: 'http://192.168.13.170:9995/cloud_development', //物料规则专用地址
+  materialBaseUrl: 'http://192.168.13.22:9995/cloud_development', //物料规则专用地址
 
   // baseURL: 'http://192.168.13.158:9997/cloud_development',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl

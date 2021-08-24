@@ -31,6 +31,7 @@
             <a-radio-group
               name="hasSupplier"
               v-model="form.hasSupplier"
+              @change="hasSupplierChange"
             >
               <a-radio :value="1">有</a-radio>
               <a-radio :value="2">无</a-radio>
@@ -120,7 +121,7 @@
               <a-col :span="24">
                   <span>{{b.brandName}}</span>
                   <span style="margin:0 5px;">/</span>
-                  <span>{{b.buyRequirementBrandModels.map(sub => sub.modelName).join(',')}}</span>
+                  <span>{{Array.isArray(b.manageBrandModels) && b.manageBrandModels.length > 0 ? b.manageBrandModels.map(sub => sub.modelName).join(',') : '无'}}</span>
               </a-col>
             </a-row>
 
@@ -381,7 +382,8 @@ export default {
       supplierList:[],
       packingType:[],
       materialRequirement:{},
-      supplierRequirement:{}
+      supplierRequirement:{},
+      isvalidateMaterialRequiredAndSupplierRequired:false
     }
   },
   computed: {
@@ -431,6 +433,7 @@ export default {
       that.type = type
       that.record = { ...record }
       that.visible = true
+      that.isvalidateMaterialRequiredAndSupplierRequired = false
       that.form = {
         ...that.form,
         requestId: that.record.requestId || that.record.id,
@@ -521,7 +524,10 @@ export default {
             packageCount:materialRequirement.pageNum,//包内数量
             newPrice:materialRequirement.price ,//最新采购价格
             materialRate:materialRequirement.taxRate ,//物料税率
-            manageBrands:materialRequirement.buyRequirementBrands || [],
+            manageBrands:(materialRequirement.buyRequirementBrands || []).map(item => {
+              item.manageBrandModels = [...item.buyRequirementBrandModels]
+              return item
+            }),
           }
         }else{
           that.form = {
@@ -531,10 +537,16 @@ export default {
         }
       }
     },
+
     handleSubmit() {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
+
+          if(!that.validateMaterialRequiredAndSupplierRequired()){
+            return
+          }
+
           that.spinning = true
           const { modelName, modelType } = that.form
           if(+that.form.source === 3){
@@ -566,6 +578,10 @@ export default {
       this.resetForm()
       this.visible = false
     },
+    hasSupplierChange(v){
+      const that = this
+      that.form = {...that.form,supplierId:undefined,supplierName:undefined}
+    },
     supplierChangeHandler(v){
       const that = this
 
@@ -587,11 +603,196 @@ export default {
     },
     validateMaterialRequiredAndSupplierRequired(){
       const that = this
+      if(validateMaterialRequiredAndSupplierRequired){
+        return true
+      }
       let supplierRequirement = {...that.supplierRequirement}
-      let {buyRequirement ,supplierId,materialId,packageType,packageCount,lastPrice,settlementMode,invoiceType,
-        nakedPrice,newPrice,materialRate,freightRate,lowestNum,deliveryCycle,shelfLife
+      let {
+        buyRequirement ,supplierId,materialId,
+        packageType,packageCount,lastPrice,
+        settlementMode,invoiceType,
+        nakedPrice,newPrice,
+        materialRate,freightRate,
+        lowestNum,deliveryCycle,shelfLife,
+        manageBrands
       } = supplierRequirement
-      return true
+
+      let arrCase = []
+      //比较品牌
+      let _manageBrands = [...(manageBrands || [])]
+      let _buyRequirementBrands = [...(buyRequirement.buyRequirementBrands || [])]
+
+      let brandsCaseList = _buyRequirementBrands.map(c1 => {
+        //物料
+        let mid = c1.brandId
+        let subMids = Array.isArray(c1.buyRequirementBrandModels)
+          ? c1.buyRequirementBrandModels.map(_c1 => _c1.modelId).join(',')
+          : ''
+        //供应商
+        let target = _manageBrands.find(c => c.brandId === mid)
+        let _mid = target ? target.brandId : null
+        let _subMids = target && Array.isArray(target.manageBrandModels)
+          ? target.manageBrandModels.map(_c1 => _c1.modelId).join(',')
+          : ''
+        return mid === _mid && _subMids.includes(subMids)
+      })
+
+      arrCase.push({
+        msg:'供应商提供的品牌型号和物料要求的品牌型号不匹配',
+        result:brandsCaseList.every(c => c),
+        fix:() => {
+          let _supplierRequirement = {...that.supplierRequirement}
+          let _buyRequirement = _supplierRequirement.buyRequirement
+          _buyRequirement.buyRequirementBrands = _supplierRequirement.manageBrands.map(c => {
+            c.buyRequirementBrandModels = [...c.manageBrandModels]
+            return c
+          })
+          that.supplierRequirement = _supplierRequirement
+        }
+      })
+
+      //比较包装类型和数量
+      //是否固定包装(1是固定，2是不固定)
+      if(buyRequirement.packType === 1){
+        let {packMethod,pageNum} = buyRequirement
+        arrCase.push({
+          msg:`包装类型和包装数量不匹配，供应商提供为【${packageCount}/${packageType}】物料要求为【${pageNum}/${packMethod}】`,
+          result:packMethod === packageType && pageNum === packageCount,
+          fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.packMethod = packageType
+            _buyRequirement.pageNum = packageCount
+            that.supplierRequirement = _supplierRequirement
+          }
+        })
+      }
+      //对比裸价标准
+      let mapNakedPrice = {1:'含税运',2:'含税不含运'}
+      arrCase.push({
+        msg:`裸价标准不匹配，供应商提供为【${mapNakedPrice[nakedPrice] || '无'}】物料要求为【${mapNakedPrice[buyRequirement.nakedPrice] || '无'}】`,
+        result:nakedPrice === buyRequirement.nakedPrice,
+        fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.nakedPrice = nakedPrice
+            that.supplierRequirement = _supplierRequirement
+          }
+      })
+      //对比发票类型
+      let mapInvoiceType = {0:'不限',1:'增值税专用发票',2:'普通发票'}
+      arrCase.push({
+        msg:`发票类型不匹配，供应商提供为【${mapInvoiceType[invoiceType] || '无'}】物料要求为【${mapInvoiceType[buyRequirement.invoiceType] || '无'}】`,
+        result:invoiceType === buyRequirement.invoiceType,
+        fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.invoiceType = invoiceType
+            that.supplierRequirement = _supplierRequirement
+          }
+      })
+      //对比交货周期
+      arrCase.push({
+        msg:`交货周期不匹配，供应商提供为【${deliveryCycle}天】物料要求为最长【${buyRequirement.maxDelivery}天】`,
+        result:deliveryCycle <= buyRequirement.maxDelivery,
+        fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.maxDelivery = deliveryCycle
+            that.supplierRequirement = _supplierRequirement
+          }
+      })
+      //对比质保期
+      arrCase.push({
+        msg:`质保期不匹配，供应商提供质保期为【${shelfLife}】天，物料要求质保期为最短【${buyRequirement.minWarranty}】天`,
+        result:shelfLife >= buyRequirement.minWarranty,
+        fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.minWarranty = shelfLife
+            that.supplierRequirement = _supplierRequirement
+          }
+      })
+      //对比采购量
+      arrCase.push({
+        msg:`采购量不匹配，供应商提供为【${lowestNum}】物料要求为【${buyRequirement.maxPurchase}】`,
+        result:lowestNum <= buyRequirement.maxPurchase,
+        fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.maxPurchase = lowestNum
+            that.supplierRequirement = _supplierRequirement
+          }
+      })
+      //物料价格模式(1是固定价格模式，2是实时价格模式)
+      //if(buyRequirement.priceModel === 1 && buyRequirement.price ){}
+      arrCase.push({
+        msg:`最新采购价格不匹配，供应商提供为【${that.form.lastPrice || 0}元】物料要求为【${buyRequirement.price || 0}元】`,
+        result:that.form.lastPrice === buyRequirement.price || that.form.newPrice === buyRequirement.price,
+        fix:() => {
+            let _supplierRequirement = {...that.supplierRequirement}
+            let _buyRequirement = _supplierRequirement.buyRequirement
+            _buyRequirement.price = that.form.lastPrice || that.form.newPrice
+            that.supplierRequirement = _supplierRequirement
+          }
+      })
+
+      if(arrCase.find(c => !c.result)){
+        that.$confirm({
+          title: '提示',
+          content: (
+            <div class="__notice-wrapper">
+              {
+                arrCase.filter(c => !c.result).map(c => <p>{c.msg}</p>)
+              }
+              <p>
+                确定要使用供应商的要求吗？
+              </p>
+            </div>
+          ),
+          width: 650,
+          onOk: () => {
+            that.form = {
+              ...that.form,
+              buyRequirement ,
+              supplierId,
+              materialId,
+              packageType,
+              packageCount,
+              settlementMode,
+              invoiceType,
+              nakedPrice,
+              newPrice,
+              materialRate,
+              freightRate,
+              lowestNum,
+              deliveryCycle,
+              shelfLife,
+              manageBrands,
+              modelName:manageBrands.map(c => c.brandName).join(','),
+              modelType:manageBrands.map(c => [...c.manageBrandModels.map(c1 => c1.modelName)]).join(',')
+            }
+
+            arrCase.map(c => {
+              if(!c.result){
+                c.fix && c.fix()
+              }
+            })
+
+
+            that.validateMaterialRequiredAndSupplierRequired = true
+
+          },
+          onCancel() {},
+        })
+      }
+
+      // let errorCase = arrCase.find(c => !c.result)
+      // if(errorCase){
+      //   that.$message.info(errorCase.msg)
+      // }
+
+      return arrCase.every(c => c.result)
     }
   }
 }
