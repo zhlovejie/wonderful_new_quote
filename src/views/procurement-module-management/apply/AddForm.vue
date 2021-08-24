@@ -137,6 +137,7 @@
             :dataSource="dataSource"
             :pagination="false"
             size="small"
+            :scroll="{ x: 1650 }"
           >
             <div slot="order" slot-scope="text, record, index">
               <span>{{index + 1}}</span>
@@ -158,7 +159,7 @@
                   show-search
                   :value="record.materialCode"
                   placeholder="模糊搜索"
-                  style="width: 180px;"
+                  style="width:100%;"
                   :default-active-first-option="false"
                   :show-arrow="false"
                   :filter-option="false"
@@ -176,7 +177,7 @@
                     :key="item.__key"
                     :value="item.materialCodeFormat"
                   >
-                    {{ item.materialCodeFormat }}
+                    {{ item.__label }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -187,7 +188,7 @@
               <a-form-model-item v-if="!isDisabled">
                 <a-input-number
                   v-model="record.requestNum"
-                  style="width:80px;"
+                  style="width:100%;"
                   :min="0"
                   :step="1"
                   :precision="0"
@@ -201,7 +202,6 @@
             <div slot="requestTime" slot-scope="text, record, index">
               <a-form-model-item v-if="!isDisabled">
                 <a-date-picker
-                  style="width:160px !important;"
                   v-model="record.requestTime"
                   :show-time="{ format: 'HH:mm' }"
                   format="YYYY-MM-DD HH:mm"
@@ -284,25 +284,32 @@ import ChoiceOrderFactory from './ChoiceOrderFactory'
 const columns = [
   {
     title: '序号',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
+    width:60,
+    fixed: 'left'
   },
   {
     title: '需求单号',
     dataIndex: 'requestApplyNum',
-    scopedSlots: { customRender: 'requestApplyNum' }
+    scopedSlots: { customRender: 'requestApplyNum' },
+    width:200,
+    fixed: 'left'
   },
   {
     title: '需求类型',
     dataIndex: 'requestTypeText',
+    width:120,
   },
   {
     title: '关联单号',
     dataIndex: 'relatedNumText',
+    width:200,
   },
   {
     title: '物料代码',
     dataIndex: 'materialCode',
-    scopedSlots: { customRender: 'materialCode' }
+    scopedSlots: { customRender: 'materialCode' },
+    width:260,
   },
   {
     title: '物料名称',
@@ -311,26 +318,32 @@ const columns = [
   {
     title: '单位',
     dataIndex: 'mainUnit',
-    scopedSlots: { customRender: 'mainUnit' }
+    scopedSlots: { customRender: 'mainUnit' },
+    width:100,
   },
   {
     title: '当前库存',
     dataIndex: 'inventory',
-    scopedSlots: { customRender: 'inventory' }
+    scopedSlots: { customRender: 'inventory' },
+    width:100,
   },
   {
     title: '需求数量',
     dataIndex: 'requestNum',
     scopedSlots: { customRender: 'requestNum' },
+    width:100,
   },
   {
     title: '需求日期',
     dataIndex: 'requestTime',
     scopedSlots: { customRender: 'requestTime' },
+    width:200
   },
   {
     title: '操作',
     scopedSlots: { customRender: 'action' },
+    fixed: 'right',
+    width:80
   }
 ]
 
@@ -652,11 +665,27 @@ export default {
     },
     async materialFuzzyAction(wd,isFilter=false) {
       const that = this
+      /*校验是否中文名称组成 */
+      function ischina(str) {
+          var reg=/^[\u4E00-\u9FA5]+$/;   /*定义验证表达式*/
+          return reg.test(str);     /*进行验证*/
+      }
+
       const _searchParam = {
         current: 1,
         size: 50,
-        materialCode: wd
+        materialCode: wd,
+        materialName: wd
       }
+      if(ischina(wd)){
+        _searchParam.materialCode = undefined
+        _searchParam.materialName = wd
+      }else{
+        _searchParam.materialCode = wd
+        _searchParam.materialName = undefined
+      }
+
+
       that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
       // productMaterialInfoPageList
 
@@ -816,6 +845,11 @@ export default {
 }
 .card-item:last-child{
   margin-bottom: 0;
+}
+
+.card-item >>> .ant-calendar-picker{
+  min-width: none;
+  width: auto;
 }
 .__hd {
   font-weight: 700;
