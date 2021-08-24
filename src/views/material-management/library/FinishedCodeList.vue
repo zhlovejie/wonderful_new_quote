@@ -475,9 +475,6 @@ export default {
     },
     fetchTree() {
       const that = this
-      // routineMaterialInfoTwoTierTreeList({parentId:that.parentId}).then(res =>{
-      //   console.log(res)
-      // })
       productMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then(res => {
           const root = {
@@ -488,7 +485,7 @@ export default {
             code: '0',
             codeLength: 10,
             parentId: 0,
-            children: res.data.map(item => that.formatTreeData(item)),
+            children: Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : [],
             scopedSlots: { title: 'title' }
           }
           that.orgTree = [root]

@@ -157,9 +157,17 @@ export default {
         }
         routineMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
           .then(res => {
-            treeNode.dataRef.children = res.data.map(item => that.formatTreeData(item))
-            that.treeData = [...that.treeData]
-            that.dataList = that.generateList(that.treeData)
+            if(res && res.code === 200 && Array.isArray(res.data)){
+              treeNode.dataRef.children = res.data.map(item => that.formatTreeData(item))
+              that.treeData = [...that.treeData]
+              that.dataList = that.generateList(that.treeData)
+            }else{
+              treeNode.dataRef.isLeaf = true
+              treeNode.dataRef.children = []
+              that.treeData = [...that.treeData]
+              that.dataList = that.generateList(that.treeData)
+              that.$message.info(res.msg)
+            }
             resolve()
           })
           .catch(err => {

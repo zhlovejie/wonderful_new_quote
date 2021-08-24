@@ -231,7 +231,7 @@ export default {
           configName: '配置项',
           isLeaf: false,
           parentConfigId: null,
-          childrenList: res.data.map(item => that.formatTreeData(item))
+          childrenList: Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : []
         }
         // 去除没有参数的分支
         const shaking = node => {

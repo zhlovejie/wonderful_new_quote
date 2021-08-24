@@ -317,7 +317,7 @@ export default {
             title: '配置项',
             isLeaf: false,
             parentId: null,
-            children: res.data.map(item => that.formatTreeData(item))
+            children: Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : []
           }
           that.orgTree = [root]
           // if (that.parentId === -1) {
