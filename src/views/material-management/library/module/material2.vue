@@ -80,7 +80,7 @@
             </td>
           </tr>
           <tr>
-            <td>最新采购价格</td>
+            <td>最后一次采购时单价</td>
             <td>
               {{ Details.price }}
               <span style="float: right; width: 15%">&ensp;&ensp;</span>

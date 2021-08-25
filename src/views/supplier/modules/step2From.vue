@@ -90,7 +90,7 @@
           </tr>
 
           <tr>
-            <td>最新采购单价</td>
+            <td>最后一次采购时单价</td>
             <td v-if="Details.buyRequirement && Details.buyRequirement.price">
               {{ Details.buyRequirement.price }}
             </td>
@@ -330,22 +330,21 @@ export default {
       }
       that.form.validateFields((err, values) => {
         if (!err) {
-          if (
-            (that.Details.buyRequirement &&
-              that.Details.buyRequirement.maxDelivery &&
-              values.deliveryCycle > that.Details.buyRequirement.maxDelivery) ||
-            values.deliveryCycle > 30
-          ) {
+          let react =
+            that.Details.buyRequirement && that.Details.buyRequirement.maxDelivery
+              ? values.deliveryCycle > that.Details.buyRequirement.maxDelivery
+              : values.deliveryCycle > 30
+          if (react) {
             return this.$message.error(
               `交货周期不能大于${(that.Details.buyRequirement && that.Details.buyRequirement.maxDelivery) || 30}天`
             )
           }
-          if (
-            (that.Details.buyRequirement &&
-              that.Details.buyRequirement.minWarranty &&
-              values.shelfLife < that.Details.buyRequirement.minWarranty) ||
-            values.shelfLife < 180
-          ) {
+
+          let rest =
+            that.Details.buyRequirement && that.Details.buyRequirement.minWarranty
+              ? values.shelfLife < that.Details.buyRequirement.minWarranty
+              : values.shelfLife < 180
+          if (rest) {
             return this.$message.error(
               `质保期不能小于${(that.Details.buyRequirement && that.Details.buyRequirement.minWarranty) || 180}天`
             )

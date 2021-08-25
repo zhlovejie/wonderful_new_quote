@@ -83,7 +83,7 @@ const priewColumns = [
   },
   {
     align: 'center',
-    title: '最新报价',
+    title: '最后一次采购时单价',
     key: 'newPrice',
     dataIndex: 'newPrice',
   },
