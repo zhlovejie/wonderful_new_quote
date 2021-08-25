@@ -166,16 +166,16 @@
           <!-- 裸价标准 -->
           <tr v-if="isStandard">
             <td>当前类型</td>
-            <td v-if="!isDisabled">{{ Details.nakedPrice === 1 ? '含税运' : '不含税运' }}</td>
+            <td v-if="!isDisabled">{{ Details.nakedPrice === 1 ? '含税运' : '含税不含运' }}</td>
             <td v-else>
-              {{ Details.type === 1 ? '含税运' : '不含税运' }}
+              {{ Details.type === 1 ? '含税运' : '含税不含运' }}
             </td>
           </tr>
           <tr v-if="isStandard">
             <td>申请变更为</td>
-            <td v-if="!isDisabled">{{ Details.nakedPrice === 1 ? '不含税运' : '含税运' }}</td>
+            <td v-if="!isDisabled">{{ Details.nakedPrice === 1 ? '含税不含运' : '含税运' }}</td>
             <td v-else>
-              {{ Details.type === 1 ? '不含税运' : '含税运' }}
+              {{ Details.type === 1 ? '含税不含运' : '含税运' }}
             </td>
           </tr>
           <!-- 发票类型 -->

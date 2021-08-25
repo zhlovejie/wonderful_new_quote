@@ -90,7 +90,7 @@
             <td>裸价的标准</td>
             <td>
               <a-button type="link" @click="historys('standard')">
-                {{ Details.nakedPrice === 1 ? '含运费' : '不含运费' }}
+                {{ Details.nakedPrice === 1 ? '含税运' : '含税不含运' }}
               </a-button>
               <span style="float: right; width: 15%">
                 <a-button style="float: right" type="primary" @click="Procurement('standard')"

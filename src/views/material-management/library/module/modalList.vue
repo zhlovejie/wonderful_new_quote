@@ -1,11 +1,11 @@
 <template>
-  <a-modal :title="modalTitle" v-model="visible" :width="1000" :footer="null" :maskClosable="false">
+  <a-modal :title="modalTitle" v-model="visible" :width="1200" :footer="null" :maskClosable="false">
     <a-table :columns="priewColumns" rowKey="id" :dataSource="priewData" :pagination="false" :loading="loading">
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
       </div>
       <div slot="beforeType" slot-scope="text, record, index">
-        <span v-if="isStandard">{{ record.type === 0 ? '含运费' : '不含运费' }}</span>
+        <span v-if="isStandard">{{ record.type === 1 ? '含税运' : '含税不含运' }}</span>
         <span v-if="isStock">{{ record.number }}</span>
         <span v-if="isTaxRate">{{ record.taxRate }}%</span>
         <span v-if="isSupplier">{{ record.supplierName }}</span>
@@ -24,7 +24,7 @@
         {{ getStateText(text) }}
       </div>
       <div slot="afterType" slot-scope="text, record, index">
-        <span v-if="isStandard">{{ record.ctype === 0 ? '含运费' : '不含运费' }}</span>
+        <span v-if="isStandard">{{ record.ctype === 1 ? '含税运' : '含税不含运' }}</span>
         <span v-if="isStock">{{ record.cnumber }}</span>
         <span v-if="isTaxRate">{{ record.ctaxRate }}%</span>
         <span v-if="isSupplier">{{ record.csupplierName }}</span>
@@ -91,10 +91,28 @@ const priewColumns = [
   },
   {
     align: 'center',
-    title: '审批状态',
+    title: '审批人',
+    key: 'approverName',
+    dataIndex: 'approverName',
+  },
+  {
+    align: 'center',
+    title: '审批结果',
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
+  },
+  {
+    align: 'center',
+    title: '审批原因',
+    key: 'approverReason',
+    dataIndex: 'approverReason',
+  },
+  {
+    align: 'center',
+    title: '审批时间',
+    key: 'approverDate',
+    dataIndex: 'approverDate',
   },
 ]
 

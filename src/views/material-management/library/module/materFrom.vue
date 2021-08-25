@@ -140,7 +140,7 @@
                     { initialValue: 1, rules: [{ required: true, message: '请选择裸价的标准' }] },
                   ]"
                 >
-                  <a-radio :value="1"> 含运税 </a-radio>
+                  <a-radio :value="1"> 含税运 </a-radio>
                   <a-radio :value="2"> 含税不含运</a-radio>
                 </a-radio-group>
               </a-form-item>

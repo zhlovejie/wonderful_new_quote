@@ -71,7 +71,7 @@
             </td>
           </tr>
           <tr>
-            <td>指定品牌及型号</td>
+            <td>品牌及型号</td>
             <td v-if="Details.buyRequirement && Details.buyRequirement.buyRequirementBrands.length > 0">
               {{
                 Details.buyRequirement.buyRequirementBrands
@@ -134,9 +134,9 @@
             <td v-if="Details.buyRequirement && Details.buyRequirement.nakedPrice !== null">
               {{
                 Details.buyRequirement.nakedPrice === 1
-                  ? '含运费'
+                  ? '含税运'
                   : Details.buyRequirement.nakedPrice === 2
-                  ? '不含运费'
+                  ? '含税不含运'
                   : ''
               }}
             </td>

@@ -74,8 +74,8 @@
               }}
             </td>
             <td>
-              <a-button @click="Addmodel(item)" style="margin-right: 10px">添加品牌型号</a-button>
-              <a-button @click="modelDel(index)">删除</a-button>
+              <a-button @click="Addmodel(item)" v-if="!isEdit" style="margin-right: 10px">添加品牌型号</a-button>
+              <a-button @click="modelDel(index)" v-if="!isEdit">删除</a-button>
             </td>
           </tr>
         </table>
@@ -879,7 +879,7 @@
                 <a-col :span="12">
                   <a-form-model-item ref="supplierEmail" label="官方邮箱" prop="supplierEmail">
                     <a-input
-                      placeholder="请输入售后微信号"
+                      placeholder="请输入官方邮箱"
                       v-model="form.supplierEmail"
                       :disabled="isEdit"
                       :allowClear="true"
@@ -1718,6 +1718,12 @@ export default {
           if (this.type === 'mation') {
             detail.supplierScale = 1
           }
+
+          let Year = this.Position.some((i) => i.text === detail.establishYear)
+          detail.establishYear = Year ? detail.establishYear : undefined
+          let Level = this.Warehouse.some((i) => i.text === detail.sincerityLevel)
+          detail.sincerityLevel = Level ? detail.sincerityLevel : undefined
+
           that.form = { ...that.form, ...detail }
           this.form.endTime = this.form.endTime ? moment(this.form.endTime) : undefined
           that.brandList = detail.manageSupplierMaterials
