@@ -335,7 +335,6 @@ export default {
       this.buyRequirementBrands = this.buyRequirementBrands.filter((i) => i.brandId !== index)
     },
     Procureadd() {
-      buyRequirementBrands
       let arrs = []
       let ret = this.modList.toString()
       if (ret === '0') {
