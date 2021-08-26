@@ -495,6 +495,7 @@ export default {
         // })
 
         await getDictionary({ text: '采购包装类型' }).then(res => (that.packingType = res.data))
+
         //根据物料查询相应的供应商列表
         await quotationSupplierList({ materialId: that.record.materialId }).then(res => {
           that.supplierList = res.data
@@ -541,9 +542,16 @@ export default {
       that.materialRequirement = materialRequirement
       let {supplierId,supplierName} = that.materialRequirement
 
+      //是否指定供应商
       that.isDesignatedSupplier = (supplierId !== undefined && supplierId !== null) &&  +supplierId !== 0
+      //没有物料要求的时候  可选供应商 是同部门该物料的供应商都可以用
+      //有采购要求 并且指定供应商了 只能选择被指定的几个供应商 且是自己部门的数据
       if(that.isDesignatedSupplier){
         // that.form = {...that.form}
+        let supplierArr = supplierId.split(',').map(v => +v)
+        that.supplierList = that.supplierList.filter(c => {
+          return supplierArr.includes(+c.id)
+        })
       }
     },
     async initMaterialRequired() {
@@ -832,7 +840,7 @@ export default {
           })
         }
       }
-      if (isExists(buyRequirement.nakedPrice) && buyRequirement.nakedPrice >= 1) {
+      if (isExists(buyRequirement.nakedPrice) && +buyRequirement.nakedPrice >= 1) {
         //对比裸价标准
         const mapNakedPrice = { 1: '含税运', 2: '含税不含运' }
         arrCase.push({
@@ -848,7 +856,7 @@ export default {
           }
         })
       }
-      if (isExists(buyRequirement.invoiceType) && buyRequirement.invoiceType >= 0) {
+      if (isExists(buyRequirement.invoiceType) && +buyRequirement.invoiceType > 0) {
         //对比发票类型
         const mapInvoiceType = { 0: '不限', 1: '增值税专用发票', 2: '普通发票' }
         arrCase.push({
@@ -903,6 +911,21 @@ export default {
           }
         })
       }
+      debugger
+      if(isExists(buyRequirement.taxRate) && +buyRequirement.taxRate >=0 ){
+        //对比物料税率
+        arrCase.push({
+          msg: `物料税率不匹配，供应商提供为【${materialRate}%】物料要求为【${buyRequirement.taxRate}%】`,
+          result: +materialRate === +buyRequirement.taxRate,
+          fix: () => {
+            that.form = {
+              ...that.form,
+              materialRate: buyRequirement.taxRate
+            }
+          }
+        })
+      }
+
       //物料价格模式(1是固定价格模式，2是实时价格模式)
       //if(buyRequirement.priceModel === 1 && buyRequirement.price ){}
       if (isExists(buyRequirement.price) && buyRequirement.price > 0) {

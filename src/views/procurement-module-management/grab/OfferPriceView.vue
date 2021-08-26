@@ -62,7 +62,7 @@
             <a-col
               :span="4"
               class="lbl"
-            >最新报价：</a-col>
+            >抢单报价：</a-col>
             <a-col :span="8">{{`${detail.detail.newPrice}` | moneyFormatNumber}}</a-col>
           </a-row>
           <a-row :gutter="[16,16]">

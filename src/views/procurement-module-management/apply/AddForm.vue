@@ -236,17 +236,11 @@
           <table class="custom-table custom-table-border">
             <tr>
               <td style="width:150px;">制单人</td>
-              <td >{{detail.createdName || userInfo.trueName}}</td>
+              <td >{{ detail.updateName || detail.createdName}}</td>
               <td style="width:150px;">制单时间</td>
-              <td style="width:260px;">{{ detail.createdTime}}</td>
+              <td style="width:260px;">{{ detail.updateTime || detail.createdTime}}</td>
             </tr>
 
-            <tr v-if="detail.modifyTime">
-              <td style="width:150px;">修改人</td>
-              <td >{{detail.modifierName}}</td>
-              <td style="width:150px;">修改时间</td>
-              <td style="width:260px;">{{ detail.modifyTime}}</td>
-            </tr>
           </table>
         </div>
       </div>
@@ -743,9 +737,12 @@ export default {
       let result = []
       if(isFilter){
         //显示 常规和成品的 自制和委外件，有规格型号的
-        result = [...res[0],...res[1]].filter(item => {
-          return [1,3].includes(+item.materialSource) && typeof item.specification === 'string' && item.specification.length > 0
-        })
+        // result = [...res[0],...res[1]].filter(item => {
+        //   return [1,3].includes(+item.materialSource) && typeof item.specification === 'string' && item.specification.length > 0
+        // })
+
+        //不限制
+        result = [...res[0],...res[1]]
       }else{
         //显示 常规件 ，不过滤
         result = [...res[0]]

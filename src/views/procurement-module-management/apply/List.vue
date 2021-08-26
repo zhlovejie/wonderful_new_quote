@@ -74,10 +74,11 @@
         >
           <!-- <template v-if="$auth('requestApply:all')"> -->
           <a-tab-pane
-            tab="全部"
+            tab="我的"
             :key="1"
           />
 
+          <template v-if="$auth('requestApply:approval')">
           <a-tab-pane
             tab="待审批"
             :key="2"
@@ -91,6 +92,7 @@
             tab="不通过"
             :key="5"
           />
+          </template>
         </a-tabs>
         <a-table
           :columns="columns"

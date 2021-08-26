@@ -1,4 +1,5 @@
 <template>
+<a-spin :spinning="spinning">
   <div class="apply-form-view-wrapper">
     <div class="card-item">
       <div class="__hd">申请人信息</div>
@@ -83,13 +84,39 @@
         </a-table>
       </div>
     </div>
+    <div class="card-item">
+      <div class="__hd">需求物料</div>
+      <div class="__bd">
+        <table class="custom-table custom-table-border" v-for="item in priewData" :key="item.id">
+          <tr>
+            <td style="width:150px;">审核结果</td>
+            <td >
+              item
+            </td>
+          </tr>
+          <tr>
+            <td style="width:150px;">审核理由</td>
+            <td >
+              {{item.code}}
+            </td>
+          </tr>
+          <tr>
+            <td style="width:150px;">审核人/审核时间</td>
+            <td >
+              {{item.userName}}/{{item.createTime}}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
+</a-spin>
 </template>
 <script>
 import moment from 'moment'
 
 import { requestApplyDetail } from '@/api/procurementModuleManagement'
-
+import {findApprovedNodeList} from '@/api/common'
 const columns = [
   {
     title: '序号',
@@ -148,7 +175,13 @@ export default {
       spinning: false,
       detail: {},
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      dataSource: []
+      dataSource: [],
+      priewData:[]
+    }
+  },
+  computed:{
+    lastPriewData(){
+
     }
   },
   methods: {
@@ -159,7 +192,15 @@ export default {
       that.dataSource = []
       that.visible = true
 
-      const result = await requestApplyDetail({ id: record.id }).then(res => res.data)
+      that.spinning = true
+      const result = await requestApplyDetail({ id: record.id }).then(res => res.data).catch(err => {
+        console.log(err)
+        return null
+      })
+      if(result === null){
+        that.$message.error('requestApplyDetail 接口出错')
+        return
+      }
       that.detail = result
       that.dataSource = [
         {
@@ -175,6 +216,12 @@ export default {
       if(!that.detail.relatedNum){ //不关联订单的，不显示 关联订单列
         that.columns = that.columns.filter(item => item.dataIndex !== 'relatedNumText')
       }
+      // 获取审批预览信息
+      that.priewData = await findApprovedNodeList({instanceId: that.detail.instanceId})
+      .then(res => res.data).catch(err => {
+        console.log(err)
+        return []
+      })
 
     }
   }
