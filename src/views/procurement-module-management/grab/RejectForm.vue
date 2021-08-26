@@ -94,7 +94,7 @@ export default {
               that.spinning = false
               that.$message.info(res.msg)
               if (res.code === 200) {
-                that.$emit('finish')
+                that.$emit('finished')
                 that.handleCancel()
               }
             })

@@ -27,11 +27,13 @@
         slot-scope="text, record, index"
       >
         <!--  approveStatus 报价单审核状态：1待审核，2通过，3不通过，4不通过已报价，5异常，6异常已处理 -->
-        <template v-if="record.approveStatus === 1">
+        <template v-if="record.approveStatus === 1 && $auth('quotation:approval')">
           <a @click="doAction('view',record)">查看</a>
           <a-divider type="vertical" />
           <a @click="doAction('approval',record)">审批</a>
         </template>
+
+
         <template v-if="record.approveStatus === 2">
           <a @click="doAction('view',record)">查看</a>
         </template>

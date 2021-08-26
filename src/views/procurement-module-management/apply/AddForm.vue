@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1050"
+    :width="1250"
     :visible="visible"
     :destroyOnClose="true"
     :footer="footer"
@@ -82,7 +82,7 @@
                 </span>
               </td>
             </tr>
-            <tr >
+            <tr v-if="isRelatedSellOrder">
               <td style="width:150px;">关联单号</td>
               <td >
                 <!-- <a-form-model-item prop="relatedNum">
@@ -95,7 +95,7 @@
                 </a-form-model-item> -->
 
                 <a-form-model-item prop="relatedNum" v-if="!isDisabled">
-                  <a-select v-if="isRelatedSellOrder" style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
+                  <a-select  style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
                     <a-select-option
                       v-for="item in relatedNumList"
                       :key="item.id"
@@ -137,7 +137,6 @@
             :dataSource="dataSource"
             :pagination="false"
             size="small"
-            :scroll="{ x: 1650 }"
           >
             <div slot="order" slot-scope="text, record, index">
               <span>{{index + 1}}</span>
@@ -159,7 +158,7 @@
                   show-search
                   :value="record.materialCode"
                   placeholder="模糊搜索"
-                  style="width:100%;"
+                  style="width:250px;"
                   :default-active-first-option="false"
                   :show-arrow="false"
                   :filter-option="false"
@@ -188,7 +187,7 @@
               <a-form-model-item v-if="!isDisabled">
                 <a-input-number
                   v-model="record.requestNum"
-                  style="width:100%;"
+                  style="width:80px;"
                   :min="0"
                   :step="1"
                   :precision="0"
@@ -206,6 +205,7 @@
                   :show-time="{ format: 'HH:mm' }"
                   format="YYYY-MM-DD HH:mm"
                   placeholder="需求日期"
+                  style="min-width:auto;width:150px !important;"
                 />
               </a-form-model-item>
               <span v-else>
@@ -213,7 +213,7 @@
               </span>
             </div>
             <div slot="mainUnit" slot-scope="text, record, index">
-              {{ {1:'支',2:'把',3:'件'}[text] }}
+              {{ {1:'支',2:'把',3:'件'}[text] || text }}
             </div>
 
             <div slot="inventory" slot-scope="text, record, index">
@@ -226,7 +226,7 @@
             type="dashed"
             icon="plus"
             @click="materialAction('add')"
-            v-if="(isAdd) && form.requestType"
+            v-if="(isAdd) && form.requestType && dataSource.length < 20"
           >新增需求物料</a-button>
         </div>
       </div>
@@ -238,11 +238,20 @@
               <td style="width:150px;">制单人</td>
               <td >{{detail.createdName || userInfo.trueName}}</td>
               <td style="width:150px;">制单时间</td>
-              <td style="width:260px;">{{detail.createdTime}}</td>
+              <td style="width:260px;">{{ detail.createdTime}}</td>
+            </tr>
+
+            <tr v-if="detail.modifyTime">
+              <td style="width:150px;">修改人</td>
+              <td >{{detail.modifierName}}</td>
+              <td style="width:150px;">修改时间</td>
+              <td style="width:260px;">{{ detail.modifyTime}}</td>
             </tr>
           </table>
         </div>
       </div>
+
+
 
       <div class="card-item" v-if="isDisabled && Array.isArray(detail.rejects) && detail.rejects.length > 0">
         <div class="__hd">驳回记录</div>
@@ -286,64 +295,53 @@ const columns = [
     title: '序号',
     scopedSlots: { customRender: 'order' },
     width:60,
-    fixed: 'left'
   },
   {
     title: '需求单号',
     dataIndex: 'requestApplyNum',
     scopedSlots: { customRender: 'requestApplyNum' },
     width:200,
-    fixed: 'left'
   },
   {
     title: '需求类型',
     dataIndex: 'requestTypeText',
-    width:120,
   },
   {
     title: '关联单号',
     dataIndex: 'relatedNumText',
-    width:200,
   },
   {
     title: '物料代码',
     dataIndex: 'materialCode',
     scopedSlots: { customRender: 'materialCode' },
-    width:260,
   },
-  {
-    title: '物料名称',
-    dataIndex: 'materialName',
-  },
+  // {
+  //   title: '物料名称',
+  //   dataIndex: 'materialName',
+  // },
   {
     title: '单位',
     dataIndex: 'mainUnit',
     scopedSlots: { customRender: 'mainUnit' },
-    width:100,
   },
   {
     title: '当前库存',
     dataIndex: 'inventory',
     scopedSlots: { customRender: 'inventory' },
-    width:100,
   },
   {
     title: '需求数量',
     dataIndex: 'requestNum',
     scopedSlots: { customRender: 'requestNum' },
-    width:100,
   },
   {
     title: '需求日期',
     dataIndex: 'requestTime',
     scopedSlots: { customRender: 'requestTime' },
-    width:200
   },
   {
     title: '操作',
     scopedSlots: { customRender: 'action' },
-    fixed: 'right',
-    width:80
   }
 ]
 
@@ -422,9 +420,22 @@ export default {
     },
     columns(){
       let col = [...columns]
-      if(this.isDisabled){
-        return col.slice(0,-1)
+      if(this.isDisabled){ // 查看是 不显示操作列
+        col = col.slice(0,-1)
       }
+      if(!this.isRelatedSellOrder){ //不关联订单的，不显示 关联订单列
+        let idx = col.findIndex(item => item.dataIndex === 'relatedNumText')
+        if(idx >= 0){
+          col.splice(idx,1)
+        }
+      }
+      if(this.isAdd){ //新增需求单号系统自动生成，先不显示，编辑和查看 显示
+        let idx = col.findIndex(item => item.dataIndex === 'requestApplyNum')
+        if(idx >= 0){
+          col.splice(idx,1)
+        }
+      }
+
       return col
     },
     footer() {
@@ -472,7 +483,7 @@ export default {
         let requestTypeItem = that.$refs['requestType'].getTarget()
         return requestTypeItem && requestTypeItem.text && requestTypeItem.text.includes('销售订单')
       }
-      return false
+      return !!relatedNum
     }
   },
   methods: {
@@ -503,6 +514,14 @@ export default {
           that.$message.info('采购申请单详情接口【/requestApply】报错，请联系管理员')
           return
         }
+
+        let materialRequirement = await getBuyRequirement({ materialId: result.materialId })
+        .then((res) => res.data || {})
+        .catch(err => {
+          console.log(err)
+          return {}
+        })
+
         that.detail = result
         that.form = {
           ...result,
@@ -512,7 +531,8 @@ export default {
             userId:result.proposerId,
             userName:result.proposerName
           },
-          requestTime:moment(result.requestTime)
+          requestTime:moment(result.requestTime),
+
         }
         that.dataSource = [
           {
@@ -521,7 +541,9 @@ export default {
             mainUnit:that.detail.unit,
             inventory:that.detail.inventory || 0,
             requestTime:moment(that.detail.requestTime),
-            unsafetyInventory:that.detail.requestNum > that.detail.inventory ? 1 : 2,
+            unsafetyInventory:that.detail.requestNum > (materialRequirement.pageNum || 0) ? 1 : 2,
+            __maxBuyNumber:materialRequirement.pageNum || 0,
+            relatedNumText:result.relatedNum
           }
         ]
       }
@@ -531,8 +553,9 @@ export default {
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let {depId,depName,userId,userName} = that.form.applyUser
-          let {applyUser,reason,remark,requestType,relatedNum,requestTime} = that.form
+          let {id,applyUser,reason,remark,requestType,relatedNum,requestTime} = that.form
           let baseInfo = {
+            id,
             reason,
             remark,
             requestType,
@@ -541,14 +564,15 @@ export default {
             applyDepId:depId,
             applyDepName:depName,
             proposerId:userId,
-            proposerName:userName
+            proposerName:userName,
+            saveType:saveType
           }
           let arr = []
           that.dataSource.map(item => {
             let param = {
               ...item,
-              ...baseInfo,
-              saveType:saveType
+              // ...baseInfo,
+              // saveType:saveType
             }
             param.requestTime = param.requestTime.format('YYYY-MM-DD HH:mm:ss')
             arr.push(param)
@@ -558,29 +582,40 @@ export default {
 
           let api = that.isEdit ? requestApplyUpdate : requestApplyAdd
 
-          const result = await Promise.all(arr.map(item => {
-            return api(item).then(res => {
-              console.log(res)
-              return res
-            })
-          })).catch(err => {
+          api({...baseInfo,requestManageBos:arr}).then(res => {
             that.spinning = false
-            that.$message.info(err)
-            return null
-          })
-          that.spinning = false
-
-          console.log(result)
-          if(result !== null){
-              let msg = ''
-              result.filter(res => res.code !== 200).map(res => {
-                msg += `${res.msg}`
-              })
-              msg = msg || '操作成功'
-              that.$message.info(msg)
+            that.$message.info(res.msg)
+            if(+res.code === 200){
               that.$emit('finish')
               that.handleCancel()
-          }
+            }
+            return res
+          })
+
+
+          // const result = await Promise.all(arr.map(item => {
+          //   return api(item).then(res => {
+          //     console.log(res)
+          //     return res
+          //   })
+          // })).catch(err => {
+          //   that.spinning = false
+          //   that.$message.info(err)
+          //   return null
+          // })
+          // that.spinning = false
+
+          // console.log(result)
+          // if(result !== null){
+          //     let msg = ''
+          //     result.filter(res => res.code !== 200).map(res => {
+          //       msg += `${res.msg}`
+          //     })
+          //     msg = msg || '操作成功'
+          //     that.$message.info(msg)
+          //     that.$emit('finish')
+          //     that.handleCancel()
+          // }
 
           // priceQuotedZktListAddOrUpdate(params)
           //   .then(res => {
@@ -759,7 +794,8 @@ export default {
       target.mainUnit = material.mainUnit
       target.specification = 'specification' in material  ? (material.specification || material.specifications) : '无'
       target.materialCode = material.materialCodeFormat
-      target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
+      // target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
+      target.inventory = materialRequirement.pageNum || 0
       target.__maxBuyNumber = materialRequirement.pageNum || 0
       that.dataSource = dataSource
 

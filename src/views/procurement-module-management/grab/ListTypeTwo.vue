@@ -29,8 +29,8 @@
         <a @click="doAction('view',record)">查看</a>
         <a-divider type="vertical" />
         <a @click="doAction('offer',record)">提交异议</a>
-        <!-- <a-divider type="vertical" />
-        <a @click="doAction('reject',record)">驳回</a> -->
+        <a-divider type="vertical" />
+        <a @click="doAction('reject',record)">驳回</a>
       </div>
 
       <div

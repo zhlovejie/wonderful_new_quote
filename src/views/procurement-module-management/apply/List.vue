@@ -82,6 +82,7 @@
             tab="待审批"
             :key="2"
           />
+
           <a-tab-pane
             tab="通过"
             :key="4"
@@ -131,7 +132,8 @@
             <template v-if="+activeKey === 1">
               <a @click="doAction('view',record)">查看</a>
               <!--待审批 -->
-              <template v-if="+record.approveStatus === 1 && +record.createdId === +userInfo.id">
+              <!-- <template v-if="+record.approveStatus === 1 && +record.createdId === +userInfo.id"> -->
+              <template v-if="+record.approveStatus === 1 || +record.approveStatus === 2">
                 <a-divider type="vertical" />
                 <a @click="doAction('cancel',record)">取消申请</a>
               </template>
@@ -151,9 +153,7 @@
               </template>
             </template>
 
-            <template v-if="+activeKey === 2">
-              <a @click="doAction('view',record)">查看</a>
-              <a-divider type="vertical" />
+            <template v-if="+activeKey === 2 && $auth('requestApply:approval')">
               <a @click="doAction('approval',record)">审批</a>
             </template>
 
@@ -620,7 +620,7 @@ export default {
         return
       }else if(type === 'cancel'){
         that.confirmModel({
-          content:'取消申请后，需求单将在不通过列表中出现，你可编辑数据后重新提交审核。确认执行取消操作吗?',
+          content:'取消申请后，需求单将在全部列表中出现，你可编辑数据后重新提交审核。确认执行取消操作吗?',
           success:() => {
             that.selectedRows = [record]
             let promiseList = that.selectedRows.map(row => {

@@ -70,7 +70,7 @@
                 <td>{{detail.detail.model}}</td>
               </tr>
               <tr>
-                <td style="width:150px;">最新采购单价</td>
+                <td style="width:150px;">最后一次采购单价</td>
                 <td>
                   {{`${form.lastPrice}元`}}
                   <!-- <a-form-model-item prop="lastPrice">
@@ -103,7 +103,8 @@
                 <td style="width:150px;">最新报价</td>
                 <td>
                   <a-form-model-item prop="newPrice" >
-                    <a-input-number
+                    {{form.newPrice | moneyFormatNumber}}
+                    <!-- <a-input-number
                       placeholder="最新报价"
                       v-model="form.newPrice"
                       style="width:100%;"
@@ -112,7 +113,7 @@
                       :precision="2"
                       :formatter="value => `${value}元`"
                       :parser="value => value.replace('元', '')"
-                    />
+                    /> -->
                   </a-form-model-item>
                 </td>
               </tr>
@@ -147,21 +148,23 @@
               <tr>
                 <td style="width:150px;">预计到货日期</td>
                 <td>
-                  <a-form-model-item prop="deliveryDate">
-                    <a-date-picker
+                  <a-form-model-item >
+                    {{ (form.deliveryDate && form.deliveryDate.format && form.deliveryDate.format('YYYY-MM-DD HH:mm:ss')) || form.deliveryDate }}
+                    <!-- <a-date-picker
                       style="width:100%;"
                       v-model="form.deliveryDate"
                       format="YYYY-MM-DD"
                       placeholder="预计到货日期"
-                    />
+                    /> -->
                   </a-form-model-item>
                 </td>
               </tr>
               <tr>
                 <td style="width:150px;">采购总金额</td>
                 <td>
-                  <a-form-model-item prop="amount" >
-                    <a-input-number
+                  <a-form-model-item  >
+                    {{form.amount | moneyFormatNumber}}
+                    <!-- <a-input-number
                       placeholder="采购总金额"
                       v-model="form.amount"
                       style="width:100%;"
@@ -170,7 +173,7 @@
                       :precision="2"
                       :formatter="value => `${value}元`"
                       :parser="value => value.replace('元', '')"
-                    />
+                    /> -->
                   </a-form-model-item>
                 </td>
               </tr>
@@ -220,9 +223,9 @@ export default {
       },
       rules: {
         // lastPrice:[{ required: true, message: '请输入最新采购单价' }],
-        newPrice: [{ required: true, message: '请输入最新报价' }],
-        deliveryDate: [{ required: true, message: '请选择预计到货日期' }],
-        amount: [{ required: true, message: '请输入采购总金额' }],
+        // newPrice: [{ required: true, message: '请输入最新报价' }],
+        // deliveryDate: [{ required: true, message: '请选择预计到货日期' }],
+        // amount: [{ required: true, message: '请输入采购总金额' }],
         // fileUrl: [{ required: true, message: '请上传采购合同' }],
       },
       cardBordered: true,
@@ -283,7 +286,6 @@ export default {
   },
   methods: {
     async query(type, record) {
-      debugger
       const that = this
       that.type = type
       that.record = { ...record }
@@ -338,7 +340,7 @@ export default {
           supplierName:d2.supplierName,
           quotationId:d2.id,
           deliveryDate:moment(d2.modifyTime).add('days',+d2.deliveryCycle),
-          amount: that.detail.requestNum * newLastPrice
+          amount: that.detail.requestNum * d2.newPrice
         }
 
     },

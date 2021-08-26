@@ -109,13 +109,13 @@ export default {
       const that = this
       const target = that.depList.find(dep => dep.id === depId)
       that.initUsers(depId)
-      that.$emit('update:info', { depId, depName: target.departmentName, userId: undefined, userName: undefined })
+      that.$emit('update:info', { depId, depName: target ? target.departmentName : undefined, userId: undefined, userName: undefined })
     },
     userChange(userId) {
       const that = this
       const target = that.userList.find(u => u.id === userId)
       that.$nextTick(() => {
-        that.$emit('update:info', { ...that.selfInfo, userId, userName: target.trueName })
+        that.$emit('update:info', { ...that.selfInfo, userId, userName: target ? target.trueName : undefined })
       })
     }
   }

@@ -96,13 +96,13 @@
       <a-card :bordered="cardBordered">
         <a-form-model-item label="发票类型" prop="invoiceType">
           <a-select v-model="form.invoiceType" placeholder="发票类型">
-            <a-select-option :value="1">
+            <a-select-option :value="0">
               不限
             </a-select-option>
-            <a-select-option :value="2">
+            <a-select-option :value="1">
               增值税专用发票
             </a-select-option>
-            <a-select-option :value="3">
+            <a-select-option :value="2">
               普通发票
             </a-select-option>
           </a-select>
@@ -262,7 +262,13 @@ export default {
       const that = this
       that.record = {...record}
       that.visible = true
-      that.form = {}
+      that.form = {
+        requestId:that.record.id,
+        materialId:that.record.materialId,
+        materialName:that.record.materialName,
+        materialModelType:that.record.materialModelType,
+        freightRate:0
+      }
 
       let materialRequirement = await getBuyRequirement({ materialId: that.record.materialId })
         .then(res => res.data)
@@ -272,33 +278,24 @@ export default {
         })
 
 
-        if(materialRequirement === null){
-          let msg = `物料名称：${that.record.materialName} 要求获取失败`
-          that.$message.error(msg);
-          return
+        if(materialRequirement){
+          that.form = {
+              ...that.form,
+              lastPrice:materialRequirement.price || 0,
+              invoiceType:materialRequirement.invoiceType, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
+              deliveryCycle:materialRequirement.maxDelivery,//交货期
+              lowestNum:materialRequirement.maxPurchase,//采购量
+              shelfLife:materialRequirement.minWarranty,//最短质保期
+              nakedPrice:materialRequirement.nakedPrice,//裸价的标准(0为含运费，1为不含运费)
+              packageType:materialRequirement.packMethod,//包装方式
+              // packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
+              packageCount:materialRequirement.pageNum,//包内数量
+              newPrice:materialRequirement.price || 0,//最新采购价格
+              materialRate:materialRequirement.taxRate,//物料税率
+
+              manageBrands:materialRequirement.buyRequirementBrands || []
+            }
         }
-
-        that.form = {
-            requestId:that.record.id,
-            materialId:that.record.materialId,
-            materialName:that.record.materialName,
-            materialModelType:that.record.materialModelType,
-            // supplierId:materialRequirement.supplierId,
-            lastPrice:materialRequirement.price || 0,
-            invoiceType:materialRequirement.invoiceType, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
-            deliveryCycle:materialRequirement.maxDelivery,//交货期
-            lowestNum:materialRequirement.maxPurchase,//采购量
-            shelfLife:materialRequirement.minWarranty,//最短质保期
-            nakedPrice:materialRequirement.nakedPrice,//裸价的标准(0为含运费，1为不含运费)
-            packageType:materialRequirement.packMethod,//包装方式
-            // packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
-            packageCount:materialRequirement.pageNum,//包内数量
-            newPrice:materialRequirement.price || 0,//最新采购价格
-            materialRate:materialRequirement.taxRate,//物料税率
-
-            manageBrands:materialRequirement.buyRequirementBrands || [],
-            freightRate:0
-          }
 
       //根据物料查询相应的供应商列表
       quotationSupplierList({materialId:that.record.materialId}).then(res => {

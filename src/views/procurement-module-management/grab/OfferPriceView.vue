@@ -39,7 +39,7 @@
               :span="4"
               class="lbl"
             >发票类型：</a-col>
-            <a-col :span="8">{{`${{1:'不限',2:'增值税专用发票',3:'普通发票'}[detail.detail.invoiceType]}`}}</a-col>
+            <a-col :span="8">{{`${{0:'不限',1:'增值税专用发票',2:'普通发票'}[detail.detail.invoiceType]}`}}</a-col>
           </a-row>
           <a-row :gutter="[16,16]">
             <a-col
@@ -51,14 +51,14 @@
               :span="4"
               class="lbl"
             >裸价标准：</a-col>
-            <a-col :span="8">{{`${{0:'含税运',1:'含税不含运'}[detail.detail.nakedPrice]}`}}</a-col>
+            <a-col :span="8">{{`${{1:'含税运',2:'含税不含运'}[detail.detail.nakedPrice]}`}}</a-col>
           </a-row>
           <a-row :gutter="[16,16]">
             <a-col
               :span="4"
               class="lbl"
             >包装方式：</a-col>
-            <a-col :span="8">{{`${detail.detail.packageType}`}}</a-col>
+            <a-col :span="8">{{`${detail.detail.packageCount}/${detail.detail.packageType}`}}</a-col>
             <a-col
               :span="4"
               class="lbl"
@@ -70,7 +70,11 @@
               :span="4"
               class="lbl"
             >品牌型号：</a-col>
-            <a-col :span="8">{{`${detail.detail.model}`}}</a-col>
+            <a-col :span="8">
+              <div v-for="s in String(detail.detail.model).split(';')">
+                {{s}}
+              </div>
+            </a-col>
             <a-col
               :span="4"
               class="lbl"

@@ -171,6 +171,11 @@ export default {
           unsafetyInventory: that.detail.requestNum > that.detail.inventory ? 1 : 2
         }
       ]
+
+      if(!that.detail.relatedNum){ //不关联订单的，不显示 关联订单列
+        that.columns = that.columns.filter(item => item.dataIndex !== 'relatedNumText')
+      }
+
     }
   }
 }
