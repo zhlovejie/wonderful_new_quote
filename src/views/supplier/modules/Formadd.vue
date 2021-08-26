@@ -1599,9 +1599,14 @@ export default {
     brandAdd() {
       let that = this
       if (JSON.stringify(that.Brandform.materialItem) !== '{}') {
-        that.brandList.push(that.Brandform.materialItem)
+        let react = that.brandList.some((item) => item.materialCode === that.Brandform.materialItem.materialCode)
+        if (!react) {
+          that.brandList.push(that.Brandform.materialItem)
+        } else {
+          that.$message.error('此物料已添加')
+        }
       } else {
-        that.$message.info('请先选择供应物料')
+        that.$message.error('请先选择供应物料')
       }
     },
     //选择物料分类
@@ -1693,6 +1698,7 @@ export default {
       if (type !== 'add') {
         let detail = await getDetail({ id: record.id }).then((res) => res.data)
         that.$nextTick(() => {
+          detail.supplierType = detail.supplierType ? detail.supplierType : 0
           detail.paymentCycleId = Number(detail.paymentCycleId)
           if (detail.supplierScale === 1 && detail.licenseUrl !== null) {
             let _sp = detail.licenseUrl.split(',')
