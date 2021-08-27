@@ -210,7 +210,7 @@
                 :span="4"
                 class="lbl"
               >发票类型：</a-col>
-              <a-col :span="8">{{`${{1:'不限',2:'增值税专用发票',3:'普通发票'}[item.invoiceType]}`}}</a-col>
+              <a-col :span="8">{{`${{0:'不限',1:'增值税专用发票',2:'普通发票'}[item.invoiceType]}`}}</a-col>
             </a-row>
             <a-row :gutter="[16,16]">
               <a-col

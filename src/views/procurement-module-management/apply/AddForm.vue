@@ -230,7 +230,7 @@
           >新增需求物料</a-button>
         </div>
       </div>
-      <div class="card-item">
+      <div class="card-item" v-if="isDisabled">
         <div class="__hd">制单人</div>
         <div class="__bd">
           <table class="custom-table custom-table-border">
@@ -240,11 +240,32 @@
               <td style="width:150px;">制单时间</td>
               <td style="width:260px;">{{ detail.updateTime || detail.createdTime}}</td>
             </tr>
-
           </table>
         </div>
       </div>
 
+
+      <div class="card-item" v-if="isDisabled && Array.isArray(priewData) && priewData.length > 0">
+        <div class="__hd">审核结果</div>
+        <div class="__bd">
+          <table class="custom-table custom-table-border">
+            <tr>
+              <td style="width:150px;">审核结果</td>
+              <td >
+                {{  getStatusText(detail.approveStatus) }}
+              </td>
+              <td style="width:150px;">审核理由</td>
+              <td >
+                {{priewData[priewData.length - 1].code}}
+              </td>
+              <td style="width:150px;">审核人/审核时间</td>
+              <td >
+                {{priewData[priewData.length - 1].userName}}/{{priewData[priewData.length - 1].createTime || '-'}}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
 
 
       <div class="card-item" v-if="isDisabled && Array.isArray(detail.rejects) && detail.rejects.length > 0">
@@ -253,9 +274,9 @@
           <table class="custom-table custom-table-border">
             <tr v-for="item in detail.rejects" :key="item.createdTime">
               <td style="width:150px;">驳回理由</td>
-              <td >{{detail.reason }}</td>
+              <td >{{ item.reason }}</td>
               <td style="width:150px;">驳回人/驳回时间</td>
-              <td style="width:260px;">{{detail.createdName}}/{{detail.createdTime}}</td>
+              <td style="width:260px;">{{ item.createdName}}/{{ item.createdTime}}</td>
             </tr>
           </table>
         </div>
@@ -272,6 +293,7 @@ import moment from 'moment'
 //物料代码模糊搜索
 import { routineMaterialInfoPageList ,productMaterialInfoPageList} from '@/api/routineMaterial'
 import { getBuyRequirement } from '@/api/routineMaterial'
+import {findApprovedNodeList} from '@/api/common'
 import Approval from './Approval'
 import {
   requestApplyDetail,
@@ -388,7 +410,8 @@ export default {
         {id:1,label:'测试关联订单1',orderId:1},
         {id:2,label:'测试关联订单2',orderId:2},
         {id:3,label:'测试关联订单3',orderId:3},
-      ]
+      ],
+      priewData:[]
     }
   },
   created() {},
@@ -540,6 +563,15 @@ export default {
             relatedNumText:result.relatedNum
           }
         ]
+      }
+
+      if(that.isView || that.isApproval){
+        // 获取审批预览信息
+        that.priewData = await findApprovedNodeList({instanceId: that.detail.instanceId})
+        .then(res => res.data).catch(err => {
+          console.log(err)
+          return []
+        })
       }
     },
     handleSubmit(saveType=1) {
@@ -834,6 +866,10 @@ export default {
       }
 
 
+    },
+    getStatusText(type){
+      let m = {1:'待审批',2:'通过',3:'不通过',4:'已经撤销',5:'已被驳回'}
+      return m[type]
     },
     //审批部分
     submitAction(opt) {

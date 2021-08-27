@@ -69,7 +69,8 @@
           @change="tabChange"
         >
           <a-tab-pane tab="需求申请单" :key="1" />
-          <a-tab-pane tab="采购单" :key="2" />
+          <a-tab-pane tab="未完成采购单" :key="2" />
+          <a-tab-pane tab="已完成采购单" :key="3" />
         </a-tabs>
 
         <template v-if="[1].includes(activeKey)">
@@ -78,8 +79,10 @@
         <template v-if="[2].includes(activeKey)">
           <ListTypeTwo ref="ref_table" :queryParam="queryParamCustom" :tagKey="activeKey"/>
         </template>
+        <template v-if="[3].includes(activeKey)">
+          <ListTypeThree ref="ref_table" :queryParam="queryParamCustom" :tagKey="activeKey"/>
+        </template>
       </div>
-
   </a-card>
 </template>
 
@@ -88,6 +91,7 @@ import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ListTypeOne from './ListTypeOne'
 import ListTypeTwo from './ListTypeTwo'
+import ListTypeThree from './ListTypeThree'
 
 export default {
   name:'procurement-module-management-order',
@@ -95,7 +99,8 @@ export default {
     DepartmentSelect,
     CommonDictionarySelect,
     ListTypeOne,
-    ListTypeTwo
+    ListTypeTwo,
+    ListTypeThree
   },
   data(){
     return {
@@ -108,6 +113,7 @@ export default {
       let k = this.activeKey
       let case1 = [1].includes(k)
       let case2 = [2].includes(k)
+      let case3 = [3].includes(k)
 
       let extendsParams = {current:1}
       if(case1){
@@ -115,7 +121,9 @@ export default {
         // extendsParams = {...extendsParams,queryType:3,result:1,storageStatus:undefined,forOrder:1}
         extendsParams = {...extendsParams,queryType:undefined,result:undefined,storageStatus:undefined,forOrder:1}
       }else if(case2){
-        extendsParams = {...extendsParams}
+        extendsParams = {...extendsParams,finishStatus:1}
+      }else if(case3){
+        extendsParams = {...extendsParams,createdName:undefined,orderNum:undefined,queryType:1}
       }
       return {...this.queryParam,...extendsParams}
     }

@@ -237,7 +237,12 @@
             <span v-else>{{text}}</span>
           </div>
 
-
+          <div
+            slot="createdTime"
+            slot-scope="text, record, index"
+          >
+            {{record.updateTime || record.createdTime}}
+          </div>
 
 
 
@@ -385,6 +390,7 @@ const columns = [
   {
     title: '制单时间',
     dataIndex: 'createdTime',
+    scopedSlots: { customRender: 'createdTime' },
     width:200
   },
   {
@@ -622,7 +628,7 @@ export default {
         return
       }else if(type === 'cancel'){
         that.confirmModel({
-          content:'取消申请后，需求单将在全部列表中出现，你可编辑数据后重新提交审核。确认执行取消操作吗?',
+          content:'取消申请后，你可编辑数据后重新提交审核。确认执行取消操作吗?',
           success:() => {
             that.selectedRows = [record]
             let promiseList = that.selectedRows.map(row => {

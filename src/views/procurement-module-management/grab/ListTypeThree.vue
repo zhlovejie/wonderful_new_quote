@@ -37,11 +37,18 @@
         <template v-if="record.approveStatus === 2">
           <a @click="doAction('view',record)">查看</a>
         </template>
-        <template v-if="record.approveStatus === 3 || record.approveStatus === 4">
+        <template v-if="record.approveStatus === 3 ">
           <a @click="doAction('view',record)">查看</a>
-          <a-divider type="vertical" />
-          <a @click="doAction('offer',record)">报价</a>
+          <template v-if="$auth('quotation:reorder')">
+            <a-divider type="vertical" />
+            <a @click="doAction('offer',record)">报价</a>
+          </template>
         </template>
+
+        <template v-if="record.approveStatus === 4">
+          <a @click="doAction('view',record)">查看</a>
+        </template>
+
         <template v-if="record.approveStatus === 5">
           <a @click="doAction('view',record)">查看</a>
           <a-divider type="vertical" />
@@ -137,7 +144,7 @@
 
 <script>
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
-import { quotationPageList } from '@/api/procurementModuleManagement'
+import { quotationPageList ,hasAuthApprove} from '@/api/procurementModuleManagement'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OfferPriceForm from './OfferPriceForm'
 import OfferPriceView from './OfferPriceView'
@@ -354,7 +361,7 @@ export default {
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
-    doAction(type, record) {
+    async doAction(type, record) {
       const that = this
       if (type === 'view') {
         that.$refs.offerPriceView.query('view', record)
@@ -363,6 +370,16 @@ export default {
         that.$refs.offerPriceForm.query('add', {...record,source:3})
         return
       }else if(type === 'approval'){
+        let _hasAuthApprove = await hasAuthApprove({instanceId:record.instanceId}).then(res => {
+          return +res.code === 200
+        }).catch(err => {
+          console.log(err)
+          return false;
+        })
+        if(!_hasAuthApprove){
+          that.$message.info('您没有审批权限');
+          return
+        }
         that.$refs.offerPriceView.query('approval', record)
         return
       }else if(type === 'chuli'){

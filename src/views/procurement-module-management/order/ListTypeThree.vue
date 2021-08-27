@@ -27,13 +27,12 @@
         slot="action"
         slot-scope="text, record, index"
       >
+        <!-- 完成审核的状态：1待审核，2通过，3不通过 -->
         <a @click="doAction('view',record)">查看</a>
-        <a-divider type="vertical" />
-        <a @click="doAction('saveMaterial',record)">收料</a>
-        <a-divider type="vertical" />
-        <a @click="doAction('takeGoods',record)">提货</a>
-        <a-divider type="vertical" />
-        <a @click="doAction('over',record)">采购完成</a>
+        <template v-if="+record.approveStatus === 1">
+          <a-divider type="vertical" />
+          <a @click="doAction('approval',record)">审批</a>
+        </template>
       </div>
 
       <div
@@ -59,6 +58,16 @@
         </a-popover>
       </div>
 
+
+      <div
+        slot="approveStatus"
+        slot-scope="text, record, index"
+      >
+        <a href="javascript:void(0);" @click="approvalPreview(record)">
+          {{ {1:'待审批',2:'通过',3:'不通过',4:'已撤销',5:'已驳回'}[text] || '未知状态' }}
+        </a>
+      </div>
+
       <div
         slot="urgencyDegree"
         slot-scope="text, record, index"
@@ -74,7 +83,7 @@
       </div>
 
       <div
-        slot="orderPrice"
+        slot="newPrice"
         slot-scope="text, record, index"
       >
         {{ text | moneyFormatNumber }}
@@ -87,10 +96,10 @@
       </div>
 
       <div
-        slot="totalPrice"
+        slot="amount"
         slot-scope="text, record, index"
       >
-        {{ (record.orderPrice * record.requestNum) | moneyFormatNumber }}
+       {{ text | moneyFormatNumber }}
       </div>
 
       <div
@@ -113,29 +122,21 @@
       </template>
 
     </a-table>
+    <MaterialView
+        :key="normalAddFormKeyCount"
+        ref="materialView"
+      />
+      <ApproveInfo ref="approveInfoCard" />
     <OrderFormView ref="orderFormView" />
-    <ReceiveMaterial
-      ref="receiveMaterial"
-      @finish="() => search()"
-    />
-    <TakeGoods
-      ref="takeGoods"
-      @finish="() => search()"
-    />
-    <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
-
-    <FinishForm ref="finishForm" @finished="() => search()"/>
-
   </div>
 </template>
 
 <script>
+
+import { orderFinishPageList} from '@/api/procurementModuleManagement'
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
-import { orderPageList ,orderFinish} from '@/api/procurementModuleManagement'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OrderFormView from './OrderFormView'
-import ReceiveMaterial from './ReceiveMaterial'
-import TakeGoods from './TakeGoods'
-import FinishForm from './FinishForm'
 const columns = [
   {
     title: '序号',
@@ -186,12 +187,13 @@ const columns = [
   },
   {
     title: '采购单价',
-    dataIndex: 'orderPrice',
-    scopedSlots: { customRender: 'orderPrice' }
+    dataIndex: 'newPrice',
+    scopedSlots: { customRender: 'newPrice' }
   },
   {
     title: '订单金额',
-    scopedSlots: { customRender: 'totalPrice' }
+    dataIndex: 'amount',
+    scopedSlots: { customRender: 'amount' }
   },
   {
     title: '预计到货时间',
@@ -214,12 +216,18 @@ const columns = [
     scopedSlots: { customRender: 'backQuantity' }
   },
   {
-    title: '采购人',
-    dataIndex: 'createdName'
+    title: '审批状态',
+    dataIndex: 'approveStatus',
+    scopedSlots: { customRender: 'approveStatus' },
+    width:120
   },
   {
-    title: '采购时间',
-    dataIndex: 'createdTime',
+    title: '采购人',
+    dataIndex: 'buyer'
+  },
+  {
+    title: '采购完成时间',
+    dataIndex: 'finishTime',
     width: 200
   },
   {
@@ -232,11 +240,9 @@ const columns = [
 export default {
   props: ['queryParam'],
   components: {
-    OrderFormView,
-    ReceiveMaterial,
-    TakeGoods,
     MaterialView,
-    FinishForm
+    ApproveInfo,
+    OrderFormView
   },
   data() {
     return {
@@ -290,12 +296,11 @@ export default {
       }
       const _searchParam = Object.assign({}, { ...that.queryParamCustom }, paginationParam, params)
       that.loading = true
-      orderPageList(_searchParam)
+      orderFinishPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            item.requestTime = item.requestTime.slice(0, -3)
             return item
           })
           //设置数据总条数
@@ -329,13 +334,8 @@ export default {
       if (type === 'view') {
         that.$refs.orderFormView.query('view', record)
         return
-      } else if (type === 'saveMaterial') {
-        //收料
-        that.$refs.receiveMaterial.query('saveMaterial', record)
-        return
-      } else if (type === 'takeGoods') {
-        //提货
-        that.$refs.takeGoods.query('takeGoods', record)
+      } else if (type === 'approval') {
+        that.$refs.orderFormView.query('approval', record)
         return
       } else if (type === 'materialView') {
         if(!record.materialId){
@@ -353,11 +353,13 @@ export default {
           })
         })
         return
-      }else if(type === 'over'){
-        that.$refs.finishForm.query(record)
-        return
+      }else{
+        that.$message.info('未知指令')
       }
-    }
+    },
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId)
+    },
   }
 }
 </script>

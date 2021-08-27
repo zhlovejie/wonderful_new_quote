@@ -4,7 +4,7 @@
     :width="650"
     :visible="visible"
     :destroyOnClose="true"
-    :footer="null"
+    :footer="footer"
     @cancel="handleCancel"
     :maskClosable="false"
     :confirmLoading="spinning"
@@ -163,21 +163,25 @@
               </tr>
             </table>
           </div>
-          <div class="__bd">暂无数据</div>
+          <div class="__bd" v-else>暂无数据</div>
         </div>
 
       </a-form-model>
       <XdocView ref="xdocView" />
+      <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { orderDetail } from '@/api/procurementModuleManagement'
+
+import { orderDetail ,orderFinishAudit} from '@/api/procurementModuleManagement'
 import XdocView from './XdocView'
+import Approval from './Approval'
 import moment from 'moment'
 export default {
   components: {
-    XdocView
+    XdocView,
+    Approval
   },
   data() {
     return {
@@ -195,7 +199,38 @@ export default {
   },
   computed: {
     modalTitle() {
-      return `查看采购单`
+      let m = this.isView ? '查看' : '审批'
+      return `${m}采购单`
+    },
+    isView(){
+      return this.type === 'view'
+    },
+    isApproval(){
+      return this.type === 'approval'
+    },
+    footer() {
+      const that = this
+      const h = that.$createElement
+      const btn = []
+      if (that.isView) {
+        return null
+      } else if(that.isApproval) {
+        btn.push(
+          h(
+            'a-button',
+            { key: 'no-pass', on: { click: that.noPassAction }, props: { loading: that.spinning } },
+            '不通过'
+          )
+        )
+        btn.push(
+          h(
+            'a-button',
+            { key: 'pass', on: { click: that.passAction }, props: { type: 'primary', loading: that.spinning } },
+            '通过'
+          )
+        )
+      }
+      return btn
     }
   },
   methods: {
@@ -223,7 +258,40 @@ export default {
         return
       }
       that.$refs.xdocView.query(url)
-    }
+    },
+    //审批部分
+    submitAction(opt) {
+      const that = this
+      let values = Object.assign({}, opt || {}, { approveId: that.record.orderId })
+      that.spinning = true
+      orderFinishAudit(values)
+        .then((res) => {
+          that.spinning = false
+          that.$message.info(res.msg)
+          if(+ res.code === 200){
+            that.$emit('finish')
+            that.handleCancel()
+          }
+        })
+        .catch((err) => {
+          that.spinning = false
+          console.log(err)
+        })
+    },
+    passAction(opt = {}) {
+      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+    },
+    noPassAction() {
+      this.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion,
+      })
+    },
+    //审批部分
   }
 }
 </script>

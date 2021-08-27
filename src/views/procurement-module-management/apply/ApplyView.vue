@@ -84,26 +84,22 @@
         </a-table>
       </div>
     </div>
-    <div class="card-item">
-      <div class="__hd">需求物料</div>
+    <div class="card-item" v-if="Array.isArray(priewData) && priewData.length > 0">
+      <div class="__hd">审核结果</div>
       <div class="__bd">
-        <table class="custom-table custom-table-border" v-for="item in priewData" :key="item.id">
+        <table class="custom-table custom-table-border">
           <tr>
             <td style="width:150px;">审核结果</td>
             <td >
-              item
+              {{  getStatusText(detail.approveStatus) }}
             </td>
-          </tr>
-          <tr>
             <td style="width:150px;">审核理由</td>
             <td >
-              {{item.code}}
+              {{priewData[priewData.length - 1].code}}
             </td>
-          </tr>
-          <tr>
             <td style="width:150px;">审核人/审核时间</td>
             <td >
-              {{item.userName}}/{{item.createTime}}
+              {{priewData[priewData.length - 1].userName}}/{{priewData[priewData.length - 1].createTime}}
             </td>
           </tr>
         </table>
@@ -223,6 +219,12 @@ export default {
         return []
       })
 
+      that.spinning = false
+
+    },
+    getStatusText(type){
+      let m = {1:'待审批',2:'通过',3:'不通过',4:'已经撤销',5:'已被驳回'}
+      return m[type]
     }
   }
 }

@@ -179,6 +179,19 @@ const materialBaseUrl = system.materialBaseUrl
       params: parameter
     })
   }
+
+  //待审批列表 是否有审批权限
+  export function hasAuthApprove(parameter) {
+    return axios({
+      baseURL: materialBaseUrl,
+      url: '/quotation/isApprove',
+      method: 'GET',
+      params: parameter
+    })
+  }
+
+
+
 /**采购报价单 END*/
 
 
@@ -329,6 +342,38 @@ export function updatePickUpFreigh(parameter) {
   })
 }
 /**提货单管理 END*/
+
+/**采购完成 */
+
+//采购完成
+export function orderFinish(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/orderFinish',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+//审批
+export function orderFinishAudit(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/orderFinish/audit',
+    method: 'POST',
+    data: parameter
+  })
+}
+//采购完成分页列表
+export function orderFinishPageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/orderFinish/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
+/**采购完成 END */
 
 
 
