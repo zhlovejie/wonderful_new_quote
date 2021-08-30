@@ -68,7 +68,7 @@
               <a-form-item v-if="brand !== 0 && brand !== undefined && brand !== ''" style="width: 40%; float: left">
                 <a-select allowClear placeholder="请选择型号" v-model="modList" mode="multiple">
                   <a-select-option :value="0">不限型号</a-select-option>
-                  <a-select-option v-for="item in modelList" :key="item.id" :value="item.id">{{
+                  <a-select-option v-for="item in modelList" :key="item.brandId" :value="item.brandId">{{
                     item.modelName
                   }}</a-select-option>
                 </a-select>
@@ -433,12 +433,12 @@ export default {
         let as = this.modelList.filter((i) => this.modList.includes(i.id))
         arrs = [...as]
       }
-      let arr = this.brandList.find((u) => u.id === this.brand)
+      let arr = this.brandList.find((u) => u.brandId === this.brand)
       let reacts = this.buyRequirementBrands.every((u) => u.brandName !== arr.brandName)
       if (reacts) {
         this.buyRequirementBrands.push({
           brandName: arr.brandName,
-          brandId: arr.id,
+          brandId: arr.brandId,
           changeBrandModelInfos: arrs,
         })
       } else {
