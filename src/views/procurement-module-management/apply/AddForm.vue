@@ -758,12 +758,12 @@ export default {
             }
             return res.data.records
           }),
-          productMaterialInfoPageList(_searchParam).then(res => {
-            if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
-              return []
-            }
-            return res.data.records
-          })
+          // productMaterialInfoPageList(_searchParam).then(res => {
+          //   if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
+          //     return []
+          //   }
+          //   return res.data.records
+          // })
         ]
       )
       let result = []
@@ -774,7 +774,7 @@ export default {
         // })
 
         //不限制
-        result = [...res[0],...res[1]]
+        result = [...res[0]]
       }else{
         //显示 常规件 ，不过滤
         result = [...res[0]]
