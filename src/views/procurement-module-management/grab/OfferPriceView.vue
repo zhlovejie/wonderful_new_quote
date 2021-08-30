@@ -10,7 +10,23 @@
     :confirmLoading="spinning"
   >
     <a-spin :spinning="spinning">
+
+      <a-tabs
+        :activeKey="activeKey"
+        :defaultActiveKey="activeKey"
+        @change="tabChange"
+      >
+        <a-tab-pane tab="采购申请单" :key="1" />
+        <a-tab-pane tab="抢单报价" :key="2" />
+        <a-tab-pane tab="异议信息" :key="3" />
+        <a-tab-pane tab="历史价格信息" :key="4" />
+      </a-tabs>
+
+      <div v-show="+activeKey === 1">
       <ApplyView ref="applyView" />
+      </div>
+
+      <div v-show="+activeKey === 2">
       <template v-if="detail.detail">
         <div class="__hd">抢单/领单信息</div>
         <a-card
@@ -177,7 +193,9 @@
           </a-row>
         </a-card>
       </template>
+      </div>
 
+      <div v-show="+activeKey === 3">
       <template v-if="Array.isArray(detail.objections) && detail.objections.length > 0">
         <div class="__hd">异议信息</div>
         <div
@@ -345,7 +363,12 @@
           </a-card>
         </div>
       </template>
+      <template v-else>
+        <span>无</span>
+      </template>
+      </div>
 
+      <div v-show="+activeKey === 4">
       <template v-if="detail.history && Array.isArray(detail.history)">
         <div class="__hd">历史价格信息</div>
         <a-table
@@ -393,6 +416,10 @@
           </div>
         </a-table>
       </template>
+      <template v-else>
+        <span>无</span>
+      </template>
+      </div>
 
     </a-spin>
     <Approval
@@ -473,7 +500,8 @@ export default {
         details: [],
         history: []
       },
-      detailUpdate: {}
+      detailUpdate: {},
+      activeKey:2
     }
   },
   computed: {
@@ -613,8 +641,11 @@ export default {
         isAdopt: 1,
         opinion: opinion
       })
-    }
+    },
     //审批部分
+    tabChange(key){
+      this.activeKey = +key
+    }
   }
 }
 </script>

@@ -127,7 +127,7 @@
         ref="materialView"
       />
       <ApproveInfo ref="approveInfoCard" />
-    <OrderFormView ref="orderFormView" />
+    <OrderFormView ref="orderFormView" @finish="() => search()" />
   </div>
 </template>
 

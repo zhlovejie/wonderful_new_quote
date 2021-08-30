@@ -187,19 +187,25 @@
         <a-card :bordered="cardBordered">
           <a-form-model-item
             label="结算方式"
+            prop="settlementMode"
           >
-            {{ {0:'现款现货',1:'账期结算'}[form.settlementMode] || '-' }}
-            <!-- <a-select
-              v-model="form.settlementMode"
-              placeholder="结算方式"
-            >
-              <a-select-option :value="0">
-                现款现货
-              </a-select-option>
-              <a-select-option :value="1">
-                账期结算
-              </a-select-option>
-            </a-select> -->
+            <template v-if="form.hasSupplier === 2">
+              <a-select
+                v-model="form.settlementMode"
+                placeholder="结算方式"
+              >
+                <a-select-option :value="0">
+                  现款现货
+                </a-select-option>
+                <a-select-option :value="1">
+                  账期结算
+                </a-select-option>
+              </a-select>
+
+            </template>
+            <template v-else>
+              {{ {0:'现款现货',1:'账期结算'}[form.settlementMode] || '-' }}
+            </template>
           </a-form-model-item>
 
           <a-form-model-item
@@ -578,7 +584,7 @@ export default {
       if (materialRequirement) {
         const _manageBrands = materialRequirement.buyRequirementBrands.map(c => {
           const obj = { ...c }
-          obj.manageBrands = that.$_.cloneDeep(obj.buyRequirementBrandModels)
+          obj.manageBrandModels = that.$_.cloneDeep(obj.buyRequirementBrandModels)
           delete obj.buyRequirementBrandModels
           return obj
         })
@@ -646,7 +652,7 @@ export default {
             lowestNum,
             deliveryCycle,
             shelfLife,
-            manageBrands
+            manageBrandLists : manageBrands
           } = supplierRequirement
 
           that.form = {
@@ -730,11 +736,13 @@ export default {
       this.resetForm()
       this.visible = false
     },
-    hasSupplierChange(v) {
+    async hasSupplierChange(v) {
       const that = this
       that.form = { ...that.form, supplierId: undefined, supplierName: undefined }
       that.needValidateMaterialRequiredAndSupplierRequired = +v === 1
-      that.initMaterialRequired()
+      await that.initMaterialRequired()
+
+      await that.$refs.ruleForm.validate()
     },
     supplierChangeHandler(v) {
       const that = this
@@ -743,9 +751,13 @@ export default {
       const target = supplierList.find(item => +item.id === +v)
       if (target) {
         that.form = { ...that.form, supplierName: target.supplierName,supplierId:v ,settlementMode:target.settlementMode}
+      }else{
+        that.form = { ...that.form, supplierName: undefined,supplierId:undefined ,settlementMode:undefined}
       }
 
-      that.fillSupplierInfo(v)
+      if(v){
+        that.fillSupplierInfo(v)
+      }
 
       //判断供应商是否有采购某一物料的资格，返回true为有资格
       // quotationCheckSupplier({supplierId:v,materialId:that.record.materialId}).then(res => {
