@@ -74,8 +74,10 @@
               }}
             </td>
             <td>
-              <a-button @click="Addmodel(item)" v-if="!isEdit" style="margin-right: 10px">添加品牌型号</a-button>
-              <a-button @click="modelDel(index)" v-if="!isEdit">删除</a-button>
+              <a-button @click="Addmodel(item)" v-if="!isEdit && item.updateType !== 1" style="margin-right: 10px"
+                >添加品牌型号</a-button
+              >
+              <a-button @click="modelDel(index)" v-if="!isEdit && item.updateType !== 1">删除</a-button>
             </td>
           </tr>
         </table>
@@ -135,7 +137,7 @@
                   <a-form-model-item ref="scompanyName" label="供应商公司名称" prop="scompanyName">
                     <a-input
                       placeholder="请输入供应商公司名称"
-                      :disabled="isEdit"
+                      :disabled="isEdit || isSalary"
                       v-model="form.scompanyName"
                       :allowClear="true"
                       @blur="
@@ -265,7 +267,7 @@
                   <a-form-model-item label="结算方式" prop="settlementMode">
                     <a-select
                       placeholder="选择结算方式"
-                      :disabled="isEdit"
+                      :disabled="isEdit || isSalary"
                       v-model="form.settlementMode"
                       :allowClear="true"
                       style="width: 290px"
@@ -610,7 +612,7 @@
                     <a-input
                       placeholder="请输入供应商公司名称"
                       v-model="form.scompanyName"
-                      :disabled="isEdit"
+                      :disabled="isEdit || isSalary"
                       :allowClear="true"
                       @blur="
                         () => {
@@ -1032,7 +1034,7 @@
                     <a-select
                       placeholder="选择结算方式"
                       v-model="form.settlementMode"
-                      :disabled="isEdit"
+                      :disabled="isEdit || isSalary"
                       :allowClear="true"
                       style="width: 290px"
                     >
@@ -1459,6 +1461,7 @@ export default {
         arrivalDay: undefined,
         lpersonName: undefined,
         endTime: undefined,
+        updateType: 0,
       },
       type: 'view',
       record: {},
@@ -1518,6 +1521,10 @@ export default {
     isEdit() {
       //审核
       return this.type === 'edit'
+    },
+    isSalary() {
+      //审核
+      return this.type === 'edit-salary' || this.form.updateType === 1
     },
     isAdd() {
       //新增
@@ -1793,6 +1800,7 @@ export default {
                 materialCode: item.materialCode,
                 materialId: item.materialId,
                 needCheck: item.needCheck,
+                updateType: item.updateType || 0,
                 manageBrands:
                   item.manageBrands.map((u) => {
                     return {

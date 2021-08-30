@@ -46,7 +46,7 @@
                   :disabled="isDisabled"
                 >
                   <a-select-option :value="0">不限品牌</a-select-option>
-                  <a-select-option v-for="item in brandList" :key="item.id" :value="item.id">{{
+                  <a-select-option v-for="item in brandList" :key="item.brandId" :value="item.brandId">{{
                     item.brandName
                   }}</a-select-option>
                 </a-select>
@@ -344,12 +344,12 @@ export default {
         arrs = [...as]
       }
 
-      let arr = this.brandList.find((u) => u.id === this.brand)
+      let arr = this.brandList.find((u) => u.brandId === this.brand)
       let reacts = this.buyRequirementBrands.every((u) => u.brandName !== arr.brandName)
       if (reacts) {
         this.buyRequirementBrands.push({
           brandName: arr.brandName,
-          brandId: arr.id,
+          brandId: arr.brandId,
           buyRequirementBrandModels: arrs,
         })
       } else {

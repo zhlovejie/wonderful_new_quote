@@ -173,7 +173,7 @@
       </a-upload>
     </a-modal>
     <a-modal title="错误数据" :visible="visibles" @ok="handleOks" @cancel="handleCancels">
-      <h3>{{ iserror.failNum || 0 }}条错误数据</h3>
+      <h3>{{ iserror.successNum || 0 }}条成功数据 {{ iserror.failNum || 0 }}条错误数据</h3>
       <div v-for="item in iserror.errorList" :key="item.failNum">
         <p>第{{ item.rowNum }}行 {{ item.msg }}</p>
       </div>
