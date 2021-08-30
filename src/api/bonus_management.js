@@ -837,6 +837,16 @@ export function getSaleStation(parameter) {
     params: parameter
   })
 }
+// 非销售岗位
+export function getOtherStation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salesman/getOtherStation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //销汇总查询
 export function sale_SalerMonthCollectDetail(parameter) {
   return axios({

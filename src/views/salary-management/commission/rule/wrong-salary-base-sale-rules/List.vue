@@ -109,7 +109,7 @@ export default {
       pagination1: {},
       queryParam: {
         current: 1,
-        type: 1,
+        type: 2,
       },
       hiddenBoolean: false,
 
@@ -128,7 +128,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'salary-base-sale-rules') {
+        if (to.name === 'wrong-salary-base-sale-rules') {
           this.init()
         }
       },
