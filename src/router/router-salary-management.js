@@ -260,6 +260,17 @@ export default {
           },
         },
         {
+          path: '/salary-management/commission/wrongResearchCommission',
+          name: 'wrongResearchCommission',
+          component: () => import('@/views/salary-management/commission/wrongResearchCommission/List'),
+          meta: {
+            title: '非销售提成奖金',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
           path: '/salary-management/commission/commissionDetail',
           name: 'commission-detail',
           component: RouteView,
