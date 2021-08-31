@@ -422,7 +422,9 @@ export default {
     },
     depChangeHandler(depId) {
       console.log(depId)
+      this.brand = undefined
       this.brandList = []
+      this.modelList = []
       let reat = depId.filter((i) => i !== 0)
       this.depidType = reat.toString() || undefined
       //品牌
@@ -440,6 +442,7 @@ export default {
     },
     async query(type, record = {}) {
       let that = this
+      that.brand = undefined
       that.actionType = type
       that.visible = true
       that.record = record

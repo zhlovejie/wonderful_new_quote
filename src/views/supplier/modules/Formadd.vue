@@ -1524,7 +1524,7 @@ export default {
     },
     isSalary() {
       //审核
-      return this.type === 'edit-salary' || this.form.updateType === 1
+      return this.type === 'edit-salary' && this.form.updateType === 1
     },
     isAdd() {
       //新增

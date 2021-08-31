@@ -508,6 +508,7 @@ export default {
       that.form.validateFields((err, values) => {
         if (!err) {
           values.requirementId = this.Details.id
+          //供应商
           if (this.isSupplier) {
             // 供应商
             values.supplierId = this.Details.supplierId
@@ -569,34 +570,38 @@ export default {
             values.type = this.isWarranty ? 1 : 2
             values.number = this.isWarranty ? this.Details.minWarranty : this.Details.maxDelivery
           }
-
-          let api = {
-            supplier: SupplierUpdate,
-            packing: changePackUpdate,
-            brand: BrandUpdate,
-            invoice: InvoiceUpdate,
-            taxRate: TaxRateUpdate,
-            stock: MaxPurchaseUpdate,
-            standard: NakedUpdate,
-            Warranty: DeliveryUpdate,
-            delivery: DeliveryUpdate,
-          }
-          api[this.type](values)
-            .then((res) => {
-              if (res.code === 200) {
-                that.spinning = false
-                this.visible = false
-                that.$message.info(res.msg)
-                this.$emit('filts')
-                this.buyRequirementBrands = []
-              } else {
-                this.$message.error(res.msg)
-              }
-            })
-            .catch((err) => (that.spinning = false))
+          Submit(values)
         }
       })
     },
+
+    Submit() {
+      let api = {
+        supplier: SupplierUpdate,
+        packing: changePackUpdate,
+        brand: BrandUpdate,
+        invoice: InvoiceUpdate,
+        taxRate: TaxRateUpdate,
+        stock: MaxPurchaseUpdate,
+        standard: NakedUpdate,
+        Warranty: DeliveryUpdate,
+        delivery: DeliveryUpdate,
+      }
+      api[this.type](values)
+        .then((res) => {
+          if (res.code === 200) {
+            that.spinning = false
+            this.visible = false
+            that.$message.info(res.msg)
+            this.$emit('filts')
+            this.buyRequirementBrands = []
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+        .catch((err) => (that.spinning = false))
+    },
+
     handleCancel() {
       this.visible = false
       this.buyRequirementBrands = []
