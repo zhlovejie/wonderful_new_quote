@@ -199,13 +199,28 @@
             slot="requestNum"
             slot-scope="text, record, index"
           >
-            <template v-if="+record.approveStatus === 1">
-              <a-button
-                type="link"
-                @click="doAction('changeQty',record)"
-              >{{text}}</a-button>
-            </template>
-            <template v-else>{{text}}</template>
+
+            <a-popover
+              :title="`${record.materialName}（${record.materialCode}）数量预警`"
+              trigger="hover"
+            >
+              <template slot="content">
+                <p>需求数量：{{text}}</p>
+                <p>安全库存：{{record.__safetyStock}}</p>
+                <p>超安全库存数量：{{ record.__difNum < 0 ? 0 : record.__difNum }}</p>
+              </template>
+              <template v-if="+record.approveStatus === 1">
+                <a-button
+                  type="link"
+                  @click="doAction('changeQty',record)"
+                  :style="{color:record.__isWarning ? 'red' : ''}"
+                >{{text}}</a-button>
+              </template>
+              <template v-else>
+                <span :style="{color:record.__isWarning ? 'red' : ''}" style="padding:5px 15px;">{{text}}</span>
+              </template>
+            </a-popover>
+
           </div>
 
           <div
@@ -312,7 +327,7 @@ import ChangeQtyForm from './ChangeQtyForm'
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import RejectForm from '../grab/RejectForm'
-
+import { getBuyRequirement } from '@/api/routineMaterial'
 import {
   requestApplyPageList,
   requestApplyDelete ,
@@ -480,6 +495,8 @@ export default {
             item.requestTime = item.requestTime.slice(0, -3)
             return item
           })
+
+          that.fillNum()
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total || 0
@@ -499,6 +516,35 @@ export default {
           console.log(err)
         })
     },
+
+    async fillNum(){
+      const that = this
+      let arr = that.dataSource.map(item => {
+        return new Promise(resolve => {
+          getBuyRequirement({ materialId:item.materialId })
+              .then(res => {
+                let n = 0
+                try{
+                  n = res.data.pageNum || 0
+                }catch(e){
+                  n = 0
+                }
+                let dataSource = [...that.dataSource]
+                let target = dataSource.find(_item => _item.key === item.key)
+                target.__safetyStock = n //安全库存
+                target.__difNum = (target.requestNum || 0) - n
+                target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
+                that.dataSource = dataSource
+              })
+              .catch(err => {
+                console.log(err)
+              })
+        })
+      })
+
+      await Promise.all(arr)
+    },
+
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
       this.search()
@@ -529,8 +575,28 @@ export default {
       const { materialId } = record
       return {
         on: {
-          dblclick: event => {
-            console.log(record)
+          mouseenter: event => {
+            // if('__safetyStock' in record){
+            //   return
+            // }
+            // getBuyRequirement({ materialId })
+            //   .then(res => {
+            //     let n = 0
+            //     try{
+            //       n = res.data.pageNum || 0
+            //     }catch(e){
+            //       n = 0
+            //     }
+            //     let dataSource = [...that.dataSource]
+            //     let target = dataSource.find(item => item.key === record.key)
+            //     target.__safetyStock = n //安全库存
+            //     target.__difNum = (target.requestNum || 0) - n
+            //     target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
+            //     that.dataSource = dataSource
+            //   })
+            //   .catch(err => {
+            //     console.log(err)
+            //   })
           }
         }
       }

@@ -1,32 +1,6 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :width="1250"
-    :visible="visible"
-    :destroyOnClose="true"
-    :footer="footer"
-    @cancel="handleCancel"
-    :maskClosable="false"
-    :confirmLoading="spinning"
-  >
     <a-spin :spinning="spinning">
-
-      <a-tabs
-        :activeKey="activeKey"
-        :defaultActiveKey="activeKey"
-        @change="tabChange"
-      >
-        <a-tab-pane tab="采购申请单" :key="1" />
-        <a-tab-pane tab="抢单报价" :key="2" />
-        <a-tab-pane tab="异议信息" :key="3" />
-        <a-tab-pane tab="历史价格信息" :key="4" />
-      </a-tabs>
-
-      <div v-show="+activeKey === 1">
-      <ApplyView ref="applyView" />
-      </div>
-
-      <div v-show="+activeKey === 2">
+      <div v-show="+$attrs.tagKey === 2">
       <template v-if="detail.detail">
         <div class="__hd">抢单/领单信息</div>
         <a-card
@@ -230,7 +204,7 @@
       </template>
       </div>
 
-      <div v-show="+activeKey === 3">
+      <div v-show="+$attrs.tagKey === 3">
       <template v-if="Array.isArray(detail.objections) && detail.objections.length > 0">
         <div class="__hd">异议信息</div>
         <div
@@ -411,7 +385,7 @@
       </template>
       </div>
 
-      <div v-show="+activeKey === 4">
+      <div v-show="+$attrs.tagKey === 4">
       <template v-if="detail.history && Array.isArray(detail.history)">
         <div class="__hd">历史价格信息</div>
         <a-table
@@ -463,24 +437,13 @@
         <span>无</span>
       </template>
       </div>
-
     </a-spin>
-    <Approval
-      ref="approval"
-      @opinionChange="opinionChange"
-    />
-  </a-modal>
 </template>
 <script>
 import {
-  quotationAdd,
   quotationDetail,
   quotationDetailForUpdate,
-  quotationApproval
 } from '@/api/procurementModuleManagement'
-
-import ApplyView from '../apply/ApplyView'
-import Approval from '../apply/Approval'
 
 const columnsHistory = [
   {
@@ -525,8 +488,7 @@ const columnsHistory = [
 
 export default {
   components: {
-    ApplyView,
-    Approval
+
   },
   data() {
     return {
@@ -543,71 +505,20 @@ export default {
         details: [],
         history: []
       },
-      detailUpdate: {},
-      activeKey:2
-    }
-  },
-  computed: {
-    modalTitle() {
-      const type = this.type
-      const t = type === 'add' ? '新增' : type === 'edit' ? '修改' : type === 'view' ? '查看' : '审批'
-      return `${t}物料报价单`
-    },
-    isAdd() {
-      return this.type === 'add'
-    },
-    isEdit() {
-      return this.type === 'edit'
-    },
-    isView() {
-      return this.type === 'view'
-    },
-    isApproval() {
-      return this.type === 'approval'
-    },
-    isDisabled() {
-      return this.isView || this.isApproval
-    },
-    footer() {
-      const that = this
-      const h = that.$createElement
-      const btn = []
-      if (that.isView) {
-        return null
-      } else if (that.isApproval) {
-        btn.push(
-          h(
-            'a-button',
-            { key: 'no-pass', on: { click: that.noPassAction }, props: { loading: that.spinning } },
-            '不通过'
-          )
-        )
-        btn.push(
-          h(
-            'a-button',
-            { key: 'pass', on: { click: that.passAction }, props: { type: 'primary', loading: that.spinning } },
-            '通过'
-          )
-        )
-      }
-      return btn
+      detailUpdate: {}
     }
   },
   methods: {
-    async query(type, record) {
+    async query(id) {
       const that = this
-      that.type = type
-      that.record = { ...record }
-      that.visible = true
-
       const [d1, d2] = await Promise.all([
-        quotationDetail({ id: that.record.id })
+        quotationDetail({ id })
           .then(res => res.data)
           .catch(err => {
             that.$message.error(err)
             return null
           }),
-        quotationDetailForUpdate({ id: that.record.id })
+        quotationDetailForUpdate({ id })
           .then(res => res.data)
           .catch(err => {
             that.$message.error(err)
@@ -619,75 +530,6 @@ export default {
       }
       that.detail = d1
       that.detailUpdate = d2
-
-      that.$nextTick(() => {
-        that.$refs.applyView.query({ id: that.detail.raId })
-      })
-    },
-    handleSubmit() {
-      const that = this
-      that.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          that.spinning = true
-          const { modelName, modelType } = that.form
-
-          quotationAdd({ ...that.form, model: `${modelName}-${modelType}` })
-            .then(res => {
-              that.spinning = false
-              that.$message.info(res.msg)
-              if (res.code === 200) {
-                that.$emit('finish')
-                that.handleCancel()
-              }
-            })
-            .catch(err => {
-              that.spinning = false
-              that.$message.info(err)
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    handleCancel() {
-      this.visible = false
-    },
-    //审批部分
-    submitAction(opt) {
-      const that = this
-      const values = Object.assign({}, opt || {}, { approveId: that.record.id })
-      that.spinning = true
-      quotationApproval(values)
-        .then(res => {
-          that.spinning = false
-          that.$message.info(res.msg)
-          if (+res.code === 200) {
-            that.$emit('finish')
-            that.handleCancel()
-          }
-        })
-        .catch(err => {
-          that.spinning = false
-          console.log(err)
-        })
-    },
-    passAction(opt = {}) {
-      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
-    },
-    noPassAction() {
-      this.$refs.approval.query()
-    },
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion
-      })
-    },
-    //审批部分
-    tabChange(key){
-      this.activeKey = +key
     }
   }
 }
@@ -709,4 +551,5 @@ p{
   padding: 0;
 }
 </style>
+
 

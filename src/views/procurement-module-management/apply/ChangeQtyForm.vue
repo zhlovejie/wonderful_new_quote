@@ -17,7 +17,7 @@
         v-bind="layout"
       >
         <a-form-model-item label="安全库存" >
-          <span>500</span>
+          <span>{{form.__safetyStock}}</span>
         </a-form-model-item>
         <a-form-model-item prop="num" label="需求库存">
           <a-input-number
@@ -97,7 +97,7 @@ export default {
       return btn
     },
     msg(){
-      let diff = +this.form.num - 500
+      let diff = +this.form.num - this.form.__safetyStock
       let msg = diff > 0 ? `提示：超库存${diff}` : ''
       return msg
     }
@@ -108,7 +108,8 @@ export default {
       that.record = {...record}
       that.visible = true
       that.form = {
-        num:record.requestNum || 0
+        num:record.requestNum || 0,
+        __safetyStock:record.__safetyStock || 0
       }
     },
     handleSubmit(){

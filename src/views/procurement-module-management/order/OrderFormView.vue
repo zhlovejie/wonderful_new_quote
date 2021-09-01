@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="650"
+    :width="1250"
     :visible="visible"
     :destroyOnClose="true"
     :footer="footer"
@@ -9,7 +9,32 @@
     :maskClosable="false"
     :confirmLoading="spinning"
   >
+
+
+
     <a-spin :spinning="spinning">
+
+      <a-tabs
+        :activeKey="activeKey"
+        :defaultActiveKey="activeKey"
+        @change="tabChange"
+      >
+        <a-tab-pane tab="采购申请单" :key="1" />
+        <a-tab-pane tab="抢单报价" :key="2" />
+        <a-tab-pane tab="异议信息" :key="3" />
+        <a-tab-pane tab="历史价格信息" :key="4" />
+        <a-tab-pane tab="采购信息" :key="5" />
+      </a-tabs>
+
+      <div v-show="+activeKey === 1">
+        <ApplyView ref="applyView" />
+      </div>
+
+      <div v-show="[2,3,4].includes(+activeKey)">
+        <OfferPriceView ref="offerPriceView" :tagKey="activeKey"/>
+      </div>
+
+      <div v-show="+activeKey === 5">
       <a-form-model
         ref="ruleForm"
         :model="form"
@@ -47,7 +72,7 @@
                 <td>{{detail.model}}</td>
               </tr>
               <tr>
-                <td style="width:150px;">最新采购单价</td>
+                <td style="width:150px;">最后一次采购单价</td>
                 <td>
                   {{detail.lastPrice | moneyFormatNumber}}
                 </td>
@@ -167,6 +192,8 @@
         </div>
 
       </a-form-model>
+      </div>
+
       <XdocView ref="xdocView" />
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
@@ -177,11 +204,15 @@
 import { orderDetail ,orderFinishAudit} from '@/api/procurementModuleManagement'
 import XdocView from './XdocView'
 import Approval from './Approval'
+import ApplyView from '../apply/ApplyView'
+import OfferPriceView from './OfferPriceView'
 import moment from 'moment'
 export default {
   components: {
     XdocView,
-    Approval
+    Approval,
+    ApplyView,
+    OfferPriceView
   },
   data() {
     return {
@@ -194,7 +225,8 @@ export default {
       visible: false,
       spinning: false,
       record: {},
-      detail: {}
+      detail: {},
+      activeKey:5
     }
   },
   computed: {
@@ -247,6 +279,13 @@ export default {
           that.$message.error(err)
           return null
         })
+
+
+      that.$nextTick(() => {
+        that.$refs.applyView.query({ id: that.record.requestId })
+
+        that.$refs.offerPriceView.query(that.record.quotationId)
+      })
     },
     handleCancel() {
       this.visible = false
@@ -292,6 +331,9 @@ export default {
       })
     },
     //审批部分
+    tabChange(key){
+      this.activeKey = +key
+    }
   }
 }
 </script>
