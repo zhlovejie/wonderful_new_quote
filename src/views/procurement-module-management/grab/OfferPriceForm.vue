@@ -465,7 +465,7 @@ export default {
       that.type = type
       that.record = { ...record }
       that.visible = true
-      that.isvalidateMaterialRequiredAndSupplierRequired = false
+      that.needValidateMaterialRequiredAndSupplierRequired = true
       that.form = {
         ...that.form,
         requestId: that.record.requestId || that.record.id,
@@ -654,6 +654,8 @@ export default {
             shelfLife,
             manageBrandLists : manageBrands
           } = supplierRequirement
+
+
 
           that.form = {
             ...that.form,
@@ -923,7 +925,6 @@ export default {
           }
         })
       }
-      debugger
       if(isExists(buyRequirement.taxRate) && +buyRequirement.taxRate >=0 ){
         //对比物料税率
         arrCase.push({

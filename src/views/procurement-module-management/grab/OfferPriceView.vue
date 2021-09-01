@@ -146,51 +146,86 @@
         <a-card
           title="异常信息"
           size="small"
-          v-if="detail.detail.exception"
+          v-if="Array.isArray(detail.detail.exception) && detail.detail.exception.length > 0"
         >
-          <a-row :gutter="[16,16]">
-            <a-col :span="6">
-              <p>抢单报价单价：{{`${detail.detail.exception.newPrice}` | moneyFormatNumber}}</p>
-            </a-col>
-            <a-col :span="6">
-              <p>抢单报价部门：{{`${detail.detail.exception.npDepName}`}}</p>
-            </a-col>
-            <a-col :span="6">
-              <p>抢单报价人：{{`${detail.detail.exception.npCreater}`}}</p>
-            </a-col>
-            <a-col :span="6">
-              <p>抢单报价时间：{{`${detail.detail.exception.npCreateTime}`}}</p>
-            </a-col>
-          </a-row>
 
-          <a-row :gutter="[16,16]" v-if="detail.detail.exception.disposeType">
+          <div v-if="detail.detail.exception.find(item => !item.disposeType)">
+              <a-row :gutter="[16,16]">
+                <a-col :span="24">
+                  <p>异常说明：系统判断系统内最新报价与抢单成功时报价不一致</p>
+                </a-col>
+              </a-row>
+              <a-row :gutter="[16,16]">
+                <a-col :span="3">
+                  <p>抢单报价</p>
+                </a-col>
+                <a-col :span="4">
+                  <p>报价单价：{{`${detail.detail.newPrice}` | moneyFormatNumber}}</p>
+                </a-col>
+                <a-col :span="5">
+                  <p>报价部门：{{`${detail.detail.createdDepName}`}}</p>
+                </a-col>
+                <a-col :span="4">
+                  <p>报价人：{{`${detail.detail.createdName}`}}</p>
+                </a-col>
+                <a-col :span="8">
+                  <p>报价时间：{{`${detail.detail.createdTime}`}}</p>
+                </a-col>
+              </a-row>
+          </div>
+
+          <div v-for="item in detail.detail.exception.filter(item => !item.disposeType)">
+              <a-row :gutter="[16,16]">
+                <a-col :span="3">
+                  <p>最新报价</p>
+                </a-col>
+                <a-col :span="4">
+                  <p>维护单价：{{`${item.newPrice}` | moneyFormatNumber}}</p>
+                </a-col>
+                <a-col :span="5">
+                  <p>报价部门：{{`${item.npDepName}`}}</p>
+                </a-col>
+                <a-col :span="4">
+                  <p>维护人：{{`${item.npCreater}`}}</p>
+                </a-col>
+                <a-col :span="8">
+                  <p>更新时间：{{`${item.npCreateTime}`}}</p>
+                </a-col>
+              </a-row>
+          </div>
+
+          <template v-if="detail.detail.exception.find(item => !!item.disposeType)">
+          <a-row :gutter="[16,16]" v-for="item in detail.detail.exception.filter(item => !!item.disposeType)">
             <a-col :span="6">
-              <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[detail.detail.exception.disposeType] }`}}</p>
+              <p>处理方式：{{`${ {1:'重抢',2:'重新报价采购'}[item.disposeType] }`}}</p>
             </a-col>
-            <template v-if="+detail.detail.exception.disposeType === 1">
+            <template v-if="+item.disposeType === 1">
               <a-col :span="6">
-                <p>抢单时长：{{`${detail.detail.exception.grabTime} 分钟`}}</p>
+                <p>抢单时长：{{`${item.grabTime} 分钟`}}</p>
               </a-col>
               <a-col :span="6">
-                <p>公示时长：{{`${detail.detail.exception.publicityTime} 分钟`}}</p>
+                <p>公示时长：{{`${item.publicityTime} 分钟`}}</p>
               </a-col>
             </template>
 
             <a-col :span="24">
-              <p>处理理由：{{`${detail.detail.exception.reason}`}}</p>
+              <p>处理理由：{{`${item.reason}`}}</p>
             </a-col>
             <a-col :span="6">
-              <p>处理人：{{`${detail.detail.exception.processor}`}}</p>
+              <p>处理人：{{`${item.processor}`}}</p>
             </a-col>
             <a-col :span="6">
-              <p>处理时间：{{`${detail.detail.exception.createdTime || '无'}`}}</p>
+              <p>处理时间：{{`${item.createdTime || '无'}`}}</p>
             </a-col>
           </a-row>
-          <a-row v-else :gutter="[16,16]">
-            <a-col :span="24">
-              <p style="color:red;">该异常尚未处理</p>
-            </a-col>
-          </a-row>
+          </template>
+          <template v-else>
+            <a-row :gutter="[16,16]">
+              <a-col :span="24">
+                <p style="color:red;">该异常尚未处理</p>
+              </a-col>
+            </a-row>
+          </template>
         </a-card>
       </template>
       </div>
