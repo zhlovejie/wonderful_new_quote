@@ -741,6 +741,16 @@ export function bounsRules_exportExcel(parameter) {
     params: parameter
   })
 }
+//非销售提成奖金下载
+export function qualificationBorrow_exportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-nsaler-bouns-apply/excel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 
 export function bounsRules_del(parameter) {
   return axios({

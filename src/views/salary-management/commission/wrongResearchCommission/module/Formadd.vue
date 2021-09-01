@@ -85,6 +85,12 @@ export default {
           dataIndex: 'percentageAmountDecimal',
           key: 'percentageAmountDecimal',
         },
+        {
+          align: 'center',
+          title: '差额(元)',
+          dataIndex: 'subAmountDecimal',
+          key: 'subAmountDecimal',
+        },
       ],
 
       spinning: false,

@@ -1,7 +1,7 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.staticsDate" />
+      <a-month-picker style="width: 200px; margin-right: 10px" v-model="queryParam.month" />
       <a-select
         placeholder="审核状态"
         v-if="activeKey === 0"
@@ -84,7 +84,7 @@
   </div>
 </template>
 <script>
-import { wrong_pageList, bounsRules_exportExcel, removeSalaryNSalerBounsApply } from '@/api/bonus_management'
+import { wrong_pageList, qualificationBorrow_exportExcel, removeSalaryNSalerBounsApply } from '@/api/bonus_management'
 import AddForm from './module/Formadd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -215,9 +215,9 @@ export default {
     // },
     searchAction(opt) {
       let that = this
-      if (that.queryParam.staticsDate) {
-        let date = moment(that.queryParam.staticsDate).format('YYYY-MM')
-        that.queryParam.staticsDate = date
+      if (that.queryParam.month) {
+        let date = moment(that.queryParam.month).format('YYYY-MM')
+        that.queryParam.month = date
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {}, {
         searchStatus: that.activeKey,
@@ -248,7 +248,7 @@ export default {
     downloadAction(downloadId) {
       let that = this
       that.spinning = true
-      bounsRules_exportExcel({ id: downloadId })
+      qualificationBorrow_exportExcel({ applyId: downloadId })
         .then((res) => {
           that.spinning = false
           console.log(res)
@@ -262,7 +262,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download = `研发提成奖金信息.xls`
+              a.download = `非销售提成奖金信息.xls`
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')
