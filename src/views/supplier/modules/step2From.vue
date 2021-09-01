@@ -354,7 +354,20 @@ export default {
             values.packageCount = this.Details.buyRequirement.pageNum
           }
           if (that.Details.buyRequirement.buyRequirementBrands.length > 0) {
-            values.manageBrands = that.Details.buyRequirement.buyRequirementBrands
+            values.manageBrands =
+              that.Details.buyRequirement.buyRequirementBrands.map((u) => {
+                return {
+                  brandId: u.brandId,
+                  brandName: u.brandName,
+                  manageBrandModels:
+                    u.buyRequirementBrandModels.map((i) => {
+                      return {
+                        modelId: i.modelId,
+                        modelName: i.modelName,
+                      }
+                    }) || [],
+                }
+              }) || []
           } else {
             values.type = 1
             values.manageBrands =
