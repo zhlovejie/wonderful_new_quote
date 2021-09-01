@@ -21,9 +21,10 @@
                 {{ Details.supplierName === '' ? '供应商不限' : Details.supplierName }}
               </a-button>
               <span style="float: right; width: 15%">
-                <a-button style="float: right" type="primary" @click="Procurement('supplier')"
+                <a-button style="float: right" type="primary" @click="Procurement('brand')">变更供应商及品牌 </a-button>
+                <!-- <a-button style="float: right" type="primary" @click="Procurement('supplier')"
                   >变更指定工供应商
-                </a-button>
+                </a-button> -->
               </span>
             </td>
           </tr>
@@ -41,9 +42,7 @@
                 }}</a-button
               >
 
-              <span style="float: right; width: 15%">
-                <a-button style="float: right" type="primary" @click="Procurement('brand')">变更指定品牌 </a-button>
-              </span>
+              <span style="float: right; width: 15%"> &ensp;&ensp; </span>
             </td>
           </tr>
           <tr>
