@@ -142,7 +142,7 @@ export default {
       getOtherStation().then((res) => (this.getUserByType = res.data))
 
       getDictionaryList({ parentId: 616 }).then(
-        (res) => (this.assetTypeList = res.data.filter((i) => i.text === '销售部总奖金系数'))
+        (res) => (this.assetTypeList = res.data.filter((i) => i.code === 'saler_all_bouns'))
       )
       if (type === 'edit-salary') {
         this.fillData()
