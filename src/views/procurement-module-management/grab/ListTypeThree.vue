@@ -58,6 +58,9 @@
           <a @click="doAction('view',record)">查看</a>
         </template>
 
+        <a-divider type="vertical" />
+        <a @click="doAction('reject',record)">驳回</a>
+
         <!-- <a-divider type="vertical" />
         <a @click="doAction('reject',record)">驳回</a> -->
         <!-- <a @click="doAction('chuli',record)">处理</a> -->
