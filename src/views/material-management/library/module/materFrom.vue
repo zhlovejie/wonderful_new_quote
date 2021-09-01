@@ -337,7 +337,7 @@ export default {
     Procureadd() {
       let arrs = []
       let ret = this.modList.toString()
-      if (ret === '0') {
+      if (ret === '0' || this.modList.length === 0) {
         arrs = [...this.modelList]
       } else {
         let as = this.modelList.filter((i) => this.modList.includes(i.id))
