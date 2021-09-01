@@ -191,7 +191,7 @@ export default {
       this.loading = true
 
       let api = {
-        supplier: getSupplier,
+        supplier: getBrand,
         packing: getPack,
         brand: getBrand,
         invoice: getInvoice,

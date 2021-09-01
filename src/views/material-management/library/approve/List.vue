@@ -49,11 +49,18 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
+        <div slot="changeStart" slot-scope="text, record, index">
+          <span v-html="text"></span>
+        </div>
+        <div slot="changeEnd" slot-scope="text, record, index">
+          <span v-html="text"></span>
+        </div>
+
         <div slot="type" slot-scope="text, record, index">
           {{
             {
               1: '供应商',
-              2: '品牌型号',
+              2: '供应商品牌型号',
               3: '包装',
               4: '裸价',
               5: '发票',
@@ -129,13 +136,13 @@ const columns = [
     align: 'center',
     title: '变更前',
     dataIndex: 'changeStart',
-    // scopedSlots: { customRender: 'beforeType' },
+    scopedSlots: { customRender: 'changeStart' },
   },
   {
     align: 'center',
     title: '变更后',
     dataIndex: 'changeEnd',
-    // scopedSlots: { customRender: 'afterType' },
+    scopedSlots: { customRender: 'changeEnd' },
   },
   {
     align: 'center',

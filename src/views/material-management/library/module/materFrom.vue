@@ -343,13 +343,13 @@ export default {
         let as = this.modelList.filter((i) => this.modList.includes(i.id))
         arrs = [...as]
       }
-
       let arr = this.brandList.find((u) => u.brandId === this.brand)
       let reacts = this.buyRequirementBrands.every((u) => u.brandName !== arr.brandName)
       if (reacts) {
         this.buyRequirementBrands.push({
           brandName: arr.brandName,
           brandId: arr.brandId,
+          supplierId: arr.supplierId,
           buyRequirementBrandModels: arrs,
         })
       } else {
@@ -426,6 +426,7 @@ export default {
       this.brandList = []
       this.modelList = []
       let reat = depId.filter((i) => i !== 0)
+      this.buyRequirementBrands = this.buyRequirementBrands.filter((i) => depId.includes(i.supplierId))
       this.depidType = reat.toString() || undefined
       //品牌
       if (depId.length > 0) {
@@ -438,7 +439,9 @@ export default {
       this.userList = []
       this.modList = []
       //型号
-      listManageBrandModel({ materialId: this.record.id, brandId: depId }).then((res) => (this.modelList = res.data))
+      listManageBrandModel({ materialId: this.record.id, brandId: depId, supplierId: this.depidType || 0 }).then(
+        (res) => (this.modelList = res.data)
+      )
     },
     async query(type, record = {}) {
       let that = this
