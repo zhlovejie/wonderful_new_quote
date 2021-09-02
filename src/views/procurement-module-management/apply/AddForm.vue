@@ -61,7 +61,7 @@
           </table>
         </div>
       </div>
-      <div class="card-item">
+      <div class="card-item" v-if="isAdd">
         <div class="__hd">需求单信息</div>
         <div class="__bd">
           <table class="custom-table custom-table-border">
@@ -149,7 +149,6 @@
               <template v-if="isAdd">
                 <a href="javascript:void(0);" @click="materialAction('del',record)">删除</a>
               </template>
-
             </div>
 
             <div slot="materialCode" slot-scope="text, record, index">
@@ -219,6 +218,24 @@
             <div slot="inventory" slot-scope="text, record, index">
               <span :style="{'color': +record.unsafetyInventory === 1 ? 'red' : ''}">{{text}}</span>
             </div>
+
+            <div slot="relatedNumText" slot-scope="text, record, index">
+              <a-form-model-item prop="relatedNum" v-if="!isDisabled && record.__isRelated">
+                  <a-select  style="width: 180px" allowClear v-model="record.relatedNum">
+                    <a-select-option
+                      v-for="item in relatedNumList"
+                      :key="item.id"
+                      :value="item.id"
+                    >
+                    {{item.label}}
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
+                <span v-else>
+                  {{text}}
+                </span>
+            </div>
+
 
           </a-table>
           <a-button
@@ -325,6 +342,7 @@ const columns = [
   {
     title: '关联单号',
     dataIndex: 'relatedNumText',
+    scopedSlots: { customRender: 'relatedNumText' },
   },
   {
     title: '物料代码',
@@ -407,9 +425,9 @@ export default {
         fetching: false
       },
       relatedNumList:[
-        {id:1,label:'测试关联订单1',orderId:1},
-        {id:2,label:'测试关联订单2',orderId:2},
-        {id:3,label:'测试关联订单3',orderId:3},
+        {id:"1",label:'测试关联订单1',orderId:1},
+        {id:"2",label:'测试关联订单2',orderId:2},
+        {id:"3",label:'测试关联订单3',orderId:3},
       ],
       priewData:[]
     }
@@ -556,11 +574,12 @@ export default {
             key:that._uuid(),
             ...that.detail,
             mainUnit:that.detail.unit,
-            inventory:that.detail.inventory || 0,
+            inventory:that.detail.inventory || materialRequirement.pageNum || 0,
             requestTime:moment(that.detail.requestTime),
             unsafetyInventory:that.detail.requestNum > (materialRequirement.pageNum || 0) ? 1 : 2,
             __maxBuyNumber:materialRequirement.pageNum || 0,
-            relatedNumText:result.relatedNum
+            relatedNumText:result.relatedNum,
+            __isRelated:that.detail.requestTypeText.includes("销售订单")
           }
         ]
       }
@@ -685,6 +704,7 @@ export default {
           relatedNumText:relatedNumItem ? relatedNumItem.label : undefined,
           requestType:requestType,
           requestTypeText:requestTypeItem.text,
+          __isRelated:requestTypeItem && requestTypeItem.text.includes('销售订单'),
           unsafetyInventory:2, //是否大于安全库存：1是，2否
           materialId:undefined,
           requestNum:0,//需求数量

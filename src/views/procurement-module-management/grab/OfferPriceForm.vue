@@ -467,7 +467,6 @@ export default {
       that.visible = true
       that.needValidateMaterialRequiredAndSupplierRequired = true
       that.form = {
-        ...that.form,
         requestId: that.record.requestId || that.record.id,
         materialId: that.record.materialId,
         materialName: that.record.materialName,

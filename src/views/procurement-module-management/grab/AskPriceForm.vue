@@ -317,9 +317,24 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          const { modelName, modelType } = that.form
+          let params = that.$_.cloneDeep(that.form)
+          const { manageBrands } = params
+          try{
+            if(Array.isArray(manageBrands) && manageBrands.length > 0){
+              let arr = []
+              manageBrands.map(c => {
+                arr.push(`${c.brandName}:${c.manageBrandModels.map(c1 => c1.modelName).join(',')}`)
+              })
+              params.model = arr.join(';')
+            }else{
+              params.model = '无'
+            }
+          }catch(err){
+            console.error(err)
+          }
+
           that.spinning = true
-          enquiryAdd({ ...that.form, model: `${modelName}-${modelType}` }).then(res => {
+          enquiryAdd(params).then(res => {
             that.spinning = false
             that.$message.info(res.msg)
             if(res.code === 200){

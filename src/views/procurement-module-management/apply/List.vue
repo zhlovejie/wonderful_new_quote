@@ -156,6 +156,8 @@
             </template>
 
             <template v-if="+activeKey === 2 && $auth('requestApply:approval')">
+              <a @click="doAction('view',record)">查看</a>
+              <a-divider type="vertical" />
               <a @click="doAction('approval',record)">审批</a>
             </template>
 
@@ -165,7 +167,14 @@
               <a @click="doAction('reject',record)">驳回</a> -->
             </template>
 
+            <template v-if="+activeKey === 5">
+              <a @click="doAction('view',record)">查看</a>
+              <!-- <a-divider type="vertical" />
+              <a @click="doAction('reject',record)">驳回</a> -->
+            </template>
+
             <template v-if="+activeKey === 5 && +record.createdId === +userInfo.id">
+              <a-divider type="vertical" />
               <a @click="doAction('edit',record)">编辑</a>
               <a-divider type="vertical" />
               <a @click="doAction('del',record)">删除</a>

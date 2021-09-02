@@ -362,6 +362,7 @@ export default {
       } else if (type === 'offer') {
         let source = +that.$attrs.tagKey
         that.$refs.offerPriceForm.query('add',{...record,source})
+        return
       } else if (type === 'materialView') {
         if(!record.materialId){
           that.$message.info('物料编号未定义');
