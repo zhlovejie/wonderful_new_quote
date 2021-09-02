@@ -79,7 +79,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '最新采购单价',
+    title: '最后一次采购单价',
     dataIndex: 'lastPrice',
   },
   {
