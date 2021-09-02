@@ -86,6 +86,27 @@
         <span v-else>{{text}}</span>
       </div>
 
+            <div
+            slot="requestNum"
+            slot-scope="text, record, index"
+          >
+
+            <a-popover
+              :title="`${record.materialName}（${record.materialCode}）数量预警`"
+              trigger="hover"
+            >
+              <template slot="content">
+                <p>需求数量：{{text}}</p>
+                <p>安全库存：{{record.__safetyStock}}</p>
+                <p>超安全库存数量：{{ record.__difNum < 0 ? 0 : record.__difNum }}</p>
+              </template>
+
+                <span :style="{color:record.__isWarning ? 'red' : ''}" style="padding:5px 15px;">{{text}}</span>
+
+            </a-popover>
+
+          </div>
+
       <template
         slot="footer"
         slot-scope="text"
@@ -110,6 +131,7 @@
 <script>
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import { requestApplyPageList } from '@/api/procurementModuleManagement'
+import { getBuyRequirement } from '@/api/routineMaterial'
 import AskPriceForm from './AskPriceForm'
 import OfferPriceForm from './OfferPriceForm'
 import ApplyView from '../apply/AddForm'
@@ -188,7 +210,8 @@ export default {
         },
         {
           title: '需求数量',
-          dataIndex: 'requestNum'
+          dataIndex: 'requestNum',
+          scopedSlots: { customRender: 'requestNum' }
         },
         {
           title: '需求日期',
@@ -275,6 +298,7 @@ export default {
             item.requestTime = item.requestTime.slice(0, -3)
             return item
           })
+          that.fillNum()
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total || 0
@@ -293,6 +317,34 @@ export default {
           that.loading = false
           console.log(err)
         })
+    },
+
+    async fillNum(){
+      const that = this
+      let arr = that.dataSource.map(item => {
+        return new Promise(resolve => {
+          getBuyRequirement({ materialId:item.materialId })
+              .then(res => {
+                let n = 0
+                try{
+                  n = res.data.pageNum || 0
+                }catch(e){
+                  n = 0
+                }
+                let dataSource = [...that.dataSource]
+                let target = dataSource.find(_item => _item.key === item.key)
+                target.__safetyStock = n //安全库存
+                target.__difNum = (target.requestNum || 0) - n
+                target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
+                that.dataSource = dataSource
+              })
+              .catch(err => {
+                console.log(err)
+              })
+        })
+      })
+
+      await Promise.all(arr)
     },
     handleTableChange(pagination, filters, sorter) {
       this.pagination = { ...this.pagination, current: pagination.current }
