@@ -30,30 +30,33 @@
             label="包装方式"
             prop="packageType"
           >
-            <a-row>
+            <a-row v-if="+form.packType === 1">
               <a-col :span="11">
-                <a-select style="width:100%;" allowClear v-model="form.packageType" placeholder="包装类型">
+                <!-- <a-select style="width:100%;" allowClear v-model="form.packageType" placeholder="包装类型">
                   <a-select-option
                     v-for="item in packingType"
                     :key="item.text"
                     :value="item.text"
                   >{{item.text}}</a-select-option>
-                </a-select>
+                </a-select> -->
+                {{form.packageType}}
               </a-col>
               <a-col
                 :span="11"
                 :offset="2"
               >
-                <a-input-number
+                <!-- <a-input-number
                   v-model="form.packageCount"
                   placeholder="包装内数量"
                   style="width:100%;"
                   :min="0"
                   :step="1"
                   :precision="0"
-                />
+                /> -->
+                包装内数量：{{ form.packageCount || '不限' }}
               </a-col>
             </a-row>
+            <a-row v-else>不限</a-row>
         </a-form-model-item>
         <a-form-model-item
             label="品牌/型号"
@@ -70,7 +73,7 @@
 
             </template>
             <template v-else>
-              <span>该物料需求下暂未设置品牌</span>
+              <span>不限</span>
             </template>
 
               <!-- <a-col :span="11">
@@ -95,7 +98,7 @@
 
       <a-card :bordered="cardBordered">
         <a-form-model-item label="发票类型" prop="invoiceType">
-          <a-select v-model="form.invoiceType" placeholder="发票类型">
+          <!-- <a-select v-model="form.invoiceType" placeholder="发票类型">
             <a-select-option :value="0">
               不限
             </a-select-option>
@@ -105,20 +108,23 @@
             <a-select-option :value="2">
               普通发票
             </a-select-option>
-          </a-select>
+          </a-select> -->
+          {{ {0:'不限',1:'增值税专用发票',2:'普通发票'}[form.invoiceType]  }}
         </a-form-model-item>
         <a-form-model-item label="裸价标准" prop="nakedPrice">
-          <a-select v-model="form.nakedPrice" placeholder="裸价标准">
+          <!-- <a-select v-model="form.nakedPrice" placeholder="裸价标准">
             <a-select-option :value="1">
               含税运
             </a-select-option>
             <a-select-option :value="2">
               含税不含运
             </a-select-option>
-          </a-select>
+          </a-select> -->
+
+          {{ {1:'含税运',2:'含税不含运'}[form.nakedPrice]  }}
         </a-form-model-item>
         <a-form-model-item  label="最新报价" prop="newPrice">
-          <a-input-number
+          <!-- <a-input-number
             placeholder="最新报价"
             v-model="form.newPrice"
             style="width:100%;"
@@ -127,10 +133,11 @@
             :precision="2"
             :formatter="value => `${value}元`"
             :parser="value => value.replace('元', '')"
-          />
+          /> -->
+          {{ form.newPrice | moneyFormatNumber }}
         </a-form-model-item>
         <a-form-model-item  label="物料税率" prop="materialRate">
-          <a-input-number
+          <!-- <a-input-number
             placeholder="物料税率"
             v-model="form.materialRate"
             style="width:100%;"
@@ -140,10 +147,11 @@
             :precision="0"
             :formatter="value => `${value}%`"
             :parser="value => value.replace('%', '')"
-          />
+          /> -->
+          {{ `${form.materialRate}%` }}
         </a-form-model-item>
         <a-form-model-item  label="运费税率" prop="freightRate">
-          <a-input-number
+          <!-- <a-input-number
             placeholder="运费税率"
             v-model="form.freightRate"
             style="width:100%;"
@@ -153,20 +161,22 @@
             :precision="0"
             :formatter="value => `${value}%`"
             :parser="value => value.replace('%', '')"
-          />
+          /> -->
+          {{ `${form.freightRate}%` }}
         </a-form-model-item>
         <a-form-model-item  label="最低采购数量" prop="lowestNum">
-          <a-input-number
+          <!-- <a-input-number
             placeholder="最低采购数量"
             v-model="form.lowestNum"
             style="width:100%;"
             :min="0"
             :step="1"
             :precision="0"
-          />
+          /> -->
+          {{ form.lowestNum }}
         </a-form-model-item>
         <a-form-model-item  label="交货周期" prop="deliveryCycle">
-          <a-input-number
+          <!-- <a-input-number
             placeholder="交货周期"
             v-model="form.deliveryCycle"
             style="width:100%;"
@@ -176,10 +186,11 @@
             :precision="0"
             :formatter="value => `${value}天`"
             :parser="value => value.replace('天', '')"
-          />
+          /> -->
+          {{ `${form.deliveryCycle}天` }}
         </a-form-model-item>
         <a-form-model-item  label="保质期" prop="shelfLife">
-          <a-input-number
+          <!-- <a-input-number
             placeholder="保质期"
             v-model="form.shelfLife"
             style="width:100%;"
@@ -188,7 +199,8 @@
             :precision="0"
             :formatter="value => `${value}天`"
             :parser="value => value.replace('天', '')"
-          />
+          /> -->
+          {{ `${form.shelfLife}天` }}
         </a-form-model-item>
       </a-card>
 
@@ -288,11 +300,10 @@ export default {
               shelfLife:materialRequirement.minWarranty,//最短质保期
               nakedPrice:materialRequirement.nakedPrice,//裸价的标准(0为含运费，1为不含运费)
               packageType:materialRequirement.packMethod,//包装方式
-              // packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
+              packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
               packageCount:materialRequirement.pageNum,//包内数量
               newPrice:materialRequirement.price || 0,//最新采购价格
               materialRate:materialRequirement.taxRate,//物料税率
-
               manageBrands:materialRequirement.buyRequirementBrands || []
             }
         }
@@ -318,19 +329,23 @@ export default {
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
           let params = that.$_.cloneDeep(that.form)
-          const { manageBrands } = params
+          const { manageBrands , packType } = params
           try{
             if(Array.isArray(manageBrands) && manageBrands.length > 0){
               let arr = []
               manageBrands.map(c => {
-                arr.push(`${c.brandName}:${c.manageBrandModels.map(c1 => c1.modelName).join(',')}`)
+                arr.push(`${c.brandName}:${c.buyRequirementBrandModels.map(c1 => c1.modelName).join(',')}`)
               })
               params.model = arr.join(';')
             }else{
-              params.model = '无'
+              params.model = '不限'
             }
           }catch(err){
             console.error(err)
+          }
+          if(+packType === 2){
+            params.packageType = undefined
+            params.packageCount = undefined
           }
 
           that.spinning = true

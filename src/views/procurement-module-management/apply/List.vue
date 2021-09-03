@@ -135,7 +135,7 @@
               <a @click="doAction('view',record)">查看</a>
               <!--待审批 -->
               <!-- <template v-if="+record.approveStatus === 1 && +record.createdId === +userInfo.id"> -->
-              <template v-if="+record.approveStatus === 1 || +record.approveStatus === 2">
+              <template v-if="(+record.approveStatus === 1 || +record.approveStatus === 2) && +record.createdId === +userInfo.id ">
                 <a-divider type="vertical" />
                 <a @click="doAction('cancel',record)">取消申请</a>
               </template>
@@ -163,6 +163,11 @@
 
             <template v-if="+activeKey === 4">
               <a @click="doAction('view',record)">查看</a>
+
+              <template v-if="+record.createdId === +userInfo.id">
+                <a-divider type="vertical" />
+                <a @click="doAction('cancel',record)">取消申请</a>
+              </template>
               <!-- <a-divider type="vertical" />
               <a @click="doAction('reject',record)">驳回</a> -->
             </template>

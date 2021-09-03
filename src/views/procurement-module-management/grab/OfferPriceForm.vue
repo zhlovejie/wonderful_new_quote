@@ -604,11 +604,12 @@ export default {
           materialRate: materialRequirement.taxRate, //物料税率
           manageBrands: _manageBrands
         }
-      } else {
-        that.form = {
-          ...that.form,
-          lastPrice: newLastPrice
-        }
+      }
+      else {
+        // that.form = {
+        //   ...that.form,
+        //   lastPrice: newLastPrice
+        // }
       }
     },
 
@@ -654,27 +655,34 @@ export default {
             manageBrandLists : manageBrands
           } = supplierRequirement
 
-
-
+          //先填充供应商信息，供应商未提供的  物料需求里面有的 就用 物料需求里面的
+          let materialRequirement = that.materialRequirement
+          const _buyRequirementBrands = [...materialRequirement.buyRequirementBrands]
+          const _manageBrands = _buyRequirementBrands.map(c => {
+              const obj = { ...c }
+              obj.manageBrandModels = that.$_.cloneDeep(obj.buyRequirementBrandModels)
+              delete obj.buyRequirementBrandModels
+              return obj
+            })
+          let isExists = (obj) => obj !== undefined && obj !== null
           that.form = {
             ...that.form,
             //buyRequirement ,
             // supplierId: String(supplierId),
             // materialId,
-            packageType,
-            packageCount,
+            packageType: isExists(packageType) ? packageType : isExists(materialRequirement.packMethod) ? materialRequirement.packMethod : undefined,
+            packageCount:isExists(packageCount) ? packageCount : isExists(materialRequirement.pageNum) ? materialRequirement.pageNum : undefined,
             // settlementMode,
-            invoiceType,
+            invoiceType:isExists(invoiceType) ? invoiceType : isExists(materialRequirement.invoiceType) ? materialRequirement.invoiceType : undefined,
             lastPrice: newLastPrice,
-            nakedPrice,
-            newPrice,
-            materialRate,
+            nakedPrice:isExists(nakedPrice) ? nakedPrice : isExists(materialRequirement.nakedPrice) ? materialRequirement.nakedPrice : undefined,
+            newPrice:isExists(newPrice) ? newPrice : isExists(materialRequirement.price) ? materialRequirement.price : undefined,
+            materialRate:isExists(materialRate) ? materialRate : isExists(materialRequirement.taxRate) ? materialRequirement.taxRate : undefined,
             freightRate,
-            lowestNum,
-            deliveryCycle,
-            shelfLife,
-            manageBrands,
-
+            lowestNum:isExists(lowestNum) ? lowestNum : isExists(materialRequirement.maxPurchase) ? materialRequirement.maxPurchase : undefined,
+            deliveryCycle : isExists(deliveryCycle) ? deliveryCycle : isExists(materialRequirement.maxDelivery) ? materialRequirement.maxDelivery : undefined,
+            shelfLife:isExists(shelfLife) ? shelfLife : isExists(materialRequirement.minWarranty) ? materialRequirement.minWarranty : undefined,
+            manageBrands:Array.isArray(manageBrands) && manageBrands.length > 0 ? manageBrands : isArray(_manageBrands) && _manageBrands.length > 0 ? _manageBrands : undefined,
           }
         })
         .catch(err => {

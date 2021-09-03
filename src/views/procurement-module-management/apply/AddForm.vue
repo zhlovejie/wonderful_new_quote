@@ -593,6 +593,31 @@ export default {
         })
       }
     },
+    validateMaterial(){
+      const that = this
+      let dataSource = [...that.dataSource]
+
+      let errorArr = []
+      dataSource.map(item => {
+        let {materialCode,requestNum,requestTime} = item
+        if(!materialCode){
+          that.$message.info('请选择物料')
+          errorArr.push({key:'materialCode',msg:'请选择物料'})
+        }
+        if(!requestNum){
+          that.$message.info('请选择需求数量')
+          errorArr.push({key:'requestNum',msg:'请选择需求数量'})
+          hasError = true
+        }
+        if(!requestTime){
+          that.$message.info('请选择需求日期')
+          errorArr.push({key:'requestTime',msg:'请选择需求日期'})
+          hasError = true
+        }
+      })
+
+      return {result:errorArr.length === 0,errorArr}
+    },
     handleSubmit(saveType=1) {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
@@ -619,9 +644,14 @@ export default {
               // ...baseInfo,
               // saveType:saveType
             }
-            param.requestTime = param.requestTime.format('YYYY-MM-DD HH:mm:ss')
+            param.requestTime = param.requestTime ? param.requestTime.format('YYYY-MM-DD HH:mm:ss') : undefined
             arr.push(param)
           })
+
+          let materialStatus = that.validateMaterial()
+          if(!materialStatus.result){
+            return
+          }
 
           that.spinning = true
 

@@ -144,10 +144,12 @@
             <template v-if="$auth('supplier:edit-salary') && record.status !== 1 && +record.deptType === 1">
               <a-divider type="vertical" />
               <a type="primary" @click="doAction('edit-salary', record)">修改</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
-                <a type="primary">删除</a>
-              </a-popconfirm>
+              <template v-if="+record.updateType !== 1">
+                <a-divider type="vertical" />
+                <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
+                  <a type="primary">删除</a>
+                </a-popconfirm>
+              </template>
             </template>
           </template>
 
