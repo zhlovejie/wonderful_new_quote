@@ -190,6 +190,18 @@ const materialBaseUrl = system.materialBaseUrl
     })
   }
 
+  //公示列表，是否有权限异议报价
+  export function hasAuthDiffOrder(parameter) {
+    return axios({
+      baseURL: materialBaseUrl,
+      url: '/quotation/isObjection',
+      method: 'GET',
+      params: parameter
+    })
+  }
+
+
+
 
 
 /**采购报价单 END*/

@@ -98,11 +98,13 @@
             <a-col :span="8">{{`${detail.detail.materialRate} %`}}</a-col>
           </a-row>
           <a-row :gutter="[16,16]">
+            <template v-if="detail.detail.nowPrice">
             <a-col
               :span="4"
               class="lbl"
             >最后一次采购单价：</a-col>
-            <a-col :span="8">{{`${detail.detail.lastPrice}` | moneyFormatNumber}}</a-col>
+            <a-col :span="8">{{`${detail.detail.nowPrice}` | moneyFormatNumber}}</a-col>
+            </template>
             <a-col
               :span="4"
               class="lbl"

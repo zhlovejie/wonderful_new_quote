@@ -6,6 +6,7 @@
       :action="uploadUrl"
       :multiple="$attrs.multiple || false"
       :beforeUpload="beforeUpload"
+      :disabled="$attrs.disabled || false"
       :fileList="fileList"
       @preview="handlePreview"
       @change="handleChange"

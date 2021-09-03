@@ -115,7 +115,7 @@
 
 <script>
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
-import { quotationPublicPageList } from '@/api/procurementModuleManagement'
+import { quotationPublicPageList,hasAuthDiffOrder } from '@/api/procurementModuleManagement'
 import OfferPriceForm from './OfferPriceForm'
 import OfferPriceView from './OfferPriceView'
 import RejectForm from './RejectForm'
@@ -295,12 +295,22 @@ export default {
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
     },
-    doAction(type, record) {
+    async doAction(type, record) {
       const that = this
       if (type === 'view') {
         that.$refs.offerPriceView.query('view', record)
         return
       } else if (type === 'offer') {
+        let _hasAuthDiffOrder = await hasAuthDiffOrder({requestId:record.requestId}).then(res => {
+          return +res.code === 200
+        }).catch(err => {
+          console.log(err)
+          return false;
+        })
+        if(!_hasAuthDiffOrder){
+          that.$message.info('您没有异议报价权限');
+          return
+        }
         that.$refs.offerPriceForm.query('add', {...record,source:1})
         return
       } else if (type === 'materialView') {

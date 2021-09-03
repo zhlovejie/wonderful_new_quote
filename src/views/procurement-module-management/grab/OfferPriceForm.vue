@@ -304,6 +304,7 @@
               :precision="0"
             />
           </a-form-model-item>
+
           <a-form-model-item
             label="交货周期"
             prop="deliveryCycle"
@@ -327,6 +328,7 @@
               placeholder="保质期"
               v-model="form.shelfLife"
               style="width:100%;"
+              :min="0"
               :step="1"
               :precision="0"
               :formatter="value => `${value}天`"
@@ -354,6 +356,39 @@ import { getDictionary } from '@/api/common'
 export default {
   components:{BrandFrom},
   data() {
+    let isExists = (obj) => obj !== undefined && obj !== null && obj !== ''
+    let validateDeliveryCycle = (rule, value, callback) => {
+      let deliveryCycle = this.extendsValidate.deliveryCycle
+      if(isExists(deliveryCycle)){
+        callback()
+      }else{
+        if(!isExists(value)){
+          callback(new Error('请输入交货周期'));
+        }
+        if(+value >= 0 && +value <= 30){
+          callback()
+        }else{
+          callback(new Error('交货周期必须在30天内'));
+        }
+      }
+    }
+
+    let validateShelfLife = (rule, value, callback) => {
+      let shelfLife = this.extendsValidate.shelfLife
+      if(isExists(shelfLife)){
+        callback()
+      }else{
+        if(!isExists(value)){
+          callback(new Error('请输入交保质期'));
+        }
+        if(+value >= 180){
+          callback()
+        }else{
+          callback(new Error('保质期必须大于等于 180 天'));
+        }
+      }
+    }
+
     return {
       type: 'add',
       labelCol: { span: 5 },
@@ -388,8 +423,8 @@ export default {
         materialRate: [{ required: true, message: '请输入物料税率' }],
         freightRate: [{ required: true, message: '请输入运费税率' }],
         lowestNum: [{ required: true, message: '请输入最低采购数量' }],
-        deliveryCycle: [{ required: true, message: '请输入交货周期' }],
-        shelfLife: [{ required: true, message: '请输入保质期' }],
+        deliveryCycle: [{ validator: validateDeliveryCycle, trigger: 'change' }],
+        shelfLife: [{ validator: validateShelfLife, trigger: 'change' }],
         supplierId: [{ required: true, message: '请选择供应商' }],
         supplierName: [{ required: true, message: '请输入供应商名称' }],
         email: [{ required: true, message: '请输入邮箱信息' }]
@@ -406,6 +441,12 @@ export default {
       supplierRequirement: {},
       needValidateMaterialRequiredAndSupplierRequired: true,
       isDesignatedSupplier:false,//是否指定供应商
+
+
+      extendsValidate:{
+        deliveryCycle:null,
+        shelfLife:null
+      }
 
     }
   },
@@ -535,6 +576,7 @@ export default {
     async testSupplierByMaterial(){
       const that = this
       that.spinning = true
+
       const materialRequirement = await getBuyRequirement({ materialId: that.record.materialId })
         .then(res => res.data || {})
         .catch(err => {
@@ -604,6 +646,11 @@ export default {
           materialRate: materialRequirement.taxRate, //物料税率
           manageBrands: _manageBrands
         }
+
+        that.extendsValidate = {
+          deliveryCycle: materialRequirement.maxDelivery || undefined,
+          shelfLife: materialRequirement.minWarranty || undefined
+        }
       }
       else {
         // that.form = {
@@ -634,7 +681,6 @@ export default {
         .then(res => {
           that.supplierRequirement = res.data
           that.isvalidateMaterialRequiredAndSupplierRequired = false
-
           const supplierRequirement = { ...that.supplierRequirement }
           const {
             buyRequirement,
@@ -656,8 +702,9 @@ export default {
           } = supplierRequirement
 
           //先填充供应商信息，供应商未提供的  物料需求里面有的 就用 物料需求里面的
-          let materialRequirement = that.materialRequirement
-          const _buyRequirementBrands = [...materialRequirement.buyRequirementBrands]
+          let materialRequirement = that.materialRequirement || {}
+          const _buyRequirementBrands = materialRequirement && materialRequirement.buyRequirementBrands
+            ? [...materialRequirement.buyRequirementBrands] : []
           const _manageBrands = _buyRequirementBrands.map(c => {
               const obj = { ...c }
               obj.manageBrandModels = that.$_.cloneDeep(obj.buyRequirementBrandModels)
@@ -682,8 +729,14 @@ export default {
             lowestNum:isExists(lowestNum) ? lowestNum : isExists(materialRequirement.maxPurchase) ? materialRequirement.maxPurchase : undefined,
             deliveryCycle : isExists(deliveryCycle) ? deliveryCycle : isExists(materialRequirement.maxDelivery) ? materialRequirement.maxDelivery : undefined,
             shelfLife:isExists(shelfLife) ? shelfLife : isExists(materialRequirement.minWarranty) ? materialRequirement.minWarranty : undefined,
-            manageBrands:Array.isArray(manageBrands) && manageBrands.length > 0 ? manageBrands : isArray(_manageBrands) && _manageBrands.length > 0 ? _manageBrands : undefined,
+            manageBrands:Array.isArray(manageBrands) && manageBrands.length > 0 ? manageBrands : Array.isArray(_manageBrands) && _manageBrands.length > 0 ? _manageBrands : undefined,
           }
+
+          that.extendsValidate = {
+            deliveryCycle : isExists(deliveryCycle) ? deliveryCycle : isExists(materialRequirement.maxDelivery) ? materialRequirement.maxDelivery : undefined,
+            shelfLife:isExists(shelfLife) ? shelfLife : isExists(materialRequirement.minWarranty) ? materialRequirement.minWarranty : undefined,
+          }
+
         })
         .catch(err => {
           console.log(err)
@@ -1000,6 +1053,9 @@ export default {
         modelType: manageBrands.map(c => [...c.manageBrandModels.map(c1 => c1.modelName)]).join(',')
       }
     },
+    isExists (obj) {
+      return obj !== undefined && obj !== null
+    }
   }
 }
 </script>

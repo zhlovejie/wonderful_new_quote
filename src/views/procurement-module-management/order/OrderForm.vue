@@ -72,7 +72,7 @@
               <tr>
                 <td style="width:150px;">最后一次采购单价</td>
                 <td>
-                  {{`${form.lastPrice}元`}}
+                  {{`${form.nowPrice || 0}元`}}
                   <!-- <a-form-model-item prop="lastPrice">
                     <a-input-number
                       placeholder="最新采购单价"
@@ -316,23 +316,23 @@ export default {
 
 
         //根据物料id获取该物料最新采购价  目前尚未使用
-        let newLastPrice = await getOrderLastPrice({materialId:that.detail.materialId}).then(res => {
-          if(res && res.code === 200){
-            return res.data || 0
-          }else{
-            that.$message.info(`获取物料最新采购单价失败:${res.msg}`)
-            return 0
-          }
-        }).catch(err => {
-          that.$message.info(`获取物料最新采购单价失败:${err}`)
-          return 0
-        })
-
+        // let newLastPrice = await getOrderLastPrice({materialId:that.detail.materialId}).then(res => {
+        //   if(res && res.code === 200){
+        //     return res.data || 0
+        //   }else{
+        //     that.$message.info(`获取物料最新采购单价失败:${res.msg}`)
+        //     return 0
+        //   }
+        // }).catch(err => {
+        //   that.$message.info(`获取物料最新采购单价失败:${err}`)
+        //   return 0
+        // })
         that.form = {
-          ...that.form,
+          // ...that.form,
           requestId: that.detail.raId,
           materialId:that.detail.materialId,
-          lastPrice:newLastPrice,
+          nowPrice:d2.nowPrice,
+          lastPrice:d2.lastPrice,
           newPrice:d2.newPrice,
           packMethod:d2.packageType,
           pageNum:d2.packageCount,
@@ -353,6 +353,9 @@ export default {
             ...that.form,
             deliveryDate:moment(that.form.deliveryDate).format('YYYY-MM-DD HH:mm:ss')
           }
+
+          param.newPrice = param.lastPrice
+
           orderAdd(param)
             .then(res => {
               that.spinning = false

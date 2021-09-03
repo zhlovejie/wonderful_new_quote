@@ -69,7 +69,7 @@
       </div>
 
       <div
-        slot="nowPrice"
+        slot="lastPrice"
         slot-scope="text, record, index"
       >
         {{ text | moneyFormatNumber }}
@@ -177,8 +177,8 @@ const columns = [
   },
   {
     title: '最新报价',
-    dataIndex: 'nowPrice',
-    scopedSlots: { customRender: 'nowPrice' }
+    dataIndex: 'lastPrice',
+    scopedSlots: { customRender: 'lastPrice' }
   },
   {
     title: '物料税率(%)',
