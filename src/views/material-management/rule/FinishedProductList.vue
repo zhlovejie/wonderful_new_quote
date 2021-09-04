@@ -291,13 +291,21 @@ export default {
         }
         productMaterialRulePageTwoTierTreeList({parentId:treeNode.dataRef.value})
         .then((res) => {
-          let oldChildren = [...(treeNode.dataRef.children || [])]
-          let newChildren = res.data.map((item) => that.formatTreeData(item))
-          let children = that.margeNode(oldChildren, newChildren)
+          if(res && res.code === 200 && Array.isArray(res.data)){
+            let oldChildren = [...(treeNode.dataRef.children || [])]
+            let newChildren = res.data.map((item) => that.formatTreeData(item))
+            let children = that.margeNode(oldChildren, newChildren)
 
-          treeNode.dataRef.children = children
-          that.orgTree = [...that.orgTree]
-          that.dataList = that.generateList(that.orgTree)
+            treeNode.dataRef.children = children
+            that.orgTree = [...that.orgTree]
+            that.dataList = that.generateList(that.orgTree)
+          }else{
+            treeNode.dataRef.isLeaf = true
+            treeNode.dataRef.children = []
+            that.orgTree = [...that.orgTree]
+            that.dataList = that.generateList(that.orgTree)
+            that.$message.info(res.msg)
+          }
           resolve();
         })
         .catch((err) => {

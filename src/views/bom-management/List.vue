@@ -222,7 +222,7 @@
             {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
           </div>
           <div slot="materialUnit" slot-scope="text, record, index" >
-            {{ {1:'支',2:'把',3:'件'}[text] }}
+            {{ {1:'支',2:'把',3:'件'}[text] || text }}
           </div>
           <div slot="isDelete" slot-scope="text, record, index" >
             {{ {1:'是',0:'否'}[text] }}
@@ -273,7 +273,7 @@
             {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
           </div>
           <div slot="materialUnit" slot-scope="text, record, index" >
-            {{ {1:'支',2:'把',3:'件'}[text] }}
+            {{ {1:'支',2:'把',3:'件'}[text] || text }}
           </div>
           <div slot="isDelete" slot-scope="text, record, index" >
             {{ {1:'是',0:'否'}[text] }}

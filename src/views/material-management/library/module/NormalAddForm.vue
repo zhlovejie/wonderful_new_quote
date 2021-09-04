@@ -11,7 +11,7 @@
     :footer="null"
     :forceRender="true"
   >
-    <div v-if="isAdd">
+    <div v-if="isAdd || isEdit">
       <template v-if="isNormal">
         <StepOne v-if="step === 1" @change="stepOneChange" />
       </template>
@@ -21,7 +21,7 @@
 
       <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
-    <div v-else-if="isView || isEdit">
+    <div v-else-if="isView ">
       <StepTwo @change="stepTwoChange" />
     </div>
     <div v-else></div>
@@ -61,7 +61,8 @@ export default {
       detail: {},
       submitParams: {},
       selectNode: {},
-      record: {},
+      stepOneCacheData:{},
+      stepTwoCacheData:{},
     }
   },
   computed: {
@@ -91,14 +92,17 @@ export default {
       //that.type = type
       that.visible = true
       that.detail = { ...record }
-      that.record = record
+      that.stepOneCacheData = {}
+      that.stepTwoCacheData = {}
       that.selectNode = { ...that.detail.__selectItem }
 
       let isAdd = type === 'add'
       let isEdit = type === 'edit'
       let isView = type === 'view'
       if (isAdd) {
+        that.step = 1
       } else if (isView || isEdit) {
+        that.step = 2
         let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
         let accessory = await __APIAccessory({ materialId: record.id }).then((res) => res.data)
 
@@ -125,9 +129,15 @@ export default {
         console.error(`未知命令：`, arguments)
       }
     },
-    stepTwoChange() {
-      this.handleCancel()
-      this.$emit('finish')
+    stepTwoChange(type) {
+      debugger
+      const that = this
+      if(type === 'ok'){
+        that.handleCancel()
+        that.$emit('finish')
+      }else if(type === 'prevStep'){
+        that.step = 1
+      }
     },
     handleSubmit() {
       this.handleCancel()
@@ -137,6 +147,8 @@ export default {
       that.step = 1
       that.detail = {}
       that.submitParams = {}
+      that.stepOneCacheData = {}
+      that.stepTwoCacheData = {}
       that.$nextTick(() => {
         that.visible = false
       })

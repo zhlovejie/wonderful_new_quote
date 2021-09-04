@@ -170,7 +170,7 @@
             slot="mainUnit"
             slot-scope="text, record, index"
           >
-            {{ {1:'支',2:'把',3:'件'}[text] }}
+            {{ {1:'支',2:'把',3:'件'}[text] || text }}
           </div>
           <div
             slot="specifications"
@@ -430,18 +430,28 @@ export default {
         }
         productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
           .then(res => {
-            let oldChildren = [...(treeNode.dataRef.children || [])]
-            let newChildren = res.data.map(item => that.formatTreeData(item))
-            let children = that.margeNode(oldChildren, newChildren)
+            if(res && res.code === 200 && Array.isArray(res.data)){
+              let oldChildren = [...(treeNode.dataRef.children || [])]
+              let newChildren = res.data.map(item => that.formatTreeData(item))
+              let children = that.margeNode(oldChildren, newChildren)
 
-            treeNode.dataRef.children = children
-            that.orgTree = [...that.orgTree]
-            that.dataList = that.generateList(that.orgTree)
+              treeNode.dataRef.children = children
+              that.orgTree = [...that.orgTree]
+              that.dataList = that.generateList(that.orgTree)
+            }else{
+              treeNode.dataRef.isLeaf = true
+              treeNode.dataRef.children = []
+              that.orgTree = [...that.orgTree]
+              that.dataList = that.generateList(that.orgTree)
+              that.$message.info(res.msg)
+            }
             resolve()
           })
           .catch(err => {
             console.error(err)
             that.$message.error(`调用接口[productMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
+            resolve()
+            return
           })
       })
     },
@@ -465,9 +475,6 @@ export default {
     },
     fetchTree() {
       const that = this
-      // routineMaterialInfoTwoTierTreeList({parentId:that.parentId}).then(res =>{
-      //   console.log(res)
-      // })
       productMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then(res => {
           const root = {
@@ -478,7 +485,7 @@ export default {
             code: '0',
             codeLength: 10,
             parentId: 0,
-            children: res.data.map(item => that.formatTreeData(item)),
+            children: Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : [],
             scopedSlots: { title: 'title' }
           }
           that.orgTree = [root]

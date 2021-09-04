@@ -38,9 +38,13 @@
         <a-col :span="12">
           <a-form-item label="主计量单位">
             <a-select v-decorator="['mainUnit']" placeholder="主计量单位">
-              <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
+              <a-select-option
+                v-for="item in materialUnitList"
+                :key="item.text"
+                :value="item.text"
+              >
+              {{item.text}}
+              </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -51,6 +55,17 @@
               <a-select-option :value="2">审核中</a-select-option>
               <a-select-option :value="3">已审核</a-select-option>
             </a-select>
+          </a-form-item>
+        </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="录入人">
+            <a-input v-decorator="['createdName']" placeholder="录入人" :allowClear="true" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="录入时间">
+            <a-range-picker v-decorator="['sDate']"   />
           </a-form-item>
         </a-col>
 
@@ -88,6 +103,9 @@
 </template>
 <script>
 import SpecificationSearch from './SpecificationSearch'
+import { getDictionary } from '@/api/common'
+import moment from 'moment'
+
 export default {
   name: 'searchForm',
   components: {SpecificationSearch},
@@ -99,6 +117,7 @@ export default {
       detail:{},
 
       specification:undefined, //规格型号
+      materialUnitList:[]
     }
   },
   computed:{
@@ -111,8 +130,12 @@ export default {
   },
   methods: {
     query(record) {
-      this.detail = { ...record }
-      this.visible = true
+      const that = this
+      that.detail = { ...record }
+      getDictionary({ text: '物料计量单位' }).then((res) => {
+        that.materialUnitList = res.data
+      })
+      that.visible = true
     },
     handleCancel() {
       this.visible = false
@@ -127,6 +150,14 @@ export default {
       } else if (type === 'search') {
         let values = this.form.getFieldsValue()
         values = {...values,specification:this.specification}
+
+        let beginTime = undefined, endTime = undefined;
+        if (Array.isArray(values.sDate) && values.sDate.length === 2) {
+          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD') : undefined
+          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD') : undefined
+        }
+        values.startTime = beginTime
+        values.endTime = endTime
         console.log(values)
         this.$emit('change', values)
         this.handleCancel()

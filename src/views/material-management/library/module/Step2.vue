@@ -41,7 +41,40 @@
           </p>
         </a-spin>
       </div>
-    </div>
+      <!-- 附件 END-->
+      <p
+        style="margin-top:20px;text-align:center;"
+        v-if="normalAddForm.isAdd || normalAddForm.isEdit"
+      >
+        <a-button
+          type="primary"
+          @click="() => onSubmit(1)"
+          v-if="normalAddForm.isAdd"
+        >
+          上一步
+        </a-button>
+        <a-button
+          style="margin: 0 10px;"
+          type="primary"
+          @click="() => onSubmit(2)"
+        >
+          保存
+        </a-button>
+        <!-- <a-button
+          v-if="normalAddForm.isAdd"
+          type="primary"
+          @click="() => onSubmit(3)"
+        >
+          提交审核
+        </a-button> -->
+        <a-button
+
+          @click="resetForm"
+        >
+          取消
+        </a-button>
+      </p>
+    </a-spin>
   </div>
 </template>
 <script>
@@ -57,7 +90,6 @@ import {
 } from '@/api/routineMaterial'
 
 export default {
-  name: 'material-rule-management-library-normal-step2',
   inject: ['normalAddForm'],
   components: {
     BaseData,
@@ -79,8 +111,14 @@ export default {
     tabChange(key) {
       this.activeKey = +key
     },
-    async onSubmit() {
+    async onSubmit(type) {
       const that = this
+
+      if(type === 1){ //返回上一步
+        that.$emit('change','prevStep')
+        return
+      }
+
       let refs = ['baseData', 'technologyData', 'shoppingData']
 
       let baseDataResult = await that.$refs.baseData.validate()
@@ -103,7 +141,7 @@ export default {
             that.spinning = false
             that.$message.info(res.msg)
             if (res.code === 200) {
-              that.$emit('change')
+              that.$emit('change','ok')
             }
           })
           .catch((err) => {

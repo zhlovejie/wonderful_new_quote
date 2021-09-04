@@ -69,7 +69,7 @@ export default {
             code: '0',
             codeLength: 10,
             parentId: 0,
-            children: res.data.map(item => that.formatTreeData(item)),
+            children: Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : [],
           }
           that.treeData = [root]
           that.currentNode = root
@@ -98,7 +98,7 @@ export default {
       const that = this
       return productMaterialInfoTwoTierTreeList({ parentId })
           .then(res => {
-            return res.data.map(item => that.formatTreeData(item))
+            return Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : []
           })
           .catch(err => {
             console.error(err)

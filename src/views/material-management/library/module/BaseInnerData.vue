@@ -20,7 +20,7 @@
               <a-input
                 v-model="form.materialCode"
                 placeholder="系统生成"
-                :disabled="!normalAddForm.isAdd"
+                disabled="disabled"
               />
             </a-form-model-item>
           </td>
@@ -34,7 +34,7 @@
             >
               <a-input
                 v-model="form.materialName"
-                :disabled="!normalAddForm.isAdd"
+                :disabled="normalAddForm.isView"
               />
             </a-form-model-item>
           </td>
@@ -104,9 +104,13 @@
                 placeholder="请选择主计量单位"
                 :allowClear="true"
               >
-                <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
+                <a-select-option
+                  v-for="item in materialUnitList"
+                  :key="item.text"
+                  :value="item.text"
+                >
+                {{item.text}}
+                </a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -121,9 +125,13 @@
                 placeholder="请选择辅计量单位"
                 :allowClear="true"
               >
-                <a-select-option :value="1">支</a-select-option>
-                <a-select-option :value="2">把</a-select-option>
-                <a-select-option :value="3">件</a-select-option>
+                <a-select-option
+                  v-for="item in materialUnitList"
+                  :key="item.text"
+                  :value="item.text"
+                >
+                {{item.text}}
+                </a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -134,7 +142,7 @@
             <span style="margin-left:5px;">
               <a-tooltip>
                 <template slot="title">
-                  换算率 = 辅计量单位 / 主计量单位
+                  换算率是一个主计量单位等于多少个辅计量单位
                 </template>
                 <span class="icon-required">换算率</span>
                 <a-icon
@@ -160,7 +168,7 @@
             </a-form-model-item>
           </td>
           <td>
-            <span>预估重量</span>
+            <span>预估重量(克)</span>
           </td>
           <td>
             <a-form-model-item
@@ -231,6 +239,7 @@
   </a-form-model>
 </template>
 <script>
+import { getDictionary } from '@/api/common'
 export default {
   name: 'BaseInnerData',
   inject: ['normalAddForm'],
@@ -260,7 +269,8 @@ export default {
         conversionRate: [{ required: true, message: '请输入换算率' }],
         k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         needCheck:[{ required: true, message: '请选择是否需要送检' }]
-      }
+      },
+      materialUnitList:[], //物料计量单位
     }
   },
   created() {
@@ -270,11 +280,15 @@ export default {
       that.$nextTick(() => {
         that.form = {
           ...that.form,
-          useStatus:1,
+          useStatus:2,
           needCheck:2
         }
       })
     }
+
+    getDictionary({ text: '物料计量单位' }).then((res) => {
+      that.materialUnitList = res.data
+    })
   },
   methods: {
     validate() {

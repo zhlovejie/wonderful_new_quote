@@ -53,6 +53,7 @@
       <a-button
         type="primary"
         @click="onSubmit"
+        :disabled="disabledStepButton"
       >
         下一步
       </a-button>
@@ -114,7 +115,13 @@ export default {
     }
   },
   computed:{
-
+    disabledStepButton(){
+      const that = this
+      let {parentId,specificationsList} = that.form
+      let case1 = String(parentId) === '0'
+      let case2 = specificationsList && specificationsList.length === 0
+      return case1 || case2
+    }
   },
   created() {
     this.$nextTick(() => this.init())
@@ -133,9 +140,13 @@ export default {
         that.treeData = __treeData
         that.dataList = that.generateList(that.treeData)
 
-        let __selectItem = that.normalAddForm.getSelectNode()
-        that.form = { ...that.form, parentId: __selectItem.key }
-        that.initSpecifications({...__selectItem})
+        if(that.normalAddForm.stepOneCacheData.cached){
+          that.form = that.$_.cloneDeep(that.normalAddForm.stepOneCacheData.form)
+        }else{
+          let __selectItem = that.normalAddForm.getSelectNode()
+          that.form = { ...that.form, parentId: __selectItem.key }
+          that.initSpecifications({...__selectItem})
+        }
       }
     },
     async qrChangeHandler(dataUrl,id){
@@ -251,7 +262,9 @@ export default {
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let ruleId = that.form.parentId
-          let materialName = that.getNode(ruleId).title
+          debugger
+          let dddd = that.getNode(ruleId)
+          let materialName = that.getNode(ruleId).sourceTitle
           //成品物料库 物料代码不显示点
           let materialCode = that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
           // 去除物料代码的0
@@ -296,6 +309,11 @@ export default {
             // width:widthText,
             // length:lengthText
             specification:that.getSpecification()
+          }
+
+          that.normalAddForm.stepOneCacheData = {
+            cached:true,
+            form:that.$_.cloneDeep(that.form)
           }
 
           that.$emit('change', { __action__: 'nextStep', values: params })
@@ -384,9 +402,17 @@ export default {
         }
         routineMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
           .then(res => {
-            treeNode.dataRef.children = res.data.map(item => that.formatTreeData(item))
-            that.treeData = [...that.treeData]
-            that.dataList = that.generateList(that.treeData)
+            if(res && res.code === 200 && Array.isArray(res.data)){
+              treeNode.dataRef.children = res.data.map(item => that.formatTreeData(item))
+              that.treeData = [...that.treeData]
+              that.dataList = that.generateList(that.treeData)
+            }else{
+              treeNode.dataRef.isLeaf = true
+              treeNode.dataRef.children = []
+              that.treeData = [...that.treeData]
+              that.dataList = that.generateList(that.treeData)
+              that.$message.info(res.msg)
+            }
             resolve()
           })
           .catch(err => {
@@ -400,6 +426,7 @@ export default {
       let obj = {}
       obj.key = String(item.id)
       obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      obj.sourceTitle = item.newRuleName || item.ruleName
       obj.value = String(item.id)
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId
@@ -428,9 +455,9 @@ export default {
           let label = `${ruleName}(${n.code})`
           return label.includes(w)
         })
-        if(list.length > 20){
-          list = list.slice(0,20)
-        }
+
+        list = list.slice(0,400)
+
         target.searchList = [...list]
         that.form = {...that.form,specificationsList}
       }

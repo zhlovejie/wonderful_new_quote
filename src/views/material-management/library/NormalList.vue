@@ -13,7 +13,6 @@
             :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
-            :defaultExpandAll="true"
             @select="handleClick"
             :expandedKeys="expandedKeys"
             :autoExpandParent="autoExpandParent"
@@ -42,7 +41,20 @@
               <a-input placeholder="名称模糊查询" v-model="queryParam.materialName" allowClear style="width: 150px" />
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
+              <a-input
+                placeholder="原K3物料代码"
+                v-model="queryParam.k3Code"
+                allowClear
+                style="width: 150px"
+              />
+            </a-form-item>
+
+            <a-form-item>
+              <a-button
+                type="primary"
+                icon="search"
+                @click="search({ current: 1 })"
+              >查询</a-button>
             </a-form-item>
             <a-form-item>
               <a-button type="primary" icon="filter" @click="doAction('filter', null)">筛选</a-button>
@@ -51,7 +63,11 @@
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:edit')">
-              <a-button :disabled="!canEdit" type="primary" @click="doAction('edit', null)">修改</a-button>
+              <a-button
+
+                type="primary"
+                @click="doAction('edit', null)"
+              >修改</a-button>
             </a-form-item>
 
             <a-form-item v-if="$auth('routineMaterialInfo:disable')">
@@ -64,7 +80,11 @@
               <a-button :disabled="!canUse" type="primary" @click="doAction('del', null)">删除</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:audit')">
-              <a-button :disabled="!canUse" type="primary" @click="doAction('approval', null)">审核</a-button>
+              <a-button
+                :disabled="!canUse"
+                type="primary"
+                @click="doAction('approval', null)"
+              >提交审核</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterial:annulAudit')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('unapproval', null)">反审核</a-button>
@@ -101,8 +121,11 @@
             {{ { 1: '自制', 2: '外购', 3: '委外', 4: '标准件' }[text] }}
           </div>
 
-          <div slot="mainUnit" slot-scope="text, record, index">
-            {{ { 1: '支', 2: '把', 3: '件' }[text] }}
+          <div
+            slot="mainUnit"
+            slot-scope="text, record, index"
+          >
+            {{ {1:'支',2:'把',3:'件'}[text] || text }}
           </div>
           <div slot="specification" slot-scope="text, record, index">
             <a-tooltip>
@@ -116,6 +139,13 @@
           <a slot="auditStatus" slot-scope="text, record" @click="approvalPreview(record)">
             {{ { 1: '未审核', 2: '审批中', 3: '已审核' }[text] }}
           </a>
+
+          <div
+            slot="useStatus"
+            slot-scope="text, record, index"
+          >
+            {{ {1:'使用中',2:'未使用',3:'逐步淘汰',4:'已淘汰'}[text] }}
+          </div>
         </a-table>
       </div>
     </div>
@@ -142,11 +172,16 @@ import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import SearchForm from './module/SearchForm'
 
 const columns = [
+  // {
+  //   align: 'center',
+  //   title: '物料代码',
+  //   dataIndex: 'materialCode',
+  //   scopedSlots: { customRender: 'materialCode' }
+  // },
   {
     align: 'center',
-    title: '物料代码',
-    dataIndex: 'materialCode',
-    scopedSlots: { customRender: 'materialCode' },
+    title: '原K3物料代码',
+    dataIndex: 'k3Code',
   },
   {
     align: 'center',
@@ -173,8 +208,19 @@ const columns = [
   },
   {
     align: 'center',
+    title: '使用状态',
+    dataIndex: 'useStatus',
+    scopedSlots: { customRender: 'useStatus' }
+  },
+  {
+    align: 'center',
     title: '录入人',
     dataIndex: 'createdName',
+  },
+  {
+    align: 'center',
+    title: '录入时间',
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
@@ -280,6 +326,7 @@ export default {
   },
   methods: {
     onExpand(expandedKeys) {
+      console.log(arguments)
       this.expandedKeys = expandedKeys
       this.autoExpandParent = false
     },
@@ -345,19 +392,29 @@ export default {
           return
         }
         routineMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
-          .then((res) => {
-            let oldChildren = [...(treeNode.dataRef.children || [])]
-            let newChildren = res.data.map((item) => that.formatTreeData(item))
-            let children = that.margeNode(oldChildren, newChildren)
+          .then(res => {
+            if(res && res.code === 200 && Array.isArray(res.data)){
+              let oldChildren = [...(treeNode.dataRef.children || [])]
+              let newChildren = res.data.map(item => that.formatTreeData(item))
+              let children = that.margeNode(oldChildren, newChildren)
 
-            treeNode.dataRef.children = children
-            that.orgTree = [...that.orgTree]
-            that.dataList = that.generateList(that.orgTree)
+              treeNode.dataRef.children = children
+              that.orgTree = [...that.orgTree]
+              that.dataList = that.generateList(that.orgTree)
+            }else{
+              treeNode.dataRef.isLeaf = true
+              treeNode.dataRef.children = []
+              that.orgTree = [...that.orgTree]
+              that.dataList = that.generateList(that.orgTree)
+              that.$message.info(res.msg)
+            }
             resolve()
           })
           .catch((err) => {
             console.error(err)
             that.$message.error(`调用接口[routineMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
+            resolve()
+            return
           })
       })
     },
@@ -381,9 +438,6 @@ export default {
     },
     fetchTree() {
       const that = this
-      // routineMaterialInfoTwoTierTreeList({parentId:that.parentId}).then(res =>{
-      //   console.log(res)
-      // })
       routineMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then((res) => {
           const root = {
@@ -394,11 +448,13 @@ export default {
             code: '0',
             codeLength: 10,
             parentId: 0,
-            children: res.data.map((item) => that.formatTreeData(item)),
-            scopedSlots: { title: 'title' },
+            children: Array.isArray(res.data) ? res.data.map(item => that.formatTreeData(item)) : [],
+            scopedSlots: { title: 'title' }
           }
           that.orgTree = [root]
           that.dataList = that.generateList(that.orgTree)
+
+          that.expandedKeys = ['0']
 
           if (String(that.parentId) === '0') {
             that.parentItem = root
@@ -480,6 +536,7 @@ export default {
       let ruleName = item.newRuleName || item.ruleName
       let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
       obj.title = `${ruleName}${showCode}`
+      obj.sourceTitle = ruleName
 
       obj.value = String(item.id)
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
@@ -571,7 +628,7 @@ export default {
           approval: {
             api: routineMaterialInfoAudit,
             title: '审核',
-            tpl: (names) => `确定要审核项目${names}吗？`,
+            tpl: names => `确定要提交审核项目${names}吗？`
           },
           unapproval: {
             api: routineMaterialInfoAnnulAudit,

@@ -170,10 +170,16 @@
                     slot-scope="text, record, index"
                   >
                     <template v-if="record.key === 1">
-                      {{ {1:'支',2:'把',3:'件'}[form.replaceMaterialItem.mainUnit || form.replaceMaterialItem.materialUnit] }}
+                      {{
+                        {1:'支',2:'把',3:'件'}[form.replaceMaterialItem.mainUnit || form.replaceMaterialItem.materialUnit] ||
+                        (form.replaceMaterialItem.mainUnit || form.replaceMaterialItem.materialUnit)
+                      }}
                     </template>
                     <template v-if="record.key === 2">
-                      {{ {1:'支',2:'把',3:'件'}[form.materialItem.mainUnit || form.materialItem.materialUnit] }}
+                      {{
+                        {1:'支',2:'把',3:'件'}[form.materialItem.mainUnit || form.materialItem.materialUnit] ||
+                        (form.materialItem.mainUnit || form.materialItem.materialUnit)
+                      }}
                     </template>
                   </div>
 
