@@ -9,9 +9,6 @@
     :maskClosable="false"
     :confirmLoading="spinning"
   >
-
-
-
     <a-spin :spinning="spinning">
 
       <a-tabs
@@ -24,6 +21,7 @@
         <a-tab-pane tab="异议信息" :key="3" />
         <a-tab-pane tab="历史价格信息" :key="4" />
         <a-tab-pane tab="采购信息" :key="5" />
+        <a-tab-pane tab="采购进程" :key="6" />
       </a-tabs>
 
       <div v-show="+activeKey === 1">
@@ -74,7 +72,7 @@
               <tr>
                 <td style="width:150px;">最后一次采购单价</td>
                 <td>
-                  {{detail.lastPrice | moneyFormatNumber}}
+                  {{detail.nowPrice | moneyFormatNumber}}
                 </td>
               </tr>
               <tr>
@@ -92,7 +90,7 @@
               <tr>
                 <td style="width:150px;">最新报价</td>
                 <td>
-                  {{detail.newPrice | moneyFormatNumber}}
+                  {{detail.lastPrice | moneyFormatNumber}}
                 </td>
               </tr>
               <tr>
@@ -194,6 +192,10 @@
       </a-form-model>
       </div>
 
+      <div v-show="+activeKey === 6">
+        <OrderProcessView ref="orderProcessView" />
+      </div>
+
       <XdocView ref="xdocView" />
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
@@ -206,13 +208,15 @@ import XdocView from './XdocView'
 import Approval from './Approval'
 import ApplyView from '../apply/ApplyView'
 import OfferPriceView from './OfferPriceView'
+import OrderProcessView from './OrderProcessView'
 import moment from 'moment'
 export default {
   components: {
     XdocView,
     Approval,
     ApplyView,
-    OfferPriceView
+    OfferPriceView,
+    OrderProcessView
   },
   data() {
     return {
@@ -285,6 +289,9 @@ export default {
         that.$refs.applyView.query({ id: that.record.requestId })
 
         that.$refs.offerPriceView.query(that.record.quotationId)
+
+        that.$refs.orderProcessView.query(that.record.id )
+
       })
     },
     handleCancel() {

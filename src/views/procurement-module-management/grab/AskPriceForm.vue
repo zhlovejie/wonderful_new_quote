@@ -121,7 +121,7 @@
             </a-select-option>
           </a-select> -->
 
-          {{ {1:'含税运',2:'含税不含运'}[form.nakedPrice]  }}
+          {{ {1:'含税运',2:'含税不含运'}[form.nakedPrice] || '不限' }}
         </a-form-model-item>
         <a-form-model-item  label="最新报价" prop="newPrice">
           <!-- <a-input-number
@@ -236,6 +236,18 @@ export default {
       labelCol: { span: 5 },
       wrapperCol: { span: 18 },
       form: {
+        lastPrice:0,
+        invoiceType:0, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
+        deliveryCycle:0,//交货期
+        lowestNum:0,//采购量
+        shelfLife:0,//最短质保期
+        nakedPrice:0,//裸价的标准(0为含运费，1为不含运费)
+        packageType:'不限',//包装方式
+        packType:2,//是否固定包装(1是固定，2是不固定)
+        packageCount:0,//包内数量
+        newPrice:0,//最新采购价格
+        materialRate:0,//物料税率
+        manageBrands:[],
         email:undefined
       },
       rules: {
@@ -275,6 +287,7 @@ export default {
       that.record = {...record}
       that.visible = true
       that.form = {
+        ...that.form,
         requestId:that.record.id,
         materialId:that.record.materialId,
         materialName:that.record.materialName,
@@ -294,16 +307,16 @@ export default {
           that.form = {
               ...that.form,
               lastPrice:materialRequirement.price || 0,
-              invoiceType:materialRequirement.invoiceType, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
-              deliveryCycle:materialRequirement.maxDelivery,//交货期
-              lowestNum:materialRequirement.maxPurchase,//采购量
-              shelfLife:materialRequirement.minWarranty,//最短质保期
-              nakedPrice:materialRequirement.nakedPrice,//裸价的标准(0为含运费，1为不含运费)
-              packageType:materialRequirement.packMethod,//包装方式
-              packType:materialRequirement.packType,//是否固定包装(1是固定，2是不固定)
-              packageCount:materialRequirement.pageNum,//包内数量
+              invoiceType:materialRequirement.invoiceType || 0, //物流发票类型(0为无限，1为增值税专用发票，2为普通发票)
+              deliveryCycle:materialRequirement.maxDelivery || 0,//交货期
+              lowestNum:materialRequirement.maxPurchase || 0,//采购量
+              shelfLife:materialRequirement.minWarranty || 0,//最短质保期
+              nakedPrice:materialRequirement.nakedPrice || 0,//裸价的标准(0为含运费，1为不含运费)
+              packageType:materialRequirement.packMethod || '不限',//包装方式
+              packType:materialRequirement.packType || 2,//是否固定包装(1是固定，2是不固定)
+              packageCount:materialRequirement.pageNum || 0,//包内数量
               newPrice:materialRequirement.price || 0,//最新采购价格
-              materialRate:materialRequirement.taxRate,//物料税率
+              materialRate:materialRequirement.taxRate || 0,//物料税率
               manageBrands:materialRequirement.buyRequirementBrands || []
             }
         }

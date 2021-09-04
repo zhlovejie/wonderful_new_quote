@@ -103,7 +103,7 @@
                 <td style="width:150px;">最新报价</td>
                 <td>
                   <a-form-model-item prop="newPrice" >
-                    {{form.newPrice | moneyFormatNumber}}
+                    {{form.lastPrice | moneyFormatNumber}}
                     <!-- <a-input-number
                       placeholder="最新报价"
                       v-model="form.newPrice"
@@ -340,7 +340,7 @@ export default {
           supplierName:d2.supplierName,
           quotationId:d2.id,
           deliveryDate:moment(d2.modifyTime).add('days',+d2.deliveryCycle),
-          amount: that.detail.requestNum * d2.newPrice
+          amount: that.detail.requestNum * d2.lastPrice
         }
 
     },

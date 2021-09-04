@@ -385,6 +385,15 @@ export function orderFinishPageList(parameter) {
     params: parameter
   })
 }
+
+export function orderProcessList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/orderProcess/detail',
+    method: 'GET',
+    params: parameter
+  })
+}
 /**采购完成 END */
 
 

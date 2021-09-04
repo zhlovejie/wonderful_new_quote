@@ -277,14 +277,14 @@
                 :span="4"
                 class="lbl"
               >裸价标准：</a-col>
-              <a-col :span="8">{{`${{0:'含税运',1:'含税不含运'}[item.nakedPrice]}`}}</a-col>
+              <a-col :span="8">{{`${{1:'含税运',2:'含税不含运'}[item.nakedPrice]}`}}</a-col>
             </a-row>
             <a-row :gutter="[16,16]">
               <a-col
                 :span="4"
                 class="lbl"
               >包装方式：</a-col>
-              <a-col :span="8">{{`${item.packageType}`}}</a-col>
+              <a-col :span="8">{{`${item.packageCount}/${item.packageType}`}}</a-col>
               <a-col
                 :span="4"
                 class="lbl"

@@ -346,7 +346,8 @@ import {
   requestApplyPageList,
   requestApplyDelete ,
   requestApplyApproval,
-  requestApplyRevocation
+  requestApplyRevocation,
+  hasAuthApprove
 } from '@/api/procurementModuleManagement'
 
 const columns = [
@@ -665,6 +666,21 @@ export default {
     async doAction(type, record) {
       const that = this
       if (['add','edit', 'view', 'approval'].includes(type)) {
+
+        if(type === 'approval'){
+          let _hasAuthApprove = await hasAuthApprove({instanceId:record.instanceId}).then(res => {
+            return +res.code === 200
+          }).catch(err => {
+            console.log(err)
+            return false;
+          })
+          if(!_hasAuthApprove){
+            that.$message.info('您没有审批权限');
+            return
+          }
+        }
+
+
         that.$refs['addForm'].query(type, { ...record })
         return
       } else if (type === 'del') {
@@ -726,6 +742,10 @@ export default {
         return
       }else if(type === 'batchApproval'){
         that.selectedRows = [record]
+
+
+
+        return
         let promiseList = that.selectedRows.map(row => {
           return requestApplyApproval({ isAdopt: 0, opinion: '通过' ,approveId:row.id}).then(res => {
             return {

@@ -59,12 +59,12 @@
           <a-tab-pane tab="待抢单" :key="1" />
           <a-tab-pane tab="已派单" :key="2" />
           <a-tab-pane tab="公示中" :key="3" />
-          <a-tab-pane tab="我的" :key="9" />
-          <template v-if="$auth('quotation:approval')">
+          <!-- <a-tab-pane tab="我的" :key="9" /> -->
+          <!-- <template v-if="$auth('quotation:approval')"> -->
             <a-tab-pane tab="待审核" :key="4" />
             <a-tab-pane tab="通过" :key="5" />
             <a-tab-pane tab="不通过" :key="6" />
-          </template>
+          <!-- </template> -->
           <a-tab-pane tab="待处理报价异常单" :key="7" />
           <a-tab-pane tab="已处理报价异常单" :key="8" />
         </a-tabs>
