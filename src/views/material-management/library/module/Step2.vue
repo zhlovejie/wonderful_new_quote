@@ -74,7 +74,7 @@
           取消
         </a-button>
       </p>
-    </a-spin>
+  </div>
   </div>
 </template>
 <script>
