@@ -2,7 +2,7 @@ import {
   axios
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
-let materialBaseUrl = system.baseURL
+let materialBaseUrl = system.materialBaseUrl
 // eslint-disable-next-line no-unused-vars
 const api = {
   manageSupplier: '/manageSupplier/page',
