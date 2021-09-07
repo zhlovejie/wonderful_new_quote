@@ -66,14 +66,20 @@
         </a-form-item>
         <a-form-item label="代码输入" v-if="type === 2">
           <a-select
-            :filter-option="filterOption"
             show-search
+            placeholder="模糊搜索"
+            :default-active-first-option="false"
+            :show-arrow="false"
+            :filter-option="false"
             v-decorator="['valencyId', { rules: [{ required: true, message: '请选择代码' }] }]"
-            :loading="loading"
+            @search="(w) => materialFuzzyAction(w, false)"
+            @change="(key) => materialFuzzyTableHandleChange(key, record)"
           >
-            <a-select-option v-for="item in saleValenc" :key="item.id" :value="item.id"
-              >核价产品代码：{{ item.productCode }}--产品代码{{ item.newBasisModel }}---产品名称：
-              {{ item.productName }}
+            <a-spin v-if="materialFuzzySearch.fetching" slot="notFoundContent" size="small" />
+            <a-select-option v-for="item in materialFuzzySearch.list" :key="item.__key" :value="item.id">
+              {{ item.__label }}
+              <!-- 核价产品代码：{{ item.productCode }}--产品代码{{ item.newBasisModel }}---产品名称：
+              {{ item.productName }} -->
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -150,6 +156,8 @@ import {
   exportMaterialCodePricing,
   exportValencyCodePricing,
 } from '@/api/productOfferManagement'
+import { getProductList } from '@/api/workBox'
+
 const innerColumns = [
   {
     align: 'center',
@@ -200,6 +208,8 @@ const columns = [
 
 export default {
   data() {
+    this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
+    this.bomFuzzyAction = this.$_.debounce(this.bomFuzzyAction, 800)
     return {
       columns,
       innerColumns,
@@ -213,6 +223,16 @@ export default {
       depList: [],
       form: this.$form.createForm(this, { name: 'pom-pricing' }),
       type: undefined,
+      materialFuzzySearch: {
+        list: [],
+        item: {},
+        fetching: false,
+      },
+      bomFuzzySearch: {
+        list: [],
+        item: {},
+        fetching: false,
+      },
     }
   },
   watch: {
@@ -226,6 +246,64 @@ export default {
     },
   },
   methods: {
+    async bomFuzzyAction(wd) {
+      const that = this
+      const _searchParam = {
+        current: 1,
+        size: 10,
+        parameter: wd,
+      }
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true }
+      const result = await productInformationList({ status: 3 }).then((res) => {
+        const records = res.data.records.map((item) => {
+          item.__key = uuid()
+          item.__label = `${item.productName}(${item.productModel})`
+          // item.__value = item.routeCode
+          return item
+        })
+        return records
+      })
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: false, list: result }
+    },
+    bomFuzzyHandleChange(key) {
+      const that = this
+      const target = that.bomFuzzySearch.list.find((item) => item.__key === key)
+      console.log(target)
+      // that.form = { ...that.form, craftId: target.id, routeCode: target.routeCode, routeName: target.routeName }
+      // that.bomFuzzySearch = { ...that.bomFuzzySearch, item: target }
+    },
+    async materialFuzzyAction(wd, isFilter = false) {
+      const that = this
+      const _searchParam = {
+        current: 1,
+        size: 100,
+        parameter: wd,
+      }
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
+      let res = await Promise.all([
+        saleValencyProduct(_searchParam).then((res) => {
+          const records = res.data.records.map((item) => {
+            item.__key = uuid()
+            item.__label = `核价产品代码：${item.productCode}}--产品代码:(${item.newBasisModel})--产品名称：${item.productName}`
+            return item
+          })
+          return records
+        }),
+      ])
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: false, list: res }
+    },
+    materialFuzzyTableHandleChange(key, item) {
+      // debugger
+      const that = this
+      const target = that.materialFuzzySearch.list.find((item) => item.materialCodeFormat === key)
+      that.materialFuzzySearch = { list: [], fetching: false, item: target }
+
+      that.$nextTick(() => {
+        that.form.setFieldsValue({
+          valencyId: target.id,
+        })
+      })
+    },
     expandHandler(expanded, record) {
       console.log(arguments)
       if (expanded) {
@@ -259,16 +337,15 @@ export default {
     },
 
     init() {
-      productInformationList().then((res) => {
+      productInformationList({ current: 1, size: 100 }).then((res) => {
         if (res.code === 200) {
-          this.loading = false
-          this.tionList = res.data
+          this.bomFuzzySearch.list = res.data.records
         }
       })
-      saleValencyProduct().then((res) => {
+      saleValencyProduct({ current: 1, size: 100 }).then((res) => {
         if (res.code === 200) {
           this.loading = false
-          this.saleValenc = res.data
+          this.materialFuzzySearch.list = res.data.records
         }
       })
       typeConfigList().then((res) => {
@@ -277,9 +354,6 @@ export default {
           this.depList = res.data
         }
       })
-    },
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     downloadAction() {
       let that = this
@@ -364,7 +438,7 @@ export default {
                 item.innerData = []
                 return item
               })
-              this.expandedRowKeys = that.dataSource.map((item) => item.key) || []
+              // this.expandedRowKeys = this.dataSource.map((item) => item.key) || []
               // this.dataSource = res.data.sort(function (a, b) {
               //   return a.rateType - b.rateType
               // })

@@ -38,9 +38,7 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('personnel:add') && record.status === 0">
-              <a-popconfirm title="是否退房" ok-text="是" cancel-text="否" @confirm="Check(record)">
-                <a type="primary">退房</a>
-              </a-popconfirm>
+              <a @click="showModal(record)">退房</a>
             </template>
             <template>
               <template v-if="$auth('personnel:add') && record.status === 0">
@@ -57,7 +55,23 @@
       </a-layout-content>
     </a-layout>
     <AddForm ref="addForm" @finish="searchAction()" />
-    <!-- <XdocView ref="xdocView" /> -->
+    <a-modal
+      title="退房操作"
+      :visible="visible"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+        <a-form-item label="退房时间">
+          <a-date-picker
+            format="YYYY-MM-DD"
+            :disabled-date="disabledDate"
+            v-decorator="['checkOutTime', { rules: [{ required: true, message: '请选择退房时间' }] }]"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </a-card>
 </template>
 
@@ -65,18 +79,19 @@
 import { getDevisionList, getStationList } from '../../../../api/systemSetting'
 import { personnel_List, queryList, personnel_delete, personnel_Check } from '@/api/humanResources'
 import AddForm from './module/FormAdd'
-// import XdocView from './module/XdocView'
-
+import moment from 'moment'
 export default {
   name: 'RoleManagement',
   components: {
     AddForm,
-    // XdocView,
   },
   data() {
     return {
       openKeys: ['id'],
       parentId: 0,
+      visible: false,
+      confirmLoading: false,
+      form: this.$form.createForm(this, { name: 'coordinated' }),
       userInfo: this.$store.getters.userInfo, // 当前登录人
       hiddenBoolean: false,
       stationId: undefined,
@@ -141,6 +156,7 @@ export default {
       ],
       //列表数据
       dataSource: [],
+      Check: {},
 
       // 部门列表
       departmentList: [],
@@ -161,6 +177,10 @@ export default {
     },
   },
   methods: {
+    moment,
+    disabledDate(current) {
+      return current && current.format('MM') !== moment().format('MM')
+    },
     init() {
       let that = this
       getDevisionList().then((res) => {
@@ -215,16 +235,33 @@ export default {
     handle(type, record) {
       this.$refs.addForm.query(type, record)
     },
-    //退房
-    Check(record) {
-      personnel_Check({ id: record.id }).then((res) => {
-        if (res.code === 200) {
-          this.searchAction()
-          that.$message.info(res.msg)
-        } else {
-          this.$message.error(res.msg)
+    showModal(record) {
+      this.form.resetFields()
+      this.visible = true
+      this.Check = record
+    },
+    handleOk(e) {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          values.id = this.Check.id
+          values.checkOutTime = moment(values.checkOutTime).format('YYYY-MM-DD')
+          this.confirmLoading = true
+          personnel_Check(values).then((res) => {
+            if (res.code === 200) {
+              this.visible = false
+              this.confirmLoading = false
+              this.searchAction()
+              this.$message.info(res.msg)
+            } else {
+              this.confirmLoading = false
+              this.$message.error(res.msg)
+            }
+          })
         }
       })
+    },
+    handleCancel(e) {
+      this.visible = false
     },
     // 删除
     deleteRoleInfo(record) {
