@@ -544,6 +544,17 @@ export function DictionaryModify(parameter) {
     data: parameter
   })
 }
+//数据字典详情
+export function getDictionaryByCode(parameter) {
+  // const token = parameter.Authorization
+  return axios({
+    baseURL: system.baseURL,
+    url: '/dictionary/getDictionaryByCode',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 新增字典项目
 export function dictionaryAdd(parameter) {
   return axios({
