@@ -2,59 +2,29 @@
   <!-- 资产盘点记录 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-month-picker placeholder="选择年月" style="width:160px;" v-model="searchParam.beginTime"/>
+      <a-month-picker placeholder="选择年月" style="width: 160px" v-model="searchParam.beginTime" />
       <span>~</span>
-      <a-month-picker placeholder="选择年月" style="width:160px;" v-model="searchParam.endTime"/>
-      <a-input
-        placeholder="资产名称"
-        v-model="searchParam.name"
-        :allowClear="true"
-        style="width:160px;"
-      />
-      <a-input
-        placeholder="资产代码"
-        v-model="searchParam.code"
-        :allowClear="true"
-        style="width:160px;"
-      />
-      <a-input
-        placeholder="使用人"
-        v-model="searchParam.userName"
-        :allowClear="true"
-        style="width:160px;"
-      />
-      <a-select
-        placeholder="选择资产类型"
-        v-model="searchParam.typeDicId"
-        :allowClear="true"
-        style="width:160px;"
-      >
-        <a-select-option v-for="item in assetTypeList" :key="item.id" :value="item.id">{{item.text}}</a-select-option>
+      <a-month-picker placeholder="选择年月" style="width: 160px" v-model="searchParam.endTime" />
+      <a-input placeholder="资产名称" v-model="searchParam.name" :allowClear="true" style="width: 160px" />
+      <a-input placeholder="资产代码" v-model="searchParam.code" :allowClear="true" style="width: 160px" />
+      <a-input placeholder="使用人" v-model="searchParam.userName" :allowClear="true" style="width: 160px" />
+      <a-select placeholder="选择资产类型" v-model="searchParam.typeDicId" :allowClear="true" style="width: 160px">
+        <a-select-option v-for="item in assetTypeList" :key="item.id" :value="item.id">{{ item.text }}</a-select-option>
       </a-select>
 
-      <a-select
-        placeholder="选择资产状态"
-        v-model="searchParam.infoStatus"
-        :allowClear="true"
-        style="width:160px;"
-      >
+      <a-select placeholder="选择资产状态" v-model="searchParam.infoStatus" :allowClear="true" style="width: 160px">
         <a-select-option :value="1">入库</a-select-option>
         <a-select-option :value="2">使用中</a-select-option>
         <a-select-option :value="3">报修中</a-select-option>
         <a-select-option :value="4">报废</a-select-option>
         <a-select-option :value="5">缺失</a-select-option>
       </a-select>
-      <a-select
-        placeholder="选择盘点状态"
-        v-model="searchParam.status"
-        :allowClear="true"
-        style="width:160px;"
-      >
+      <a-select placeholder="选择盘点状态" v-model="searchParam.status" :allowClear="true" style="width: 160px">
         <a-select-option :value="1">正常</a-select-option>
         <a-select-option :value="2">待盘点</a-select-option>
         <a-select-option :value="3">缺失</a-select-option>
       </a-select>
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
     </div>
     <div class="main-wrapper">
       <a-table
@@ -68,25 +38,24 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="beginTime" slot-scope="text, record, index">
-          <span>{{record.beginTime}}~{{record.endTime}}</span>
+          <span>{{ record.beginTime }}~{{ record.endTime }}</span>
         </div>
 
-        
         <div slot="beyondType" slot-scope="text, record, index">
-          {{ {1:'个人',2:'部门',3:'资产库'}[text] || '未知' }}
+          {{ { 1: '个人', 2: '部门', 3: '资产库' }[text] || '未知' }}
         </div>
 
         <div slot="infoStatus" slot-scope="text, record, index">
-          {{ {1:'入库',2:'使用中',3:'报修中',4:'报废',5:'缺失'}[text] || '未知' }}
+          {{ { 1: '入库', 2: '使用中', 3: '报修中', 4: '报废', 5: '缺失' }[text] || '未知' }}
         </div>
         <div slot="status" slot-scope="text, record, index">
           <template v-if="+text === 2">
-            <a-popconfirm title="是否要执行缺失操作？" @confirm="doAction('miss',record)">
-              <a type="primary" >待盘点</a>
+            <a-popconfirm title="是否要执行缺失操作？" @confirm="doAction('miss', record)">
+              <a type="primary">待盘点</a>
             </a-popconfirm>
           </template>
           <template v-else>
-            {{ {1:'正常',2:'待盘点',3:'缺失'}[text] || '未知' }}
+            {{ { 1: '正常', 2: '待盘点', 3: '缺失' }[text] || '未知' }}
           </template>
         </div>
       </a-table>
@@ -95,10 +64,10 @@
 </template>
 
 <script>
-import { 
+import {
   oaAssertsInfoInventory,
   oaAssertsInfoInventoryList,
-  oaAssertsInfoInventoryMissing 
+  oaAssertsInfoInventoryMissing,
 } from '@/api/assetManagement'
 import { getDictionaryList } from '@/api/workBox'
 import moment from 'moment'
@@ -169,11 +138,11 @@ const columns = [
     title: '盘点状态',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-  }
+  },
 ]
 
 export default {
-  name: 'asset-management-inventory-record',
+  name: 'replenishment-oil',
   components: {},
   data() {
     return {
@@ -183,17 +152,15 @@ export default {
       pagination: {
         current: 1,
       },
-      searchParam:{},
+      searchParam: {},
       loading: false,
     }
   },
-  computed: {
-    
-  },
+  computed: {},
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'asset-management-inventory-record') {
+        if (to.name === 'replenishment-oil') {
           this.init()
         }
       },
@@ -209,13 +176,19 @@ export default {
     },
     searchAction(opt = {}) {
       let that = this
-      
-      let _beginTime = this.searchParam.beginTime 
+
+      let _beginTime = this.searchParam.beginTime
       _beginTime = _beginTime instanceof moment ? _beginTime.format('YYYY-MM-DD') : undefined
-      let _endTime = this.searchParam.endTime 
+      let _endTime = this.searchParam.endTime
       _endTime = _endTime instanceof moment ? _endTime.format('YYYY-MM-DD') : undefined
 
-      let _searchParam = Object.assign({}, { ...this.searchParam },{beginTime:_beginTime,endTime:_endTime}, { ...this.pagination }, opt)
+      let _searchParam = Object.assign(
+        {},
+        { ...this.searchParam },
+        { beginTime: _beginTime, endTime: _endTime },
+        { ...this.pagination },
+        opt
+      )
       console.log('执行搜索...', _searchParam)
       that.loading = true
       oaAssertsInfoInventoryList(_searchParam)
@@ -242,18 +215,18 @@ export default {
       this.pagination = pager
       this.searchAction({ current: pagination.current })
     },
-    doAction(type,record){
+    doAction(type, record) {
       let that = this
-      if(type === 'miss'){
-        oaAssertsInfoInventoryMissing({id:record.id}).then(res =>{
+      if (type === 'miss') {
+        oaAssertsInfoInventoryMissing({ id: record.id }).then((res) => {
           console.log(res)
           that.$message.info(res.msg)
-          if(res.code === 200){
+          if (res.code === 200) {
             that.searchAction()
           }
         })
       }
-    }
+    },
   },
 }
 </script>

@@ -6,18 +6,12 @@
     :destroyOnClose="true"
     @cancel="handleCancel"
     :maskClosable="false"
-    :class="{'ant-modal_no_footer':isView}"
+    :class="{ 'ant-modal_no_footer': isView }"
   >
     <template slot="footer">
       <template v-if="isApproval">
         <a-button key="back" icon="close" @click="noPassAction">不通过</a-button>
-        <a-button
-          key="submit"
-          type="primary"
-          icon="check"
-          :loading="spinning"
-          @click="passAction"
-        >通过</a-button>
+        <a-button key="submit" type="primary" icon="check" :loading="spinning" @click="passAction">通过</a-button>
       </template>
       <template v-else>
         <a-button key="back" @click="handleCancel">取消</a-button>
@@ -27,69 +21,80 @@
     <a-spin :spinning="spinning">
       <a-form :form="form" layout="inline" class="wdf-custom-add-form-wrapper">
         <a-form-item hidden>
-          <a-input v-decorator="['id',{initialValue:detail.id}]" />
+          <a-input v-decorator="['id', { initialValue: detail.id }]" />
         </a-form-item>
         <a-form-item hidden>
-          <a-input v-decorator="['instanceId',{initialValue:detail.instanceId}]" />
+          <a-input v-decorator="['instanceId', { initialValue: detail.instanceId }]" />
         </a-form-item>
 
         <table class="custom-table custom-table-border">
           <tr>
             <td>编号</td>
             <td>
-              <span v-if="!isDisabled" style="color:#999;">系统自动生成</span>
-              <span v-else>{{detail.ybNum}}</span>
+              <span v-if="!isDisabled" style="color: #999">系统自动生成</span>
+              <span v-else>{{ detail.ybNum }}</span>
             </td>
             <td>部门</td>
-            <td>{{detail.departmentName || userInfo.departmentName}}</td>
+            <td>{{ detail.departmentName || userInfo.departmentName }}</td>
           </tr>
           <tr>
             <td>岗位</td>
-            <td>{{detail.stationName || userInfo.stationName}}</td>
+            <td>{{ detail.stationName || userInfo.stationName }}</td>
             <td>姓名</td>
-            <td>{{detail.createdName || userInfo.trueName}}</td>
+            <td>{{ detail.createdName || userInfo.trueName }}</td>
           </tr>
 
           <tr>
             <td>车牌号</td>
-            <td style="width:220px;" v-if="carNoOptions.length === 0">
+            <td style="width: 220px" v-if="carNoOptions.length === 0">
               <a-form-item>
-                <a-input 
+                <a-input
                   v-if="!isDisabled"
                   placeholder="车牌号"
-                  :allowClear="true" 
-                  v-decorator="[`carNo_input`,{initialValue:detail.carNo,rules: [{required: true,message: '请输入车牌号'}]}]"
+                  :allowClear="true"
+                  v-decorator="[
+                    `carNo_input`,
+                    { initialValue: detail.carNo, rules: [{ required: true, message: '请输入车牌号' }] },
+                  ]"
                 />
-                <span v-else>{{detail.carNo}}</span>
+                <span v-else>{{ detail.carNo }}</span>
               </a-form-item>
             </td>
-            <td style="width:220px;" v-if="carNoOptions.length > 0">
+            <td style="width: 220px" v-if="carNoOptions.length > 0">
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="!isDisabled"
                   placeholder="车牌号"
-                  :allowClear="true" 
-                  v-decorator="[`carNo_select`,{initialValue:detail.carNo,rules: [{required: true,message: '请选择车牌号'}]}]"
+                  :allowClear="true"
+                  v-decorator="[
+                    `carNo_select`,
+                    { initialValue: detail.carNo, rules: [{ required: true, message: '请选择车牌号' }] },
+                  ]"
                 >
-                  <a-select-option v-for="item in carNoOptions" :key="item.key" :value="item.carcode">{{item.carcode}}</a-select-option>
+                  <a-select-option v-for="item in carNoOptions" :key="item.key" :value="item.carcode">{{
+                    item.carcode
+                  }}</a-select-option>
                 </a-select>
-                <span v-else>{{detail.carNo}}</span>
+                <span v-else>{{ detail.carNo }}</span>
               </a-form-item>
             </td>
             <td>申请事项</td>
             <td>
               <a-form-item>
-                <a-select 
+                <a-select
                   v-if="!isDisabled"
                   placeholder="申请事项"
-                  :allowClear="true" 
-                  v-decorator="[`itemType`,{initialValue:detail.itemType,rules: [{required: true,message: '请选择申请事项'}]}]"
+                  :allowClear="true"
+                  v-decorator="[
+                    `itemType`,
+                    { initialValue: detail.itemType, rules: [{ required: true, message: '请选择申请事项' }] },
+                  ]"
                 >
                   <a-select-option :value="1">初次申请</a-select-option>
                   <a-select-option :value="2">调整申请</a-select-option>
                   <a-select-option :value="3">其他申请</a-select-option>
                 </a-select>
-                <span v-else>{{ {1:'初次申请',2:'调整申请',3:'其他申请'}[detail.itemType] || '未知' }}</span>
+                <span v-else>{{ { 1: '初次申请', 2: '调整申请', 3: '其他申请' }[detail.itemType] || '未知' }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -98,16 +103,19 @@
             <td>补贴金</td>
             <td colspan="3">
               <a-form-item>
-                <a-input-number 
+                <a-input-number
                   v-if="!isDisabled"
-                  style="width:100%;"
+                  style="width: 100%"
                   :min="0"
                   :max="99999"
                   :step="1"
                   :precision="2"
-                  v-decorator="['amount', {initialValue:detail['amount'], rules: [{ required: true, message: '请输入补贴金' }]}]"
+                  v-decorator="[
+                    'amount',
+                    { initialValue: detail['amount'], rules: [{ required: true, message: '请输入补贴金' }] },
+                  ]"
                 />
-                <span v-else>{{detail['amount'] | moneyFormatNumber}}</span>
+                <span v-else>{{ detail['amount'] | moneyFormatNumber }}</span>
               </a-form-item>
             </td>
           </tr>
@@ -116,11 +124,32 @@
             <td colspan="3">
               <a-form-item v-if="!isDisabled">
                 <UploadFile ref="uploadVehicleLisence" maxFileCount="2" />
-                <a-input hidden v-decorator="['vehicleLisenceUrl', {initialValue:detail['vehicleLisenceUrl'],rules: [{ required: true, message: '请输入行驶证' }]}]" />
+                <a-input
+                  hidden
+                  v-decorator="[
+                    'vehicleLisenceUrl',
+                    { initialValue: detail['vehicleLisenceUrl'], rules: [{ required: true, message: '请输入行驶证' }] },
+                  ]"
+                />
               </a-form-item>
               <template v-else>
                 <div v-if="detail.vehicleLisenceUrl">
-                <img v-for="url in detail.vehicleLisenceUrl.split(',')" :key="url" @click="() => showImg(url)" :src="url" style="width:96px;height:auto;border:none;border-radius: 3px;box-shadow: 0 0 3px #ddd;margin-right: 10px;cursor: pointer;" alt="">
+                  <img
+                    v-for="url in detail.vehicleLisenceUrl.split(',')"
+                    :key="url"
+                    @click="() => showImg(url)"
+                    :src="url"
+                    style="
+                      width: 96px;
+                      height: auto;
+                      border: none;
+                      border-radius: 3px;
+                      box-shadow: 0 0 3px #ddd;
+                      margin-right: 10px;
+                      cursor: pointer;
+                    "
+                    alt=""
+                  />
                 </div>
               </template>
             </td>
@@ -130,14 +159,34 @@
             <td colspan="3">
               <a-form-item v-if="!isDisabled">
                 <UploadFile ref="uploadDriverLisence" maxFileCount="2" />
-                <a-input hidden v-decorator="['driverLisenceUrl', {initialValue:detail['driverLisenceUrl'],rules: [{ required: true, message: '请输入驾驶证' }]}]" />
+                <a-input
+                  hidden
+                  v-decorator="[
+                    'driverLisenceUrl',
+                    { initialValue: detail['driverLisenceUrl'], rules: [{ required: true, message: '请输入驾驶证' }] },
+                  ]"
+                />
               </a-form-item>
               <template v-else>
                 <div v-if="detail.driverLisenceUrl">
-                <img v-for="url in detail.driverLisenceUrl.split(',')" :key="url" @click="() => showImg(url)" :src="url" style="width:96px;height:auto;border:none;border-radius: 3px;box-shadow: 0 0 3px #ddd;margin-right: 10px;cursor: pointer;" alt="">
+                  <img
+                    v-for="url in detail.driverLisenceUrl.split(',')"
+                    :key="url"
+                    @click="() => showImg(url)"
+                    :src="url"
+                    style="
+                      width: 96px;
+                      height: auto;
+                      border: none;
+                      border-radius: 3px;
+                      box-shadow: 0 0 3px #ddd;
+                      margin-right: 10px;
+                      cursor: pointer;
+                    "
+                    alt=""
+                  />
                 </div>
               </template>
-              
             </td>
           </tr>
           <tr>
@@ -163,19 +212,14 @@
     </a-spin>
 
     <Approval ref="approval" @opinionChange="opinionChange" />
-    <ImgView ref="imgView" title="图片预览"/>
+    <ImgView ref="imgView" title="图片预览" />
     <CarSelect ref="carSelect" @select="carSelectHandler" />
   </a-modal>
 </template>
 <script>
-
-import {
-  oilApplyApproval,
-  oilApplyAddOrUpdate,
-  getUserInfoById
-} from '@/api/salaryManagement'
-import {queryStationLevel} from '@/api/common'
-import {levelRulePageList } from '@/api/salaryManagement'
+import { oilApplyApproval, oilApplyAddOrUpdate, getUserInfoById } from '@/api/salaryManagement'
+import { queryStationLevel } from '@/api/common'
+import { levelRulePageList } from '@/api/salaryManagement'
 import UploadFile from '@/components/CustomerList/UploadFile'
 import ImgView from '@/components/CustomerList/ImgView'
 import Approval from './Approval'
@@ -186,7 +230,7 @@ let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'addForm',
-  components: { Approval ,UploadFile,ImgView,CarSelect},
+  components: { Approval, UploadFile, ImgView, CarSelect },
   data() {
     return {
       form: this.$form.createForm(this),
@@ -197,8 +241,8 @@ export default {
       record: {},
       spinning: false,
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      festivalDetails:[],
-      carNoOptions:[]
+      festivalDetails: [],
+      carNoOptions: [],
     }
   },
   computed: {
@@ -231,18 +275,18 @@ export default {
       let queue = []
       return Promise.all(queue)
     },
-    showImg(url){
+    showImg(url) {
       this.$refs.imgView.show(url)
     },
-    openCarSelect(){
+    openCarSelect() {
       this.$refs.carSelect.query()
     },
-    carSelectHandler(record){
+    carSelectHandler(record) {
       console.log(record)
       this.form.setFieldsValue({
-        carNo:record.carCode
+        carNo: record.carCode,
       })
-      let detail = {...this.detail}
+      let detail = { ...this.detail }
       detail.carNo = record.carCode
       this.detail = detail
     },
@@ -260,69 +304,76 @@ export default {
       //   return
       // }
       let money = +that.record.amount || 0
-      try{
-        if(money === 0){
-          let stationLevel = await queryStationLevel({id:that.userInfo.stationId}).then(res => res && res.data && res.data.level ? res.data.level : null)
-          let records = await levelRulePageList({current:1,size:10,levelType:stationLevel}).then(res => res.data.records)
-          if(Array.isArray(records) && records.length > 0){
+      try {
+        if (money === 0) {
+          let stationLevel = await queryStationLevel({ id: that.userInfo.stationId }).then((res) =>
+            res && res.data && res.data.level ? res.data.level : null
+          )
+          let records = await levelRulePageList({ current: 1, size: 10, levelType: stationLevel }).then(
+            (res) => res.data.records
+          )
+          if (Array.isArray(records) && records.length > 0) {
             money = +records[0].oilAmount || 0
           }
         }
-      }catch(err){
+      } catch (err) {
         console.log(err)
         money = 0
       }
 
-      getUserInfoById({userId:that.userInfo.id}).then(res =>{
+      getUserInfoById({ userId: that.userInfo.id }).then((res) => {
         console.log(res)
-        let {licensePlateNum /*常用车牌号*/,spareLicensePlateNum/*备用车牌号*/} = res.data
+        let { licensePlateNum /*常用车牌号*/, spareLicensePlateNum /*备用车牌号*/ } = res.data
         let arr = []
-        if(licensePlateNum){
-          arr.push({carcode:licensePlateNum,key:uuid()})
+        if (licensePlateNum) {
+          arr.push({ carcode: licensePlateNum, key: uuid() })
         }
-        if(spareLicensePlateNum){
-          arr.push({carcode:spareLicensePlateNum,key:uuid()})
+        if (spareLicensePlateNum) {
+          arr.push({ carcode: spareLicensePlateNum, key: uuid() })
         }
         that.carNoOptions = arr
       })
 
+      that.detail = { ...that.record, amount: money }
 
-      that.detail = { ...that.record,amount:money }
-      
-      that.$nextTick(() =>{
+      that.$nextTick(() => {
         console.log(that.detail)
-        if(that.detail.vehicleLisenceUrl){
-          that.$refs.uploadVehicleLisence && that.$refs.uploadVehicleLisence.setFiles(
-            that.detail.vehicleLisenceUrl.split(',').map(url =>{return {url}})
-          )
+        if (that.detail.vehicleLisenceUrl) {
+          that.$refs.uploadVehicleLisence &&
+            that.$refs.uploadVehicleLisence.setFiles(
+              that.detail.vehicleLisenceUrl.split(',').map((url) => {
+                return { url }
+              })
+            )
         }
 
-        if(that.detail.driverLisenceUrl){
-          that.$refs.uploadDriverLisence && that.$refs.uploadDriverLisence.setFiles(
-            that.detail.driverLisenceUrl.split(',').map(url =>{return {url}})
-          )
+        if (that.detail.driverLisenceUrl) {
+          that.$refs.uploadDriverLisence &&
+            that.$refs.uploadDriverLisence.setFiles(
+              that.detail.driverLisenceUrl.split(',').map((url) => {
+                return { url }
+              })
+            )
         }
       })
-
     },
     handleSubmit() {
       let that = this
       let uploadVehicleLisence = that.$refs.uploadVehicleLisence.getFiles()
       let uploadDriverLisence = that.$refs.uploadDriverLisence.getFiles()
 
-      if(Array.isArray(uploadVehicleLisence) && uploadVehicleLisence.length > 0){
-        that.form.setFieldsValue({ vehicleLisenceUrl: uploadVehicleLisence.map(f =>f.url).join(',')})
+      if (Array.isArray(uploadVehicleLisence) && uploadVehicleLisence.length > 0) {
+        that.form.setFieldsValue({ vehicleLisenceUrl: uploadVehicleLisence.map((f) => f.url).join(',') })
       }
-      if(Array.isArray(uploadDriverLisence) && uploadDriverLisence.length > 0){
-        that.form.setFieldsValue({ driverLisenceUrl: uploadDriverLisence.map(f => f.url).join(',') })
+      if (Array.isArray(uploadDriverLisence) && uploadDriverLisence.length > 0) {
+        that.form.setFieldsValue({ driverLisenceUrl: uploadDriverLisence.map((f) => f.url).join(',') })
       }
-
 
       this.form.validateFields((err, values) => {
         if (!err) {
-          if(values.carNo_input){
+          if (values.carNo_input) {
             values.carNo = values.carNo_input
-          }else if(values.carNo_select){
+          } else if (values.carNo_select) {
             values.carNo = values.carNo_select
           }
 
@@ -333,10 +384,10 @@ export default {
             values.id = that.record.id
           }
           console.log('Received values of form: ', values)
-          
+
           that.spinning = true
           oilApplyAddOrUpdate(values)
-            .then(res => {
+            .then((res) => {
               that.spinning = false
               if (res.code === 200) {
                 that.visible = false
@@ -346,7 +397,7 @@ export default {
                 that.$message.warning(res.msg)
               }
             })
-            .catch(err => {
+            .catch((err) => {
               that.spinning = false
               that.$message.error('操作失败')
             })
@@ -390,7 +441,7 @@ export default {
 }
 </script>
 <style>
-.ant-upload-list-picture-card .ant-upload-list-item-info::before{
+.ant-upload-list-picture-card .ant-upload-list-item-info::before {
   left: 0;
 }
 </style>

@@ -221,7 +221,7 @@
                     <div class="ant-upload-text">上传</div>
                   </div>
                 </a-upload>
-                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel1">
+                <a-modal title="查看" :visible="previewVisible" :footer="null" @cancel="handleCancel1">
                   <img alt="example" style="width: 100%" :src="previewImage" />
                 </a-modal>
               </a-form-item>
@@ -252,7 +252,14 @@ import Approval from './Approval'
 import moment from 'moment'
 
 let uuid = () => Math.random().toString(32).slice(-10)
-
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'supplement-card-apply-add',
   components: { Approval },
