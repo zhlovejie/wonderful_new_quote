@@ -16,6 +16,8 @@
           <a-tree
             ref="treeRef"
             :loadData="onLoadData"
+            @load="onLoadAction"
+            :loadedKeys="loadedKeys"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             @select="handleClick"
@@ -283,6 +285,7 @@ export default {
 
       dataList: [],
       expandedKeys: [],
+      loadedKeys:[],
       searchValue: '',
       autoExpandParent: true,
 
@@ -459,6 +462,7 @@ export default {
       that.dataSource = []
       that.selectedRowKeys = []
       that.selectedRows = []
+      that.loadedKeys = []
       routineMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then((res) => {
           that.spinning = false
@@ -849,6 +853,9 @@ export default {
       this.queryParam = { ...this.queryParam, ...params }
       this.search()
     },
+    onLoadAction(loadedKeys){
+      this.loadedKeys = loadedKeys
+    }
   },
   beforeDestroy() {
     if (this._ResizeColumnInstance) {

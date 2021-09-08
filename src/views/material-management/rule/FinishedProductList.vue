@@ -16,6 +16,8 @@
           <a-tree
             ref="treeRef"
             :loadData="onLoadData"
+            @load="onLoadAction"
+            :loadedKeys="loadedKeys"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
             :defaultExpandAll="true"
@@ -185,6 +187,7 @@ export default {
 
       dataList: [],
       expandedKeys: [],
+      loadedKeys:[],
       searchValue: '',
       autoExpandParent: true,
 
@@ -354,6 +357,8 @@ export default {
       that.dataSource = []
       that.selectedRowKeys = []
       that.selectedRows = []
+      that.loadedKeys = []
+      that.spinning = true
       productMaterialRulePageTwoTierTreeList({ parentId: 0 })
         .then((res) => {
           that.spinning = false
@@ -399,6 +404,7 @@ export default {
       that.dataSource = []
       that.selectedRowKeys = []
       that.selectedRows = []
+      that.loadedKeys = []
       that.spinning = true
       productMaterialRulePageConditionTreeList({ ruleName: w,type:1 })
         .then((res) => {
@@ -671,6 +677,9 @@ export default {
         }
       }
     },
+    onLoadAction(loadedKeys){
+      this.loadedKeys = loadedKeys
+    }
   },
   beforeDestroy() {
     if (this._ResizeColumnInstance) {
