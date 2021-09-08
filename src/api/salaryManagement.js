@@ -389,6 +389,24 @@ export function oilApplyRevocation(parameter) {
     params: parameter
   })
 }
+export function pageAllowanceOilInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/allowanceRules/allowance-oil-info/pageAllowanceOilInfo',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function exportAllowanceOilInfo(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/allowanceRules/allowance-oil-info/exportAllowanceOilInfo',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 //油补申请END
 
 //通讯申请

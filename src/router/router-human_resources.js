@@ -104,7 +104,18 @@ export default { //人力资源
           name: 'salary-subsidy-oil',
           component: () => import('@/views/salary-management/salary-subsidy-oil/List'),
           meta: {
-            title: '油补',
+            title: '油补申请',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/replenishment-oil',
+          name: 'replenishment-oil',
+          component: () => import('@/views/salary-management/replenishment-oil/List'),
+          meta: {
+            title: '油补记录',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
