@@ -4,68 +4,39 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item>
-          <a-input style="width: 150px" placeholder="任务单编号模糊查询" allowClear v-model="queryParam.taskNum" />
+          <a-input
+            style="width: 200px"
+            placeholder="任务单编号模糊查询"
+            allowClear
+            v-model="queryParam.taskDocumentNum"
+          />
         </a-form-item>
         <a-form-item>
-          <a-select v-model="queryParam.approveStatus" allowClear style="width: 150px" placeholder="销售负责人">
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>
-          </a-select>
+          <a-input
+            placeholder="配件清单编号模糊查询"
+            style="width: 200px"
+            allowClear
+            v-model="queryParam.accessoriesNum"
+          />
         </a-form-item>
         <a-form-item>
           <a-input
             placeholder="客户名称/机构名称"
-            style="width: 150px"
+            style="width: 200px"
             allowClear
-            v-model="queryParam.orgNameOrCustomerName"
+            v-model="queryParam.customerParameter"
           />
-        </a-form-item>
-        <a-form-item>
-          <a-input
-            placeholder="联系人/联系人电话模糊查询"
-            style="width: 150px"
-            allowClear
-            v-model="queryParam.linkmanOrContactNumber"
-          />
-        </a-form-item>
-        <a-form-item>
-          <a-input
-            placeholder="主板号模糊查询"
-            allowClear
-            style="width: 150px"
-            v-model="queryParam.linkmanOrContactNumber"
-          />
-        </a-form-item>
-        <a-form-item>
-          <a-select v-model="queryParam.source" allowClear style="width: 150px" placeholder="来源">
-            <a-select-option :value="1">400售后电话</a-select-option>
-            <a-select-option :value="2">客户反馈</a-select-option>
-            <a-select-option :value="3">第三方反馈</a-select-option>
-            <a-select-option :value="4">销售部</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-select v-model="queryParam.taskStatus" allowClear style="width: 150px" placeholder="状态">
-            <a-select-option :value="0">待提交</a-select-option>
-            <a-select-option :value="1">待派工</a-select-option>
-            <a-select-option :value="2">待处理 </a-select-option>
-            <a-select-option :value="3">已处理 </a-select-option>
-            <a-select-option :value="4">已完结</a-select-option>
-            <a-select-option :value="5">驳回</a-select-option>
-          </a-select>
         </a-form-item>
         <a-form-item>
           <template v-if="$auth('receipt:list')">
             <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
           </template>
         </a-form-item>
-        <div class="table-operator fl-r">
+        <!-- <div class="table-operator fl-r">
           <a-button type="primary" @click="handleAdd('add', null)" style="margin-left: 8px">
             新增 <a-icon type="plus" />
           </a-button>
-        </div>
+        </div> -->
       </a-form>
     </div>
     <a-row>
@@ -89,15 +60,20 @@
           :expandedRowKeys="expandedRowKeys"
           @expand="expandHandler"
         >
-          <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+          <span slot="isTax" slot-scope="text, record">
+            <span> {{ { 0: '含税', 1: '不含税' }[text] || '未知' }}</span>
           </span>
-          <span slot="source" slot-scope="text, record">
-            <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
+          <span slot="isPayment" slot-scope="text, record">
+            <span v-if="text === 0" style="color: red">否</span>
+            <span v-if="text === 1">是</span>
           </span>
-          <div slot="taskStatus" slot-scope="text, record">
+
+          <span slot="paymentType" slot-scope="text, record">
+            <span> {{ { 0: '完结付款', 1: '先付款', 2: '免付款' }[text] || '未知' }}</span>
+          </span>
+          <div slot="status" slot-scope="text, record">
             <a @click="handleClick(record)">{{
-              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 4: '驳回' }[text] || '未知'
+              { 1: '待处理', 2: '待完结', 3: '不通过', 4: '完结', 5: '已撤回' }[text] || '未知'
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
@@ -185,55 +161,69 @@ const innerColumns = [
   },
   {
     align: 'center',
-    title: '主板号',
+    title: '物料代码',
     dataIndex: 'mainBoardNo',
     key: 'mainBoardNo',
     width: '200px',
   },
   {
     align: 'center',
-    title: '产品名称',
+    title: '物料名称',
     dataIndex: 'productName',
     key: 'productName',
     width: '200px',
   },
   {
     align: 'center',
-    title: '机构',
+    title: '规格型号',
     dataIndex: 'orgName',
     key: 'orgName',
     width: '120px',
   },
   {
     align: 'center',
-    title: '小区',
+    title: '单位',
     dataIndex: 'villageName',
     key: 'villageName',
     width: '100px',
-    scopedSlots: { customRender: 'paidType' },
+    // scopedSlots: { customRender: 'paidType' },
   },
   {
     align: 'center',
-    title: '地址',
+    title: '数量',
     dataIndex: 'deviceLocation',
     key: 'deviceLocation',
-    // scopedSlots: { customRender: 'freightCharge' },
     width: '120px',
   },
   {
     align: 'center',
-    title: '问题描述',
-    key: 'problemDescription',
-    dataIndex: 'problemDescription',
-    scopedSlots: { customRender: 'problemDescription' },
+    title: '单价（元）',
+    dataIndex: 'deviceLocation',
+    key: 'deviceLocation',
     width: '120px',
   },
+  {
+    align: 'center',
+    title: '金额（元）',
+    dataIndex: 'deviceLocation',
+    key: 'deviceLocation',
+    width: '120px',
+  },
+
   {
     align: 'center',
     title: '是否过保',
     dataIndex: 'isWarranty',
     key: 'isWarranty',
     scopedSlots: { customRender: 'isWarranty' },
+    width: '120px',
+  },
+  {
+    align: 'center',
+    title: '带货方式',
+    key: 'problemDescription',
+    dataIndex: 'problemDescription',
+    scopedSlots: { customRender: 'problemDescription' },
     width: '120px',
   },
 ]
@@ -252,7 +242,9 @@ export default {
       form: this.$form.createForm(this),
       userInfo: this.$store.getters.userInfo,
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        searchStatus: 0,
+      },
       recordResult: {},
       queryRecord: {},
       contractState: 0,
@@ -284,19 +276,12 @@ export default {
       // 表头
       columns: [
         {
-          title: '任务单类型',
-          dataIndex: 'taskType',
-          scopedSlots: { customRender: 'taskType' },
+          title: '配件清单编号',
+          dataIndex: 'accessoriesNum',
         },
         {
           title: '任务单编号',
-          dataIndex: 'taskNum',
-        },
-        {
-          title: '来源',
-          dataIndex: 'source',
-          scopedSlots: { customRender: 'source' },
-          width: '200px',
+          dataIndex: 'taskDocumentNum',
         },
         {
           title: '客户名称',
@@ -312,17 +297,28 @@ export default {
           dataIndex: 'saleUserName',
         },
         {
-          title: '联系人',
-          dataIndex: 'linkman',
+          title: '是否含税',
+          dataIndex: 'isTax',
+          scopedSlots: { customRender: 'isTax' },
         },
         {
-          title: '联系人电话',
-          dataIndex: 'contactNumber',
+          title: '金额（元）',
+          dataIndex: 'totalAmount',
+        },
+        {
+          title: '付款方式',
+          dataIndex: 'paymentType',
+          scopedSlots: { customRender: 'paymentType' },
+        },
+        {
+          title: '是否付款',
+          dataIndex: 'isPayment',
+          scopedSlots: { customRender: 'isPayment' },
         },
         {
           title: '状态',
-          dataIndex: 'taskStatus',
-          scopedSlots: { customRender: 'taskStatus' },
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' },
         },
         {
           title: '提交人',
@@ -367,7 +363,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'access_office_repair') {
+        if (to.name === 'access_sidewalk_detailedList') {
           this.searchAction()
         }
       },
@@ -404,27 +400,13 @@ export default {
       this.searchAction()
     },
     paramClick(key) {
-      /*搜索框的显示判断，只有在全部一栏中时，才显示状态查询条件下拉列*/
-      // if (key == 0) {
-      //   this.showFlag = true
-      // } else {
-      //   this.showFlag = false
-      // }
-      // this.contractState = key
-
-      // if (key == 4) {
-      //   this.audit = true
-      // } else {
-      //   this.audit = false
-      // }
-
-      this.queryParam = { ...this.queryParam, statue: key }
+      this.queryParam = { ...this.queryParam, searchStatus: key }
       this.searchAction()
       console.log(key)
     },
-    handleAdd(type, record) {
-      this.$refs.formadd.query()
-    },
+    // handleAdd(type, record) {
+    //   this.$refs.formadd.query()
+    // },
     handleClick(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },

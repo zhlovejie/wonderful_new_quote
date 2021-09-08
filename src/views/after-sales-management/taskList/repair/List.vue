@@ -393,7 +393,7 @@ export default {
       this.searchAction()
     },
     handleAdd(type, record) {
-      this.$refs.formadd.query()
+      this.$refs.formadd.query(type, record)
     },
 
     handleClick(record) {
