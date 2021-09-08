@@ -177,7 +177,7 @@ export default {
   methods: {
     async query(record) {
       this.record = record
-      if (record.id) {
+      if (record && record.id) {
         getBuyRequirement({ materialId: record.id }).then((res) => (this.Details = res.data))
       }
     },

@@ -492,6 +492,25 @@ export function routineMaterialRulePageTwoTierTreeList(parameter) {
   })
 }
 
+//常规物料规则 条件查询树
+export function routineMaterialRulePageConditionTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/conditionTreeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//成品物料规则 条件查询树
+export function productMaterialRulePageConditionTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/productMaterialRule/conditionTreeList',
+    method: 'get',
+    params: parameter
+  })
+}
 
 // 成品物料规则--------------------------
 

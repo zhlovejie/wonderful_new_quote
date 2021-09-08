@@ -36,8 +36,8 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="主计量单位">
-            <a-select v-decorator="['mainUnit']" placeholder="主计量单位">
+          <a-form-item label="辅计量单位">
+            <a-select v-decorator="['subUnit']" placeholder="辅计量单位">
               <a-select-option
                 v-for="item in materialUnitList"
                 :key="item.text"
@@ -65,7 +65,12 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="录入时间">
-            <a-range-picker v-decorator="['sDate']"   />
+            <a-range-picker
+              v-decorator="['sDate']"
+               :show-time="{ format: 'HH:mm:ss' }"
+              format="YYYY-MM-DD HH:mm:ss"
+              :placeholder="['开始时间', '结束时间']"
+            />
           </a-form-item>
         </a-col>
 
@@ -153,8 +158,8 @@ export default {
 
         let beginTime = undefined, endTime = undefined;
         if (Array.isArray(values.sDate) && values.sDate.length === 2) {
-          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD') : undefined
-          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD') : undefined
+          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD HH:mm:ss') : undefined
+          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD HH:mm:ss') : undefined
         }
         values.startTime = beginTime
         values.endTime = endTime

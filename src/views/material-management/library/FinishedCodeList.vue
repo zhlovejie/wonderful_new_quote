@@ -5,40 +5,55 @@
   >
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
-        <div
-          class="menu-tree-list-wrapper"
-          style="width: 100%; overflow: auto; height: auto; min-height: 600px"
-        >
-          <!-- <a-input-search
-            style="line-height: 40px; width: 100%"
-            placeholder="代码/名称模糊查询"
-            @change="treeInputSearchDebounce"
-          /> -->
-          <a-tree
-            ref="treeRef"
-            :loadData="onLoadData"
-            :treeData="orgTree"
-            :selectedKeys="treeSelectedKeys"
-            :defaultExpandAll="true"
-            @select="handleClick"
-            :expandedKeys="expandedKeys"
-            :autoExpandParent="autoExpandParent"
-            @expand="onExpand"
-            :showLine="true"
+        <a-spin :spinning="spinning">
+          <div
+            class="menu-tree-list-wrapper"
+            style="width: 100%; overflow: auto; height: auto; min-height: 600px"
           >
-            <template
-              slot="title"
-              slot-scope="{ title }"
+            <div style="display:flex;">
+              <a-input
+                style="line-height: 40px;flex:1;"
+                placeholder="规则名称模糊查询"
+                v-model="searchValue"
+              />
+              <a-button
+                title="查询"
+                style="margin:0 7px;"
+                icon="search"
+                @click="() => searchAction(1)"
+              ></a-button>
+              <a-button
+                title="重置"
+                icon="reload"
+                @click="() => searchAction(2)"
+              ></a-button>
+            </div>
+            <a-tree
+              ref="treeRef"
+              :loadData="onLoadData"
+              :treeData="orgTree"
+              :selectedKeys="treeSelectedKeys"
+              :defaultExpandAll="true"
+              @select="handleClick"
+              :expandedKeys="expandedKeys"
+              :autoExpandParent="autoExpandParent"
+              @expand="onExpand"
+              :showLine="true"
             >
-              <span v-if="title.indexOf(searchValue) > -1">
-                {{ title.substr(0, title.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else>{{ title }}</span>
-            </template>
-          </a-tree>
-        </div>
+              <template
+                slot="title"
+                slot-scope="{ title }"
+              >
+                <span v-if="title.indexOf(searchValue) > -1">
+                  {{ title.substr(0, title.indexOf(searchValue)) }}
+                  <span style="color: #f50">{{ searchValue }}</span>
+                  {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
+                </span>
+                <span v-else>{{ title }}</span>
+              </template>
+            </a-tree>
+          </div>
+        </a-spin>
       </div>
       <div class="resize-column-control-bar"></div>
       <div class="resize-column-right">
@@ -59,6 +74,25 @@
                 allowClear
                 style="width: 150px"
               />
+            </a-form-item>
+            <a-form-item>
+              <a-input
+                placeholder="原K3物料代码"
+                v-model="queryParam.k3Code"
+                allowClear
+                style="width: 150px"
+              />
+            </a-form-item>
+            <a-form-item>
+              <a-select
+                placeholder="创建日期排序"
+                :allowClear="true"
+                style="width: 130px;"
+                v-model="queryParam.orderCreatedTimeDesc"
+              >
+                  <a-select-option :value="1">降序</a-select-option>
+                  <a-select-option :value="2">升序</a-select-option>
+                </a-select>
             </a-form-item>
             <a-form-item>
               <a-button
@@ -167,7 +201,7 @@
           </div>
 
           <div
-            slot="mainUnit"
+            slot="subUnit"
             slot-scope="text, record, index"
           >
             {{ {1:'支',2:'把',3:'件'}[text] || text }}
@@ -219,6 +253,7 @@ import {
   productMaterialInfoStartUsing,
   productMaterialInfoPageList,
   productMaterialInfoTwoTierTreeList,
+  productMaterialRulePageConditionTreeList,
   __MaterialInfoExport
 } from '@/api/routineMaterial'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -227,6 +262,11 @@ import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import SearchForm from './module/SearchForm'
 
 const columns = [
+  {
+    align: 'center',
+    title: '原K3物料代码',
+    dataIndex: 'k3Code',
+  },
   {
     align: 'center',
     title: '物料代码',
@@ -251,14 +291,19 @@ const columns = [
   // },
   {
     align: 'center',
-    title: '主计量单位',
-    dataIndex: 'mainUnit',
-    scopedSlots: { customRender: 'mainUnit' }
+    title: '辅计量单位',
+    dataIndex: 'subUnit',
+    scopedSlots: { customRender: 'subUnit' }
   },
   {
     align: 'center',
     title: '录入人',
     dataIndex: 'createdName'
+  },
+  {
+    align: 'center',
+    title: '录入时间',
+    dataIndex: 'createdTime',
   },
   {
     align: 'center',
@@ -318,7 +363,8 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler
       },
       treeInputSearchDebounce: null,
-      normalAddFormKeyCount: 1
+      normalAddFormKeyCount: 1,
+      spinning: false
     }
   },
   watch: {
@@ -335,9 +381,9 @@ export default {
     canEdit() {
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
-      let selectedRows = this.selectedRows
+      const selectedRows = this.selectedRows
       if (selectedRows.length === 1) {
-        let { auditStatus, forbidden } = selectedRows[0]
+        const { auditStatus, forbidden } = selectedRows[0]
         return !(+forbidden === 1 || +auditStatus === 3)
       }
       return false
@@ -349,10 +395,10 @@ export default {
       return [String(this.parentId)]
     },
     parentCodes() {
-      let arr = []
+      const arr = []
       let parentId = this.parentId
       while (+parentId) {
-        let target = this.dataList.find(item => +item.key === +parentId)
+        const target = this.dataList.find(item => +item.key === +parentId)
         arr.push({ ...target })
         parentId = target.parentId
       }
@@ -367,27 +413,22 @@ export default {
       this.expandedKeys = expandedKeys
       this.autoExpandParent = false
     },
-    onChange(e) {
+    searchAction(type) {
       const that = this
-      const value = e.target.value.trim()
+      const value = that.searchValue.trim()
+      if (type === 1) {
+        if (value.length === 0) {
 
-      const expandedKeys = that.dataList
-        .map(item => {
-          if (value && item.title.indexOf(value) > -1) {
-            return getParentKey(item.key, that.orgTree)
-          }
-          return null
-        })
-        .filter((item, i, self) => item && self.indexOf(item) === i)
-
-      Object.assign(that, {
-        expandedKeys,
-        searchValue: value,
-        autoExpandParent: true
-      })
+        } else {
+          that.fetchTreeWithName(value)
+        }
+      } else {
+        that.searchValue = ''
+        that.fetchTree()
+      }
     },
     generateList(data) {
-      let arr = []
+      const arr = []
       for (let i = 0; i < data.length; i++) {
         const node = data[i]
         arr.push({ ...node })
@@ -422,7 +463,7 @@ export default {
     },
     onLoadData(treeNode, isForceRefresh = false) {
       const that = this
-      that.selectedTreeNode = treeNode
+      // that.selectedTreeNode = treeNode
       return new Promise(resolve => {
         if (!isForceRefresh && treeNode.dataRef.children) {
           resolve()
@@ -430,17 +471,19 @@ export default {
         }
         productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
           .then(res => {
-            if(res && res.code === 200 && Array.isArray(res.data)){
-              let oldChildren = [...(treeNode.dataRef.children || [])]
-              let newChildren = res.data.map(item => that.formatTreeData(item))
-              let children = that.margeNode(oldChildren, newChildren)
+            if (res && res.code === 200 && Array.isArray(res.data)) {
+              const oldChildren = [...(treeNode.dataRef.children || [])]
+              const newChildren = res.data.map(item => that.formatTreeData(item))
+              const children = that.margeNode(oldChildren, newChildren)
 
               treeNode.dataRef.children = children
+              that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
-            }else{
+            } else {
               treeNode.dataRef.isLeaf = true
               treeNode.dataRef.children = []
+              that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
               that.$message.info(res.msg)
@@ -451,17 +494,16 @@ export default {
             console.error(err)
             that.$message.error(`调用接口[productMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
             resolve()
-            return
           })
       })
     },
     margeNode(oldChildren, newChildren) {
-      let arr = []
+      const arr = []
       for (let i = 0; i < newChildren.length; i++) {
-        let newNode = newChildren[i]
-        let oldNode = oldChildren.find(node => node.value === newNode.value)
+        const newNode = newChildren[i]
+        const oldNode = oldChildren.find(node => node.value === newNode.value)
         if (oldNode) {
-          for (let key in newNode) {
+          for (const key in newNode) {
             if (newNode.hasOwnProperty(key) && key !== 'children') {
               oldNode[key] = newNode[key]
             }
@@ -475,8 +517,17 @@ export default {
     },
     fetchTree() {
       const that = this
+      that.spinning = true
+      that.dataSource = []
+      that.selectedRowKeys = []
+      that.selectedRows = []
       productMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then(res => {
+          that.spinning = false
+          if (+res.code !== 200) {
+            that.$message.info(res.msg)
+            return
+          }
           const root = {
             key: '0',
             value: '0',
@@ -494,19 +545,94 @@ export default {
           if (String(that.parentId) === '0') {
             that.parentItem = root
           }
+
+          that.selectedTreeNode = {
+            dataRef: {
+              ...root
+            }
+          }
+
+          Object.assign(that, {
+            expandedKeys: ['0'],
+            autoExpandParent: true
+          })
         })
         .catch(err => {
+          that.spinning = false
           that.$message.error(`调用接口[productMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    fetchTreeWithName(w) {
+      const that = this
+      that.modelType = 2
+      that.dataSource = []
+      that.selectedRowKeys = []
+      that.selectedRows = []
+      that.spinning = true
+      productMaterialRulePageConditionTreeList({ ruleName: w, type: 2 })
+        .then(res => {
+          that.spinning = false
+          if (+res.code !== 200) {
+            that.$message.info(res.msg)
+            return
+          }
+          const root = {
+            key: '0',
+            value: '0',
+            title: '成品代码库',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map(item => that.formatTreeData(item)),
+            scopedSlots: { title: 'title' }
+          }
+          that.orgTree = []
+          that.dataList = []
+
+          if (String(that.parentId) === '0') {
+            that.parentItem = root
+          }
+
+          that.$nextTick(() => {
+            that.orgTree = [root]
+            that.dataList = that.generateList(that.orgTree)
+
+            let expandedKeys = that.dataList
+              .map(item => {
+                return getParentKey(item.key, that.orgTree)
+              })
+              .filter(item => item !== undefined && item !== null)
+
+            // let expandedKeys = that.dataList
+            // .map((item) => {
+            //   return item.key
+            // })
+
+            expandedKeys = [...new Set(expandedKeys)]
+            console.log(that.dataList.map(item => item.key))
+
+            console.log(expandedKeys)
+
+            Object.assign(that, {
+              expandedKeys,
+              autoExpandParent: true
+            })
+          })
+        })
+        .catch(err => {
+          that.spinning = false
+          that.$message.error(`调用接口[productMaterialRulePageConditionTreeList]时发生错误，错误信息:${err}`)
         })
     },
     search(params = {}) {
       const that = this
-      let paginationParam = {
+      const paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
       that.loading = true
-      let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      const _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       productMaterialInfoPageList(_searchParam)
         .then(res => {
           that.loading = false
@@ -532,7 +658,7 @@ export default {
 
           //有两页数据,第二页只有一条数据,删除第二页的一条数据了,界面显示在第一页,但是不显示第一页数据了
           //刷新也不显示数据
-          let { current, pages } = res.data
+          const { current, pages } = res.data
           if (+pages > 0 && +current > +pages) {
             that.pagination = { ...pagination, current: pages }
             that.search()
@@ -552,12 +678,12 @@ export default {
     },
     //格式化接口数据 key,title,value
     formatTreeData(item) {
-      let that = this
-      let obj = {}
+      const that = this
+      const obj = {}
       obj.key = String(item.id)
 
-      let ruleName = item.newRuleName || item.ruleName
-      let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
+      const ruleName = item.newRuleName || item.ruleName
+      const showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
       obj.title = `${ruleName}${showCode}`
 
       obj.value = String(item.id)
@@ -575,7 +701,7 @@ export default {
     handleClick(selectedKeys, e) {
       const that = this
       that.selectedTreeNode = e.node
-      let dataRef = e.node.dataRef
+      const dataRef = e.node.dataRef
       // 点击树结构菜单
       var parentId = this.parentId
       if (selectedKeys[0] !== undefined) {
@@ -601,7 +727,6 @@ export default {
             __from: 'product'
           })
         })
-        return
       } else if (type === 'edit') {
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
         that.$nextTick(() => {
@@ -612,23 +737,20 @@ export default {
             __from: 'product'
           })
         })
-        return
       } else if (type === 'export') {
-        let ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
-        let res = await __MaterialInfoExport(2,ids)
+        const ids = that.selectedRows.map(item => `ids=${item.id}`).join('&')
+        const res = await __MaterialInfoExport(2, ids)
         console.log(res)
         that.$message.info(res.msg)
-        return
       } else if (type === 'filter') {
         that.$refs.searchForm.query({
-            ...record,
-            __selectItem: that.parentItem,
-            __treeData: [...that.orgTree],
-            __from: 'product'
-          })
-        return
+          ...record,
+          __selectItem: that.parentItem,
+          __treeData: [...that.orgTree],
+          __from: 'product'
+        })
       } else {
-        let m = {
+        const m = {
           disable: {
             api: productMaterialInfoForbidden,
             title: '禁用',
@@ -655,13 +777,13 @@ export default {
             tpl: names => `反审核项目${names}后，数据标记为未审核，是否继续？`
           }
         }
-        let target = m[type]
+        const target = m[type]
         if (!target) {
           that.$message.error(`不支持的操作类型:${type}`)
           return
         }
-        let itemNames = `【${that.selectedRows.map(item => item.materialName).join('，')}】`
-        let ids = that.selectedRows.map(item => item.id).join(',')
+        const itemNames = `【${that.selectedRows.map(item => item.materialName).join('，')}】`
+        const ids = that.selectedRows.map(item => item.id).join(',')
         that.$confirm({
           title: '提示',
           content: target.tpl(itemNames),
@@ -688,7 +810,7 @@ export default {
       this.selectedRows = []
       this.search()
       if (param && param.key) {
-        let target = this.findTreeNode(this.$refs.treeRef, param.key)
+        const target = this.findTreeNode(this.$refs.treeRef, param.key)
         if (target) {
           this.onLoadData(target, true)
         }
@@ -700,7 +822,7 @@ export default {
       }
       if (Array.isArray(rootNode.$children)) {
         for (let i = 0; i < rootNode.$children.length; i++) {
-          let node = this.findTreeNode(rootNode.$children[i], key)
+          const node = this.findTreeNode(rootNode.$children[i], key)
           if (node) {
             return node
           }
@@ -708,14 +830,33 @@ export default {
       }
     },
     customRowFunction(record) {
+      const that = this
       // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
       // isForbidden  是否禁用：1禁用，2启用
-      let { useStatus, isForbidden } = record
+      const { useStatus, isForbidden } = record
       return {
         style: {
           color: +isForbidden === 1 ? 'red' : +useStatus === 1 ? 'blue' : ''
         },
         on: {
+          click: async event => {
+            try {
+              if (that.selectedTreeNode) {
+                const expandedKeys = [...that.expandedKeys]
+                Object.assign(that, {
+                  expandedKeys: [...new Set([...expandedKeys, that.selectedTreeNode.dataRef.key])],
+                  autoExpandParent: true
+                })
+                const children = that.selectedTreeNode.dataRef.children || []
+                const target = children.find(n => n.code === record.code)
+                if (target) {
+                  that.parentId = target.key
+                }
+              }
+            } catch (err) {
+              console.log(err)
+            }
+          },
           dblclick: event => {
             const that = this
             that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1

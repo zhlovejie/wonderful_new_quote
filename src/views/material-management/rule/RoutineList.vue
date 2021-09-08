@@ -2,14 +2,21 @@
   <a-card :bordered="false" class="material-management-rule-RoutineList">
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
-        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
-          <!-- <a-input-search
-            style="line-height: 40px; width: 100%"
-            placeholder="代码/名称模糊查询"
-            @change="treeInputSearchDebounce"
-          /> -->
+        <a-spin :spinning="spinning">
+        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; max-height: 900px; min-height: 600px">
+          <div style="display:flex;">
+            <a-input
+              style="line-height: 40px;flex:1;"
+              placeholder="规则名称模糊查询"
+              v-model="searchValue"
+            />
+            <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
+            <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
+          </div>
+
           <a-tree
             ref="treeRef"
+            key="k2"
             :loadData="onLoadData"
             :treeData="orgTree"
             :selectedKeys="treeSelectedKeys"
@@ -29,7 +36,10 @@
               <span v-else>{{ title }}</span>
             </template>
           </a-tree>
+
+
         </div>
+        </a-spin>
       </div>
       <div class="resize-column-control-bar"></div>
       <div class="resize-column-right">
@@ -41,6 +51,18 @@
             <a-form-item>
               <a-input placeholder="名称模糊查询" v-model="queryParam.ruleName" allowClear style="width: 150px" />
             </a-form-item>
+            <a-form-item>
+              <a-select
+                placeholder="创建日期排序"
+                :allowClear="true"
+                style="width: 130px;"
+                v-model="queryParam.orderCreatedTimeDesc"
+              >
+                  <a-select-option :value="1">降序</a-select-option>
+                  <a-select-option :value="2">升序</a-select-option>
+                </a-select>
+            </a-form-item>
+
             <a-form-item>
               <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
             </a-form-item>
@@ -61,7 +83,7 @@
               <a-button :disabled="!canUse" type="primary" @click="doAction('del', null)">删除</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialRule:audit')">
-              <a-button :disabled="!canUse" type="primary" @click="doAction('approval', null)">审核</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('approval', null)">提交审核</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialRule:annulAudit')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('unapproval', null)">反审核</a-button>
@@ -107,6 +129,7 @@ import {
   routineMaterialRulePageList,
   routineMaterialRulePageTreeList,
   routineMaterialRulePageTwoTierTreeList,
+  routineMaterialRulePageConditionTreeList
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -157,6 +180,7 @@ export default {
   },
   data() {
     return {
+      modelType:1, //1 全部 2条件搜索
       parentId: 0, // 父id
       parentItem: {},
       selectedTreeNode: null, //新增修改后刷新节点用
@@ -183,6 +207,7 @@ export default {
         onShowSizeChange: this.onShowSizeChangeHandler,
       },
       treeInputSearchDebounce: null,
+      spinning:false,
     }
   },
   watch: {
@@ -231,24 +256,19 @@ export default {
       this.expandedKeys = expandedKeys
       this.autoExpandParent = false
     },
-    onChange(e) {
+    searchAction(type) {
       const that = this
-      const value = e.target.value.trim()
-
-      const expandedKeys = that.dataList
-        .map((item) => {
-          if (value && item.title.indexOf(value) > -1) {
-            return getParentKey(item.key, that.orgTree)
-          }
-          return null
-        })
-        .filter((item, i, self) => item && self.indexOf(item) === i)
-
-      Object.assign(that, {
-        expandedKeys,
-        searchValue: value,
-        autoExpandParent: true,
-      })
+      const value = that.searchValue ? that.searchValue.trim() : ''
+      if(type === 1){
+        if(value.length === 0){
+          return
+        }else{
+          that.fetchTreeWithName(value)
+        }
+      }else{
+        that.searchValue = ''
+        that.fetchTree()
+      }
     },
     generateList(data) {
       let arr = []
@@ -267,9 +287,9 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
-      if (this.treeInputSearchDebounce === null) {
-        this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
-      }
+      // if (this.treeInputSearchDebounce === null) {
+      //   this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
+      // }
 
       this.parentId = 0
       this.selectedTreeNode = null
@@ -286,25 +306,26 @@ export default {
     },
     onLoadData(treeNode, isForceRefresh = false) {
       const that = this
-      that.selectedTreeNode = treeNode
-      return new Promise((resolve) => {
+      return new Promise((resolve,reject) => {
         if (!isForceRefresh && treeNode.dataRef.children) {
           resolve()
           return
         }
         routineMaterialRulePageTwoTierTreeList({ parentId: treeNode.dataRef.value })
           .then((res) => {
-            if(res && res.code === 200 && Array.isArray(res.data)){
+            if(res && res.code === 200 && Array.isArray(res.data) && res.data.length > 0){
               let oldChildren = [...(treeNode.dataRef.children || [])]
               let newChildren = res.data.map((item) => that.formatTreeData(item))
               let children = that.margeNode(oldChildren, newChildren)
 
-              treeNode.dataRef.children = children
+              treeNode.dataRef.children = newChildren
+              that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
             }else{
               treeNode.dataRef.isLeaf = true
               treeNode.dataRef.children = []
+              that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
               that.$message.info(res.msg)
@@ -312,8 +333,8 @@ export default {
             resolve()
           })
           .catch((err) => {
+            reject()
             console.error(err)
-            that.$message.error(`调用接口[routineMaterialRulePageTwoTierTreeList]时发生错误，错误信息:${err}`)
           })
       })
     },
@@ -337,11 +358,19 @@ export default {
     },
     fetchTree() {
       const that = this
-      // routineMaterialRulePageTwoTierTreeList({parentId:that.parentId}).then(res =>{
-      //   console.log(res)
-      // })
+      that.modelType = 1
+      that.spinning = true
+      that.dataSource = []
+      that.selectedRowKeys = []
+      that.selectedRows = []
+      that.expandedKeys = []
       routineMaterialRulePageTwoTierTreeList({ parentId: 0 })
         .then((res) => {
+          that.spinning = false
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
           const root = {
             key: '0',
             value: '0',
@@ -353,15 +382,94 @@ export default {
             children: res.data.map((item) => that.formatTreeData(item)),
             scopedSlots: { title: 'title' },
           }
-          that.orgTree = [root]
-          that.dataList = that.generateList(that.orgTree)
+          if (String(that.parentId) === '0') {
+            that.parentItem = root
+          }
+          that.orgTree = []
+          that.dataList = []
+
+          that.$nextTick(() => {
+            that.orgTree = [root]
+            that.dataList = that.generateList(that.orgTree)
+            that.selectedTreeNode = {
+              dataRef:{
+                ...root
+              }
+            }
+
+            Object.assign(that, {expandedKeys:['0'],autoExpandParent: true })
+          })
+        })
+        .catch((err) => {
+          that.spinning = false
+          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    fetchTreeWithName(w) {
+      const that = this
+      that.modelType = 2
+      that.dataSource = []
+      that.selectedRowKeys = []
+      that.selectedRows = []
+      that.expandedKeys = []
+      that.spinning = true
+      routineMaterialRulePageConditionTreeList({ ruleName: w,type:1 })
+        .then((res) => {
+          that.spinning = false
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
+          const root = {
+            key: '0',
+            value: '0',
+            title: '常规物料规则',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map((item) => that.formatTreeData(item)),
+            scopedSlots: { title: 'title' },
+          }
+          that.orgTree = []
+          that.dataList = []
 
           if (String(that.parentId) === '0') {
             that.parentItem = root
           }
+
+          that.$nextTick(() => {
+
+            that.orgTree = [root]
+            that.dataList = that.generateList(that.orgTree)
+
+
+            let expandedKeys = that.dataList
+            .map((item) => {
+              return getParentKey(item.key, that.orgTree)
+            }).filter(item => item !== undefined && item !== null)
+
+            // let expandedKeys = that.dataList
+            // .map((item) => {
+            //   return item.key
+            // })
+
+            expandedKeys = [...new Set(expandedKeys)]
+            console.log(that.dataList.map(item =>item.key))
+
+            console.log(expandedKeys)
+
+            Object.assign(that, {
+              expandedKeys,
+              autoExpandParent: true,
+            })
+          })
+
+
         })
         .catch((err) => {
-          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+          that.spinning = false
+          that.$message.error(`调用接口[routineMaterialRulePageConditionTreeList]时发生错误，错误信息:${err}`)
         })
     },
     search(params = {}) {
@@ -420,6 +528,7 @@ export default {
       obj.title = `${ruleName}${showCode}`
 
       obj.value = String(item.id)
+      obj.isLeaf = false
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
@@ -487,7 +596,7 @@ export default {
             api: routineMaterialRuleAudit,
             title: '审核',
             tpl: (names) =>
-              `审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`,
+              `提交审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`,
           },
           unapproval: {
             api: routineMaterialRuleAnnulAudit,
@@ -546,6 +655,7 @@ export default {
       }
     },
     customRowFunction(record) {
+      const that = this
       // auditStatus审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
       let { auditStatus, forbidden } = record
@@ -553,6 +663,26 @@ export default {
         style: {
           color: +forbidden === 1 ? 'red' : +auditStatus === 3 ? 'blue' : '',
         },
+        on:{
+          click:async event => {
+            try{
+              if(that.selectedTreeNode){
+                let expandedKeys = [...that.expandedKeys]
+                Object.assign(that, {
+                  expandedKeys:[...new Set([...expandedKeys,that.selectedTreeNode.dataRef.key])],
+                  autoExpandParent: true,
+                })
+                let children = that.selectedTreeNode.dataRef.children || []
+                let target = children.find(n => n.code === record.code)
+                if(target){
+                  that.parentId = target.key
+                }
+              }
+            }catch(err){
+              console.log(err)
+            }
+          }
+        }
       }
     },
   },
