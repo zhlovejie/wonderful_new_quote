@@ -46,7 +46,7 @@
         label="智能/非智能"
         prop="isIntelligent"
       >
-        <a-select v-model="form.isIntelligent" placeholder="请选择材质">
+        <a-select v-model="form.isIntelligent" placeholder="请选择智能/非智能">
           <a-select-option :value="1">智能（Z）</a-select-option>
           <a-select-option :value="2">非智能（F）</a-select-option>
         </a-select>
@@ -138,9 +138,10 @@ export default {
       that.type = type
       if (that.normalAddForm && that.normalAddForm.detail) {
         let { __treeData } = that.normalAddForm.detail
-        // that.treeData = __treeData
-        // that.dataList = that.generateList(that.treeData)
-        await that.fetchTree()
+        that.treeData = that.$_.cloneDeep(__treeData)
+        that.dataList = that.generateList(that.treeData)
+
+        // await that.fetchTree()
 
         let __selectItem = that.normalAddForm.getSelectNode()
         that.form = { ...that.form, parentId: __selectItem.key }

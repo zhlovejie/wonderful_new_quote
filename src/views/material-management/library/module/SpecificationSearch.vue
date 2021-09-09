@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-spin :spinning="spinning">
     <a-form-model
       ref="ruleForm"
       :model="form"
@@ -27,6 +28,8 @@
           style="width: 100%"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           :loadData="onLoadData"
+          @load="onLoadAction"
+          :loadedKeys="loadedKeys"
           :tree-data="treeData"
           @select="handleClick"
           :treeExpandedKeys="expandedKeys"
@@ -49,13 +52,22 @@
         :label="item.newRuleName || item.ruleName"
         :prop="'specificationsList.' + index + '.selectedID'"
       >
-        <a-select v-model="item.selectedID" placeholder="请选择" :allowClear="true" @change="specificationChangeHandler">
+        <a-input
+          v-model="item.selectedLabel"
+          style="width: 100%"
+          read-only="read-only"
+          allowClear
+          @click="doAction('specificationSearch',{...item})"
+        />
+        <!-- <a-select v-model="item.selectedID" placeholder="请选择" :allowClear="true" @change="specificationChangeHandler">
           <a-select-option v-for="sub in item.subList" :key="sub.id" :value="sub.id">
             {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
-        </a-select>
+        </a-select> -->
       </a-form-model-item>
     </a-form-model>
+    <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
+    </a-spin>
   </div>
 </template>
 <script>
@@ -66,6 +78,9 @@ import {
   routineMaterialInfoCheckName,
   routineMaterialRulePageConditionTreeList
 } from '@/api/routineMaterial'
+
+import SpecificationSearchForm from './SpecificationSearchForm'
+
 
 const getParentKey = (key, tree) => {
   let parentKey
@@ -82,8 +97,8 @@ const getParentKey = (key, tree) => {
   return parentKey
 }
 
-
 export default {
+  components:{SpecificationSearchForm},
   props:['info'],
   data() {
     return {
@@ -101,7 +116,9 @@ export default {
 
       selectItem:null,
       expandedKeys:['0'],
-      searchValue:undefined
+      searchValue:undefined,
+      loadedKeys:[],
+      spinning:false
     }
   },
   computed:{
@@ -118,6 +135,11 @@ export default {
   methods: {
     async init(type, record) {
       const that = this
+      that.form = {
+        parentId: undefined,
+        specificationsList:[],//动态加载节点下的菜单
+      }
+
       if (that.info) {
         let { __treeData ,__selectItem} = that.info
         if(that.selectItem !== null && that.selectItem.key === __selectItem.key){
@@ -181,7 +203,9 @@ export default {
     },
     initSpecifications(node){
       const that = this
+      that.spinning = true
       routineMaterialRulePageTwoTierTreeList({ parentId: node.value }).then(res => {
+        that.spinning = false
         console.log(res)
         if(!res || res.code !== 200){
           that.$message.info(`获取节点【名称：${node.title}-编号：${node.value}】的规格数据失败！`)
@@ -189,6 +213,8 @@ export default {
         }
         //加载为规格型号的数据
         that.form = {...that.form,specificationsList:res.data.filter(item => item.isSpecification === 1)}
+      }).catch(err => {
+        that.spinning = false
       })
     },
     onLoadData(treeNode) {
@@ -222,6 +248,11 @@ export default {
     },
     searchAction(type) {
       const that = this
+      that.form = {
+        ...that.form,
+        parentId:undefined,
+        specificationsList:[]
+      }
       const value = that.searchValue ? that.searchValue.trim() : ''
       if(type === 1){
         if(value.length === 0){
@@ -236,6 +267,7 @@ export default {
     },
     fetchTree() {
       const that = this
+      that.loadedKeys = []
       that.spinning = true
       routineMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then((res) => {
@@ -269,6 +301,7 @@ export default {
     fetchTreeWithName(w) {
       const that = this
       that.spinning = true
+      that.loadedKeys = []
       routineMaterialRulePageConditionTreeList({ ruleName: w,type:2 })
         .then((res) => {
           that.spinning = false
@@ -351,6 +384,31 @@ export default {
       this.expandedKeys = expandedKeys
       // this.autoExpandParent = false
     },
+    onLoadAction(loadedKeys){
+      this.loadedKeys = loadedKeys
+    },
+    specificationSelectedHandler({parentItem,selectItem}){
+      const that = this
+      let {specificationsList} = that.form
+      let target = specificationsList.find(item => item.id === parentItem.id)
+      if(target){
+        target.selectedID = selectItem.id
+        target.selectedLabel = `${(selectItem.newRuleName || selectItem.ruleName)}(${selectItem.code})`
+        target.subList = [selectItem]
+        that.form = {
+          ...that.form,
+          specificationsList
+        }
+      }
+    },
+    doAction(type,record){
+      const that = this
+      if(type === 'specificationSearch'){
+        debugger
+        that.$refs.specificationSearchForm.query(type,{...record})
+        return
+      }
+    }
   }
 }
 </script>

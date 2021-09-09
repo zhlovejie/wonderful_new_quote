@@ -114,6 +114,21 @@
           <div slot="customerName" slot-scope="text, record, index">
             <a href="javascript:void(0);" @click="clickVue(record)">{{ text }}</a>
           </div>
+
+          <div slot="useAlways" slot-scope="text, record, index">
+            <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
+          </div>
+
+          <div slot="remark" slot-scope="text, record, index">
+            <a-tooltip v-if="String(text).length > 15">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 15) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
+
+
+
         </a-table>
       </div>
     </div>
@@ -147,6 +162,18 @@ const columns = [
     align: 'center',
     title: '名称',
     dataIndex: 'ruleName',
+  },
+  {
+    align: 'center',
+    title: '是否常用',
+    dataIndex: 'useAlways',
+    scopedSlots: { customRender: 'useAlways' },
+  },
+  {
+    align: 'center',
+    title: '规则说明',
+    dataIndex: 'remark',
+    scopedSlots: { customRender: 'remark' },
   },
   {
     align: 'center',
@@ -663,10 +690,11 @@ export default {
       const that = this
       // auditStatus审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
-      let { auditStatus, forbidden } = record
+      let { auditStatus, forbidden ,useAlways} = record
       return {
         style: {
           color: +forbidden === 1 ? 'red' : +auditStatus === 3 ? 'blue' : '',
+          'font-weight': +useAlways === 1 ? 'bold' : 'normal'
         },
         on:{
           click:async event => {

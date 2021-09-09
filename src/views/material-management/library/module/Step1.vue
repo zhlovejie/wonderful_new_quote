@@ -22,10 +22,13 @@
           <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
         </div>
         <a-tree-select
+          ref="treeSelect"
           v-model="form.parentId"
           style="width: 100%"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           :loadData="onLoadData"
+          @load="onLoadAction"
+          :loadedKeys="loadedKeys"
           :tree-data="treeData"
           @select="handleClick"
           :treeExpandedKeys="expandedKeys"
@@ -42,7 +45,6 @@
         </a-tree-select>
       </a-form-model-item>
 
-
       <a-form-model-item
         v-for="(item,index) in form.specificationsList"
         :key="item.id"
@@ -53,7 +55,14 @@
           message: `请选择${item.newRuleName || item.ruleName}`,
         }"
       >
-        <a-select
+        <a-input
+          v-model="item.selectedLabel"
+          style="width: 100%"
+          read-only="read-only"
+          @click="doAction('specificationSearch',{...item})"
+        />
+
+        <!-- <a-select
           show-search
           option-filter-prop="children"
           v-model="item.selectedID"
@@ -61,11 +70,12 @@
           :allowClear="true"
           :filter-option="filterOption"
           @search="(w) => searchHandler(w,item)"
+          @click="doAction('specificationSearch',{...item})"
         >
           <a-select-option v-for="sub in item.searchList" :key="sub.id" :value="sub.id">
             {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
-        </a-select>
+        </a-select> -->
       </a-form-model-item>
 
     </a-form-model>
@@ -88,6 +98,8 @@
     <div style="position: absolute;left: -99999px;" class="wuliao-qr-code-wrapper">
       <vue-qr :text="qrText" :size="qrSize" :callback="qrChangeHandler" ></vue-qr>
     </div>
+
+    <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
   </div>
 </template>
 <script>
@@ -101,6 +113,7 @@ import {
 import moment from 'moment'
 import VueQr from 'vue-qr'
 import { customUpload } from '@/api/common'
+import SpecificationSearchForm from './SpecificationSearchForm'
 
 const getParentKey = (key, tree) => {
   let parentKey
@@ -120,7 +133,8 @@ const getParentKey = (key, tree) => {
 export default {
   inject: ['normalAddForm'],
   components:{
-    VueQr
+    VueQr,
+    SpecificationSearchForm
   },
   data() {
     return {
@@ -150,6 +164,7 @@ export default {
       tip:'数据处理中...',
       // nextButtonDisable:true
       expandedKeys:['0'],
+      loadedKeys:[],
       searchValue:undefined
     }
   },
@@ -176,9 +191,9 @@ export default {
       that.type = type
       if (that.normalAddForm && that.normalAddForm.detail) {
         let { __treeData } = that.normalAddForm.detail
-        // that.treeData = __treeData
-        // that.dataList = that.generateList(that.treeData)
-        await that.fetchTree()
+        that.treeData = that.$_.cloneDeep(__treeData)
+        that.dataList = that.generateList(that.treeData)
+        // await that.fetchTree()
         if(that.normalAddForm.stepOneCacheData.cached){
           that.form = that.$_.cloneDeep(that.normalAddForm.stepOneCacheData.form)
         }else{
@@ -187,6 +202,9 @@ export default {
           that.initSpecifications({...__selectItem})
         }
       }
+      try{
+        console.log(that.$refs.treeSelect)
+      }catch(e){}
     },
     async qrChangeHandler(dataUrl,id){
       const that = this
@@ -239,7 +257,7 @@ export default {
       const that = this
       let timer = null
       let t1 = Date.now()
-      let max = 1000 * 3
+      let max = 1000 * 10
       return new Promise((resolve) =>{
         timer = setInterval(function(){
           if(typeof that.wuliaoQrUrl === 'string' && that.wuliaoQrUrl.length > 0){
@@ -522,6 +540,7 @@ export default {
     },
     fetchTree() {
       const that = this
+      that.loadedKeys = []
       that.spinning = true
       routineMaterialInfoTwoTierTreeList({ parentId: 0 })
         .then((res) => {
@@ -554,6 +573,7 @@ export default {
     },
     fetchTreeWithName(w) {
       const that = this
+      that.loadedKeys = []
       that.spinning = true
       routineMaterialRulePageConditionTreeList({ ruleName: w,type:2 })
         .then((res) => {
@@ -604,11 +624,34 @@ export default {
           that.$message.error(`调用接口[routineMaterialRulePageConditionTreeList]时发生错误，错误信息:${err}`)
         })
     },
-
     onExpand(expandedKeys) {
       this.expandedKeys = expandedKeys
       // this.autoExpandParent = false
     },
+    onLoadAction(loadedKeys){
+      this.loadedKeys = loadedKeys
+    },
+    specificationSelectedHandler({parentItem,selectItem}){
+      const that = this
+      let {specificationsList} = that.form
+      let target = specificationsList.find(item => item.id === parentItem.id)
+      if(target){
+        target.selectedID = selectItem.id
+        target.selectedLabel = `${(selectItem.newRuleName || selectItem.ruleName)}(${selectItem.code})`
+        target.subList = [selectItem]
+        that.form = {
+          ...that.form,
+          specificationsList
+        }
+      }
+    },
+    doAction(type,record){
+      const that = this
+      if(type === 'specificationSearch'){
+        that.$refs.specificationSearchForm.query(type,{...record})
+        return
+      }
+    }
   }
 }
 </script>

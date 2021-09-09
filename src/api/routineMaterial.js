@@ -512,6 +512,20 @@ export function productMaterialRulePageConditionTreeList(parameter) {
   })
 }
 
+/**
+ * 常规物料库 新增  规格型号 分页接口
+ * @param {*} parameter
+ * @returns
+ */
+export function routineMaterialRuleSpecificationsPagerTreeList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/pageTierTreeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 成品物料规则--------------------------
 
 
@@ -1111,4 +1125,22 @@ export function __MaterialInfoExport(type, params) {
         msg: `请求出错：${err.message}`
       }
     })
+}
+
+/**
+ * 检测 K3 物料代码是否重复
+ * @param {*} parameter
+ * @returns
+ */
+export function materialInfoCheckK3Code(parameter) {
+  let m = {
+    'normal':'/routineMaterialInfo/checkK3Code',
+    'product':'/productMaterialInfo/checkK3Code'
+  }
+  return axios({
+    baseURL: materialBaseUrl,
+    url: m[parameter._type],
+    method: 'GET',
+    params: parameter
+  })
 }

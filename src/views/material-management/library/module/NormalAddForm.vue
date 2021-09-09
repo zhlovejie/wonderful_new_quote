@@ -12,13 +12,8 @@
     :forceRender="true"
   >
     <div v-if="isAdd || isEdit">
-      <template v-if="isNormal">
-        <StepOne v-if="step === 1" @change="stepOneChange" />
-      </template>
-      <template v-if="isProduct">
-        <StepProduct v-if="step === 1" @change="stepOneChange" />
-      </template>
-
+      <StepOne v-show="isNormal && step === 1" @change="stepOneChange" />
+      <StepProduct v-show="isProduct && step === 1" @change="stepOneChange" />
       <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
     <div v-else-if="isView ">
@@ -130,7 +125,6 @@ export default {
       }
     },
     stepTwoChange(type) {
-      debugger
       const that = this
       if(type === 'ok'){
         that.handleCancel()

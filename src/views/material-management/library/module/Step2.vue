@@ -35,10 +35,10 @@
             <AppendData ref="appendData" />
           </div>
           <!-- 附件 END-->
-          <p style="margin-top: 20px; text-align: center" v-if="normalAddForm.isAdd || normalAddForm.isEdit">
+          <!-- <p style="margin-top: 20px; text-align: center" v-if="normalAddForm.isAdd || normalAddForm.isEdit">
             <a-button type="primary" @click="onSubmit"> 保存 </a-button>
             <a-button style="margin-left: 10px" @click="resetForm"> 取消 </a-button>
-          </p>
+          </p> -->
         </a-spin>
       </div>
       <!-- 附件 END-->

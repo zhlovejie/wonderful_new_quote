@@ -508,6 +508,7 @@ export default {
       that.dataSource = []
       that.selectedRowKeys = []
       that.selectedRows = []
+      that.loadedKeys = []
       that.spinning = true
       routineMaterialRulePageConditionTreeList({ ruleName: w,type:2 })
         .then((res) => {

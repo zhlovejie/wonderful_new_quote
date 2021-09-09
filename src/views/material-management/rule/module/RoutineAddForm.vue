@@ -281,6 +281,7 @@
       </a-form>
       <a-alert message="说明" type="warning" show-icon style="margin-top: 10px">
         <div slot="description">
+          <template v-if="isNormal">
           <div class="alert-wrapper">
             <div class="hd">是否为规格型号</div>
             <div class="bd">
@@ -295,6 +296,7 @@
               <div>－判定输入的数据是否存在有规律的循环，如果存在规律则可直接批量生成数据。</div>
             </div>
           </div>
+          </template>
           <div class="alert-wrapper">
             <div class="hd">是否常用</div>
             <div class="bd">
