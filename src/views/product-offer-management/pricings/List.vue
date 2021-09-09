@@ -134,7 +134,7 @@
         <tr>
           <td>规格型号</td>
           <td colspan="3">
-            {{ materialFuzzySearch.item.specs }}
+            {{ materialFuzzySearch.item.valencySpecs }}
           </td>
         </tr>
       </table>
