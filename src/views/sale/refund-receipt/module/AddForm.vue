@@ -39,7 +39,7 @@
                   <a-select-option :value="1">代理保证金</a-select-option>
                   <a-select-option :value="2">投标保证金</a-select-option>
                   <a-select-option :value="3">退货款</a-select-option>
-                  <a-select-option :value="4">其他</a-select-option>
+                  <!-- <a-select-option :value="4">其他</a-select-option> -->
                 </a-select>
               </a-form-item>
             </td>
@@ -211,7 +211,7 @@
                   <a-select-option :value="1">代理保证金</a-select-option>
                   <a-select-option :value="2">投标保证金</a-select-option>
                   <a-select-option :value="3">退货款</a-select-option>
-                  <a-select-option :value="4">其他</a-select-option>
+                  <!-- <a-select-option :value="4">其他</a-select-option> -->
                 </a-select>
               </a-form-item>
             </td>
