@@ -90,6 +90,7 @@
           <div slot="description">
             <span style="color: blue">蓝色已审核</span>
             <span style="color: red; margin: 0 10px">红色禁用</span>
+            <span style="font-weight: bold; margin: 0 10px">加粗常用</span>
             <span>黑色未审核</span>
           </div>
         </a-alert>
