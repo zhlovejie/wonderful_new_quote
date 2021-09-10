@@ -86,44 +86,30 @@
           </span>
           <div slot="taskStatus" slot-scope="text, record">
             <a @click="handleClick(record)">{{
-              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 4: '驳回' }[text] || '未知'
+              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回' }[text] || '未知'
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('receipt:one')">
-              <a @click="handleVue(record)">查看</a>
+              <a @click="handleAdd('veiw', record)">详情</a>
             </template>
-            <!-- <template v-if="$auth('receipt:edit') && audit">
+            <template v-if="$auth('receipt:edit') && +record.taskStatus === 0 && userInfo.id === record.createdId">
               <a-divider type="vertical" />
-              <a @click="handleAudit(record)">审核</a>
+              <a @click="handleAdd('edit', record)">修改</a>
             </template>
             <template
-              v-if="
-                $auth('receipt:edit') &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
-                userInfo.id === record.createdId
-              "
-            >
-              <a-divider type="vertical" />
-              <a @click="handleEdit(record)">修改</a>
-            </template>
-            <template
-              v-if="
-                $auth('receipt:del') &&
-                !audit &&
-                userInfo.id === record.createdId &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9)
-              "
+              v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && +record.taskStatus === 0"
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="!audit && record.receiptStatus === 1">
+
+            <template v-if="!audit && record.taskStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
-            </template> -->
+            </template>
           </span>
 
           <a-table
@@ -164,7 +150,7 @@
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-import { taskDocumentPage } from '@/api/after-sales-management'
+import { taskDocumentPage, revocationTaskDocument, delTaskDocument } from '@/api/after-sales-management'
 const innerColumns = [
   {
     align: 'center',
@@ -404,13 +390,13 @@ export default {
       const _this = this
       this.$confirm({
         title: '警告',
-        content: `真的要删除编号为: ${row.receiptCode} 的收款单吗?`,
+        content: `真的要删除编号为: ${row.taskNum} 的维修单吗?`,
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          deleteReceipt({ id: row.id }).then((res) => {
+          delTaskDocument({ id: row.id }).then((res) => {
             if (res.code == 200) {
               _this.searchAction()
             } else {
@@ -437,7 +423,7 @@ export default {
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        revocationReceipt({ id: record.id }).then((res) => {
+        revocationTaskDocument(`id=${record.id}`).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })

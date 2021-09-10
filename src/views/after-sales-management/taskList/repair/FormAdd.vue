@@ -11,107 +11,248 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk(0)">保存</a-button>
+        <a-button type="primary" :loading="spinning" @click="handleOk(1)">提交</a-button>
       </template>
     </template>
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
+        <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>台账年月</td>
-            <td colspan="3">
-              <a-form-item>
-                <a-month-picker
-                  style="width: 300px"
-                  v-decorator="['accountDate', { rules: [{ required: true, message: '请选择日期！' }] }]"
-                />
-                <!-- initialValue:moment(), -->
-              </a-form-item>
-            </td>
+            <td>任务单类型</td>
+            <td>设备维修</td>
+            <td>任务单编号</td>
+            <td>{{ record && record.taskNum ? record.taskNum : '系统自动生成' }}</td>
           </tr>
           <tr>
-            <td>公司缴费金额（元）</td>
-            <td colspan="3">
+            <td>来源</td>
+            <td>
               <a-form-item>
-                <a-input
-                  style="width: 300px"
-                  placeholder="输入公司缴费金额"
-                  v-decorator="['companyPay', { rules: [{ required: true, message: '请输入公司缴费金额!' }] }]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>个人缴费金额（元）</td>
-            <td colspan="3">
-              <a-form-item>
-                <a-input
-                  style="width: 300px"
-                  placeholder="输入个人缴费金额"
-                  v-decorator="['personalPay', { rules: [{ required: true, message: '请输入个人缴费金额!' }] }]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <tr>
-            <td>设备文件</td>
-            <td colspan="3">
-              <a-form-item>
-                <a-upload
-                  style="width: 300px"
-                  name="file"
-                  @change="handleChange"
-                  :fileList="fileList"
-                  :beforeUpload="beforeUpload"
-                  accept=".xls, .xlsx"
+                <a-select
+                  v-decorator="['source', { rules: [{ required: true, message: '请选择来源！' }] }]"
+                  allowClear
+                  style="width: 200px"
+                  placeholder="来源"
                 >
-                  <a-button> <a-icon type="upload" />导入 </a-button>
-                </a-upload>
+                  <a-select-option :value="1">400售后电话</a-select-option>
+                  <a-select-option :value="2"> 客户反馈</a-select-option>
+                  <a-select-option :value="3"> 第三方反馈</a-select-option>
+                  <a-select-option :value="4"> 销售部</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+            <td>机构名称</td>
+            <td>
+              <a-form-item>
+                <!-- :filter-option="false" -->
+                <!-- <a-select
+                  showSearch
+                  placeholder="机构名称"
+                  style="width: 200px"
+                  :default-active-first-option="false"
+                  :show-arrow="false"
+                  :not-found-content="null"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择机构名称！' }] }]"
+                  allowClear
+                >
+                  <a-select-option v-for="item in NamePage" :key="item.orgId" :value="item.orgId">{{
+                    item.orgName
+                  }}</a-select-option>
+                </a-select> -->
+                <a-select
+                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择来源！' }] }]"
+                  allowClear
+                  style="width: 200px"
+                  placeholder="来源"
+                >
+                  <a-select-option :value="1">400售后电话</a-select-option>
+                  <a-select-option :value="2"> 客户反馈</a-select-option>
+                  <a-select-option :value="3"> 第三方反馈</a-select-option>
+                  <a-select-option :value="4"> 销售部</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>客户名称</td>
+            <td>
+              <CustomerSelect
+                ref="customerSelect"
+                :needOptions="needOptions"
+                :options="customerSelectOptions"
+                @selected="handleCustomerSelected"
+              />
+              <a-form-item>
+                <a-input
+                  hidden
+                  v-decorator="['customerId', { rules: [{ required: true, message: '请选择客户名称' }] }]"
+                />
+              </a-form-item>
+              <a-form-item hidden>
+                <a-input v-decorator="['customerName']" />
+              </a-form-item>
+            </td>
+            <td>销售负责人</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  placeholder="销售负责人"
+                  showSearch
+                  :disabled="saleuserShow"
+                  :filterOption="filterOption"
+                  v-decorator="['saleUserId', { rules: [{ required: true, message: '请选择客户名称' }] }]"
+                  :allowClear="true"
+                  style="width: 200px"
+                >
+                  <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+
+          <tr>
+            <td>联系人</td>
+            <td>
+              <a-form-item>
+                <a-input
+                  style="width: 200px"
+                  placeholder="输入联系人"
+                  v-decorator="['linkman', { rules: [{ required: true, message: '请输入联系人!' }] }]"
+                />
+              </a-form-item>
+            </td>
+            <td>联系人电话</td>
+            <td>
+              <a-form-item>
+                <a-input
+                  style="width: 200px"
+                  placeholder="输入联系人电话"
+                  v-decorator="['contactNumber', { rules: [{ required: true, message: '输入联系人电话!' }] }]"
+                />
               </a-form-item>
             </td>
           </tr>
         </table>
+        <h3 style="margin-top: 15px">
+          问题设备 <a-button type="link" style="margin-bottom: 15px; float: right" @click="problemadd">新增 </a-button>
+        </h3>
+        <table class="custom-table custom-table-border" v-for="(item, index) in opinionData" :key="item.index">
+          <a-button type="primary" shape="round"> 主板号：{{ item.mainBoardNo }} </a-button>
+          <a-button type="link" style="margin-bottom: 15px; margin-top: 15px" @click="problemdel(index)"
+            >删除
+          </a-button>
+          <tr>
+            <td>机构</td>
+            <td>{{ item.orgName }}</td>
+          </tr>
+          <tr>
+            <td>设备位置</td>
+            <td>{{ item.deviceLocation }}</td>
+          </tr>
+          <tr>
+            <td>产品名称</td>
+            <td>{{ item.productName }}</td>
+          </tr>
+          <tr>
+            <td>问题描述</td>
+            <td>{{ item.problemDescription }}</td>
+          </tr>
+          <tr>
+            <td>照片</td>
+            <td>
+              <a-upload disabled list-type="picture-card" :file-list="item.picture" @preview="handlePreview1">
+              </a-upload>
+              <a-modal title="查看" :visible="previewVisible1" :footer="null" @cancel="previewCancel1">
+                <img alt="example" style="width: 100%" :src="previewImage" />
+              </a-modal>
+            </td>
+          </tr>
+          <tr>
+            <td>视频</td>
+            <td>
+              <span v-if="item.video"><a target="_blank" :href="item.video">预览</a></span>
+            </td>
+          </tr>
+          <tr>
+            <td>备注</td>
+            <td>{{ item.remark }}</td>
+          </tr>
+        </table>
       </a-form>
-
-      <!-- <Approval ref="approval" @opinionChange="opinionChange" /> -->
+      <ProblemForm ref="problemForm" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { securitySocial_Add, securitySocial_Details } from '@/api/humanResources'
-import { getUploadPath2 } from '@/api/common'
+import { getOrgNamePage, addAndUpdateTaskDocument, taskDocumentDetail } from '@/api/after-sales-management' //机构名称
+import { listUserBySale } from '@/api/systemSetting' //销售人员
 import moment from 'moment'
-
+import CustomerSelect from './mode/CustomerSelect'
+import ProblemForm from './mode/ProblemForm'
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'BecomingForm',
   components: {
-    // Approval: Approval,
+    ProblemForm,
+    CustomerSelect,
   },
   data() {
     return {
+      opinionData: [],
+      record: {},
+      recordDetails: {},
       visible: false,
       spinning: false,
+      previewImage: '',
+      previewVisible1: false,
+      saleuserShow: false,
       type: 'add',
       fileUrl: false,
+      userInfo: this.$store.getters.userInfo,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
-      uploadUrl: getUploadPath2(),
-      //   上传文件
-      fileList1: [],
-      fileList: [],
+      personincharge: [],
+      NamePage: [],
+      customerSelectOptions: {
+        inputLabel: '',
+        wrapperStyle: { flex: '1' },
+        formLayout: 'inline',
+        formItemLayout: {
+          labelCol: { span: '' },
+          wrapperCol: { span: '' },
+        },
+        inputRequired: true,
+        inputAllowClear: true,
+        inputDisable: false,
+      },
+      needOptions: {
+        userId: undefined,
+      },
     }
   },
   computed: {
     modalTitle() {
-      // if (this.isEditSalary) {
-      //   return '社保'
-      // }
-      let txt = this.isView ? '新增' : '修改'
-      return `${txt}社保`
+      let txt = this.isAdd ? '新增' : '修改'
+      return `${txt}维修任务单`
     },
-    isView() {
+    isAdd() {
       //查看
       return this.type === 'add'
+    },
+    isVeiw() {
+      return this.type === 'veiw'
     },
     isEditSalary() {
       //修改
@@ -119,19 +260,10 @@ export default {
     },
 
     isDisabled() {
-      return this.isView || this.isEdit
+      return this.isAdd || this.isEdit
     },
   },
-  watch: {
-    $route: {
-      handler: function (to, from) {
-        if (to.name === 'human_Resources_Insurance') {
-          this.init()
-        }
-      },
-      immediate: true,
-    },
-  },
+
   created() {},
   methods: {
     moment: moment,
@@ -141,78 +273,114 @@ export default {
       this.fileList1 = []
       this.type = type
       this.record = record
-      if (type === 'edit-salary') {
+      let reacat = {}
+      listUserBySale().then((res) => (this.personincharge = res.data))
+      getOrgNamePage({ size: 50, current: 1 }).then((res) => (this.NamePage = res.data.records))
+      if (type !== 'add') {
         this.fillData()
       }
     },
 
+    problemdel(i) {
+      this.opinionData.splice(i, 1)
+    },
+    previewCancel1() {
+      this.previewVisible1 = false
+    },
+    async handlePreview1(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible1 = true
+    },
+    // handleSearch(value) {
+    //   fetch(value)
+    // },
+    // handleChange(value) {
+    //   fetch(value)
+    // },
+    // fetch(value) {
+    //   getOrgNamePage({ orgName: value, size: 50, current: 1 }).then(() => {
+    //     this.NamePage = res.data.records
+    //   })
+    // },
+    problemadd() {
+      this.$refs.problemForm.query()
+    },
+    opinionChange(data) {
+      this.opinionData.push(data)
+    },
+    handleCustomerSelected(item) {
+      this.saleuserShow = item.saleUserId !== 0 && item.saleUserId !== null ? true : false
+      this.form.setFieldsValue({
+        customerId: item && item.id ? item.id : undefined,
+        customerName: item.name,
+        saleUserId:
+          item && item.saleUserId && item.saleUserId !== 0 && item.saleUserId !== null ? item.saleUserId : undefined,
+      })
+    },
     fillData() {
       let that = this
       let id = {
         id: this.record.id,
       }
-
-      securitySocial_Details(id).then((res) => {
+      taskDocumentDetail(id).then((res) => {
         that.recordDetails = res.data
-        let ress = moment(res.data.accountDate, 'YYYY-MM').valueOf()
-        let accountDate = moment(ress).format('YYYY-MM')
         this.form.setFieldsValue({
-          accountDate: moment(ress),
-          companyPay: res.data.companyPay,
-          personalPay: res.data.personalPay,
+          // companyPay: res.data.companyPay,
+          // personalPay: res.data.personalPay,
+          //           source: 2
+          // orgId: 2
+          // customerId: 2
+          // customerName: 艺格
+          // saleUserId: 106
+          // linkman: 123
+          // contactNumber: 123
+          // taskStatus: 1
+          // orgName: 12312312
+          // taskType: 1
         })
       })
     },
-
-    beforeUpload(file) {
-      this.fileList1 = [...this.fileList1, file]
-      this.fileList1 = this.fileList1.slice(-1)
-      return false
-    },
-    handleChange(info) {
-      this.fileList = []
-      let fileList = [...info.fileList]
-      fileList = fileList.map((file) => {
-        if (file.response && file.response.code === 200) {
-          file.url = file.response.data
-        }
-        return file
-      })
-      this.fileList = fileList
-    },
-    handleOk() {
+    handleOk(opt) {
       console.log('你是要提交')
       let that = this
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            values.accountDate = values.accountDate.format('YYYYMM')
-            let formData = new FormData()
-            if (that.type !== 'add') {
-              formData.append('id', this.record.id)
-            }
-            formData.append('accountDate', values.accountDate)
-            formData.append('companyPay', values.companyPay)
-            formData.append('personalPay', values.personalPay)
-            formData.append('file', this.fileList1[0])
+            values.deviceInfoSaveBoList =
+              this.opinionData.map((i) => {
+                return {
+                  deviceLocation: i.deviceLocation,
+                  mainBoardNo: i.mainBoardNo,
+                  orgName: i.orgName,
+                  photo: i.photo,
+                  problemDescription: i.problemDescription,
+                  productName: i.productName,
+                  remark: i.remark,
+                  villageName: i.villageName,
+                  video: i.video,
+                  orgId: i.orgId,
+                  villageId: i.villageId,
+                }
+              }) || []
+            values.taskStatus = opt
+            values.orgName = 12312312
+            values.taskType = 1
             that.spinning = true
-            securitySocial_Add(formData)
+            addAndUpdateTaskDocument(values)
               .then((res) => {
                 that.spinning = false
                 console.log(res)
                 that.form.resetFields() // 清空表
                 that.visible = false
                 that.$message.info(res.msg)
-                that.$emit('finish')
+                that.$emit('filet')
               })
               .catch((err) => (that.spinning = false))
           }
         })
-      } else if (that.isEditSalary) {
-        // that.updateUserBackCardSalary()
-      } else {
-        that.form.resetFields() // 清空表
-        that.visible = false
       }
     },
     handleCancel() {
@@ -220,6 +388,9 @@ export default {
       this.fileList1 = []
       this.form.resetFields() // 清空表
       this.visible = false
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
   },
 }
