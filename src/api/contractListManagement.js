@@ -92,6 +92,16 @@ export function getcusSelectsListPage(parameter) {
     params: parameter
   })
 }
+// 获取销售名称
+export function getcusSelectsListqueryOne(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/user/queryOne',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 获取流程节点信息
 export function getsaveAdditionalClause(parameter) {
   return axios({
