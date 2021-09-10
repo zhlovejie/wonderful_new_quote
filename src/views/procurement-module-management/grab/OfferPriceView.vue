@@ -176,7 +176,7 @@
               </a-row>
           </div>
 
-          <div v-for="item in detail.detail.exception.filter(item => !item.disposeType)">
+          <div v-for="(item,idx) in detail.detail.exception.filter((item) => !item.disposeType)" :key="idx">
               <a-row :gutter="[16,16]">
                 <a-col :span="3">
                   <p>最新报价</p>
@@ -197,7 +197,11 @@
           </div>
 
           <template v-if="detail.detail.exception.find(item => !!item.disposeType)">
-          <a-row :gutter="[16,16]" v-for="item in detail.detail.exception.filter(item => !!item.disposeType)">
+          <a-row
+            :gutter="[16,16]"
+            v-for="(item,idx) in detail.detail.exception.filter(item => !!item.disposeType)"
+            :key="idx"
+          >
             <a-col :span="6">
               <p>处理方式：{{`${ {1:'重抢',2:'新报价采购'}[item.disposeType] }`}}</p>
             </a-col>
