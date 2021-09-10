@@ -519,8 +519,8 @@ export default {
       let target = this.sources.find(item => +item.id === +val)
       if(target){
         if(target.text === '自开发客户'){
-          this.form.setFieldsValue({contactCycle:365})
-          this.maxContactCycle = 365
+          this.form.setFieldsValue({contactCycle:90})
+          this.maxContactCycle = 90
         }else{
           this.form.setFieldsValue({contactCycle:90})
           this.maxContactCycle = 90
