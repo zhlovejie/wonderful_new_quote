@@ -18,6 +18,7 @@ const api = {
   getCommonList: '/customer/getCommonList',
   getChangeRecord: '/customerChange/getChangeRecord',
   getALLList: '/customer/getAllList',
+  getSalesmanDepCusDay: '/customer/getSalesmanDepCusDay',
   getAllEnter: '/customer/getAllEnter',
   addContactNum: '/customer/addContactNum',
   reAllocate: '/customer/reAllocate',
@@ -188,6 +189,18 @@ export function getDepList (parameter) {
     params: parameter
   })
 }
+
+// 部门客户列表
+export function getSalesmanDepCusDay (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: api.getSalesmanDepCusDay,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 
 // 所有销售人员
 export function getAllSalesMan (param) {
