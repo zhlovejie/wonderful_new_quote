@@ -12,7 +12,7 @@
       rowKey="id"
       :columns="columns"
       :dataSource="salesmans"
-      :pagination="false" 
+      :pagination="false"
     >
       <span slot="canDistribute" slot-scope="text,record">
         <template v-if="$auth('salesman:edit')">
@@ -170,6 +170,14 @@ export default {
         {
           title: '提取周期',
           dataIndex: 'recoverTime'
+        },
+        {
+          title: '部门客户渠道周期',
+          dataIndex: 'depCusDay'
+        },
+        {
+          title: '自开发客户渠道周期',
+          dataIndex: 'selfCusDay'
         },
         {
           title: '创建人',

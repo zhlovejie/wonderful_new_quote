@@ -172,6 +172,34 @@
             ]"
           />
         </a-form-item>
+        <a-form-item label="部门客户渠道维护周期（天）" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input
+            v-decorator="[
+              'depCusDay',
+              {
+                rules: [
+                  { required: true, message: '请填写部门客户渠道维护周期！' },
+                  { pattern: /^\d+$/, message: '必须是数字' },
+                ],
+                initialValue: 90,
+              },
+            ]"
+          />
+        </a-form-item>
+        <a-form-item label="自开发客户渠道维护周期（天）" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input
+            v-decorator="[
+              'selfCusDay',
+              {
+                rules: [
+                  { required: true, message: '请填写自开发客户渠道维护周期！' },
+                  { pattern: /^\d+$/, message: '必须是数字' },
+                ],
+                initialValue: 90,
+              },
+            ]"
+          />
+        </a-form-item>
       </a-form>
     </div>
   </a-modal>
@@ -313,6 +341,8 @@ export default {
             overduePunish: record.overduePunish,
             maximum: record.maximum,
             recoverTime: record.recoverTime,
+            depCusDay: record.depCusDay,
+            selfCusDay: record.selfCusDay,
             depId: record.depId,
             stationId: record.stationId,
             //assistantId:record.assistantId

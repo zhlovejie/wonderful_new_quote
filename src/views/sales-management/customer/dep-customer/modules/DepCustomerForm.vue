@@ -72,7 +72,7 @@
             :min="5"
             :max="maxContactCycle"
             :step="1"
-            v-decorator="['contactCycle', {initialValue:90,rules: [{ required: true, message: '客户维护周期' }]}]"
+            v-decorator="['contactCycle', {initialValue:depCusDayData.depCusDay,rules: [{ required: true, message: '客户维护周期' }]}]"
             @change="contactCycleChange"
           />
         </a-form-item>
@@ -130,8 +130,8 @@
     <a-row class="form-row" :gutter="24">
       <a-col v-show="salesJurisdiction.allSalesman != null && salesJurisdiction.allSalesman.length > 0 && cId == 0" :lg="12" :md="12" :sm="24">
         <a-form-item label="指定销售" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-select placeholder="请选择指定销售" v-decorator="['userId',{rules: [{required: false}]}]">
-            <a-select-option v-for="salesman in salesJurisdiction.allSalesman" :key="salesman.index" :value="salesman.userId">{{ salesman.salesmanName }}</a-select-option>
+          <a-select @change="salerSalerChange"  placeholder="请选择指定销售" v-decorator="['userId',{rules: [{required: false}]}]">
+            <a-select-option  v-for="salesman in salesJurisdiction.allSalesman" :key="salesman.index" :value="salesman.userId">{{ salesman.salesmanName }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -219,7 +219,7 @@
 </template>
 
 <script>
-import { checkName, allAgency } from '@/api/customer'
+import { checkName, allAgency, getSalesmanDepCusDay } from '@/api/customer'
 import { getUploadPath, getDictionary, getAreaByParent } from '@/api/common'
 import AliasName from '@/components/CustomerList/AliasName'
 export default {
@@ -267,6 +267,7 @@ export default {
       uploadPath: getUploadPath(), // 上传图片的url
       sources:[],
       maxContactCycle:90,
+      depCusDayData: {"depCusDay":90, "selfCusDay": 90},
       isOtherLearn:false, //其他获知渠道
       aliasName:''
     }
@@ -283,6 +284,13 @@ export default {
       that.customerTypes = await getDictionary({ text: '客户类型' }).then(res => res.data)
       that.learns = await getDictionary({ text: '客户获知渠道' }).then(res => res.data)
       that.provinces = await getAreaByParent({ pId: 100000 }).then(res => res.data)
+      var dataResult = await getSalesmanDepCusDay().then(res => res.data)
+      if(dataResult != null) {
+        that.depCusDayData = dataResult
+        that.maxContactCycle = that.depCusDayData.depCusDay
+      }
+
+
 
       // 新增的时候不需要改变页面数据，且不能修改cId，否则页面有些关于cId去判断是新增还是修改会出错
       if (that.customer.id !== undefined && that.customer.id !== '') {
@@ -515,15 +523,27 @@ export default {
     handleCancel () {
       this.form.resetFields() // 清空表
     },
+    salerSalerChange(val){
+      //console.log(val);
+      const that = this
+      var param = { userId: val }
+      getSalesmanDepCusDay(param).then(res => {
+        if (res.code === 200) {
+          that.depCusDayData = res.data
+        } else {
+          console.log(res.msg)
+        }
+      })
+    },
     sourceChange(val){
       let target = this.sources.find(item => +item.id === +val)
       if(target){
         if(target.text === '自开发客户'){
-          this.form.setFieldsValue({contactCycle:90})
-          this.maxContactCycle = 90
+          this.form.setFieldsValue({contactCycle:this.depCusDayData.selfCusDay})
+          this.maxContactCycle = this.depCusDayData.selfCusDay
         }else{
-          this.form.setFieldsValue({contactCycle:90})
-          this.maxContactCycle = 90
+          this.form.setFieldsValue({contactCycle:this.depCusDayData.depCusDay})
+          this.maxContactCycle = this.depCusDayData.depCusDay
         }
       }
     },
