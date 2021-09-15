@@ -435,7 +435,6 @@ export default {
         },
       })
     },
-
     expandHandler(expanded, record) {
       console.log(arguments)
       if (expanded) {

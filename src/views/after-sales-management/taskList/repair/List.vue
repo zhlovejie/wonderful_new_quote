@@ -93,17 +93,37 @@
             <template v-if="$auth('receipt:one')">
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
-            <template v-if="$auth('receipt:edit') && +record.taskStatus === 0 && userInfo.id === record.createdId">
+            <template
+              v-if="
+                $auth('receipt:edit') &&
+                (+record.taskStatus === 0 || +record.taskStatus === 5) &&
+                userInfo.id === record.createdId
+              "
+            >
               <a-divider type="vertical" />
-              <a @click="handleAdd('edit', record)">修改</a>
+              <a @click="handleAdd('edit-salary', record)">修改</a>
             </template>
             <template
-              v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && +record.taskStatus === 0"
+              v-if="
+                $auth('receipt:del') &&
+                !audit &&
+                userInfo.id === record.createdId &&
+                (+record.taskStatus === 0 || +record.taskStatus === 5)
+              "
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-
+            <template
+              v-if="
+                !audit && userInfo.id === record.createdId && (+record.taskStatus === 0 || +record.taskStatus === 5)
+              "
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认提交该条数据吗?" @confirm="() => doAction('Document', record)">
+                <a type="primary" href="javascript:;">提交</a>
+              </a-popconfirm>
+            </template>
             <template v-if="!audit && record.taskStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
@@ -150,7 +170,12 @@
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-import { taskDocumentPage, revocationTaskDocument, delTaskDocument } from '@/api/after-sales-management'
+import {
+  taskDocumentPage,
+  revocationTaskDocument,
+  delTaskDocument,
+  submitTaskDocument,
+} from '@/api/after-sales-management'
 const innerColumns = [
   {
     align: 'center',
@@ -423,7 +448,14 @@ export default {
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        revocationTaskDocument(`id=${record.id}`).then((res) => {
+        revocationTaskDocument({ id: record.id }).then((res) => {
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+      if (type === 'Document') {
+        submitTaskDocument({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
