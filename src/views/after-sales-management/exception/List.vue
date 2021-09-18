@@ -95,26 +95,68 @@
             slot="action"
             slot-scope="text, record, index"
           >
-            <a @click="doAction('view',record)">查看</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('edit',record)">修改</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('handle',record)">处理</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('reback',record)">撤回</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('feedbackAdd',record)">新增反馈记录</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('feedbackDetail',record)">反馈详情</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('over',record)">完结</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('approval',record)">审批</a>
+            <template v-if=" [0,2,3].includes(+record.status)">
+              <a @click="doAction('view',record)">查看</a>
+              <a-divider type="vertical" />
+              <a @click="doAction('edit',record)">修改</a>
+            </template>
+
+            <template v-if="+record.status === 1">
+              <a @click="doAction('view',record)">查看</a>
+
+              <template v-if="$auth('exceptionReport:handle')">
+                <a-divider type="vertical" />
+                <a @click="doAction('handle',record)">处理</a>
+              </template>
+
+              <template v-if="+record.createdId === +userInfo.id">
+                <a-divider type="vertical" />
+                <a @click="doAction('reback',record)">撤回</a>
+              </template>
+            </template>
+
+            <template v-if="+record.status === 4">
+              <a @click="doAction('view',record)">查看</a>
+            </template>
+
+            <template v-if="+record.status === 5">
+              <a @click="doAction('edit',record)">修改</a>
+            </template>
+
+            <template v-if="+record.status === 6">
+              <template v-if="+record.formCustomer === 1">
+                <a @click="doAction('view',record)">查看</a>
+                <template v-if="$auth('exceptionReport:feedback')">
+                  <a-divider type="vertical" />
+                  <a @click="doAction('feedbackAdd',record)">新增反馈记录</a>
+                </template>
+              </template>
+              <template v-else>
+                <a @click="doAction('view',record)">查看</a>
+                <template v-if="$auth('exceptionReport:over')">
+                  <a-divider type="vertical" />
+                  <a @click="doAction('over',record)">完结</a>
+                </template>
+              </template>
+            </template>
+
+            <template v-if="+record.status === 7">
+              <template v-if="+record.formCustomer === 1">
+                <a @click="doAction('view',record)">查看</a>
+                <a-divider type="vertical" />
+                <a @click="doAction('feedbackDetail',record)">反馈详情</a>
+              </template>
+              <template v-else>
+                <a @click="doAction('view',record)">查看</a>
+              </template>
+            </template>
           </div>
         </a-table>
       </div>
       <ActionForm ref="actionForm" @finish="() => search()" />
       <ApproveInfo ref="approveInfoCard" />
+      <FeedBackForm ref="feedBackForm" @finish="() => search()" />
+      <FeedBackRecordForm ref="feedBackRecordForm" />
     </a-spin>
   </a-card>
 </template>
@@ -124,7 +166,8 @@ import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ActionForm from './ActionForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-
+import FeedBackForm from './FeedBackForm'
+import FeedBackRecordForm from './FeedBackRecordForm'
 import {
   exceptionReportApproval,
   exceptionReportFinishExceptionReport,
@@ -196,7 +239,9 @@ export default {
     DepartmentSelect,
     CommonDictionarySelect,
     ActionForm,
-    ApproveInfo
+    ApproveInfo,
+    FeedBackForm,
+    FeedBackRecordForm
   },
   data() {
     return {
@@ -286,6 +331,54 @@ export default {
       const that = this
       if(['add','view','edit','approval','handle'].includes(type)){
         that.$refs.actionForm.query(type,record)
+        return
+      }else if(type === 'feedbackAdd'){
+        that.$refs.feedBackForm.query(record)
+        return
+      }else if(type === 'feedbackDetail'){
+        that.$refs.feedBackRecordForm.query(record)
+        return
+      }else if(type === 'over'){
+        that.$confirm({
+          title: '完结',
+          content: `异常单[${record.serialNum}]是否更状态为完结！请确保此任务单已经完成！`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            exceptionReportFinishExceptionReport({id:record.id}).then(res => {
+              that.$message.info(res.msg)
+              if(res.code === 200){
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err)
+            })
+          },
+          onCancel() {
+            console.log('Cancel')
+          }
+        })
+        return
+      }else if(type === 'reback'){
+        that.$confirm({
+          title: '撤回',
+          content: `确定执行撤回操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            exceptionReportWithdraw({id:record.id}).then(res => {
+              that.$message.info(res.msg)
+              if(res.code === 200){
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err)
+            })
+          },
+          onCancel() {
+            console.log('Cancel')
+          }
+        })
         return
       }
     },

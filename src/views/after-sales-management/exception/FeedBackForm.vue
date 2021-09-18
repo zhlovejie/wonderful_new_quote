@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="450"
+    :width="650"
     :visible="visible"
     :destroyOnClose="true"
     :footer="footer"
@@ -23,10 +23,10 @@
           </a-radio-group>
         </a-form-model-item>
         <a-form-model-item prop="solvedTime" label="解决时间">
-          <a-date-picker v-model="form.solvedTime" />
+          <a-date-picker v-model="form.solvedTime" style="width:100%;" />
         </a-form-model-item>
         <a-form-model-item prop="remark" label="备注">
-          <a-textarea v-model="form.remark" placeholder="备注" allow-clear  />
+          <a-textarea v-model="form.remark" placeholder="备注" allow-clear style="width:100%;" />
         </a-form-model-item>
       </a-form-model>
     </a-spin>
@@ -38,7 +38,7 @@
 import {
   exceptionReportSaveExceptionFeedback,
 } from '@/api/after-sales-management-custom'
-
+import moment from 'moment'
 export default {
   components:{
 
@@ -49,19 +49,19 @@ export default {
       visible: false,
       spinning: false,
       form: {
-        num:0
+        isSolved:1
       },
       rules: {
         solvedTime:[
-           { required: true, message: '请选择解决时间', trigger: 'blur' }
+           { required: true, message: '请选择解决时间', trigger: 'change' }
         ],
         remark:[
-          { required: true, message: '请输入备注信息', trigger: 'blur' }
+          { required: true, message: '请输入备注信息', trigger: 'change' }
         ]
       },
       layout: {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 12 },
+        labelCol: { span: 4 },
+        wrapperCol: { span: 18 },
       },
       record:{}
     }
@@ -96,6 +96,7 @@ export default {
       that.record = {...record}
       that.visible = true
       that.form = {
+        ...that.form,
         exceptionId:record.id
       }
     },
@@ -104,7 +105,9 @@ export default {
       that.$refs['ruleForm'].validate(valid => {
         if (valid) {
           that.spinning = true
-          exceptionReportSaveExceptionFeedback({...that.form}).then(res => {
+          let params = {...that.form}
+          params.solvedTime = params.solvedTime.format('YYYY-MM-DD HH:mm:ss')
+          exceptionReportSaveExceptionFeedback(params).then(res => {
             that.spinning = false
             that.$message.info(res.msg)
             if(res.code === 200){

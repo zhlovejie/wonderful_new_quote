@@ -275,7 +275,7 @@
                   @change="(fileList) => fileChange(fileList,'vedio')"
                 />
                 <div v-else>
-                  <a v-if="form.videoUrl" target="blank" :href="form.videoUrl">查看视频</a>
+                  <a v-if="form.videoUrl" class="ant-btn" target="blank" :href="form.videoUrl">查看视频</a>
                   <span v-else>未上传视频</span>
                 </div>
               </p>
