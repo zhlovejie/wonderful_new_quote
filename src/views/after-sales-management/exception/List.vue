@@ -41,7 +41,7 @@
           </a-form-item>
 
           <a-form-item>
-            <a-range-picker show-time v-model="queryParam.date" :placeholder="['开始日期','结束日期']" />
+            <a-range-picker v-model="queryParam.date" :placeholder="['开始日期','结束日期']" />
           </a-form-item>
 
           <a-form-item>
@@ -168,6 +168,7 @@ import ActionForm from './ActionForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import FeedBackForm from './FeedBackForm'
 import FeedBackRecordForm from './FeedBackRecordForm'
+import moment from 'moment'
 import {
   exceptionReportApproval,
   exceptionReportFinishExceptionReport,
@@ -285,8 +286,18 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
+      let _queryParam = {...that.queryParam}
+      if(_queryParam.date){
+        let [exceptionBeginDate,exceptionEndDate] = _queryParam.date
+        if(exceptionBeginDate){
+          _queryParam.exceptionBeginDate = exceptionBeginDate.format('YYYY-MM-DD')
+        }
+        if(exceptionEndDate){
+          _queryParam.exceptionEndDate = exceptionEndDate.format('YYYY-MM-DD')
+        }
+      }
 
-      const _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      const _searchParam = Object.assign({}, _queryParam, paginationParam, params)
       that.loading = true
       exceptionReportPageList(_searchParam)
         .then(res => {

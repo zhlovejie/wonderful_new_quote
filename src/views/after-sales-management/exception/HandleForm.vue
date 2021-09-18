@@ -69,7 +69,7 @@
           </td>
           <td>
             <a-form-model-item prop="finishDate" >
-              <a-date-picker v-if="!isDisabled" show-time format="YYYY-MM-DD HH:mm:ss" style="width: 100%;" v-model="form.finishDate" />
+              <a-date-picker v-if="!isDisabled"  style="width: 100%;" v-model="form.finishDate" />
               <span v-else>{{ form.finishDate }}</span>
             </a-form-model-item>
           </td>
@@ -299,6 +299,7 @@ export default {
         if (valid) {
           that.spinning = true
           let params = {...that.form,operationType}
+          params.finishDate = params.finishDate.format('YYYY-MM-DD')
           exceptionReportSaveAndUpdateDispose(params).then(res => {
             that.spinning = false
             that.$message.info(res.msg)

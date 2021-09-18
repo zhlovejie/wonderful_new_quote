@@ -220,3 +220,69 @@ export function exceptionReportWithdraw(parameter) {
   })
 }
 //售后异常报告单 END
+
+
+//差旅报销单
+export function reimburseAdd(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/addAndUpdateReimburse',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function reimburseApproval(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/approvalReimburse',
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function reimburseDelete(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/delReimburse',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function reimburseDetail(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/reimburseDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function reimbursePageList(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/reimbursePage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function reimburseWithdraw(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/revocationReimburse',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function reimburseSubmit(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/submitReimburse',
+    method: 'get',
+    params: parameter
+  })
+}
+//差旅报销单END

@@ -144,7 +144,7 @@
             </td>
             <td>
               <a-form-model-item prop="exceptionDate" >
-                <a-date-picker v-if="!isDisabled" show-time format="YYYY-MM-DD HH:mm:ss" style="width: 100%;" v-model="form.exceptionDate" />
+                <a-date-picker v-if="!isDisabled"  style="width: 100%;" v-model="form.exceptionDate" />
                 <span v-else>{{ form.exceptionDate }}</span>
               </a-form-model-item>
             </td>
@@ -227,7 +227,7 @@
             </td>
             <td colspan="3">
               <a-form-model-item prop="productionDate" >
-                <a-date-picker v-if="!isDisabled" show-time format="YYYY-MM-DD HH:mm:ss" style="width: 100%;" v-model="form.productionDate" />
+                <a-date-picker v-if="!isDisabled"  style="width: 100%;" v-model="form.productionDate" />
                 <span v-else>{{form.productionDate}}</span>
               </a-form-model-item>
             </td>
@@ -559,8 +559,8 @@ export default {
         if (valid) {
           that.spinning = true
           let params = {...that.form,operationType}
-          params.productionDate = params.productionDate.format('YYYY-MM-DD HH:mm:ss')
-          params.exceptionDate = params.exceptionDate.format('YYYY-MM-DD HH:mm:ss')
+          params.productionDate = params.productionDate.format('YYYY-MM-DD')
+          params.exceptionDate = params.exceptionDate.format('YYYY-MM-DD')
           exceptionReportSaveAndUpdateExceptionReport(params).then(res => {
             that.spinning = false
             that.$message.info(res.msg)
