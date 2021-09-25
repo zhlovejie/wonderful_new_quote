@@ -10,8 +10,9 @@
       @preview="handlePreview"
       @change="handleChange"
       :class="{'ant-upload-list-hidden':!margeConfig.showFileList}"
+      :disabled="$attrs.disabled || false"
     >
-      <div v-if="fileList.length < (margeConfig.maxFileCount)">
+      <div v-if="!$attrs.disabled && fileList.length < (margeConfig.maxFileCount)">
         <a-button :type="margeConfig.btn.attr.type" :icon="margeConfig.btn.attr.icon">{{margeConfig.btn.text}}</a-button>
       </div>
     </a-upload>
@@ -37,7 +38,12 @@ function getBase64(file) {
 import { getUploadPath2 } from '@/api/common'
 export default {
   name: 'uploadFile',
-  props:['config'],
+  props:{
+    config:{
+      type:Object,
+      default:() => {}
+    }
+  },
   data() {
     return {
       uploadUrl: getUploadPath2(),
@@ -71,7 +77,6 @@ export default {
         if(obj){
           this.margeConfig = Object.assign({},this.margeConfig,(obj || {}))
         }
-
       },
       immediate: true
     }

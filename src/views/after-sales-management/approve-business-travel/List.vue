@@ -52,13 +52,6 @@
           </div>
 
           <div
-            slot="formCustomer"
-            slot-scope="text, record, index"
-          >
-            {{ {1:'是',2:'否'}[text] }}
-          </div>
-
-          <div
             slot="status"
             slot-scope="text, record, index"
           >
@@ -69,14 +62,53 @@
             slot="action"
             slot-scope="text, record, index"
           >
+              <!-- let m = {1:'待提交',2:'待审批',3:'通过',4:'不通过',5:'已撤回'} -->
 
-              <a @click="doAction('view',record)">查看</a>
-              <a-divider type="vertical" />
-              <a @click="doAction('edit',record)">修改</a>
-              <a-divider type="vertical" />
+              <template v-if="+activeKey === 0">
+                <a @click="doAction('view',record)">查看</a>
+                <template v-if="+record.status === 1">
+                  <a-divider type="vertical" />
+                  <a @click="doAction('submit',record)">提交</a>
+                </template>
+
+                <template v-if="+record.status === 2">
+                  <a-divider type="vertical" />
+                  <a @click="doAction('reback',record)">撤回</a>
+                </template>
+
+                <template v-if="[1,4,5].includes(+record.status)">
+                  <a-divider type="vertical" />
+                  <a @click="doAction('edit',record)">修改</a>
+                  <a-divider type="vertical" />
+                  <a @click="doAction('del',record)">删除</a>
+                </template>
+
+              </template>
+
+              <template v-if="+activeKey === 1">
+                <a @click="doAction('approval',record)">审批</a>
+              </template>
+
+              <template v-if="+activeKey === 2">
+                <a @click="doAction('view',record)">查看</a>
+              </template>
+              <!--
+
+              <template v-if="+record.status === 2">
+                <a-divider type="vertical" />
+                <a @click="doAction('approval',record)">审批</a>
+                <a-divider type="vertical" />
                 <a @click="doAction('reback',record)">撤回</a>
-              <a-divider type="vertical" />
+              </template>
+
+              <template v-if="+record.status === 4 || +record.status === 5">
+                <a-divider type="vertical" />
+                <a @click="doAction('edit',record)">修改</a>
+                <a-divider type="vertical" />
                 <a @click="doAction('del',record)">删除</a>
+              </template> -->
+
+
 
           </div>
         </a-table>
@@ -113,20 +145,19 @@ const columns = [
   },
   {
     title: '报销人',
-    dataIndex: 'formCustomer',
-    scopedSlots: { customRender: 'formCustomer' }
+    dataIndex: 'createdName'
   },
   {
     title: '报销时间',
-    dataIndex: 'exceptionDate'
+    dataIndex: 'createdTime'
   },
   {
     title: '报销描述',
-    dataIndex: 'materialCode'
+    dataIndex: 'describes'
   },
   {
     title: '金额(元)',
-    dataIndex: 'materialType'
+    dataIndex: 'realityReimbursementAmount'
   },
   {
     title: '状态',
@@ -261,8 +292,71 @@ export default {
     },
     doAction(type,record){
       const that = this
-      if(['add','view','edit','approval','handle'].includes(type)){
+      if(['add','view','edit','approval'].includes(type)){
         that.$refs.addForm.query(type,record)
+        return
+      }else if(type === 'submit'){
+        that.$confirm({
+          title: '提交审批',
+          content: `确定执行提交审批操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            reimburseSubmit({id:record.id}).then(res => {
+              that.$message.info(res.msg)
+              if(res.code === 200){
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err)
+            })
+          },
+          onCancel() {
+            console.log('Cancel')
+          }
+        })
+        return
+      }else if(type === 'reback'){
+        that.$confirm({
+          title: '撤回',
+          content: `确定执行撤回操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            reimburseWithdraw({id:record.id}).then(res => {
+              that.$message.info(res.msg)
+              if(res.code === 200){
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err)
+            })
+          },
+          onCancel() {
+            console.log('Cancel')
+          }
+        })
+        return
+      }else if(type === 'del'){
+        that.$confirm({
+          title: '删除',
+          content: `确定执行删除操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            reimburseDelete({id:record.id}).then(res => {
+              that.$message.info(res.msg)
+              if(res.code === 200){
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err)
+            })
+          },
+          onCancel() {
+            console.log('Cancel')
+          }
+        })
         return
       }
       //else if(type === 'feedbackAdd'){
@@ -292,31 +386,10 @@ export default {
       //     }
       //   })
       //   return
-      // }else if(type === 'reback'){
-      //   that.$confirm({
-      //     title: '撤回',
-      //     content: `确定执行撤回操作吗?`,
-      //     okText: '确定',
-      //     cancelText: '取消',
-      //     onOk() {
-      //       exceptionReportWithdraw({id:record.id}).then(res => {
-      //         that.$message.info(res.msg)
-      //         if(res.code === 200){
-      //           that.search()
-      //         }
-      //       }).catch(err => {
-      //         that.$message.error(err)
-      //       })
-      //     },
-      //     onCancel() {
-      //       console.log('Cancel')
-      //     }
-      //   })
-      //   return
-      // }
+
     },
     getStatus(type){
-      let m = {0:'待提交',1:'待处理',2:'已撤回',3:'已处理',4:'待审批',5:'不通过',6:'通过',7:'完结'}
+      let m = {1:'待提交',2:'待审批',3:'通过',4:'不通过',5:'已撤回'}
       return m[type]
     },
     tabChange(key){

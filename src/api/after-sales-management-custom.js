@@ -286,3 +286,105 @@ export function reimburseSubmit(parameter) {
   })
 }
 //差旅报销单END
+
+
+//数据分析
+
+/**数据分析-配件收款分析 */
+export function accessoriesCollectionDetailCollectionAnalysis(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/accessories-collection-detail/collectionAnalysis',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-销售担保欠款 */
+export function accessoriesManagementGuaranteeArrears(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/accessories-management/guaranteeArrears',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-销售担保欠款-合计 */
+export function accessoriesManagementTotalAmount(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/accessories-management/totalAmount',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-售后成本统计 */
+export function reimburseCostStatistics(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/costStatistics',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-售后人员成本统计 */
+export function reimburseUserCostStatistics(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/reimburse/userCostStatistics',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-客户验收分析 */
+export function maintenanceTaskAcceptanceTaskAcceptance(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/maintenance-task-acceptance/taskAcceptancePage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-过保分析 */
+export function deviceArchivesWarrantyAnalyse(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/device-archives/warrantyAnalyse',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**数据分析-过保统计 */
+export function deviceArchivesWarrantyStatistics(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/device-archives/warrantyStatistics',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+export function exportExcelDatas(key,params) {
+  let map = {
+    1:'/csupport/accessories-collection-detail/exportExcel',//售后管理-数据分析-配件收款分析-导出
+    2:'/csupport/accessories-management/exportExcel',//数据分析-销售担保欠款-导出
+    3:'/csupport/reimburse/exportExcel', //数据分析-售后成本统计-导出
+    4:'/csupport/reimburse/userExportExcel', //数据分析-售后人员成本统计-导出
+  }
+  return axios({
+    baseURL: system.baseURL,
+    url: map[key],
+    method: 'get',
+    responseType:'blob',
+    params: params
+  })
+}
+
+//数据分析END

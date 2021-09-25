@@ -17,7 +17,7 @@ import { getDictionary } from '@/api/common'
 export default {
   props: {
     text: [String],
-    dictionaryId:[Number]
+    dictionaryId:[Number,String]
   },
   data() {
     return {

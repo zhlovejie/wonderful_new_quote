@@ -50,12 +50,13 @@ export default {
       return [...this.areaInfo.text];
     },
     async change(value, selectedOptions) {
-      let area = [],
-        text = [];
-      selectedOptions.map(item => {
-        area.push(item.value);
-        text.push(item.label);
-      });
+      let area = [],text = [];
+      if(selectedOptions){
+        selectedOptions.map(item => {
+          area.push(item.value);
+          text.push(item.label);
+        });
+      }
       this.areaInfo = {
         area,
         text
