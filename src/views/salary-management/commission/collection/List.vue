@@ -102,7 +102,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '回款额(去税)',
+    title: '回款额(去税去运费)',
     dataIndex: 'untaxReceivableAmount',
     key: 'untaxReceivableAmount',
   },

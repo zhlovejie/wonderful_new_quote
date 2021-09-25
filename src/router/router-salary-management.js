@@ -158,6 +158,28 @@ export default {
               },
             },
             {
+              path: '/salary-management/commission/rule/wrong-salary-base-sale-rules',
+              name: 'wrong-salary-base-sale-rules',
+              component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/List'),
+              meta: {
+                title: '非销售基本工资规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
+            }, {
+              path: '/salary-management/commission/rule/wrong-salary-base-sale-rules/module',
+              name: 'wrong-salary-base-sale-module',
+              component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/module/See'),
+              meta: {
+                title: '非销售基本工资规则明细',
+                icon: 'select',
+                hidden: true,
+                keepAlive: false,
+                permission: ['permission']
+              },
+            },
+            {
               path: '/salary-management/commission/rule/research',
               name: 'salary-research',
               component: () => import('@/views/salary-management/commission/rule/research/List'),
@@ -238,6 +260,17 @@ export default {
           },
         },
         {
+          path: '/salary-management/commission/wrongResearchCommission',
+          name: 'wrongResearchCommission',
+          component: () => import('@/views/salary-management/commission/wrongResearchCommission/List'),
+          meta: {
+            title: '非销售提成奖金',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
           path: '/salary-management/commission/commissionDetail',
           name: 'commission-detail',
           component: RouteView,
@@ -287,7 +320,7 @@ export default {
             name: 'ai-product-detail-development',
             component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
             meta: {
-              title: '部门提成明细',
+              title: '智能产品提成明细',
               icon: 'select',
               keepAlive: false,
               permission: ['permission']

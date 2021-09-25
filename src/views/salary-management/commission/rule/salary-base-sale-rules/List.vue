@@ -109,6 +109,7 @@ export default {
       pagination1: {},
       queryParam: {
         current: 1,
+        type: 1,
       },
       hiddenBoolean: false,
 

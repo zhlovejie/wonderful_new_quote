@@ -45,7 +45,7 @@
                 <td>{{ product.productName }}</td>
                 <td>{{ product.productConfigName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
-                <td>{{ product.costPrice | moneyFormatNumber}}</td>
+                <td>{{ product.costPrice | moneyFormatNumber }}</td>
                 <td>{{ product.profitValue }}</td>
                 <td>{{ product.percentageRatio }}</td>
 
@@ -106,7 +106,7 @@
                 <td>{{ product.productName }}</td>
                 <td>{{ product.productConfigName }}</td>
                 <td>{{ product.saleAmount | moneyFormatNumber }}</td>
-                <td>{{ product.costPrice | moneyFormatNumber}}</td>
+                <td>{{ product.costPrice | moneyFormatNumber }}</td>
                 <td>{{ product.profitValue }}</td>
                 <td>{{ product.percentageRatio }}</td>
                 <td colspan="4">
@@ -142,6 +142,50 @@
         :maskClosable="false"
       >
         <div class="commission-render-wrapper">
+          <table
+            class="custom-table custom-table-border"
+            v-for="(commission, index) in commissionVoList"
+            :key="commission.index"
+          >
+            <caption>
+              {{
+                commission.departmentName
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th>部门</th>
+                <th>岗位</th>
+                <th>姓名</th>
+                <th>提成系数</th>
+                <th>提成类型名称</th>
+                <th>提出金额</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-if="commission.departmentDetailVoList && commission.departmentDetailVoList !== 0">
+                <tr v-for="(item, itemIdx) in commission.departmentDetailVoList" :key="itemIdx">
+                  <td>{{ item.departmentName }}</td>
+                  <td>{{ item.stationName }}</td>
+                  <td>{{ item.userName }}</td>
+                  <td>{{ item.percentageRetio }}</td>
+                  <td>{{ item.typeName }}</td>
+                  <td>{{ item.percentageAmountBigDecimal | moneyFormatNumber }}</td>
+                </tr>
+              </template>
+              <template v-else>
+                <tr>
+                  <td :colspan="6">暂无数据</td>
+                </tr>
+              </template>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="1">合计</td>
+                <td :colspan="5">{{ commission.departmentAmount | moneyFormatNumber }}</td>
+              </tr>
+            </tfoot>
+          </table>
           <table class="custom-table custom-table-border" v-for="commission in commissionSet" :key="commission.key">
             <caption>
               {{
@@ -171,7 +215,7 @@
               </template>
               <template v-else>
                 <tr>
-                  <td :colspan="commission.__type !== 3 ? 3 : 2">暂无数据</td>
+                  <td :colspan="3">暂无数据</td>
                 </tr>
               </template>
             </tbody>
@@ -202,6 +246,7 @@ export default {
       title: '',
       subHandleVisible: false,
       commissionSet: [],
+      commissionVoList: [],
     }
   },
   computed: {
@@ -263,26 +308,26 @@ export default {
     },
     viewAllAction(product) {
       const m = {
-        1: '销售提成',
-        2: '研发提成-管理总提成',
+        // 1: '销售提成',
+        // 2: '研发提成-管理总提成',
         3: '研发提成-单品总提成',
-        4: '软件/硬件提成',
+        // 4: '软件/硬件提成',
       }
       let arr = []
 
-      arr.push({
-        data: { money: product.salerDivAmount, data: product.salerDivList },
-        title: m[1],
-        __type: 1,
-        key: uuid(),
-      })
+      // arr.push({
+      //   data: { money: product.salerDivAmount, data: product.salerDivList },
+      //   title: m[1],
+      //   __type: 1,
+      //   key: uuid(),
+      // })
 
-      arr.push({
-        data: { money: product.developmentDivAmount, data: product.developmentDivList },
-        title: m[2],
-        __type: 2,
-        key: uuid(),
-      })
+      // arr.push({
+      //   data: { money: product.developmentDivAmount, data: product.developmentDivList },
+      //   title: m[2],
+      //   __type: 2,
+      //   key: uuid(),
+      // })
 
       arr.push({
         data: { money: product.developmentIntellectDivAmount, data: product.developmentIntellectDivList },
@@ -291,14 +336,15 @@ export default {
         key: uuid(),
       })
 
-      arr.push({
-        data: { money: product.softHardDivAmount, data: product.softHardDivList },
-        title: m[4],
-        __type: 4,
-        key: uuid(),
-      })
+      // arr.push({
+      //   data: { money: product.softHardDivAmount, data: product.softHardDivList },
+      //   title: m[4],
+      //   __type: 4,
+      //   key: uuid(),
+      // })
       this.subHandleVisible = true
       this.$nextTick(() => (this.commissionSet = arr))
+      this.$nextTick(() => (this.commissionVoList = product.departmentVoList))
     },
   },
 }
