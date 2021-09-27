@@ -5,11 +5,8 @@
         <a-form layout="inline">
           <a-form-item>
             <a-button-group>
-              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 1 }" @click="simpleSearch(1)"
-                >本周</a-button
-              >
-              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 2 }" @click="simpleSearch(2)"
-                >本月</a-button
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 4 }" @click="simpleSearch(4)"
+                >本年</a-button
               >
               <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 5 }" @click="simpleSearch(5)"
                 >全部</a-button
@@ -21,6 +18,9 @@
           </a-form-item>
           <a-form-item>
             <a-button class="a-button" type="primary" icon="search" @click="actionHandler('search')">查询</a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-button class="a-button" type="primary" icon="download" @click="actionHandler('download')">下载</a-button>
           </a-form-item>
         </a-form>
 
@@ -38,14 +38,14 @@
       </a-col>
       <a-col :span="14">
         <div class="chart-wrapper">
-          <h3 class="chart-title">过保分析数据</h3>
+          <h3 class="chart-title">配件收款分析</h3>
           <template v-if="chartData && chartData.length > 0">
-            <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
-              <v-tooltip />
-              <v-legend />
-              <v-interval position="dateTime*quantity" :label="labelInterval" />
-              <v-axis dataKey="quantity" :label="labelFormat" :title="title" />
-            </v-chart>
+          <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
+            <v-tooltip />
+            <v-axis dataKey="money" :label="labelFormat" :title="title" />
+            <v-line position="date*money" />
+            <v-point position="date*money" shape="circle" :label="labelInterval" />
+          </v-chart>
           </template>
           <template v-else>
             <a-empty :image="emptyImage" />
@@ -59,7 +59,8 @@
 <script>
 import { Empty } from 'ant-design-vue'
 import {
-  maintenanceTaskAcceptanceTaskAcceptance,//数据分析-过保统计
+  accessoriesCollectionDetailCollectionAnalysis,
+  exportExcelDatas
 } from '@/api/after-sales-management-custom'
 import moment from 'moment'
 const columns = [
@@ -71,12 +72,12 @@ const columns = [
   },
   {
     title: '日期',
-    dataIndex: 'dateTime',
+    dataIndex: 'date',
     width: '100px',
   },
   {
-    title: '过保数量',
-    dataIndex: 'quantity',
+    title: '配件收款金额(元)',
+    dataIndex: 'money',
     width: '150px',
   },
 ]
@@ -104,18 +105,18 @@ const title = {
   offset: 70,
 }
 
+
 const labelInterval = ['quantity', {
     useHtml: true,
     htmlTemplate: function htmlTemplate(text, item) {
-      return '<span class="g2-label-item"><p class="g2-label-item-value">' + item.point.quantity + '</p></div>';
+      return '<span style="display: inline-block;width: max-content;">' + item.point.money + '元</span>';
     }
   }]
-
 export default {
-  name: 'MaintenanceTaskAcceptanceTaskAcceptance',
+  name: 'accessoriesCollectionDetailCollectionAnalysis',
   data() {
     return {
-      pageTitle: '客户验收分析',
+      pageTitle: '配件收款分析',
       columns: columns,
       sDate: [undefined, undefined],
       dataSource: [],
@@ -124,7 +125,7 @@ export default {
       },
       loading: false,
       chartHeight: 600,
-      padding: [20, 20, 50, 140],
+      padding: [50, 20, 50, 140],
       label,
       labelFormat,
       labelInterval,
@@ -132,12 +133,14 @@ export default {
       title,
       scale: [
         {
-          dataKey: 'quantity',
-          alias: '数量',
+          dataKey: 'money',
+          alias: '金额(元)',
+          min: 0,
         },
         {
-          dataKey: 'dateTime',
-          type: 'timeCat',
+          dataKey: 'date',
+          min: 0,
+          max: 1,
         },
       ],
 
@@ -176,7 +179,7 @@ export default {
       let _searchParam = Object.assign({}, { ...that.searchParam }, { ...that.pagination }, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      maintenanceTaskAcceptanceTaskAcceptance(_searchParam)
+      accessoriesCollectionDetailCollectionAnalysis(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -199,14 +202,67 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-      this.stageTimeType = +type === 5 ? undefined : type
+      this.stageTimeType = +type === 4 ? 4 : undefined
       this.searchAction()
     },
     actionHandler(type) {
       if (type === 'search') {
         this.searchAction()
+      } else if (type === 'download') {
+        this.downloadAction()
       }
-    }
+    },
+    downloadAction() {
+      let that = this
+      exportExcelDatas(1, this.searchParam)
+        .then((res) => {
+          console.log(res)
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = `${that.pageTitle}.xls`
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => {
+          that.$message.info(`请求出错：${err.message}`)
+        })
+    },
   }
 }
 </script>

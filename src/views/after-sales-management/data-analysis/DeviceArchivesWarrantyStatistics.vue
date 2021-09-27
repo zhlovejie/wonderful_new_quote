@@ -5,20 +5,14 @@
         <a-form layout="inline">
           <a-form-item>
             <a-button-group>
-              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 0 }" @click="simpleSearch(0)"
-                >今天</a-button
-              >
               <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 1 }" @click="simpleSearch(1)"
                 >本周</a-button
               >
               <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 2 }" @click="simpleSearch(2)"
                 >本月</a-button
               >
-              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 3 }" @click="simpleSearch(3)"
-                >上月</a-button
-              >
-              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 4 }" @click="simpleSearch(4)"
-                >本年</a-button
+              <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 5 }" @click="simpleSearch(5)"
+                >全部</a-button
               >
             </a-button-group>
           </a-form-item>
@@ -45,12 +39,17 @@
       <a-col :span="14">
         <div class="chart-wrapper">
           <h3 class="chart-title">过保分析数据</h3>
-          <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
-            <v-tooltip />
-            <v-legend />
-            <v-interval position="dateTime*quantity" :opcaity="1" />
-            <v-axis dataKey="quantity" :label="labelFormat" :title="title" />
-          </v-chart>
+          <template v-if="chartData && chartData.length > 0">
+            <v-chart :forceFit="true" :height="chartHeight" :data="chartData" :scale="scale" :padding="padding">
+              <v-tooltip />
+              <v-legend />
+              <v-interval position="dateTime*quantity" :opcaity="1" :label="labelInterval"/>
+              <v-axis dataKey="quantity" :label="labelFormat" :title="title" />
+            </v-chart>
+          </template>
+          <template v-else>
+            <a-empty :image="emptyImage" />
+          </template>
         </div>
       </a-col>
     </a-row>
@@ -58,6 +57,7 @@
 </template>
 
 <script>
+import { Empty } from 'ant-design-vue'
 import {
   deviceArchivesWarrantyStatistics,//数据分析-过保统计
 } from '@/api/after-sales-management-custom'
@@ -95,6 +95,14 @@ const labelFormat = {
   },
 }
 
+  const labelInterval = ['quantity', {
+    useHtml: true,
+    htmlTemplate: function htmlTemplate(text, item) {
+      return '<span class="g2-label-item"><p class="g2-label-item-value">' + item.point.quantity + '</p></div>';
+    }
+  }]
+
+
 const tickLine = {
   alignWithLabel: false,
   length: 0,
@@ -126,9 +134,14 @@ export default {
           dataKey: 'quantity',
           alias: '数量',
         },
+        {
+          dataKey: 'dateTime',
+          type: 'timeCat',
+        },
       ],
-
-      stageTimeType: 1,
+      labelInterval,
+      stageTimeType: undefined,
+      emptyImage: Empty.PRESENTED_IMAGE_SIMPLE,
     }
   },
   computed: {
@@ -185,7 +198,7 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-      this.stageTimeType = type
+      this.stageTimeType = +type === 5 ? undefined : type
       this.searchAction()
     },
     actionHandler(type) {

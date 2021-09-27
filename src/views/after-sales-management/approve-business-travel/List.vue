@@ -71,12 +71,12 @@
                   <a @click="doAction('submit',record)">提交</a>
                 </template>
 
-                <template v-if="+record.status === 2">
+                <template v-if="+record.status === 2 && userInfo.id === record.createdId">
                   <a-divider type="vertical" />
                   <a @click="doAction('reback',record)">撤回</a>
                 </template>
 
-                <template v-if="[1,4,5].includes(+record.status)">
+                <template v-if="[1,4,5].includes(+record.status) && userInfo.id === record.createdId">
                   <a-divider type="vertical" />
                   <a @click="doAction('edit',record)">修改</a>
                   <a-divider type="vertical" />
@@ -394,6 +394,10 @@ export default {
     },
     tabChange(key){
       this.activeKey = +key
+      this.queryParam = {
+        ...this.queryParam,
+        searchStatus:this.activeKey
+      }
       this.search()
     }
   }

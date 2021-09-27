@@ -61,14 +61,16 @@
                 <span class="icon-required">报销描述</span>
               </td>
               <td colspan="3">
-                <a-textarea
-                  v-if="!isDisabled"
-                  placeholder="报销描述"
-                  allow-clear
-                  autoSize
-                  v-model="form.describes"
-                />
-                <span v-else>{{form.describes}}</span>
+                <a-form-model-item prop="describes">
+                  <a-textarea
+                    v-if="!isDisabled"
+                    placeholder="报销描述"
+                    allow-clear
+                    autoSize
+                    v-model="form.describes"
+                  />
+                  <span v-else>{{form.describes}}</span>
+                </a-form-model-item>
               </td>
             </tr>
 
@@ -116,162 +118,258 @@
               slot="startTime"
               slot-scope="text, record, index"
             >
-              <a-date-picker
-                v-if="!isDisabled"
-                show-time
-                v-model="record.startTime"
-              />
-              <span v-else>{{ record.startTime.format('YYYY-MM-DD HH:mm:ss') }}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.startTime'"
+                :rules="{
+                  required: true,
+                  message: '请选择出发时间',
+                }"
+              >
+                <a-date-picker
+                  v-if="!isDisabled"
+                  show-time
+                  v-model="record.startTime"
+                />
+                <span v-else>{{ record.startTime.format('YYYY-MM-DD HH:mm:ss') }}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="departurePlace"
               slot-scope="text, record, index"
             >
-              <CaseCadeArea
-                v-if="!isDisabled"
-                :area.sync="record.departurePlaceId"
-                @change="e => handleAreaChange(e,'departurePlace',record)"
-              />
-              <span v-else>{{record.departurePlace}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.departurePlaceId'"
+                :rules="{
+                required: true,
+                message: '请选择出发地',
+              }"
+              >
+                <CaseCadeArea
+                  v-if="!isDisabled"
+                  :area.sync="record.departurePlaceId"
+                  @change="e => handleAreaChange(e,'departurePlace',record)"
+                />
+                <span v-else>{{record.departurePlace}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="departureTime"
               slot-scope="text, record, index"
             >
-              <a-date-picker
-                v-if="!isDisabled"
-                show-time
-                v-model="record.departureTime"
-              />
-              <span v-else>{{ record.departureTime.format('YYYY-MM-DD HH:mm:ss') }}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.departureTime'"
+                :rules="{
+                required: true,
+                message: '请选择离开时间',
+              }"
+              >
+                <a-date-picker
+                  v-if="!isDisabled"
+                  show-time
+                  v-model="record.departureTime"
+                />
+                <span v-else>{{ record.departureTime.format('YYYY-MM-DD HH:mm:ss') }}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="destination"
               slot-scope="text, record, index"
             >
-              <CaseCadeArea
-                v-if="!isDisabled"
-                :area.sync="record.destinationId"
-                @change="e => handleAreaChange(e,'destination',record)"
-              />
-              <span v-else>{{record.destination}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.destinationId'"
+                :rules="{
+                required: true,
+                message: '请选择目的地',
+              }"
+              >
+                <CaseCadeArea
+                  v-if="!isDisabled"
+                  :area.sync="record.destinationId"
+                  @change="e => handleAreaChange(e,'destination',record)"
+                />
+                <span v-else>{{record.destination}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="longDistanceVehicle"
               slot-scope="text, record, index"
             >
-              <CommonDictionarySelect
-                :disabled="isDisabled"
-                placeholder="交通工具"
-                :text="'交通工具'"
-                :dictionaryId.sync="record.longDistanceVehicle"
-              />
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.longDistanceVehicle'"
+                :rules="{
+                required: true,
+                message: '请选择交通工具',
+              }"
+              >
+                <CommonDictionarySelect
+                  :disabled="isDisabled"
+                  placeholder="交通工具"
+                  :text="'交通工具'"
+                  :dictionaryId.sync="record.longDistanceVehicle"
+                />
+              </a-form-model-item>
             </div>
 
             <div
               slot="longDistanceCost"
               slot-scope="text, record, index"
             >
-              <a-input-number
-                v-if="!isDisabled"
-                v-model="record.longDistanceCost"
-                :min="0"
-                :step="1"
-                :precision="2"
-                @change="handleTravelRecordListChange"
-              />
-              <span v-else>{{record.longDistanceCost | moneyFormatNumber}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.longDistanceCost'"
+                :rules="{
+                required: true,
+                message: '请输入金额',
+              }"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.longDistanceCost"
+                  :min="0"
+                  :step="1"
+                  :precision="2"
+                  @change="handleTravelRecordListChange"
+                />
+                <span v-else>{{record.longDistanceCost | moneyFormatNumber}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="sortDistanceVehicle"
               slot-scope="text, record, index"
             >
-              <CommonDictionarySelect
-                :disabled="isDisabled"
-                placeholder="交通工具"
-                :text="'交通工具'"
-                :dictionaryId.sync="record.sortDistanceVehicle"
-              />
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.sortDistanceVehicle'"
+                :rules="{
+                required: true,
+                message: '请选择交通工具',
+              }"
+              >
+                <CommonDictionarySelect
+                  :disabled="isDisabled"
+                  placeholder="交通工具"
+                  :text="'交通工具'"
+                  :dictionaryId.sync="record.sortDistanceVehicle"
+                />
+              </a-form-model-item>
             </div>
 
             <div
               slot="sortDistanceCost"
               slot-scope="text, record, index"
             >
-              <a-input-number
-                v-if="!isDisabled"
-                v-model="record.sortDistanceCost"
-                :min="0"
-                :step="1"
-                :precision="2"
-                @change="handleTravelRecordListChange"
-              />
-              <span v-else>{{record.sortDistanceCost | moneyFormatNumber}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.sortDistanceCost'"
+                :rules="{
+                required: true,
+                message: '请输入金额',
+              }"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.sortDistanceCost"
+                  :min="0"
+                  :step="1"
+                  :precision="2"
+                  @change="handleTravelRecordListChange"
+                />
+                <span v-else>{{record.sortDistanceCost | moneyFormatNumber}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="repastDays"
               slot-scope="text, record, index"
             >
-              <a-input-number
-                v-if="!isDisabled"
-                v-model="record.repastDays"
-                :min="0"
-                :step="1"
-                :precision="0"
-                @change="handleTravelRecordListChange"
-              />
-              <span v-else>{{record.repastDays}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.repastDays'"
+                :rules="{
+                required: true,
+                message: '请输入天数',
+              }"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.repastDays"
+                  :min="0"
+                  :step="1"
+                  :precision="0"
+                  @change="handleTravelRecordListChange"
+                />
+                <span v-else>{{record.repastDays}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="foodCost"
               slot-scope="text, record, index"
             >
-              <a-input-number
-                v-if="!isDisabled"
-                v-model="record.foodCost"
-                :min="0"
-                :step="1"
-                :precision="2"
-                @change="handleTravelRecordListChange"
-              />
-              <span v-else>{{record.foodCost | moneyFormatNumber}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.foodCost'"
+                :rules="{
+                required: true,
+                message: '请输入金额',
+              }"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.foodCost"
+                  :min="0"
+                  :step="1"
+                  :precision="2"
+                  @change="handleTravelRecordListChange"
+                />
+                <span v-else>{{record.foodCost | moneyFormatNumber}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="accommodationDays"
               slot-scope="text, record, index"
             >
-              <a-input-number
-                v-if="!isDisabled"
-                v-model="record.accommodationDays"
-                :min="0"
-                :step="1"
-                :precision="0"
-                @change="handleTravelRecordListChange"
-              />
-              <span v-else>{{record.accommodationDays}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.accommodationDays'"
+                :rules="{
+                required: true,
+                message: '请输入天数',
+              }"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.accommodationDays"
+                  :min="0"
+                  :step="1"
+                  :precision="0"
+                  @change="handleTravelRecordListChange"
+                />
+                <span v-else>{{record.accommodationDays}}</span>
+              </a-form-model-item>
             </div>
 
             <div
               slot="accommodationCost"
               slot-scope="text, record, index"
             >
-              <a-input-number
-                v-if="!isDisabled"
-                v-model="record.accommodationCost"
-                :min="0"
-                :step="1"
-                :precision="2"
-                @change="handleTravelRecordListChange"
-              />
-              <span v-else>{{record.accommodationCost | moneyFormatNumber}}</span>
+              <a-form-model-item
+                :prop="'travelRecordList.' + index + '.accommodationCost'"
+                :rules="{
+                required: true,
+                message: '请输入金额',
+              }"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.accommodationCost"
+                  :min="0"
+                  :step="1"
+                  :precision="2"
+                  @change="handleTravelRecordListChange"
+                />
+                <span v-else>{{record.accommodationCost | moneyFormatNumber}}</span>
+              </a-form-model-item>
             </div>
 
             <div
@@ -430,13 +528,17 @@
                 @click="handleTravelCase('remove',record)"
               >删除</a-button>
             </div>
+
+            <div slot="footer">
+              <h3 style="color:red;">合计：{{ travelCaseList.map(item => Number(item.overdraftAmount) || 0).reduce((a,b) => a + b,0) | moneyFormatNumber }}</h3>
+            </div>
           </a-table>
         </div>
 
       </a-form-model>
 
       <a-form-model
-        v-if="isApproval"
+        v-if="+form.formKey === 1"
         :model="approvalForm"
         ref="approvalForm"
         :rules="approvalRules"
@@ -652,11 +754,11 @@ export default {
         travelId: '',
         __sum: {}
       },
-      rules: {},
-      approvalForm: {},
-      approvalRules: {
-
+      rules: {
+        describes: [{ required: true, message: '请输入报销描述', trigger: 'change' }]
       },
+      approvalForm: {},
+      approvalRules: {},
       travelCaseList: [],
 
       spinning: false,
@@ -691,6 +793,7 @@ export default {
           }
         }
       }
+      //流程节点 1表示是财务
     }
   },
   created() {},
@@ -920,6 +1023,47 @@ export default {
       const that = this
       that.type = type
       that.record = { ...record }
+
+      that.form = {
+        travelRecordList: [],
+        costDetailList: [
+          {
+            key: 1,
+            costCategory: 1,
+            haveTicketCost: 0,
+            haveTicketEvidence: undefined,
+            noTicketCost: 0,
+            noTicketEvidence: undefined
+          },
+          {
+            key: 2,
+            costCategory: 2,
+            haveTicketCost: 0,
+            haveTicketEvidence: undefined,
+            noTicketCost: 0,
+            noTicketEvidence: undefined
+          },
+          {
+            key: 3,
+            costCategory: 3,
+            haveTicketCost: 0,
+            haveTicketEvidence: undefined,
+            noTicketCost: 0,
+            noTicketEvidence: undefined
+          },
+          {
+            key: 4,
+            costCategory: 4,
+            haveTicketCost: 0,
+            haveTicketEvidence: undefined,
+            noTicketCost: 0,
+            noTicketEvidence: undefined
+          }
+        ],
+        travelId: '',
+        __sum: {}
+      }
+
       that.visible = true
       if (that.isAdd) {
         that.form = {
@@ -1012,6 +1156,18 @@ export default {
       const that = this
       that.$refs['ruleForm'].validate(valid => {
         if (valid) {
+
+          // let {totalLongDistanceCost,totalSortDistanceCost,totalFoodCost,totalAccommodationCost} = that.form.__sum
+
+          if(that.travelRecordList.length === 0){
+            that.$message.info('请添加行程记录')
+            return
+          }
+          if(that.travelCaseList.length === 0){
+            that.$message.info('请选择关联出差单')
+            return
+          }
+
           that.spinning = true
           const params = that.$_.cloneDeep(that.form || {})
 
@@ -1027,7 +1183,6 @@ export default {
           })
           delete params.createdTime
           console.log(params)
-          debugger
           reimburseAdd(params)
             .then(res => {
               that.spinning = false
@@ -1107,14 +1262,16 @@ export default {
           const accommodationDays = Number(current.accommodationDays) || 0
           const accommodationCost = Number(current.accommodationCost) || 0
 
-          const totalCost =
-            longDistanceCost + sortDistanceCost + repastDays * foodCost + accommodationDays * accommodationCost
+          //const totalCost = longDistanceCost + sortDistanceCost + repastDays * foodCost + accommodationDays * accommodationCost
+
+          const totalCost = longDistanceCost + sortDistanceCost + foodCost + accommodationCost
+
           current.totalCost = totalCost
 
           obj.totalLongDistanceCost += longDistanceCost
           obj.totalSortDistanceCost += sortDistanceCost
-          obj.totalFoodCost += repastDays * foodCost
-          obj.totalAccommodationCost += accommodationDays * accommodationCost
+          obj.totalFoodCost += foodCost
+          obj.totalAccommodationCost += accommodationCost
           obj.totalCost += current.totalCost
           return obj
         },
@@ -1149,27 +1306,34 @@ export default {
         }
       }
     },
-
     //审批
-    approvalAction(type){
+    approvalAction(type) {
       const that = this
-      that.$refs['approvalForm'].validate(valid => {
-        if (valid) {
-          if(type === 1){
-            that.passAction()
-          }else{
-            that.noPassAction()
+      if (that.$refs['approvalForm']) {
+        that.$refs['approvalForm'].validate(valid => {
+          if (valid) {
+            if (type === 1) {
+              that.passAction()
+            } else {
+              that.noPassAction()
+            }
+          } else {
+            console.log('error submit!!')
+            return false
           }
+        })
+      } else {
+        if (type === 1) {
+          that.passAction()
         } else {
-          console.log('error submit!!')
-          return false
+          that.noPassAction()
         }
-      })
+      }
     },
-    submitAction(opt={}) {
+    submitAction(opt = {}) {
       const that = this
 
-      const values = Object.assign({},opt, {...that.approvalForm}, { approveId: that.record.id })
+      const values = Object.assign({}, opt, { ...that.approvalForm }, { approveId: that.record.id })
       that.spinning = true
       reimburseApproval(values)
         .then(res => {

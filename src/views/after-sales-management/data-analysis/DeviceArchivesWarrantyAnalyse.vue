@@ -12,11 +12,8 @@
           <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 2 }" @click="simpleSearch(2)"
             >本月</a-button
           >
-          <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 3 }" @click="simpleSearch(3)"
-            >上月</a-button
-          >
-          <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 4 }" @click="simpleSearch(4)"
-            >本年</a-button
+          <a-button type="primary" :class="{ currentDayWeekMonth: stageTimeType === 5 }" @click="simpleSearch(5)"
+            >全部</a-button
           >
         </a-button-group>
       </a-form-item>
@@ -109,7 +106,7 @@ export default {
         current: 1,
       },
       loading: false,
-      stageTimeType: 0,
+      stageTimeType: undefined,
     }
   },
   computed: {
@@ -163,7 +160,7 @@ export default {
       this.searchAction()
     },
     simpleSearch(type) {
-      this.stageTimeType = type
+      this.stageTimeType = +type === 5 ? undefined : type
       this.searchAction()
     },
     actionHandler(type) {

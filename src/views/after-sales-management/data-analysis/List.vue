@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding:20px;background-color:#fff;">
      <a-tabs :activeKey="activeKey" @change="handlerTabChange">
        <a-tab-pane v-for="tab in tabList" :key="tab.key" :tab="tab.label" />
      </a-tabs>
@@ -11,12 +11,20 @@
 import DeviceArchivesWarrantyAnalyse from './DeviceArchivesWarrantyAnalyse'
 import DeviceArchivesWarrantyStatistics from './DeviceArchivesWarrantyStatistics'
 import MaintenanceTaskAcceptanceTaskAcceptance from './MaintenanceTaskAcceptanceTaskAcceptance'
+import ReimburseCostStatistics from './ReimburseCostStatistics'
+import ReimburseUserCostStatistics from './ReimburseUserCostStatistics'
+import AccessoriesCollectionDetailCollectionAnalysis from './AccessoriesCollectionDetailCollectionAnalysis'
+import AccessoriesManagementGuaranteeArrears from './AccessoriesManagementGuaranteeArrears'
 export default {
   name: 'after-sales-management_data-analysis',
   components:{
     DeviceArchivesWarrantyAnalyse,
     DeviceArchivesWarrantyStatistics,
-    MaintenanceTaskAcceptanceTaskAcceptance
+    MaintenanceTaskAcceptanceTaskAcceptance,
+    ReimburseCostStatistics,
+    AccessoriesCollectionDetailCollectionAnalysis,
+    ReimburseUserCostStatistics,
+    AccessoriesManagementGuaranteeArrears
   },
   data() {
     return {
