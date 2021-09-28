@@ -70,7 +70,7 @@
           <td>
             <a-form-model-item prop="finishDate" >
               <a-date-picker v-if="!isDisabled"  style="width: 100%;" v-model="form.finishDate" />
-              <span v-else>{{ form.finishDate }}</span>
+              <span v-else>{{ moment(form.finishDate).format('YYYY-MM-DD')  }}</span>
             </a-form-model-item>
           </td>
         </tr>
@@ -166,7 +166,7 @@
       </tbody>
     </table>
 
-    <p v-if="isHandle" style="text-align:center;">
+    <p v-if="isHandle || isEdit" style="text-align:center;">
       <a-button key="cancel" @click="() => handleCancel()">取消</a-button>
       <a-button style="margin:0 10px;" key="save" type='primary' :loading="spinning" @click="() => handleSubmit(1)">保存</a-button>
       <a-button key="submit" type='primary' :loading="spinning" @click="() => handleSubmit(2)">提交审批</a-button>
@@ -270,6 +270,7 @@ export default {
     }
   },
   methods: {
+    moment,
     query(){
       const that = this
 
@@ -282,7 +283,10 @@ export default {
           })
         })
       }
-      that.form = {...that.detail,responsibilityList}
+      that.form = {
+        ...that.detail,responsibilityList,
+        finishDate:moment(that.detail.finishDate)
+      }
       if(that.actionForm.isHandle){
         that.form = {...that.form,exceptionId:that.actionForm.detail.id}
       }

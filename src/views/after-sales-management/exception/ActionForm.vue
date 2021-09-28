@@ -9,15 +9,16 @@
       :maskClosable="false"
     >
     <a-spin :spinning="spinning">
-      <template v-if="isAdd || isEdit">
+      <template v-if="[0,2].includes((+record.status || 0))">
         <AddForm :type="type" :detail="detail" @finish="handleFinish"/>
       </template>
-      <template v-else-if="isView || isHandle || isApproval">
-        <AddForm :type="type" :detail="detail" />
+
+      <template v-else>
+        <AddForm type="view" :detail="detail" />
         <HandleForm
-          v-if="((isView || isApproval) && detail.reportDisposeVo) || isHandle"
+          v-if="(+record.status === 1 && isHandle) ||  [3,4,5,6,7].includes((+record.status || 0))"
           :type="type"
-          :detail="detail.reportDisposeVo"
+          :detail="detail.reportDisposeVo || {}"
           @finish="handleFinish"
         />
       </template>
