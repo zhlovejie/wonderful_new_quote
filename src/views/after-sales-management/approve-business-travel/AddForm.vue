@@ -1156,10 +1156,9 @@ export default {
       const that = this
       that.$refs['ruleForm'].validate(valid => {
         if (valid) {
-
           // let {totalLongDistanceCost,totalSortDistanceCost,totalFoodCost,totalAccommodationCost} = that.form.__sum
 
-          if(that.travelRecordList.length === 0){
+          if(that.form.travelRecordList.length === 0){
             that.$message.info('请添加行程记录')
             return
           }
