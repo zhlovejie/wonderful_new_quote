@@ -283,6 +283,9 @@ export default {
         })
       }
       that.form = {...that.detail,responsibilityList}
+      if(that.actionForm.isHandle){
+        that.form = {...that.form,exceptionId:that.actionForm.detail.id}
+      }
     },
     reset() {
       this.$refs.ruleForm.resetFields()
