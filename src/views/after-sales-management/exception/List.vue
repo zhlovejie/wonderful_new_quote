@@ -104,7 +104,7 @@
             <template v-if="+record.status === 1">
               <a @click="doAction('view',record)">查看</a>
 
-              <template v-if="$auth('exceptionReport:handle')">
+              <template v-if="[2,3].includes(+record.dataType)">
                 <a-divider type="vertical" />
                 <a @click="doAction('handle',record)">处理</a>
               </template>

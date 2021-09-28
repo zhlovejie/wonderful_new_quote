@@ -214,7 +214,7 @@ export function exceptionReportSaveExceptionFeedback(parameter) {
 export function exceptionReportWithdraw(parameter) {
   return axios({
     baseURL: baseurl,
-    url: '/exceptionReport/withdraw',
+    url: `/exceptionReport/withdraw?id=${parameter.id}`,
     method: 'post',
     data: parameter
   })
