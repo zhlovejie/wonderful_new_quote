@@ -91,7 +91,9 @@ export default {
       that.type = type
       that.record = {...record}
       that.visible = true
-      that.spinning = true
+
+      if(!that.isAdd){
+        that.spinning = true
         exceptionReportDetail({id:that.record.id}).then(res => {
           that.spinning = false
           that.detail = res.data
@@ -99,6 +101,7 @@ export default {
           that.spinning = false
           that.$message.error(err)
         })
+      }
     },
     handleCancel(){
       this.visible = false
