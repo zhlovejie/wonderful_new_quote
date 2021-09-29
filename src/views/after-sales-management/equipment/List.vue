@@ -56,9 +56,12 @@
         </template>
       </span>
     </s-table>
-    <!-- <modal ref="modal" @ok="handleSaveOk" /> -->
+    <Modal ref="modal" @ok="handleSaveOk" />
+
+    <Dictionaries ref="bictionaries" />
+    <Dictionaries1 ref="bictionaries1" />
     <SearchForm ref="searchForm" @change="paramChangeHandler" />
-    <a-modal v-model="visible" title="" @ok="handleOk">
+    <!-- <a-modal v-model="visible" title="" @ok="handleOk">
       <table class="custom-table custom-table-border">
         <tr>
           <th>序号</th>
@@ -73,15 +76,17 @@
           </td>
         </tr>
       </table>
-    </a-modal>
+    </a-modal> -->
   </a-card>
 </template>
 
 <script>
-import { getDeviceArchivesPage, getDeviceTypeList, getDeviceStateList, delAnalysis } from '@/api/after-sales-management'
+import { getDeviceArchivesPage } from '@/api/after-sales-management'
 
 import { STable } from '@/components'
-// import Modal from './modules/Video'
+import Modal from './modules/Video'
+import Dictionaries from './modules/Dictionaries'
+import Dictionaries1 from './modules/Dictionaries1'
 import SearchForm from './SearchForm'
 
 const columns = [
@@ -110,6 +115,7 @@ const columns = [
     title: '设备名称',
     key: 'deviceName',
     dataIndex: 'deviceName',
+    width: 200,
   },
 
   {
@@ -148,6 +154,7 @@ const columns = [
     title: '设备位置',
     key: 'deviceLocation',
     dataIndex: 'deviceLocation',
+    width: 200,
   },
   {
     align: 'center',
@@ -161,8 +168,10 @@ export default {
   name: 'EnterpriseSynopsis',
   components: {
     STable,
-    // Modal,
+    Modal,
+    Dictionaries,
     SearchForm,
+    Dictionaries1,
   },
   data() {
     return {
@@ -188,19 +197,7 @@ export default {
       },
     }
   },
-  created() {
-    getDeviceTypeList()
-      .then((res) => {
-        this.Warehouse = res.data
-      })
-      .catch((err) => (this.loading = false))
-
-    getDeviceStateList()
-      .then((res) => {
-        this.DeviceState = res.data
-      })
-      .catch((err) => (this.loading = false))
-  },
+  created() {},
   methods: {
     openSearchModel() {
       this.$refs.searchForm.query(this.contractState)
@@ -219,12 +216,18 @@ export default {
     },
     // 新增
     handleAdd(type, e) {
-      this.$refs.modal.query(type, e)
+      if (type === 'edit') {
+        this.$refs.bictionaries1.query(e)
+      } else {
+        this.$refs.modal.query(type, e)
+      }
     },
     handleSaveOk() {
       this.$refs.table.refresh(true)
     },
-    tutorialClick(text) {},
+    tutorialClick(text) {
+      this.$refs.bictionaries.query(text)
+    },
   },
 }
 </script>

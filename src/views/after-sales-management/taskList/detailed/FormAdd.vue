@@ -207,7 +207,7 @@
                   v-decorator="['maintenanceUserId', { rules: [{ required: true, message: '请选择售后人员' }] }]"
                   :allowClear="true"
                   @change="SelectChange"
-                  style="width: 200px"
+                  style="width: 300px"
                 >
                   <a-select-option v-for="item in AfterSale" :key="item.id" :value="item.id">{{
                     item.trueName
@@ -229,7 +229,7 @@
                   allowClear
                   :disabled="isVeiw"
                   @change="serviceType"
-                  style="width: 200px"
+                  style="width: 300px"
                   placeholder="上门服务人员"
                 >
                   <a-select-option :value="0">售后人员</a-select-option>
@@ -251,7 +251,7 @@
                       rules: [{ required: true, message: '请选择到达时间' }],
                     },
                   ]"
-                  style="width: 200px"
+                  style="width: 300px"
                 />
               </a-form-item>
             </td>
@@ -269,6 +269,7 @@
                     v-decorator="['networkId', { rules: [{ required: true, message: '请选择上门服务人员信息!' }] }]"
                     placeholder="请选择上门服务人员信息"
                   />
+                  <a @click="handleAdd('add', null)" style="padding-left: 10px">新增个人网点</a>
                 </a-form-item>
               </td>
             </tr>
@@ -277,7 +278,7 @@
               <td>
                 <a-form-item>
                   <a-input
-                    style="width: 200px"
+                    style="width: 300px"
                     :disabled="isVeiw"
                     placeholder="输入首次故障排查费（元/次）"
                     v-decorator="[
@@ -293,7 +294,7 @@
               <td>
                 <a-form-item>
                   <a-input
-                    style="width: 200px"
+                    style="width: 300px"
                     :disabled="isVeiw"
                     placeholder="输入故障处理费"
                     v-decorator="['troubleshootingCost', { rules: [{ required: true, message: '输入故障处理费!' }] }]"
@@ -305,6 +306,7 @@
         </table>
       </a-form>
       <ProblemForm ref="problemForm" @opinionChange="opinionChange" />
+      <modal ref="modal" @ok="handleSaveOk" />
     </a-spin>
   </a-modal>
 </template>
@@ -318,6 +320,7 @@ import {
 } from '@/api/after-sales-management' //机构名称
 import { listUserBySale } from '@/api/systemSetting' //销售人员
 import moment from 'moment'
+import Modal from './mode/addForm'
 import CustomerSelect from './mode/CustomerSelect'
 import ProblemForm from './mode/ProblemForm'
 let uuid = () => Math.random().toString(32).slice(-10)
@@ -334,6 +337,7 @@ export default {
   components: {
     ProblemForm,
     CustomerSelect,
+    Modal,
   },
   data() {
     return {
@@ -395,6 +399,9 @@ export default {
 
   created() {},
   methods: {
+    handleAdd(type, e) {
+      this.$refs.modal.query(type, e)
+    },
     // onChange(value) {
     //   console.log(value)
     // },
@@ -406,14 +413,7 @@ export default {
       this.mobile = arr.userInfo.mobile || ''
     },
     moment: moment,
-    query(type, record) {
-      this.visible = true
-      this.fileList = []
-      this.fileList1 = []
-      this.type = type
-      this.record = record
-      listUserBySale().then((res) => (this.personincharge = res.data))
-      listUserByAfterSale().then((res) => (this.AfterSale = res.data))
+    handleSaveOk() {
       networkManagementList().then(
         (res) =>
           (this.options = res.data.map((i) => {
@@ -429,6 +429,17 @@ export default {
             }
           }))
       )
+    },
+    query(type, record) {
+      this.visible = true
+      this.fileList = []
+      this.fileList1 = []
+      this.type = type
+      this.record = record
+      this.handleSaveOk()
+      listUserBySale().then((res) => (this.personincharge = res.data))
+      listUserByAfterSale().then((res) => (this.AfterSale = res.data))
+
       getOrgNamePage({ size: 50, current: 1 }).then((res) => (this.NamePage = res.data.records))
       if (type !== 'add') {
         this.fillData()

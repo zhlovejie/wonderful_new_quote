@@ -22,183 +22,85 @@
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>网点编号</td>
-            <td>{{ record && record.networkNum ? record.networkNum : '系统自动生成' }}</td>
-          </tr>
-          <tr>
-            <td>网点类型</td>
-            <td>企业</td>
-          </tr>
-          <tr>
+            <td>任务单编号</td>
+            <td>{{ record.taskDocumentNum }}</td>
             <td>网点名称</td>
             <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder="请输入网点名称"
-                  v-decorator="[
-                    'networkName',
-                    {
-                      rules: [
-                        {
-                          required: true,
-                          message: '请输入正确网点名称!',
-                        },
-                      ],
-                    },
-                  ]"
-                />
-              </a-form-item>
+              {{ record.networkName }}
             </td>
           </tr>
           <tr>
-            <td>区域</td>
-            <td>
-              <a-form-item>
-                <a-cascader
-                  :disabled="isDisabled"
-                  v-decorator="['territory', { rules: [{ required: true, message: '选择省市区' }] }]"
-                  :options="birthplaceOptions"
-                  @change="birthplaceCascaderChange"
-                  :loadData="birthplaceCascaderLoadData"
-                  placeholder="选择省市区"
-                />
-              </a-form-item>
-            </td>
-          </tr>
-          <!-- <tr>
             <td>业务员</td>
+            <td>{{ record.serviceUser.split(',')[0] }}</td>
+            <td>业务员手机号</td>
             <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder="请输入业务员名称"
-                  v-decorator="[
-                    'serviceUserName',
-                    {
-                      rules: [
-                        {
-                          required: true,
-                          message: '请输入正确业务员名称!',
-                        },
-                      ],
-                    },
-                  ]"
-                />
-              </a-form-item>
+              {{ record.serviceUser.split(',')[1] }}
             </td>
           </tr>
           <tr>
-            <td>业务员电话</td>
+            <td>首次故障排查费（元/次）</td>
             <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder="请输入业务员电话"
-                  v-decorator="[
-                    'contactInformation',
-                    {
-                      rules: [
-                        {
-                          required: true,
-                          message: '请输入正确业务员电话!',
-                        },
-                      ],
-                    },
-                  ]"
-                />
-              </a-form-item>
+              {{ recordDetails.screeningCost }}
             </td>
-          </tr> -->
-          <tr>
-            <td>营业执照</td>
+            <td>故障处理费</td>
             <td>
-              <a-form-item>
-                <a-upload
-                  :action="uploadUrl"
-                  :disabled="isDisabled"
-                  list-type="picture-card"
-                  :file-list="fileList"
-                  @preview="handlePreview"
-                  @change="handleChange"
-                >
-                  <div v-if="fileList.length < 5 && !isDisabled">
-                    <a-icon type="plus" />
-                    <div class="ant-upload-text">上传照片</div>
-                  </div>
-                </a-upload>
-                <a-modal title="查看" :visible="previewVisible" :footer="null" @cancel="previewCancel">
-                  <img alt="example" style="width: 100%" :src="previewImage" />
-                </a-modal>
-              </a-form-item>
+              {{ recordDetails.troubleshootingCost }}
             </td>
           </tr>
+          <tr></tr>
         </table>
-        <h3>业务员</h3>
+        <h3>付款信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <th>序号</th>
-            <th>业务员名称</th>
-            <th>业务员电话</th>
-            <th v-if="!isDisabled">操作</th>
-          </tr>
-          <tr v-for="(item, index) in serviceUserVoList" :key="item._key">
-            <td style="width: 150px">{{ index + 1 }}</td>
+            <td>客户名称</td>
             <td>
               <a-form-item>
                 <a-input
                   :disabled="isDisabled"
-                  placeholder="请输入业务员名称"
-                  @change="inputChange($event, 'serviceUserVoList', item._key, 'serviceUserName')"
-                  v-decorator="[
-                    `serviceUserVoList.${index}.serviceUserName`,
-                    { initialValue: item.serviceUserName, rules: [{ required: true, message: '输入业务员名称' }] },
-                  ]"
+                  style="width: 200px"
+                  placeholder="输入客户名称"
+                  v-decorator="['customerName', { rules: [{ required: true, message: '输入客户名称!' }] }]"
                 />
               </a-form-item>
             </td>
+            <td>开户行名称</td>
             <td>
               <a-form-item>
                 <a-input
                   :disabled="isDisabled"
-                  @change="inputChange($event, 'serviceUserVoList', item._key, 'contactInformation')"
-                  placeholder="请输入业务员电话"
-                  v-decorator="[
-                    `serviceUserVoList.${index}.contactInformation`,
-                    {
-                      initialValue: item.contactInformation,
-                      rules: [{ required: true, message: '输入业务员电话' }],
-                    },
-                  ]"
+                  style="width: 200px"
+                  placeholder="输入开户行名称"
+                  v-decorator="['bankName', { rules: [{ required: true, message: '输入开户行名称!' }] }]"
                 />
               </a-form-item>
             </td>
-            <td style="width: 70px" v-if="!isDisabled">
-              <a-form-item>
-                <a href="javascript:void(0);" @click="delItem(item._key)">删除</a>
-              </a-form-item>
-            </td>
           </tr>
-        </table>
-        <a-button
-          v-if="!isDisabled"
-          style="width: 100%"
-          type="dashed"
-          icon="plus"
-          @click="addItem('serviceUserVoList')"
-        ></a-button>
-        <h3>
-          协议信息 <span><a href="">协议模板</a> </span><span>（请填写完基本信息后，点击下载协议模板）</span>
-        </h3>
-
-        <table class="custom-table custom-table-border">
           <tr>
-            <td>协议文件</td>
+            <td>账号</td>
             <td>
               <a-form-item>
-                <a-upload :action="uploadUrl" :disabled="isDisabled" :fileList="fileList1" @change="handleChange1">
-                  <a-button> <a-icon type="upload" /> 上传文件 </a-button>
-                </a-upload>
+                <a-input
+                  :disabled="isDisabled"
+                  style="width: 200px"
+                  placeholder="输入账号"
+                  v-decorator="['account', { rules: [{ required: true, message: '输入账号!' }] }]"
+                />
+              </a-form-item>
+            </td>
+            <td>付款总额</td>
+            <td>
+              {{ recordDetails.totalPayment }}
+            </td>
+          </tr>
+          <tr>
+            <td>付款附言</td>
+            <td colspan="3">
+              <a-form-item>
+                <a-textarea
+                  :disabled="isDisabled"
+                  placeholder="输入付款附言"
+                  v-decorator="['paymentPostscript', { rules: [{ required: false, message: '输入付款附言!' }] }]"
+                />
               </a-form-item>
             </td>
           </tr>
@@ -211,11 +113,12 @@
 </template>
 
 <script>
-import { addAndUpdateEnterpriseNetwork, approvalEnterpriseNetwork } from '@/api/after-sales-management'
-import { getUploadVideoPath } from '@/api/manage'
-import { getUploadPath2, getAreaByParent } from '@/api/common'
+import {
+  networkPaymentRequestDetail,
+  approvalNetworkPaymentRequest,
+  addAndUpdateNetworkPaymentRequest,
+} from '@/api/after-sales-management'
 import Approval from './Approval'
-let uuid = () => Math.random().toString(32).slice(-10)
 export default {
   name: 'EnterpriseSynopsis',
   components: {
@@ -231,7 +134,6 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 },
       },
-      uploadUrl: getUploadPath2(),
       Warehouse: [],
       serviceUserVoList: [],
       visible: false,
@@ -239,15 +141,9 @@ export default {
       addOredit: 'add',
       type: 0,
       record: {},
+      recordDetails: {},
       toolType: 0,
       queryBoolean: false,
-      birthplaceOptions: [], //籍贯 级联 省市
-      previewVisible: false, // 图片预览框是否可见
-      previewImage: '', //  预览图片的src值
-      fileList: [],
-      fileList1: [],
-      labelName: undefined,
-      uploadPath: getUploadVideoPath(),
     }
   },
   beforeCreate() {
@@ -268,7 +164,6 @@ export default {
       return this.addOredit === 'add'
     },
     isEdit() {
-      //审核
       return this.addOredit === 'edit'
     },
     isApproval() {
@@ -283,7 +178,7 @@ export default {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
       that.spinning = true
-      approvalEnterpriseNetwork(values)
+      approvalNetworkPaymentRequest(values)
         .then((res) => {
           that.spinning = false
           console.log(res)
@@ -311,89 +206,29 @@ export default {
     handleAdd() {
       this.$refs.dictionaries.query()
     },
-    inputChange(event, key, keys, field) {
-      let programme = [...this[key]]
-      let target = programme.find((item) => item._key === keys)
-      if (target) {
-        target[field] = event instanceof Event ? event.target.value : event
-        this[key] = [...programme]
-      }
-    },
-    addItem(key) {
-      this[key].push({
-        _key: uuid(),
-        contactInformation: undefined,
-        serviceUserName: undefined,
-      })
-    },
+
     async query(type, record) {
       let that = this
-      this.visible = true
-      this.addOredit = type
-      this.record = record
-      let _areaData = await this.loadAreaAction(100000)
-      this.birthplaceOptions = _areaData
+      that.visible = true
+      that.addOredit = type
+      that.record = record
       if (type !== 'add') {
-        that.serviceUserVoList = record.serviceUserVoList
-        that.$nextTick(() => {
-          that.form.setFieldsValue({
-            networkName: record.networkName,
+        networkPaymentRequestDetail({ id: record.id }).then((res) => {
+          that.recordDetails = res.data
+          that.$nextTick(() => {
+            this.form.setFieldsValue({
+              customerName: res.data.customerName,
+              bankName: res.data.bankName,
+              account: res.data.account,
+              paymentPostscript: res.data.paymentPostscript,
+            })
           })
-          if (record.protocolFileUrl != null && record.protocolFileUrl.length > 0) {
-            let react = record.protocolFileUrl.split(',')
-            that.fileList1 = react.map((i) => {
-              return {
-                uid: uuid(),
-                name: i.substr(41, 300),
-                status: 'done',
-                url: i,
-              }
-            })
-          }
-          if (record.businessLicenseUrl != null && record.businessLicenseUrl.length > 0) {
-            let react = record.businessLicenseUrl.split(',')
-            that.fileList = react.map((i) => {
-              return {
-                uid: uuid(),
-                name: i.substr(41, 300),
-                status: 'done',
-                url: i,
-              }
-            })
-          }
         })
-        let _arr = record.territory.split(',')
-        if (record.territory) {
-          _arr = _arr.map((v) => parseInt(v, 10))
-          let _areaCityData = await that.loadAreaAction(_arr[0])
-          let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
-          if (ctiyTargetOption) {
-            ctiyTargetOption.children = _areaCityData
-            that.birthplaceOptions = [...that.birthplaceOptions]
-          }
-
-          let _areaAreaData = await that.loadAreaAction(_arr[1])
-          let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
-          if (areaTargetOption) {
-            areaTargetOption.children = _areaAreaData
-            that.birthplaceOptions = [...that.birthplaceOptions]
-          }
-          that.$nextTick(() => that.form.setFieldsValue({ territory: _arr }))
-        }
-      } else {
-        that.addItem('serviceUserVoList')
       }
     },
-    delItem(index) {
-      let _d = this.serviceUserVoList
-      _d = _d.filter((i) => i._key !== index)
-      this.serviceUserVoList = [..._d]
-    },
+
     close() {
       this.$emit('ok')
-      this.fileList = []
-      this.fileList1 = []
-      this.serviceUserVoList = []
       this.form.resetFields() // 清空表
       this.visible = false
     },
@@ -402,137 +237,43 @@ export default {
       if (this.isView) {
         return (this.visible = false)
       }
-      // 触发表单验证
-      this.form.validateFields((err, values) => {
-        // 验证表单没错误
-        if (!err) {
-          if (this.isEdit) {
-            values.id = this.record.id
+      if (this.isEdit) {
+        _this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log(values)
+
+            let params = {
+              instanceId: this.record.instanceId,
+              id: this.recordDetails.id,
+              taskDocumentId: this.recordDetails.taskDocumentId,
+              account: values.account,
+              bankName: values.bankName,
+              customerName: values.customerName,
+              networkId: this.recordDetails.networkId,
+              paymentPostscript: values.paymentPostscript,
+              screeningCost: this.recordDetails.screeningCost,
+              troubleshootingCost: this.recordDetails.troubleshootingCost,
+              totalPayment: this.recordDetails.totalPayment,
+            }
+
+            _this.spinning = true
+            addAndUpdateNetworkPaymentRequest(params)
+              .then((res) => {
+                _this.spinning = false
+                console.log(res)
+                _this.form.resetFields() // 清空表
+                _this.visible = false
+                _this.$message.info(res.msg)
+                _this.$emit('filet')
+              })
+              .catch((err) => (_this.spinning = false))
           }
-          if (this.fileList.length !== 0) {
-            values.businessLicenseUrl =
-              this.fileList.map((i) => (i.response && i.response.data) || i.url).toString() || ''
-          } else {
-            return this.$message.error('请上传营业执照')
-          }
-          if (this.fileList1.length !== 0) {
-            values.protocolFileUrl =
-              this.fileList1.map((i) => (i.response && i.response.data) || i.url).toString() || ''
-          }
-          values.networkType = 1
-          values.territory = values.territory.toString()
-          values.territoryName = this.labelName || this.record.territoryName
-          _this.confirmLoading = true
-          addAndUpdateEnterpriseNetwork(values)
-            .then((res) => {
-              if (res.code == 200) {
-                _this.$message.success('保存成功')
-              } else {
-                _this.$message.error(res.msg)
-              }
-            })
-            .catch(() => {
-              // Do something
-            })
-            .finally(() => {
-              _this.confirmLoading = false
-              // 清空表单
-              _this.form.resetFields()
-              // 清空图片
-              this.fileList = []
-              _this.close()
-            })
-        }
-      })
-    },
-    previewCancel() {
-      this.previewVisible = false
-    },
-    handlePreview(file) {
-      // 点击文件链接或预览图标时的回调
-      this.$set(this.playerOptions.sources[0], 'src', file.url || file.thumbUrl)
-      // this.playerOptions.sources.src = file.url || file.thumbUrl
-      this.previewVisible = true
-    },
-    handleChange({ file, fileList }) {
-      // debugger
-      // 上传中、完成、失败都会调用这个函数。
-      // fileList = fileList.slice(-1)
-      if (file.status !== 'uploading') {
-        console.log(file, fileList)
+        })
       }
-      if (file != null && file.status === 'done') {
-        // 状态有：uploading done error removed
-        if (file.response.code === 200) {
-          // 成功
-          console.log('file.response.data[0]', file.response.data[0])
-          this.form.setFieldsValue({ url: file.response.data[0].url })
-          this.form.setFieldsValue({ showPic: file.response.data[0].pic })
-        }
-      } else if (file.status === 'removed') {
-        // 删除清空
-        this.form.setFieldsValue({ url: '' })
-      }
-      this.fileList = fileList // 展示照片墙
-    },
-    handleChange1(info) {
-      let fileList = [...info.fileList]
-      fileList = fileList.slice(-1)
-      fileList = fileList.map((file) => {
-        if (file.response) {
-          file.url = file.response.url
-        }
-        return file
-      })
-      this.fileList1 = fileList
-    },
-    handleCancel() {
-      this.close()
     },
 
-    birthplaceCascaderChange(arrSelected) {
-      console.log('birthplaceCascaderChange called...')
-      console.log(arguments)
-      this.labelName = arguments[1].map((i) => i.label).toString()
-    },
-    birthplaceCascaderLoadData(selectedOptions) {
-      let that = this
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      getAreaByParent({ pId: targetOption.value })
-        .then((res) => {
-          //城市
-          targetOption.loading = false
-          targetOption.children = res.data.map((item) => {
-            return {
-              label: item.area,
-              value: item.id,
-              isLeaf: item.level === 3 ? true : false,
-            }
-          })
-          that.birthplaceOptions = [...that.birthplaceOptions]
-        })
-        .catch(function (err) {
-          console.log(err)
-        })
-    },
-    loadAreaAction(pId) {
-      const that = this
-      return getAreaByParent({ pId: pId })
-        .then((res) => {
-          //城市
-          return res.data.map((item) => {
-            return {
-              label: item.area,
-              value: item.id,
-              isLeaf: item.level === 3 ? true : false,
-            }
-          })
-        })
-        .catch(function (err) {
-          console.log(err)
-          return []
-        })
+    handleCancel() {
+      this.close()
     },
   },
 }

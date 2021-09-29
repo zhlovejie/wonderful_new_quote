@@ -85,7 +85,7 @@
           @expand="expandHandler"
         >
           <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+            <span> {{ { 1: '维修任务单', 2: '产品调试任务单' }[text] || '未知' }}</span>
           </span>
           <span slot="source" slot-scope="text, record">
             <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
@@ -97,7 +97,7 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="queryParam.taskDetailStatus === '1'">
-              <template v-if="$auth('receipt:one')">
+              <template>
                 <a @click="handleAdd('Dispatch', record)">派工</a>
               </template>
               <template v-if="!audit && userInfo.id === record.createdId">
@@ -112,7 +112,7 @@
             </template>
 
             <template v-if="queryParam.taskDetailStatus === '2'">
-              <template v-if="$auth('receipt:one')">
+              <template>
                 <a @click="handleAdd('veiw', record)">详情</a>
               </template>
               <template>
@@ -165,7 +165,7 @@
           @expand="expandHandler"
         >
           <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+            <span> {{ { 1: '维修任务单', 2: '产品调试任务单' }[text] || '未知' }}</span>
           </span>
           <span slot="source" slot-scope="text, record">
             <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
@@ -214,6 +214,7 @@
       </a-col>
     </a-row>
     <FormAdd ref="formadd" @filet="searchAction"></FormAdd>
+    <AfterVueOfAudit ref="afterVueOfAudit" @filet="searchAction"></AfterVueOfAudit>
     <ApproveInfo ref="approveInfoCard" />
     <Approval ref="approval" @opinionChange="searchAction" />
   </a-card>
@@ -223,6 +224,7 @@
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import Approval from './Approval'
+import AfterVueOfAudit from './mode/AfterVueOfAudit'
 
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import {
@@ -419,6 +421,7 @@ export default {
     // Tendering,
     // InvestigateNode,
     // ReceiptAdd,
+    AfterVueOfAudit,
     Approval,
     STable,
     ApproveInfo,
@@ -523,7 +526,11 @@ export default {
       this.searchAction()
     },
     handleAdd(type, record) {
-      this.$refs.formadd.query(type, record)
+      if (record.taskType === 1) {
+        this.$refs.formadd.query(type, record)
+      } else {
+        this.$refs.afterVueOfAudit.init(type, record)
+      }
     },
 
     handleClick(record) {

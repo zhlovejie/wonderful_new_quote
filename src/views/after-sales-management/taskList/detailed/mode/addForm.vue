@@ -385,7 +385,7 @@ export default {
     birthplaceCascaderChange(arrSelected) {
       console.log('birthplaceCascaderChange called...')
       console.log(arguments)
-      this.labelName = arguments[1] !== undefined ? arguments[1].map((i) => i.label).toString() : ''
+      this.labelName = arguments[1].map((i) => i.label).toString()
     },
     birthplaceCascaderLoadData(selectedOptions) {
       let that = this

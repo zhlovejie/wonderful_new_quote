@@ -41,15 +41,68 @@ const api = {
   getDeviceArchivesDetailVo: '/csupport/device-archives/getDeviceArchivesDetailVo', //设备状态详情
   getMaintenanceRecordPage: '/csupport/device-maintenance-record/getMaintenanceRecordPage', //维修记录
   getReplacementListingPage: '/csupport/device-replacement-listing/getReplacementListingPage', //更换记录
-
-
-
-
-
-
+  finishTaskDocument: '/csupport/task-document/finishTaskDocument', //任务单正常完结
+  addAndUpdateNetworkPaymentRequest: '/csupport/network-payment-request/addAndUpdateNetworkPaymentRequest', //付款申请
+  networkPaymentRequestDetail: '/csupport/network-payment-request/networkPaymentRequestDetail', //付款申请详情
+  revocationNetworkPaymentRequest: '/csupport/network-payment-request/revocationNetworkPaymentRequest', //付款申请撤回
+  delNetworkPaymentRequest: '/csupport/network-payment-request/delNetworkPaymentRequest', //付款申请删除
+  approvalNetworkPaymentRequest: '/csupport/network-payment-request/approvalNetworkPaymentRequest', //付款申请审批
 
 }
-
+//付款申请审批
+export function approvalNetworkPaymentRequest(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.approvalNetworkPaymentRequest,
+    method: 'post',
+    data: parameter
+  })
+}
+//付款申请删除
+export function delNetworkPaymentRequest(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.delNetworkPaymentRequest,
+    method: 'get',
+    params: parameter
+  })
+}
+//付款申请撤回
+export function revocationNetworkPaymentRequest(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.revocationNetworkPaymentRequest,
+    method: 'get',
+    params: parameter
+  })
+}
+//付款申请详情
+export function networkPaymentRequestDetail(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.networkPaymentRequestDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+//付款申请
+export function addAndUpdateNetworkPaymentRequest(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.addAndUpdateNetworkPaymentRequest,
+    method: 'post',
+    data: parameter
+  })
+}
+//任务单正常完结
+export function finishTaskDocument(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.finishTaskDocument,
+    method: 'post',
+    data: parameter
+  })
+}
 //更换记录
 export function getReplacementListingPage(parameter) {
   return axios({

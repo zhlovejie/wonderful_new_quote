@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="维修记录"
+    title="更换件清单"
     v-model="visible"
     :width="900"
     @ok="handleSubmit()"
@@ -17,12 +17,7 @@
             </a-form-item>
           </a-form-item>
           <a-form-item>
-            <a-input
-              placeholder="维修内容模糊查询"
-              v-model="searchParam.maintenanceContent"
-              allowClear
-              style="width: 160px"
-            />
+            <a-input placeholder="更换件名称" v-model="searchParam.replacementName" allowClear style="width: 160px" />
           </a-form-item>
 
           <a-form-item>
@@ -50,7 +45,7 @@
 </template>
 
 <script>
-import { getMaintenanceRecordPage } from '@/api/after-sales-management'
+import { getReplacementListingPage } from '@/api/after-sales-management'
 const columns = [
   {
     align: 'center',
@@ -62,9 +57,9 @@ const columns = [
 
   {
     align: 'center',
-    title: '维修内容',
-    key: 'maintenanceContent',
-    dataIndex: 'maintenanceContent',
+    title: '更换件名称',
+    key: 'replacementName',
+    dataIndex: 'replacementName',
   },
   {
     align: 'center',
@@ -118,7 +113,7 @@ export default {
       )
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      getMaintenanceRecordPage(_searchParam)
+      getReplacementListingPage(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

@@ -385,6 +385,8 @@ export default {
                 }
               }) || []
             let react = this.NamePage.find((i) => i.orgId === values.orgId)
+            let react1 = this.personincharge.find((i) => i.id === values.saleUserId)
+            values.saleUserName = react1.trueName
             values.orgName = react.orgName
             values.taskType = 1
             that.spinning = true

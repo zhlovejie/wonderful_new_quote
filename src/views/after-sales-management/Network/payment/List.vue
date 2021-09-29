@@ -48,21 +48,23 @@
           }}</a>
         </div>
         <div slot="serviceUser" slot-scope="text, record, index">
-          <span>{{ record.serviceUserVoList[0].serviceUserName }}</span>
+          <span>{{ record.serviceUser.split(',')[0] }}</span>
         </div>
 
         <div slot="contactInformation" slot-scope="text, record, index">
-          <span>{{ record.serviceUserVoList && record.serviceUserVoList[0].serviceUserName }}</span>
-        </div>
-        <div slot="tutorialVideo" slot-scope="text, record, index">
-          <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>
+          <span>{{ record.serviceUser.split(',')[1] }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleAdd('view', record)">查看</a>
           </template>
           <template v-if="queryParam.searchStatus === 0">
-            <template v-if="userInfo.id === record.createdId">
+            <template
+              v-if="
+                userInfo.id === record.createdId &&
+                (record.status === 3 || +record.status === 4 || +record.status === 1)
+              "
+            >
               <a-divider type="vertical" />
               <a @click="handleAdd('edit', record)">修改</a>
             </template>
@@ -72,13 +74,7 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template
-              v-if="
-                $auth('receipt:del') &&
-                userInfo.id === record.createdId &&
-                (+record.status === 3 || +record.status === 4)
-              "
-            >
+            <template v-if="userInfo.id === record.createdId && (record.status === 3 || +record.status === 4)">
               <a-divider type="vertical" />
 
               <a class="delete" @click="() => del(record)">删除</a>
@@ -88,19 +84,11 @@
             <a-divider type="vertical" />
             <a @click="handleAdd('approval', record)">审批</a>
           </template>
-          <!-- <template v-if="$auth('video:del')">
-          <a-divider type="vertical" />
-          <a class="delete" @click="() => del(record)">删除</a>
-        </template>
-        <template v-if="$auth('video:download')">
-          <a-divider type="vertical" />
-          <a v-download="record.url">下载</a>
-        </template> -->
         </span>
       </s-table>
     </div>
 
-    <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
+    <Modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
     <ApproveInfo ref="approveInfoCard" />
   </a-card>
 </template>
@@ -108,10 +96,9 @@
 <script>
 import {
   networkPaymentRequestPage,
-  revocationEnterpriseNetwork,
-  delNetworkManagement,
+  revocationNetworkPaymentRequest,
+  delNetworkPaymentRequest,
 } from '@/api/after-sales-management'
-import { getAreaByParent } from '@/api/common'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { queryCode } from '@/api/workBox'
 
@@ -130,8 +117,8 @@ const columns = [
   {
     align: 'center',
     title: '任务单编号',
-    key: 'networkNum',
-    dataIndex: 'networkNum',
+    key: 'taskDocumentNum',
+    dataIndex: 'taskDocumentNum',
   },
   {
     align: 'center',
@@ -248,7 +235,7 @@ export default {
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        revocationEnterpriseNetwork({ id: record.id }).then((res) => {
+        revocationNetworkPaymentRequest({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
@@ -271,7 +258,7 @@ export default {
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          delNetworkManagement({ id: row.id })
+          delNetworkPaymentRequest({ id: row.id })
             .then((data) => {
               if (data.code == 200) {
                 _this.$message.success('删除成功')

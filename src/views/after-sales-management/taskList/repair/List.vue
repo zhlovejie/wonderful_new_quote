@@ -79,7 +79,7 @@
           @expand="expandHandler"
         >
           <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+            <span> {{ { 1: '维修任务单', 2: '产品调试任务单' }[text] || '未知' }}</span>
           </span>
           <span slot="source" slot-scope="text, record">
             <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
@@ -90,7 +90,7 @@
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('receipt:one')">
+            <template>
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
             <template
@@ -252,7 +252,9 @@ export default {
       form: this.$form.createForm(this),
       userInfo: this.$store.getters.userInfo,
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        taskType: 1,
+      },
       recordResult: {},
       queryRecord: {},
       contractState: 0,

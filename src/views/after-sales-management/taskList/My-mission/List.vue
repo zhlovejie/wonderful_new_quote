@@ -52,23 +52,16 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('receipt:list')">
+          <template>
             <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
           </template>
         </a-form-item>
-        <!-- <div class="table-operator fl-r">
-          <a-button type="primary" @click="handleAdd('add', null)" style="margin-left: 8px">
-            新增 <a-icon type="plus" />
-          </a-button>
-        </div> -->
       </a-form>
     </div>
     <a-row>
       <a-col>
         <div>
           <a-tabs defaultActiveKey="2" @change="paramClick">
-            <!-- <a-tab-pane tab="待派工" key="1" forceRender> </a-tab-pane> -->
-
             <a-tab-pane tab="进行中" key="2"> </a-tab-pane>
             <a-tab-pane tab="已完结" key="4"> </a-tab-pane>
             <a-tab-pane tab="全部" key="0"> </a-tab-pane>
@@ -85,7 +78,7 @@
           @expand="expandHandler"
         >
           <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+            <span> {{ { 1: '维修任务单', 2: '产品调试任务单' }[text] || '未知' }}</span>
           </span>
           <span slot="source" slot-scope="text, record">
             <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
@@ -96,41 +89,36 @@
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <!-- <template v-if="queryParam.taskDetailStatus === '1'">
-              <template v-if="$auth('receipt:one')">
-                <a @click="handleAdd('Dispatch', record)">派工</a>
-              </template>
-              <template v-if="!audit && userInfo.id === record.createdId">
-                <a-divider type="vertical" />
-
-                <a type="primary" href="javascript:;" @click="noPassAction('reject', record)">驳回</a>
-              </template>
-              <template v-if="!audit && userInfo.id === record.createdId">
-                <a-divider type="vertical" />
-                <a type="primary" href="javascript:;" @click="noPassAction('end', record)">完结</a>
-              </template>
-            </template> -->
-
             <template v-if="queryParam.taskDetailStatus === '2'">
-              <template>
-                <a @click="handleAdd('veiw', record)">详情</a>
-              </template>
               <template v-if="record.taskStatus === 2">
-                <a-divider type="vertical" />
                 <a @click="handleAdd('handle', record)">处理</a>
               </template>
-              <template v-if="record.taskStatus === 2">
+              <template v-if="record.taskStatus === 3">
+                <a @click="handleAdd('veiw', record)">详情</a>
+              </template>
+              <template>
                 <a-divider type="vertical" />
                 <a>申请客诉</a>
               </template>
-              <template v-if="record.taskStatus === 3">
-                <a @click="handleAdd('veiw', record)">完结</a>
+              <template v-if="record.taskStatus === 3 && record.serviceMode === 0">
+                <a-divider type="vertical" />
+                <a @click="end(record)">完结</a>
+              </template>
+              <template v-if="record.taskStatus === 3 && record.serviceMode === 1">
+                <a-divider type="vertical" />
+                <a @click="handleAdd('veiw', record)">验收单下载</a>
+                <a-divider type="vertical" />
+                <a @click="handleAdd('veiw', record)">验收单</a>
+              </template>
+              <template v-if="record.taskStatus === 3 && record.serviceType === 1">
+                <a-divider type="vertical" />
+                <a @click="Payment('add', record)">申请付款</a>
               </template>
               <template v-if="record.taskStatus === 3">
-                <a @click="handleAdd('veiw', record)">配件申请</a>
+                <a-divider type="vertical" />
+                <a @click="partsAdd('add', record)">配件申请</a>
               </template>
             </template>
-
             <template v-if="queryParam.taskDetailStatus === null">
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
@@ -187,7 +175,12 @@
             <template v-if="$auth('receipt:one')">
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
+            <template v-if="record.serviceType === 1">
+              <a-divider type="vertical" />
+              <a @click="Payment('add', record)">申请付款</a>
+            </template>
             <template>
+              <a-divider type="vertical" />
               <a @click="handleAdd('veiw', record)">验收单</a>
             </template>
           </span>
@@ -221,7 +214,10 @@
       </a-col>
     </a-row>
     <FormAdd ref="formadd" @filet="searchAction"></FormAdd>
+    <Application ref="application" @filet="searchAction"></Application>
+    <PartsForm ref="partsForm" @filet="searchAction"></PartsForm>
     <ApproveInfo ref="approveInfoCard" />
+    <AfterVueOfAudit ref="afterVueOfAudit" @filet="searchAction"></AfterVueOfAudit>
     <Approval ref="approval" @opinionChange="searchAction" />
   </a-card>
 </template>
@@ -229,16 +225,18 @@
 <script>
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
-import Approval from './Approval'
+import Application from './application'
+import PartsForm from './partsForm'
 
+import Approval from './Approval'
+import AfterVueOfAudit from './mode/AfterVueOfAudit'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import {
   taskDocumentPage,
   revocationTaskDocument,
-  delTaskDocument,
   submitTaskDocument,
   againDispatchTaskDocument,
-  dispatchTaskDocument,
+  finishTaskDocument,
 } from '@/api/after-sales-management'
 const innerColumns = [
   {
@@ -423,13 +421,13 @@ const columns1 = [
 export default {
   name: 'ReceiptList',
   components: {
-    // Tendering,
-    // InvestigateNode,
-    // ReceiptAdd,
     Approval,
     STable,
     ApproveInfo,
     FormAdd,
+    AfterVueOfAudit,
+    Application,
+    PartsForm,
   },
   data() {
     return {
@@ -531,24 +529,36 @@ export default {
       this.searchAction()
     },
     handleAdd(type, record) {
-      this.$refs.formadd.query(type, record)
+      if (record.taskType === 1) {
+        this.$refs.formadd.query(type, record)
+      } else {
+        this.$refs.afterVueOfAudit.init(type, record)
+      }
+      // this.$refs.formadd.query(type, record)
+    },
+
+    Payment(type, record) {
+      this.$refs.application.query(type, record)
+    },
+    partsAdd(type, record) {
+      this.$refs.partsForm.query(type, record)
     },
 
     handleClick(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
 
-    del(row) {
+    end(row) {
       const _this = this
       this.$confirm({
-        title: '警告',
-        content: `真的要删除编号为: ${row.taskNum} 的维修单吗?`,
-        okText: '删除',
+        title: '完结',
+        content: `任务单[${row.taskNum}]服务方式为远程指导，是否更状态为完结！请确保此任务单已完成！`,
+        okText: '确定',
         okType: 'danger',
         cancelText: '取消',
         onOk() {
-          // 在这里调用删除接口
-          delTaskDocument({ id: row.id }).then((res) => {
+          // 在这里调用完结接口
+          finishTaskDocument({ approveId: row.id, isAdopt: 1 }).then((res) => {
             if (res.code == 200) {
               _this.searchAction()
             } else {
