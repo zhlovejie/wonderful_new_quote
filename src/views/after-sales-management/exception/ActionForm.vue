@@ -20,24 +20,44 @@
           :type="type"
           :detail="detail.reportDisposeVo || {}"
           @finish="handleFinish"
+          ref="handleForm"
         />
       </template>
       <div v-if="detail.approveOpinion">
         <h3>处理结果审批</h3>
         <p>审批意见：{{detail.approveOpinion}}</p>
       </div>
-      <p v-if="isApproval" style="text-align:center;">
+      <div v-if="isApproval">
+      <p >
+        <h3>审批意见</h3>
+        <a-form-model
+          ref="approvalForm"
+          :model="approvalForm"
+          :rules="approvalRules"
+          class="approval-modal-form-wrapper"
+        >
+          <a-form-model-item
+            prop="opinion"
+          >
+            <a-textarea
+              placeholder="审批意见"
+              :rows="2"
+              v-model="approvalForm.opinion"
+            />
+          </a-form-model-item>
+        </a-form-model>
+      </p>
+      <p style="text-align:center;">
         <a-button :loading="spinning" @click="noPassAction">不通过</a-button>
         <a-button type="primary" :loading="spinning" @click="passAction" style="margin:0 10px;">通过</a-button>
       </p>
+      </div>
     </a-spin>
-    <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
 </template>
 <script>
 import AddForm from './AddForm'
 import HandleForm from './HandleForm'
-import Approval from './Approval'
 import {
   exceptionReportApproval,
   exceptionReportDetail,
@@ -45,8 +65,7 @@ import {
 export default {
   components:{
     AddForm,
-    HandleForm,
-    Approval
+    HandleForm
   },
   provide(){
     return {
@@ -59,7 +78,11 @@ export default {
       record:{},
       visible:false,
       spinning:false,
-      detail:{}
+      detail:{},
+      approvalForm:{},
+      approvalRules:{
+        opinion: [{ required: true, message: '请输入审批意见', trigger: 'blur' }],
+      }
     }
   },
   computed:{
@@ -114,30 +137,39 @@ export default {
     //审批
     submitAction(opt) {
       let that = this
-      let values = Object.assign({}, opt || {}, { approveId: that.record.id })
-      that.spinning = true
-      exceptionReportApproval(values)
-        .then((res) => {
-          that.spinning = false
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch((err) => (that.spinning = false))
+      that.$refs['approvalForm'].validate(valid => {
+        if (valid) {
+          let responsibilitySaveBoList = []
+          try{
+            responsibilitySaveBoList = that.$refs.handleForm.form.responsibilityList
+          }catch(err){
+            console.log(err)
+            responsibilitySaveBoList = []
+          }
+          let parms = {
+            ...opt,
+            opinion:that.approvalForm.opinion,
+            responsibilitySaveBoList,
+            approveId: that.record.id
+          }
+          that.spinning = true
+          exceptionReportApproval(parms)
+            .then((res) => {
+              that.spinning = false
+              that.visible = false
+              that.$message.info(res.msg)
+              that.handleFinish()
+            })
+            .catch((err) => (that.spinning = false))
+        }else{}
+      })
     },
     passAction(opt = {}) {
       this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
     },
     noPassAction() {
-      this.$refs.approval.query()
-    },
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion,
-      })
-    },
+      this.submitAction({isAdopt: 1,opinion: '不通过' })
+    }
   }
 }
 </script>
