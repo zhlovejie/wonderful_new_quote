@@ -68,7 +68,12 @@
           <img style="height: 50px; lenght: 40px" :src="text" />
         </div>
         <div slot="valencyStatus" slot-scope="text, record, index">
-          <a-button type="link" v-if="valencyStatusl === 3" @click="valenyclick(record)">查看</a-button>
+          <a-button
+            type="link"
+            v-if="valencyStatusl === 3 || valencyStatusl === 4 || valencyStatusl === 5"
+            @click="valenyclick(record)"
+            >查看</a-button
+          >
         </div>
 
         <div slot="costPrice" slot-scope="text">
