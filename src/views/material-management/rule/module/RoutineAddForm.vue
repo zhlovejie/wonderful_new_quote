@@ -10,6 +10,7 @@
     :confirmLoading="spinning"
   >
     <a-spin :spinning="spinning">
+
       <a-tabs v-if="isNormalAdd" :activeKey="activeKey" :defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="新增" :key="1" />
         <a-tab-pane tab="复制" :key="2" />
@@ -82,6 +83,20 @@
                 {
                   initialValue: detail.ruleName,
                   rules: [{ required: isInBatch ? false : true, message: '请输入名称' }],
+                },
+              ]"
+            />
+          </a-form-item>
+
+          <a-form-item label="规则说明">
+            <a-textarea
+              placeholder="规则说明"
+              :rows="2"
+              v-decorator="[
+                'remark',
+                {
+                  initialValue: detail.remark,
+                  rules: [{ required:false , message: '请输入规则说明' }],
                 },
               ]"
             />
@@ -190,6 +205,22 @@
               </a-form-item>
             </template>
           </template>
+
+          <a-form-item label="是否常用">
+            <a-switch
+              checked-children="是"
+              un-checked-children="否"
+              v-decorator="[
+                'useAlways',
+                {
+                  initialValue: +detail.useAlways === 1,
+                  valuePropName: 'checked',
+                  rules: [{ required: true, message: '请选择是否常用' }],
+                },
+              ]"
+            />
+          </a-form-item>
+
         </template>
 
         <template v-if="isNormalAdd && activeKey === 2">
@@ -248,6 +279,33 @@
           </a-alert>
         </template>
       </a-form>
+      <a-alert message="说明" type="warning" show-icon style="margin-top: 10px">
+        <div slot="description">
+          <template v-if="isNormal">
+          <div class="alert-wrapper">
+            <div class="hd">是否为规格型号</div>
+            <div class="bd">
+              <div>－判定输入的名称是否为产品的规格型号</div>
+              <div>－是：不占用代码位数，不显示代码。　列：材质牌号</div>
+              <div>－否：占用代码位数，显示代码。　　　列：镀锌钢卷（01）</div>
+            </div>
+          </div>
+          <div class="alert-wrapper">
+            <div class="hd">是否存在循环</div>
+            <div class="bd">
+              <div>－判定输入的数据是否存在有规律的循环，如果存在规律则可直接批量生成数据。</div>
+            </div>
+          </div>
+          </template>
+          <div class="alert-wrapper">
+            <div class="hd">是否常用</div>
+            <div class="bd">
+              <div>－判定产品名称是否为常用数据，使用频率较高的数据。</div>
+              <div>－是：常用数据加粗显示，位于数据前方。</div>
+            </div>
+          </div>
+        </div>
+      </a-alert>
     </a-spin>
   </a-modal>
 </template>
@@ -335,13 +393,18 @@ export default {
       that.treeData = __treeData
       that._api = __API__[__from][type]
 
-      if (that.isNormal) {
-        await Promise.all([
-          getDictionary({ text: '物料等差' }).then((res) => (that.differenceList = res.data)),
-          getDictionary({ text: '物料单位' }).then((res) => (that.unitList = res.data)),
-        ])
+      try{
+        that.spinning = true
+        if (that.isNormal) {
+          await Promise.all([
+            getDictionary({ text: '物料等差' }).then((res) => (that.differenceList = res.data)),
+            getDictionary({ text: '物料单位' }).then((res) => (that.unitList = res.data)),
+          ])
+        }
+        that.spinning = false
+      }catch(err){
+        that.spinning = false
       }
-
       that.detail = { ...record }
       that.$nextTick(() => {
         that.form.setFieldsValue({ parentId: __selectItem.key })
@@ -355,6 +418,11 @@ export default {
           if ((that.isAdd || that.isEdit) && 'isSpecification' in values) {
             values.isSpecification = values.isSpecification === true ? 1 : 2
           }
+
+          if ((that.isAdd || that.isEdit) && 'useAlways' in values) {
+            values.useAlways = values.useAlways === true ? 1 : 0
+          }
+
           let param = { ...values }
           if ('inBatch' in param) {
             param.inBatch = param.inBatch ? 1 : 2
@@ -537,6 +605,16 @@ export default {
   width: 220px;
   margin: 0 10px;
   font-weight: bold;
+}
+
+.alert-wrapper{
+  display: flex;
+}
+.alert-wrapper .hd{
+  width: 120px;
+}
+.alert-wrapper .bd{
+  flex: 1;
 }
 </style>
 

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-spin :spinning="spinning">
     <a-form-model
       ref="ruleForm"
       :model="form"
@@ -11,14 +12,38 @@
         label="位置/名称"
         prop="parentId"
       >
+
+        <div style="display:flex;">
+          <a-input
+            style="line-height: 40px;flex:1;"
+            placeholder="规则名称模糊查询"
+            v-model="searchValue"
+          />
+          <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
+          <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
+        </div>
+
         <a-tree-select
           v-model="form.parentId"
           style="width: 100%"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           :loadData="onLoadData"
+          @load="onLoadAction"
+          :loadedKeys="loadedKeys"
           :tree-data="treeData"
           @select="handleClick"
-        />
+          :treeExpandedKeys="expandedKeys"
+          @treeExpand="onExpand"
+        >
+           <template slot="title" slot-scope="{ copyTitle }">
+            <span v-if="copyTitle.indexOf(searchValue) > -1">
+              {{ copyTitle.substr(0, copyTitle.indexOf(searchValue)) }}
+              <span style="color: #f50">{{ searchValue }}</span>
+              {{ copyTitle.substr(copyTitle.indexOf(searchValue) + searchValue.length) }}
+            </span>
+            <span v-else>{{ copyTitle }}</span>
+          </template>
+        </a-tree-select>
       </a-form-model-item>
 
       <a-form-model-item
@@ -27,13 +52,22 @@
         :label="item.newRuleName || item.ruleName"
         :prop="'specificationsList.' + index + '.selectedID'"
       >
-        <a-select v-model="item.selectedID" placeholder="请选择" :allowClear="true" @change="specificationChangeHandler">
+        <a-input
+          v-model="item.selectedLabel"
+          style="width: 100%"
+          read-only="read-only"
+          allowClear
+          @click="doAction('specificationSearch',{...item})"
+        />
+        <!-- <a-select v-model="item.selectedID" placeholder="请选择" :allowClear="true" @change="specificationChangeHandler">
           <a-select-option v-for="sub in item.subList" :key="sub.id" :value="sub.id">
             {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
-        </a-select>
+        </a-select> -->
       </a-form-model-item>
     </a-form-model>
+    <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
+    </a-spin>
   </div>
 </template>
 <script>
@@ -41,10 +75,30 @@ import {
   routineMaterialRulePageTwoTierTreeList,
   routineMaterialInfoTwoTierTreeList,
   routineMaterialInfoCheckCode,
-  routineMaterialInfoCheckName
+  routineMaterialInfoCheckName,
+  routineMaterialRulePageConditionTreeList
 } from '@/api/routineMaterial'
 
+import SpecificationSearchForm from './SpecificationSearchForm'
+
+
+const getParentKey = (key, tree) => {
+  let parentKey
+  for (let i = 0; i < tree.length; i++) {
+    const node = tree[i]
+    if (node.children) {
+      if (node.children.some((item) => item.key === key)) {
+        parentKey = node.key
+      } else if (getParentKey(key, node.children)) {
+        parentKey = getParentKey(key, node.children)
+      }
+    }
+  }
+  return parentKey
+}
+
 export default {
+  components:{SpecificationSearchForm},
   props:['info'],
   data() {
     return {
@@ -60,7 +114,11 @@ export default {
       treeData: [],
       dataList:[],
 
-      selectItem:null
+      selectItem:null,
+      expandedKeys:['0'],
+      searchValue:undefined,
+      loadedKeys:[],
+      spinning:false
     }
   },
   computed:{
@@ -77,14 +135,21 @@ export default {
   methods: {
     async init(type, record) {
       const that = this
+      that.form = {
+        parentId: undefined,
+        specificationsList:[],//动态加载节点下的菜单
+      }
+
       if (that.info) {
         let { __treeData ,__selectItem} = that.info
         if(that.selectItem !== null && that.selectItem.key === __selectItem.key){
           return
         }
         that.selectItem = {...__selectItem}
-        that.treeData = __treeData
-        that.dataList = that.generateList(that.treeData)
+        // that.treeData = __treeData
+        // debugger
+        // that.dataList = that.generateList(that.treeData)
+        await that.fetchTree()
         that.form = { ...that.form, parentId: __selectItem.key }
         that.initSpecifications({...__selectItem})
       }
@@ -138,7 +203,9 @@ export default {
     },
     initSpecifications(node){
       const that = this
+      that.spinning = true
       routineMaterialRulePageTwoTierTreeList({ parentId: node.value }).then(res => {
+        that.spinning = false
         console.log(res)
         if(!res || res.code !== 200){
           that.$message.info(`获取节点【名称：${node.title}-编号：${node.value}】的规格数据失败！`)
@@ -146,11 +213,13 @@ export default {
         }
         //加载为规格型号的数据
         that.form = {...that.form,specificationsList:res.data.filter(item => item.isSpecification === 1)}
+      }).catch(err => {
+        that.spinning = false
       })
     },
     onLoadData(treeNode) {
       const that = this
-      return new Promise(resolve => {
+      return new Promise((resolve,reject) => {
         if (treeNode.dataRef.children) {
           resolve()
           return
@@ -171,22 +240,134 @@ export default {
             resolve()
           })
           .catch(err => {
+            console.log(err)
+            reject()
             that.$message.error(`调用接口[routineMaterialInfoTwoTierTreeList]时发生错误，错误信息:${err}`)
           })
       })
+    },
+    searchAction(type) {
+      const that = this
+      that.form = {
+        ...that.form,
+        parentId:undefined,
+        specificationsList:[]
+      }
+      const value = that.searchValue ? that.searchValue.trim() : ''
+      if(type === 1){
+        if(value.length === 0){
+          return
+        }else{
+          that.fetchTreeWithName(value)
+        }
+      }else{
+        that.searchValue = ''
+        that.fetchTree()
+      }
+    },
+    fetchTree() {
+      const that = this
+      that.loadedKeys = []
+      that.spinning = true
+      routineMaterialInfoTwoTierTreeList({ parentId: 0 })
+        .then((res) => {
+          that.spinning = false
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
+          const root = {
+            key: '0',
+            value: '0',
+            title: '常规物料库',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map((item) => that.formatTreeData(item)),
+
+          }
+          that.treeData = [root]
+          that.dataList = that.generateList(that.treeData)
+          Object.assign(that, {
+              expandedKeys:['0']
+            })
+        })
+        .catch((err) => {
+          that.spinning = false
+          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    fetchTreeWithName(w) {
+      const that = this
+      that.spinning = true
+      that.loadedKeys = []
+      routineMaterialRulePageConditionTreeList({ ruleName: w,type:2 })
+        .then((res) => {
+          that.spinning = false
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
+          const root = {
+            key: '0',
+            value: '0',
+            title: '常规物料库',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map((item) => that.formatTreeData(item)),
+            scopedSlots: { title: 'title' },
+          }
+          that.treeData = []
+
+          that.$nextTick(() => {
+            that.treeData = [root]
+            that.dataList = that.generateList(that.treeData)
+
+            let expandedKeys = that.dataList
+            .map((item) => {
+              return getParentKey(item.key, that.treeData)
+            }).filter(item => item !== undefined && item !== null)
+
+            // let expandedKeys = that.dataList
+            // .map((item) => {
+            //   return item.key
+            // })
+
+            expandedKeys = [...new Set(expandedKeys)]
+            console.log(that.dataList.map(item =>item.key))
+
+            console.log(expandedKeys)
+
+            Object.assign(that, {
+              expandedKeys
+            })
+          })
+        })
+        .catch((err) => {
+          that.spinning = false
+          that.$message.error(`调用接口[routineMaterialRulePageConditionTreeList]时发生错误，错误信息:${err}`)
+        })
     },
     //格式化接口数据 key,title,value
     formatTreeData(item) {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      // obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      obj.copyTitle = `${item.newRuleName || item.ruleName}(${item.code})`
       obj.value = String(item.id)
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
       obj.code = item.code
+
+      //坑 上面如果设置了title ，这里插槽 也是title 的 会忽略插槽， 这里吧上面的title注释了
       obj.scopedSlots = { title: 'title' }
+
+
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {
         obj.children = item.subList.map(v => that.formatTreeData(v))
@@ -197,6 +378,36 @@ export default {
       // console.log(this.getSpecification())
       let specification = this.getSpecification()
       this.$emit('change',{specification})
+    },
+    onExpand(expandedKeys) {
+      console.log(arguments)
+      this.expandedKeys = expandedKeys
+      // this.autoExpandParent = false
+    },
+    onLoadAction(loadedKeys){
+      this.loadedKeys = loadedKeys
+    },
+    specificationSelectedHandler({parentItem,selectItem}){
+      const that = this
+      let {specificationsList} = that.form
+      let target = specificationsList.find(item => item.id === parentItem.id)
+      if(target){
+        target.selectedID = selectItem.id
+        target.selectedLabel = `${(selectItem.newRuleName || selectItem.ruleName)}(${selectItem.code})`
+        target.subList = [selectItem]
+        that.form = {
+          ...that.form,
+          specificationsList
+        }
+      }
+    },
+    doAction(type,record){
+      const that = this
+      if(type === 'specificationSearch'){
+        debugger
+        that.$refs.specificationSearchForm.query(type,{...record})
+        return
+      }
     }
   }
 }

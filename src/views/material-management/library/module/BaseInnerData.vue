@@ -209,6 +209,7 @@
             <a-form-model-item
               ref="k3Code"
               prop="k3Code"
+              has-feedback
             >
               <a-input
                 :disabled="normalAddForm.isView"
@@ -240,10 +241,34 @@
 </template>
 <script>
 import { getDictionary } from '@/api/common'
+
+import {
+  materialInfoCheckK3Code
+} from '@/api/routineMaterial'
+
 export default {
   name: 'BaseInnerData',
   inject: ['normalAddForm'],
   data() {
+    const that = this
+    let checkPending
+    let checkK3Code = (rule, value, callback) => {
+      clearTimeout(checkPending);
+      if (!value) {
+        return callback(new Error('请输入原K3物料代码'));
+      }
+      checkPending = setTimeout(() => {
+        that.checkk3code(value).then(res => {
+
+          if(res){
+            return callback(new Error('K3物料代码重复'));
+          }else{
+            callback();
+          }
+        })
+      }, 1000);
+    }
+
     return {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
@@ -267,7 +292,8 @@ export default {
         mainUnit: [{ required: true, message: '请选择主计量单位' }],
         subUnit: [{ required: true, message: '请选择辅计量单位' }],
         conversionRate: [{ required: true, message: '请输入换算率' }],
-        k3Code: [{ required: true, message: '请输入原K3物料代码' }],
+        // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
+        k3Code: [{ validator: checkK3Code, trigger: 'change' }],
         needCheck:[{ required: true, message: '请选择是否需要送检' }]
       },
       materialUnitList:[], //物料计量单位
@@ -305,6 +331,24 @@ export default {
     },
     reset() {
       this.$refs.ruleForm.resetFields()
+    },
+    checkk3code(e){
+      const that = this
+      const k3Code = that.form.k3Code
+      return materialInfoCheckK3Code({
+        k3Code,
+        _type:that.normalAddForm.isNormal ? 'normal' : 'product'
+      }).then(res => {
+        try{
+          return !!res.data
+        }catch(err){
+          console.log(err)
+          return false
+        }
+      }).catch(err => {
+        console.log(err)
+        return false
+      })
     }
   }
 }

@@ -22,7 +22,8 @@ export default { //售后管理
     permission: ['permission']
   },
   redirect: '/after-sales-management',
-  children: [{
+  children: [
+    {
       path: '/after-sales-management/analysis',
       name: 'after-sales-management_analysis',
       component: () => import('@/views/after-sales-management/analysis/List'),
@@ -44,8 +45,6 @@ export default { //售后管理
         permission: ['permission']
       },
     },
-
-
     {
       path: '/after-sales-management/taskList',
       name: 'after-sales-management_taskList',
@@ -183,5 +182,123 @@ export default { //售后管理
         },
       ]
     },
+
+    {
+      path: '/after-sales-management/return-goods',
+      name: 'after-sales-management_return-goods',
+      component: RouteView,
+      meta: {
+        title: '退换件管理',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      redirect: '/after-sales-management/return-goods/receives-customer',
+      children: [{
+          path: '/after-sales-management/return-goods/receives-customer',
+          name: 'after-sales-management_return-goods_receives-customer',
+          component: () => import('@/views/after-sales-management/return-goods/receives-customer/List'),
+          meta: {
+            title: '收件记录-客户',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/after-sales-management/return-goods/receives-sale',
+          name: 'after-sales-management_return-goods_receives-sale',
+          component: () => import('@/views/after-sales-management/return-goods/receives-sale/List'),
+          meta: {
+            title: '收件记录-售后',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/after-sales-management/return-goods/unreceives-customer',
+          name: 'after-sales-management_return-goods_unreceives-customer',
+          component: () => import('@/views/after-sales-management/return-goods/unreceives-customer/List'),
+          meta: {
+            title: '未寄回配件记录-客户',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/after-sales-management/return-goods/unreceives-sale',
+          name: 'after-sales-management_return-goods_unreceives-sale',
+          component: () => import('@/views/after-sales-management/return-goods/unreceives-sale/List'),
+          meta: {
+            title: '未寄回配件记录-售后',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }
+      ]
+    },
+
+    {
+      path: '/after-sales-management/exception',
+      name: 'after-sales-management_exception',
+      component: RouteView,
+      meta: {
+        title: '异常报告单',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      redirect: '/after-sales-management/exception/list',
+      children: [{
+          path: '/after-sales-management/exception/list',
+          name: 'after-sales-management_exception_list',
+          component: () => import('@/views/after-sales-management/exception/List'),
+          meta: {
+            title: '异常报告清单',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/after-sales-management/exception/approve',
+          name: 'after-sales-management_exception_approve',
+          component: () => import('@/views/after-sales-management/exception/ApproveList'),
+          meta: {
+            title: '异常报告清单-审批',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }
+      ]
+    },
+
+    {
+      path: '/after-sales-management/approve-business-travel',
+      name: 'after-sales-management_approve-business-travel',
+      component: () => import('@/views/after-sales-management/approve-business-travel/List'),
+      meta: {
+        title: '差旅报销单',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+
+    {
+      path: '/after-sales-management/data-analysis',
+      name: 'after-sales-management_data-analysis',
+      component: () => import('@/views/after-sales-management/data-analysis/List'),
+      meta: {
+        title: '数据分析',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    }
   ]
 }

@@ -426,9 +426,6 @@ export function getPDF(parameter) {
 // 产品分页列表
 export function getProductList(parameter) {
   return axios({
-    headers: {
-      'Authorization': parameter.token
-    },
     baseURL: system.baseURL, // 服务器ip和端口
     url: api.productList,
     method: 'get',

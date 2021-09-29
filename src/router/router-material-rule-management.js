@@ -14,8 +14,7 @@ export default {
     permission: ['permission']
   },
   redirect: '/material-rule-management/rule',
-  children: [
-    {
+  children: [{
       path: '/material-rule-management/rule',
       name: 'material-rule-management-rule',
       redirect: '/material-rule-management/rule/routine',
@@ -26,8 +25,7 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [
-        {
+      children: [{
           path: '/material-rule-management/rule/routine',
           name: 'material-rule-management-routine',
           component: () => import('@/views/material-management/rule/RoutineList'),
@@ -59,7 +57,7 @@ export default {
             keepAlive: false,
             permission: ['permission']
           },
-          props:true
+          props: true
         },
         {
           path: '/material-rule-management/rule/audit/finished-product',
@@ -71,7 +69,7 @@ export default {
             keepAlive: false,
             permission: ['permission']
           },
-          props:true
+          props: true
         },
       ]
     },
@@ -93,6 +91,17 @@ export default {
           component: () => import('@/views/material-management/library/NormalList'),
           meta: {
             title: '常规物料库',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/material-rule-management/library/module',
+          name: 'material-rule-details',
+          component: () => import('@/views/material-management/library/module/details'),
+          meta: {
+            title: '物料库>物料详情',
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
@@ -132,6 +141,18 @@ export default {
           }
         }
       ]
+    },
+    {
+
+      path: '/material-management/library/approve',
+      name: 'material-rule-management-approve',
+      component: () => import('@/views/material-management/library/approve/List'),
+      meta: {
+        title: '物料采购要求审核',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
     }
   ]
 }

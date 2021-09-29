@@ -12,16 +12,38 @@
         label="位置/名称"
         prop="parentId"
       >
+        <div style="display:flex;">
+          <a-input
+            style="line-height: 40px;flex:1;"
+            placeholder="规则名称模糊查询"
+            v-model="searchValue"
+          />
+          <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
+          <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
+        </div>
         <a-tree-select
+          ref="treeSelect"
           v-model="form.parentId"
           style="width: 100%"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           :loadData="onLoadData"
+          @load="onLoadAction"
+          :loadedKeys="loadedKeys"
           :tree-data="treeData"
           @select="handleClick"
-        />
+          :treeExpandedKeys="expandedKeys"
+          @treeExpand="onExpand"
+        >
+          <template slot="title" slot-scope="{ copyTitle }">
+            <span v-if="copyTitle.indexOf(searchValue) > -1">
+              {{ copyTitle.substr(0, copyTitle.indexOf(searchValue)) }}
+              <span style="color: #f50">{{ searchValue }}</span>
+              {{ copyTitle.substr(copyTitle.indexOf(searchValue) + searchValue.length) }}
+            </span>
+            <span v-else>{{ copyTitle }}</span>
+          </template>
+        </a-tree-select>
       </a-form-model-item>
-
 
       <a-form-model-item
         v-for="(item,index) in form.specificationsList"
@@ -33,7 +55,14 @@
           message: `请选择${item.newRuleName || item.ruleName}`,
         }"
       >
-        <a-select
+        <a-input
+          v-model="item.selectedLabel"
+          style="width: 100%"
+          read-only="read-only"
+          @click="doAction('specificationSearch',{...item})"
+        />
+
+        <!-- <a-select
           show-search
           option-filter-prop="children"
           v-model="item.selectedID"
@@ -41,11 +70,12 @@
           :allowClear="true"
           :filter-option="filterOption"
           @search="(w) => searchHandler(w,item)"
+          @click="doAction('specificationSearch',{...item})"
         >
           <a-select-option v-for="sub in item.searchList" :key="sub.id" :value="sub.id">
             {{`${(sub.newRuleName || sub.ruleName)}(${sub.code})`}}
           </a-select-option>
-        </a-select>
+        </a-select> -->
       </a-form-model-item>
 
     </a-form-model>
@@ -68,6 +98,8 @@
     <div style="position: absolute;left: -99999px;" class="wuliao-qr-code-wrapper">
       <vue-qr :text="qrText" :size="qrSize" :callback="qrChangeHandler" ></vue-qr>
     </div>
+
+    <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
   </div>
 </template>
 <script>
@@ -75,15 +107,34 @@ import {
   routineMaterialRulePageTwoTierTreeList,
   routineMaterialInfoTwoTierTreeList,
   routineMaterialInfoCheckCode,
-  routineMaterialInfoCheckName
+  routineMaterialInfoCheckName,
+  routineMaterialRulePageConditionTreeList
 } from '@/api/routineMaterial'
 import moment from 'moment'
 import VueQr from 'vue-qr'
 import { customUpload } from '@/api/common'
+import SpecificationSearchForm from './SpecificationSearchForm'
+
+const getParentKey = (key, tree) => {
+  let parentKey
+  for (let i = 0; i < tree.length; i++) {
+    const node = tree[i]
+    if (node.children) {
+      if (node.children.some((item) => item.key === key)) {
+        parentKey = node.key
+      } else if (getParentKey(key, node.children)) {
+        parentKey = getParentKey(key, node.children)
+      }
+    }
+  }
+  return parentKey
+}
+
 export default {
   inject: ['normalAddForm'],
   components:{
-    VueQr
+    VueQr,
+    SpecificationSearchForm
   },
   data() {
     return {
@@ -112,6 +163,9 @@ export default {
       spinning:false,
       tip:'数据处理中...',
       // nextButtonDisable:true
+      expandedKeys:['0'],
+      loadedKeys:[],
+      searchValue:undefined
     }
   },
   computed:{
@@ -137,9 +191,9 @@ export default {
       that.type = type
       if (that.normalAddForm && that.normalAddForm.detail) {
         let { __treeData } = that.normalAddForm.detail
-        that.treeData = __treeData
+        that.treeData = that.$_.cloneDeep(__treeData)
         that.dataList = that.generateList(that.treeData)
-
+        // await that.fetchTree()
         if(that.normalAddForm.stepOneCacheData.cached){
           that.form = that.$_.cloneDeep(that.normalAddForm.stepOneCacheData.form)
         }else{
@@ -148,6 +202,9 @@ export default {
           that.initSpecifications({...__selectItem})
         }
       }
+      try{
+        console.log(that.$refs.treeSelect)
+      }catch(e){}
     },
     async qrChangeHandler(dataUrl,id){
       const that = this
@@ -200,7 +257,7 @@ export default {
       const that = this
       let timer = null
       let t1 = Date.now()
-      let max = 1000 * 3
+      let max = 1000 * 10
       return new Promise((resolve) =>{
         timer = setInterval(function(){
           if(typeof that.wuliaoQrUrl === 'string' && that.wuliaoQrUrl.length > 0){
@@ -374,7 +431,7 @@ export default {
     initSpecifications(node){
       const that = this
       that.spinning = true
-      routineMaterialRulePageTwoTierTreeList({ parentId: node.value }).then(res => {
+      routineMaterialRulePageTwoTierTreeList({ parentId: node.value ,type:3}).then(res => {
         that.spinning = false
         // console.log(res)
         if(!res || res.code !== 200){
@@ -425,13 +482,15 @@ export default {
       let that = this
       let obj = {}
       obj.key = String(item.id)
-      obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      // obj.title = `${item.newRuleName || item.ruleName}(${item.code})`
+      obj.copyTitle = `${item.newRuleName || item.ruleName}(${item.code})`
       obj.sourceTitle = item.newRuleName || item.ruleName
       obj.value = String(item.id)
       // obj.isLeaf = !(Array.isArray(item.subList) && item.subList.length > 0)
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
       obj.code = item.code
+      //坑 上面如果设置了title ，这里插槽 也是title 的 会忽略插槽， 这里吧上面的title注释了
       obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {
@@ -460,6 +519,137 @@ export default {
 
         target.searchList = [...list]
         that.form = {...that.form,specificationsList}
+      }
+    },
+
+    searchAction(type) {
+      const that = this
+      const value = that.searchValue ? that.searchValue.trim() : ''
+      if(type === 1){
+        if(value.length === 0){
+          return
+        }else{
+          that.fetchTreeWithName(value)
+        }
+      }else{
+        that.searchValue = ''
+        that.fetchTree()
+      }
+      that.form = {...that.form,parentId:undefined,specificationsList:[]}
+
+    },
+    fetchTree() {
+      const that = this
+      that.loadedKeys = []
+      that.spinning = true
+      routineMaterialInfoTwoTierTreeList({ parentId: 0 })
+        .then((res) => {
+          that.spinning = false
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
+          const root = {
+            key: '0',
+            value: '0',
+            title: '常规物料库',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map((item) => that.formatTreeData(item)),
+
+          }
+          that.treeData = [root]
+          that.dataList = that.generateList(that.treeData)
+          Object.assign(that, {
+              expandedKeys:['0']
+            })
+        })
+        .catch((err) => {
+          that.spinning = false
+          that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    fetchTreeWithName(w) {
+      const that = this
+      that.loadedKeys = []
+      that.spinning = true
+      routineMaterialRulePageConditionTreeList({ ruleName: w,type:2 })
+        .then((res) => {
+          that.spinning = false
+          if(+res.code !== 200){
+            that.$message.info(res.msg)
+            return
+          }
+          const root = {
+            key: '0',
+            value: '0',
+            title: '常规物料库',
+            isLeaf: false,
+            code: '0',
+            codeLength: 10,
+            parentId: 0,
+            children: res.data.map((item) => that.formatTreeData(item)),
+            scopedSlots: { title: 'title' },
+          }
+          that.treeData = []
+
+          that.$nextTick(() => {
+            that.treeData = [root]
+            that.dataList = that.generateList(that.treeData)
+
+            let expandedKeys = that.dataList
+            .map((item) => {
+              return getParentKey(item.key, that.treeData)
+            }).filter(item => item !== undefined && item !== null)
+
+            // let expandedKeys = that.dataList
+            // .map((item) => {
+            //   return item.key
+            // })
+
+            expandedKeys = [...new Set(expandedKeys)]
+            console.log(that.dataList.map(item =>item.key))
+
+            console.log(expandedKeys)
+
+            Object.assign(that, {
+              expandedKeys
+            })
+          })
+        })
+        .catch((err) => {
+          that.spinning = false
+          that.$message.error(`调用接口[routineMaterialRulePageConditionTreeList]时发生错误，错误信息:${err}`)
+        })
+    },
+    onExpand(expandedKeys) {
+      this.expandedKeys = expandedKeys
+      // this.autoExpandParent = false
+    },
+    onLoadAction(loadedKeys){
+      this.loadedKeys = loadedKeys
+    },
+    specificationSelectedHandler({parentItem,selectItem}){
+      const that = this
+      let {specificationsList} = that.form
+      let target = specificationsList.find(item => item.id === parentItem.id)
+      if(target){
+        target.selectedID = selectItem.id
+        target.selectedLabel = `${(selectItem.newRuleName || selectItem.ruleName)}(${selectItem.code})`
+        target.subList = [selectItem]
+        that.form = {
+          ...that.form,
+          specificationsList
+        }
+      }
+    },
+    doAction(type,record){
+      const that = this
+      if(type === 'specificationSearch'){
+        that.$refs.specificationSearchForm.query(type,{...record})
+        return
       }
     }
   }

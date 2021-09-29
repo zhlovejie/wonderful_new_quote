@@ -441,8 +441,8 @@ export function personnel_Check(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/room/room-user/checkOutRoomUser',
-    method: 'get',
-    params: parameter
+    method: 'post',
+    data: parameter
   })
 }
 

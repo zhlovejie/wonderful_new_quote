@@ -36,6 +36,10 @@ import productProcessManagement from '@/router/router-product-process-management
 import bomManagement from '@/router/router-bom-management'
 import afterManagement from '@/router/router-after-sales-management'
 
+import procurementModuleManagement from '@/router/router-procurement-module'
+import supplier from '@/router/router-supplier'
+
+
 const __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
   systemSetting, //系统设置

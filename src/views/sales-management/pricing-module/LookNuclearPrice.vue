@@ -67,6 +67,9 @@
         <div slot="effectPic" slot-scope="text">
           <img style="height: 50px; lenght: 40px" :src="text" />
         </div>
+        <div slot="valencyStatus" slot-scope="text, record, index">
+          <a-button type="link" v-if="valencyStatusl === 3" @click="valenyclick(record)">查看</a-button>
+        </div>
 
         <div slot="costPrice" slot-scope="text">
           <span v-if="+text === -1">***</span>
@@ -111,10 +114,12 @@
         </a-row>
       </a-form>
     </a-card>
+    <Modele ref="modele" />
   </div>
 </template>
 <script>
 import { getlookApplyNuclear, getSelectsList } from '../../../api/pricingModule'
+import Modele from './model'
 const columns = [
   {
     align: 'center',
@@ -217,10 +222,17 @@ const columns = [
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
   },
+  {
+    align: 'center',
+    title: '产品价格',
+    scopedSlots: { customRender: 'valencyStatus' },
+  },
 ]
 export default {
   name: 'LookNuclearPrice',
-  components: {},
+  components: {
+    Modele,
+  },
   props: {},
   data() {
     return {
@@ -244,6 +256,7 @@ export default {
       consumerName: '',
       salerId: -1,
       salerUserName: '',
+      valencyStatusl: undefined,
     }
   },
   watch: {
@@ -257,6 +270,9 @@ export default {
     this.init()
   },
   methods: {
+    valenyclick(record) {
+      this.$refs.modele.query(record)
+    },
     init() {
       this.getValencyCode()
     },
@@ -302,6 +318,7 @@ export default {
           this.consumerName = res.data.consumerName
           this.salerId = res.data.salerId
           this.salerUserName = res.data.salerUserName
+          this.valencyStatusl = res.data.valencyStatus
           if (res.data.valencyStatus === 0) {
             this.statusName = '待接收'
           } else if (res.data.valencyStatus === 1) {

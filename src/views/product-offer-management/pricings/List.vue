@@ -54,6 +54,22 @@
         />
         <a-form-item label="代码输入" v-if="type === 1">
           <a-select
+            show-search
+            placeholder="模糊搜索"
+            :default-active-first-option="false"
+            :show-arrow="false"
+            :filter-option="false"
+            v-model="bomFuzzySearch.item.__label"
+            @search="(w) => bomFuzzyAction(w, false)"
+            @change="(key) => bomFuzzyHandleChange(key)"
+            :not-found-content="bomFuzzySearch.fetching ? undefined : '未找到匹配项'"
+          >
+            <a-spin v-if="bomFuzzySearch.fetching" slot="notFoundContent" size="small" />
+            <a-select-option v-for="item in bomFuzzySearch.list" :key="item.__key" :value="item.id">
+              {{ item.__label }}
+            </a-select-option>
+          </a-select>
+          <!-- <a-select
             :filter-option="filterOption"
             show-search
             v-decorator="['materialId', { rules: [{ required: true, message: '请选择代码' }] }]"
@@ -62,18 +78,23 @@
             <a-select-option v-for="item in tionList" :key="item.id" :value="item.id"
               >产品名称： {{ item.productName }} --产品代码：{{ item.productModel }}
             </a-select-option>
-          </a-select>
+          </a-select> -->
         </a-form-item>
         <a-form-item label="代码输入" v-if="type === 2">
           <a-select
-            :filter-option="filterOption"
             show-search
-            v-decorator="['valencyId', { rules: [{ required: true, message: '请选择代码' }] }]"
-            :loading="loading"
+            placeholder="模糊搜索"
+            :default-active-first-option="false"
+            :show-arrow="false"
+            :filter-option="false"
+            :not-found-content="materialFuzzySearch.fetching ? undefined : '未找到匹配项'"
+            v-model="materialFuzzySearch.item.__label"
+            @search="(w) => materialFuzzyAction(w, false)"
+            @change="(key) => materialFuzzyTableHandleChange(key)"
           >
-            <a-select-option v-for="item in saleValenc" :key="item.id" :value="item.id"
-              >核价产品代码：{{ item.productCode }}--产品代码{{ item.newBasisModel }}---产品名称：
-              {{ item.productName }}
+            <a-spin v-if="materialFuzzySearch.fetching" slot="notFoundContent" size="small" />
+            <a-select-option v-for="item in materialFuzzySearch.list" :key="item.__key" :value="item.id">
+              {{ item.__label }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -93,6 +114,30 @@
       </a-form>
     </div>
     <div class="steps-content" v-if="current === 2">
+      <h3>产品信息</h3>
+      <table v-if="type === 2" class="custom-table custom-table-border">
+        <tr>
+          <td>核价代码</td>
+          <td>{{ materialFuzzySearch.item.productCode }}</td>
+          <td>产品代码</td>
+          <td>
+            {{ materialFuzzySearch.item.newBasisModel }}
+          </td>
+        </tr>
+        <tr>
+          <td>产品名称</td>
+          <td>{{ materialFuzzySearch.item.productName }}</td>
+
+          <td>产品类型</td>
+          <td>{{ materialFuzzySearch.item.typeConfigName }}</td>
+        </tr>
+        <tr>
+          <td>规格型号</td>
+          <td colspan="3">
+            {{ materialFuzzySearch.item.valencySpecs }}
+          </td>
+        </tr>
+      </table>
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -150,6 +195,7 @@ import {
   exportMaterialCodePricing,
   exportValencyCodePricing,
 } from '@/api/productOfferManagement'
+
 const innerColumns = [
   {
     align: 'center',
@@ -197,9 +243,11 @@ const columns = [
     scopedSlots: { customRender: 'price' },
   },
 ]
-
+let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 export default {
   data() {
+    this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
+    this.bomFuzzyAction = this.$_.debounce(this.bomFuzzyAction, 800)
     return {
       columns,
       innerColumns,
@@ -213,6 +261,16 @@ export default {
       depList: [],
       form: this.$form.createForm(this, { name: 'pom-pricing' }),
       type: undefined,
+      materialFuzzySearch: {
+        list: [],
+        item: {},
+        fetching: false,
+      },
+      bomFuzzySearch: {
+        list: [],
+        item: {},
+        fetching: false,
+      },
     }
   },
   watch: {
@@ -226,6 +284,56 @@ export default {
     },
   },
   methods: {
+    async bomFuzzyAction(wd) {
+      const that = this
+      const _searchParam = {
+        current: 1,
+        size: 100,
+        parameter: wd,
+      }
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: true }
+      const result = await productInformationList(_searchParam).then((res) => {
+        const records = res.data.records.map((item) => {
+          item.__key = uuid()
+          item.__label = `产品名称：${item.productName}(${item.productModel})`
+          return item
+        })
+        return records
+      })
+      that.bomFuzzySearch = { ...that.bomFuzzySearch, fetching: false, list: [...result] }
+    },
+    bomFuzzyHandleChange(key) {
+      const that = this
+      const target = that.bomFuzzySearch.list.find((item) => item.id === key)
+      console.log(target)
+      that.bomFuzzySearch = { fetching: false, item: target }
+    },
+    async materialFuzzyAction(wd, isFilter = false) {
+      const that = this
+      const _searchParam = {
+        current: 1,
+        size: 100,
+        parameter: wd,
+      }
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
+      let res = await Promise.all([
+        saleValencyProduct(_searchParam).then((res) => {
+          let records = res.data.records.map((item) => {
+            item.__key = uuid()
+            item.__label = `核价产品代码：${item.productCode}}--产品代码:(${item.newBasisModel})--产品名称：${item.productName}`
+            return item
+          })
+          return records
+        }),
+      ])
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: false, list: [...res[0]] }
+    },
+    materialFuzzyTableHandleChange(key) {
+      // debugger
+      const that = this
+      const target = that.materialFuzzySearch.list.find((item) => item.id === key)
+      that.materialFuzzySearch = { fetching: false, item: target }
+    },
     expandHandler(expanded, record) {
       console.log(arguments)
       if (expanded) {
@@ -259,16 +367,24 @@ export default {
     },
 
     init() {
-      productInformationList().then((res) => {
+      productInformationList({ current: 1, size: 100 }).then((res) => {
         if (res.code === 200) {
-          this.loading = false
-          this.tionList = res.data
+          this.bomFuzzySearch.list = res.data.records.map((item) => {
+            item.__key = uuid()
+            item.__label = `产品名称：${item.productName}(${item.productModel})`
+            return item
+          })
         }
       })
-      saleValencyProduct().then((res) => {
+
+      saleValencyProduct({ current: 1, size: 100 }).then((res) => {
         if (res.code === 200) {
           this.loading = false
-          this.saleValenc = res.data
+          this.materialFuzzySearch.list = res.data.records.map((item) => {
+            item.__key = uuid()
+            item.__label = `核价产品代码：${item.productCode}}--产品代码:(${item.newBasisModel})--产品名称：${item.productName}`
+            return item
+          })
         }
       })
       typeConfigList().then((res) => {
@@ -277,9 +393,6 @@ export default {
           this.depList = res.data
         }
       })
-    },
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     downloadAction() {
       let that = this
@@ -343,11 +456,23 @@ export default {
     nexts(val) {
       this.type = val
       this.current++
+      this.init()
     },
     next() {
       this.form.validateFields((err, values) => {
         if (!err) {
           this._searchParam = values
+          if (this.type === 2 && JSON.stringify(this.materialFuzzySearch.item) !== '{}') {
+            values.valencyId = this.materialFuzzySearch.item.id
+          } else if (this.type === 2) {
+            return this.$message.error('请选择核价代码')
+          }
+          if (this.type === 1 && JSON.stringify(this.bomFuzzySearch.item) !== '{}') {
+            values.materialId = this.bomFuzzySearch.item.id
+          } else if (this.type === 1) {
+            return this.$message.error('请选择物料代码')
+          }
+
           let m = {
             1: materialCodePricing,
             2: valencyCodePricing,
@@ -364,7 +489,7 @@ export default {
                 item.innerData = []
                 return item
               })
-              this.expandedRowKeys = that.dataSource.map((item) => item.key) || []
+              // this.expandedRowKeys = this.dataSource.map((item) => item.key) || []
               // this.dataSource = res.data.sort(function (a, b) {
               //   return a.rateType - b.rateType
               // })
@@ -378,6 +503,9 @@ export default {
     prev() {
       this.dataSource = []
       this.current = 0
+      this.init()
+      this.bomFuzzySearch.item = {}
+      this.materialFuzzySearch.item = {}
     },
   },
 }
