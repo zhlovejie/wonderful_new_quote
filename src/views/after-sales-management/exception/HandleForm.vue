@@ -79,7 +79,7 @@
 
     <h3>责任判定</h3>
 
-    <p v-if="isHandle || isApproval">
+    <p v-if="isEdit || isHandle || isApproval">
       <a-select
         style="width:200px;"
         placeholder="选择部门"
@@ -115,7 +115,7 @@
           <th>责任人</th>
           <th>处罚金额</th>
           <th>原因</th>
-          <th v-if="isHandle || isApproval">操作</th>
+          <th v-if="isEdit || isHandle || isApproval">操作</th>
         </tr>
         <tr v-for="(item,idx) in form.responsibilityList" :key="item.key">
           <td>{{idx + 1}}</td>
@@ -130,7 +130,7 @@
               }"
             >
               <a-input-number
-                v-if="isHandle || isApproval"
+                v-if="isEdit || isHandle || isApproval"
                 v-model="item.penalty"
                 style="width:120px;"
                 :min="0"
@@ -144,7 +144,7 @@
           <td>
             <a-form-model-item >
               <a-textarea
-               v-if="isHandle || isApproval"
+               v-if="isEdit || isHandle || isApproval"
                placeholder="纠正方案"
                allow-clear
                autoSize
@@ -159,7 +159,7 @@
               <span v-else> {{form.reason}}</span>
             </a-form-model-item>
           </td>
-          <td v-if="isHandle || isApproval">
+          <td v-if="isEdit || isHandle || isApproval">
             <a href="javascript:void(0);" @click="moneyListAction('remove',item.key)">删除</a>
           </td>
         </tr>

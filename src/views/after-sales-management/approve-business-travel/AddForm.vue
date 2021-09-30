@@ -1095,11 +1095,18 @@ export default {
             item.key = that._uuid()
             return item
           })
+
+
           that.form = {
             ...res.data,
             travelRecordList,
-            costDetailList
+            costDetailList,
+            bankName: res.data.bankName || that.userInfo.bankName || '无',
+            bankCard: res.data.bankAccount || that.userInfo.bankCard || '无'
           }
+
+
+
           that.handleTravelRecordListChange()
           that.handleTravelSelect(res.data.travelApplyListVoList)
 

@@ -23,7 +23,7 @@
           ref="handleForm"
         />
       </template>
-      <div v-if="detail.approveOpinion">
+      <div v-if="isView && detail.approveOpinion">
         <h3>处理结果审批</h3>
         <p>审批意见：{{detail.approveOpinion}}</p>
       </div>
