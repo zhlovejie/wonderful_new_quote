@@ -97,7 +97,7 @@
           >
             <template v-if=" [0,2,3].includes(+record.status)">
               <a @click="doAction('view',record)">查看</a>
-              <template v-if=" [0,2].includes(+record.status)">
+              <template v-if="[1,3].includes(+record.dataType)">
                 <a-divider type="vertical" />
                 <a @click="doAction('edit',record)">修改</a>
               </template>

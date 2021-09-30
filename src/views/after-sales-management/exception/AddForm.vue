@@ -336,11 +336,11 @@ export default {
   data() {
     let that = this
     let checkExceptionNum = (rule, value, callback) => {
-      let sum = that.form.sum
+      let sum = Number(that.form.sum) || 0
       if(!value){
         callback(new Error('请输入异常数量'));
       }else{
-        if(value > sum){
+        if(value && sum &&  value > sum){
           callback(new Error('异常数量不能大于总数量'));
         }else{
           callback()
