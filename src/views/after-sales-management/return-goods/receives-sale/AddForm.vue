@@ -85,7 +85,7 @@
               v-if="isAdd"
               style="width:80px;"
               :min="0"
-              :max="(record.sendQuantity - record.alreadyReceiveQuantity)"
+              :max="(record.sendQuantity - (record.alreadyFreeQuantity + record.alreadyReceiveQuantity))"
               :step="1"
               :precision="0"
               :value="record.receiveQuantity"
@@ -102,7 +102,7 @@
               v-if="isAdd"
               style="width:80px;"
               :min="0"
-              :max="(record.sendQuantity - record.alreadyReceiveQuantity)"
+              :max="(record.sendQuantity - (record.alreadyFreeQuantity + record.alreadyReceiveQuantity))"
               :step="1"
               :precision="0"
               :value="record.freeQuantity"
@@ -171,10 +171,10 @@ const innerColumns = [
     title: '已收数量',
     dataIndex: 'alreadyReceiveQuantity'
   },
-  // {
-  //   title: '已免寄回数量',
-  //   dataIndex: 'alreadyFreeQuantity'
-  // },
+  {
+    title: '已免寄回数量',
+    dataIndex: 'alreadyFreeQuantity'
+  },
 
   {
     title: '本次收货数量',
@@ -276,6 +276,13 @@ export default {
             that.$message.info('请至少选择一条物料记录')
             return
           }
+
+          if(!that.validateRows()){
+            that.$message.info('数量不正确')
+            return
+          }
+
+
           params.materialList = that.selectedRows
           that.spinning = true
           receiveWorkerAdd(params)
@@ -321,16 +328,16 @@ export default {
       console.log(record)
       this.form = {
         ...this.form,
-        accessoriesId: record.accessoriesId,
+        accessoriesId: record.id,
         accessoriesNum: record.accessoriesNum
       }
       this.fillMaterial()
     },
     fillMaterial() {
       const that = this
-      const mailId = that.form.accessoriesId
+      const accessoriesId = that.form.accessoriesId
       that.loading = true
-      receiveWorkerListReceiveCustomerMaterial({ mailId })
+      receiveWorkerListReceiveCustomerMaterial({ accessoriesId })
         .then(res => {
           that.loading = false
           that.form = {
@@ -359,6 +366,22 @@ export default {
     rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    validateRows(){
+      let rows = this.selectedRows
+      for(let i=0,len = rows.length;i<len;i++){
+        let row = rows[i]
+        let sendQuantity = Number(row.sendQuantity) || 0
+        let alreadyReceiveQuantity = Number(row.alreadyReceiveQuantity) || 0
+        let alreadyFreeQuantity = Number(row.alreadyFreeQuantity) || 0
+        let receiveQuantity = Number(row.receiveQuantity) || 0
+        let freeQuantity = Number(row.freeQuantity) || 0
+        let case1 = sendQuantity >= (alreadyReceiveQuantity + alreadyFreeQuantity + receiveQuantity + freeQuantity )
+        if(!case1){
+          return false
+        }
+      }
+      return true
     }
   }
 }

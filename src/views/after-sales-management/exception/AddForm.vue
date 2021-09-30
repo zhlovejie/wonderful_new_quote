@@ -188,7 +188,7 @@
 
             <tr>
             <td style="width:150px;">
-              <span class="icon-required">总数量</span>
+              <span >总数量</span>
             </td>
             <td>
               <a-form-model-item prop="sum" >
@@ -379,9 +379,6 @@ export default {
         ],
         materialCode:[
           { required: true, message: '请选择产品代码', trigger: 'change' }
-        ],
-        sum:[
-          { required: true, message: '请输入总数量', trigger: 'change' }
         ],
         exceptionNum:[
           { validator:checkExceptionNum, trigger: 'change' }
