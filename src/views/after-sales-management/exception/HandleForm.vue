@@ -279,7 +279,7 @@ export default {
         that.detail.departmentVoList.map(dep => {
           dep.responsibilityList && dep.responsibilityList.map(user => {
             user.userName = `${user.depName}/${user.userName}`
-            responsibilityList.push({...user})
+            responsibilityList.push({...user,key:that._uuid()})
           })
         })
       }
