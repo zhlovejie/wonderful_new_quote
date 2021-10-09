@@ -90,6 +90,9 @@
             <a-form-item v-if="$auth('routineMaterialRule:annulAudit')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('unapproval', null)">反审核</a-button>
             </a-form-item>
+            <a-form-item v-if="$auth('routineMaterialRule:transfer')">
+              <a-button :disabled="!canUse" type="primary" @click="doAction('transfer', null)">数据迁移</a-button>
+            </a-form-item>
           </a-form>
         </div>
         <a-alert message="字体颜色说明" type="info" show-icon style="margin-top: 10px">
@@ -135,6 +138,7 @@
       </div>
     </div>
     <RoutineAddForm ref="routineAddForm" @finish="finishHandler" />
+    <BatchTransferForm ref="batchTransferForm" @finish="() => searchAction(2)" />
   </a-card>
 </template>
 
@@ -152,6 +156,7 @@ import {
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
+import BatchTransferForm from './module/BatchTransferForm'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 
 const columns = [
@@ -208,6 +213,7 @@ export default {
   name: 'material-management-rule-RoutineList',
   components: {
     RoutineAddForm,
+    BatchTransferForm
   },
   data() {
     return {
@@ -604,6 +610,14 @@ export default {
       } else if (type === 'edit') {
         that.$refs.routineAddForm.query(type, {
           ...that.selectedRows[0],
+          __selectItem: that.parentItem,
+          __treeData: [...that.orgTree],
+          __from: 'normal',
+        })
+        return
+      } else if(type === 'transfer'){
+        that.$refs.batchTransferForm.query(type, {
+          selectedRows:[...that.selectedRows],
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
           __from: 'normal',

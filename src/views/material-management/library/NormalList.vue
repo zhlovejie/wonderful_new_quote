@@ -649,6 +649,7 @@ export default {
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
       obj.code = item.code
+      obj.isBringCode = item.isBringCode || 1
       obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {

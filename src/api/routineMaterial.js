@@ -670,6 +670,22 @@ export function routineMaterialRuleCopy(parameter) {
   })
 }
 
+/**迁移数据的节点 */
+export function materialRuleTransferSeat(parameter) {
+  let params = []
+  params.push(`transferSeatId=${parameter.transferSeatId}`)
+  parameter.ids.map(id => {
+    params.push(`ids=${id}`)
+  })
+  let p = params.join('&')
+  return axios({
+    baseURL: materialBaseUrl,
+    url: `/routineMaterialRule/transferSeat?${p}`,
+    method: 'GET'
+  })
+}
+
+
 /**--------------资料库--------------- */
 /**常规物料 基本数据接口 */
 export function routineMaterialInfo(parameter) {

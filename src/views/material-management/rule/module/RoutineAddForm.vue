@@ -115,6 +115,21 @@
                     rules: [{ required: true, message: '请选择是否为规格型号' }],
                   },
                 ]"
+                @change="handlerSpecificationChange"
+              />
+            </a-form-item>
+            <a-form-item label="是否计入物料代码">
+              <a-switch
+                checked-children="是"
+                un-checked-children="否"
+                v-decorator="[
+                  'isBringCode',
+                  {
+                    initialValue: +detail.isBringCode === 1,
+                    valuePropName: 'checked',
+                    rules: [{ required: true, message: '请选择是否计入物料代码' }],
+                  },
+                ]"
               />
             </a-form-item>
           </template>
@@ -405,7 +420,10 @@ export default {
       }catch(err){
         that.spinning = false
       }
-      that.detail = { ...record }
+      that.detail = {
+        isBringCode:1,
+         ...record
+      }
       that.$nextTick(() => {
         that.form.setFieldsValue({ parentId: __selectItem.key })
       })
@@ -427,6 +445,10 @@ export default {
           if ('inBatch' in param) {
             param.inBatch = param.inBatch ? 1 : 2
           }
+          if ('isBringCode' in param) {
+            param.isBringCode = param.isBringCode ? 1 : 2
+          }
+
           if (that.isEdit) {
             param.newCode = param.code
             param.newCodeLength = param.codeLength
@@ -573,6 +595,12 @@ export default {
       }
       return obj
     },
+    handlerSpecificationChange(e){
+      let isBringCode = this.form.getFieldValue('isBringCode')
+      this.form.setFieldsValue({
+        isBringCode:e ? false : isBringCode
+      })
+    }
   },
 }
 </script>
