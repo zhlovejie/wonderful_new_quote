@@ -3,11 +3,11 @@
   <div class="container-list-wrapper">
     <div class="search-wrapper">
       <a-month-picker placeholder="选择年月" style="width: 160px" v-model="searchParam.staticsDate" />
-      <a-select placeholder="选择部门" v-model="searchParam.departmentId" :allowClear="true" style="width: 160px">
+      <!--<a-select placeholder="选择部门" v-model="searchParam.departmentId" :allowClear="true" style="width: 160px">
         <a-select-option v-for="item in depSelectDataSource" :key="item.id" :value="item.id">{{
           item.departmentName
         }}</a-select-option>
-      </a-select>
+      </a-select>-->
 
       <!-- <a-input
         placeholder="姓名模糊查询"
@@ -68,11 +68,11 @@ const columns = [
     dataIndex: 'staticsDate',
     scopedSlots: { customRender: 'staticsDate' },
   },
-  {
+  /*{
     align: 'center',
     title: '部门',
     dataIndex: 'departmentName',
-  },
+  },*/
   {
     align: 'center',
     title: '差额（元）',
