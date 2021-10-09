@@ -105,7 +105,11 @@
             </td>
             <td>付款总额</td>
             <td>
-              {{ recordDetails.taskUserInfo.troubleshootingCost + recordDetails.taskUserInfo.screeningCost }}
+              {{
+                recordDetails.taskUserInfo &&
+                recordDetails.taskUserInfo.troubleshootingCost + recordDetails.taskUserInfo &&
+                recordDetails.taskUserInfo.screeningCost
+              }}
             </td>
           </tr>
           <tr>

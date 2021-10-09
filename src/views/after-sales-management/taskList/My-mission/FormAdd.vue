@@ -277,7 +277,6 @@ import {
   handleTaskDocument,
   taskDocumentDetail,
 } from '@/api/after-sales-management' //机构名称
-import { listUserBySale } from '@/api/systemSetting' //销售人员
 import moment from 'moment'
 import CustomerSelect from './mode/CustomerSelect'
 import ProblemForm from './mode/ProblemForm'

@@ -108,7 +108,7 @@
                 <a-divider type="vertical" />
                 <a @click="handleAdd('veiw', record)">验收单下载</a>
                 <a-divider type="vertical" />
-                <a @click="handleAdd('veiw', record)">验收单</a>
+                <a @click="checkAdd('add', record)">验收单</a>
               </template>
               <template v-if="record.taskStatus === 3 && record.serviceType === 1">
                 <a-divider type="vertical" />
@@ -161,7 +161,7 @@
           @expand="expandHandler"
         >
           <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+            <span> {{ { 1: '维修任务单', 2: '产品调试任务单' }[text] || '未知' }}</span>
           </span>
           <span slot="source" slot-scope="text, record">
             <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
@@ -172,7 +172,7 @@
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('receipt:one')">
+            <template>
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
             <template v-if="record.serviceType === 1">
@@ -181,7 +181,7 @@
             </template>
             <template>
               <a-divider type="vertical" />
-              <a @click="handleAdd('veiw', record)">验收单</a>
+              <a @click="checkAdd('add', record)">验收单</a>
             </template>
           </span>
 
@@ -216,6 +216,7 @@
     <FormAdd ref="formadd" @filet="searchAction"></FormAdd>
     <Application ref="application" @filet="searchAction"></Application>
     <PartsForm ref="partsForm" @filet="searchAction"></PartsForm>
+    <Check ref="check" @filet="searchAction"></Check>
     <ApproveInfo ref="approveInfoCard" />
     <AfterVueOfAudit ref="afterVueOfAudit" @filet="searchAction"></AfterVueOfAudit>
     <Approval ref="approval" @opinionChange="searchAction" />
@@ -227,6 +228,7 @@ import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import Application from './application'
 import PartsForm from './partsForm'
+import Check from './check'
 
 import Approval from './Approval'
 import AfterVueOfAudit from './mode/AfterVueOfAudit'
@@ -428,6 +430,7 @@ export default {
     AfterVueOfAudit,
     Application,
     PartsForm,
+    Check,
   },
   data() {
     return {
@@ -543,7 +546,9 @@ export default {
     partsAdd(type, record) {
       this.$refs.partsForm.query(type, record)
     },
-
+    checkAdd(type, record) {
+      this.$refs.check.query(type, record)
+    },
     handleClick(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },

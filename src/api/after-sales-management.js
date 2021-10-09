@@ -47,7 +47,59 @@ const api = {
   revocationNetworkPaymentRequest: '/csupport/network-payment-request/revocationNetworkPaymentRequest', //付款申请撤回
   delNetworkPaymentRequest: '/csupport/network-payment-request/delNetworkPaymentRequest', //付款申请删除
   approvalNetworkPaymentRequest: '/csupport/network-payment-request/approvalNetworkPaymentRequest', //付款申请审批
+  acceptanceCheckDetail: '/csupport/task-document/acceptanceCheckDetail', //验收单详情
+  addAndUpdateAccessoriesManagement: '/csupport/accessories-management/addAndUpdateAccessoriesManagement', //配件清单申请
+  accessoriesManagementDetail: '/csupport/accessories-management/accessoriesManagementDetail', //配件清单详情
+  approvalAccessoriesManagement: '/csupport/accessories-management/approvalAccessoriesManagement', //配件清单处理
+  acceptanceCheckTaskDocument: '/csupport/task-document/acceptanceCheckTaskDocument', //验收单
 
+
+
+}
+//验收单
+export function acceptanceCheckTaskDocument(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.acceptanceCheckTaskDocument,
+    method: 'post',
+    data: parameter
+  })
+}
+//配件清单处理
+export function approvalAccessoriesManagement(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.approvalAccessoriesManagement,
+    method: 'post',
+    data: parameter
+  })
+}
+//配件清单详情
+export function accessoriesManagementDetail(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesManagementDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+//配件清单申请
+export function addAndUpdateAccessoriesManagement(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.addAndUpdateAccessoriesManagement,
+    method: 'post',
+    data: parameter
+  })
+}
+//验收单详情
+export function acceptanceCheckDetail(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.acceptanceCheckDetail,
+    method: 'get',
+    params: parameter
+  })
 }
 //付款申请审批
 export function approvalNetworkPaymentRequest(parameter) {

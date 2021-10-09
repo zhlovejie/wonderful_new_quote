@@ -287,7 +287,6 @@ import {
   networkManagementList,
 } from '@/api/after-sales-management' //机构名称
 import { getAreaByParent } from '@/api/common'
-import { listUserBySale } from '@/api/systemSetting' //销售人员
 // import Modal from './addForm'
 import moment from 'moment'
 export default {
@@ -385,6 +384,7 @@ export default {
       }
     },
     handleCancel() {
+      this.form.resetFields() // 清空表
       this.visible = false
     },
     handleSaveOk() {
@@ -417,10 +417,10 @@ export default {
       this.birthplaceOptions = _areaData
 
       listUserByAfterSale().then((res) => (this.AfterSale = res.data))
-      if (type !== 'handle' && reacd.serviceMode === 1) {
+      if (type === 'veiw') {
         let that = this
-        if (reacd.province) {
-          let _arr = reacd.province.split(',')
+        if (this.reacd.province) {
+          let _arr = this.reacd.province.split(',')
           _arr = _arr.map((v) => parseInt(v, 10))
           let _areaCityData = await that.loadAreaAction(_arr[0])
           let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
@@ -447,7 +447,7 @@ export default {
           maintenanceUserId: res.data.taskUserInfo.maintenanceUserId,
           arriveTime: moment(res.data.taskUserInfo.arriveTime),
           serviceType: res.data.taskUserInfo.serviceType,
-          serviceType: res.data.taskUserInfo.serviceType,
+          serviceMode: res.data.taskUserInfo.serviceMode,
         })
         if (!this.Dispatch) {
           this.sceneType = res.data.taskUserInfo.serviceMode === 1 ? true : false

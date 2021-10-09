@@ -28,15 +28,10 @@
           />
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('receipt:list')">
+          <template>
             <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
           </template>
         </a-form-item>
-        <!-- <div class="table-operator fl-r">
-          <a-button type="primary" @click="handleAdd('add', null)" style="margin-left: 8px">
-            新增 <a-icon type="plus" />
-          </a-button>
-        </div> -->
       </a-form>
     </div>
     <a-row>
@@ -45,9 +40,9 @@
           <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
 
-            <template v-if="$auth('receipt:approval')">
-              <a-tab-pane tab="待我审批" key="4"> </a-tab-pane>
-              <a-tab-pane tab="我已审批" key="2"> </a-tab-pane>
+            <template>
+              <a-tab-pane tab="待处理" key="1"> </a-tab-pane>
+              <a-tab-pane tab="已处理" key="2"> </a-tab-pane>
             </template>
           </a-tabs>
         </div>
@@ -77,47 +72,19 @@
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('receipt:one')">
-              <a @click="handleVue(record)">查看</a>
+            <template v-if="queryParam.searchStatus !== '1'">
+              <a @click="handleAdd('veiw', record)">查看</a>
             </template>
-            <!-- <template v-if="$auth('receipt:edit') && audit">
-              <a-divider type="vertical" />
-              <a @click="handleAudit(record)">审核</a>
+            <template v-if="queryParam.searchStatus === '1'">
+              <a @click="handleAdd('edit', record)">处理</a>
             </template>
-            <template
-              v-if="
-                $auth('receipt:edit') &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
-                userInfo.id === record.createdId
-              "
-            >
-              <a-divider type="vertical" />
-              <a @click="handleEdit(record)">修改</a>
-            </template>
-            <template
-              v-if="
-                $auth('receipt:del') &&
-                !audit &&
-                userInfo.id === record.createdId &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9)
-              "
-            >
-              <a-divider type="vertical" />
-              <a class="delete" @click="() => del(record)">删除</a>
-            </template>
-            <template v-if="!audit && record.receiptStatus === 1">
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
-                <a type="primary" href="javascript:;">撤回</a>
-              </a-popconfirm>
-            </template> -->
           </span>
 
           <a-table
             slot="expandedRowRender"
             slot-scope="record, index, indent, expanded"
             :columns="innerColumns"
-            :dataSource="record.deviceInfoVoList"
+            :dataSource="record.productInfoList"
             :pagination="false"
             size="small"
           >
@@ -125,12 +92,19 @@
               <span>{{ index + 1 }}</span>
             </div>
 
-            <div slot="isWarranty" slot-scope="text, record">
-              <span v-if="text === 0">否</span>
-              <span v-if="text === 1" style="color：red;">是</span>
+            <div slot="money" slot-scope="text, record, index">
+              {{ record.isWarranty === 0 ? '0' : record.quantity * record.unitPrice }}
             </div>
 
-            <div slot="problemDescription" slot-scope="text">
+            <div slot="deliveryMode" slot-scope="text, record, index">
+              {{ text === 0 ? '自带' : '邮寄' }}
+            </div>
+            <div slot="isWarranty" slot-scope="text, record, index">
+              <span v-if="record.isWarranty === 0">否</span>
+              <span v-if="record.isWarranty === 1" style="color: red">是</span>
+            </div>
+
+            <div slot="specification" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
                 <template slot="title">{{ text }}</template>
                 {{ String(text).slice(0, 10) }}...
@@ -141,15 +115,14 @@
         </a-table>
       </a-col>
     </a-row>
-    <!-- <InvestigateNode ref="node" />-->
-    <!-- <FormAdd ref="formadd" @filet="searchAction"></FormAdd> -->
+    <PartsForm ref="partsForm" @filet="searchAction"></PartsForm>
     <ApproveInfo ref="approveInfoCard" />
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
-// import FormAdd from './FormAdd'
+import PartsForm from './partsForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { accessoriesManagementPage } from '@/api/after-sales-management'
 const innerColumns = [
@@ -160,71 +133,42 @@ const innerColumns = [
     scopedSlots: { customRender: 'order' },
   },
   {
-    align: 'center',
     title: '物料代码',
-    dataIndex: 'mainBoardNo',
-    key: 'mainBoardNo',
-    width: '200px',
+    dataIndex: 'materialCode',
   },
   {
-    align: 'center',
     title: '物料名称',
-    dataIndex: 'productName',
-    key: 'productName',
-    width: '200px',
+    dataIndex: 'materialName',
   },
   {
-    align: 'center',
     title: '规格型号',
-    dataIndex: 'orgName',
-    key: 'orgName',
-    width: '120px',
+    dataIndex: 'specification',
+    scopedSlots: { customRender: 'specification' },
   },
   {
-    align: 'center',
     title: '单位',
-    dataIndex: 'villageName',
-    key: 'villageName',
-    width: '100px',
-    // scopedSlots: { customRender: 'paidType' },
+    dataIndex: 'company',
   },
   {
-    align: 'center',
     title: '数量',
-    dataIndex: 'deviceLocation',
-    key: 'deviceLocation',
-    width: '120px',
+    dataIndex: 'quantity',
   },
   {
-    align: 'center',
     title: '单价（元）',
-    dataIndex: 'deviceLocation',
-    key: 'deviceLocation',
-    width: '120px',
+    dataIndex: 'unitPrice',
   },
   {
-    align: 'center',
     title: '金额（元）',
-    dataIndex: 'deviceLocation',
-    key: 'deviceLocation',
-    width: '120px',
+    dataIndex: 'money',
+    scopedSlots: { customRender: 'money' },
   },
-
   {
-    align: 'center',
     title: '是否过保',
-    dataIndex: 'isWarranty',
-    key: 'isWarranty',
     scopedSlots: { customRender: 'isWarranty' },
-    width: '120px',
   },
   {
-    align: 'center',
     title: '带货方式',
-    key: 'problemDescription',
-    dataIndex: 'problemDescription',
-    scopedSlots: { customRender: 'problemDescription' },
-    width: '120px',
+    scopedSlots: { customRender: 'deliveryMode' },
   },
 ]
 export default {
@@ -235,6 +179,7 @@ export default {
     // ReceiptAdd,
     STable,
     ApproveInfo,
+    PartsForm,
     // FormAdd,
   },
   data() {
@@ -336,13 +281,6 @@ export default {
         },
       ],
       innerColumns: innerColumns,
-      // 加载数据方法 必须为 Promise 对象
-      loadData: (parameter) => {
-        console.log('开始加载数据', JSON.stringify(this.queryParam))
-        return accessoriesManagementPage(Object.assign(parameter, this.queryParam)).then((res) => {
-          return res
-        })
-      },
       selectedRowKeys: [],
       selectedRows: [],
       dayWeekMonth: 1,
@@ -371,6 +309,9 @@ export default {
     },
   },
   methods: {
+    handleAdd(type, record) {
+      this.$refs.partsForm.query(type, record)
+    },
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})
@@ -402,7 +343,6 @@ export default {
     paramClick(key) {
       this.queryParam = { ...this.queryParam, searchStatus: key }
       this.searchAction()
-      console.log(key)
     },
     // handleAdd(type, record) {
     //   this.$refs.formadd.query()

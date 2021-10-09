@@ -115,7 +115,9 @@
               },
             ]"
           />
+          <a-input hidden v-decorator="['isWarranty']" />
         </a-form-item>
+
         <a-form-item label="照片" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
             :action="uploadUrl"
@@ -272,11 +274,17 @@ export default {
       // 拿去主板号获取设备信息
       let arr = this.form.getFieldValue('mainBoardNo')
       console.log(arr)
-      getNewDeviceInfoByMainBoardNo().then((res) => {
+      getNewDeviceInfoByMainBoardNo({ mainBoardNo: arr }).then((res) => {
         console.log(res.data)
-        // if(){
-
-        // }
+        if (res.data !== null) {
+          this.form.setFieldsValue({
+            villageName: res.data.villageName,
+            deviceLocation: res.data.deviceLocation,
+            orgName: res.data.orgName,
+            productName: res.data.productName,
+            isWarranty: res.data.isWarranty,
+          })
+        }
       })
     },
     query(type, record) {
@@ -300,6 +308,7 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
+          console.log(values)
           if (this.isEdit) {
             values.id = this.record.id
           }

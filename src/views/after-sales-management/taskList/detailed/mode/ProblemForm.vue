@@ -272,9 +272,9 @@ export default {
       // 拿去主板号获取设备信息
       let arr = this.form.getFieldValue('mainBoardNo')
       console.log(arr)
-      getNewDeviceInfoByMainBoardNo().then((res) => {
+      getNewDeviceInfoByMainBoardNo({ mainBoardNo: arr }).then((res) => {
         console.log(res.data)
-        // if(){
+        // if(res.data!==null){
 
         // }
       })
