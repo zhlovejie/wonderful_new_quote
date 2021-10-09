@@ -695,6 +695,33 @@ export function bonus_getDepartmentByType(parameter) {
   })
 }
 
+// 非销售提成列表接口
+export function wrong_pageList(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-nsaler-bouns-apply/pageList',
+    method: 'get',
+    params: parameter
+  })
+}
+// 非销售提成详情
+export function getOaSalaryNSalerBounsApplyDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-nsaler-bouns-apply/getOaSalaryNSalerBounsApplyDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//非销售提成审批
+export function MonthInstanceApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-nsaler-bouns-apply/approvalNSalaryMonthInstanceApply',
+    method: 'post',
+    data: parameter
+  })
+}
 // 研发提成列表接口
 export function bonus_pageList(parameter) {
   return axios({
@@ -714,6 +741,16 @@ export function bounsRules_exportExcel(parameter) {
     params: parameter
   })
 }
+//非销售提成奖金下载
+export function qualificationBorrow_exportExcel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-nsaler-bouns-apply/excel',
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
 
 export function bounsRules_del(parameter) {
   return axios({
@@ -724,6 +761,14 @@ export function bounsRules_del(parameter) {
   })
 }
 
+export function removeSalaryNSalerBounsApply(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/qualificationBorrow/oa-salary-nsaler-bouns-apply/removeSalaryNSalerBounsApply',
+    method: 'post',
+    params: parameter
+  })
+}
 
 //研发提成审批
 export function bonus_DeveloperPercentageApply(parameter) {
@@ -837,6 +882,16 @@ export function getSaleStation(parameter) {
     params: parameter
   })
 }
+// 非销售岗位
+export function getOtherStation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/salesman/getOtherStation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //销汇总查询
 export function sale_SalerMonthCollectDetail(parameter) {
   return axios({
