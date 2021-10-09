@@ -115,7 +115,7 @@ export default {
 
       let {departmentId,staticsDate} = record
 
-      this.title = `${staticsDate.slice(0,7)}月【${record.departmentName}】差额记录`
+      this.title = `${staticsDate.slice(0,7)}月差额记录`
       this.$nextTick(() => {
         this.init({departmentId,staticsDate:staticsDate.slice(0,7)})
       })

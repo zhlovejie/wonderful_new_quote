@@ -320,7 +320,7 @@ export default {
             name: 'ai-product-detail-development',
             component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
             meta: {
-              title: '部门提成明细',
+              title: '智能产品提成明细',
               icon: 'select',
               keepAlive: false,
               permission: ['permission']
