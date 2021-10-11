@@ -130,6 +130,7 @@
                     rules: [{ required: true, message: '请选择是否计入物料代码' }],
                   },
                 ]"
+                @change="handlerBringCodeChange"
               />
             </a-form-item>
           </template>
@@ -596,10 +597,23 @@ export default {
       return obj
     },
     handlerSpecificationChange(e){
-      let isBringCode = this.form.getFieldValue('isBringCode')
-      this.form.setFieldsValue({
-        isBringCode:e ? false : isBringCode
-      })
+      const that = this
+      let isBringCode = that.form.getFieldValue('isBringCode')
+      if(e){
+        that.$nextTick(() => {
+          that.form.setFieldsValue({ isBringCode:false })
+        })
+      }
+    },
+    handlerBringCodeChange(e){
+      const that = this
+      let isSpecification = that.form.getFieldValue('isSpecification')
+      if(isSpecification){
+        that.$message.info('')
+        that.$nextTick(() => {
+          that.form.setFieldsValue({ isBringCode:false })
+        })
+      }
     }
   },
 }

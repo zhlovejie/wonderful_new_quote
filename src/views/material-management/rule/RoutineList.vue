@@ -280,7 +280,10 @@ export default {
       let parentId = this.parentId
       while (+parentId) {
         let target = this.dataList.find((item) => +item.key === +parentId)
-        arr.push({ ...target })
+        if(+target.isBringCode === 1){
+          arr.push({ ...target })
+        }
+        // arr.push({ ...target })
         parentId = target.parentId
       }
       return arr
@@ -564,7 +567,8 @@ export default {
       obj.key = String(item.id)
 
       let ruleName = item.newRuleName || item.ruleName
-      let showCode = +item.isSpecification === 1 ? '' : `(${item.code})`
+      let showCode = +item.isSpecification === 1 ? '' :  +item.isBringCode === 1 ? `(${item.code})` : ''
+
       obj.title = `${ruleName}${showCode}`
 
       obj.value = String(item.id)
