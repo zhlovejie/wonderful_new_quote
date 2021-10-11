@@ -280,7 +280,13 @@ export default {
       // }
       while (+parentId) {
         let target = _dataList.find((item) => +item.key === +parentId)
-        arr.push({ ...target })
+        /**
+         * @ApiModelProperty(value = "是否计入物料代码：1是，2否，默认值1")
+         * private Integer isBringCode;
+         */
+        if(+target.isBringCode === 1){
+          arr.push({ ...target })
+        }
         parentId = target.parentId
         // if(+parentId === 0){
         //   target = _dataList.find((item) => +item.key === +parentId)
@@ -387,15 +393,21 @@ export default {
       let arr = []
       that.form.specificationsList.map(item => {
         let target = item.subList.find(s => s.id === item.selectedID)
-        arr.push(target.code)
+        /**
+         * @ApiModelProperty(value = "是否计入物料代码：1是，2否，默认值1")
+         * private Integer isBringCode;
+         */
+        if(+target.isBringCode === 1){
+          arr.push(target.code)
+        }
       })
 
       //没有规格型号的情况 年月日时分秒4位毫秒数
       let spec = arr.length > 0
         ? arr.join(joinSymbol)
-        : 'NOSPEC'+ moment().format('YYYYMMDDHHmmssSSSS')
+        : ''
 
-      return `${prefixCode}${joinSymbol}${spec}`
+      return `${prefixCode}${spec ? joinSymbol + spec : ''}`
     },
     /**
      * 获取格式化规格型号
@@ -490,6 +502,11 @@ export default {
       obj.parentId = item.parentId
       obj.codeLength = +item.codeLength
       obj.code = item.code
+      /**
+       * @ApiModelProperty(value = "是否计入物料代码：1是，2否，默认值1")
+       * private Integer isBringCode;
+       */
+      obj.isBringCode = item.isBringCode || 1
       //坑 上面如果设置了title ，这里插槽 也是title 的 会忽略插槽， 这里吧上面的title注释了
       obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf

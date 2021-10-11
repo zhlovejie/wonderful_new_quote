@@ -14,26 +14,8 @@
  */
 
 export default {
-  // baseURL: 'http://106.14.246.246:8091',    // 正式服
-  // baseURL: 'http://192.168.13.158:8999/oa',
-  //baseURL: 'http://192.168.13.2:8999/oa',
-  //baseURL: 'http://192.168.13.197:8999/oa',
-  // baseURL: 'http://192.168.13.158:8995/oa',
-  //baseURL: 'http://192.168.13.3:8999/oa',
-
-  // baseURL: 'http://192.168.13.158:8995/oa/',
-  //baseURL: 'http://192.168.13.138:8998',
-  // baseURL: 'http://192.168.13.158:8999/oa',
-   baseURL:'http://192.168.13.150:9995/cloud_development',
-
-  // baseURL: 'http://192.168.13.253/oa',
-  // baseURL: 'http://192.168.13.151:8998',
-  // baseURL: 'http://192.168.13.150:9996/cloud_development',
-  // baseURL:'http://192.168.13.3:8999/oa',
-
-  materialBaseUrl: 'http://106.14.194.64/cloud_development', //物料规则专用地址
-
-  // baseURL: 'http://192.168.13.158:9997/cloud_development',
+  baseURL: 'http://192.168.13.22:9995/cloud_development',
+  materialBaseUrl: 'http://192.168.13.22:9995/cloud_development', //物料规则专用地址
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息
     appKey: 'd39b58df3a9b437cac8a0c6a120ef1eb',
