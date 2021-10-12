@@ -98,7 +98,7 @@
               </template>
               <template>
                 <a-divider type="vertical" />
-                <a>申请客诉</a>
+                <a @click="apply('add', null)">申请客诉</a>
               </template>
               <template v-if="record.taskStatus === 3 && record.serviceMode === 0">
                 <a-divider type="vertical" />
@@ -213,6 +213,7 @@
         </a-table>
       </a-col>
     </a-row>
+    <ActionForm ref="actionForm" @finish="() => searchAction()" />
     <FormAdd ref="formadd" @filet="searchAction"></FormAdd>
     <Application ref="application" @filet="searchAction"></Application>
     <PartsForm ref="partsForm" @filet="searchAction"></PartsForm>
@@ -229,6 +230,7 @@ import FormAdd from './FormAdd'
 import Application from './application'
 import PartsForm from './partsForm'
 import Check from './check'
+import ActionForm from '../../exception/ActionForm'
 
 import Approval from './Approval'
 import AfterVueOfAudit from './mode/AfterVueOfAudit'
@@ -431,6 +433,7 @@ export default {
     Application,
     PartsForm,
     Check,
+    ActionForm,
   },
   data() {
     return {
@@ -489,6 +492,10 @@ export default {
     },
   },
   methods: {
+    apply(type, record) {
+      let that = this
+      that.$refs.actionForm.query(type, record)
+    },
     noPassAction(type, record) {
       let that = this
       that.$refs.approval.query(type, record)
@@ -565,6 +572,7 @@ export default {
           // 在这里调用完结接口
           finishTaskDocument({ approveId: row.id, isAdopt: 1 }).then((res) => {
             if (res.code == 200) {
+              _this.$message.info(res.msg)
               _this.searchAction()
             } else {
               _this.$message.error(res.msg)

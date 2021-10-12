@@ -56,11 +56,11 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('receipt:list')">
+          <template>
             <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
           </template>
         </a-form-item>
-        <div class="table-operator fl-r">
+        <div class="table-operator fl-r" v-if="$auth('repair:add')">
           <a-button type="primary" @click="handleAdd('add', null)" style="margin-left: 8px">
             新增 <a-icon type="plus" />
           </a-button>
@@ -86,16 +86,16 @@
           </span>
           <div slot="taskStatus" slot-scope="text, record">
             <a @click="handleClick(record)">{{
-              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回' }[text] || '未知'
+              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回', 6: '完结' }[text] || '未知'
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template>
+            <template v-if="$auth('repair:veiw')">
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
             <template
               v-if="
-                $auth('receipt:edit') &&
+                $auth('repair:edit') &&
                 (+record.taskStatus === 0 || +record.taskStatus === 5) &&
                 userInfo.id === record.createdId
               "
@@ -105,7 +105,7 @@
             </template>
             <template
               v-if="
-                $auth('receipt:del') &&
+                $auth('repair:del') &&
                 !audit &&
                 userInfo.id === record.createdId &&
                 (+record.taskStatus === 0 || +record.taskStatus === 5)
@@ -116,7 +116,10 @@
             </template>
             <template
               v-if="
-                !audit && userInfo.id === record.createdId && (+record.taskStatus === 0 || +record.taskStatus === 5)
+                $auth('repair:Document') &&
+                !audit &&
+                userInfo.id === record.createdId &&
+                (+record.taskStatus === 0 || +record.taskStatus === 5)
               "
             >
               <a-divider type="vertical" />
@@ -124,7 +127,7 @@
                 <a type="primary" href="javascript:;">提交</a>
               </a-popconfirm>
             </template>
-            <template v-if="!audit && record.taskStatus === 1">
+            <template v-if="$auth('repair:reback') && !audit && record.taskStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -425,6 +428,7 @@ export default {
           // 在这里调用删除接口
           delTaskDocument({ id: row.id }).then((res) => {
             if (res.code == 200) {
+              that.$message.info(res.msg)
               _this.searchAction()
             } else {
               _this.$message.error(res.msg)

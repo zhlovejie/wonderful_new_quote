@@ -11,7 +11,7 @@ const api = {
   accessoriesManagementPage: '/csupport/accessories-management/accessoriesManagementPage', //配件清单列表
   accessoriesCollectionPage: '/csupport/accessories-collection-detail/accessoriesCollectionPage', //收款明细
   getOrgNamePage: '/csupport/device-archives/getOrgNameList', //机构名称
-  getVillageNameList: ' /csupport/device-archives/getVillageNameList', //机构下面的小区
+  getVillageNameList: '/csupport/device-archives/getVillageNameList', //机构下面的小区
   getNewDeviceInfoByMainBoardNo: '/csupport/device-archives/getNewDeviceInfoByMainBoardNo', //根据主板号获取信息
   addAndUpdateTaskDocument: '/csupport/task-document/addAndUpdateTaskDocument', //新增维修单申请
   delTaskDocument: '/csupport/task-document/delTaskDocument', //维修任务单删除
@@ -52,9 +52,29 @@ const api = {
   accessoriesManagementDetail: '/csupport/accessories-management/accessoriesManagementDetail', //配件清单详情
   approvalAccessoriesManagement: '/csupport/accessories-management/approvalAccessoriesManagement', //配件清单处理
   acceptanceCheckTaskDocument: '/csupport/task-document/acceptanceCheckTaskDocument', //验收单
+  mailRecordDetail: '/csupport/accessories-mail-record/mailRecordDetail', //邮寄详情
+  addAndHandleMailRecord: '/csupport/accessories-mail-record/addAndHandleMailRecord', //邮寄处理
 
 
 
+}
+//邮寄处理
+export function addAndHandleMailRecord(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.addAndHandleMailRecord,
+    method: 'post',
+    data: parameter
+  })
+}
+//邮寄详情
+export function mailRecordDetail(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.mailRecordDetail,
+    method: 'get',
+    params: parameter
+  })
 }
 //验收单
 export function acceptanceCheckTaskDocument(parameter) {

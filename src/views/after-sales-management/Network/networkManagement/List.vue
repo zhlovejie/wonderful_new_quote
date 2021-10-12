@@ -30,14 +30,14 @@
             <a-select-option :value="1">没有</a-select-option>
           </a-select>
         </a-form-item>
-        <template v-if="$auth('video:list')">
+        <template>
           <a-form-item>
             <a-button type="primary" @click="searchAction">查询</a-button>
           </a-form-item>
         </template>
         <div class="action-wrapper" style="float: right">
           <a-form-item>
-            <template v-if="$auth('video:add')">
+            <template v-if="$auth('networkManagement:add')">
               <a-button type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
             </template>
           </a-form-item>
@@ -66,40 +66,17 @@
         <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>
       </div>
       <span slot="action" slot-scope="text, record">
-        <template v-if="$auth('video:edit')">
+        <template v-if="$auth('networkManagement:view')">
           <a @click="handleAdd('view', record)">查看</a>
         </template>
-        <template v-if="$auth('video:edit')">
+        <template v-if="$auth('networkManagement:edit') && record.networkType === 0">
           <a-divider type="vertical" />
           <a @click="handleAdd('edit', record)">修改</a>
         </template>
-        <!-- <template v-if="$auth('video:del')">
-          <a-divider type="vertical" />
-          <a class="delete" @click="() => del(record)">删除</a>
-        </template>
-        <template v-if="$auth('video:download')">
-          <a-divider type="vertical" />
-          <a v-download="record.url">下载</a>
-        </template> -->
       </span>
     </s-table>
-    <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
-    <a-modal v-model="visible" title="教程视频" @ok="handleOk">
-      <table class="custom-table custom-table-border">
-        <tr>
-          <th>序号</th>
-          <th>操作</th>
-        </tr>
-        <tr v-for="(item, index) in tutorialList" :key="item.index">
-          <td>{{ index + 1 }}</td>
-          <td>
-            <a target="_blank" :href="item">预览</a>
-            <a-divider type="vertical" />
-            <a v-download="item">下载</a>
-          </td>
-        </tr>
-      </table>
-    </a-modal>
+    <modal ref="modal" @ok="handleSaveOk" />
+    <modal1 ref="modal1" @ok="handleSaveOk" />
   </a-card>
 </template>
 
@@ -110,6 +87,7 @@ import { queryCode } from '@/api/workBox'
 
 import { STable } from '@/components'
 import Modal from './modules/addForm'
+import Modal1 from './modules/addForm1'
 
 const columns = [
   {
@@ -203,6 +181,7 @@ export default {
   components: {
     STable,
     Modal,
+    Modal1,
   },
   data() {
     return {
@@ -295,18 +274,17 @@ export default {
           console.log(err)
         })
     },
-    handleOk(e) {
-      console.log(e)
-      this.visible = false
-    },
     // 新增
     handleAdd(type, e) {
-      this.$refs.modal.query(type, e)
+      if (type === 'edit' && e.networkType === 1) {
+        this.$refs.modal1.query(type, e)
+      } else {
+        this.$refs.modal.query(type, e)
+      }
     },
     handleSaveOk() {
       this.$refs.table.refresh(true)
     },
-    handleSaveClose() {},
     handleEditOk() {
       this.$refs.table.refresh(true)
     },

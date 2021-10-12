@@ -36,7 +36,7 @@
           <a-tabs defaultActiveKey="2" @change="paramClick">
             <a-tab-pane tab="我的" key="2" forceRender> </a-tab-pane>
 
-            <template>
+            <template v-if="$auth('mail:handle')">
               <a-tab-pane tab="待邮寄" key="0"> </a-tab-pane>
               <a-tab-pane tab="已邮寄" key="1"> </a-tab-pane>
             </template>
@@ -63,13 +63,13 @@
             <span> {{ { 0: '完结付款', 1: '先付款', 2: '免付款' }[text] || '未知' }}</span>
           </span>
           <div slot="status" slot-scope="text, record">
-            <a @click="handleClick(record)">{{ { 0: '待邮寄', 1: '已邮寄' }[text] || '未知' }}</a>
+            <span>{{ { 0: '待邮寄', 1: '已邮寄' }[text] || '未知' }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="queryParam.searchStatus !== '0'">
+            <template v-if="queryParam.status !== '0'">
               <a @click="handleAdd('view', record)">查看</a>
             </template>
-            <template v-if="queryParam.searchStatus === '0'">
+            <template v-if="queryParam.status === '0'">
               <a @click="handleAdd('edit', record)">处理</a>
             </template>
           </span>
@@ -183,7 +183,7 @@ export default {
       userInfo: this.$store.getters.userInfo,
       // 查询参数
       queryParam: {
-        searchStatus: '2',
+        status: '2',
       },
       recordResult: {},
       queryRecord: {},
@@ -299,13 +299,10 @@ export default {
       this.searchAction()
     },
     paramClick(key) {
-      this.queryParam = { ...this.queryParam, searchStatus: key }
+      this.queryParam = { ...this.queryParam, status: key }
       this.searchAction()
       console.log(key)
     },
-    // handleAdd(type, record) {
-    //   this.$refs.formadd.query()
-    // },
     handleClick(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },

@@ -43,14 +43,14 @@
         <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>
       </div> -->
       <span slot="action" slot-scope="text, record">
-        <template v-if="$auth('video:edit')">
+        <template v-if="$auth('equipment:view')">
           <a @click="handleAdd('view', record)">详情</a>
         </template>
-        <template v-if="$auth('video:edit')">
+        <template v-if="$auth('equipment:edit')">
           <a-divider type="vertical" />
           <a @click="tutorialClick(record)">维修记录</a>
         </template>
-        <template v-if="$auth('video:del')">
+        <template v-if="$auth('equipment:del')">
           <a-divider type="vertical" />
           <a class="delete" @click="handleAdd('edit', record)">更换件清单</a>
         </template>

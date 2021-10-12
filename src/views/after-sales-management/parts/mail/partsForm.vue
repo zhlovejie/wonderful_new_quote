@@ -28,7 +28,7 @@
           <tr>
             <td>单位名称</td>
             <td>
-              {{ record.unitName }}
+              {{ recordDetails.unitName }}
             </td>
             <td>收货地址</td>
             <td>{{ record.provinceName }}{{ record.address }}</td>
@@ -37,7 +37,7 @@
         <div style="margin-top: 20px">
           <a-table
             :columns="travelColumns"
-            :dataSource="form.productInfoList"
+            :dataSource="recordDetails.productInfoList"
             :pagination="false"
             bordered
             size="small"
@@ -66,13 +66,13 @@
             :label-col="labelCol"
             :wrapper-col="wrapperCol"
             label="物流名称"
-            :prop="'logisticsId'"
+            :prop="'logisticsCode'"
             :rules="{
               required: true,
               message: '请选择物流名称',
             }"
           >
-            <a-select :disabled="isDisabled" v-model="form.logisticsId" placeholder="物流名称">
+            <a-select :disabled="isDisabled" v-model="form.logisticsCode" placeholder="物流名称">
               <a-select-option v-for="item in Warehouse" :key="item.code" :value="item.code">{{
                 item.text
               }}</a-select-option>
@@ -82,7 +82,7 @@
             :label-col="labelCol"
             :wrapper-col="wrapperCol"
             label="物流方式"
-            v-if="form.logisticsId === 'LogisticsName_03'"
+            v-if="form.logisticsCode === 'LogisticsName_03'"
             :prop="'logisticsType'"
             :rules="{
               required: true,
@@ -142,7 +142,7 @@
   </a-modal>
 </template>
 <script>
-import { approvalAccessoriesManagement, accessoriesManagementDetail } from '@/api/after-sales-management' //机构名称
+import { addAndHandleMailRecord, mailRecordDetail } from '@/api/after-sales-management' //机构名称
 import { queryCode } from '@/api/workBox'
 export default {
   name: 'BecomingForm',
@@ -153,8 +153,7 @@ export default {
       opinionData: [],
       details: {},
       form: {
-        productInfoList: [],
-        logisticsId: undefined,
+        logisticsCode: undefined,
         logisticsType: undefined,
         paymentMailType: undefined,
         deliveryType: undefined,
@@ -191,7 +190,7 @@ export default {
       return this.isVeiw
     },
     totalPrice() {
-      return this.form.productInfoList.reduce((addr, item) => {
+      return this.recordDetails.productInfoList.reduce((addr, item) => {
         addr = Number(addr) + Number(item.quantity)
         return parseFloat(addr).toFixed(2)
       }, 0)
@@ -242,32 +241,35 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
-      this.form.handlerUser = record.saleUserId
       queryCode({ code: 'LogisticsName_01' })
         .then((res) => {
           this.Warehouse = res.data
         })
         .catch((err) => (this.loading = false))
       if (type !== 'add') {
-        accessoriesManagementDetail({ id: record.id }).then((res) => {
-          this.details = res.data
-          this.form = { ...this.form, ...res.data }
-          this.isTax = res.data.isTax === 0 ? true : false
-          this.isAdopt = res.data.handlerResult === 0 || res.data.handlerResult === null ? true : false
-          // this.form.mailRecord = res.data.mailRecord
+        mailRecordDetail({ id: record.id }).then((res) => {
+          console.log(res.data)
+          this.recordDetails = res.data
+          this.form = res.data
         })
       }
     },
     handleOk() {
-      console.log('你是要提交')
       let that = this
       that.$refs['ruleForm'].validate((valid) => {
         if (valid) {
-          let ret = {}
           const params = that.$_.cloneDeep(that.form || {})
-          // params.mailRecord.province = params.mailRecord.province.toString()
+          let react = {
+            id: this.recordDetails.id,
+            accessoriesId: this.recordDetails.accessoriesId,
+            logisticsCode: params.logisticsCode,
+            deliveryType: params.deliveryType,
+            logisticsType: params.logisticsType,
+            paymentMailType: params.paymentMailType,
+            orderNum: params.orderNum,
+          }
 
-          approvalAccessoriesManagement(ret)
+          addAndHandleMailRecord(react)
             .then((res) => {
               if (res.code === 200) {
                 that.spinning = false

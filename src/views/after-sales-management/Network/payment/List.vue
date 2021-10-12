@@ -9,25 +9,18 @@
         <a-form-item>
           <a-input v-model.trim="queryParam.serviceUserParameter" allowClear placeholder="业务员/业务员手机号" />
         </a-form-item>
-        <template v-if="$auth('video:list')">
+        <template>
           <a-form-item>
             <a-button type="primary" @click="searchAction">查询</a-button>
           </a-form-item>
         </template>
-        <div class="action-wrapper" style="float: right">
-          <a-form-item>
-            <template v-if="$auth('video:add')">
-              <a-button type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
-            </template>
-          </a-form-item>
-        </div>
       </a-form>
     </div>
     <div>
       <a-tabs defaultActiveKey="0" @change="paramClick">
         <a-tab-pane tab="我提交的" :key="0" forceRender> </a-tab-pane>
 
-        <template>
+        <template v-if="$auth('payments:approval')">
           <a-tab-pane tab="待我审批" :key="1"> </a-tab-pane>
           <a-tab-pane tab="我已审批" :key="2"> </a-tab-pane>
         </template>
@@ -55,26 +48,33 @@
           <span>{{ record.serviceUser.split(',')[1] }}</span>
         </div>
         <span slot="action" slot-scope="text, record">
-          <template>
+          <template v-if="$auth('payments:view')">
             <a @click="handleAdd('view', record)">查看</a>
           </template>
           <template v-if="queryParam.searchStatus === 0">
             <template
               v-if="
                 userInfo.id === record.createdId &&
-                (record.status === 3 || +record.status === 4 || +record.status === 1)
+                (record.status === 3 || +record.status === 4 || +record.status === 1) &&
+                $auth('payments:edit')
               "
             >
               <a-divider type="vertical" />
               <a @click="handleAdd('edit', record)">修改</a>
             </template>
-            <template v-if="userInfo.id === record.createdId && record.status === 1">
+            <template v-if="userInfo.id === record.createdId && record.status === 1 && $auth('payments:reback')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template v-if="userInfo.id === record.createdId && (record.status === 3 || +record.status === 4)">
+            <template
+              v-if="
+                userInfo.id === record.createdId &&
+                (record.status === 3 || +record.status === 4) &&
+                $auth('payments:delete')
+              "
+            >
               <a-divider type="vertical" />
 
               <a class="delete" @click="() => del(record)">删除</a>

@@ -52,7 +52,7 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('receipt:list')">
+          <template>
             <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
           </template>
         </a-form-item>

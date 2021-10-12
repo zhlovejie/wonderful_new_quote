@@ -107,10 +107,10 @@ export default {
       this.visible = false
     },
     handleChange(value) {
-      this.saleUser = this.NamePage.find((i) => i.orgId === value).villageNameVoList || []
       if (!value) {
         return (this.saleUser = [])
       }
+      this.saleUser = this.NamePage.find((i) => i.orgId === value).villageNameVoList || []
       getVillageNameList({ orgId: value }).then((res) => {
         this.saleUser = res.data
       })

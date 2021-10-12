@@ -368,6 +368,9 @@ export default {
       if (that.type === 'add' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
+            if (that.type === 'edit-salary') {
+              values.id = this.record.id
+            }
             values.deviceInfoSaveBoList =
               this.opinionData.map((i) => {
                 return {
@@ -408,6 +411,10 @@ export default {
       this.opinionData = []
       this.form.resetFields() // 清空表
       this.visible = false
+      this.$refs.customerSelect &&
+        this.$refs.customerSelect.fill({
+          name: undefined,
+        })
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0

@@ -40,7 +40,7 @@
           <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
 
-            <template>
+            <template v-if="$auth('detailed:handle')">
               <a-tab-pane tab="待处理" key="1"> </a-tab-pane>
               <a-tab-pane tab="已处理" key="2"> </a-tab-pane>
             </template>

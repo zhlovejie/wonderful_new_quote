@@ -24,14 +24,14 @@
             <a-select-option :value="1">没有</a-select-option>
           </a-select>
         </a-form-item>
-        <template v-if="$auth('video:list')">
+        <template>
           <a-form-item>
             <a-button type="primary" @click="searchAction">查询</a-button>
           </a-form-item>
         </template>
         <div class="action-wrapper" style="float: right">
           <a-form-item>
-            <template v-if="$auth('video:add')">
+            <template v-if="$auth('enterprise:add')">
               <a-button type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
             </template>
           </a-form-item>
@@ -42,7 +42,7 @@
       <a-tabs defaultActiveKey="0" @change="paramClick">
         <a-tab-pane tab="我提交的" :key="0" forceRender> </a-tab-pane>
 
-        <template>
+        <template v-if="$auth('enterprise:approval')">
           <a-tab-pane tab="待我审批" :key="1"> </a-tab-pane>
           <a-tab-pane tab="我已审批" :key="2"> </a-tab-pane>
         </template>
@@ -73,15 +73,20 @@
           <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>
         </div>
         <span slot="action" slot-scope="text, record">
-          <template>
+          <template v-if="$auth('enterprise:view')">
             <a @click="handleAdd('view', record)">查看</a>
           </template>
           <template v-if="queryParam.searchStatus === 0">
-            <template v-if="userInfo.id === record.createdId">
+            <template
+              v-if="
+                userInfo.id === record.createdId &&
+                $auth('enterprise:edit' && (+record.status === 3 || +record.status === 4))
+              "
+            >
               <a-divider type="vertical" />
               <a @click="handleAdd('edit', record)">修改</a>
             </template>
-            <template v-if="userInfo.id === record.createdId && record.status === 1">
+            <template v-if="userInfo.id === record.createdId && record.status === 1 && $auth('enterprise:reback')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -89,7 +94,7 @@
             </template>
             <template
               v-if="
-                $auth('receipt:del') &&
+                $auth('enterprise:del') &&
                 userInfo.id === record.createdId &&
                 (+record.status === 3 || +record.status === 4)
               "
@@ -103,14 +108,6 @@
             <a-divider type="vertical" />
             <a @click="handleAdd('approval', record)">审批</a>
           </template>
-          <!-- <template v-if="$auth('video:del')">
-          <a-divider type="vertical" />
-          <a class="delete" @click="() => del(record)">删除</a>
-        </template>
-        <template v-if="$auth('video:download')">
-          <a-divider type="vertical" />
-          <a v-download="record.url">下载</a>
-        </template> -->
         </span>
       </s-table>
     </div>
