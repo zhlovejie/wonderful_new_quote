@@ -115,6 +115,85 @@ export default {
       ]
     },
 
+    {//提成规则
+      path: '/salary-management/commission/rule',
+      name: 'commission-rules',
+      component: RouteView,
+      meta: {
+        title: '规则',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      children: [{
+          path: '/salary-management/commission/rule/salary-base-sale-rules',
+          name: 'salary-base-sale-rules',
+          component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/List'),
+          meta: {
+            title: '销售基本工资规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }, {
+          path: '/salary-management/commission/rule/salary-base-sale-rules/module',
+          name: 'salary-base-sale-module',
+          component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/module/See'),
+          meta: {
+            title: '销售基本工资规则明细',
+            icon: 'select',
+            hidden: true,
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/commission/rule/wrong-salary-base-sale-rules',
+          name: 'wrong-salary-base-sale-rules',
+          component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/List'),
+          meta: {
+            title: '非销售基本工资规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }, {
+          path: '/salary-management/commission/rule/wrong-salary-base-sale-rules/module',
+          name: 'wrong-salary-base-sale-module',
+          component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/module/See'),
+          meta: {
+            title: '非销售基本工资规则明细',
+            icon: 'select',
+            hidden: true,
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/commission/rule/research',
+          name: 'salary-research',
+          component: () => import('@/views/salary-management/commission/rule/research/List'),
+          meta: {
+            title: '研发提成规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+        {
+          path: '/salary-management/commission/rule/Hardware',
+          name: 'salary-Hardware',
+          component: () => import('@/views/salary-management/commission/rule/Hardware/List'),
+          meta: {
+            title: '软件/硬件提成规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        },
+      ]
+    },
+
     { //提成
       path: '/salary-management/commission',
       name: 'commission',
@@ -125,84 +204,7 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
-          path: '/salary-management/commission/rule',
-          name: 'commission-rules',
-          component: RouteView,
-          meta: {
-            title: '规则',
-            icon: 'select',
-            keepAlive: false,
-            permission: ['permission']
-          },
-          children: [{
-              path: '/salary-management/commission/rule/salary-base-sale-rules',
-              name: 'salary-base-sale-rules',
-              component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/List'),
-              meta: {
-                title: '销售基本工资规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }, {
-              path: '/salary-management/commission/rule/salary-base-sale-rules/module',
-              name: 'salary-base-sale-module',
-              component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/module/See'),
-              meta: {
-                title: '销售基本工资规则明细',
-                icon: 'select',
-                hidden: true,
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/commission/rule/wrong-salary-base-sale-rules',
-              name: 'wrong-salary-base-sale-rules',
-              component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/List'),
-              meta: {
-                title: '非销售基本工资规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            }, {
-              path: '/salary-management/commission/rule/wrong-salary-base-sale-rules/module',
-              name: 'wrong-salary-base-sale-module',
-              component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/module/See'),
-              meta: {
-                title: '非销售基本工资规则明细',
-                icon: 'select',
-                hidden: true,
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/commission/rule/research',
-              name: 'salary-research',
-              component: () => import('@/views/salary-management/commission/rule/research/List'),
-              meta: {
-                title: '研发提成规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-            {
-              path: '/salary-management/commission/rule/Hardware',
-              name: 'salary-Hardware',
-              component: () => import('@/views/salary-management/commission/rule/Hardware/List'),
-              meta: {
-                title: '软件/硬件提成规则',
-                icon: 'select',
-                keepAlive: false,
-                permission: ['permission']
-              },
-            },
-          ]
-        },
+      children: [
         {
           path: '/salary-management/commission/collection',
           name: 'collection',
@@ -247,7 +249,6 @@ export default {
             permission: ['permission']
           },
         },
-
         {
           path: '/salary-management/commission/softwareAndHardware',
           name: 'softwareAndHardware',
