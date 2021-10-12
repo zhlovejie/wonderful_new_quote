@@ -425,7 +425,7 @@ export default {
           if (data.userRemain && data.userRemain === 1) {
             attenceLeaveApplyUserRestHoursRecord({
               hourType: that.holidayTarget.holidayType,
-              userId: that.record.createdId || that.userInfo.id,
+              userId: that.detail.createdId,
             }).then((res) => {
               console.log(res)
               that.userRestHours = res.data ? res.data.remainHours : 0
