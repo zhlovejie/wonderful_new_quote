@@ -144,7 +144,7 @@ export function exceptionReportApproval(parameter) {
 export function exceptionReportFinishExceptionReport(parameter) {
   return axios({
     baseURL: baseurl,
-    url: '/exceptionReport/finishExceptionReport',
+    url: `/exceptionReport/finishExceptionReport?id=${parameter.id}`,
     method: 'post',
     data: parameter
   })
@@ -285,6 +285,16 @@ export function reimburseSubmit(parameter) {
     params: parameter
   })
 }
+
+export function travelListByUserIdForReimburse(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: 'attenceTravelApply/travelListByUserIdForReimburse',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //差旅报销单END
 
 

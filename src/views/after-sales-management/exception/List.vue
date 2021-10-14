@@ -95,59 +95,73 @@
             slot="action"
             slot-scope="text, record, index"
           >
-            <template v-if=" [0,2,3].includes(+record.status)">
-              <a @click="doAction('view',record)">查看</a>
-              <a-divider type="vertical" />
-              <a @click="doAction('edit',record)">修改</a>
-            </template>
-
-            <template v-if="+record.status === 1">
-              <a @click="doAction('view',record)">查看</a>
-
-              <template v-if="[2,3].includes(+record.dataType)">
+            <a @click="doAction('view',record)">查看</a>
+            <!-- 0待提交-->
+            <template v-if="+record.status === 0">
+              <template v-if="[1,3].includes(+record.dataType)">
                 <a-divider type="vertical" />
-                <a @click="doAction('handle',record)">处理</a>
+                <a @click="doAction('edit',record)">修改</a>
               </template>
-
               <template v-if="+record.createdId === +userInfo.id">
                 <a-divider type="vertical" />
                 <a @click="doAction('reback',record)">撤回</a>
               </template>
             </template>
+            <!-- 1待处理-->
+            <template v-if="+record.status === 1">
+              <template v-if="[2,3].includes(+record.dataType)">
+                <a-divider type="vertical" />
+                <a @click="doAction('handle',record)">处理</a>
+              </template>
+            </template>
 
+            <!-- 2已撤回-->
+            <template v-if="+record.status === 2">
+              <template v-if="[1,3].includes(+record.dataType)">
+                <a-divider type="vertical" />
+                <a @click="doAction('edit',record)">修改</a>
+              </template>
+            </template>
+
+            <!-- 3已处理-->
+            <template v-if="+record.status === 3">
+              <template v-if="[2,3].includes(+record.dataType)">
+                <a-divider type="vertical" />
+                <a @click="doAction('edit',record)">修改</a>
+              </template>
+            </template>
+            <!-- 4待审批-->
             <template v-if="+record.status === 4">
-              <a @click="doAction('view',record)">查看</a>
+              <!-- <a @click="doAction('view',record)">查看</a> -->
             </template>
-
+            <!-- 5不通过-->
             <template v-if="+record.status === 5">
-              <a @click="doAction('edit',record)">修改</a>
+              <template v-if="[2,3].includes(+record.dataType)">
+                <a-divider type="vertical" />
+                <a @click="doAction('edit',record)">修改</a>
+              </template>
             </template>
-
+            <!-- 6通过-->
             <template v-if="+record.status === 6">
-              <template v-if="+record.formCustomer === 1">
-                <a @click="doAction('view',record)">查看</a>
+              <template v-if="[1,3].includes(+record.dataType) && +record.formCustomer === 1">
                 <template v-if="$auth('exceptionReport:feedback')">
                   <a-divider type="vertical" />
                   <a @click="doAction('feedbackAdd',record)">新增反馈记录</a>
                 </template>
               </template>
-              <template v-else>
-                <a @click="doAction('view',record)">查看</a>
+
+              <template  v-if="[1,3].includes(+record.dataType) && +record.formCustomer === 2">
                 <template v-if="$auth('exceptionReport:over')">
                   <a-divider type="vertical" />
                   <a @click="doAction('over',record)">完结</a>
                 </template>
               </template>
             </template>
-
+            <!-- 7完结-->
             <template v-if="+record.status === 7">
-              <template v-if="+record.formCustomer === 1">
-                <a @click="doAction('view',record)">查看</a>
+              <template v-if="[1,3].includes(+record.dataType) && +record.formCustomer === 1">
                 <a-divider type="vertical" />
                 <a @click="doAction('feedbackDetail',record)">反馈详情</a>
-              </template>
-              <template v-else>
-                <a @click="doAction('view',record)">查看</a>
               </template>
             </template>
           </div>

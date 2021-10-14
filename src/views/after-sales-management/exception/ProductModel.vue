@@ -7,6 +7,14 @@
     v-model="visible"
     :maskClosable="false"
   >
+    <a-tabs
+      :activeKey="activeKey"
+      :defaultActiveKey="activeKey"
+      @change="tabChange"
+    >
+      <a-tab-pane tab="常规产品" :key="0" />
+      <a-tab-pane tab="非常规产品" :key="1"/>
+    </a-tabs>
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item label="产品代码">
@@ -15,7 +23,7 @@
         <a-form-item label="产品名称">
           <a-input style="width: 200px; margin-right: 10px" class="modal-input" v-model="productName" />
         </a-form-item>
-        <a-form-item label="客户名称" v-if="this.queryParam.productType === 1">
+        <a-form-item label="客户名称" v-if="+productType === 1">
           <a-input class="modal-input" v-model="customerName" />
         </a-form-item>
         <a-form-item>
@@ -138,12 +146,9 @@ export default {
       productModel: '', // 产品代码
       nuclearPriceModel: '', // 核价编号
       recordParam: null,
+      activeKey:0
     }
   },
-  computed: {},
-  watch: {},
-  cerated() {},
-  mounted() {},
   methods: {
     query(record={}) {
       // this.mdl = Object.assign({}, record)
@@ -188,6 +193,11 @@ export default {
 
       this.close()
     },
+    tabChange(key){
+      this.activeKey = +key
+      this.productType = this.activeKey
+      this.search()
+    }
   },
 }
 </script>

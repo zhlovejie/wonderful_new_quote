@@ -45,7 +45,7 @@
 import {
   departmentList //所有部门
 } from '@/api/systemSetting'
-import { attenceTravelApplyList } from '@/api/attendanceManagement'
+import { travelListByUserIdForReimburse } from '@/api/after-sales-management-custom'
 
 import moment from 'moment'
 import { getDictionaryList } from '@/api/workBox'
@@ -126,8 +126,7 @@ export default {
       that.selectedRows = []
       that.dataSource = []
       that.searchParam = {
-        searchStatus: 2
-        // userName:that.userInfo.trueName
+        userId:that.userInfo.id
       }
       that.searchAction()
     },
@@ -135,12 +134,12 @@ export default {
       const that = this
       const paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.pageSize || 10
+        size: that.pagination.pageSize || 10,
       }
       const _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      attenceTravelApplyList(_searchParam)
+      travelListByUserIdForReimburse(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

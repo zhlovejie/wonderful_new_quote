@@ -188,7 +188,7 @@
 
             <tr>
             <td style="width:150px;">
-              <span class="icon-required">总数量</span>
+              <span >总数量</span>
             </td>
             <td>
               <a-form-model-item prop="sum" >
@@ -336,11 +336,11 @@ export default {
   data() {
     let that = this
     let checkExceptionNum = (rule, value, callback) => {
-      let sum = that.form.sum
+      let sum = Number(that.form.sum) || 0
       if(!value){
         callback(new Error('请输入异常数量'));
       }else{
-        if(value > sum){
+        if(value && sum &&  value > sum){
           callback(new Error('异常数量不能大于总数量'));
         }else{
           callback()
@@ -379,9 +379,6 @@ export default {
         ],
         materialCode:[
           { required: true, message: '请选择产品代码', trigger: 'change' }
-        ],
-        sum:[
-          { required: true, message: '请输入总数量', trigger: 'change' }
         ],
         exceptionNum:[
           { validator:checkExceptionNum, trigger: 'change' }
