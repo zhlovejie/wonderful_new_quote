@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { getDeviceArchivesPage } from '@/api/after-sales-management'
+import { getDeviceArchivesPage, getDeviceTypeList, getDeviceStateList } from '@/api/after-sales-management'
 
 import { STable } from '@/components'
 import Modal from './modules/Video'
@@ -197,7 +197,10 @@ export default {
       },
     }
   },
-  created() {},
+  created() {
+    getDeviceTypeList().then((res) => (this.Warehouse = res.data))
+    getDeviceStateList().then((res) => (this.DeviceState = res.data))
+  },
   methods: {
     openSearchModel() {
       this.$refs.searchForm.query(this.contractState)

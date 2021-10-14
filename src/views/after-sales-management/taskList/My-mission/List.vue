@@ -6,11 +6,10 @@
           <a-input style="width: 150px" placeholder="任务单编号模糊查询" allowClear v-model="queryParam.taskNum" />
         </a-form-item>
         <a-form-item>
-          <a-select v-model="queryParam.approveStatus" allowClear style="width: 150px" placeholder="销售负责人">
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>
+          <a-select v-model="queryParam.saleUserId" allowClear style="width: 150px" placeholder="销售负责人">
+            <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
+              item.trueName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -30,12 +29,7 @@
           />
         </a-form-item>
         <a-form-item>
-          <a-input
-            placeholder="主板号模糊查询"
-            allowClear
-            style="width: 150px"
-            v-model="queryParam.linkmanOrContactNumber"
-          />
+          <a-input placeholder="主板号模糊查询" allowClear style="width: 150px" v-model="queryParam.mainBoardNo" />
         </a-form-item>
         <a-form-item>
           <a-select v-model="queryParam.source" allowClear style="width: 150px" placeholder="来源">
@@ -106,7 +100,7 @@
               </template>
               <template v-if="record.taskStatus === 3 && record.serviceMode === 1">
                 <a-divider type="vertical" />
-                <a @click="handleAdd('veiw', record)">验收单下载</a>
+                <a v-download="record.acceptanceUrl">验收单下载</a>
                 <a-divider type="vertical" />
                 <a @click="checkAdd('add', record)">验收单</a>
               </template>
@@ -231,7 +225,7 @@ import Application from './application'
 import PartsForm from './partsForm'
 import Check from './check'
 import ActionForm from '../../exception/ActionForm'
-
+import { listUserBySale } from '@/api/systemSetting' //销售人员
 import Approval from './Approval'
 import AfterVueOfAudit from './mode/AfterVueOfAudit'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -453,6 +447,7 @@ export default {
       vueBoolean: this.$store.getters.vueBoolean,
       customerName: '',
       saleCustomers: [],
+      personincharge: [],
       approveStatus: 0,
       audit: false,
       showFlag: true,
@@ -486,6 +481,7 @@ export default {
       handler: function (to, from) {
         if (to.name === 'access_office_My-mission') {
           this.searchAction()
+          listUserBySale().then((res) => (this.personincharge = res.data))
         }
       },
       immediate: true,

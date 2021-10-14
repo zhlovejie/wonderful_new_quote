@@ -39,13 +39,14 @@
           <a-button type="primary" v-if="item.createdName" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             {{ item.createdName }}-{{ item.createdTime }}
           </a-button>
-          <a-button v-if="item.acceptanceUrl" type="link" @click="problemdel(index)">验收单 </a-button>
+          <span style="margin-left: 15px"><a v-download="item.acceptanceUrl">验收单</a></span>
+          <!-- <a-button v-if="item.acceptanceUrl" shape="round" type="link" @click="problemdel(index)">验收单 </a-button> -->
           <tr>
             <th>序号</th>
             <th>产品名称</th>
             <th>数量（台）</th>
           </tr>
-          <tr v-for="(i, index) in item.acceptanceProductCheckVoList" :key="i.index">
+          <tr v-for="(i, index) in item.acceptanceProductList" :key="i.index">
             <td>
               {{ index + 1 }}
             </td>
@@ -130,6 +131,7 @@ export default {
       })
     },
     opinionChange(data) {
+      console.log(data)
       this.acceptanceCheckVoList.push(data)
     },
     checkAdd() {

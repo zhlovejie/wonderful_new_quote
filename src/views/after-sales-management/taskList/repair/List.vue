@@ -6,11 +6,10 @@
           <a-input style="width: 150px" placeholder="任务单编号模糊查询" allowClear v-model="queryParam.taskNum" />
         </a-form-item>
         <a-form-item>
-          <a-select v-model="queryParam.approveStatus" allowClear style="width: 150px" placeholder="销售负责人">
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>
+          <a-select v-model="queryParam.saleUserId" allowClear style="width: 150px" placeholder="销售负责人">
+            <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
+              item.trueName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -173,6 +172,7 @@
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import { listUserBySale } from '@/api/systemSetting' //销售人员
 import {
   taskDocumentPage,
   revocationTaskDocument,
@@ -258,6 +258,7 @@ export default {
       queryParam: {
         taskType: 1,
       },
+      personincharge: [],
       recordResult: {},
       queryRecord: {},
       contractState: 0,
@@ -374,6 +375,7 @@ export default {
       handler: function (to, from) {
         if (to.name === 'access_office_repair') {
           this.searchAction()
+          listUserBySale().then((res) => (this.personincharge = res.data))
         }
       },
       immediate: true,

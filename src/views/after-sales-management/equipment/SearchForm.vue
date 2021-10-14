@@ -48,7 +48,7 @@
         </a-col>
         <a-col :span="24">
           <a-form-item label="SIM卡卡号">
-            <a-input v-decorator="['cardNo']" placeholder="提交人" :allowClear="true" />
+            <a-input v-decorator="['cardNo']" placeholder="SIM卡卡号" :allowClear="true" />
           </a-form-item>
         </a-col>
         <a-col :span="24">
@@ -110,6 +110,10 @@ export default {
       if (!value) {
         return (this.saleUser = [])
       }
+      this.form.setFieldsValue({
+        villageId: undefined,
+      })
+
       this.saleUser = this.NamePage.find((i) => i.orgId === value).villageNameVoList || []
       getVillageNameList({ orgId: value }).then((res) => {
         this.saleUser = res.data

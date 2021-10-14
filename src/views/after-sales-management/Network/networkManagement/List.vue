@@ -276,7 +276,7 @@ export default {
     },
     // 新增
     handleAdd(type, e) {
-      if (type === 'edit' && e.networkType === 1) {
+      if (e !== null && e.networkType === 1) {
         this.$refs.modal1.query(type, e)
       } else {
         this.$refs.modal.query(type, e)
