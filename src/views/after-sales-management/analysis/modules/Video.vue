@@ -9,7 +9,7 @@
     :maskClosable="false"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form :form="form" labelAlign="left">
         <!-- <a-form-item label="id" hidden>
           <a-input v-decorator="['id', {}]" />
         </a-form-item> -->
@@ -17,6 +17,7 @@
           <a-select
             placeholder="问题类型"
             :disabled="isDisabled"
+            show-search
             v-decorator="[
               'problemTypeId',
               {
@@ -361,7 +362,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.ant-form-item-label-left {
+  padding-left: 20px;
+}
+/* text-align: left;
+    padding-left: 20px; */
 /* you can make up upload button and sample style by using stylesheets */
 .ant-upload-select-picture-card i {
   font-size: 32px;
@@ -377,4 +383,4 @@ export default {
   height: 400px;
   margin: 0 auto;
 }
-</style>
+</stylev>

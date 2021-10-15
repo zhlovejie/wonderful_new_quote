@@ -11,7 +11,10 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">保存</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk(0)">保存</a-button>
+        <a-button key="submit1" v-if="!isDisabled" type="primary" :loading="spinning" @click="handleOk(1)"
+          >提交</a-button
+        >
       </template>
     </template>
 
@@ -96,8 +99,8 @@
                   :allowClear="true"
                   style="width: 200px"
                 >
-                  <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
-                    item.trueName
+                  <a-select-option v-for="item in personincharge" :key="item.userId" :value="item.userId">{{
+                    item.salesmanName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
@@ -139,6 +142,13 @@
           <a-button type="primary" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             主板号：{{ item.mainBoardNo }}
           </a-button>
+          <a-button
+            type="danger"
+            size="small"
+            style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"
+            shape="round"
+            >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
+          </a-button>
           <a-button v-if="!isDisabled" type="link" @click="problemdel(index)">删除 </a-button>
           <tr>
             <td>机构</td>
@@ -166,10 +176,12 @@
               </a-modal>
             </td>
           </tr>
-          <tr>
+          <tr v-if="item.video">
             <td>视频</td>
             <td>
-              <span v-if="item.video"><a target="_blank" :href="item.video">预览</a></span>
+              <a target="_blank" :href="item.video">预览</a>
+              <a-divider type="vertical" />
+              <a target="_blank" @click="VideoClick(item)">删除</a>
             </td>
           </tr>
           <tr>
@@ -184,7 +196,7 @@
 </template>
 <script>
 import { getOrgNamePage, addAndUpdateTaskDocument, taskDocumentDetail } from '@/api/after-sales-management' //机构名称
-import { listUserBySale } from '@/api/systemSetting' //销售人员
+import { getListSalesman } from '@/api/contractListManagement' //销售人员
 import moment from 'moment'
 import CustomerSelect from './mode/CustomerSelect'
 import ProblemForm from './mode/ProblemForm'
@@ -267,7 +279,7 @@ export default {
       this.fileList1 = []
       this.type = type
       this.record = record
-      listUserBySale().then((res) => (this.personincharge = res.data))
+      getListSalesman().then((res) => (this.personincharge = res.data))
       getOrgNamePage().then((res) => (this.NamePage = res.data))
       if (type !== 'add') {
         this.fillData()
@@ -286,6 +298,9 @@ export default {
       }
       this.previewImage = file.url || file.preview
       this.previewVisible1 = true
+    },
+    VideoClick(data) {
+      data.video = undefined
     },
     // handleSearch(value) {
     //   fetch(value)
@@ -360,7 +375,7 @@ export default {
           })
       })
     },
-    handleOk() {
+    handleOk(opt) {
       let that = this
       if (that.isVeiw) {
         return (that.visible = false)
@@ -371,6 +386,10 @@ export default {
             if (that.type === 'edit-salary') {
               values.id = this.record.id
             }
+            values.isSubmit = opt
+            if (this.opinionData.length === 0) {
+              return this.$message.error('问题设备需要有数据')
+            }
             values.deviceInfoSaveBoList =
               this.opinionData.map((i) => {
                 return {
@@ -378,6 +397,7 @@ export default {
                   mainBoardNo: i.mainBoardNo,
                   orgName: i.orgName,
                   photo: i.photo,
+                  isWarranty: i.isWarranty || 0,
                   problemDescription: i.problemDescription,
                   productName: i.productName,
                   remark: i.remark,
@@ -388,8 +408,8 @@ export default {
                 }
               }) || []
             let react = this.NamePage.find((i) => i.orgId === values.orgId)
-            let react1 = this.personincharge.find((i) => i.id === values.saleUserId)
-            values.saleUserName = react1.trueName
+            let react1 = this.personincharge.find((i) => i.userId === values.saleUserId)
+            values.saleUserName = react1.salesmanName
             values.orgName = react.orgName
             values.taskType = 1
             that.spinning = true

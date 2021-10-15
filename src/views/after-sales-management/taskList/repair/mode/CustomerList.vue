@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { getcusSelectsListPage } from '@/api/contractListManagement'
+import { getCustomerListByUserId } from '@/api/contractListManagement'
 
 let columns = [
   {
@@ -109,7 +109,7 @@ export default {
       that.loading = true
       let _param = Object.assign({}, that.pagination, that.searchParams, that.extendParam)
       console.log(_param)
-      return getcusSelectsListPage(_param)
+      return getCustomerListByUserId(_param)
         .then((res) => {
           // that.saleCustomers = res.data.records
           that.saleCustomers = res.data.records.map((item) => {

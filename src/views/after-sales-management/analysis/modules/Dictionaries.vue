@@ -31,6 +31,7 @@ export default {
   },
   methods: {
     query(type, record) {
+      this.form.resetFields() // 清空表
       this.visible = true
     },
     // 点击确定提交

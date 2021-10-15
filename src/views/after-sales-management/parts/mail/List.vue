@@ -25,7 +25,7 @@
 
         <a-form-item>
           <template>
-            <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+            <a-button class="a-button" type="primary" icon="search" @click="searchCheck">查询</a-button>
           </template>
         </a-form-item>
       </a-form>
@@ -269,6 +269,10 @@ export default {
   methods: {
     handleAdd(type, record) {
       this.$refs.partsForm.query(type, record)
+    },
+    searchCheck() {
+      this.isExpanded = true
+      this.searchAction()
     },
     searchAction(opt) {
       let that = this

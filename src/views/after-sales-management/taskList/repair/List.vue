@@ -29,12 +29,7 @@
           />
         </a-form-item>
         <a-form-item>
-          <a-input
-            placeholder="主板号模糊查询"
-            allowClear
-            style="width: 150px"
-            v-model="queryParam.linkmanOrContactNumber"
-          />
+          <a-input placeholder="主板号模糊查询" allowClear style="width: 150px" v-model="queryParam.mainBoardNo" />
         </a-form-item>
         <a-form-item>
           <a-select v-model="queryParam.source" allowClear style="width: 150px" placeholder="来源">
@@ -56,7 +51,7 @@
         </a-form-item>
         <a-form-item>
           <template>
-            <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+            <a-button class="a-button" type="primary" icon="search" @click="searchCheck">查询</a-button>
           </template>
         </a-form-item>
         <div class="table-operator fl-r" v-if="$auth('repair:add')">
@@ -382,6 +377,10 @@ export default {
     },
   },
   methods: {
+    searchCheck() {
+      this.isExpanded = true
+      this.searchAction()
+    },
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})

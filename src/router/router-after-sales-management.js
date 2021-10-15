@@ -22,19 +22,7 @@ export default { //售后管理
     permission: ['permission']
   },
   redirect: '/after-sales-management',
-  children: [
-    {
-      path: '/after-sales-management/analysis',
-      name: 'after-sales-management_analysis',
-      component: () => import('@/views/after-sales-management/analysis/List'),
-      meta: {
-        title: '售后分析',
-        icon: 'select',
-        keepAlive: false,
-        permission: ['permission']
-      },
-    },
-    {
+  children: [{
       path: '/after-sales-management/equipment',
       name: 'after-sales-management_equipment',
       component: () => import('@/views/after-sales-management/equipment/List'),

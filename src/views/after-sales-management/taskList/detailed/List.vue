@@ -47,7 +47,7 @@
         </a-form-item>
         <a-form-item>
           <template>
-            <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+            <a-button class="a-button" type="primary" icon="search" @click="searchCheck">查询</a-button>
           </template>
         </a-form-item>
         <!-- <div class="table-operator fl-r">
@@ -170,12 +170,12 @@
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('receipt:one')">
+            <template>
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
             <template v-if="record.taskStatus === 4">
               <a-divider type="vertical" />
-              <a @click="handleAdd('veiw', record)">验收单</a>
+              <a @click="checkAdd('add', record)">验收单</a>
             </template>
           </span>
 
@@ -211,6 +211,7 @@
     <AfterVueOfAudit ref="afterVueOfAudit" @filet="searchAction"></AfterVueOfAudit>
     <ApproveInfo ref="approveInfoCard" />
     <Approval ref="approval" @opinionChange="searchAction" />
+        <Check ref="check" @filet="searchAction"></Check>
   </a-card>
 </template>
 
@@ -218,6 +219,7 @@
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import Approval from './Approval'
+import Check from '../My-mission/check'
 import AfterVueOfAudit from './mode/AfterVueOfAudit'
 import { listUserBySale } from '@/api/systemSetting' //销售人员
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -420,6 +422,7 @@ export default {
     STable,
     ApproveInfo,
     FormAdd,
+    Check
   },
   data() {
     return {
@@ -479,10 +482,18 @@ export default {
     },
   },
   methods: {
+    checkAdd(type, record) {
+      this.$refs.check.query(type, record)
+    },
     noPassAction(type, record) {
       let that = this
       that.$refs.approval.query(type, record)
     },
+    searchCheck() {
+      this.isExpanded = true
+      this.searchAction()
+    },
+    // this.isExpanded = true
 
     searchAction(opt) {
       let that = this

@@ -143,6 +143,10 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.custom-table-border th,
+.custom-table-border td {
+  padding: 15px;
+}
 /* you can make up upload button and sample style by using stylesheets */
 </style>

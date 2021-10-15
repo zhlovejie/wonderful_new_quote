@@ -4,7 +4,13 @@
     <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-select placeholder="设备类型" v-model="queryParam.deviceTypeId" allowClear style="width: 200px">
+          <a-select
+            placeholder="设备类型"
+            show-search
+            v-model="queryParam.deviceTypeId"
+            allowClear
+            style="width: 200px"
+          >
             <a-select-option v-for="item in Warehouse" :key="item.deviceTypeId" :value="item.deviceTypeId">{{
               item.deviceType
             }}</a-select-option>

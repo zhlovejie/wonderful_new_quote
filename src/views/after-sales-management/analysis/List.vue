@@ -4,8 +4,14 @@
     <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-select placeholder="问题类型" v-model="queryParam.problemTypeCode" allowClear style="width: 200px">
-            <a-select-option v-for="item in Warehouse" :key="item.code" :value="item.code">{{
+          <a-select
+            placeholder="问题类型"
+            show-search
+            v-model="queryParam.problemTypeCode"
+            allowClear
+            style="width: 200px"
+          >
+            <a-select-option v-for="item in Warehouse" :key="item.index" :value="item.code">{{
               item.text
             }}</a-select-option>
           </a-select>
@@ -19,7 +25,7 @@
         <a-form-item>
           <a-select placeholder="有无教程" v-model="queryParam.isTutorialVideo" allowClear style="width: 200px">
             <a-select-option :value="0">有</a-select-option>
-            <a-select-option :value="1">没有</a-select-option>
+            <a-select-option :value="1">无</a-select-option>
           </a-select>
         </a-form-item>
         <template>

@@ -221,6 +221,16 @@ export default {
         permission: ['permission']
       },
       children: [{
+          path: '/after-sales-management/analysis',
+          name: 'after-sales-management_analysis',
+          component: () => import('@/views/after-sales-management/analysis/List'),
+          meta: {
+            title: '售后分析',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          },
+        }, {
           path: '/system-setting/work-box/SoftwareProductList',
           name: 'SoftwareProductList',
           component: () => import('@/views/system-setting/work-box/SoftwareProductList'),
