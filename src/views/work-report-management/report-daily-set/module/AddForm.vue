@@ -219,7 +219,6 @@ export default {
     },
     delItem(key, index) {
       let _d = [...this[key]]
-      debugger
       _d = _d.filter((i) => i._key !== index)
       this[key] = [..._d]
     },

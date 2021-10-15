@@ -80,10 +80,11 @@ export default {
     },
     handleCustomerClick() {
       //特殊处理，，需要根据传过来的userId 来过滤列表
+
       if (this.userInfo.stationType === 2 || this.userInfo.stationType === 3) {
-        this.$refs.customerList.init({ userId: this.userInfo.id })
+        this.$refs.customerList.init({ userId: _needOptions.userId })
       } else {
-        this.$refs.customerList.init({ userId: this.userInfo.id })
+        this.$refs.customerList.init()
       }
     },
     handleClear() {

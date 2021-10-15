@@ -391,6 +391,16 @@ export function costPricePricing(parameter) {
     params: parameter
   })
 }
+//计算价格
+export function costPricePricingGetMax(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: 'priceAdjustProductConfig/costPricePricingGetMax',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //物料代码核价
 export function materialCodePricing(parameter) {
   return axios({

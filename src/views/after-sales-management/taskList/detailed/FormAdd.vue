@@ -11,10 +11,7 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk(0)">保存</a-button>
-        <a-button key="submit1" v-if="!isDisabled" type="primary" :loading="spinning" @click="handleOk(1)"
-          >提交</a-button
-        >
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">保存</a-button>
       </template>
     </template>
 
@@ -34,7 +31,7 @@
               <a-form-item>
                 <a-select
                   v-decorator="['source', { rules: [{ required: true, message: '请选择来源！' }] }]"
-                  :disabled="isDisabled"
+                  disabled
                   allowClear
                   style="width: 200px"
                   placeholder="来源"
@@ -49,18 +46,34 @@
             <td>机构名称</td>
             <td>
               <a-form-item>
-                <a-select
-                  placeholder="机构名称"
+                <!-- :filter-option="false" -->
+                <!-- <a-select
                   showSearch
-                  :disabled="isDisabled"
-                  :filterOption="filterOption"
-                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择机构名称' }] }]"
-                  :allowClear="true"
+                  placeholder="机构名称"
                   style="width: 200px"
+                  :default-active-first-option="false"
+                  :show-arrow="false"
+                  :not-found-content="null"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择机构名称！' }] }]"
+                  allowClear
                 >
                   <a-select-option v-for="item in NamePage" :key="item.orgId" :value="item.orgId">{{
                     item.orgName
                   }}</a-select-option>
+                </a-select> -->
+                <a-select
+                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择来源！' }] }]"
+                  allowClear
+                  disabled
+                  style="width: 200px"
+                  placeholder="来源"
+                >
+                  <a-select-option :value="1">400售后电话</a-select-option>
+                  <a-select-option :value="2"> 客户反馈</a-select-option>
+                  <a-select-option :value="3"> 第三方反馈</a-select-option>
+                  <a-select-option :value="4"> 销售部</a-select-option>
                 </a-select>
               </a-form-item>
             </td>
@@ -70,14 +83,14 @@
             <td>
               <CustomerSelect
                 ref="customerSelect"
-                v-if="!isDisabled"
+                v-if="false"
                 :needOptions="needOptions"
                 :options="customerSelectOptions"
                 @selected="handleCustomerSelected"
               />
               <a-form-item>
                 <a-input
-                  v-if="!isDisabled"
+                  v-if="false"
                   hidden
                   v-decorator="['customerId', { rules: [{ required: true, message: '请选择客户名称' }] }]"
                 />
@@ -93,14 +106,14 @@
                 <a-select
                   placeholder="销售负责人"
                   showSearch
-                  :disabled="saleuserShow || isDisabled"
+                  disabled
                   :filterOption="filterOption"
                   v-decorator="['saleUserId', { rules: [{ required: true, message: '请选择客户名称' }] }]"
                   :allowClear="true"
                   style="width: 200px"
                 >
-                  <a-select-option v-for="item in personincharge" :key="item.userId" :value="item.userId">{{
-                    item.salesmanName
+                  <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
+                    item.trueName
                   }}</a-select-option>
                 </a-select>
               </a-form-item>
@@ -112,7 +125,7 @@
             <td>
               <a-form-item>
                 <a-input
-                  :disabled="isDisabled"
+                  disabled
                   style="width: 200px"
                   placeholder="输入联系人"
                   v-decorator="['linkman', { rules: [{ required: true, message: '请输入联系人!' }] }]"
@@ -123,7 +136,7 @@
             <td>
               <a-form-item>
                 <a-input
-                  :disabled="isDisabled"
+                  disabled
                   style="width: 200px"
                   placeholder="输入联系人电话"
                   v-decorator="['contactNumber', { rules: [{ required: true, message: '输入联系人电话!' }] }]"
@@ -134,7 +147,7 @@
         </table>
         <h3 style="margin-top: 15px">
           问题设备
-          <a-button v-if="!isDisabled" type="link" style="margin-bottom: 15px; float: right" @click="problemadd"
+          <a-button v-if="false" type="link" style="margin-bottom: 15px; float: right" @click="problemadd"
             >新增
           </a-button>
         </h3>
@@ -142,14 +155,7 @@
           <a-button type="primary" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             主板号：{{ item.mainBoardNo }}
           </a-button>
-          <a-button
-            type="danger"
-            size="small"
-            style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"
-            shape="round"
-            >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
-          </a-button>
-          <a-button v-if="!isDisabled" type="link" @click="problemdel(index)">删除 </a-button>
+          <a-button v-if="false" type="link" @click="problemdel(index)">删除 </a-button>
           <tr>
             <td>机构</td>
             <td>{{ item.orgName }}</td>
@@ -176,12 +182,10 @@
               </a-modal>
             </td>
           </tr>
-          <tr v-if="item.video">
+          <tr>
             <td>视频</td>
             <td>
-              <a target="_blank" :href="item.video">预览</a>
-              <a-divider type="vertical" />
-              <a target="_blank" @click="VideoClick(item)">删除</a>
+              <span v-if="item.video"><a target="_blank" :href="item.video">预览</a></span>
             </td>
           </tr>
           <tr>
@@ -189,15 +193,134 @@
             <td>{{ item.remark }}</td>
           </tr>
         </table>
+        <h3>维修人员信息</h3>
+        <table class="custom-table custom-table-border">
+          <tr>
+            <td>维修人员</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  placeholder="请选择售后人员"
+                  :disabled="isVeiw"
+                  showSearch
+                  :filterOption="filterOption"
+                  v-decorator="['maintenanceUserId', { rules: [{ required: true, message: '请选择售后人员' }] }]"
+                  :allowClear="true"
+                  @change="SelectChange"
+                  style="width: 300px"
+                >
+                  <a-select-option v-for="item in AfterSale" :key="item.id" :value="item.id">{{
+                    item.trueName
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>维修人电话</td>
+            <td>{{ mobile || '自动带入' }}</td>
+          </tr>
+          <tr>
+            <td>上门服务人员</td>
+            <td>
+              <a-form-item>
+                <a-select
+                  v-decorator="['serviceType', { rules: [{ required: true, message: '请选择上门服务人员！' }] }]"
+                  allowClear
+                  :disabled="isVeiw"
+                  @change="serviceType"
+                  style="width: 300px"
+                  placeholder="上门服务人员"
+                >
+                  <a-select-option :value="0">售后人员</a-select-option>
+                  <a-select-option :value="1"> 网点</a-select-option>
+                </a-select>
+              </a-form-item>
+            </td>
+          </tr>
+          <tr>
+            <td>到达时间</td>
+            <td>
+              <a-form-item>
+                <a-date-picker
+                  show-time
+                  :disabled="isVeiw"
+                  v-decorator="[
+                    'arriveTime',
+                    {
+                      rules: [{ required: true, message: '请选择到达时间' }],
+                    },
+                  ]"
+                  style="width: 300px"
+                />
+              </a-form-item>
+            </td>
+          </tr>
+          <template v-if="serType">
+            <tr>
+              <td>上门服务人员信息</td>
+              <td>
+                <a-form-item>
+                  <a-cascader
+                    style="width: 200px"
+                    :disabled="isVeiw"
+                    :field-names="{ label: 'networkName', value: 'id', children: 'serviceUserVoList' }"
+                    :options="options"
+                    v-decorator="['networkId', { rules: [{ required: true, message: '请选择上门服务人员信息!' }] }]"
+                    placeholder="请选择上门服务人员信息"
+                  />
+                  <a @click="handleAdd('add', null)" style="padding-left: 10px">新增个人网点</a>
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td>首次故障排查费（元/次）</td>
+              <td>
+                <a-form-item>
+                  <a-input
+                    style="width: 300px"
+                    :disabled="isVeiw"
+                    placeholder="输入首次故障排查费（元/次）"
+                    v-decorator="[
+                      'screeningCost',
+                      { rules: [{ required: true, message: '输入首次故障排查费（元/次）!' }] },
+                    ]"
+                  />
+                </a-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td>故障处理费</td>
+              <td>
+                <a-form-item>
+                  <a-input
+                    style="width: 300px"
+                    :disabled="isVeiw"
+                    placeholder="输入故障处理费"
+                    v-decorator="['troubleshootingCost', { rules: [{ required: true, message: '输入故障处理费!' }] }]"
+                  />
+                </a-form-item>
+              </td>
+            </tr>
+          </template>
+        </table>
       </a-form>
       <ProblemForm ref="problemForm" @opinionChange="opinionChange" />
+      <modal ref="modal" @ok="handleSaveOk" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { getOrgNamePage, addAndUpdateTaskDocument, taskDocumentDetail } from '@/api/after-sales-management' //机构名称
-import { getListSalesman } from '@/api/contractListManagement' //销售人员
+import {
+  getOrgNamePage,
+  listUserByAfterSale,
+  networkManagementList,
+  dispatchTaskDocument,
+  taskDocumentDetail,
+} from '@/api/after-sales-management' //机构名称
+import { listUserBySale } from '@/api/systemSetting' //销售人员
 import moment from 'moment'
+import Modal from './mode/addForm'
 import CustomerSelect from './mode/CustomerSelect'
 import ProblemForm from './mode/ProblemForm'
 let uuid = () => Math.random().toString(32).slice(-10)
@@ -214,13 +337,17 @@ export default {
   components: {
     ProblemForm,
     CustomerSelect,
+    Modal,
   },
   data() {
     return {
       opinionData: [],
       record: {},
+      mobile: '',
+      options: [],
       recordDetails: {},
       visible: false,
+      serType: false,
       spinning: false,
       previewImage: '',
       previewVisible1: false,
@@ -230,6 +357,7 @@ export default {
       userInfo: this.$store.getters.userInfo,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       personincharge: [],
+      AfterSale: [],
       NamePage: [],
       customerSelectOptions: {
         inputLabel: '',
@@ -264,7 +392,6 @@ export default {
       //修改
       return this.type === 'edit-salary'
     },
-
     isDisabled() {
       return this.isVeiw
     },
@@ -272,15 +399,48 @@ export default {
 
   created() {},
   methods: {
+    handleAdd(type, e) {
+      this.$refs.modal.query(type, e)
+    },
+    // onChange(value) {
+    //   console.log(value)
+    // },
+    serviceType(value) {
+      this.serType = value === 1 ? true : false
+    },
+    SelectChange(value) {
+      let arr = this.AfterSale.find((i) => i.id === value)
+      this.mobile = arr.userInfo.mobile || ''
+    },
     moment: moment,
+    handleSaveOk() {
+      networkManagementList().then(
+        (res) =>
+          (this.options = res.data.map((i) => {
+            return {
+              networkName: i.networkName,
+              id: i.id,
+              serviceUserVoList: i.serviceUserVoList.map((u) => {
+                return {
+                  networkName: `${u.serviceUserName}(${u.contactInformation})`,
+                  id: `${u.serviceUserName}(${u.contactInformation})`,
+                }
+              }),
+            }
+          }))
+      )
+    },
     query(type, record) {
       this.visible = true
       this.fileList = []
       this.fileList1 = []
       this.type = type
       this.record = record
-      getListSalesman().then((res) => (this.personincharge = res.data))
-      getOrgNamePage().then((res) => (this.NamePage = res.data))
+      this.handleSaveOk()
+      listUserBySale().then((res) => (this.personincharge = res.data))
+      listUserByAfterSale().then((res) => (this.AfterSale = res.data))
+
+      getOrgNamePage({ size: 50, current: 1 }).then((res) => (this.NamePage = res.data.records))
       if (type !== 'add') {
         this.fillData()
       }
@@ -299,16 +459,17 @@ export default {
       this.previewImage = file.url || file.preview
       this.previewVisible1 = true
     },
-    VideoClick(data) {
-      data.video = undefined
-    },
     // handleSearch(value) {
     //   fetch(value)
     // },
     // handleChange(value) {
     //   fetch(value)
     // },
-
+    // fetch(value) {
+    //   getOrgNamePage({ orgName: value, size: 50, current: 1 }).then(() => {
+    //     this.NamePage = res.data.records
+    //   })
+    // },
     problemadd() {
       this.$refs.problemForm.query()
     },
@@ -331,6 +492,7 @@ export default {
       }
       taskDocumentDetail(id).then((res) => {
         that.recordDetails = res.data
+
         this.opinionData = res.data.deviceInfoVoList.map((item) => {
           return {
             picture: item.photo.split(',').map((i) => {
@@ -368,6 +530,25 @@ export default {
           orgName: res.data.orgName,
           taskType: res.data.taskType,
         })
+        if (this.type !== 'Dispatch') {
+          this.serType = res.data.taskUserInfo.serviceType === 1 ? true : false
+          this.mobile = res.data.taskUserInfo.maintenanceUserPhone
+          this.form.setFieldsValue({
+            maintenanceUserId: res.data.taskUserInfo.maintenanceUserId,
+            arriveTime: moment(res.data.taskUserInfo.arriveTime),
+            serviceType: res.data.taskUserInfo.serviceType,
+          })
+          if (this.serType) {
+            this.$nextTick(() => {
+              this.form.setFieldsValue({
+                screeningCost: res.data.taskUserInfo.screeningCost,
+                troubleshootingCost: res.data.taskUserInfo.troubleshootingCost,
+                networkId: [res.data.taskUserInfo.networkId, res.data.taskUserInfo.serviceUserName],
+              })
+            })
+          }
+        }
+
         that.$refs.customerSelect &&
           that.$refs.customerSelect.fill({
             id: res.data.customerId || undefined,
@@ -375,45 +556,33 @@ export default {
           })
       })
     },
-    handleOk(opt) {
+    handleOk() {
+      console.log('你是要提交')
       let that = this
-      if (that.isVeiw) {
-        return (that.visible = false)
-      }
-      if (that.type === 'add' || that.type === 'edit-salary') {
+      if (that.type === 'Dispatch' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
-            if (that.type === 'edit-salary') {
-              values.id = this.record.id
+            console.log(values)
+
+            let params = {
+              taskDocumentId: this.record.id,
+              maintenanceUserId: values.maintenanceUserId,
+              maintenanceUserPhone: this.mobile,
+              serviceType: values.serviceType,
             }
-            values.isSubmit = opt
-            if (this.opinionData.length === 0) {
-              return this.$message.error('问题设备需要有数据')
+
+            let react = this.AfterSale.find((i) => i.id === values.maintenanceUserId)
+            params.maintenanceUserName = react.trueName
+            params.arriveTime = values.arriveTime.format('YYYY-MM-DD hh:mm:ss')
+
+            if (values.serviceType === 1) {
+              params.networkId = values.networkId[0]
+              params.screeningCost = values.screeningCost
+              params.troubleshootingCost = values.troubleshootingCost
+              params.serviceUserName = values.networkId[1]
             }
-            values.deviceInfoSaveBoList =
-              this.opinionData.map((i) => {
-                return {
-                  deviceLocation: i.deviceLocation,
-                  mainBoardNo: i.mainBoardNo,
-                  orgName: i.orgName,
-                  photo: i.photo,
-                  isWarranty: i.isWarranty || 0,
-                  problemDescription: i.problemDescription,
-                  productName: i.productName,
-                  remark: i.remark,
-                  villageName: i.villageName,
-                  video: i.video,
-                  orgId: i.orgId,
-                  villageId: i.villageId,
-                }
-              }) || []
-            let react = this.NamePage.find((i) => i.orgId === values.orgId)
-            let react1 = this.personincharge.find((i) => i.userId === values.saleUserId)
-            values.saleUserName = react1.salesmanName
-            values.orgName = react.orgName
-            values.taskType = 1
             that.spinning = true
-            addAndUpdateTaskDocument(values)
+            dispatchTaskDocument(params)
               .then((res) => {
                 that.spinning = false
                 console.log(res)
@@ -431,10 +600,6 @@ export default {
       this.opinionData = []
       this.form.resetFields() // 清空表
       this.visible = false
-      this.$refs.customerSelect &&
-        this.$refs.customerSelect.fill({
-          name: undefined,
-        })
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0

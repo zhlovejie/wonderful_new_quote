@@ -11,12 +11,41 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="主板号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="isDisabled" style="width: 75%" placeholder="请输入主板号" v-decorator="['mainBoardNo']" />
+          <a-input
+            :disabled="isDisabled"
+            style="width: 75%"
+            placeholder="请输入主板号"
+            v-decorator="[
+              'mainBoardNo',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入主板号!',
+                  },
+                ],
+              },
+            ]"
+          />
           <a-button type="primary" style="margin-left: 10px" v-if="!isDisabled" @click="handleAdd()">查询</a-button>
         </a-form-item>
 
         <a-form-item label="机构名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="isDisabled" placeholder="请输入机构名称" v-decorator="['orgName']" />
+          <a-input
+            :disabled="isDisabled"
+            placeholder="请输入机构名称"
+            v-decorator="[
+              'orgName',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入机构名称!',
+                  },
+                ],
+              },
+            ]"
+          />
         </a-form-item>
         <a-form-item label="小区名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input
@@ -86,9 +115,7 @@
               },
             ]"
           />
-          <a-input hidden v-decorator="['isWarranty']" />
         </a-form-item>
-
         <a-form-item label="照片" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
             :action="uploadUrl"
@@ -205,7 +232,6 @@ export default {
       addOredit: 'add',
       type: 0,
       record: {},
-      mainBoard: undefined,
       toolType: 0,
       queryBoolean: false,
       previewVisible: false, // 图片预览框是否可见
@@ -247,18 +273,10 @@ export default {
       let arr = this.form.getFieldValue('mainBoardNo')
       console.log(arr)
       getNewDeviceInfoByMainBoardNo({ mainBoardNo: arr }).then((res) => {
-        this.mainBoard = res.data
-        if (res.data !== null) {
-          this.form.setFieldsValue({
-            villageName: res.data.villageName,
-            deviceLocation: res.data.deviceLocation,
-            orgName: res.data.orgName,
-            productName: res.data.productName,
-            // isWarranty: res.data.isWarranty,
-          })
-        } else {
-          this.$message.error('后台未匹配到对应的数据，请检查输入的主板号是否正确')
-        }
+        console.log(res.data)
+        // if(res.data!==null){
+
+        // }
       })
     },
     query(type, record) {
@@ -272,7 +290,6 @@ export default {
       this.fileList1 = []
       this.form.resetFields() // 清空表
       this.visible = false
-      this.mainBoard = null
     },
     handleOk() {
       const _this = this
@@ -283,15 +300,11 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
-          console.log(values)
           if (this.isEdit) {
             values.id = this.record.id
           }
           if (this.fileList.length !== 0) {
             values.video = this.fileList.map((i) => (i.response && i.response.data[0].url) || i.url).toString() || ''
-          }
-          if (this.mainBoard !== null) {
-            values.isWarranty = this.mainBoard.isWarranty
           }
           if (this.fileList1.length !== 0) {
             values.photo = this.fileList1.map((i) => (i.response && i.response.data) || i.url).toString() || ''

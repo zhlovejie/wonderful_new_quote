@@ -6,11 +6,10 @@
           <a-input style="width: 150px" placeholder="任务单编号模糊查询" allowClear v-model="queryParam.taskNum" />
         </a-form-item>
         <a-form-item>
-          <a-select v-model="queryParam.approveStatus" allowClear style="width: 150px" placeholder="销售负责人">
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>
+          <a-select v-model="queryParam.saleUserId" allowClear style="width: 150px" placeholder="销售负责人">
+            <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
+              item.trueName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -30,12 +29,7 @@
           />
         </a-form-item>
         <a-form-item>
-          <a-input
-            placeholder="主板号模糊查询"
-            allowClear
-            style="width: 150px"
-            v-model="queryParam.linkmanOrContactNumber"
-          />
+          <a-input placeholder="主板号模糊查询" allowClear style="width: 150px" v-model="queryParam.mainBoardNo" />
         </a-form-item>
         <a-form-item>
           <a-select v-model="queryParam.source" allowClear style="width: 150px" placeholder="来源">
@@ -56,11 +50,11 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <template v-if="$auth('receipt:list')">
-            <a-button class="a-button" type="primary" icon="search" @click="searchAction">查询</a-button>
+          <template>
+            <a-button class="a-button" type="primary" icon="search" @click="searchCheck">查询</a-button>
           </template>
         </a-form-item>
-        <div class="table-operator fl-r">
+        <div class="table-operator fl-r" v-if="$auth('repair:add')">
           <a-button type="primary" @click="handleAdd('add', null)" style="margin-left: 8px">
             新增 <a-icon type="plus" />
           </a-button>
@@ -79,32 +73,55 @@
           @expand="expandHandler"
         >
           <span slot="taskType" slot-scope="text, record">
-            <span> {{ { 1: '维修任务单', 2: '售后任务单' }[text] || '未知' }}</span>
+            <span> {{ { 1: '维修任务单', 2: '产品调试任务单' }[text] || '未知' }}</span>
           </span>
           <span slot="source" slot-scope="text, record">
             <span> {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[text] || '未知' }}</span>
           </span>
           <div slot="taskStatus" slot-scope="text, record">
             <a @click="handleClick(record)">{{
-              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回' }[text] || '未知'
+              { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回', 6: '完结' }[text] || '未知'
             }}</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('receipt:one')">
+            <template v-if="$auth('repair:veiw')">
               <a @click="handleAdd('veiw', record)">详情</a>
             </template>
-            <template v-if="$auth('receipt:edit') && +record.taskStatus === 0 && userInfo.id === record.createdId">
+            <template
+              v-if="
+                $auth('repair:edit') &&
+                (+record.taskStatus === 0 || +record.taskStatus === 5) &&
+                userInfo.id === record.createdId
+              "
+            >
               <a-divider type="vertical" />
-              <a @click="handleAdd('edit', record)">修改</a>
+              <a @click="handleAdd('edit-salary', record)">修改</a>
             </template>
             <template
-              v-if="$auth('receipt:del') && !audit && userInfo.id === record.createdId && +record.taskStatus === 0"
+              v-if="
+                $auth('repair:del') &&
+                !audit &&
+                userInfo.id === record.createdId &&
+                (+record.taskStatus === 0 || +record.taskStatus === 5)
+              "
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-
-            <template v-if="!audit && record.taskStatus === 1">
+            <template
+              v-if="
+                $auth('repair:Document') &&
+                !audit &&
+                userInfo.id === record.createdId &&
+                (+record.taskStatus === 0 || +record.taskStatus === 5)
+              "
+            >
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认提交该条数据吗?" @confirm="() => doAction('Document', record)">
+                <a type="primary" href="javascript:;">提交</a>
+              </a-popconfirm>
+            </template>
+            <template v-if="$auth('repair:reback') && !audit && record.taskStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -150,7 +167,13 @@
 import { STable } from '@/components'
 import FormAdd from './FormAdd'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-import { taskDocumentPage, revocationTaskDocument, delTaskDocument } from '@/api/after-sales-management'
+import { listUserBySale } from '@/api/systemSetting' //销售人员
+import {
+  taskDocumentPage,
+  revocationTaskDocument,
+  delTaskDocument,
+  submitTaskDocument,
+} from '@/api/after-sales-management'
 const innerColumns = [
   {
     align: 'center',
@@ -227,7 +250,10 @@ export default {
       form: this.$form.createForm(this),
       userInfo: this.$store.getters.userInfo,
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        taskType: 1,
+      },
+      personincharge: [],
       recordResult: {},
       queryRecord: {},
       contractState: 0,
@@ -344,12 +370,17 @@ export default {
       handler: function (to, from) {
         if (to.name === 'access_office_repair') {
           this.searchAction()
+          listUserBySale().then((res) => (this.personincharge = res.data))
         }
       },
       immediate: true,
     },
   },
   methods: {
+    searchCheck() {
+      this.isExpanded = true
+      this.searchAction()
+    },
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})
@@ -398,6 +429,7 @@ export default {
           // 在这里调用删除接口
           delTaskDocument({ id: row.id }).then((res) => {
             if (res.code == 200) {
+              that.$message.info(res.msg)
               _this.searchAction()
             } else {
               _this.$message.error(res.msg)
@@ -423,7 +455,14 @@ export default {
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        revocationTaskDocument(`id=${record.id}`).then((res) => {
+        revocationTaskDocument({ id: record.id }).then((res) => {
+          that.$message.info(res.msg)
+          that.searchAction()
+        })
+        return
+      }
+      if (type === 'Document') {
+        submitTaskDocument({ id: record.id }).then((res) => {
           that.$message.info(res.msg)
           that.searchAction()
         })
