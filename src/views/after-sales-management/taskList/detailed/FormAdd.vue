@@ -21,130 +21,32 @@
         <table class="custom-table custom-table-border">
           <tr>
             <td>任务单类型</td>
-            <td>设备维修</td>
+            <td>维修任务单</td>
             <td>任务单编号</td>
             <td>{{ record && record.taskNum ? record.taskNum : '系统自动生成' }}</td>
           </tr>
           <tr>
             <td>来源</td>
             <td>
-              <a-form-item>
-                <a-select
-                  v-decorator="['source', { rules: [{ required: true, message: '请选择来源！' }] }]"
-                  disabled
-                  allowClear
-                  style="width: 200px"
-                  placeholder="来源"
-                >
-                  <a-select-option :value="1">400售后电话</a-select-option>
-                  <a-select-option :value="2"> 客户反馈</a-select-option>
-                  <a-select-option :value="3"> 第三方反馈</a-select-option>
-                  <a-select-option :value="4"> 销售部</a-select-option>
-                </a-select>
-              </a-form-item>
+              {{ { 1: '400售后电话', 2: '客户反馈', 3: '第三方反馈', 4: '销售部' }[record.source] || '未知' }}
             </td>
             <td>机构名称</td>
-            <td>
-              <a-form-item>
-                <!-- :filter-option="false" -->
-                <!-- <a-select
-                  showSearch
-                  placeholder="机构名称"
-                  style="width: 200px"
-                  :default-active-first-option="false"
-                  :show-arrow="false"
-                  :not-found-content="null"
-                  @search="handleSearch"
-                  @change="handleChange"
-                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择机构名称！' }] }]"
-                  allowClear
-                >
-                  <a-select-option v-for="item in NamePage" :key="item.orgId" :value="item.orgId">{{
-                    item.orgName
-                  }}</a-select-option>
-                </a-select> -->
-                <a-select
-                  v-decorator="['orgId', { rules: [{ required: true, message: '请选择来源！' }] }]"
-                  allowClear
-                  disabled
-                  style="width: 200px"
-                  placeholder="来源"
-                >
-                  <a-select-option :value="1">400售后电话</a-select-option>
-                  <a-select-option :value="2"> 客户反馈</a-select-option>
-                  <a-select-option :value="3"> 第三方反馈</a-select-option>
-                  <a-select-option :value="4"> 销售部</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
+            <td>{{ record.orgName }}</td>
           </tr>
           <tr>
             <td>客户名称</td>
-            <td>
-              <CustomerSelect
-                ref="customerSelect"
-                v-if="false"
-                :needOptions="needOptions"
-                :options="customerSelectOptions"
-                @selected="handleCustomerSelected"
-              />
-              <a-form-item>
-                <a-input
-                  v-if="false"
-                  hidden
-                  v-decorator="['customerId', { rules: [{ required: true, message: '请选择客户名称' }] }]"
-                />
-                <span v-else>{{ recordDetails.customerName }}</span>
-              </a-form-item>
-              <a-form-item hidden>
-                <a-input v-decorator="['customerName']" />
-              </a-form-item>
-            </td>
-            <td>销售负责人</td>
-            <td>
-              <a-form-item>
-                <a-select
-                  placeholder="销售负责人"
-                  showSearch
-                  disabled
-                  :filterOption="filterOption"
-                  v-decorator="['saleUserId', { rules: [{ required: true, message: '请选择客户名称' }] }]"
-                  :allowClear="true"
-                  style="width: 200px"
-                >
-                  <a-select-option v-for="item in personincharge" :key="item.id" :value="item.id">{{
-                    item.trueName
-                  }}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </td>
+            <td>{{ record.customerName }}</td>
+            <td>销售联系人</td>
+            <td>{{ record.saleUserName }}</td>
           </tr>
-
           <tr>
             <td>联系人</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  disabled
-                  style="width: 200px"
-                  placeholder="输入联系人"
-                  v-decorator="['linkman', { rules: [{ required: true, message: '请输入联系人!' }] }]"
-                />
-              </a-form-item>
-            </td>
+            <td>{{ record.linkman }}</td>
             <td>联系人电话</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  disabled
-                  style="width: 200px"
-                  placeholder="输入联系人电话"
-                  v-decorator="['contactNumber', { rules: [{ required: true, message: '输入联系人电话!' }] }]"
-                />
-              </a-form-item>
-            </td>
+            <td>{{ record.contactNumber }}</td>
           </tr>
         </table>
+
         <h3 style="margin-top: 15px">
           问题设备
           <a-button v-if="false" type="link" style="margin-bottom: 15px; float: right" @click="problemadd"
@@ -155,7 +57,13 @@
           <a-button type="primary" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             主板号：{{ item.mainBoardNo }}
           </a-button>
-          <a-button v-if="false" type="link" @click="problemdel(index)">删除 </a-button>
+          <a-button
+            type="danger"
+            size="small"
+            style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"
+            shape="round"
+            >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
+          </a-button>
           <tr>
             <td>机构</td>
             <td>{{ item.orgName }}</td>
@@ -196,7 +104,7 @@
         <h3>维修人员信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>维修人员</td>
+            <td class="requiredMark">维修人员</td>
             <td>
               <a-form-item>
                 <a-select
@@ -207,7 +115,7 @@
                   v-decorator="['maintenanceUserId', { rules: [{ required: true, message: '请选择售后人员' }] }]"
                   :allowClear="true"
                   @change="SelectChange"
-                  style="width: 300px"
+                  style="width: 400px"
                 >
                   <a-select-option v-for="item in AfterSale" :key="item.id" :value="item.id">{{
                     item.trueName
@@ -217,11 +125,11 @@
             </td>
           </tr>
           <tr>
-            <td>维修人电话</td>
+            <td class="requiredMark">维修人电话</td>
             <td>{{ mobile || '自动带入' }}</td>
           </tr>
           <tr>
-            <td>上门服务人员</td>
+            <td class="requiredMark">上门服务人员</td>
             <td>
               <a-form-item>
                 <a-select
@@ -229,7 +137,7 @@
                   allowClear
                   :disabled="isVeiw"
                   @change="serviceType"
-                  style="width: 300px"
+                  style="width: 400px"
                   placeholder="上门服务人员"
                 >
                   <a-select-option :value="0">售后人员</a-select-option>
@@ -239,7 +147,7 @@
             </td>
           </tr>
           <tr>
-            <td>到达时间</td>
+            <td class="requiredMark">到达时间</td>
             <td>
               <a-form-item>
                 <a-date-picker
@@ -251,34 +159,36 @@
                       rules: [{ required: true, message: '请选择到达时间' }],
                     },
                   ]"
-                  style="width: 300px"
+                  style="width: 400px"
                 />
               </a-form-item>
             </td>
           </tr>
           <template v-if="serType">
             <tr>
-              <td>上门服务人员信息</td>
+              <td class="requiredMark">上门服务人员信息</td>
               <td>
                 <a-form-item>
                   <a-cascader
-                    style="width: 200px"
+                    style="width: 300px"
                     :disabled="isVeiw"
                     :field-names="{ label: 'networkName', value: 'id', children: 'serviceUserVoList' }"
                     :options="options"
                     v-decorator="['networkId', { rules: [{ required: true, message: '请选择上门服务人员信息!' }] }]"
                     placeholder="请选择上门服务人员信息"
                   />
-                  <a @click="handleAdd('add', null)" style="padding-left: 10px">新增个人网点</a>
+                  <a v-if="!isVeiw" @click="handleAdd('add', null)" style="padding-left: 10px; float: right"
+                    >新增个人网点</a
+                  >
                 </a-form-item>
               </td>
             </tr>
             <tr>
-              <td>首次故障排查费（元/次）</td>
+              <td class="requiredMark">首次故障排查费（元/次）</td>
               <td>
                 <a-form-item>
                   <a-input
-                    style="width: 300px"
+                    style="width: 400px"
                     :disabled="isVeiw"
                     placeholder="输入首次故障排查费（元/次）"
                     v-decorator="[
@@ -290,11 +200,11 @@
               </td>
             </tr>
             <tr>
-              <td>故障处理费</td>
+              <td class="requiredMark">故障处理费</td>
               <td>
                 <a-form-item>
                   <a-input
-                    style="width: 300px"
+                    style="width: 400px"
                     :disabled="isVeiw"
                     placeholder="输入故障处理费"
                     v-decorator="['troubleshootingCost', { rules: [{ required: true, message: '输入故障处理费!' }] }]"
@@ -609,6 +519,15 @@ export default {
 </script>
 <style scoped>
 /*自定义table样式*/
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .custom-table {
   margin-bottom: 0;
 }

@@ -3,6 +3,12 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item>
+          <a-select v-model="queryParam.taskType" allowClear style="width: 150px" placeholder="任务单类型">
+            <a-select-option :value="1"> 维修任务单</a-select-option>
+            <a-select-option :value="2">产品调试任务单</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
           <a-input style="width: 150px" placeholder="任务单编号模糊查询" allowClear v-model="queryParam.taskNum" />
         </a-form-item>
         <a-form-item>
@@ -41,8 +47,8 @@
         </a-form-item>
         <a-form-item>
           <a-select v-model="queryParam.isWarranty" allowClear style="width: 150px" placeholder="是否过保">
-            <a-select-option :value="0">不过</a-select-option>
-            <a-select-option :value="1">过</a-select-option>
+            <a-select-option :value="0">否</a-select-option>
+            <a-select-option :value="1">是</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -56,9 +62,20 @@
       <a-col>
         <div>
           <a-tabs defaultActiveKey="2" @change="paramClick">
-            <a-tab-pane tab="进行中" key="2"> </a-tab-pane>
+            <template>
+              <a-tab-pane key="2">
+                <span slot="tab"> 进行中 ( {{ Totalmessages.ongoingNum || 0 }} ) </span>
+              </a-tab-pane>
+              <a-tab-pane key="4">
+                <span slot="tab"> 已完结 ( {{ Totalmessages.endNum || 0 }} ) </span>
+              </a-tab-pane>
+              <a-tab-pane key="0">
+                <span slot="tab"> 全部 ( {{ Totalmessages.allNum || 0 }} ) </span>
+              </a-tab-pane>
+            </template>
+            <!-- <a-tab-pane tab="进行中" key="2"> </a-tab-pane>
             <a-tab-pane tab="已完结" key="4"> </a-tab-pane>
-            <a-tab-pane tab="全部" key="0"> </a-tab-pane>
+            <a-tab-pane tab="全部" key="0"> </a-tab-pane> -->
           </a-tabs>
         </div>
         <a-table
@@ -85,6 +102,8 @@
           <span slot="action" slot-scope="text, record">
             <template v-if="queryParam.taskDetailStatus === '2'">
               <template v-if="record.taskStatus === 2">
+                <a @click="handleAdd('veiw', record)">详情</a>
+                <a-divider type="vertical" />
                 <a @click="handleAdd('handle', record)">处理</a>
               </template>
               <template v-if="record.taskStatus === 3">
@@ -230,6 +249,7 @@ import Approval from './Approval'
 import AfterVueOfAudit from './mode/AfterVueOfAudit'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import {
+  taskDocumentStatusNum,
   taskDocumentPage,
   revocationTaskDocument,
   submitTaskDocument,
@@ -438,10 +458,11 @@ export default {
       // 查询参数
       queryParam: {
         taskDetailStatus: '2',
-        taskType: 3,
+        myTask: 1,
       },
       recordResult: {},
       queryRecord: {},
+      Totalmessages: {},
       contractState: 0,
       saleCustomer: 0,
       vueBoolean: this.$store.getters.vueBoolean,
@@ -522,6 +543,9 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
+      taskDocumentStatusNum(_searchParam).then((res) => {
+        this.Totalmessages = res.data
+      })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

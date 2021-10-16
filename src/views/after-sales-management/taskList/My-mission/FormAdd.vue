@@ -21,7 +21,7 @@
         <table class="custom-table custom-table-border">
           <tr>
             <td>任务单类型</td>
-            <td>产品调试任务单</td>
+            <td>维修任务单</td>
             <td>任务单编号</td>
             <td>{{ record.taskNum }}</td>
           </tr>
@@ -51,6 +51,22 @@
           <a-button type="primary" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             主板号：{{ item.mainBoardNo }}
           </a-button>
+          <a-button
+            v-if="item.isWarranty === 0 || item.isWarranty === 1"
+            type="danger"
+            size="small"
+            style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"
+            shape="round"
+            >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
+          </a-button>
+          是否过保
+          <a-radio-group name="radioGroup" v-model="item.isWarranty">
+            <a-radio value="0"> 是 </a-radio>
+            <a-radio value="1"> 否 </a-radio>
+          </a-radio-group>
+          <!-- <a-checkbox style="margin-left: 15px" v-if="item.isWarranty === -1" v-model="item.isWarranty">
+            是否过保
+          </a-checkbox> -->
           <a-button v-if="false" type="link" @click="problemdel(index)">删除 </a-button>
           <tr>
             <td>机构</td>
@@ -136,7 +152,7 @@
               <a-form-item>
                 <a-date-picker
                   show-time
-                  disabled
+                  :disabled="isVeiw"
                   v-decorator="[
                     'arriveTime',
                     {
@@ -212,7 +228,7 @@
           </tr>
           <template v-if="sceneType">
             <tr>
-              <td>区域</td>
+              <td>实际维修地点</td>
               <td colspan="3">
                 <a-form-item>
                   <a-cascader
@@ -225,7 +241,7 @@
                     placeholder="选择省市区"
                   />
                   <a-input
-                    style="width: 200px"
+                    style="width: 300px"
                     :disabled="isDisabled"
                     placeholder="详细地址"
                     v-decorator="['actualMaintenanceLocation', { rules: [{ required: true, message: '详细地址' }] }]"
@@ -241,10 +257,7 @@
                     style="width: 200px"
                     :disabled="isDisabled"
                     placeholder="实际现场联系人"
-                    v-decorator="[
-                      'actualSiteContact',
-                      { rules: [{ required: true, message: '请输入实际现场联系人!' }] },
-                    ]"
+                    v-decorator="['actualSiteContact']"
                   />
                 </a-form-item>
               </td>
@@ -255,10 +268,7 @@
                     style="width: 200px"
                     :disabled="isDisabled"
                     placeholder="实际现场联系人电话"
-                    v-decorator="[
-                      'actualSiteContactNumber',
-                      { rules: [{ required: true, message: '实际现场联系人电话!' }] },
-                    ]"
+                    v-decorator="['actualSiteContactNumber']"
                   />
                 </a-form-item>
               </td>
@@ -533,6 +543,7 @@ export default {
               id: this.recordDetails.taskUserInfo.id,
               taskDocumentId: this.record.id,
               serviceMode: values.serviceMode,
+              arriveTime: values.arriveTime,
             }
             if (values.serviceMode === 1) {
               params.actualMaintenanceLocation = values.actualMaintenanceLocation

@@ -108,7 +108,7 @@
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template
+            <!-- <template
               v-if="
                 $auth('repair:Document') &&
                 !audit &&
@@ -120,7 +120,7 @@
               <a-popconfirm title="确认提交该条数据吗?" @confirm="() => doAction('Document', record)">
                 <a type="primary" href="javascript:;">提交</a>
               </a-popconfirm>
-            </template>
+            </template> -->
             <template v-if="$auth('repair:reback') && !audit && record.taskStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
@@ -252,6 +252,7 @@ export default {
       // 查询参数
       queryParam: {
         taskType: 1,
+        myTask: 0,
       },
       personincharge: [],
       recordResult: {},
