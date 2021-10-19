@@ -120,11 +120,28 @@ export default {
         that.spinning = true
         exceptionReportDetail({id:that.record.id}).then(res => {
           that.spinning = false
-          that.detail = res.data
+          that.detail = {
+            ...res.data,
+            source:record.source,
+            taskId:record.taskId
+          }
         }).catch(err => {
           that.spinning = false
           that.$message.error(err)
         })
+      }else{
+        that.detail = {...record}
+        if(that.detail.approveOpinion){
+          that.approvalForm = {
+            ...that.approvalForm,
+            opinion:that.detail.approveOpinion
+          }
+        }else{
+          that.approvalForm = {
+            ...that.approvalForm,
+            opinion:''
+          }
+        }
       }
     },
     handleCancel(){

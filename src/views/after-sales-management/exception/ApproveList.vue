@@ -27,6 +27,7 @@
               placeholder="责任部门"
               style="width: 150px"
               allowClear
+              show-search
               :depId.sync="queryParam.departmentId"
             />
           </a-form-item>
@@ -35,6 +36,7 @@
               placeholder="异常类型"
               style="width: 150px"
               allowClear
+              show-search
               :text="'售后异常类型'"
               :dictionaryId.sync="queryParam.exceptionTypeDicId"
             />
@@ -59,6 +61,13 @@
         :defaultActiveKey="activeKey"
         @change="tabChange"
       >
+      <template v-if="$auth('exceptionReportApproveList:findAll')">
+        <a-tab-pane
+          tab="全部"
+          :key="0"
+        />
+        </template>
+
         <a-tab-pane
           tab="待审批"
           :key="1"
@@ -115,7 +124,7 @@
 </template>
 
 <script>
-import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
+import DepartmentSelect from './DepartmentSelect'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import ActionForm from './ActionForm'
@@ -236,13 +245,30 @@ export default {
         size: that.pagination.pageSize || 10
       }
 
-      const _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      let {date} = that.queryParam
+      let dateParams = {...that.queryParam}
+      if(Array.isArray(date) && date.length === 2){
+        dateParams = {
+          ...dateParams,
+          exceptionBeginDate:date[0].format('YYYY-MM-DD'),
+          exceptionEndDate:date[1].format('YYYY-MM-DD')
+        }
+      }else{
+        dateParams = {
+          ...dateParams,
+          exceptionBeginDate:undefined,
+          exceptionEndDate:undefined
+        }
+      }
+      delete dateParams.date
+      const _searchParam = Object.assign({}, dateParams, paginationParam, params)
       that.loading = true
       exceptionReportPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.exceptionDate = String(item.exceptionDate).slice(0,10)
             return item
           })
 

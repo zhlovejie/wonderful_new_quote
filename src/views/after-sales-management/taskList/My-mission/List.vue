@@ -92,7 +92,7 @@
               </template>
               <template>
                 <a-divider type="vertical" />
-                <a @click="apply('add', null)">申请客诉</a>
+                <a @click="apply('add', record)">申请客诉</a>
               </template>
               <template v-if="record.taskStatus === 3 && record.serviceMode === 0">
                 <a-divider type="vertical" />
@@ -494,7 +494,10 @@ export default {
     },
     apply(type, record) {
       let that = this
-      that.$refs.actionForm.query(type, record)
+      that.$refs.actionForm.query(type, {
+        source:2,
+        taskId:record.id
+      })
     },
     noPassAction(type, record) {
       let that = this

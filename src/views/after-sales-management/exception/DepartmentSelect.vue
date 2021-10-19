@@ -8,16 +8,16 @@
   >
     <a-select-option
       v-for="item in depList"
-      :key="item.id"
-      :value="item.id"
+      :key="item.departmentId"
+      :value="item.departmentId"
     >{{ item.departmentName }}</a-select-option>
   </a-select>
 </template>
 
 <script>
 import {
-  departmentList //所有部门
-} from '@/api/systemSetting'
+  listExceptionReportDepartment
+} from '@/api/after-sales-management-custom'
 export default {
   props: {
     depId: [String,Number]
@@ -36,7 +36,7 @@ export default {
     },
     initDepartment() {
       const that = this
-      return departmentList().then(res => {
+      return listExceptionReportDepartment().then(res => {
         that.depList = res.data
       })
     },

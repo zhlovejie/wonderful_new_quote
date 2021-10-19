@@ -30,7 +30,7 @@
             </td>
             <td>
               <a-form-model-item prop="formCustomer">
-                <a-radio-group v-if="!isDisabled" name="radioGroup" v-model="form.formCustomer" :default-value="1">
+                <a-radio-group :disabled="isFromTask" v-if="!isDisabled" name="radioGroup" v-model="form.formCustomer" :default-value="1">
                   <a-radio :value="1">是</a-radio>
                   <a-radio :value="2">否</a-radio>
                 </a-radio-group>
@@ -145,7 +145,7 @@
             <td>
               <a-form-model-item prop="exceptionDate" >
                 <a-date-picker v-if="!isDisabled"  style="width: 100%;" v-model="form.exceptionDate" />
-                <span v-else>{{ form.exceptionDate }}</span>
+                <span v-else>{{ form.exceptionDate ? String(form.exceptionDate).slice(0,10) : form.exceptionDate }}</span>
               </a-form-model-item>
             </td>
           </tr>
@@ -161,13 +161,21 @@
             </td>
             <td>
               <a-form-model-item prop="materialCode">
-                <a-input
-                  v-if="!isDisabled"
-                  read-only="read-only"
-                  @click="handlerProductClick"
-                  placeholder="选择产品代码"
-                  :value="form.materialCode"
-                />
+                <div v-if="!isDisabled">
+                  <a-select v-if="isFromTask" allowClear :value="form.materialCode" @change=" taskProductChange">
+                    <a-select-option v-for="opt in form.productVoList" :key="opt.materialCode">
+                      {{opt.materialCode}}
+                    </a-select-option>
+                  </a-select>
+                  <a-input
+                    v-else
+                    read-only="read-only"
+                    @click="handlerProductClick"
+                    placeholder="选择产品代码"
+                    :value="form.materialCode"
+                  />
+                </div>
+
                 <span v-else>{{form.materialCode}}</span>
               </a-form-model-item>
             </td>
@@ -312,6 +320,7 @@ import {
   exceptionReportDetail,
   exceptionReportSaveAndUpdateDispose,
   exceptionReportSaveAndUpdateExceptionReport,
+  getExceptionReportTask
 } from '@/api/after-sales-management-custom'
 
 export default {
@@ -353,7 +362,8 @@ export default {
       form: {
         urgencyDegree:1,
         complaintLevel:1,
-        formCustomer:1
+        formCustomer:1,
+        exceptionDate:moment()
       },
       rules: {
         customerName:[
@@ -446,6 +456,9 @@ export default {
     },
     isDisabled(){
       return this.isView || this.isApproval || this.isHandle
+    },
+    isFromTask(){
+      return this.detail.source === 2
     }
   },
   created() {
@@ -453,12 +466,34 @@ export default {
   },
   methods: {
     query(){
+
       const that = this
       if(that.isAdd){
         that.form = {
           urgencyDegree:1,
           complaintLevel:1,
-          formCustomer:1
+          formCustomer:1,
+          exceptionDate:moment(),
+          ...that.detail
+        }
+        let {source,taskId} = that.detail
+        if(that.isFromTask){
+          that.spinning = true
+          getExceptionReportTask({taskId}).then(res => {
+            that.spinning = false
+            console.log(res)
+
+            let {code,data} = res
+            if(code === 200){
+              that.form = {
+                ...that.form,
+                ...data
+              }
+            }
+          }).catch(err => {
+            that.spinning = false
+            that.$message.error(err)
+          })
         }
       }else{
         let detail = {...that.detail}
@@ -580,6 +615,22 @@ export default {
       let pictureUrl = this.form.pictureUrl
       let imgList = pictureUrl.split(',').map(url => decodeURIComponent(url))
       this.$refs.imgViewList.show(imgList)
+    },
+    taskProductChange(val){
+      let target = this.form.productVoList.find(item => item.materialCode === val)
+      if(target){
+        this.form = {
+          ...this.form,
+          materialCode:target.materialCode,
+          materialType:target.materialType
+        }
+      }else{
+        this.form = {
+          ...this.form,
+          materialCode:undefined,
+          materialType:undefined
+        }
+      }
     }
   }
 }

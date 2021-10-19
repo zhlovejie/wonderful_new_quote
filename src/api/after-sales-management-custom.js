@@ -219,6 +219,26 @@ export function exceptionReportWithdraw(parameter) {
     data: parameter
   })
 }
+
+/**查询已存在异常单的部门列表 */
+export function listExceptionReportDepartment(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/exceptionReport/listExceptionReportDepartment',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**异常报告单任务单查询 */
+export function getExceptionReportTask(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/exceptionReport/getExceptionReportTask',
+    method: 'get',
+    params: parameter
+  })
+}
 //售后异常报告单 END
 
 

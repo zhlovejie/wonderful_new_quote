@@ -4,7 +4,10 @@
       <div class="search-wrapper">
         <a-form layout="inline">
           <a-form-item>
-            <DepartmentUserCascade allowClear :info.sync="queryParam.applyUser" style="width: 360px" />
+            <DepartmentSelect allowClear show-search placeholder="选择部门" :depId.sync="queryParam.depId" style="width: 180px" />
+          </a-form-item>
+          <a-form-item>
+            <UserSelect allowClear show-search placeholder="选择人员" :userId.sync="queryParam.createdId" style="width: 180px" />
           </a-form-item>
           <a-form-item>
             <a-range-picker v-model="queryParam.date" :placeholder="['开始日期', '结束日期']" />
@@ -95,7 +98,10 @@
 </template>
 
 <script>
-import DepartmentUserCascade from '@/components/CustomerList/DepartmentUserCascade'
+
+
+import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
+import UserSelect from '@/components/CustomerList/UserSelect'
 import AddForm from './AddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import {
@@ -147,7 +153,8 @@ const columns = [
 
 export default {
   components: {
-    DepartmentUserCascade,
+    DepartmentSelect,
+    UserSelect,
     AddForm,
     ApproveInfo,
   },
@@ -208,19 +215,19 @@ export default {
         queryParam.beginTime = undefined
         queryParam.endTime = undefined
       }
-      if (queryParam.applyUser) {
-        if (queryParam.applyUser.userId) {
-          queryParam.createdId = queryParam.applyUser.userId
-        } else {
-          queryParam.createdId = undefined
-        }
-        if (queryParam.applyUser.depId) {
-          queryParam.depId = queryParam.applyUser.depId
-        }
-      } else {
-        queryParam.createdId = undefined
-        queryParam.depId = undefined
-      }
+      // if (queryParam.applyUser) {
+      //   if (queryParam.applyUser.userId) {
+      //     queryParam.createdId = queryParam.applyUser.userId
+      //   } else {
+      //     queryParam.createdId = undefined
+      //   }
+      //   if (queryParam.applyUser.depId) {
+      //     queryParam.depId = queryParam.applyUser.depId
+      //   }
+      // } else {
+      //   queryParam.createdId = undefined
+      //   queryParam.depId = undefined
+      // }
       delete queryParam.applyUser
       delete queryParam.date
 

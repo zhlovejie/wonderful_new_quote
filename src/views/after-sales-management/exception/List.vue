@@ -27,6 +27,7 @@
               placeholder="责任部门"
               style="width: 150px"
               allowClear
+              show-search
               :depId.sync="queryParam.departmentId"
             />
           </a-form-item>
@@ -35,6 +36,7 @@
               placeholder="异常类型"
               style="width: 150px"
               allowClear
+              show-search
               :text="'售后异常类型'"
               :dictionaryId.sync="queryParam.exceptionTypeDicId"
             />
@@ -109,7 +111,7 @@
             </template>
             <!-- 1待处理-->
             <template v-if="+record.status === 1">
-              <template v-if="[2,3].includes(+record.dataType)">
+              <template v-if="$auth('exceptionReport:handle') && [2,3].includes(+record.dataType)">
                 <a-divider type="vertical" />
                 <a @click="doAction('handle',record)">处理</a>
               </template>
@@ -176,7 +178,7 @@
 </template>
 
 <script>
-import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
+import DepartmentSelect from './DepartmentSelect'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ActionForm from './ActionForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
@@ -318,6 +320,7 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.exceptionDate = String(item.exceptionDate).slice(0,10)
             return item
           })
 
@@ -355,7 +358,11 @@ export default {
     doAction(type,record){
       const that = this
       if(['add','view','edit','approval','handle'].includes(type)){
-        that.$refs.actionForm.query(type,record)
+        that.$refs.actionForm.query(type,{
+          ...record,
+          source:1,
+          taskId:undefined
+        })
         return
       }else if(type === 'feedbackAdd'){
         that.$refs.feedBackForm.query(record)
