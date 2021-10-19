@@ -54,9 +54,19 @@ const api = {
   acceptanceCheckTaskDocument: '/csupport/task-document/acceptanceCheckTaskDocument', //验收单
   mailRecordDetail: '/csupport/accessories-mail-record/mailRecordDetail', //邮寄详情
   addAndHandleMailRecord: '/csupport/accessories-mail-record/addAndHandleMailRecord', //邮寄处理
+  taskDocumentStatusNum: '/csupport/task-document/taskDocumentStatusNum', //任务数量
 
 
 
+}
+//邮寄详情
+export function taskDocumentStatusNum(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.taskDocumentStatusNum,
+    method: 'get',
+    params: parameter
+  })
 }
 //邮寄处理
 export function addAndHandleMailRecord(parameter) {

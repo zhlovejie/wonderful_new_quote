@@ -3,6 +3,12 @@
     <div class="top-ation">
       <a-form layout="inline" :form="form">
         <a-form-item>
+          <a-select v-model="queryParam.taskType" allowClear style="width: 150px" placeholder="任务单类型">
+            <a-select-option :value="1"> 维修任务单</a-select-option>
+            <a-select-option :value="2">产品调试任务单</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
           <a-input style="width: 150px" placeholder="任务单编号模糊查询" allowClear v-model="queryParam.taskNum" />
         </a-form-item>
         <a-form-item>
@@ -41,8 +47,8 @@
         </a-form-item>
         <a-form-item>
           <a-select v-model="queryParam.isWarranty" allowClear style="width: 150px" placeholder="是否过保">
-            <a-select-option :value="0">不过</a-select-option>
-            <a-select-option :value="1">过</a-select-option>
+            <a-select-option :value="0">否</a-select-option>
+            <a-select-option :value="1">是</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -50,22 +56,24 @@
             <a-button class="a-button" type="primary" icon="search" @click="searchCheck">查询</a-button>
           </template>
         </a-form-item>
-        <!-- <div class="table-operator fl-r">
-          <a-button type="primary" @click="handleAdd('add', null)" style="margin-left: 8px">
-            新增 <a-icon type="plus" />
-          </a-button>
-        </div> -->
       </a-form>
     </div>
     <a-row>
       <a-col>
         <div>
           <a-tabs defaultActiveKey="1" @change="paramClick">
-            <a-tab-pane tab="待派工" key="1" forceRender> </a-tab-pane>
-
-            <a-tab-pane tab="进行中" key="2"> </a-tab-pane>
-            <a-tab-pane tab="已完结" key="4"> </a-tab-pane>
-            <a-tab-pane tab="全部" key="0"> </a-tab-pane>
+            <a-tab-pane key="1" forceRender>
+              <span slot="tab"> 待派工 ( {{ Totalmessages.waitDispatchNum || 0 }} ) </span>
+            </a-tab-pane>
+            <a-tab-pane key="2">
+              <span slot="tab"> 进行中 ( {{ Totalmessages.ongoingNum || 0 }} ) </span>
+            </a-tab-pane>
+            <a-tab-pane key="4">
+              <span slot="tab"> 已完结 ( {{ Totalmessages.endNum || 0 }} ) </span>
+            </a-tab-pane>
+            <a-tab-pane key="0">
+              <span slot="tab"> 全部 ( {{ Totalmessages.allNum || 0 }} ) </span>
+            </a-tab-pane>
           </a-tabs>
         </div>
         <a-table
@@ -211,7 +219,7 @@
     <AfterVueOfAudit ref="afterVueOfAudit" @filet="searchAction"></AfterVueOfAudit>
     <ApproveInfo ref="approveInfoCard" />
     <Approval ref="approval" @opinionChange="searchAction" />
-        <Check ref="check" @filet="searchAction"></Check>
+    <Check ref="check" @filet="searchAction"></Check>
   </a-card>
 </template>
 
@@ -224,6 +232,7 @@ import AfterVueOfAudit from './mode/AfterVueOfAudit'
 import { listUserBySale } from '@/api/systemSetting' //销售人员
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import {
+  taskDocumentStatusNum,
   taskDocumentPage,
   revocationTaskDocument,
   delTaskDocument,
@@ -422,7 +431,7 @@ export default {
     STable,
     ApproveInfo,
     FormAdd,
-    Check
+    Check,
   },
   data() {
     return {
@@ -433,7 +442,9 @@ export default {
       // 查询参数
       queryParam: {
         taskDetailStatus: '1',
+        myTask: 0,
       },
+      Totalmessages: {},
       recordResult: {},
       queryRecord: {},
       contractState: 0,
@@ -516,6 +527,9 @@ export default {
           that.pagination = pagination
         })
         .catch((err) => (that.loading = false))
+      taskDocumentStatusNum(_searchParam).then((res) => {
+        this.Totalmessages = res.data
+      })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

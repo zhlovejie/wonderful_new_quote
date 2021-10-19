@@ -254,7 +254,7 @@ export default {
             deviceLocation: res.data.deviceLocation,
             orgName: res.data.orgName,
             productName: res.data.productName,
-            // isWarranty: res.data.isWarranty,
+            isWarranty: res.data.isWarranty,
           })
         } else {
           this.$message.error('后台未匹配到对应的数据，请检查输入的主板号是否正确')
@@ -290,9 +290,9 @@ export default {
           if (this.fileList.length !== 0) {
             values.video = this.fileList.map((i) => (i.response && i.response.data[0].url) || i.url).toString() || ''
           }
-          if (this.mainBoard !== null) {
-            values.isWarranty = this.mainBoard.isWarranty
-          }
+          // if (this.mainBoard !== null && this.mainBoard !== undefined) {
+          //   values.isWarranty = this.mainBoard.isWarranty
+          // }
           if (this.fileList1.length !== 0) {
             values.photo = this.fileList1.map((i) => (i.response && i.response.data) || i.url).toString() || ''
             values.picture = this.fileList1

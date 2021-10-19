@@ -142,7 +142,7 @@
                 <a-form-item>
                   <a-date-picker
                     show-time
-                    disabled
+                    :disabled="isVeiw"
                     v-decorator="[
                       'arriveTime',
                       {
@@ -219,7 +219,7 @@
             </tr>
             <template v-if="sceneType">
               <tr>
-                <td>区域</td>
+                <td>实际维修地点</td>
                 <td colspan="3">
                   <a-form-item>
                     <a-cascader
@@ -232,7 +232,7 @@
                       placeholder="选择省市区"
                     />
                     <a-input
-                      style="width: 200px"
+                      style="width: 300px"
                       :disabled="isDisabled"
                       placeholder="详细地址"
                       v-decorator="['actualMaintenanceLocation', { rules: [{ required: true, message: '详细地址' }] }]"
@@ -248,10 +248,7 @@
                       style="width: 200px"
                       :disabled="isDisabled"
                       placeholder="实际现场联系人"
-                      v-decorator="[
-                        'actualSiteContact',
-                        { rules: [{ required: true, message: '请输入实际现场联系人!' }] },
-                      ]"
+                      v-decorator="['actualSiteContact']"
                     />
                   </a-form-item>
                 </td>
@@ -262,10 +259,7 @@
                       style="width: 200px"
                       :disabled="isDisabled"
                       placeholder="实际现场联系人电话"
-                      v-decorator="[
-                        'actualSiteContactNumber',
-                        { rules: [{ required: true, message: '实际现场联系人电话!' }] },
-                      ]"
+                      v-decorator="['actualSiteContactNumber']"
                     />
                   </a-form-item>
                 </td>
@@ -359,6 +353,7 @@ export default {
               id: this.recordDetails.taskUserInfo.id,
               taskDocumentId: this.reacd.id,
               serviceMode: values.serviceMode,
+              arriveTime: values.arriveTime,
             }
             if (values.serviceMode === 1) {
               params.actualMaintenanceLocation = values.actualMaintenanceLocation
