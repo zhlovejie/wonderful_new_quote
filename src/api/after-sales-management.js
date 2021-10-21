@@ -55,9 +55,19 @@ const api = {
   mailRecordDetail: '/csupport/accessories-mail-record/mailRecordDetail', //邮寄详情
   addAndHandleMailRecord: '/csupport/accessories-mail-record/addAndHandleMailRecord', //邮寄处理
   taskDocumentStatusNum: '/csupport/task-document/taskDocumentStatusNum', //任务数量
+  updateTaskDocument: '/csupport/task-document/updateTaskDocument', //任务修改
 
 
 
+}
+//任务修改
+export function updateTaskDocument(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.updateTaskDocument,
+    method: 'post',
+    data: parameter
+  })
 }
 //邮寄详情
 export function taskDocumentStatusNum(parameter) {
@@ -257,6 +267,7 @@ export function handleTaskDocument(parameter) {
     data: parameter
   })
 }
+
 //任务单重新派工
 export function againDispatchTaskDocument(parameter) {
   return axios({

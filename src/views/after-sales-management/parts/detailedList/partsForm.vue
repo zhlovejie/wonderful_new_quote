@@ -11,9 +11,11 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-popconfirm title="确认是否愿意担保吗?" @confirm="() => handleOk()">
-          <a-button key="submit" type="primary">保存</a-button>
+        <a-button v-if="details.formKey === '3'" key="submit1" type="primary" @click="handleOk()">完结</a-button>
+        <a-popconfirm v-else-if="details.formKey === '1'" title="确认是否愿意担保吗?" @confirm="() => handleOk()">
+          <a-button key="submit" type="primary">处理</a-button>
         </a-popconfirm>
+        <a-button v-else key="submit1" type="primary" @click="handleOk()">处理</a-button>
       </template>
     </template>
 
@@ -75,7 +77,7 @@
               <div style="text-align: right; font-size: 16px; color: red">
                 <span>数量合计：{{ totalPrice }}</span>
                 <span style="margin: 0 10px">单价合计：{{ totalPhase | moneyFormatNumber }}</span>
-                <span>金额合计：{{ totalPhase1 | moneyFormatNumber }}</span>
+                <span>金额合计：{{ details.totalAmount | moneyFormatNumber }}</span>
               </div>
             </div>
           </a-table>
@@ -118,11 +120,21 @@
         <table class="custom-table custom-table-border">
           <tr>
             <td>付款方式</td>
-            <td>{{ form.paymentType === 0 ? '完结付款' : form.paymentType === 1 ? '先付款' : '免付款' }}</td>
+            <td>
+              {{
+                form.paymentType === 0
+                  ? '完结付款'
+                  : form.paymentType === 1
+                  ? '先付款'
+                  : form.paymentType === 2
+                  ? '免付款'
+                  : '赠送'
+              }}
+            </td>
           </tr>
           <tr v-if="form.paymentType === 0 || form.paymentType === 2">
             <td>处理人</td>
-            <td>{{ form.mailRecord.contactNumber }}</td>
+            <td>{{ form.handlerUser.split(',')[1] }}</td>
           </tr>
           <tr>
             <td>备注</td>
@@ -130,7 +142,7 @@
               {{ form.remark }}
             </td>
           </tr>
-          <tr>
+          <tr v-if="details.formKey === '1' || details.handlerResult === 0 || details.handlerResult === 1">
             <td>是否愿意担保</td>
             <td>
               <a-switch
@@ -227,12 +239,12 @@ export default {
         return parseFloat(addr).toFixed(2)
       }, 0)
     },
-    totalPhase1() {
-      return this.form.productInfoList.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.money || 0)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
+    // totalPhase1() {
+    //   return this.form.productInfoList.reduce((addr, item) => {
+    //     addr = Number(addr) + Number(item.money || 0)
+    //     return parseFloat(addr).toFixed(2)
+    //   }, 0)
+    // },
     travelColumns() {
       const baseColumns = [
         {

@@ -44,7 +44,7 @@
               <a-form-item>
                 <a-input
                   style="width: 400px"
-                  disabled
+                  @change="onchange"
                   placeholder="输入首次故障排查费（元/次）"
                   v-decorator="[
                     'screeningCost',
@@ -59,8 +59,8 @@
             <td>
               <a-form-item>
                 <a-input
+                  @change="onchange1"
                   style="width: 400px"
-                  disabled
                   placeholder="输入故障处理费"
                   v-decorator="['troubleshootingCost', { rules: [{ required: true, message: '输入故障处理费!' }] }]"
                 />
@@ -104,13 +104,7 @@
               </a-form-item>
             </td>
             <td>付款总额</td>
-            <td>
-              {{
-                recordDetails.taskUserInfo &&
-                recordDetails.taskUserInfo.troubleshootingCost + recordDetails.taskUserInfo &&
-                recordDetails.taskUserInfo.screeningCost
-              }}
-            </td>
+            <td>{{ Number(arr) + Number(arr1) }}</td>
           </tr>
           <tr>
             <td>付款附言</td>
@@ -139,6 +133,8 @@ export default {
   components: {},
   data() {
     return {
+      arr: undefined,
+      arr1: undefined,
       opinionData: [],
       birthplaceOptions: [], //籍贯 级联 省市
       labelName: undefined,
@@ -178,10 +174,27 @@ export default {
     isDisabled() {
       return this.isVeiw
     },
+    // total() {
+    //   this.istotal()
+    // },
   },
 
   created() {},
   methods: {
+    onchange(e) {
+      const v = e.target.value
+      this.arr = v
+    },
+    onchange1(e) {
+      const v = e.target.value
+      this.arr1 = v
+    },
+    // istotal() {
+    //   let arr = this.form.getFieldValue('screeningCost')
+    //   let arr1 = this.form.getFieldValue('troubleshootingCost')
+    //   console.log(arr)
+    //   console.log(arr1)
+    // },
     async query(type, record) {
       this.visible = true
       this.fileList = []
@@ -213,6 +226,8 @@ export default {
       taskDocumentDetail(id).then((res) => {
         that.recordDetails = res.data
         this.$nextTick(() => {
+          this.arr = res.data.taskUserInfo.screeningCost
+          this.arr1 = res.data.taskUserInfo.troubleshootingCost
           this.form.setFieldsValue({
             screeningCost: res.data.taskUserInfo.screeningCost,
             troubleshootingCost: res.data.taskUserInfo.troubleshootingCost,

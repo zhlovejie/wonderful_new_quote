@@ -30,7 +30,7 @@
             <td>企业</td>
           </tr>
           <tr>
-            <td>网点名称</td>
+            <td class="requiredMark">网点名称</td>
             <td>
               <a-form-item>
                 <a-input
@@ -52,66 +52,35 @@
             </td>
           </tr>
           <tr>
-            <td>区域</td>
-            <td>
+            <td class="requiredMark">区域</td>
+            <td style="width: 80%">
               <a-form-item>
                 <a-cascader
                   :disabled="isDisabled"
-                  v-decorator="['territory', { rules: [{ required: true, message: '选择省市区' }] }]"
+                  v-decorator="['territory', { rules: [{ required: true, message: '选择省市' }] }]"
                   :options="birthplaceOptions"
                   @change="birthplaceCascaderChange"
                   :loadData="birthplaceCascaderLoadData"
-                  placeholder="选择省市区"
+                  placeholder="选择省市"
                 />
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  :disabled="isDisabled"
+                  mode="multiple"
+                  v-decorator="['region', { rules: [{ required: true, message: '选择区' }] }]"
+                  placeholder="选择区"
+                >
+                  <a-select-option v-for="i in areaList" :key="i.id" :value="i.id">
+                    {{ i.area }}
+                  </a-select-option>
+                </a-select>
               </a-form-item>
             </td>
           </tr>
-          <!-- <tr>
-            <td>业务员</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder="请输入业务员名称"
-                  v-decorator="[
-                    'serviceUserName',
-                    {
-                      rules: [
-                        {
-                          required: true,
-                          message: '请输入正确业务员名称!',
-                        },
-                      ],
-                    },
-                  ]"
-                />
-              </a-form-item>
-            </td>
-          </tr>
+
           <tr>
-            <td>业务员电话</td>
-            <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder="请输入业务员电话"
-                  v-decorator="[
-                    'contactInformation',
-                    {
-                      rules: [
-                        {
-                          required: true,
-                          message: '请输入正确业务员电话!',
-                        },
-                      ],
-                    },
-                  ]"
-                />
-              </a-form-item>
-            </td>
-          </tr> -->
-          <tr>
-            <td>营业执照</td>
+            <td class="requiredMark">营业执照</td>
             <td>
               <a-form-item>
                 <a-upload
@@ -138,12 +107,12 @@
         <table class="custom-table custom-table-border">
           <tr>
             <th>序号</th>
-            <th>业务员名称</th>
-            <th>业务员电话</th>
+            <th class="requiredMark">业务员名称</th>
+            <th class="requiredMark">业务员电话</th>
             <th v-if="!isDisabled">操作</th>
           </tr>
           <tr v-for="(item, index) in serviceUserVoList" :key="item._key">
-            <td style="width: 150px">{{ index + 1 }}</td>
+            <td style="width: 20%">{{ index + 1 }}</td>
             <td>
               <a-form-item>
                 <a-input
@@ -193,13 +162,16 @@
 
         <table class="custom-table custom-table-border">
           <tr>
-            <td>协议文件</td>
+            <td style="width: 20%" class="requiredMark">协议文件</td>
             <td>
-              <a-form-item>
+              <a-form-item v-if="!isView">
                 <a-upload :action="uploadUrl" :disabled="isDisabled" :fileList="fileList1" @change="handleChange1">
                   <a-button> <a-icon type="upload" /> 上传文件 </a-button>
                 </a-upload>
               </a-form-item>
+              <span v-else
+                ><a v-download="record.businessLicenseUrl">{{ record.businessLicenseUrl.substr(41, 300) }}</a>
+              </span>
             </td>
           </tr>
         </table>
@@ -216,6 +188,14 @@ import { getUploadVideoPath } from '@/api/manage'
 import { getUploadPath2, getAreaByParent } from '@/api/common'
 import Approval from './Approval'
 let uuid = () => Math.random().toString(32).slice(-10)
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'EnterpriseSynopsis',
   components: {
@@ -233,6 +213,7 @@ export default {
       },
       uploadUrl: getUploadPath2(),
       Warehouse: [],
+      areaList: [],
       serviceUserVoList: [],
       visible: false,
       confirmLoading: false,
@@ -362,7 +343,9 @@ export default {
             })
           }
         })
+        debugger
         let _arr = record.territory.split(',')
+        let _arr1 = record.region.split(',').map(Number)
         if (record.territory) {
           _arr = _arr.map((v) => parseInt(v, 10))
           let _areaCityData = await that.loadAreaAction(_arr[0])
@@ -371,13 +354,10 @@ export default {
             ctiyTargetOption.children = _areaCityData
             that.birthplaceOptions = [...that.birthplaceOptions]
           }
-
-          let _areaAreaData = await that.loadAreaAction(_arr[1])
-          let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
-          if (areaTargetOption) {
-            areaTargetOption.children = _areaAreaData
-            that.birthplaceOptions = [...that.birthplaceOptions]
-          }
+          getAreaByParent({ pId: _arr[1] }).then((res) => {
+            this.areaList = res.data
+            that.$nextTick(() => that.form.setFieldsValue({ region: _arr1 }))
+          })
           that.$nextTick(() => that.form.setFieldsValue({ territory: _arr }))
         }
       } else {
@@ -422,6 +402,10 @@ export default {
           values.networkType = 1
           values.territory = values.territory.toString()
           values.territoryName = this.labelName || this.record.territoryName
+          values.region = values.region.toString()
+          let arr = this.areaList.filter((i) => values.region.includes(i.id))
+          values.regionName = arr.map((i) => i.area).toString()
+
           _this.confirmLoading = true
           addAndUpdateEnterpriseNetwork(values)
             .then((res) => {
@@ -448,10 +432,12 @@ export default {
     previewCancel() {
       this.previewVisible = false
     },
-    handlePreview(file) {
+    async handlePreview(file) {
       // 点击文件链接或预览图标时的回调
-      this.$set(this.playerOptions.sources[0], 'src', file.url || file.thumbUrl)
-      // this.playerOptions.sources.src = file.url || file.thumbUrl
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
       this.previewVisible = true
     },
     handleChange({ file, fileList }) {
@@ -491,9 +477,13 @@ export default {
     },
 
     birthplaceCascaderChange(arrSelected) {
-      console.log('birthplaceCascaderChange called...')
       console.log(arguments)
-      this.labelName = arguments[1].map((i) => i.label).toString()
+      this.areaList = []
+
+      getAreaByParent({ pId: arrSelected[1] }).then((res) => {
+        this.areaList = res.data
+      })
+      this.labelName = arguments[1] !== undefined ? arguments[1].map((i) => i.label).toString() : ''
     },
     birthplaceCascaderLoadData(selectedOptions) {
       let that = this
@@ -507,7 +497,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]
@@ -525,7 +515,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
         })
@@ -540,6 +530,15 @@ export default {
 
 <style scoped >
 /* you can make up upload button and sample style by using stylesheets */
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .ant-upload-select-picture-card i {
   font-size: 32px;
   color: #999;

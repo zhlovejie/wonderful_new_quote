@@ -54,13 +54,15 @@
       <div slot="networkType" slot-scope="text, record, index">
         <span>{{ text === 0 ? '个人' : '企业' }}</span>
       </div>
-
+      <div slot="territoryName" slot-scope="text, record, index">
+        <span>{{ text }},{{ record.regionName }}</span>
+      </div>
       <div slot="serviceUser" slot-scope="text, record, index">
-        <span>{{ record.serviceUserVoList[0].serviceUserName }}</span>
+        <span>{{ record.serviceUser.split(',')[0] }}</span>
       </div>
 
       <div slot="contactInformation" slot-scope="text, record, index">
-        <span>{{ record.serviceUserVoList && record.serviceUserVoList[0].serviceUserName }}</span>
+        <span>{{ record.serviceUser.split(',')[1] }}</span>
       </div>
       <div slot="tutorialVideo" slot-scope="text, record, index">
         <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>
@@ -122,6 +124,7 @@ const columns = [
     title: '区域',
     key: 'territoryName',
     dataIndex: 'territoryName',
+    scopedSlots: { customRender: 'territoryName' },
   },
   {
     align: 'center',
@@ -240,7 +243,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
         })
@@ -265,7 +268,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]

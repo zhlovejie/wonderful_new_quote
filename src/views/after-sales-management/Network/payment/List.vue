@@ -4,7 +4,7 @@
     <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input v-model.trim="queryParam.networkParameter" allowClear placeholder="网点编号/网点名称" />
+          <a-input v-model.trim="queryParam.networkParameter" allowClear placeholder="网点名称" />
         </a-form-item>
         <a-form-item>
           <a-input v-model.trim="queryParam.serviceUserParameter" allowClear placeholder="业务员/业务员手机号" />
@@ -18,7 +18,7 @@
     </div>
     <div>
       <a-tabs defaultActiveKey="0" @change="paramClick">
-        <a-tab-pane tab="我提交的" :key="0" forceRender> </a-tab-pane>
+        <a-tab-pane tab="我的" :key="0" forceRender> </a-tab-pane>
 
         <template v-if="$auth('payments:approval')">
           <a-tab-pane tab="待我审批" :key="1"> </a-tab-pane>
@@ -55,7 +55,7 @@
             <template
               v-if="
                 userInfo.id === record.createdId &&
-                (record.status === 3 || +record.status === 4 || +record.status === 1) &&
+                (record.status === 3 || +record.status === 4) &&
                 $auth('payments:edit')
               "
             >
@@ -68,13 +68,7 @@
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
-            <template
-              v-if="
-                userInfo.id === record.createdId &&
-                (record.status === 3 || +record.status === 4) &&
-                $auth('payments:delete')
-              "
-            >
+            <template v-if="userInfo.id === record.createdId && record.status !== 2 && $auth('payments:delete')">
               <a-divider type="vertical" />
 
               <a class="delete" @click="() => del(record)">删除</a>
@@ -88,7 +82,7 @@
       </s-table>
     </div>
 
-    <Modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
+    <Modal ref="modal" @filet="handleSaveClose" />
     <ApproveInfo ref="approveInfoCard" />
   </a-card>
 </template>
@@ -230,7 +224,9 @@ export default {
       this.$refs.table.refresh(true)
     },
 
-    handleSaveClose() {},
+    handleSaveClose() {
+      this.searchAction()
+    },
 
     doAction(type, record) {
       let that = this

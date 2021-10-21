@@ -52,21 +52,16 @@
             主板号：{{ item.mainBoardNo }}
           </a-button>
           <a-button
-            v-if="item.isWarranty === 0 || item.isWarranty === 1"
+            v-if="item.isWarranty !== -1"
             type="danger"
             size="small"
             style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"
             shape="round"
             >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
           </a-button>
-          是否过保
-          <a-radio-group name="radioGroup" v-model="item.isWarranty">
-            <a-radio value="0"> 是 </a-radio>
-            <a-radio value="1"> 否 </a-radio>
-          </a-radio-group>
-          <!-- <a-checkbox style="margin-left: 15px" v-if="item.isWarranty === -1" v-model="item.isWarranty">
-            是否过保
-          </a-checkbox> -->
+          <a-checkbox style="margin-left: 15px" v-if="item.isWarranty === -1" v-model="item.temporaryISWarranty">
+            过保
+          </a-checkbox>
           <a-button v-if="false" type="link" @click="problemdel(index)">删除 </a-button>
           <tr>
             <td>机构</td>
@@ -94,10 +89,10 @@
               </a-modal>
             </td>
           </tr>
-          <tr>
+          <tr v-if="item.video">
             <td>视频</td>
             <td>
-              <span v-if="item.video"><a target="_blank" :href="item.video">预览</a></span>
+              <span><a target="_blank" :href="item.video">预览</a></span>
             </td>
           </tr>
           <tr>
@@ -119,7 +114,7 @@
                   v-decorator="['maintenanceUserId', { rules: [{ required: true, message: '请选择售后人员' }] }]"
                   :allowClear="true"
                   @change="SelectChange"
-                  style="width: 200px"
+                  style="width: 270px"
                 >
                   <a-select-option v-for="item in AfterSale" :key="item.id" :value="item.id">{{
                     item.trueName
@@ -139,7 +134,7 @@
                   allowClear
                   disabled
                   @change="serviceType"
-                  style="width: 200px"
+                  style="width: 270px"
                   placeholder="上门服务人员"
                 >
                   <a-select-option :value="0">售后人员</a-select-option>
@@ -159,7 +154,7 @@
                       rules: [{ required: true, message: '请选择到达时间' }],
                     },
                   ]"
-                  style="width: 200px"
+                  style="width: 270px"
                 />
               </a-form-item>
             </td>
@@ -170,7 +165,7 @@
               <td>
                 <a-form-item>
                   <a-cascader
-                    style="width: 200px"
+                    style="width: 270px"
                     disabled
                     :field-names="{ label: 'networkName', value: 'id', children: 'serviceUserVoList' }"
                     :options="options"
@@ -183,7 +178,7 @@
               <td>
                 <a-form-item>
                   <a-input
-                    style="width: 200px"
+                    style="width: 270px"
                     disabled
                     placeholder="输入首次故障排查费（元/次）"
                     v-decorator="[
@@ -233,18 +228,23 @@
                 <a-form-item>
                   <a-cascader
                     :disabled="isDisabled"
-                    style="width: 200px"
+                    style="width: 300px"
                     v-decorator="['territory', { rules: [{ required: true, message: '选择省市区' }] }]"
                     :options="birthplaceOptions"
                     @change="birthplaceCascaderChange"
                     :loadData="birthplaceCascaderLoadData"
                     placeholder="选择省市区"
                   />
+                </a-form-item>
+                <a-form-item>
                   <a-input
                     style="width: 300px"
                     :disabled="isDisabled"
                     placeholder="详细地址"
-                    v-decorator="['actualMaintenanceLocation', { rules: [{ required: true, message: '详细地址' }] }]"
+                    v-decorator="[
+                      'actualMaintenanceLocation',
+                      { rules: [{ required: true, message: '请输入详细地址' }] },
+                    ]"
                   />
                 </a-form-item>
               </td>
@@ -286,6 +286,7 @@ import {
   networkManagementList,
   handleTaskDocument,
   taskDocumentDetail,
+  updateTaskDocument,
 } from '@/api/after-sales-management' //机构名称
 import moment from 'moment'
 import CustomerSelect from './mode/CustomerSelect'
@@ -357,8 +358,12 @@ export default {
       return this.type === 'veiw'
     },
     isEditSalary() {
-      //修改
+      //处理
       return this.type === 'handle'
+    },
+    //修改
+    ismodify() {
+      return this.type === 'modify'
     },
     isDisabled() {
       return this.isVeiw
@@ -474,6 +479,7 @@ export default {
                 url: i,
               }
             }),
+            id: item.id,
             createdName: item.createdName,
             deviceLocation: item.deviceLocation,
             isWarranty: item.isWarranty,
@@ -488,6 +494,7 @@ export default {
             video: item.video,
             villageId: item.villageId,
             villageName: item.villageName,
+            temporaryISWarranty: item.temporaryISWarranty === -1 ? false : true,
           }
         })
 
@@ -505,6 +512,7 @@ export default {
         if (!this.isEditSalary) {
           this.sceneType = res.data.taskUserInfo.serviceMode === 1 ? true : false
           if (this.sceneType) {
+            this.labelName = res.data.taskUserInfo.provinceName
             this.$nextTick(() => {
               this.form.setFieldsValue({
                 actualMaintenanceLocation: res.data.taskUserInfo.actualMaintenanceLocation,
@@ -532,9 +540,8 @@ export default {
       })
     },
     handleOk() {
-      console.log('你是要提交')
       let that = this
-      if (that.type === 'handle') {
+      if (that.type === 'handle' || this.ismodify) {
         that.form.validateFields((err, values) => {
           if (!err) {
             console.log(values)
@@ -543,8 +550,14 @@ export default {
               id: this.recordDetails.taskUserInfo.id,
               taskDocumentId: this.record.id,
               serviceMode: values.serviceMode,
-              arriveTime: values.arriveTime,
+              arriveTime: values.arriveTime.format('YYYY-MM-DD HH:mm'),
             }
+            params.handleBoList = this.opinionData.map((i) => {
+              return {
+                id: i.id,
+                isWarranty: i.isWarranty !== -1 ? i.isWarranty : i.temporaryISWarranty === false ? 0 : 1,
+              }
+            })
             if (values.serviceMode === 1) {
               params.actualMaintenanceLocation = values.actualMaintenanceLocation
               params.actualSiteContact = values.actualSiteContact
@@ -553,17 +566,31 @@ export default {
               params.provinceName = this.labelName
             }
 
-            that.spinning = true
-            handleTaskDocument(params)
-              .then((res) => {
-                that.spinning = false
-                console.log(res)
-                that.form.resetFields() // 清空表
-                that.visible = false
-                that.$message.info(res.msg)
-                that.$emit('filet')
-              })
-              .catch((err) => (that.spinning = false))
+            if (this.ismodify) {
+              that.spinning = true
+              updateTaskDocument(params)
+                .then((res) => {
+                  that.spinning = false
+                  console.log(res)
+                  that.form.resetFields() // 清空表
+                  that.visible = false
+                  that.$message.info(res.msg)
+                  that.$emit('filet')
+                })
+                .catch((err) => (that.spinning = false))
+            } else {
+              that.spinning = true
+              handleTaskDocument(params)
+                .then((res) => {
+                  that.spinning = false
+                  console.log(res)
+                  that.form.resetFields() // 清空表
+                  that.visible = false
+                  that.$message.info(res.msg)
+                  that.$emit('filet')
+                })
+                .catch((err) => (that.spinning = false))
+            }
           }
         })
       }

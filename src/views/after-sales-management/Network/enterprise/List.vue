@@ -57,17 +57,21 @@
         <div slot="networkType" slot-scope="text, record, index">
           <span>{{ text === 0 ? '个人' : '企业' }}</span>
         </div>
+        <div slot="territoryName" slot-scope="text, record, index">
+          <span>{{ text }},{{ record.regionName }}</span>
+        </div>
+
         <div slot="status" slot-scope="text, record">
           <a @click="handleClick(record)">{{
             { 1: '待审批 ', 2: '通过', 3: '不通过', 4: '已撤回' }[text] || '未知'
           }}</a>
         </div>
         <div slot="serviceUser" slot-scope="text, record, index">
-          <span>{{ record.serviceUserVoList[0].serviceUserName }}</span>
+          <span>{{ record.serviceUser.split(',')[0] }}</span>
         </div>
 
         <div slot="contactInformation" slot-scope="text, record, index">
-          <span>{{ record.serviceUserVoList && record.serviceUserVoList[0].serviceUserName }}</span>
+          <span>{{ record.serviceUser.split(',')[1] }}</span>
         </div>
         <div slot="tutorialVideo" slot-scope="text, record, index">
           <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>
@@ -79,14 +83,17 @@
           <template v-if="queryParam.searchStatus === 0">
             <template
               v-if="
-                userInfo.id === record.createdId &&
-                $auth('enterprise:edit' && (+record.status === 3 || +record.status === 4))
+                +userInfo.userId === +record.createdId &&
+                $auth('enterprise:edit') &&
+                (+record.status === 3 || +record.status === 4 || +record.status === 2)
               "
             >
               <a-divider type="vertical" />
               <a @click="handleAdd('edit', record)">修改</a>
             </template>
-            <template v-if="userInfo.id === record.createdId && record.status === 1 && $auth('enterprise:reback')">
+            <template
+              v-if="+userInfo.userId === +record.createdId && record.status === 1 && $auth('enterprise:reback')"
+            >
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -95,7 +102,7 @@
             <template
               v-if="
                 $auth('enterprise:del') &&
-                userInfo.id === record.createdId &&
+                +userInfo.userId === +record.createdId &&
                 (+record.status === 3 || +record.status === 4)
               "
             >
@@ -152,6 +159,7 @@ const columns = [
     title: '区域',
     key: 'territoryName',
     dataIndex: 'territoryName',
+    scopedSlots: { customRender: 'territoryName' },
   },
   {
     align: 'center',
@@ -209,7 +217,7 @@ export default {
     return {
       birthplaceOptions: [], //籍贯 级联 省市
       visible: false,
-      userInfo: this.$store.getters.userInfo,
+      userInfo: this.$store.getters.userInfo.userInfo,
       // 表头
       columns: columns,
       territory: [],
@@ -269,7 +277,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
         })
@@ -294,7 +302,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]

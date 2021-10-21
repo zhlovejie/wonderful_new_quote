@@ -143,12 +143,12 @@
             主板号：{{ item.mainBoardNo }}
           </a-button>
           <a-button
-            v-if="item.isWarranty !== undefined"
+            v-if="item.isWarranty !== undefined && item.isWarranty !== -1"
             type="danger"
             size="small"
             style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"
             shape="round"
-            >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
+            >{{ item.isWarranty === 0 ? '质保中' : item.isWarranty === 1 ? '过保' : '' }}
           </a-button>
           <a-button v-if="!isDisabled" type="link" @click="problemdel(index)">删除 </a-button>
           <tr>
@@ -398,7 +398,7 @@ export default {
                   mainBoardNo: i.mainBoardNo,
                   orgName: i.orgName,
                   photo: i.photo,
-                  isWarranty: i.isWarranty || -1,
+                  isWarranty: i.isWarranty === undefined ? '-1' : i.isWarranty,
                   problemDescription: i.problemDescription,
                   productName: i.productName,
                   remark: i.remark,

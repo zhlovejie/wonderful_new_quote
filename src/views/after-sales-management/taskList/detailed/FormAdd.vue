@@ -58,6 +58,7 @@
             主板号：{{ item.mainBoardNo }}
           </a-button>
           <a-button
+            v-if="item.isWarranty !== undefined && item.isWarranty !== -1"
             type="danger"
             size="small"
             style="margin-bottom: 15px; margin-top: 15px; margin-left: 15px"

@@ -17,7 +17,7 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper" :label-col="{ span: 2 }" :wrapper-col="{ span: 12 }">
-        <a-form-item label="验收类型">
+        <a-form-item v-if="!isVeiw" label="验收类型">
           <a-select
             v-decorator="['acceptanceType', { rules: [{ required: true, message: '请选泽验收类型！' }] }]"
             allowClear
@@ -29,7 +29,7 @@
         </a-form-item>
 
         <h3 style="margin-top: 15px">
-          验收单 <span style="margin-left: 40px"> <a @click="checkAdd">新增</a> </span>
+          验收单 <span style="margin-left: 40px"> <a @click="checkAdd" v-if="!isVeiw">新增</a> </span>
         </h3>
         <table
           class="custom-table custom-table-border"
@@ -58,8 +58,8 @@
             <td colspan="2">{{ item.remark }}</td>
           </tr>
         </table>
-        <h3>未验收明细:</h3>
-        <table class="custom-table custom-table-border">
+        <h3 v-if="!isVeiw">未验收明细:</h3>
+        <table v-if="!isVeiw" class="custom-table custom-table-border">
           <tr>
             <th>序号</th>
             <th>产品名称</th>

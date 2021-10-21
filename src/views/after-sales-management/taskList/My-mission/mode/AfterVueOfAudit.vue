@@ -160,7 +160,7 @@
                 <td>
                   <a-form-item>
                     <a-cascader
-                      style="width: 200px"
+                      style="width: 250px"
                       disabled
                       :field-names="{ label: 'networkName', value: 'id', children: 'serviceUserVoList' }"
                       :options="options"
@@ -231,11 +231,16 @@
                       :loadData="birthplaceCascaderLoadData"
                       placeholder="选择省市区"
                     />
+                  </a-form-item>
+                  <a-form-item>
                     <a-input
                       style="width: 300px"
                       :disabled="isDisabled"
                       placeholder="详细地址"
-                      v-decorator="['actualMaintenanceLocation', { rules: [{ required: true, message: '详细地址' }] }]"
+                      v-decorator="[
+                        'actualMaintenanceLocation',
+                        { rules: [{ required: true, message: '请输入详细地址' }] },
+                      ]"
                     />
                   </a-form-item>
                 </td>
@@ -279,6 +284,7 @@ import {
   handleTaskDocument,
   taskDocumentDetail,
   networkManagementList,
+  updateTaskDocument,
 } from '@/api/after-sales-management' //机构名称
 import { getAreaByParent } from '@/api/common'
 // import Modal from './addForm'
@@ -320,6 +326,10 @@ export default {
     Dispatch() {
       return this.afterType === 'handle'
     },
+    //修改
+    ismodify() {
+      return this.type === 'modify'
+    },
     isDisabled() {
       return this.isVeiw
     },
@@ -353,7 +363,7 @@ export default {
               id: this.recordDetails.taskUserInfo.id,
               taskDocumentId: this.reacd.id,
               serviceMode: values.serviceMode,
-              arriveTime: values.arriveTime,
+              arriveTime: values.arriveTime.format('YYYY-MM-DD HH:mm'),
             }
             if (values.serviceMode === 1) {
               params.actualMaintenanceLocation = values.actualMaintenanceLocation
@@ -363,17 +373,31 @@ export default {
               params.provinceName = this.labelName
             }
 
-            that.spinning = true
-            handleTaskDocument(params)
-              .then((res) => {
-                that.spinning = false
-                console.log(res)
-                that.form.resetFields() // 清空表
-                that.visible = false
-                that.$message.info(res.msg)
-                that.$emit('filet')
-              })
-              .catch((err) => (that.spinning = false))
+            if (this.ismodify) {
+              that.spinning = true
+              updateTaskDocument(params)
+                .then((res) => {
+                  that.spinning = false
+                  console.log(res)
+                  that.form.resetFields() // 清空表
+                  that.visible = false
+                  that.$message.info(res.msg)
+                  that.$emit('filet')
+                })
+                .catch((err) => (that.spinning = false))
+            } else {
+              that.spinning = true
+              handleTaskDocument(params)
+                .then((res) => {
+                  that.spinning = false
+                  console.log(res)
+                  that.form.resetFields() // 清空表
+                  that.visible = false
+                  that.$message.info(res.msg)
+                  that.$emit('filet')
+                })
+                .catch((err) => (that.spinning = false))
+            }
           }
         })
       }

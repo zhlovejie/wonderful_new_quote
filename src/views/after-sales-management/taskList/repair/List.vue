@@ -430,7 +430,7 @@ export default {
           // 在这里调用删除接口
           delTaskDocument({ id: row.id }).then((res) => {
             if (res.code == 200) {
-              that.$message.info(res.msg)
+              _this.$message.info(res.msg)
               _this.searchAction()
             } else {
               _this.$message.error(res.msg)

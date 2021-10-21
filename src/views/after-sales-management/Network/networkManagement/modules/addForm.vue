@@ -21,7 +21,7 @@
             <td>个人</td>
           </tr>
           <tr>
-            <td>网点名称</td>
+            <td class="requiredMark">网点名称</td>
             <td>
               <a-form-item>
                 <a-input
@@ -43,7 +43,7 @@
             </td>
           </tr>
           <tr>
-            <td>区域</td>
+            <td class="requiredMark">区域</td>
             <td>
               <a-form-item>
                 <a-cascader
@@ -55,10 +55,22 @@
                   placeholder="选择省市区"
                 />
               </a-form-item>
+              <a-form-item>
+                <a-select
+                  :disabled="isDisabled"
+                  mode="multiple"
+                  v-decorator="['region', { rules: [{ required: true, message: '选择区' }] }]"
+                  placeholder="选择区"
+                >
+                  <a-select-option v-for="i in areaList" :key="i.id" :value="i.id">
+                    {{ i.area }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>业务员</td>
+            <td class="requiredMark">业务员</td>
             <td>
               <a-form-item>
                 <a-input
@@ -80,7 +92,7 @@
             </td>
           </tr>
           <tr>
-            <td>业务员电话</td>
+            <td class="requiredMark">业务员电话</td>
             <td>
               <a-form-item>
                 <a-input
@@ -131,13 +143,16 @@
 
         <table class="custom-table custom-table-border">
           <tr>
-            <td>协议文件</td>
+            <td class="requiredMark">协议文件</td>
             <td>
-              <a-form-item>
+              <a-form-item v-if="!isView">
                 <a-upload :action="uploadUrl" :disabled="isDisabled" :fileList="fileList1" @change="handleChange1">
                   <a-button> <a-icon type="upload" /> 上传文件 </a-button>
                 </a-upload>
               </a-form-item>
+              <span v-else
+                ><a v-download="record.businessLicenseUrl">{{ record.businessLicenseUrl.substr(41, 300) }}</a>
+              </span>
             </td>
           </tr>
         </table>
@@ -154,6 +169,14 @@ import { getUploadPath2, getAreaByParent } from '@/api/common'
 import { queryCode } from '@/api/workBox'
 // import Dictionaries from './Dictionaries'
 let uuid = () => Math.random().toString(32).slice(-10)
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
 export default {
   name: 'EnterpriseSynopsis',
   components: {
@@ -177,6 +200,7 @@ export default {
       type: 0,
       record: {},
       toolType: 0,
+      areaList: [],
       queryBoolean: false,
       birthplaceOptions: [], //籍贯 级联 省市
       previewVisible: false, // 图片预览框是否可见
@@ -226,6 +250,7 @@ export default {
         let that = this
         if (record.territory) {
           let _arr = record.territory.split(',')
+          let _arr1 = record.region.split(',').map(Number)
           _arr = _arr.map((v) => parseInt(v, 10))
           let _areaCityData = await that.loadAreaAction(_arr[0])
           let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
@@ -233,13 +258,16 @@ export default {
             ctiyTargetOption.children = _areaCityData
             that.birthplaceOptions = [...that.birthplaceOptions]
           }
-
-          let _areaAreaData = await that.loadAreaAction(_arr[1])
-          let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
-          if (areaTargetOption) {
-            areaTargetOption.children = _areaAreaData
-            that.birthplaceOptions = [...that.birthplaceOptions]
-          }
+          getAreaByParent({ pId: _arr[1] }).then((res) => {
+            this.areaList = res.data
+            that.$nextTick(() => that.form.setFieldsValue({ region: _arr1 }))
+          })
+          // let _areaAreaData = await that.loadAreaAction(_arr[1])
+          // let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
+          // if (areaTargetOption) {
+          //   areaTargetOption.children = _areaAreaData
+          //   that.birthplaceOptions = [...that.birthplaceOptions]
+          // }
           that.$nextTick(() => that.form.setFieldsValue({ territory: _arr }))
         }
 
@@ -305,7 +333,9 @@ export default {
           values.networkType = 0
           values.territory = values.territory.toString()
           values.territoryName = this.labelName || this.record.territoryName
-
+          values.region = values.region.toString()
+          let arr = this.areaList.filter((i) => values.region.includes(i.id))
+          values.regionName = arr.map((i) => i.area).toString()
           values.serviceUserVoList = [
             {
               contactInformation: values.contactInformation,
@@ -340,10 +370,12 @@ export default {
     previewCancel() {
       this.previewVisible = false
     },
-    handlePreview(file) {
+    async handlePreview(file) {
       // 点击文件链接或预览图标时的回调
-      this.$set(this.playerOptions.sources[0], 'src', file.url || file.thumbUrl)
-      // this.playerOptions.sources.src = file.url || file.thumbUrl
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
       this.previewVisible = true
     },
     handleChange({ file, fileList }) {
@@ -385,6 +417,10 @@ export default {
     birthplaceCascaderChange(arrSelected) {
       console.log('birthplaceCascaderChange called...')
       console.log(arguments)
+      this.areaList = []
+      getAreaByParent({ pId: arrSelected[1] }).then((res) => {
+        this.areaList = res.data
+      })
       this.labelName = arguments[1] !== undefined ? arguments[1].map((i) => i.label).toString() : ''
     },
     birthplaceCascaderLoadData(selectedOptions) {
@@ -399,7 +435,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]
@@ -417,7 +453,7 @@ export default {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 3 ? true : false,
+              isLeaf: item.level === 2 ? true : false,
             }
           })
         })
@@ -432,6 +468,15 @@ export default {
 
 <style scoped >
 /* you can make up upload button and sample style by using stylesheets */
+.requiredMark::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
 .ant-upload-select-picture-card i {
   font-size: 32px;
   color: #999;

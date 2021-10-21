@@ -20,15 +20,15 @@
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>收件人姓名</td>
-            <td>{{ record.recipientName }}</td>
-            <td>联系电话</td>
-            <td>{{ record.contactNumber }}</td>
+            <td style="width: 20%">收件人姓名</td>
+            <td style="width: 30%">{{ record.recipientName }}</td>
+            <td style="width: 20%">联系电话</td>
+            <td style="width: 30%">{{ record.contactNumber }}</td>
           </tr>
           <tr>
-            <td>单位名称</td>
+            <td>客户名称</td>
             <td>
-              {{ recordDetails.unitName }}
+              {{ recordDetails.customerName }}
             </td>
             <td>收货地址</td>
             <td>{{ record.provinceName }}{{ record.address }}</td>
@@ -137,6 +137,16 @@
             <a-input :disabled="isDisabled" v-model="form.orderNum" />
           </a-form-model-item>
         </div>
+        <table v-if="record.status === 1" class="custom-table custom-table-border">
+          <tr>
+            <td style="width: 20%">处理人</td>
+            <td style="width: 30%">{{ form.modifierName }}</td>
+            <td style="width: 20%">处理时间</td>
+            <td style="width: 30%">{{ form.modifyTime }}</td>
+          </tr>
+        </table>
+
+        <!-- status -->
       </a-form-model>
     </a-spin>
   </a-modal>

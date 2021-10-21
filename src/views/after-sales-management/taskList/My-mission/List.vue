@@ -108,6 +108,8 @@
               </template>
               <template v-if="record.taskStatus === 3">
                 <a @click="handleAdd('veiw', record)">详情</a>
+                <a-divider type="vertical" />
+                <a @click="handleAdd('modify', record)">修改</a>
               </template>
               <template>
                 <a-divider type="vertical" />
@@ -194,7 +196,7 @@
             </template>
             <template>
               <a-divider type="vertical" />
-              <a @click="checkAdd('add', record)">验收单</a>
+              <a @click="checkAdd('veiw', record)">验收单</a>
             </template>
           </span>
 

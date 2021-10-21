@@ -26,8 +26,8 @@
             <td>{{ record.customerName }}</td>
           </tr>
           <tr>
-            <td>产品名称</td>
-            <td>
+            <td style="width: 25%">产品名称</td>
+            <td style="width: 25%">
               <a-form-model-item
                 prop="deviceInfoId"
                 :rules="{
@@ -35,15 +35,20 @@
                   message: '请选择产品名称',
                 }"
               >
-                <a-select v-model="form.deviceInfoId" placeholder="产品名称" @change="Productchange">
+                <a-select
+                  v-model="form.deviceInfoId"
+                  style="width: 250px"
+                  placeholder="产品名称"
+                  @change="Productchange"
+                >
                   <a-select-option v-for="item in record.deviceInfoVoList" :value="item.id" :key="item.id">{{
                     item.productName
                   }}</a-select-option>
                 </a-select>
               </a-form-model-item>
             </td>
-            <td>主板号</td>
-            <td>{{ form.mainBoardNo }}</td>
+            <td style="width: 25%">主板号</td>
+            <td style="width: 25%">{{ form.mainBoardNo }}</td>
           </tr>
         </table>
         <div style="margin-top: 20px">
@@ -268,6 +273,7 @@
             <a-select-option :value="0">完结付款</a-select-option>
             <a-select-option :value="1">先付款</a-select-option>
             <a-select-option :value="2">免付款</a-select-option>
+            <a-select-option :value="3">赠送</a-select-option>
           </a-select>
         </a-form-model-item>
         <a-form-model-item

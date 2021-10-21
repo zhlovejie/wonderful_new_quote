@@ -22,10 +22,10 @@
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>任务单编号</td>
-            <td>{{ record.taskDocumentNum }}</td>
-            <td>网点名称</td>
-            <td>
+            <td style="width: 25%">任务单编号</td>
+            <td style="width: 25%">{{ record.taskDocumentNum }}</td>
+            <td style="width: 25%">网点名称</td>
+            <td style="width: 25%">
               {{ record.networkName }}
             </td>
           </tr>
@@ -228,7 +228,6 @@ export default {
     },
 
     close() {
-      this.$emit('ok')
       this.form.resetFields() // 清空表
       this.visible = false
     },
