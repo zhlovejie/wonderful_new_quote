@@ -79,16 +79,28 @@
                 <span class="icon-required">银行名称(开户行)</span>
               </td>
               <td>
-                <a-form-model-item>
-                  {{form.bankName}}
+                <a-form-model-item
+                  prop="bankName"
+                >
+                  <a-input
+                    v-if="!isDisabled"
+                    v-model="form.bankName"
+                  />
+                  <span v-else>{{form.bankName}}</span>
                 </a-form-model-item>
               </td>
               <td style="width:150px;">
                 <span class="icon-required">账号</span>
               </td>
               <td>
-                <a-form-model-item>
-                  {{form.bankCard}}
+                <a-form-model-item
+                  prop="bankCard"
+                >
+                  <a-input
+                    v-if="!isDisabled"
+                    v-model="form.bankCard"
+                  />
+                  <span v-else>{{form.bankCard}}</span>
                 </a-form-model-item>
               </td>
             </tr>
@@ -403,6 +415,7 @@
             </div>
           </a-table>
           <a-button
+            v-if="!isDisabled"
             style="width: 100%"
             type="dashed"
             icon="plus"
@@ -542,7 +555,6 @@
         :model="approvalForm"
         ref="approvalForm"
         :rules="approvalRules"
-        class="routine-addform-wrapper-baseInnerData"
       >
         <div style="margin-top:20px;">
           <h3>审批结果</h3>
@@ -624,6 +636,49 @@
                       v-model="approvalForm.remark"
                     />
                   </a-form-model-item>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </a-form-model>
+
+      <a-form-model
+        v-else
+        :model="approvalForm"
+        ref="approvalForm"
+        :rules="approvalRules"
+      >
+        <div style="margin-top:20px;" v-if="approvalForm.realityReimbursementAmount">
+          <h3>审批结果</h3>
+          <table class="custom-table custom-table-border">
+            <tbody>
+              <tr>
+                <td style="width:150px;">
+                  <span>实际报销金额(不含长途交通费)</span>
+                </td>
+                <td>
+                  {{approvalForm.realityReimbursementAmount | moneyFormatNumber}}
+                </td>
+                <td style="width:150px;">
+                  <span>是否超标准</span>
+                </td>
+                <td>
+                  {{ {1:'是',0:'否'}[approvalForm.isExcessive] }}
+                </td>
+              </tr>
+              <tr>
+                <td style="width:150px;">
+                  <span>超标金额(元)</span>
+                </td>
+                <td>
+                  {{approvalForm.excessiveAmount | moneyFormatNumber}}
+                </td>
+                <td style="width:150px;">
+                  <span>备注</span>
+                </td>
+                <td>
+                  {{ approvalForm.remark }}
                 </td>
               </tr>
             </tbody>
@@ -721,33 +776,33 @@ export default {
           {
             key: 1,
             costCategory: 1,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           },
           {
             key: 2,
             costCategory: 2,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           },
           {
             key: 3,
             costCategory: 3,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           },
           {
             key: 4,
             costCategory: 4,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           }
         ],
@@ -755,7 +810,9 @@ export default {
         __sum: {}
       },
       rules: {
-        describes: [{ required: true, message: '请输入报销描述', trigger: 'change' }]
+        describes: [{ required: true, message: '请输入报销描述', trigger: 'change' }],
+        bankCard: [{ required: true, message: '请输入银行卡号', trigger: 'change' }],
+        bankName: [{ required: true, message: '请输入银行名称', trigger: 'change' }]
       },
       approvalForm: {},
       approvalRules: {},
@@ -1030,33 +1087,33 @@ export default {
           {
             key: 1,
             costCategory: 1,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           },
           {
             key: 2,
             costCategory: 2,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           },
           {
             key: 3,
             costCategory: 3,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           },
           {
             key: 4,
             costCategory: 4,
-            haveTicketCost: 0,
+            haveTicketCost: undefined,
             haveTicketEvidence: undefined,
-            noTicketCost: 0,
+            noTicketCost: undefined,
             noTicketEvidence: undefined
           }
         ],
@@ -1070,9 +1127,9 @@ export default {
           ...that.form,
           createdId: that.userInfo.id,
           createdName: that.userInfo.trueName,
-          createdTime: that.moment().format('YYYY-MM-DD HH:mm:ss'),
-          bankName: that.userInfo.bankName || '无',
-          bankCard: that.userInfo.bankCard || '无'
+          createdTime: that.moment().format('YYYY-MM-DD'),
+          bankName: that.userInfo.bankName ,
+          bankCard: that.userInfo.bankCard
         }
       } else {
         reimburseDetail({ id: record.id }).then(res => {
@@ -1091,21 +1148,20 @@ export default {
             item.sortDistanceVehicle = +item.sortDistanceVehicle
             return item
           })
+
           costDetailList = costDetailList.map(item => {
             item.key = that._uuid()
             return item
           })
 
-
           that.form = {
             ...res.data,
             travelRecordList,
             costDetailList,
-            bankName: res.data.bankName || that.userInfo.bankName || '无',
-            bankCard: res.data.bankAccount || that.userInfo.bankCard || '无'
+            bankName: res.data.bankName || that.userInfo.bankName ,
+            bankCard: res.data.bankAccount || that.userInfo.bankCard,
+            // formKey:1
           }
-
-
 
           that.handleTravelRecordListChange()
           that.handleTravelSelect(res.data.travelApplyListVoList)
@@ -1129,6 +1185,15 @@ export default {
               }
             })
           })
+
+          that.approvalForm = {
+            realityReimbursementAmount:res.data.realityReimbursementAmount,
+            isExcessive:res.data.isExcessive,
+            excessiveAmount:res.data.excessiveAmount,
+            remark:res.data.remark,
+          }
+
+
         })
       }
     },
@@ -1163,16 +1228,24 @@ export default {
       const that = this
       that.$refs['ruleForm'].validate(valid => {
         if (valid) {
+          // debugger
           // let {totalLongDistanceCost,totalSortDistanceCost,totalFoodCost,totalAccommodationCost} = that.form.__sum
-
+          if(!that.validateCostDetailList()){
+            return
+          }
           if(that.form.travelRecordList.length === 0){
             that.$message.info('请添加行程记录')
             return
           }
+
+
+
           if(that.travelCaseList.length === 0){
             that.$message.info('请选择关联出差单')
             return
           }
+
+
 
           that.spinning = true
           const params = that.$_.cloneDeep(that.form || {})
@@ -1209,6 +1282,33 @@ export default {
         }
       })
     },
+    validateCostDetailList(){
+      const that = this
+      // {
+      //   key: 1,
+      //       costCategory: 1,
+      //       haveTicketCost: undefined,
+      //       haveTicketEvidence: undefined,
+      //       noTicketCost: undefined,
+      //       noTicketEvidence: undefined
+      // }
+      let m = {
+        1:'长途交通费',2:'市内交通费',3:'餐饮费',4:'住宿费'
+      }
+      let costDetailList = this.form.costDetailList
+      for(let i=0;i<costDetailList.length;i++){
+        let item = costDetailList[i]
+        if(!((!item.haveTicketCost && !item.haveTicketEvidence) || (item.haveTicketCost && item.haveTicketEvidence))){
+          that.$message.info(`请完善 ${m[item.costCategory]} 金额和发票信息`)
+          return false
+        }
+        if(!((!item.noTicketCost && !item.noTicketEvidence) || (item.noTicketCost && item.noTicketEvidence))){
+          that.$message.info(`请完善 ${m[item.costCategory]} 金额和付款凭证信息`)
+          return false
+        }
+      }
+      return true
+    },
     handlerImageView() {
       const pictureUrl = this.form.pictureUrl
       const imgList = pictureUrl.split(',').map(url => decodeURIComponent(url))
@@ -1228,15 +1328,15 @@ export default {
           departureTime: undefined,
           destination: [],
           longDistanceVehicle: undefined,
-          longDistanceCost: 0,
+          longDistanceCost: undefined,
           sortDistanceVehicle: undefined,
-          sortDistanceCost: 0,
-          repastDays: 0,
-          foodCost: 0,
-          serialNum: 0,
-          accommodationDays: 0,
-          accommodationCost: 0,
-          totalCost: 0
+          sortDistanceCost: undefined,
+          repastDays: undefined,
+          foodCost: undefined,
+          serialNum: undefined,
+          accommodationDays: undefined,
+          accommodationCost: undefined,
+          totalCost: undefined
         })
         that.form = { ...that.form, travelRecordList }
       } else if (type === 'remove') {

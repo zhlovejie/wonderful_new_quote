@@ -145,18 +145,18 @@
             <a-form-model-item >
               <a-textarea
                v-if="isEdit || isHandle || isApproval"
-               placeholder="纠正方案"
+               placeholder="处罚原因"
                allow-clear
                autoSize
                v-model="item.reason"
                :prop="'responsibilityList.' + idx + '.reason'"
                 :rules="{
                   required: true,
-                  message: '请输入纠正方案',
+                  message: '请输入处罚原因',
                   trigger: 'blur',
                 }"
               />
-              <span v-else> {{form.reason}}</span>
+              <span v-else> {{item.reason}}</span>
             </a-form-model-item>
           </td>
           <td v-if="isEdit || isHandle || isApproval">

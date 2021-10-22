@@ -3,6 +3,7 @@
     v-bind="$attrs"
     :value="dictionaryId"
     @change="changeHandler"
+    :filter-option="filterOption"
   >
     <a-select-option
       v-for="item in dataSource"
@@ -46,7 +47,12 @@ export default {
       let {dataSource,dictionaryId} = this
       let target = dataSource.find(item => item.id === dictionaryId)
       return target ? {...target} : null
-    }
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
   }
 };
 </script>

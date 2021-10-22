@@ -1,30 +1,30 @@
 <template>
   <a-select
     v-bind="$attrs"
-    :value="depId"
-    @change="depChange"
+    :value="userId"
+    @change="change"
     option-filter-prop="children"
     :filter-option="filterOption"
   >
     <a-select-option
-      v-for="item in depList"
+      v-for="item in list"
       :key="item.id"
       :value="item.id"
-    >{{ item.departmentName }}</a-select-option>
+    >{{ item.trueName }}</a-select-option>
   </a-select>
 </template>
 
 <script>
 import {
-  departmentList //所有部门
+  getUserListNoPage //所有部门
 } from '@/api/systemSetting'
 export default {
   props: {
-    depId: [String,Number]
+    userId: [String,Number]
   },
   data() {
     return {
-      depList: []
+      list: []
     };
   },
   created(){
@@ -32,16 +32,13 @@ export default {
   },
   methods: {
     init() {
-      this.initDepartment()
-    },
-    initDepartment() {
       const that = this
-      return departmentList().then(res => {
-        that.depList = res.data
+      return getUserListNoPage().then(res => {
+        that.list = res.data
       })
     },
-    depChange(depId) {
-      this.$emit("update:depId", depId);
+    change(userId) {
+      this.$emit("update:userId", userId);
     },
     filterOption(input, option) {
       return (
