@@ -48,7 +48,7 @@
         >
           <a-input
             v-if="isAdd"
-            v-model="form.accessoriesNum"
+            v-model="form.accessoriesNums"
             read-only="read-only"
             @click="() => {
             if(!form.userId){
@@ -204,7 +204,7 @@ export default {
       },
       rules: {
         sender: [{ required: true, message: '请输入寄件人姓名' }],
-        accessoriesNum: [{ required: true, message: '请选择邮寄编号' }]
+        accessoriesNums: [{ required: true, message: '请选择邮寄编号' }]
       },
       customList: [],
       innerColumns,
@@ -272,7 +272,7 @@ export default {
         if (valid) {
           const params = { ...that.form }
 
-          if (that.selectedRows.length !== 1) {
+          if (that.selectedRows.length === 0) {
             that.$message.info('请至少选择一条物料记录')
             return
           }
@@ -281,7 +281,6 @@ export default {
             that.$message.info('数量不正确')
             return
           }
-
 
           params.materialList = that.selectedRows
           that.spinning = true
@@ -324,20 +323,20 @@ export default {
         sender: record.userName
       }
     },
-    postListSelectedHandler(record) {
-      console.log(record)
+    postListSelectedHandler(records) {
+      console.log(records)
       this.form = {
         ...this.form,
-        accessoriesId: record.id,
-        accessoriesNum: record.accessoriesNum
+        accessoriesIds: records.map(r => r.id).join(','),
+        accessoriesNums: records.map(r => r.accessoriesNum).join(',')
       }
       this.fillMaterial()
     },
-    fillMaterial() {
+    async fillMaterial() {
       const that = this
-      const accessoriesId = that.form.accessoriesId
+      const accessoriesIds = that.form.accessoriesIds
       that.loading = true
-      receiveWorkerListReceiveCustomerMaterial({ accessoriesId })
+      receiveWorkerListReceiveCustomerMaterial({ accessoriesIds })
         .then(res => {
           that.loading = false
           that.form = {
