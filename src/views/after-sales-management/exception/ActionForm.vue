@@ -114,6 +114,8 @@ export default {
       const that = this
       that.type = type
       that.record = {...record}
+      that.detail = {}
+      that.approvalForm = {}
       that.visible = true
 
       if(!that.isAdd){
@@ -131,17 +133,17 @@ export default {
         })
       }else{
         that.detail = {...record}
-        if(that.detail.approveOpinion){
-          that.approvalForm = {
-            ...that.approvalForm,
-            opinion:that.detail.approveOpinion
-          }
-        }else{
-          that.approvalForm = {
-            ...that.approvalForm,
-            opinion:''
-          }
-        }
+        // if(that.detail.approveOpinion){
+        //   that.approvalForm = {
+        //     ...that.approvalForm,
+        //     opinion:that.detail.approveOpinion
+        //   }
+        // }else{
+        //   that.approvalForm = {
+        //     ...that.approvalForm,
+        //     opinion:''
+        //   }
+        // }
       }
     },
     handleCancel(){
