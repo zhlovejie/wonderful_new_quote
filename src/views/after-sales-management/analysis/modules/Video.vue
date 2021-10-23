@@ -18,6 +18,7 @@
             placeholder="问题类型"
             :disabled="isDisabled"
             show-search
+            :filter-option="filterOption"
             v-decorator="[
               'problemTypeId',
               {
@@ -215,6 +216,9 @@ export default {
   methods: {
     handleAdd() {
       this.$refs.dictionaries.query()
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     query(type, record) {
       this.visible = true

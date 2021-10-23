@@ -55,6 +55,7 @@ export default {
         })
       })
     },
+
     doAdd() {
       // 取数据
       this.form.validateFields((err, values) => {

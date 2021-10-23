@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1005"
+    :width="1000"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -16,14 +16,14 @@
     </template>
 
     <a-spin :spinning="spinning">
-      <a-form :form="form" class="becoming-form-wrapper">
+      <a-form :form="form" layout="inline" class="becoming-form-wrapper">
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>任务单类型</td>
-            <td>维修任务单</td>
-            <td>任务单编号</td>
-            <td>{{ record && record.taskNum ? record.taskNum : '系统自动生成' }}</td>
+            <td style="width: 200px">任务单类型</td>
+            <td style="width: 30%">维修任务单</td>
+            <td style="width: 200px">任务单编号</td>
+            <td style="width: 30%">{{ record && record.taskNum ? record.taskNum : '系统自动生成' }}</td>
           </tr>
           <tr>
             <td>来源</td>
@@ -53,7 +53,7 @@
             >新增
           </a-button>
         </h3>
-        <table class="custom-table custom-table-border" v-for="(item, index) in opinionData" :key="item.index">
+        <div v-for="(item, index) in opinionData" :key="item.index">
           <a-button type="primary" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             主板号：{{ item.mainBoardNo }}
           </a-button>
@@ -65,47 +65,50 @@
             shape="round"
             >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
           </a-button>
-          <tr>
-            <td>机构</td>
-            <td>{{ item.orgName }}</td>
-          </tr>
-          <tr>
-            <td>设备位置</td>
-            <td>{{ item.deviceLocation }}</td>
-          </tr>
-          <tr>
-            <td>产品名称</td>
-            <td>{{ item.productName }}</td>
-          </tr>
-          <tr>
-            <td>问题描述</td>
-            <td>{{ item.problemDescription }}</td>
-          </tr>
-          <tr>
-            <td>照片</td>
-            <td>
-              <a-upload disabled list-type="picture-card" :file-list="item.picture" @preview="handlePreview1">
-              </a-upload>
-              <a-modal title="查看" :visible="previewVisible1" :footer="null" @cancel="previewCancel1">
-                <img alt="example" style="width: 100%" :src="previewImage" />
-              </a-modal>
-            </td>
-          </tr>
-          <tr>
-            <td>视频</td>
-            <td>
-              <span v-if="item.video"><a target="_blank" :href="item.video">预览</a></span>
-            </td>
-          </tr>
-          <tr>
-            <td>备注</td>
-            <td>{{ item.remark }}</td>
-          </tr>
-        </table>
+          <table class="custom-table custom-table-border">
+            <tr>
+              <td style="width: 200px">机构</td>
+              <td>{{ item.orgName }}</td>
+            </tr>
+            <tr>
+              <td>设备位置</td>
+              <td>{{ item.deviceLocation }}</td>
+            </tr>
+            <tr>
+              <td>产品名称</td>
+              <td>{{ item.productName }}</td>
+            </tr>
+            <tr>
+              <td>问题描述</td>
+              <td>{{ item.problemDescription }}</td>
+            </tr>
+            <tr>
+              <td>照片</td>
+              <td>
+                <a-upload disabled list-type="picture-card" :file-list="item.picture" @preview="handlePreview1">
+                </a-upload>
+                <a-modal title="查看" :visible="previewVisible1" :footer="null" @cancel="previewCancel1">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </td>
+            </tr>
+            <tr>
+              <td>视频</td>
+              <td>
+                <span v-if="item.video"><a target="_blank" :href="item.video">预览</a></span>
+              </td>
+            </tr>
+            <tr>
+              <td>备注</td>
+              <td>{{ item.remark }}</td>
+            </tr>
+          </table>
+        </div>
+
         <h3>维修人员信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td class="requiredMark">维修人员</td>
+            <td style="width: 200px" class="requiredMark">维修人员</td>
             <td>
               <a-form-item>
                 <a-select
@@ -153,6 +156,7 @@
               <a-form-item>
                 <a-date-picker
                   show-time
+                  format="YYYY-MM-DD HH:mm"
                   :disabled="isVeiw"
                   v-decorator="[
                     'arriveTime',
@@ -171,17 +175,21 @@
               <td>
                 <a-form-item>
                   <a-cascader
-                    style="width: 300px"
+                    style="width: 400px; margin-left: 93px"
                     :disabled="isVeiw"
                     :field-names="{ label: 'networkName', value: 'id', children: 'serviceUserVoList' }"
                     :options="options"
                     v-decorator="['networkId', { rules: [{ required: true, message: '请选择上门服务人员信息!' }] }]"
                     placeholder="请选择上门服务人员信息"
                   />
-                  <a v-if="!isVeiw" @click="handleAdd('add', null)" style="padding-left: 10px; float: right"
-                    >新增个人网点</a
-                  >
                 </a-form-item>
+                <a
+                  v-if="!isVeiw"
+                  @click="handleAdd('add', null)"
+                  style="padding-left: 10px; padding-top: 10px; float: right"
+                  >新增个人网点</a
+                >
+                <a v-else style="width: 93px; float: right"> &nbsp;</a>
               </td>
             </tr>
             <tr>
@@ -231,7 +239,7 @@ import {
 } from '@/api/after-sales-management' //机构名称
 import { listUserBySale } from '@/api/systemSetting' //销售人员
 import moment from 'moment'
-import Modal from './mode/addForm'
+import Modal from '../../Network/networkManagement/modules/addForm'
 import CustomerSelect from './mode/CustomerSelect'
 import ProblemForm from './mode/ProblemForm'
 let uuid = () => Math.random().toString(32).slice(-10)

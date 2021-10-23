@@ -7,6 +7,7 @@
           <a-select
             placeholder="问题类型"
             show-search
+            :filter-option="filterOption"
             v-model="queryParam.problemTypeCode"
             allowClear
             style="width: 200px"
@@ -204,6 +205,9 @@ export default {
     handleOk(e) {
       console.log(e)
       this.visible = false
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     // 新增
     handleAdd(type, e) {

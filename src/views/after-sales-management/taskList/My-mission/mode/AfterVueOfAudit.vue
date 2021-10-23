@@ -65,7 +65,7 @@
               <td>项目地址</td>
               <td>{{ item.address }}</td>
               <td>发货时间</td>
-              <td>{{ item.deliveryTime }}</td>
+              <td>{{ item.deliveryTime.substr(0, 10) }}</td>
             </tr>
             <tr>
               <td>联系人</td>
@@ -90,7 +90,7 @@
               <td>{{ items.productModel }}</td>
               <td>{{ items.productName }}</td>
               <td>{{ items.productStandard }}</td>
-              <td>{{ items.productStandard }}</td>
+              <td>{{ items.company }}</td>
             </tr>
           </table>
         </div>
@@ -142,6 +142,7 @@
                 <a-form-item>
                   <a-date-picker
                     show-time
+                    format="YYYY-MM-DD HH:mm"
                     :disabled="isVeiw"
                     v-decorator="[
                       'arriveTime',

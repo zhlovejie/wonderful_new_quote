@@ -94,6 +94,17 @@
             :action="uploadUrl"
             list-type="picture-card"
             :file-list="fileList1"
+            v-decorator="[
+              'photo',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: '请上传照片!',
+                  },
+                ],
+              },
+            ]"
             @preview="handlePreview1"
             @change="handleChange1"
           >

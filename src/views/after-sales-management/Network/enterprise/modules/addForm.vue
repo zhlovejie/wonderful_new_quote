@@ -343,7 +343,6 @@ export default {
             })
           }
         })
-        debugger
         let _arr = record.territory.split(',')
         let _arr1 = record.region.split(',').map(Number)
         if (record.territory) {
@@ -388,6 +387,7 @@ export default {
         if (!err) {
           if (this.isEdit) {
             values.id = this.record.id
+            values.instanceId = this.record.instanceId
           }
           if (this.fileList.length !== 0) {
             values.businessLicenseUrl =

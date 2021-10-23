@@ -23,10 +23,10 @@
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td>任务单类型</td>
-            <td>设备维修</td>
-            <td>任务单编号</td>
-            <td>{{ record && record.taskNum ? record.taskNum : '系统自动生成' }}</td>
+            <td style="width: 200px">任务单类型</td>
+            <td style="width: 300px">设备维修</td>
+            <td style="width: 200px">任务单编号</td>
+            <td style="width: 300px">{{ record && record.taskNum ? record.taskNum : '系统自动生成' }}</td>
           </tr>
           <tr>
             <td>来源</td>
@@ -106,7 +106,6 @@
               </a-form-item>
             </td>
           </tr>
-
           <tr>
             <td>联系人</td>
             <td>
@@ -138,7 +137,7 @@
             >新增
           </a-button>
         </h3>
-        <table class="custom-table custom-table-border" v-for="(item, index) in opinionData" :key="item.index">
+        <div v-for="(item, index) in opinionData" :key="item.index">
           <a-button type="primary" style="margin-bottom: 15px; margin-top: 15px" shape="round">
             主板号：{{ item.mainBoardNo }}
           </a-button>
@@ -151,45 +150,47 @@
             >{{ item.isWarranty === 0 ? '质保中' : item.isWarranty === 1 ? '过保' : '' }}
           </a-button>
           <a-button v-if="!isDisabled" type="link" @click="problemdel(index)">删除 </a-button>
-          <tr>
-            <td>机构</td>
-            <td>{{ item.orgName }}</td>
-          </tr>
-          <tr>
-            <td>设备位置</td>
-            <td>{{ item.deviceLocation }}</td>
-          </tr>
-          <tr>
-            <td>产品名称</td>
-            <td>{{ item.productName }}</td>
-          </tr>
-          <tr>
-            <td>问题描述</td>
-            <td>{{ item.problemDescription }}</td>
-          </tr>
-          <tr>
-            <td>照片</td>
-            <td>
-              <a-upload disabled list-type="picture-card" :file-list="item.picture" @preview="handlePreview1">
-              </a-upload>
-              <a-modal title="查看" :visible="previewVisible1" :footer="null" @cancel="previewCancel1">
-                <img alt="example" style="width: 100%" :src="previewImage" />
-              </a-modal>
-            </td>
-          </tr>
-          <tr v-if="item.video">
-            <td>视频</td>
-            <td>
-              <a target="_blank" :href="item.video">预览</a>
-              <a-divider type="vertical" />
-              <a target="_blank" @click="VideoClick(item)">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td>备注</td>
-            <td>{{ item.remark }}</td>
-          </tr>
-        </table>
+          <table class="custom-table custom-table-border">
+            <tr>
+              <td style="width: 200px">机构</td>
+              <td>{{ item.orgName }}</td>
+            </tr>
+            <tr>
+              <td>设备位置</td>
+              <td>{{ item.deviceLocation }}</td>
+            </tr>
+            <tr>
+              <td>产品名称</td>
+              <td>{{ item.productName }}</td>
+            </tr>
+            <tr>
+              <td>问题描述</td>
+              <td>{{ item.problemDescription }}</td>
+            </tr>
+            <tr>
+              <td>照片</td>
+              <td>
+                <a-upload disabled list-type="picture-card" :file-list="item.picture" @preview="handlePreview1">
+                </a-upload>
+                <a-modal title="查看" :visible="previewVisible1" :footer="null" @cancel="previewCancel1">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </td>
+            </tr>
+            <tr v-if="item.video">
+              <td>视频</td>
+              <td>
+                <a target="_blank" :href="item.video">预览</a>
+                <a-divider type="vertical" />
+                <a target="_blank" @click="VideoClick(item)">删除</a>
+              </td>
+            </tr>
+            <tr>
+              <td>备注</td>
+              <td>{{ item.remark }}</td>
+            </tr>
+          </table>
+        </div>
       </a-form>
       <ProblemForm ref="problemForm" @opinionChange="opinionChange" />
     </a-spin>
@@ -271,17 +272,23 @@ export default {
     },
   },
 
-  created() {},
+  created() {
+    getOrgNamePage().then((res) => (this.NamePage = res.data))
+  },
   methods: {
     moment: moment,
     query(type, record) {
       this.visible = true
+      this.opinionData = []
+      this.$refs.customerSelect &&
+        this.$refs.customerSelect.fill({
+          name: undefined,
+        })
       this.fileList = []
       this.fileList1 = []
       this.type = type
       this.record = record
       getListSalesman().then((res) => (this.personincharge = res.data))
-      getOrgNamePage().then((res) => (this.NamePage = res.data))
       if (type !== 'add') {
         this.fillData()
       }
@@ -317,12 +324,15 @@ export default {
       this.opinionData.push(data)
     },
     handleCustomerSelected(item) {
-      this.saleuserShow = item.saleUserId !== 0 && item.saleUserId !== null ? true : false
+      let react = this.personincharge.some((i) => i.userId === item.saleUserId)
+      this.saleuserShow = item.saleUserId !== 0 && item.saleUserId !== null && react ? true : false
       this.form.setFieldsValue({
         customerId: item && item.id ? item.id : undefined,
         customerName: item.name,
         saleUserId:
-          item && item.saleUserId && item.saleUserId !== 0 && item.saleUserId !== null ? item.saleUserId : undefined,
+          item && item.saleUserId && item.saleUserId !== 0 && item.saleUserId !== null && react
+            ? item.saleUserId
+            : undefined,
       })
     },
     fillData() {

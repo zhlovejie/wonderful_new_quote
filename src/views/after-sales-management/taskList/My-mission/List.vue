@@ -99,6 +99,20 @@
               { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回' }[text] || '未知'
             }}</a>
           </div>
+          <div slot="orgName" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
+          <div slot="customerName" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
           <span slot="action" slot-scope="text, record">
             <template v-if="queryParam.taskDetailStatus === '2'">
               <template v-if="record.taskStatus === 2">
@@ -156,6 +170,20 @@
               <span v-if="text === 1" style="color：red;">是</span>
             </div>
 
+            <div slot="productName" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+            <div slot="deviceLocation" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
             <div slot="problemDescription" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
                 <template slot="title">{{ text }}</template>
@@ -185,6 +213,20 @@
             <a @click="handleClick(record)">{{
               { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回' }[text] || '未知'
             }}</a>
+          </div>
+          <div slot="orgName" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
+          <div slot="customerName" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
             <template>
@@ -217,6 +259,20 @@
               <span v-if="text === 1" style="color：red;">是</span>
             </div>
 
+            <div slot="productName" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+            <div slot="deviceLocation" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
             <div slot="problemDescription" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
                 <template slot="title">{{ text }}</template>
@@ -270,28 +326,26 @@ const innerColumns = [
     title: '主板号',
     dataIndex: 'mainBoardNo',
     key: 'mainBoardNo',
-    width: '200px',
+    width: 200,
   },
   {
     align: 'center',
     title: '产品名称',
     dataIndex: 'productName',
     key: 'productName',
-    width: '200px',
+    scopedSlots: { customRender: 'productName' },
   },
   {
     align: 'center',
     title: '机构',
     dataIndex: 'orgName',
     key: 'orgName',
-    width: '120px',
   },
   {
     align: 'center',
     title: '小区',
     dataIndex: 'villageName',
     key: 'villageName',
-    width: '100px',
     scopedSlots: { customRender: 'paidType' },
   },
   {
@@ -299,8 +353,7 @@ const innerColumns = [
     title: '地址',
     dataIndex: 'deviceLocation',
     key: 'deviceLocation',
-    // scopedSlots: { customRender: 'freightCharge' },
-    width: '120px',
+    scopedSlots: { customRender: 'deviceLocation' },
   },
   {
     align: 'center',
@@ -308,7 +361,6 @@ const innerColumns = [
     key: 'problemDescription',
     dataIndex: 'problemDescription',
     scopedSlots: { customRender: 'problemDescription' },
-    width: '120px',
   },
   {
     align: 'center',
@@ -316,7 +368,6 @@ const innerColumns = [
     dataIndex: 'isWarranty',
     key: 'isWarranty',
     scopedSlots: { customRender: 'isWarranty' },
-    width: '120px',
   },
 ]
 // 表头
@@ -325,25 +376,30 @@ const columns = [
     title: '任务单类型',
     dataIndex: 'taskType',
     scopedSlots: { customRender: 'taskType' },
+    width: 130,
   },
   {
     title: '任务单编号',
     dataIndex: 'taskNum',
+    width: 140,
   },
   {
     title: '来源',
     dataIndex: 'source',
     scopedSlots: { customRender: 'source' },
-    width: '200px',
+    width: 130,
   },
   {
     title: '客户名称',
     dataIndex: 'customerName',
+    width: 140,
+    scopedSlots: { customRender: 'customerName' },
   },
   {
     title: '机构名称',
     dataIndex: 'orgName',
-    width: 100,
+    scopedSlots: { customRender: 'orgName' },
+    width: 130,
   },
   {
     title: '销售负责人',
@@ -382,25 +438,30 @@ const columns1 = [
     title: '任务单类型',
     dataIndex: 'taskType',
     scopedSlots: { customRender: 'taskType' },
+    width: 130,
   },
   {
     title: '任务单编号',
     dataIndex: 'taskNum',
+    width: 140,
   },
   {
     title: '来源',
     dataIndex: 'source',
     scopedSlots: { customRender: 'source' },
-    width: '200px',
+    width: 130,
   },
   {
     title: '客户名称',
     dataIndex: 'customerName',
+    width: 140,
+    scopedSlots: { customRender: 'customerName' },
   },
   {
     title: '机构名称',
     dataIndex: 'orgName',
-    width: 100,
+    scopedSlots: { customRender: 'orgName' },
+    width: 130,
   },
   {
     title: '销售负责人',
@@ -518,8 +579,8 @@ export default {
     apply(type, record) {
       let that = this
       that.$refs.actionForm.query(type, {
-        source:2,
-        taskId:record.id
+        source: 2,
+        taskId: record.id,
       })
     },
     noPassAction(type, record) {

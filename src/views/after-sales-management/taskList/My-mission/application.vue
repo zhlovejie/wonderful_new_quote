@@ -252,10 +252,9 @@ export default {
               customerName: values.customerName,
               networkId: values.networkId[0],
               paymentPostscript: values.paymentPostscript,
-              screeningCost: this.recordDetails.taskUserInfo.screeningCost,
-              troubleshootingCost: this.recordDetails.taskUserInfo.troubleshootingCost,
-              totalPayment:
-                this.recordDetails.taskUserInfo.screeningCost + this.recordDetails.taskUserInfo.troubleshootingCost,
+              screeningCost: values.screeningCost,
+              troubleshootingCost: values.troubleshootingCost,
+              totalPayment: values.screeningCost + values.troubleshootingCost,
             }
 
             that.spinning = true

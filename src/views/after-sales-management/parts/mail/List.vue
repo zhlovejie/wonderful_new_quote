@@ -232,6 +232,14 @@ export default {
           dataIndex: 'createdTime',
         },
         {
+          title: '处理人',
+          dataIndex: 'modifierName',
+        },
+        {
+          title: '处理时间',
+          dataIndex: 'modifyTime',
+        },
+        {
           title: '操作',
           dataIndex: 'id',
 

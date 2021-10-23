@@ -13,9 +13,9 @@
         <a-button key="back" @click="handleCancel">取消</a-button>
         <a-button v-if="details.formKey === '3'" key="submit1" type="primary" @click="handleOk()">完结</a-button>
         <a-popconfirm v-else-if="details.formKey === '1'" title="确认是否愿意担保吗?" @confirm="() => handleOk()">
-          <a-button key="submit" type="primary">处理</a-button>
+          <a-button key="submit" type="primary">确定</a-button>
         </a-popconfirm>
-        <a-button v-else key="submit1" type="primary" @click="handleOk()">处理</a-button>
+        <a-button v-else key="submit1" type="primary" @click="handleOk()">确定</a-button>
       </template>
     </template>
 

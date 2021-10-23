@@ -11,7 +11,7 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">保存</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
       </template>
     </template>
 
@@ -148,6 +148,7 @@
                 <a-date-picker
                   show-time
                   :disabled="isVeiw"
+                  format="YYYY-MM-DD HH:mm"
                   v-decorator="[
                     'arriveTime',
                     {
@@ -541,6 +542,9 @@ export default {
     },
     handleOk() {
       let that = this
+      if (this.isVeiw) {
+        return (that.visible = false)
+      }
       if (that.type === 'handle' || this.ismodify) {
         that.form.validateFields((err, values) => {
           if (!err) {

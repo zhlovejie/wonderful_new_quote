@@ -154,6 +154,9 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
+      if (this.isVeiw) {
+        return (that.visible = false)
+      }
       if (that.type === 'add') {
         that.form.validateFields((err, values) => {
           if (!err) {

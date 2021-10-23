@@ -40,14 +40,32 @@
           <tr>
             <td>首次故障排查费（元/次）</td>
             <td>
-              {{ recordDetails.screeningCost }}
+              <a-form-item>
+                <a-input
+                  style="width: 200px"
+                  :disabled="isDisabled"
+                  @change="onchange"
+                  placeholder="输入首次故障排查费（元/次）"
+                  v-decorator="[
+                    'screeningCost',
+                    { rules: [{ required: true, message: '输入首次故障排查费（元/次）!' }] },
+                  ]"
+                />
+              </a-form-item>
             </td>
             <td>故障处理费</td>
             <td>
-              {{ recordDetails.troubleshootingCost }}
+              <a-form-item>
+                <a-input
+                  :disabled="isDisabled"
+                  @change="onchange1"
+                  style="width: 200px"
+                  placeholder="输入故障处理费"
+                  v-decorator="['troubleshootingCost', { rules: [{ required: true, message: '输入故障处理费!' }] }]"
+                />
+              </a-form-item>
             </td>
           </tr>
-          <tr></tr>
         </table>
         <h3>付款信息</h3>
         <table class="custom-table custom-table-border">
@@ -89,7 +107,7 @@
             </td>
             <td>付款总额</td>
             <td>
-              {{ recordDetails.totalPayment }}
+              {{ Number(arr) + Number(arr1) }}
             </td>
           </tr>
           <tr>
@@ -126,6 +144,8 @@ export default {
   },
   data() {
     return {
+      arr: undefined,
+      arr1: undefined,
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -174,6 +194,14 @@ export default {
     },
   },
   methods: {
+    onchange(e) {
+      const v = e.target.value
+      this.arr = v
+    },
+    onchange1(e) {
+      const v = e.target.value
+      this.arr1 = v
+    },
     submitAction(opt) {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.record.id })
@@ -215,8 +243,12 @@ export default {
       if (type !== 'add') {
         networkPaymentRequestDetail({ id: record.id }).then((res) => {
           that.recordDetails = res.data
+          this.arr = res.data.screeningCost
+          this.arr1 = res.data.troubleshootingCost
           that.$nextTick(() => {
             this.form.setFieldsValue({
+              screeningCost: res.data.screeningCost,
+              troubleshootingCost: res.data.troubleshootingCost,
               customerName: res.data.customerName,
               bankName: res.data.bankName,
               account: res.data.account,
@@ -250,9 +282,9 @@ export default {
               customerName: values.customerName,
               networkId: this.recordDetails.networkId,
               paymentPostscript: values.paymentPostscript,
-              screeningCost: this.recordDetails.screeningCost,
-              troubleshootingCost: this.recordDetails.troubleshootingCost,
-              totalPayment: this.recordDetails.totalPayment,
+              screeningCost: values.screeningCost,
+              troubleshootingCost: values.troubleshootingCost,
+              totalPayment: values.screeningCost + values.troubleshootingCost,
             }
 
             _this.spinning = true

@@ -7,6 +7,7 @@
           <a-select
             placeholder="设备类型"
             show-search
+            :filter-option="filterOption"
             v-model="queryParam.deviceTypeId"
             allowClear
             style="width: 200px"
@@ -208,6 +209,9 @@ export default {
     getDeviceStateList().then((res) => (this.DeviceState = res.data))
   },
   methods: {
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
     openSearchModel() {
       this.$refs.searchForm.query(this.contractState)
     },

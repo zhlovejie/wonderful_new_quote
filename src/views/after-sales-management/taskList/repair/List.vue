@@ -83,6 +83,22 @@
               { 0: '待提交', 1: '待派工', 2: '待处理', 3: '已处理', 4: '已完结', 5: '驳回', 6: '完结' }[text] || '未知'
             }}</a>
           </div>
+
+          <div slot="orgName" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
+          <div slot="customerName" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
+
           <span slot="action" slot-scope="text, record">
             <template v-if="$auth('repair:veiw')">
               <a @click="handleAdd('veiw', record)">详情</a>
@@ -108,19 +124,6 @@
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <!-- <template
-              v-if="
-                $auth('repair:Document') &&
-                !audit &&
-                userInfo.id === record.createdId &&
-                (+record.taskStatus === 0 || +record.taskStatus === 5)
-              "
-            >
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认提交该条数据吗?" @confirm="() => doAction('Document', record)">
-                <a type="primary" href="javascript:;">提交</a>
-              </a-popconfirm>
-            </template> -->
             <template v-if="$auth('repair:reback') && !audit && record.taskStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
@@ -146,6 +149,20 @@
               <span v-if="text === 1" style="color：red;">是</span>
             </div>
 
+            <div slot="productName" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+            <div slot="deviceLocation" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
             <div slot="problemDescription" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
                 <template slot="title">{{ text }}</template>
@@ -194,6 +211,7 @@ const innerColumns = [
     dataIndex: 'productName',
     key: 'productName',
     width: '200px',
+    scopedSlots: { customRender: 'productName' },
   },
   {
     align: 'center',
@@ -207,7 +225,6 @@ const innerColumns = [
     title: '小区',
     dataIndex: 'villageName',
     key: 'villageName',
-    width: '100px',
     scopedSlots: { customRender: 'paidType' },
   },
   {
@@ -215,8 +232,7 @@ const innerColumns = [
     title: '地址',
     dataIndex: 'deviceLocation',
     key: 'deviceLocation',
-    // scopedSlots: { customRender: 'freightCharge' },
-    width: '120px',
+    scopedSlots: { customRender: 'deviceLocation' },
   },
   {
     align: 'center',
@@ -224,7 +240,6 @@ const innerColumns = [
     key: 'problemDescription',
     dataIndex: 'problemDescription',
     scopedSlots: { customRender: 'problemDescription' },
-    width: '120px',
   },
   {
     align: 'center',
@@ -232,7 +247,6 @@ const innerColumns = [
     dataIndex: 'isWarranty',
     key: 'isWarranty',
     scopedSlots: { customRender: 'isWarranty' },
-    width: '120px',
   },
 ]
 export default {
@@ -288,26 +302,31 @@ export default {
         {
           title: '任务单类型',
           dataIndex: 'taskType',
+          width: 130,
           scopedSlots: { customRender: 'taskType' },
         },
         {
           title: '任务单编号',
           dataIndex: 'taskNum',
+          width: 140,
         },
         {
           title: '来源',
           dataIndex: 'source',
           scopedSlots: { customRender: 'source' },
-          width: '200px',
+          width: 130,
         },
         {
           title: '客户名称',
           dataIndex: 'customerName',
+          width: 140,
+          scopedSlots: { customRender: 'customerName' },
         },
         {
           title: '机构名称',
           dataIndex: 'orgName',
-          width: 100,
+          scopedSlots: { customRender: 'orgName' },
+          width: 130,
         },
         {
           title: '销售负责人',
