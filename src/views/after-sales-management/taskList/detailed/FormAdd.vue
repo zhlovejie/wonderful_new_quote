@@ -478,6 +478,9 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
+      if (this.isVeiw) {
+        return (this.visible = false)
+      }
       if (that.type === 'Dispatch' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {
