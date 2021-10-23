@@ -236,7 +236,9 @@
             <td colspan="3">
               <a-form-model-item prop="productionDate" >
                 <a-date-picker v-if="!isDisabled"  style="width: 100%;" v-model="form.productionDate" />
-                <span v-else>{{form.productionDate}}</span>
+                <span v-else>
+                  {{ form.productionDate ? String(form.productionDate).slice(0,10) : form.productionDate }}
+                </span>
               </a-form-model-item>
             </td>
           </tr>

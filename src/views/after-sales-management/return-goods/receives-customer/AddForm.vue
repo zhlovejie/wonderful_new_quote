@@ -411,10 +411,11 @@ export default {
       }
     },
     postListSelectedHandler(record) {
+      // debugger
       console.log(record)
       this.form = {
         ...this.form,
-        mailId: record.mailId,
+        mailId: record.id,
         mailNum: record.mailNum,
         accessoriesId: record.accessoriesId
       }
