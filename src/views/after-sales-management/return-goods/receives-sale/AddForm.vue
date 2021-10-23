@@ -282,7 +282,16 @@ export default {
             return
           }
 
-          params.materialList = that.selectedRows
+          params.materialList = that.selectedRows.map(item => {
+            if(!item.receiveQuantity){
+              item.receiveQuantity = 0
+            }
+            if(!item.freeQuantity){
+              item.freeQuantity = 0
+            }
+            return item
+          })
+
           that.spinning = true
           receiveWorkerAdd(params)
             .then(res => {
@@ -332,7 +341,7 @@ export default {
       }
       this.fillMaterial()
     },
-    async fillMaterial() {
+    fillMaterial() {
       const that = this
       const accessoriesIds = that.form.accessoriesIds
       that.loading = true
@@ -342,7 +351,10 @@ export default {
           that.form = {
             ...that.form,
             materialList: res.data.map(item => {
+              // debugger
               item.key = that._uuid()
+              item.receiveQuantity = item.receiveQuantity || 0
+              item.freeQuantity = item.freeQuantity || 0
               return item
             })
           }

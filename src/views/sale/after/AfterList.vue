@@ -94,10 +94,10 @@
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="$auth('after:edit') && +record.state === 2 && +record.aftersaleType === 1">
+            <!-- <template v-if="$auth('after:edit') && +record.state === 2 && +record.aftersaleType === 1">
               <a-divider type="vertical" />
               <a @click="unloadClick(record)">上传</a>
-            </template>
+            </template> -->
             <template
               v-if="
                 $auth('after:one') && +record.state === 2 && +record.aftersaleType === 1 && record.acceptanceUrl != null
@@ -253,11 +253,11 @@ export default {
           dataIndex: 'state',
           scopedSlots: { customRender: 'state' },
         },
-        {
-          title: '是否完结',
-          dataIndex: 'aftersaleIsend',
-          scopedSlots: { customRender: 'aftersaleIsend' },
-        },
+        // {
+        //   title: '是否完结',
+        //   dataIndex: 'aftersaleIsend',
+        //   scopedSlots: { customRender: 'aftersaleIsend' },
+        // },
         {
           title: '申请人',
           dataIndex: 'createdName',

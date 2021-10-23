@@ -30,6 +30,8 @@
         <span v-else>{{ text }}</span>
       </div>
 
+
+
       <span slot="isTax" slot-scope="text, record">
         <span> {{ { 0: '含税', 1: '不含税' }[text] || '未知' }}</span>
       </span>
@@ -53,6 +55,17 @@
         <div slot="order" slot-scope="text, record, index">
           {{ index + 1 }}
         </div>
+        <div slot="money" slot-scope="text, record, index">
+          {{ record.isWarranty === 0 ? '0' : record.quantity * record.unitPrice }}
+        </div>
+
+        <div slot="deliveryMode" slot-scope="text, record, index">
+          {{ text === 0 ? '自带' : '邮寄' }}
+        </div>
+        <div slot="isWarranty" slot-scope="text, record, index">
+          <span v-if="record.isWarranty === 0">否</span>
+          <span v-if="record.isWarranty === 1" style="color: red">是</span>
+        </div>
       </a-table>
 
       <p></p>
@@ -72,39 +85,47 @@ const innerColumns = [
     align: 'center',
     title: '序号',
     width: '80px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '物料代码',
-    dataIndex: 'materialCode'
+    dataIndex: 'materialCode',
   },
   {
     title: '物料名称',
-    dataIndex: 'materialName'
+    dataIndex: 'materialName',
   },
   {
     title: '规格型号',
-    dataIndex: 'materialModel'
+    dataIndex: 'specification',
+    scopedSlots: { customRender: 'specification' },
   },
   {
     title: '单位',
-    dataIndex: 'unit',
-    scopedSlots: { customRender: 'unit' }
+    dataIndex: 'company',
   },
   {
-    title: '出货数量',
-    dataIndex: 'sendQuantity'
+    title: '数量',
+    dataIndex: 'quantity',
   },
   {
-    title: '已收数量',
-    dataIndex: 'alreadyReceiveQuantity'
+    title: '单价（元）',
+    dataIndex: 'unitPrice',
   },
   {
-    title: '已免寄回数量',
-    dataIndex: 'alreadyFreeQuantity'
-  }
+    title: '金额（元）',
+    dataIndex: 'money',
+    scopedSlots: { customRender: 'money' },
+  },
+  {
+    title: '是否过保',
+    scopedSlots: { customRender: 'isWarranty' },
+  },
+  {
+    title: '带货方式',
+    scopedSlots: { customRender: 'deliveryMode' },
+  },
 ]
-
 
 export default {
   name: 'PostList',

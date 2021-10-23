@@ -357,7 +357,7 @@ export default {
       }
       that.$refs.ruleForm.validate(valid => {
         if (valid) {
-          if (that.selectedRows.length !== 1) {
+          if (that.selectedRows.length === 0) {
             that.$message.info('请至少选择一条物料记录')
             return
           }
@@ -370,7 +370,15 @@ export default {
           const params = { ...that.form }
           params.area = params.area.join(',')
           params.areaName = params.areaText.join(',')
-          params.materialList = that.selectedRows
+          params.materialList = that.selectedRows.map(item => {
+            if(!item.receiveQuantity){
+              item.receiveQuantity = 0
+            }
+            if(!item.freeQuantity){
+              item.freeQuantity = 0
+            }
+            return item
+          })
           that.spinning = true
           receiveCustomerAdd(params)
             .then(res => {
@@ -412,12 +420,12 @@ export default {
     },
     postListSelectedHandler(record) {
       // debugger
-      console.log(record)
+      // console.log(record)
       this.form = {
         ...this.form,
         mailId: record.id,
         mailNum: record.mailNum,
-        accessoriesId: record.accessoriesId
+        accessoriesId: record.id
       }
       this.fillMaterial()
     },
@@ -432,6 +440,12 @@ export default {
             ...that.form,
             materialList: res.data.map(item => {
               item.key = that._uuid()
+              if(!item.receiveQuantity){
+                item.receiveQuantity = 0
+              }
+              if(!item.freeQuantity){
+                item.freeQuantity = 0
+              }
               return item
             })
           }

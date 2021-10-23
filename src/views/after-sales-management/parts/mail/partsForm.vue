@@ -220,12 +220,12 @@ export default {
         {
           title: '物料名称',
           dataIndex: 'materialName',
-          width: 100,
+          width: 200,
         },
         {
           title: '规格型号',
           dataIndex: 'specification',
-          width: 100,
+          width: 220,
         },
         {
           title: '单位',
@@ -238,7 +238,7 @@ export default {
         {
           title: '带货方式',
           scopedSlots: { customRender: 'deliveryMode' },
-          width: 150,
+          width: 120,
         },
       ]
       return baseColumns

@@ -11,7 +11,7 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">保存</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">{{ isVeiw ? '确定' : '保存' }}</a-button>
       </template>
     </template>
 
@@ -478,6 +478,10 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
+      if(that.isVeiw){
+        that.handleCancel()
+        return
+      }
       if (that.type === 'Dispatch' || that.type === 'edit-salary') {
         that.form.validateFields((err, values) => {
           if (!err) {

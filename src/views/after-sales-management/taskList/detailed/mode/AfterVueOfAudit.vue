@@ -283,7 +283,9 @@ export default {
     },
     handleOk() {
       if (this.isVeiw) {
-        return (this.visible = false)
+        debugger
+        this.visible = false;
+        return
       }
       let that = this
       if (that.afterType === 'Dispatch') {
