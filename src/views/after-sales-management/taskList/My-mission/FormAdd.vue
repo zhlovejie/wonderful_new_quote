@@ -59,7 +59,12 @@
             shape="round"
             >{{ item.isWarranty === 0 ? '质保中' : '过保' }}
           </a-button>
-          <a-checkbox style="margin-left: 15px" v-if="item.isWarranty === -1" v-model="item.temporaryISWarranty">
+          <a-checkbox
+            style="margin-left: 15px"
+            :disabled="isVeiw"
+            v-if="item.isWarranty === -1"
+            v-model="item.temporaryISWarranty"
+          >
             过保
           </a-checkbox>
           <a-button v-if="false" type="link" @click="problemdel(index)">删除 </a-button>

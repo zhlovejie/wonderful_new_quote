@@ -254,7 +254,7 @@ export default {
               paymentPostscript: values.paymentPostscript,
               screeningCost: values.screeningCost,
               troubleshootingCost: values.troubleshootingCost,
-              totalPayment: values.screeningCost + values.troubleshootingCost,
+              totalPayment: Number(values.screeningCost) + Number(values.troubleshootingCost),
             }
 
             that.spinning = true

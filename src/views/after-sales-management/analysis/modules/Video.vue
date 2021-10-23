@@ -25,7 +25,7 @@
                 rules: [
                   {
                     required: true,
-                    message: '请选择视频名称!',
+                    message: '请选择问题类型!',
                   },
                 ],
               },
