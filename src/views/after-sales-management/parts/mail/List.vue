@@ -98,6 +98,28 @@
               <span v-if="record.isWarranty === 1" style="color: red">是</span>
             </div>
 
+            <div slot="materialName" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 25">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 25) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+            <div slot="specification" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 25">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 25) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+            <div slot="company" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+
             <div slot="problemDescription" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
                 <template slot="title">{{ text }}</template>
@@ -134,16 +156,19 @@ const innerColumns = [
   {
     title: '物料名称',
     dataIndex: 'materialName',
-    width: 100,
+    scopedSlots: { customRender: 'materialName' },
+    width: 300,
   },
   {
     title: '规格型号',
     dataIndex: 'specification',
-    width: 100,
+    scopedSlots: { customRender: 'specification' },
+    width: 300,
   },
   {
     title: '单位',
     dataIndex: 'company',
+    scopedSlots: { customRender: 'company' },
   },
   {
     title: '数量',

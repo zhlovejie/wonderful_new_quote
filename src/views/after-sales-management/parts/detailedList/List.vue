@@ -103,7 +103,20 @@
               <span v-if="record.isWarranty === 0">否</span>
               <span v-if="record.isWarranty === 1" style="color: red">是</span>
             </div>
-
+            <div slot="materialName" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 25">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 25) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
+            <div slot="specification" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 25">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 25) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
             <div slot="specification" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
                 <template slot="title">{{ text }}</template>
@@ -135,15 +148,19 @@ const innerColumns = [
   {
     title: '物料代码',
     dataIndex: 'materialCode',
+    width: 150,
   },
   {
     title: '物料名称',
     dataIndex: 'materialName',
+    scopedSlots: { customRender: 'materialName' },
+    width: 300,
   },
   {
     title: '规格型号',
     dataIndex: 'specification',
     scopedSlots: { customRender: 'specification' },
+    width: 300,
   },
   {
     title: '单位',
@@ -231,11 +248,12 @@ export default {
         {
           title: '客户名称',
           dataIndex: 'customerName',
+          width: 200,
         },
         {
           title: '机构名称',
           dataIndex: 'orgName',
-          width: 100,
+          width: 200,
         },
         {
           title: '销售负责人',
@@ -309,7 +327,7 @@ export default {
     },
   },
   methods: {
-        searchCheck() {
+    searchCheck() {
       this.isExpanded = true
       this.searchAction()
     },
