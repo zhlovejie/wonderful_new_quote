@@ -14,7 +14,7 @@
  */
 
 export default {
-  baseURL: 'http://192.168.13.22:9995/cloud_development',
+  baseURL: 'http://192.168.13.22:8996/oa',
   materialBaseUrl: 'http://192.168.13.22:9995/cloud_development', //物料规则专用地址
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息

@@ -9,100 +9,94 @@
     :confirmLoading="spinning"
   >
     <template slot="footer">
-      <template v-if="isApproval">
-        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
-        <a-button class="a-button" type="primary" icon="check" @click="passAction()">通过</a-button>
-      </template>
-      <template v-else>
+      <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" v-if="isHandle" @click="handleOk">完结</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" v-else @click="handleOk">确定</a-button>
+        <!-- isHandle -->
       </template>
     </template>
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
-        <h1 style="text-align: center">公司职工年终奖发放表</h1>
+        <h1 style="text-align: center">{{ year }}年终奖金规则</h1>
+
+        <h3>发放规则</h3>
+        <table class="custom-table custom-table-border">
+          <tr v-for="(item, index) in planList" :key="item.index">
+            <td style="width: 150px">{{ getStateText(index + 1) }}期比例（%）</td>
+            <td style="width: 35%">
+              {{ item.percentage }}
+            </td>
+            <td>发放时间</td>
+            <td>
+              {{ item.grantDate }}
+            </td>
+          </tr>
+        </table>
+        <h3 style="margin-top：15px">奖金明细</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <th>序号</th>
             <th>部门</th>
-            <th>职工姓名</th>
-            <th>实发奖金</th>
-            <th>一期奖金</th>
-            <th>二期奖金</th>
-            <th>三期奖金</th>
+            <th>岗位</th>
+            <th>姓名</th>
+            <th>年终奖金</th>
+            <th>{{ details.batchCode }}期奖金</th>
           </tr>
           <tr v-for="(item, index) in programme" :key="item.key">
             <td>
               {{ index + 1 }}
             </td>
             <td>{{ item.departmentName }}</td>
-            <td>{{ item.trueName }}</td>
+            <td>{{ item.stationName }}</td>
+            <td>{{ item.userName }}</td>
             <td>
-              <a-form-item>
-                <a-input
-                  :disabled="isDisabled"
-                  placeholder
-                  @change="inputChange($event, item.userId, 'amount')"
-                  v-decorator="[
-                    `programme${index}.amount`,
-                    { initialValue: item.amount, rules: [{ required: true, message: '请输入实发奖金' }] },
-                  ]"
-                />
-              </a-form-item>
+              {{ item.amount }}
             </td>
-            <td>{{ item.firAmount }}</td>
-            <td>{{ item.secAmount }}</td>
-            <td>{{ item.thrAmount }}</td>
+
+            <td>{{ item.grantAmount }}</td>
           </tr>
           <tr>
-            <td colspan="3">合计：</td>
+            <td colspan="4">合计：</td>
             <td>{{ totalPrice }}</td>
             <td>{{ totalPhase }}</td>
-            <td>{{ totalPhase1 }}</td>
-            <td>{{ totalPhase2 }}</td>
           </tr>
         </table>
       </a-form>
-      <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { queryList } from '@/api/humanResources'
-
-import { year_send_rule, year_annual_addAndUpdate, year_send_getId, year_annual_approval } from '@/api/bonus_management'
-import Approval from './Approval'
-
+import { getDepartmentUser, bounsRules_handle, year_send_getDetail } from '@/api/bonus_management'
+import { getDevisionList } from '@/api/systemSetting'
 let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name: 'BecomingForm',
-  components: {
-    Approval: Approval,
-  },
+  components: {},
   data() {
     return {
+      // 部门列表
+      loading: false,
+      planList: [],
       programme: [],
-      remark: '',
       visible: false,
       spinning: false,
-      year_send: {},
-      ment: false,
+      year: undefined,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'view',
       record: {},
-      isModified: false, //财务人员为 true
-      previewVisible: false,
+      details: {},
     }
   },
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改年终奖金'
+        return '修改年终奖金明细'
       }
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}年终奖金`
+      return `${txt}年终奖金明细`
     },
     isView() {
       //查看
@@ -112,6 +106,11 @@ export default {
       //查看
       return this.type === 'view5'
     },
+    isHandle() {
+      //查看
+      return this.type === 'handle'
+    },
+
     isEdit() {
       //审核
       return this.type === 'edit'
@@ -135,73 +134,74 @@ export default {
     },
     totalPhase() {
       return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.firAmount || 0)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
-    totalPhase1() {
-      return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.secAmount || 0)
-        return parseFloat(addr).toFixed(2)
-      }, 0)
-    },
-    totalPhase2() {
-      return this.programme.reduce((addr, item) => {
-        addr = Number(addr) + Number(item.thrAmount || 0)
+        addr = Number(addr) + Number(item.grantAmount || 0)
         return parseFloat(addr).toFixed(2)
       }, 0)
     },
   },
+  created() {
+    getDevisionList().then((res) => {
+      this.departmentList = res.data
+    })
+    getDepartmentUser().then((res) => {
+      this.treeData = res.data.map((i) => {
+        return {
+          departmentName: i.departmentName,
+          userId: i.departmentId,
+          title: i.departmentName,
+          key: uuid(),
+          children: i.userListsVos.map((s) => {
+            return {
+              departmentId: s.departmentId,
+              departmentName: s.departmentName,
+              stationId: s.stationId,
+              stationName: s.stationName,
+              userId: s.userId,
+              userName: s.userName,
+              title: s.userName,
+              key: uuid(),
+            }
+          }),
+        }
+      })
+    })
+  },
 
   methods: {
-    // moment,
-    inputChange(event, keys, field) {
-      let programme = [...this.programme]
-      let target = programme.find((item, index) => item.userId === keys)
-      if (target) {
-        target[field] = event instanceof Event ? event.target.value : event
-        target['firAmount'] = parseFloat(target[field] * this.year_send.firPart).toFixed(2)
-        target['secAmount'] = parseFloat(target[field] * this.year_send.secPar).toFixed(2)
-        target['thrAmount'] = parseFloat(target[field] * this.year_send.thrPar).toFixed(2)
-        this.programme = programme
-      }
-    },
     query(type, record) {
       this.visible = true
       this.type = type
       this.record = record
-      year_send_rule().then((res) => (this.year_send = res.data[0]))
-      if (type === 'add') {
-        console.log(record)
-        return queryList({ departmentId: record.depId }).then((res) => {
-          this.programme = res.data.map((res) => {
-            return {
-              departmentId: record.depId,
-              departmentName: record.departmentName,
-              amount: '',
-              trueName: res.trueName,
-              userId: res.id,
-              firAmount: undefined,
-              secAmount: undefined,
-              thrAmount: undefined,
-            }
-          })
-          console.log(res.data)
-        })
-      } else {
-        this.fillData()
-      }
+      this.fillData()
+      this.year = record.applyDate
     },
     // 详情
     fillData() {
       let that = this
-      this.$nextTick(() => {
-        year_send_getId({ id: this.record.id }).then((res) => {
-          console.log(res.data)
-          this.programme = res.data.oaSalaryBounsAnnulDetails
-          this.record.depId = res.data.departmentId
+      that.$nextTick(() => {
+        year_send_getDetail({ id: that.record.id }).then((res) => {
+          that.details = res.data
+          that.planList = res.data.salaryBonusAnnualRules
+          that.programme = res.data.salaryBonusAnnualDetailedUserDetailVos
         })
       })
+    },
+    getStateText(state) {
+      let stateMap = {
+        1: '一',
+        2: '二',
+        3: '三',
+        4: '四',
+        5: '五',
+        6: '六',
+        7: '七',
+        8: '八',
+        9: '九',
+        10: '十',
+        11: '十一',
+        12: '十二',
+      }
+      return stateMap[state]
     },
 
     handleOk() {
@@ -210,71 +210,25 @@ export default {
       if (that.type === 'view') {
         this.visible = false
       } else {
-        that.form.validateFields((err, values) => {
-          if (!err) {
-            let arr = {}
-            if (that.type === 'edit-salary') {
-              arr.id = that.record.id
+        bounsRules_handle({ id: this.record.id })
+          .then((res) => {
+            if (res.code === 200) {
+              this.programme = []
+              that.planList = []
+              this.visible = false
+              that.spinning = false
+              that.$message.info(res.msg)
+              that.$emit('finish')
             }
-
-            arr.departmentId = that.record.depId
-            arr.oaSalaryBounsAnnulDetails = this.programme
-
-            if (that.type === 'add' || that.type === 'edit-salary') {
-              that.spinning = true
-              year_annual_addAndUpdate(arr)
-                .then((res) => {
-                  this.programme = []
-                  this.visible = false
-                  that.spinning = false
-                  that.$message.info(res.msg)
-                  that.$emit('finish')
-                })
-                .catch((err) => (that.spinning = false))
-            }
-          }
-        })
+          })
+          .catch((err) => (that.spinning = false))
       }
     },
     handleCancel() {
       this.programme = []
+      this.planList = []
       this.remark = '' // 清空表
       this.visible = false
-    },
-    submitAction(opt) {
-      let that = this
-      let values = {
-        approveId: this.record.id,
-        isAdopt: opt.isAdopt,
-        opinion: opt.opinion,
-      }
-      that.spinning = true
-      year_annual_approval(values)
-        .then((res) => {
-          that.spinning = false
-          that.form.resetFields() // 清空表
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch((err) => (that.spinning = false))
-    },
-    passAction() {
-      this.submitAction({
-        isAdopt: 0,
-        // opinion: '通过',
-      })
-    },
-    noPassAction() {
-      let that = this
-      that.$refs.approval.query()
-    },
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion,
-      })
     },
   },
 }

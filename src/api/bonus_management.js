@@ -332,6 +332,45 @@ export function attendance_delete(parameter) {
   })
 }
 
+//获取所有部门，及部门下所有的员工
+export function getDepartmentUser(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/user/getDepartmentUser',
+    method: 'get',
+    params: parameter
+  })
+}
+//年终奖规则新增
+export function saveAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//年终奖金明细完结
+export function bounsRules_handle(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-bonus-annual-detailed/handle',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+//年终奖金规则列表接口
+export function bounsRules_List(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-bonus-annual/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 年终奖金列表接口
 
 export function year_List(parameter) {
@@ -347,22 +386,12 @@ export function year_List(parameter) {
 export function year_bonus_annua(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-bonus-annual/list',
+    url: '/bounsRules/salary-bonus-annual/isApplyDate',
     method: 'get',
     params: parameter
   })
 }
 
-
-// 查询发放规则列表
-export function year_send_rule(parameter) {
-  return axios({
-    baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-bouns-annul-send-rule/list',
-    method: 'get',
-    params: parameter
-  })
-}
 
 //发放新增规则
 export function year_delete_addAndUpdate(parameter) {
@@ -388,28 +417,56 @@ export function year_annual_addAndUpdate(parameter) {
 export function year_send_getId(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-bonus-annual/getId',
+    url: '/bounsRules/salary-bonus-annual/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+export function year_getDetail(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/getDetail',
     method: 'get',
     params: parameter
   })
 }
 
-//年终撤回
-export function year_send_annual(parameter) {
+//年终详情
+export function year_send_getDetail(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-bonus-annual/withdraw',
+    url: '/bounsRules/salary-bonus-annual-detailed/getDetail',
     method: 'get',
     params: parameter
   })
 }
-//年终删除
+
+//年终明细列表
+export function salary_bonus_annual_page(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-bonus-annual-detailed/page',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//年终规则撤回
+export function year_send_annual(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-bonus-annual/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+//年终规则删除
 export function year_annual_addAnddel(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-bonus-annual/del',
-    method: 'post',
-    data: parameter
+    url: '/bounsRules/salary-bonus-annual/delete',
+    method: 'get',
+    params: parameter
   })
 }
 
@@ -417,11 +474,21 @@ export function year_annual_addAnddel(parameter) {
 export function year_annual_approval(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/oaSalaryInfo/oa-salary-bonus-annual/approval',
+    url: '/bounsRules/salary-bonus-annual/approval',
     method: 'post',
     data: parameter
   })
 }
+//保底申请审批
+export function year_salary_approval(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+
 //其他奖金列表
 export function other_add(parameter) {
   return axios({
@@ -967,6 +1034,42 @@ export function floorsAnnual_List(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/floorsAnnual/floors-annual-account/page',
+    method: 'get',
+    params: parameter
+  })
+}
+//年薪资申请
+export function floorsAnnual_page(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/page',
+    method: 'get',
+    params: parameter
+  })
+}
+//年薪资申请撤回
+export function floorsAnnual_revocation(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+//年薪资申请做废
+export function floorsAnnual_cancel(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/cancel',
+    method: 'get',
+    params: parameter
+  })
+}
+//年薪资申请删除
+export function floorsAnnual_delete(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/floorsAnnual/salary-min-apply/delete',
     method: 'get',
     params: parameter
   })

@@ -115,7 +115,7 @@ export default {
       ]
     },
 
-    {//提成规则
+    { //提成规则
       path: '/salary-management/commission/rule',
       name: 'commission-rules',
       component: RouteView,
@@ -204,8 +204,7 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [
-        {
+      children: [{
           path: '/salary-management/commission/collection',
           name: 'collection',
           component: () => import('@/views/salary-management/commission/collection/List'),
@@ -483,6 +482,17 @@ export default {
                 keepAlive: false,
                 permission: ['permission']
               },
+            },
+            {
+              path: '/salary-management/bonus/bonusRules/yearDonusRules',
+              name: 'bonusRules_yearDonusRules',
+              component: () => import('@/views/salary-management/bonus/bonusRules/yearDonusRules/year_end_bonus_List'),
+              meta: {
+                title: '年终奖金规则',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              },
             }
           ]
         },
@@ -491,7 +501,7 @@ export default {
           name: 'salary_year_bonus',
           component: () => import('@/views/salary-management/bonus/year_end_bonus/year_end_bonus_List'),
           meta: {
-            title: '年终奖金',
+            title: '年终奖明细',
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
@@ -570,6 +580,16 @@ export default {
         component: () => import('@/views/salary-management/Salary_accounting/List'),
         meta: {
           title: '薪资核算',
+          icon: 'select',
+          keepAlive: false,
+          permission: ['permission']
+        },
+      }, {
+        path: '/salary-management/salary-year-rules-Add',
+        name: 'salary-year-rules-Add',
+        component: () => import('@/views/salary-management/salary-year-rules-Add/List'),
+        meta: {
+          title: '年薪制申请',
           icon: 'select',
           keepAlive: false,
           permission: ['permission']
