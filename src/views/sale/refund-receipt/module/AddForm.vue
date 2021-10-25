@@ -135,6 +135,7 @@
                 >
                   <a-select-option :value="1">公户退款</a-select-option>
                   <a-select-option :value="2">私户退款</a-select-option>
+                  <a-select-option :value="3">现金退款</a-select-option>
                 </a-select>
               </a-form-item>
             </td>

@@ -12,7 +12,7 @@
           >重新提交</a-button
         >
         <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
-        <a-button class=" fl-r btn btn-primary" icon="download" @click="getPdf('pdfDom')">导出调试任务单</a-button>
+        <!-- <a-button class=" fl-r btn btn-primary" icon="download" @click="getPdf('pdfDom')">导出调试任务单</a-button> -->
       </div>
 
       <a-card class="card sales-task-wrapper" :bordered="false" id="pdfDom">

@@ -3,6 +3,7 @@
     v-bind="$attrs"
     :value="dictionaryId"
     @change="changeHandler"
+    :filter-option="filterOption"
   >
     <a-select-option
       v-for="item in dataSource"
@@ -17,7 +18,7 @@ import { getDictionary } from '@/api/common'
 export default {
   props: {
     text: [String],
-    dictionaryId:[Number]
+    dictionaryId:[Number,String]
   },
   data() {
     return {
@@ -46,7 +47,12 @@ export default {
       let {dataSource,dictionaryId} = this
       let target = dataSource.find(item => item.id === dictionaryId)
       return target ? {...target} : null
-    }
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
   }
 };
 </script>

@@ -3,6 +3,8 @@
     v-bind="$attrs"
     :value="depId"
     @change="depChange"
+    option-filter-prop="children"
+    :filter-option="filterOption"
   >
     <a-select-option
       v-for="item in depList"
@@ -40,7 +42,12 @@ export default {
     },
     depChange(depId) {
       this.$emit("update:depId", depId);
-    }
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
   }
 };
 </script>

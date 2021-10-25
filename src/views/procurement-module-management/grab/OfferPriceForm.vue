@@ -32,7 +32,7 @@
               v-model="form.hasSupplier"
               @change="hasSupplierChange"
             >
-              <a-radio v-for="item in hasSupplierList" :value="item.id">{{item.label}}</a-radio>
+              <a-radio v-for="(item,idx) in hasSupplierList" :key="idx" :value="item.id">{{item.label}}</a-radio>
             </a-radio-group>
           </a-form-model-item>
 
