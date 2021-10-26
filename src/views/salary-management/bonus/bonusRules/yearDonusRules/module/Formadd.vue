@@ -56,17 +56,19 @@
                 />
               </a-form-item>
             </td>
-            <td v-if="!isView">
+            <td v-if="!isDisabled">
               <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="del(item._key)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </td>
           </tr>
         </table>
-        <a-button v-if="!isView" style="width: 100%" type="dashed" icon="plus" @click="addItem()">新增规则</a-button>
+        <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="addItem()"
+          >新增规则</a-button
+        >
         <!-- <h3>奖金明细 <a style="margin-left：15px" @click="detailedAdd()">新增</a></h3> -->
         <h3 style="margin-top：15px">奖金明细</h3>
-        <a-row :gutter="24" v-if="!isView">
+        <a-row :gutter="24" v-if="!isDisabled">
           <a-form :form="form" class="form wdf-form">
             <a-col :span="10">
               <a-form-item style="margin-bottom: 0">
@@ -136,7 +138,7 @@
                 />
               </a-form-item>
             </td>
-            <td v-if="!isView">
+            <td v-if="!isDisabled">
               <a-popconfirm
                 title="是否确定删除"
                 ok-text="确定"
@@ -158,13 +160,7 @@
   </a-modal>
 </template>
 <script>
-import {
-  getDepartmentUser,
-  saveAndUpdate,
-  year_annual_addAndUpdate,
-  year_send_getId,
-  year_annual_approval,
-} from '@/api/bonus_management'
+import { salary_saveAndUpdate, year_send_getId, year_annual_approval } from '@/api/bonus_management'
 import { getDevisionList, getUserByDep } from '@/api/systemSetting'
 import Approval from './Approval'
 import moment from 'moment'
@@ -183,7 +179,6 @@ export default {
       roleList: [],
       departmentId: undefined,
       roleArr: [],
-      departmentList: [],
       loading: false,
       cancelTag: null,
       planList: [],
@@ -230,7 +225,7 @@ export default {
       return this.type === 'edit-salary'
     },
     isDisabled() {
-      return this.isView || this.isEdit || this.isView5
+      return this.isView || this.isEdit
     },
     totalPrice() {
       return this.programme.reduce((addr, item) => {
@@ -248,28 +243,6 @@ export default {
   created() {
     getDevisionList().then((res) => {
       this.departmentList = res.data
-    })
-    getDepartmentUser().then((res) => {
-      this.treeData = res.data.map((i) => {
-        return {
-          departmentName: i.departmentName,
-          userId: i.departmentId,
-          title: i.departmentName,
-          key: uuid(),
-          children: i.userListsVos.map((s) => {
-            return {
-              departmentId: s.departmentId,
-              departmentName: s.departmentName,
-              stationId: s.stationId,
-              stationName: s.stationName,
-              userId: s.userId,
-              userName: s.userName,
-              title: s.userName,
-              key: uuid(),
-            }
-          }),
-        }
-      })
     })
   },
 
@@ -360,12 +333,13 @@ export default {
       let prevDate = index === 0 ? undefined : moment(this.planList[index - 1].grantDate)
       console.log(prevDate)
       if (prevDate === undefined) {
-        return current.format('YYYY') !== this.record.applyDate.format('YYYY')
+        let arr = this.isEditSalary ? this.record.applyDate : this.record.applyDate.format('YYYY')
+        return current.format('YYYY') !== arr
       } else {
-        return (
-          current.format('YYYY-MM-DD') < prevDate.format('YYYY-MM-DD') ||
-          current.format('YYYY-MM-DD') > this.record.applyDate.format('YYYY') + '12-31'
-        )
+        let react = this.isEditSalary
+          ? this.record.applyDate + '-12-31'
+          : this.record.applyDate.format('YYYY') + '12-31'
+        return current.format('YYYY-MM-DD') < prevDate.format('YYYY-MM-DD') || current.format('YYYY-MM-DD') > react
       }
     },
     getStateText(state) {
@@ -438,6 +412,7 @@ export default {
           console.log(res.data)
           this.planList = res.data.salaryBonusAnnualRuleDetailVos.map((i) => {
             return {
+              _key: uuid(),
               grantDate: moment(i.grantDate),
               percentage: i.percentage,
             }
@@ -478,7 +453,7 @@ export default {
 
             if (that.type === 'add' || that.type === 'edit-salary') {
               that.spinning = true
-              saveAndUpdate(arr)
+              salary_saveAndUpdate(arr)
                 .then((res) => {
                   if (res.code === 200) {
                     this.programme = []

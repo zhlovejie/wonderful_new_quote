@@ -33,12 +33,13 @@
       </a-select>
       <a-select
         placeholder="薪资类型"
-        v-model="queryParam.salaryType"
+        v-model="queryParam.yearSalaryId"
         :allowClear="true"
         style="width: 200px; margin-right: 10px"
       >
-        <a-select-option :value="0">周薪制</a-select-option>
-        <a-select-option :value="1">年薪制</a-select-option>
+        <a-select-option v-for="(item, index) in annual" :key="index" :value="item.id">{{
+          item.ruleName
+        }}</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -86,8 +87,9 @@
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
             <template v-if="record.status === 2">
-              <a-popconfirm title="是否确定做废" ok-text="确定" cancel-text="取消" @confirm="confirmwaste(record)">
-                <a type="primary">撤回</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否确定作废" ok-text="确定" cancel-text="取消" @confirm="confirmwaste(record)">
+                <a type="primary">作废</a>
               </a-popconfirm>
             </template>
             <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
@@ -131,6 +133,7 @@
 </template>
 <script>
 import { getDevisionList } from '@/api/systemSetting'
+import { annual_ruleList } from '@/api/humanResources'
 import {
   floorsAnnual_page,
   floorsAnnual_revocation,
@@ -217,6 +220,7 @@ export default {
   data() {
     return {
       departmentList: [], // 部门列表
+      annual: [], //年薪制规则
       visible: false,
       queryParam: {},
       pagination1: { current: 1 },
@@ -257,6 +261,7 @@ export default {
       handler: function (to, from) {
         if (to.name === 'salary-year-rules-Add') {
           this.init()
+          annual_ruleList().then((res) => (this.annual = res.data))
         }
       },
       immediate: true,

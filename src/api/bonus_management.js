@@ -342,6 +342,15 @@ export function getDepartmentUser(parameter) {
   })
 }
 //年终奖规则新增
+export function salary_saveAndUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/bounsRules/salary-bonus-annual/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+//年薪制新增
 export function saveAndUpdate(parameter) {
   return axios({
     baseURL: system.baseURL,
