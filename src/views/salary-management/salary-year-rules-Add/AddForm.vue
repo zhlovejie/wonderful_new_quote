@@ -145,7 +145,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr v-for="(item, index) in salaryMinApplyMonies" :key="item.index">
+          <tr v-for="(item, index) in salaryMinApplyMonies" :key="item._key">
             <td class="requiredMark" v-if="SalaryChang === 1" style="width: 150px">销售额（万元）</td>
             <td v-if="SalaryChang === 1" style="width: 35%">
               <a-form-item>
@@ -156,8 +156,8 @@
                   style="width: 200px"
                   @change="inputChanges($event, item._key, 'saleQuota')"
                   v-decorator="[
-                    `salaryMinApplyMonies[${index}].saleQuota`,
-                    { initialValue: item.saleQuota, rules: [{ required: true, message: '请输入比例' }] },
+                    `salaryMinApplyMonies.${index}.saleQuota`,
+                    { initialValue: item.saleQuota, rules: [{ required: true, message: '请输入销售额' }] },
                   ]"
                 />
               </a-form-item>
@@ -172,20 +172,26 @@
                   style="width: 200px"
                   @change="inputChanges($event, item._key, 'cycleSalary')"
                   v-decorator="[
-                    `salaryMinApplyMonies[${index}].cycleSalary`,
-                    { initialValue: item.cycleSalary, rules: [{ required: true, message: '请输入比例' }] },
+                    `salaryMinApplyMonies.${index}.cycleSalary`,
+                    { initialValue: item.cycleSalary, rules: [{ required: true, message: '请输入保底薪资' }] },
                   ]"
                 />
               </a-form-item>
             </td>
-            <td v-if="!isDisabled">
+            <td v-if="!isDisabled && SalaryChang === 1">
               <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="del(item._key)">
                 <a type="primary">删除</a>
               </a-popconfirm>
             </td>
           </tr>
         </table>
-        <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="addItem()"></a-button>
+        <a-button
+          v-if="!isDisabled && SalaryChang === 1"
+          style="width: 100%"
+          type="dashed"
+          icon="plus"
+          @click="addItem()"
+        ></a-button>
       </a-form>
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
@@ -266,15 +272,16 @@ export default {
       this.SalaryChang = e
     },
     del(key) {
-      let that = this
-      that.salaryMinApplyMonies = that.salaryMinApplyMonies.filter((i) => i._key !== key)
+      let _d = [...this.salaryMinApplyMonies]
+      _d = _d.filter((i) => i._key !== key)
+      this.salaryMinApplyMonies = [..._d]
     },
     inputChanges(event, keys, field) {
       let salaryMinApplyMonies = [...this.salaryMinApplyMonies]
       let target = salaryMinApplyMonies.find((item, index) => item._key === keys)
       if (target) {
         target[field] = event instanceof Event ? event.target.value : event
-        this.salaryMinApplyMonies = salaryMinApplyMonies
+        this.salaryMinApplyMonies = [...salaryMinApplyMonies]
       }
     },
     addItem() {
@@ -292,6 +299,7 @@ export default {
       this.visible = true
       this.type = type
       this.record = record
+      this.form.resetFields()
       this.salaryMinApplyMonies = []
       annual_ruleList().then((res) => (this.annual = res.data))
       departmentList().then((res) => (this.depSelectDataSource = res.data))
@@ -324,13 +332,19 @@ export default {
         year_getDetail({ id: that.record.id }).then((res) => {
           console.log(res.data)
           let react = res.data
-          that.salaryMinApplyMonies = react.salaryMinApplyMonies
+          that.salaryMinApplyMonies = react.salaryMinApplyMonies.map((i) => {
+            i._key = uuid()
+            return i
+          })
           that.SalaryChang = react.type
           that.form.setFieldsValue({
             cycle: react.cycle,
             cycleTime: moment(react.cycleTime),
             departmentId: react.departmentId,
-            salaryMinApplyMonies: react.salaryMinApplyMonies,
+            salaryMinApplyMonies: react.salaryMinApplyMonies.map((i) => {
+              i._key = uuid()
+              return i
+            }),
             stationId: react.stationId,
             type: react.type,
             userId: react.userId,
@@ -355,7 +369,17 @@ export default {
               values.id = that.record.id
               values.instanceId = that.record.instanceId
             }
+            if (this.salaryMinApplyMonies.length === 0) {
+              return this.$message.error('销售额及保底薪资必须要有一条数据')
+            }
             values.salaryType = 1
+            delete values.salaryMinApplyMonies
+            values.salaryMinApplyMonies = this.salaryMinApplyMonies.map((i) => {
+              return {
+                saleQuota: i.saleQuota,
+                cycleSalary: i.cycleSalary,
+              }
+            })
             values.cycleTime = values.cycleTime.format('YYYY-MM-DD')
             console.log(values)
             if (that.type === 'add' || that.type === 'edit-salary') {

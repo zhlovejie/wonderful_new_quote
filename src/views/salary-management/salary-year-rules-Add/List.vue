@@ -74,9 +74,6 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="salaryType" slot-scope="text, record, index">
-          <span>{{ text === 0 ? '周薪制薪资' : '年薪制薪资' }}</span>
-        </div>
 
         <div slot="status" slot-scope="text, record">
           <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
@@ -173,8 +170,7 @@ const columns = [
     align: 'center',
     title: '薪资类型',
     key: 'salaryType',
-    dataIndex: 'salaryType',
-    scopedSlots: { customRender: 'salaryType' },
+    dataIndex: 'yearSalaryName',
   },
   {
     align: 'center',

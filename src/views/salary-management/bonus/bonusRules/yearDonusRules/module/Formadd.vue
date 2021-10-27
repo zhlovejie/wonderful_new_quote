@@ -47,6 +47,9 @@
               <a-form-item>
                 <a-date-picker
                   :disabled="isDisabled"
+                  :defaultPickerValue="
+                    index === 0 ? moment(`${year}-01-01`, dateFormat) : moment(planList[index - 1].grantDate)
+                  "
                   :disabled-date="(currentDate) => disabledDate(currentDate, index)"
                   @change="inputChanges($event, item._key, 'grantDate')"
                   v-decorator="[
@@ -116,9 +119,9 @@
             <th>岗位</th>
             <th>姓名</th>
             <th>年终奖金</th>
-            <th v-if="!isView">操作</th>
+            <th v-if="!isDisabled">操作</th>
           </tr>
-          <tr v-for="(item, index) in programme" :key="item.key">
+          <tr v-for="(item, index) in programme" :key="item.userId">
             <td>
               {{ index + 1 }}
             </td>
@@ -127,13 +130,20 @@
             <td>{{ item.userName }}</td>
             <td>
               <a-form-item>
-                <a-input
+                <a-input-Number
                   :disabled="isDisabled"
                   placeholder
+                  style="width: 200px"
                   @change="inputChange($event, item.userId, 'amount')"
                   v-decorator="[
-                    `programme${index}.amount`,
-                    { initialValue: item.amount, rules: [{ required: true, message: '请输入实发奖金' }] },
+                    `programme.${index}.amount`,
+                    {
+                      initialValue: item.amount,
+                      rules: [
+                        { required: true, message: '请输入实发奖金' },
+                        { pattern: /^[1-9]+[0-9]*]*$/, message: '实发奖金不能小于或等于0' },
+                      ],
+                    },
                   ]"
                 />
               </a-form-item>
@@ -173,6 +183,7 @@ export default {
   },
   data() {
     return {
+      dateFormat: 'YYYY-MM-DD',
       // 部门列表
       departmentList: [],
       // 角色列表
@@ -418,7 +429,6 @@ export default {
             }
           })
           this.programme = res.data.salaryBonusAnnualUserDetailVos
-          this.roleArr = res.data.salaryBonusAnnualUserDetailVos.map((i) => i.userId)
           // this.record.depId = res.data.departmentId
         })
       })
@@ -443,6 +453,9 @@ export default {
               return this.$message.error('比例总和要等于100')
             }
             arr.applyDate = this.year
+            if (this.programme.length === 0) {
+              return this.$message.error('奖金明细不能为空')
+            }
             arr.salaryBonusAnnualUsers = this.programme
             arr.salaryBonusAnnualRules = this.planList.map((i) => {
               return {

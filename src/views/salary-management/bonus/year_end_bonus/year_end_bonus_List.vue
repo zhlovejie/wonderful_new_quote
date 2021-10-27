@@ -43,7 +43,6 @@
     </div>
     <div class="main-wrapper">
       <a-table
-        v-if="$auth('year:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"

@@ -76,7 +76,7 @@
             <template v-if="$auth('year_end:view')">
               <a type="primary" @click="doAction('view', record)">查看</a>
             </template>
-            <template v-if="record.status === 1 && +record.createdId === +userInfo.id">
+            <template v-if="(record.status === 2 || record.status === 1) && +record.createdId === +userInfo.id">
               <a-divider type="vertical" />
               <template v-if="$auth('year_end:Withdraw')">
                 <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
