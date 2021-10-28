@@ -180,10 +180,10 @@ export function checkInspectionSchemeSetDelete(parameter) {
 }
 
 /**详情 */
-export function checkInspectionSchemeSetDelete(parameter) {
+export function checkInspectionSchemeSetDetail(parameter) {
   return axios({
     baseURL: baseurl,
-    url: '/checkInspectionSchemeSet/delete',
+    url: '/checkInspectionSchemeSet/getDetail',
     method: 'get',
     params: parameter
   })
@@ -232,7 +232,7 @@ export function checkInspectionStandardSetDelete(parameter) {
   })
 }
 
-/**删除 */
+/**详情 */
 export function checkInspectionStandardSetDetail(parameter) {
   return axios({
     baseURL: baseurl,
