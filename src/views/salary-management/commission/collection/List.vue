@@ -100,12 +100,6 @@ const columns = [
     dataIndex: 'freightChargeSub',
     key: 'freightChargeSub',
   },
-  {
-    align: 'center',
-    title: '回款额(去税去运费)',
-    dataIndex: 'untaxReceivableAmount',
-    key: 'untaxReceivableAmount',
-  },
 
   {
     align: 'center',
@@ -121,9 +115,9 @@ const columns = [
   },
   {
     align: 'center',
-    title: '回款额',
-    key: 'receivableAmount',
-    dataIndex: 'receivableAmount',
+    title: '回款额(去税去运费)',
+    dataIndex: 'untaxReceivableAmount',
+    key: 'untaxReceivableAmount',
   },
 ]
 
