@@ -18,12 +18,17 @@ import { getDictionary } from '@/api/common'
 export default {
   props: {
     text: [String],
-    dictionaryId:[Number,String]
+    dictionaryId:[Number,String,Array]
   },
   data() {
     return {
       dataSource: []
     };
+  },
+  computed:{
+    isMultiple(){
+      return Array.isArray(this.dictionaryId)
+    }
   },
   created(){
     this.init()
@@ -36,17 +41,33 @@ export default {
         console.warn(`text参数缺失`)
         return
       }
-      getDictionary({text:that.text}).then(res => (that.dataSource = res.data));
+      getDictionary({text:that.text}).then(res => {
+        that.dataSource = res.data
+        that.$emit("loaded",[...that.dataSource])
+      });
     },
     changeHandler(dictionaryId) {
       this.$emit("update:dictionaryId", dictionaryId);
-      let target = this.dataSource.find(item => item.id === dictionaryId)
-      this.$emit("selected",{...target})
+      if(this.isMultiple){
+        let list = this.dataSource.filter(item => dictionaryId.includes(item.id))
+        this.$emit("selected",list)
+      }else{
+        let target = this.dataSource.find(item => item.id === dictionaryId)
+        this.$emit("selected",{...target})
+      }
     },
     getTarget(){
       let {dataSource,dictionaryId} = this
-      let target = dataSource.find(item => item.id === dictionaryId)
-      return target ? {...target} : null
+      if(this.isMultiple){
+        console.log(dataSource.filter(item => dictionaryId.includes(item.id)))
+        return dataSource.filter(item => dictionaryId.includes(item.id))
+      }else{
+        let target = dataSource.find(item => item.id === dictionaryId)
+        return target ? {...target} : null
+      }
+    },
+    getDataSource(){
+      return [...this.dataSource]
     },
     filterOption(input, option) {
       return (

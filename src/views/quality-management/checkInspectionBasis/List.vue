@@ -64,7 +64,7 @@
           </div>
         </a-table>
       </div>
-      <AddForm ref="addForm" @finish="() => search()" />
+      <AddForm ref="addForm" :key="normalAddFormKeyCount" @ok="() => search()" />
     </a-spin>
   </a-card>
 </template>
@@ -212,12 +212,15 @@ export default {
     doAction(type,record){
       const that = this
       if(['add','view','edit'].includes(type)){
-        that.$refs.addForm.query(type,record)
+        that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
+        that.$nextTick(() => {
+          that.$refs.addForm.query(type,record)
+        })
         return
       }else if(type === 'del'){
         checkInspectionBasisDelete({id:record.id}).then(res => {
           if(res.code === 200){
-            that.handleOk()
+            that.search()
           }else{
             that.$message.error(res.msg)
             return
