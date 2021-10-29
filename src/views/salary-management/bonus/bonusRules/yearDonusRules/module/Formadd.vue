@@ -118,7 +118,7 @@
             <th>部门</th>
             <th>岗位</th>
             <th>姓名</th>
-            <th>年终奖金</th>
+            <th>年终奖金(元)</th>
             <th v-if="!isDisabled">操作</th>
           </tr>
           <tr v-for="(item, index) in programme" :key="item.userId">

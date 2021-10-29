@@ -146,7 +146,7 @@
             </td>
           </tr>
           <tr v-for="(item, index) in salaryMinApplyMonies" :key="item._key">
-            <td class="requiredMark" v-if="SalaryChang === 1" style="width: 150px">销售额（万元）</td>
+            <td class="requiredMark" v-if="SalaryChang === 1" style="width: 150px">销售额(万元)</td>
             <td v-if="SalaryChang === 1" style="width: 35%">
               <a-form-item>
                 <a-input-Number
@@ -162,7 +162,7 @@
                 />
               </a-form-item>
             </td>
-            <td class="requiredMark" style="width: 150px">保底薪资万元</td>
+            <td class="requiredMark" style="width: 150px">保底薪资(万元)</td>
             <td>
               <a-form-item>
                 <a-input-Number

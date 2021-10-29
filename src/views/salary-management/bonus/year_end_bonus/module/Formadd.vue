@@ -41,8 +41,8 @@
             <th>部门</th>
             <th>岗位</th>
             <th>姓名</th>
-            <th>年终奖金</th>
-            <th>{{ details.batchCode }}期奖金</th>
+            <th>年终奖金(元)</th>
+            <th>{{ details.batchCode }}期奖金(元)</th>
           </tr>
           <tr v-for="(item, index) in programme" :key="item.key">
             <td>
