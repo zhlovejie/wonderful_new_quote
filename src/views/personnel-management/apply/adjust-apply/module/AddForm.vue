@@ -270,7 +270,7 @@
               <td>期望生效时间</td>
               <td colspan="3">
                 <a-form-item>
-                  <a-date-picker
+                  <a-month-picker
                     :disabled="isDisabled"
                     :disabledDate="disabledDate"
                     style="width: 100%"
@@ -462,7 +462,7 @@
               <td>期望生效时间</td>
               <td colspan="3">
                 <a-form-item>
-                  <a-date-picker
+                  <a-month-picker
                     :disabled="isDisabled"
                     :disabledDate="disabledDate"
                     style="width: 100%"
@@ -625,9 +625,7 @@ export default {
   methods: {
     moment: moment,
     disabledDate(current) {
-      // Can not select days before today and today
-      let startDate = current.clone().startOf('month')
-      return current.format('YYYY/MM/DD') !== startDate.format('YYYY/MM/DD') || current < moment().endOf('day')
+      return current && current < moment().startOf('month')
     },
     init() {
       let that = this
