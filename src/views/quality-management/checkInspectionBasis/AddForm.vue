@@ -201,7 +201,7 @@ export default {
         return reg.test(_n) || _n === '*'
       }
       let checkRange = (min,max,n) => {
-        return n === '*' || (n >= min && n <= max)
+        return n === '*' || (+n >= +min && +n <= +max)
       }
 
       let checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]

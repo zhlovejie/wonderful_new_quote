@@ -21,6 +21,12 @@ let uuid = () => Math.random().toString(32).slice(-10)
 
 export default {
   name:'tools-select',
+  props:{
+    termName:{
+      type:String,
+      default:''
+    }
+  },
   data(){
     return {
       authoritySaveBoList:[],
@@ -35,11 +41,13 @@ export default {
     this.fetchTree()
   },
   methods:{
-    treeSelectChange(value,titleList){
-      debugger
+    treeSelectChange(value,titleList,vnode){
+      let {remarks,parentId} = vnode.triggerNode.dataRef
       let result = {
         name:titleList[0],
-        value
+        value,
+        remarks,
+        parentId
       }
       this.$emit('change',{...result})
     },
@@ -81,6 +89,7 @@ export default {
 
       obj.title = item.termName
       obj.value = String(item.id)
+      obj.remarks = item.remarks,
       obj.parentId = item.parentId
       if (Array.isArray(item.children) && item.children.length > 0) {
         obj.children = item.children.map((v) => that.formatTreeData(v))
@@ -90,26 +99,34 @@ export default {
 
     fetchTree() {
       const that = this
+      if(that.termName.length === 0){
+        return
+      }
       that.modelType = 1
       that.spinning = true
       that.dataSource = []
       that.selectedRowKeys = []
       that.selectedRows = []
       that.loadedKeys = []
-      checkParameterTermList({ parentId: 0 })
+      checkParameterTermList({ termName: that.termName })
         .then((res) => {
           that.spinning = false
           if(+res.code !== 200){
             that.$message.info(res.msg)
             return
           }
+          let node =  Array.isArray(res.data) && res.data.length > 0 ? res.data[0] : []
+          if(node.length === 0){
+            return
+          }
           const root = {
-            key: '0',
-            value: '0',
-            title: '参数配置',
+            key: String(node.id),
+            value: String(node.id),
+            title: node.termName,
+            remarks:node.remarks,
             isLeaf: false,
-            parentId: 0,
-            children: res.data.map((item) => that.formatTreeData(item)),
+            parentId: node.parentId,
+            children: [],
           }
           that.orgTree = [root]
           // that.dataList = that.generateList(that.orgTree)
@@ -119,9 +136,7 @@ export default {
             }
           }
 
-          if (String(that.parentId) === '0') {
-            that.parentItem = root
-          }
+          that.parentItem = root
           // Object.assign(that, {
           //     expandedKeys:['0'],
           //     autoExpandParent: true,

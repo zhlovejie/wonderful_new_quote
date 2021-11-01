@@ -21,8 +21,21 @@
               </td>
               <td>
                 <a-form-model-item prop="parameterTermName">
-                  <ToolsSelect v-if="isAdd"  @change="handlerToolsSelect"/>
+                  <a-select
+                    v-if="isAdd"
+                    style="width:200px;"
+                    :value="form.parameterTermId"
+                    @change="handlerToolsSelect"
+                  >
+                    <a-select-option
+                      v-for="item in parameterTermList"
+                      :key="item.id"
+                    >
+                      {{item.termName}}
+                    </a-select-option>
+                  </a-select>
                   <span v-else>{{form.parameterTermName}}</span>
+
                 </a-form-model-item>
               </td>
 
@@ -118,8 +131,11 @@
                 <span class="icon-required">二维码</span>
               </td>
               <td>
-                <a-form-model-item >
-                  <vue-qr :text="qrText" :size="qrSize"  ></vue-qr>
+                <a-form-model-item>
+                  <vue-qr
+                    :text="qrText"
+                    :size="qrSize"
+                  ></vue-qr>
                 </a-form-model-item>
               </td>
               <td style="width:150px;">
@@ -197,8 +213,10 @@
           title="预览凭证"
         />
 
-        <FileViewList ref="fileViewList" title="查看附件"/>
-
+        <FileViewList
+          ref="fileViewList"
+          title="查看附件"
+        />
 
         <p
           v-if="isAdd || isEdit || isAuth"
@@ -234,13 +252,13 @@ import ImgViewList from '@/components/CustomerList/ImgViewList'
 import FileViewList from '@/components/CustomerList/FileViewList'
 
 import UploadFile from './UploadFile'
-import ToolsSelect from './ToolsSelect'
 import moment from 'moment'
 import VueQr from 'vue-qr'
 import {
   checkToolAuthenticationDetail,
   checkToolAuthenticationAddOrUpdate,
-  checkToolAuthentication
+  checkToolAuthentication,
+  checkParameterTermList
 } from '@/api/qualityManagement'
 
 export default {
@@ -249,7 +267,6 @@ export default {
     UploadFile,
     ImgViewList,
     FileViewList,
-    ToolsSelect,
     VueQr
   },
   data() {
@@ -259,9 +276,9 @@ export default {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
       form: {
-        authenticationOffice:0,
-        authenticationResult:0,
-        type:0
+        authenticationOffice: 0,
+        authenticationResult: 0,
+        type: 0
       },
       rules: {
         parameterTermId: [{ required: true, message: '请选择检验工具', trigger: 'change' }],
@@ -301,8 +318,10 @@ export default {
         }
       },
 
-      qrText:'',
-      qrSize:200,
+      qrText: '',
+      qrSize: 200,
+
+      parameterTermList: []
     }
   },
   computed: {
@@ -332,15 +351,15 @@ export default {
     async query(type, record) {
       const that = this
       that.form = {
-        authenticationOffice:0,
-        authenticationResult:0,
-        type:0
+        authenticationOffice: 0,
+        authenticationResult: 0,
+        type: 0
       }
       that.type = type
       that.qrText = ''
       that.visible = true
+      await that.fetchParameterTermList()
       if (that.isAdd) {
-
       } else {
         that.spinning = true
         let detail = {}
@@ -400,7 +419,7 @@ export default {
           that.spinning = true
           const params = { ...that.form }
           console.log(params)
-          let api = type === 1 ? checkToolAuthenticationAddOrUpdate : checkToolAuthentication
+          const api = type === 1 ? checkToolAuthenticationAddOrUpdate : checkToolAuthentication
           api(params)
             .then(res => {
               that.spinning = false
@@ -426,17 +445,47 @@ export default {
       const imgList = pictureUrl.split(',').map(url => decodeURIComponent(url))
       this.$refs.imgViewList.show(imgList)
     },
-    handleAnnexUrl(){
+    handleAnnexUrl() {
       debugger
       const pictureUrl = this.form.annexUrl
       const imgList = pictureUrl.split(',').map(url => decodeURIComponent(url))
       this.$refs.fileViewList.show(imgList)
     },
-    handlerToolsSelect({name,value}){
-      this.form = {
-        ...this.form,
-        parameterTermId:value,
-        parameterTermName:name
+
+    async fetchParameterTermList() {
+      const that = this
+      const id = await checkParameterTermList({ termName: '检验工具' })
+        .then(res => {
+          return Array.isArray(res.data) && res.data.length > 0 ? res.data[0].id : null
+        })
+        .catch(err => {
+          return null
+        })
+
+      const list = await checkParameterTermList({ parentId: id })
+        .then(res => {
+          return Array.isArray(res.data) && res.data.length > 0 ? res.data : []
+        })
+        .catch(err => {
+          return []
+        })
+      that.parameterTermList = list
+    },
+
+    handlerToolsSelect(val) {
+      const target = this.parameterTermList.find(item => item.id === val)
+      if (target) {
+        this.form = {
+          ...this.form,
+          parameterTermId: target.id,
+          parameterTermName: target.termName
+        }
+      } else {
+        this.form = {
+          ...this.form,
+          parameterTermId: undefined,
+          parameterTermName: undefined
+        }
       }
     }
   }

@@ -52,7 +52,7 @@
           </div>
         </a-table>
       </div>
-      <AddForm ref="addForm" @finish="() => search()" />
+      <AddForm ref="addForm" @ok="() => search()" />
     </a-spin>
   </a-card>
 </template>

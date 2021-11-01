@@ -164,6 +164,17 @@ export function checkInspectionBasisAddOrUpdate(parameter) {
     data: parameter
   })
 }
+
+/**查询全部 */
+export function checkInspectionBasisList(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/checkInspectionBasis/list',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //  质量管理-检验依据 END
 
 
