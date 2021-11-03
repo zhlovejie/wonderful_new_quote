@@ -26,9 +26,12 @@
               @click="search({ current: 1 })"
             >查询</a-button>
           </a-form-item>
-          <a-form-item  style="float:right;">
-              <a-button type="primary" @click="doAction('add', null)">新增</a-button>
-            </a-form-item>
+          <a-form-item style="float:right;">
+            <a-button
+              type="primary"
+              @click="doAction('add', null)"
+            >新增</a-button>
+          </a-form-item>
         </a-form>
       </div>
       <a-tabs
@@ -69,32 +72,53 @@
           >
             {{index + 1}}
           </div>
-          <div slot="materialSource" slot-scope="text, record, index" >
+          <div
+            slot="materialSource"
+            slot-scope="text, record, index"
+          >
             {{ {1:'自制',3:'委外',2:'外购',4:'标准件'}[text] }}
           </div>
+
+          <div
+            slot="status"
+            slot-scope="text, record, index"
+          >
+            <a @click="approvalPreview(record)">
+              {{ {0:'待提交',1:'待审批',3:'不通过',2:'通过',4:'已撤回'}[text] || '-' }}
+            </a>
+          </div>
+
           <div
             slot="action"
             slot-scope="text, record, index"
           >
-            <a @click="doAction('view',record)">查看</a>
             <a-divider type="vertical" />
-            <a @click="doAction('edit',record)">修改</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-              <a type="primary" href="javascript:;">删除</a>
-            </a-popconfirm>
+            <template v-if="+activeKey === 0">
+              <a @click="doAction('add',record)">制定标准</a>
+            </template>
+            <template v-if="+activeKey === 1">
+              <a @click="doAction('edit',record)">修改</a>
+            </template>
+            <template v-if="+activeKey === 2">
+              <a @click="doAction('approval',record)">审批</a>
+            </template>
+            <template v-if="+activeKey === 3">
+              <a @click="doAction('view',record)">查看标准</a>
+            </template>
           </div>
         </a-table>
       </div>
-      <AddForm ref="addForm" @finish="() => search()" />
+      <AddForm
+        ref="addForm"
+        @ok="() => search()"
+      />
+      <ApproveInfo ref="approveInfoCard" />
     </a-spin>
   </a-card>
 </template>
 
 <script>
-
 import {
-
   checkInspectionStandardSetDelete,
   checkInspectionStandardSetDetail,
   checkInspectionStandardSetPage,
@@ -102,33 +126,40 @@ import {
   checkInspectionStandardSetAddOrUpdate,
   checkInspectionStandardSetApproval
 } from '@/api/qualityManagement'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import AddForm from './AddForm.vue'
 const columns = [
   {
     title: '序号',
     scopedSlots: { customRender: 'order' },
-    width:80
+    width: 80
   },
   {
     title: '物料代码',
     dataIndex: 'materialCode',
-    width:250
+    width: 250
   },
   {
     title: '物料名称',
     dataIndex: 'materialName',
-    width:300
+    width: 300
   },
   {
     title: '规格型号',
     dataIndex: 'specification',
-    width:400
+    width: 400
   },
   {
     title: '物料来源',
     dataIndex: 'materialSource',
-    scopedSlots: { customRender: 'materialSource' },
+    scopedSlots: { customRender: 'materialSource' }
   },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' }
+  },
+
   {
     title: '创建人',
     dataIndex: 'createdName'
@@ -144,17 +175,18 @@ const columns = [
 ]
 
 export default {
-  name:'quality-management_standard_inspection-standard-set',
+  name: 'quality-management_standard_inspection-standard-set',
   components: {
-    AddForm
+    AddForm,
+    ApproveInfo
   },
   data() {
     return {
       dataSource: [],
       loading: false,
-      activeKey:0,
+      activeKey: 0,
       queryParam: {
-        searchStatus:0
+        searchStatus: 0
       },
       columns,
       pagination: {
@@ -167,7 +199,7 @@ export default {
       },
       spinning: false,
       normalAddFormKeyCount: 1,
-      userInfo: this.$store.getters.userInfo, // 当前登录人
+      userInfo: this.$store.getters.userInfo // 当前登录人
     }
   },
   watch: {
@@ -192,8 +224,8 @@ export default {
         size: that.pagination.pageSize || 10
       }
 
-      let {date} = that.queryParam
-      let dateParams = {...that.queryParam}
+      const { date } = that.queryParam
+      const dateParams = { ...that.queryParam }
       const _searchParam = Object.assign({}, dateParams, paginationParam, params)
       that.loading = true
       checkInspectionStandardSetPage(_searchParam)
@@ -232,38 +264,28 @@ export default {
       this.pagination = { ...this.pagination, current, pageSize }
     },
 
-    tabChange(key){
+    tabChange(key) {
       this.activeKey = +key
       this.queryParam = {
         ...this.queryParam,
-        searchStatus:this.activeKey
+        searchStatus: this.activeKey
       }
       this.search()
     },
-    doAction(type,record){
+    doAction(type, record) {
       const that = this
-      if(['add','view','edit'].includes(type)){
-        that.$refs.addForm.query(type,record)
-        return
-      }else if(type === 'del'){
-        checkInspectionStandardSetDelete({id:record.id}).then(res => {
-          if(res.code === 200){
-            that.search()
-          }else{
-            that.$message.error(res.msg)
-            return
-          }
-        }).catch(err => {
-          that.$message.error(err.message)
-        })
-        return
+      if (['add', 'approval', 'view', 'edit'].includes(type)) {
+        that.$refs.addForm.query(type, record)
       }
     },
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId)
+    }
   }
 }
 </script>
 <style scoped>
-.__table-footer-action-wrapper > *{
+.__table-footer-action-wrapper > * {
   margin-right: 10px;
 }
 </style>

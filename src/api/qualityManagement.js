@@ -219,6 +219,17 @@ export function checkInspectionSchemeSetAddOrUpdate(parameter) {
     data: parameter
   })
 }
+
+/**查询全部 */
+export function checkInspectionSchemeSetList(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/checkInspectionSchemeSet/list',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //  质量管理-检验方案设置 END
 
 //  质量管理-检验标准指定
