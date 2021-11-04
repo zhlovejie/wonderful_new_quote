@@ -193,6 +193,7 @@
                     style="width: 100%;"
                     v-model="item.toolId"
                     :disabled="isDisabled"
+                    @change="(val) => handlerSelectName(val,'tool',item)"
                   >
                     <a-select-option
                       v-for="item in toolList"
@@ -207,6 +208,7 @@
                     style="width: 100%;"
                     v-model="item.methodId"
                     :disabled="isDisabled"
+                    @change="(val) => handlerSelectName(val,'method',item)"
                   >
                     <a-select-option
                       v-for="item in methodList"
@@ -221,6 +223,7 @@
                     style="width: 100%;"
                     v-model="item.frequencyId"
                     :disabled="isDisabled"
+                    @change="(val) => handlerSelectName(val,'frequency',item)"
                   >
                     <a-select-option
                       v-for="item in frequencyList"
@@ -670,6 +673,16 @@ export default {
       let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
       return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
     },
+    handlerSelectName(val,key,record){
+      const that = this
+      let checkInspectionStandardDetails = [...that.checkInspectionStandardDetails]
+      let target = checkInspectionStandardDetails.find(item => item.key === record.key)
+      let list = that[`${key}List`]
+      let keyName = `${key}Name`
+      let item = list.find(item => item.id === val)
+      target[keyName] = item.termName
+      that.checkInspectionStandardDetails = checkInspectionStandardDetails
+    }
   },
 };
 </script>
