@@ -275,7 +275,7 @@
                     :disabledDate="disabledDate"
                     style="width: 100%"
                     v-decorator="['expectDate', { rules: [{ required: true, message: '输入期望生效时间' }] }]"
-                    format="YYYY-MM-DD"
+                    format="YYYY-MM"
                   />
                 </a-form-item>
               </td>
@@ -467,7 +467,7 @@
                     :disabledDate="disabledDate"
                     style="width: 100%"
                     v-decorator="['expectDate', { rules: [{ required: true, message: '输入期望生效时间' }] }]"
-                    format="YYYY-MM-DD"
+                    format="YYYY-MM"
                   />
                 </a-form-item>
               </td>
@@ -680,7 +680,7 @@ export default {
               expectBasicSalary: values.expectBasicSalary,
               applyUserId: this.survey.applyUserId,
             }
-
+            console.log(react)
             apiMap[that.operationStatus](react)
               .then((res) => {
                 that.spinning = false
@@ -723,6 +723,10 @@ export default {
           }
           //提交
           that.spinning = true
+
+          values.expectDate = values.expectDate.format('YYYY-MM') + '-01'
+          values.nEnterDate = values.nEnterDate.format('YYYY-MM-DD')
+          console.log(values)
           apiMap[that.operationStatus](values)
             .then((res) => {
               that.spinning = false
