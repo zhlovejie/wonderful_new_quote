@@ -178,25 +178,13 @@
                   v-model="record.qualifiedNum"
                   :min="0"
                   :max="record.checkNum"
+                  @change="() => handleTravelRecordListChange(record)"
                   :step="1"
                 />
                 <span v-else>{{ record.qualifiedNum | moneyFormatNumber }}</span>
               </a-form-model-item>
-              <!-- @change="handleTravelRecordListChange" -->
             </div>
-            <div slot="unqualifiedNum" slot-scope="text, record, index">
-              <a-form-model-item
-                :prop="'checkResultHisBoList.' + index + '.unqualifiedNum'"
-                :rules="{
-                  required: true,
-                  message: '请输入不合格数量',
-                }"
-              >
-                <a-input-number v-if="!isDisabled" v-model="record.unqualifiedNum" :min="0" :step="1" />
-                <span v-else>{{ record.unqualifiedNum | moneyFormatNumber }}</span>
-              </a-form-model-item>
-              <!-- @change="handleTravelRecordListChange" -->
-            </div>
+
             <div slot="unqualifiedRate" slot-scope="text, record, index">
               <span>
                 {{ (record.unqualifiedNum !== undefined && record.unqualifiedNum / record.checkNum) * 100 + '%' }}</span
@@ -209,7 +197,7 @@
               <a-form-model-item
                 :prop="'checkResultHisBoList.' + index + '.unqualifiedReason'"
                 :rules="{
-                  required: true,
+                  required: record.unqualifiedNum > 0 ? true : false,
                   message: '请输入不良原因',
                 }"
               >
@@ -256,7 +244,7 @@
                     prop="unqualifiedNum"
                     :rules="{
                       required: true,
-                      message: '请输入合格数量',
+                      message: '请输入不合格数量',
                     }"
                   >
                     <a-input-number
@@ -264,7 +252,7 @@
                       v-if="!isDisabled"
                       v-model="form.unqualifiedNum"
                       :min="0"
-                      :max="checkNum"
+                      :max="record.reportNum"
                       :step="1"
                     />
                   </a-form-model-item>
@@ -315,12 +303,12 @@
       </a-form-model>
       <p style="text-align: center; margin-top: 20px">
         <a-button key="cancel" @click="() => handleCancel()">取消</a-button>
-        <template v-if="isHandle">
+        <template v-if="isHandle || isEdit">
           <a-button style="margin: 0 10px" key="save" type="primary" :loading="spinning" @click="() => handleSubmit(1)"
             >保存</a-button
           >
           <a-button style="margin: 0 10px" key="save1" type="primary" :loading="spinning" @click="() => handleSubmit(2)"
-            >完结</a-button
+            >提交</a-button
           >
         </template>
 
@@ -453,7 +441,6 @@ export default {
         {
           title: '不合格数量',
           dataIndex: 'unqualifiedNum',
-          scopedSlots: { customRender: 'unqualifiedNum' },
         },
         {
           title: '不合格率',
@@ -489,6 +476,14 @@ export default {
   },
   methods: {
     moment,
+    handleTravelRecordListChange(e) {
+      let programme = [...this.form.checkResultHisBoList]
+      let target = this.form.checkResultHisBoList.find((i) => i.key === e.key)
+      if (target) {
+        target.unqualifiedNum = target.checkNum - target.qualifiedNum
+        this.form.checkResultHisBoList = [...programme]
+      }
+    },
     viewInspectionClick() {
       this.$refs.viewInspectionCriteria.query(this.record)
     },
@@ -629,110 +624,6 @@ export default {
     },
     handleCancel() {
       this.visible = false
-    },
-    doAction(type, record) {
-      const that = this
-      if (type === 'add-travelRecord') {
-        const travelRecordList = [...that.form.travelRecordList]
-        travelRecordList.push({
-          key: that._uuid(),
-          startTime: undefined,
-          departurePlace: [],
-          departureTime: undefined,
-          destination: [],
-          longDistanceVehicle: undefined,
-          longDistanceCost: 0,
-          sortDistanceVehicle: undefined,
-          sortDistanceCost: 0,
-          repastDays: 0,
-          foodCost: 0,
-          serialNum: 0,
-          accommodationDays: 0,
-          accommodationCost: 0,
-          totalCost: 0,
-        })
-        that.form = { ...that.form, travelRecordList }
-      } else if (type === 'remove') {
-        let travelRecordList = [...that.form.travelRecordList]
-        travelRecordList = travelRecordList.filter((item) => item.key !== record.key)
-        that.form = { ...that.form, travelRecordList }
-      }
-    },
-    handleAreaChange({ area, text }, field, record) {
-      const that = this
-      const travelRecordList = [...that.form.travelRecordList]
-      const target = travelRecordList.find((item) => item.key === record.key)
-      target[`${field}Name`] = text
-      that.form = { ...that.form, travelRecordList }
-      console.log(arguments)
-    },
-    handleTravelSelect(rows) {
-      console.log(arguments)
-      this.travelCaseList = rows.map((item) => {
-        item.key = this._uuid()
-        return item
-      })
-      this.form = { ...this.form, travelId: rows.map((item) => item.id) }
-    },
-    handleTravelCase(type, record) {
-      if (type === 'remove') {
-        this.travelCaseList = this.travelCaseList.filter((item) => item.key !== record.key)
-        this.form = {
-          ...this.form,
-          travelId: this.travelCaseList.map((item) => item.id).join(','),
-        }
-      }
-    },
-    //审批
-    approvalAction(type) {
-      const that = this
-      if (that.$refs['approvalForm']) {
-        that.$refs['approvalForm'].validate((valid) => {
-          if (valid) {
-            if (type === 1) {
-              that.passAction()
-            } else {
-              that.noPassAction()
-            }
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
-      } else {
-        if (type === 1) {
-          that.passAction()
-        } else {
-          that.noPassAction()
-        }
-      }
-    },
-    submitAction(opt = {}) {
-      const that = this
-
-      const values = Object.assign({}, opt, { ...that.approvalForm }, { approveId: that.record.id })
-      that.spinning = true
-      reimburseApproval(values)
-        .then((res) => {
-          that.spinning = false
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch((err) => (that.spinning = false))
-    },
-    passAction(opt = {}) {
-      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
-    },
-    noPassAction() {
-      this.$refs.approval.query()
-    },
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion,
-      })
     },
   },
 }

@@ -169,25 +169,12 @@
                   v-if="!isDisabled"
                   v-model="record.qualifiedNum"
                   :min="0"
+                  @change="() => handleTravelRecordListChange(record)"
                   :max="record.checkNum"
                   :step="1"
                 />
                 <span v-else>{{ record.qualifiedNum | moneyFormatNumber }}</span>
               </a-form-model-item>
-              <!-- @change="handleTravelRecordListChange" -->
-            </div>
-            <div slot="unqualifiedNum" slot-scope="text, record, index">
-              <a-form-model-item
-                :prop="'checkResultHisBoList.' + index + '.unqualifiedNum'"
-                :rules="{
-                  required: true,
-                  message: '请输入不合格数量',
-                }"
-              >
-                <a-input-number v-if="!isDisabled" v-model="record.unqualifiedNum" :min="0" :step="1" />
-                <span v-else>{{ record.unqualifiedNum | moneyFormatNumber }}</span>
-              </a-form-model-item>
-              <!-- @change="handleTravelRecordListChange" -->
             </div>
             <div slot="unqualifiedRate" slot-scope="text, record, index">
               <span>
@@ -203,7 +190,7 @@
               <a-form-model-item
                 :prop="'checkResultHisBoList.' + index + '.unqualifiedReason'"
                 :rules="{
-                  required: true,
+                  required: record.unqualifiedNum > 0 ? true : false,
                   message: '请输入不良原因',
                 }"
               >
@@ -309,12 +296,12 @@
       </a-form-model>
       <p style="text-align: center; margin-top: 20px">
         <a-button key="cancel" @click="() => handleCancel()">取消</a-button>
-        <template v-if="isHandle">
+        <template v-if="isHandle || isEdit">
           <a-button style="margin: 0 10px" key="save" type="primary" :loading="spinning" @click="() => handleSubmit(1)"
             >保存</a-button
           >
           <a-button style="margin: 0 10px" key="save1" type="primary" :loading="spinning" @click="() => handleSubmit(2)"
-            >完结</a-button
+            >提交</a-button
           >
         </template>
 
@@ -447,7 +434,6 @@ export default {
         {
           title: '不合格数量',
           dataIndex: 'unqualifiedNum',
-          scopedSlots: { customRender: 'unqualifiedNum' },
         },
         {
           title: '不合格率',
@@ -483,6 +469,14 @@ export default {
   },
   methods: {
     moment,
+    handleTravelRecordListChange(e) {
+      let programme = [...this.form.checkResultHisBoList]
+      let target = this.form.checkResultHisBoList.find((i) => i.key === e.key)
+      if (target) {
+        target.unqualifiedNum = target.checkNum - target.qualifiedNum
+        this.form.checkResultHisBoList = [...programme]
+      }
+    },
     viewInspectionClick() {
       this.$refs.viewInspectionCriteria.query(this.records)
     },

@@ -53,16 +53,25 @@
             <span v-if="text == 3">特急</span>
           </div>
           <div slot="status" slot-scope="text, record">
-            <span v-if="+text === 0">待处理</span>
-            <span v-if="+text === 1">完结</span>
+            {{ { 0: '待处理', 1: '待提交', 2: '待完结', 3: '完结' }[text] }}
           </div>
 
           <span slot="action" slot-scope="text, record">
-            <template v-if="record.status === 1">
+            <template v-if="record.status !== 0">
               <a @click="handleVue('view', record)">查看</a>
             </template>
-            <template v-else>
+            <template v-if="record.status === 0">
               <a @click="handleVue('handle', record)">处理</a>
+            </template>
+            <template v-if="record.status === 1">
+              <a-divider type="vertical" />
+              <a @click="handleVue('edit', record)">修改</a>
+            </template>
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认完结该条数据吗?" @confirm="() => doAction(record)">
+                <a type="primary" href="javascript:;">完结</a>
+              </a-popconfirm>
             </template>
           </span>
         </s-table>
@@ -76,7 +85,7 @@
 
 <script>
 import { STable } from '@/components'
-import { quality_trust_pageList, quality_getCheckGetMaterialId } from '@/api/qualityTesting'
+import { quality_trust_pageList, quality_getCheckGetMaterialId, finishCheck } from '@/api/qualityTesting'
 import Formadd from './modules/Formadd'
 import SearchForm from './modules/SearchForm'
 export default {
@@ -199,6 +208,21 @@ export default {
     },
   },
   methods: {
+    doAction(record) {
+      const that = this
+      finishCheck(`checkId=${record.id}`)
+        .then((res) => {
+          if (res.code === 200) {
+            that.search()
+          } else {
+            that.$message.error(res.msg)
+            return
+          }
+        })
+        .catch((err) => {
+          that.$message.error(err.message)
+        })
+    },
     //高级筛选打开
     openSearchModel() {
       this.$refs.searchForm.query(this.contractState)
@@ -286,5 +310,8 @@ export default {
 .develop-wrap {
   background-color: #fff;
   padding: 12px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>

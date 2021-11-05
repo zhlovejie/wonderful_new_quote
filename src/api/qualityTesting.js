@@ -23,8 +23,28 @@ const api = {
   getPurchaseDisputeDealPage: '/quality-purchase-dispute-deal/getPurchaseDisputeDealPage', //采购议价记录单列表
   getPurchaseDisputeDealDetail: '/quality-purchase-dispute-deal/getPurchaseDisputeDealDetail', //采购议价记录单详情
   addAndUpdatePurchaseDisputeDeal: '/quality-purchase-dispute-deal/addAndUpdatePurchaseDisputeDeal', //处理或修改采购议价记录单
+  sourceFinishCheck: '/quality-material-source-check/finishCheck', //完结
+  finishCheck: '/quality-trust-check/finishCheck', //完结
 
 
+}
+//处理或修改采购议价记录单
+export function sourceFinishCheck(parameter) {
+  return axios({
+    baseURL: baseURL,
+    url: api.sourceFinishCheck,
+    method: 'post',
+    data: parameter
+  })
+}
+//处理或修改采购议价记录单
+export function finishCheck(parameter) {
+  return axios({
+    baseURL: baseURL,
+    url: api.finishCheck,
+    method: 'post',
+    data: parameter
+  })
 }
 //处理或修改采购议价记录单
 export function addAndUpdatePurchaseDisputeDeal(parameter) {

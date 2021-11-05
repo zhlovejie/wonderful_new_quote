@@ -280,4 +280,7 @@ export default {
   background-color: #fff;
   padding: 12px;
 }
+.currentDayWeekMonth {
+  opacity: 0.7;
+}
 </style>

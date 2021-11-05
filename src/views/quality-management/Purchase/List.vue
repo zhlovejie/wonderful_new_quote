@@ -207,6 +207,7 @@ export default {
   watch: {
     $route(to, from) {
       if (to.name == 'qquality-management_Purchase') {
+        this.dayWeekMonth = 1
         this.search()
       }
     },
@@ -290,5 +291,8 @@ export default {
 .develop-wrap {
   background-color: #fff;
   padding: 12px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>
