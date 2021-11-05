@@ -7,158 +7,163 @@
     :width="1400"
   >
     <a-spin :spinning="spinning">
-    <a-form-model
-      ref="ruleForm"
-      :model="form"
-      :rules="rules"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
-      <a-row >
-        <a-col :span="24">
-          <a-form-model-item
-            label="检验方案"
-            :label-col="{span:2}"
-            :wrapper-col="{span:22}"
-            prop="inspectionScheme"
+      <a-form-model
+        ref="ruleForm"
+        :model="form"
+        :rules="rules"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-row>
+          <a-col :span="24">
+            <a-form-model-item
+              label="检验方案"
+              :label-col="{span:2}"
+              :wrapper-col="{span:22}"
+              prop="inspectionScheme"
+            >
+              <a-input
+                v-if="!isDisabled"
+                allow-clear
+                v-model="form.inspectionScheme"
+                placeholder="检验方案"
+              />
+              <span v-else>{{form.inspectionScheme}}</span>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+        <a-row type="flex">
+          <a-col :span="24">
+            <a-form-model-item
+              label="备注信息"
+              :label-col="{span:2}"
+              :wrapper-col="{span:22}"
+              prop="remarks"
+            >
+              <a-textarea
+                v-if="!isDisabled"
+                placeholder="备注"
+                style="width: 100%"
+                allow-clear
+                autoSize
+                v-model="form.remarks"
+              />
+              <span v-else>{{form.remarks}}</span>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-form-model>
+
+      <table class="custom-table custom-table-border">
+        <thead>
+          <tr>
+            <th rowspan="2">项目顺序</th>
+            <th colspan="2">检验项目信息</th>
+            <th colspan="3">检验标准参数</th>
+            <th rowspan="2">备注</th>
+            <th
+              rowspan="2"
+              v-if="!isDisabled"
+            >操作</th>
+          </tr>
+
+          <tr>
+            <th>检验项目名称</th>
+            <th>项目备注</th>
+            <th>检验依据</th>
+            <th>AQL值</th>
+            <th>检验等级</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr
+            v-for="(item,idx) in checkInspectionSchemeSetProjects"
+            :key="item.key"
           >
-            <a-input
-              v-if="!isDisabled"
-              allow-clear
-              v-model="form.inspectionScheme"
-              placeholder="检验方案"
-            />
-            <span v-else>{{form.inspectionScheme}}</span>
-          </a-form-model-item>
-        </a-col>
-      </a-row>
-      <a-row type="flex">
-        <a-col :span="24">
-          <a-form-model-item
-            label="备注信息"
-            :label-col="{span:2}"
-            :wrapper-col="{span:22}"
-            prop="remarks"
-          >
-            <a-textarea
-              v-if="!isDisabled"
-              placeholder="备注"
-              style="width: 100%"
-              allow-clear
-              autoSize
-              v-model="form.remarks"
-            />
-            <span v-else>{{form.remarks}}</span>
-          </a-form-model-item>
-        </a-col>
-      </a-row>
-    </a-form-model>
-
-    <table class="custom-table custom-table-border">
-      <thead>
-        <tr>
-          <th rowspan="2">项目顺序</th>
-          <th colspan="2">检验项目信息</th>
-          <th colspan="3">检验标准参数</th>
-          <th rowspan="2">备注</th>
-          <th rowspan="2" v-if="!isDisabled">操作</th>
-        </tr>
-
-        <tr>
-          <th>检验项目名称</th>
-          <th>项目备注</th>
-          <th>检验依据</th>
-          <th>AQL值</th>
-          <th>检验等级</th>
-        </tr>
-      </thead>
-      <tbody>
-
-
-        <tr
-          v-for="(item,idx) in checkInspectionSchemeSetProjects"
-          :key="item.key"
-        >
-          <td>{{idx + 1}}</td>
-          <td>
-            <a-select
-              v-if="!isDisabled"
-              style="width:200px;"
-              :value="item.parameterTermId"
-              @change="(val) => handlerToolsSelect(val,item.key)"
-            >
-              <a-select-option
-                v-for="item in parameterTermList"
-                :key="item.id"
+            <td>{{idx + 1}}</td>
+            <td>
+              <a-select
+                v-if="!isDisabled"
+                style="width:200px;"
+                :value="item.parameterTermId"
+                @change="(val) => handlerToolsSelect(val,item.key)"
               >
-                {{item.termName}}
-              </a-select-option>
-            </a-select>
-            <span v-else>{{item.parameterTermName}}</span>
+                <a-select-option
+                  v-for="item in parameterTermList"
+                  :key="item.id"
+                >
+                  {{item.termName}}
+                </a-select-option>
+              </a-select>
+              <span v-else>{{item.parameterTermName}}</span>
 
-          </td>
-          <td>{{item.parameterTermRemarks}}</td>
-          <td>
-            <a-select
-              v-if="!isDisabled"
-              style="width:200px;"
-              v-model="item.inspectionBasisId"
-              @change="(val) => handlerInspectionBasisChange(val,item.key)"
-            >
-              <a-select-option
-                v-for="_base in inspectionBasisList"
-                :key="_base.id"
-                :value="_base.id"
+            </td>
+            <td>{{item.parameterTermRemarks}}</td>
+            <td>
+              <a-select
+                v-if="!isDisabled"
+                style="width:200px;"
+                v-model="item.inspectionBasisId"
+                @change="(val) => handlerInspectionBasisChange(val,item.key)"
               >
-                {{_base.inspectionBasis}}
-              </a-select-option>
-            </a-select>
-            <span v-else>{{item.inspectionBasisName}}</span>
-          </td>
-          <td>
-            <a-select
-              v-if="!isDisabled"
-              style="width:150px;"
-              v-model="item.parameterTermAqlId"
-              @change="(val) => handlerAQLChange(val,item.key)"
-            >
-              <a-select-option
-                v-for="_base in item.aqlList"
-                :key="_base.id"
-                :value="_base.id"
+                <a-select-option
+                  v-for="_base in inspectionBasisList"
+                  :key="_base.id"
+                  :value="_base.id"
+                >
+                  {{_base.inspectionBasis}}
+                </a-select-option>
+              </a-select>
+              <span v-else>{{item.inspectionBasisName}}</span>
+            </td>
+            <td>
+              <a-select
+                v-if="!isDisabled"
+                style="width:150px;"
+                v-model="item.parameterTermAqlId"
+                @change="(val) => handlerAQLChange(val,item.key)"
               >
-                {{_base.text}}
-              </a-select-option>
-            </a-select>
-            <span v-else>{{item.parameterTermAqlName}}</span>
-          </td>
-          <td>
-            {{ {0:'正常',1:'加严',2:'放宽'}[item.inspectionGrade] }}
-          </td>
-          <td>
-            <a-textarea
-              v-if="!isDisabled"
-              placeholder="备注"
-              style="width: 100%"
-              allow-clear
-              autoSize
-              v-model="item.remarks"
-            />
-            <span v-else>{{item.remarks}}</span>
-          </td>
-          <td v-if="!isDisabled">
-            <a href="javascript:void(0);" @click="doAction('del',item)">删除</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <a-button
-      v-if="!isDisabled"
-      style="width: 100%"
-      type="dashed"
-      icon="plus"
-      @click="doAction('add',null)"
-    >新增行</a-button>
+                <a-select-option
+                  v-for="_base in item.aqlList"
+                  :key="_base.id"
+                  :value="_base.id"
+                >
+                  {{_base.text}}
+                </a-select-option>
+              </a-select>
+              <span v-else>{{item.parameterTermAqlName}}</span>
+            </td>
+            <td>
+              {{ {0:'正常',1:'加严',2:'放宽'}[item.inspectionGrade] }}
+            </td>
+            <td>
+              <a-textarea
+                v-if="!isDisabled"
+                placeholder="备注"
+                style="width: 100%"
+                allow-clear
+                autoSize
+                v-model="item.remarks"
+              />
+              <span v-else>{{item.remarks}}</span>
+            </td>
+            <td v-if="!isDisabled">
+              <a
+                href="javascript:void(0);"
+                @click="doAction('del',item)"
+              >删除</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <a-button
+        v-if="!isDisabled"
+        style="width: 100%"
+        type="dashed"
+        icon="plus"
+        @click="doAction('add',null)"
+      >新增行</a-button>
     </a-spin>
   </a-modal>
 </template>
@@ -190,7 +195,7 @@ export default {
       },
       type: 'add',
       parameterTermList: [],
-      spinning:false
+      spinning: false
     }
   },
   computed: {
@@ -214,7 +219,7 @@ export default {
   methods: {
     doAction(type, record) {
       const that = this
-      let checkInspectionSchemeSetProjects = [...that.checkInspectionSchemeSetProjects]
+      const checkInspectionSchemeSetProjects = [...that.checkInspectionSchemeSetProjects]
       if (type === 'add') {
         checkInspectionSchemeSetProjects.push({
           key: that._uuid(),
@@ -304,10 +309,10 @@ export default {
 
       that.spinning = true
 
-      try{
-        await Promise.all([that.fetchAQL(),that.fetchInspectionBasis(),that.fetchParameterTermList()])
+      try {
+        await Promise.all([that.fetchAQL(), that.fetchInspectionBasis(), that.fetchParameterTermList()])
         that.spinning = false
-      }catch(err){
+      } catch (err) {
         that.spinning = false
         that.$message.error(err.message)
       }
@@ -315,19 +320,19 @@ export default {
       if (that.isAdd) {
       } else {
         that.spinning = true
-        try{
-          let detail = await checkInspectionSchemeSetDetail({ id: record.id }).then(res => {
+        try {
+          const detail = await checkInspectionSchemeSetDetail({ id: record.id }).then(res => {
             that.spinning = false
             return res.data
           })
           that.form = {
-            id:detail.id,
-            inspectionScheme:detail.inspectionScheme,
-            remarks:detail.remarks
+            id: detail.id,
+            inspectionScheme: detail.inspectionScheme,
+            remarks: detail.remarks
           }
 
-          if(Array.isArray(detail.checkInspectionSchemeSetProjectDetailVos)){
-            for(let item of detail.checkInspectionSchemeSetProjectDetailVos){
+          if (Array.isArray(detail.checkInspectionSchemeSetProjectDetailVos)) {
+            for (const item of detail.checkInspectionSchemeSetProjectDetailVos) {
               const { aqlList, inspectionGrade } = await that.fetchAQLList(item.inspectionBasisId)
               item.inspectionGrade = inspectionGrade
               item.aqlList = that.aqlDataSource.filter(aql => aqlList.includes(aql.id))
@@ -336,19 +341,40 @@ export default {
             }
             that.checkInspectionSchemeSetProjects = detail.checkInspectionSchemeSetProjectDetailVos
           }
-        }catch(err){
+        } catch (err) {
           that.spinning = false
           that.$message.error(err.message)
         }
-
-
       }
     },
     validate() {
-      if(this.checkInspectionSchemeSetProjects.length === 0){
-        this.$message.info('请添加检验项目');
+      const that = this
+      const checkInspectionSchemeSetProjects = [...that.checkInspectionSchemeSetProjects]
+      if (checkInspectionSchemeSetProjects.length === 0) {
+        this.$message.info('请添加检验项目')
         return false
       }
+
+      for (let i = 0, len = checkInspectionSchemeSetProjects.length; i < len; i++) {
+        const { parameterTermId, inspectionBasisId, parameterTermAqlId } = checkInspectionSchemeSetProjects[i]
+        const line = i + 1
+        if (!parameterTermId) {
+          const msg = `第${line}行 请选择检验项目名称`
+          that.$message.info(msg)
+          return false
+        }
+        if (!inspectionBasisId) {
+          const msg = `第${line}行 请选择检验依据`
+          that.$message.info(msg)
+          return false
+        }
+        if (!parameterTermAqlId) {
+          const msg = `第${line}行 请选择AQL值`
+          that.$message.info(msg)
+          return false
+        }
+      }
+
       return true
     },
     handleOk() {

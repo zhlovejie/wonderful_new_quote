@@ -23,7 +23,7 @@
                 <a-form-model-item prop="parameterTermName">
                   <a-select
                     v-if="isAdd"
-                    style="width:200px;"
+                    style="width:100%;"
                     :value="form.parameterTermId"
                     @change="handlerToolsSelect"
                   >
@@ -133,6 +133,7 @@
               <td>
                 <a-form-model-item>
                   <vue-qr
+                    ref="qr"
                     :text="qrText"
                     :size="qrSize"
                   ></vue-qr>
@@ -360,6 +361,15 @@ export default {
       that.visible = true
       await that.fetchParameterTermList()
       if (that.isAdd) {
+        that.$nextTick(() => {
+          that.$refs.uploadImage && that.$refs.uploadImage.setFiles([])
+          that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles([])
+
+          try{
+            let ele = that.$refs.qr.$el
+            ele.setAttribute('src','')
+          }catch(err){}
+        })
       } else {
         that.spinning = true
         let detail = {}

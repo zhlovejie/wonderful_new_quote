@@ -13,9 +13,13 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-row >
-        <a-col :span="8" >
-          <a-form-model-item label="检验依据" required  prop="inspectionBasis">
+      <a-row>
+        <a-col :span="8">
+          <a-form-model-item
+            label="检验依据"
+            required
+            prop="inspectionBasis"
+          >
             <a-input
               :disabled="isDisabled"
               placeholder="检验依据"
@@ -26,7 +30,11 @@
           </a-form-model-item>
         </a-col>
         <a-col :span="8">
-          <a-form-model-item label="检验等级" required  prop="inspectionGrade">
+          <a-form-model-item
+            label="检验等级"
+            required
+            prop="inspectionGrade"
+          >
             <a-select
               :disabled="isDisabled"
               placeholder="检验等级"
@@ -42,9 +50,15 @@
         </a-col>
       </a-row>
       <a-row type="flex">
-        <a-col flex="112.66px" style="text-align:right;line-height: 38px;">AQL值：</a-col>
+        <a-col
+          flex="112.66px"
+          style="text-align:right;line-height: 38px;"
+        >AQL值：</a-col>
         <a-col flex="auto">
-          <a-form-model-item  :label-col="{span:0}" :wrapper-col="{span:24}">
+          <a-form-model-item
+            :label-col="{span:0}"
+            :wrapper-col="{span:24}"
+          >
             <CommonDictionarySelect
               style="width: 100%"
               :disabled="isDisabled"
@@ -59,9 +73,15 @@
         </a-col>
       </a-row>
       <a-row type="flex">
-        <a-col flex="112.66px" style="text-align:right;line-height: 30px;">备注信息：</a-col>
+        <a-col
+          flex="112.66px"
+          style="text-align:right;line-height: 30px;"
+        >备注信息：</a-col>
         <a-col flex="auto">
-          <a-form-model-item  :label-col="{span:0}" :wrapper-col="{span:24}">
+          <a-form-model-item
+            :label-col="{span:0}"
+            :wrapper-col="{span:24}"
+          >
             <a-textarea
               :disabled="isDisabled"
               placeholder="备注"
@@ -81,154 +101,189 @@
       <tbody>
         <tr>
           <td style="width:200px;">AQL值</td>
-          <td v-for="col in planHeaderColumns" :key="col.text">{{col.text}}</td>
-          <td rowspan="3" v-if="!isDisabled" style="width:60px;">操作</td>
+          <td
+            v-for="col in planHeaderColumns"
+            :key="col.text"
+          >{{col.text}}</td>
+          <td
+            rowspan="3"
+            v-if="!isDisabled"
+            style="width:60px;"
+          >操作</td>
         </tr>
         <tr>
-          <td rowspan="2" style="width:200px;">批量范围</td>
+          <td
+            rowspan="2"
+            style="width:200px;"
+          >批量范围</td>
           <td :colspan="planHeaderColumns.length">样本数</td>
         </tr>
         <tr>
-          <td v-for="col in planHeaderColumns" :key="col.text">
+          <td
+            v-for="col in planHeaderColumns"
+            :key="col.text"
+          >
             AC
           </td>
         </tr>
-        <tr v-for="item in checkInspectionBasisAqls" :key="item.key">
+        <tr
+          v-for="item in checkInspectionBasisAqls"
+          :key="item.key"
+        >
           <td>
             <div>
               <span>
-                <a-input style="width:45%;text-align:center;" :disabled="isDisabled" v-model="item.startValue"/>
+                <a-input
+                  style="width:45%;text-align:center;"
+                  :disabled="isDisabled"
+                  v-model="item.startValue"
+                />
               </span>
               <span>~</span>
               <span>
-                <a-input style="width:45%;text-align:center;" :disabled="isDisabled" v-model="item.endValue"/>
+                <a-input
+                  style="width:45%;text-align:center;"
+                  :disabled="isDisabled"
+                  v-model="item.endValue"
+                />
               </span>
             </div>
           </td>
-          <td v-for="row in item.checkInspectionBasisAqlInfos" :key="row.text">
-            <a-input style="width:100%;text-align:center;" :disabled="isDisabled" v-model="row.ac"></a-input>
+          <td
+            v-for="row in item.checkInspectionBasisAqlInfos"
+            :key="row.text"
+          >
+            <a-input
+              style="width:100%;text-align:center;"
+              :disabled="isDisabled"
+              v-model="row.ac"
+            ></a-input>
           </td>
           <td v-if="!isDisabled">
-            <a href="javascript:void(0);" @click="doAction('del',item)">删除</a>
+            <a
+              href="javascript:void(0);"
+              @click="doAction('del',item)"
+            >删除</a>
           </td>
         </tr>
       </tbody>
     </table>
-    <a-button style="width: 100%" type="dashed" v-if="!isDisabled" icon="plus" @click="doAction('add',null)">新增行</a-button>
+    <a-button
+      style="width: 100%"
+      type="dashed"
+      v-if="!isDisabled"
+      icon="plus"
+      @click="doAction('add',null)"
+    >新增行</a-button>
 
   </a-modal>
 </template>
 <script>
-import {
-  checkInspectionBasisDetail,
-  checkInspectionBasisAddOrUpdate,
-} from '@/api/qualityManagement'
+import { checkInspectionBasisDetail, checkInspectionBasisAddOrUpdate } from '@/api/qualityManagement'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 export default {
-  components:{
+  components: {
     CommonDictionarySelect
   },
   data() {
     return {
-      visible:false,
+      visible: false,
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
-      form: {
-
-      },
-      checkInspectionBasisAqls:[],
-      aqlList:[],
-      aqlDataSource:[],
+      form: {},
+      checkInspectionBasisAqls: [],
+      aqlList: [],
+      aqlDataSource: [],
       rules: {
-        inspectionBasis:[
-          { required: true, message: '请输入检验依据', trigger: 'blur' },
-        ],
-        inspectionGrade:[
-          { required: true, message: '请选择检验等级', trigger: 'change' },
-        ]
+        inspectionBasis: [{ required: true, message: '请输入检验依据', trigger: 'blur' }],
+        inspectionGrade: [{ required: true, message: '请选择检验等级', trigger: 'change' }]
       },
-      type:'add'
+      type: 'add'
     }
   },
-  computed:{
-    modalTitle(){
+  computed: {
+    modalTitle() {
       return this.isAdd ? '新增' : this.isEdit ? '编辑' : '查看'
     },
-    isAdd(){
+    isAdd() {
       return this.type === 'add'
     },
-    isEdit(){
+    isEdit() {
       return this.type === 'edit'
     },
-    isView(){
+    isView() {
       return this.type === 'view'
     },
-    planHeaderColumns(){
-      let list = this.aqlDataSource.filter(item => this.aqlList.includes(item.id))
+    planHeaderColumns() {
+      const list = this.aqlDataSource.filter(item => this.aqlList.includes(item.id))
       return [...list]
     },
-    isDisabled(){
+    isDisabled() {
       return this.isView
     }
   },
   methods: {
-    handlerDictionaryChange(){
+    handlerDictionaryChange() {
       const that = this
-      let checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
+      const checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
       that.checkInspectionBasisAqls = checkInspectionBasisAqls.map(aql => {
         aql.checkInspectionBasisAqlInfos = that.planHeaderColumns.map(col => {
-          let key = `${col.id}-${col.text}`
-          let target = aql.checkInspectionBasisAqlInfos.find(info => info.key === key)
-          if(target){
-            return {...target}
-          }else{
+          const key = `${col.id}-${col.text}`
+          const target = aql.checkInspectionBasisAqlInfos.find(info => info.key === key)
+          if (target) {
+            return { ...target }
+          } else {
             return {
               key,
-              ac:undefined,
-              parameterTermId:col.id,
-              parameterTermName:col.text
+              ac: undefined,
+              parameterTermId: col.id,
+              parameterTermName: col.text
             }
           }
         })
         return aql
       })
     },
-    validate(){
+    validate() {
       const that = this
-      let checkNumberOrAsterisk = (n) => {
-        let _n = String(n).trim()
-        let reg = /[1-9]\d*/
+      const checkNumberOrAsterisk = n => {
+        const _n = String(n).trim()
+        const reg = /[1-9]\d*/
         return reg.test(_n) || _n === '*'
       }
-      let checkRange = (min,max,n) => {
+      const checkRange = (min, max, n) => {
         return n === '*' || (+n >= +min && +n <= +max)
       }
 
-      let checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
-      for(let i=0,len = checkInspectionBasisAqls.length;i<len;i++){
-        let {startValue,endValue,checkInspectionBasisAqlInfos} = checkInspectionBasisAqls[i]
-        let line = i + 1
-        if(!checkNumberOrAsterisk(startValue) || !checkNumberOrAsterisk(endValue)){
-          let msg = `第${line}行批量范围输入不符合规则，只能输入【数字或*号】`
+      const checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
+      if (checkInspectionBasisAqls.length === 0) {
+        that.$message.info('AQL值不能为空')
+        return false
+      }
+      for (let i = 0, len = checkInspectionBasisAqls.length; i < len; i++) {
+        const { startValue, endValue, checkInspectionBasisAqlInfos } = checkInspectionBasisAqls[i]
+        const line = i + 1
+        if (!checkNumberOrAsterisk(startValue) || !checkNumberOrAsterisk(endValue)) {
+          const msg = `第${line}行批量范围输入不符合规则，只能输入【数字或*号】`
           that.$message.info(msg)
           return false
         }
 
-        for(let j=0,len1 = checkInspectionBasisAqlInfos.length;j<len1;j++){
-          let {ac,parameterTermName} = checkInspectionBasisAqlInfos[j]
-          let line1 = j + 1
-          if(!checkNumberOrAsterisk(ac)){
-            let msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】`
+        for (let j = 0, len1 = checkInspectionBasisAqlInfos.length; j < len1; j++) {
+          const { ac, parameterTermName } = checkInspectionBasisAqlInfos[j]
+          const line1 = j + 1
+          if (!checkNumberOrAsterisk(ac)) {
+            const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】`
             that.$message.info(msg)
             return false
           }
-          if(!checkNumberOrAsterisk(ac)){
-            let msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】`
+          if (!checkNumberOrAsterisk(ac)) {
+            const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】`
             that.$message.info(msg)
             return false
           }
-          if(!checkRange(startValue,endValue,ac)){
-            let msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】且范围在【${startValue}~${endValue}】之间`
+          if (!checkRange(startValue, endValue, ac)) {
+            const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】且范围在【${startValue}~${endValue}】之间`
             that.$message.info(msg)
             return false
           }
@@ -236,48 +291,51 @@ export default {
       }
       return true
     },
-    doAction(type,record){
+    doAction(type, record) {
       const that = this
-      let checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
-      if(type === 'add'){
+      const checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
+      if (type === 'add') {
         checkInspectionBasisAqls.push({
-          key:that._uuid(),
-          startValue:'',
-          endValue:'',
-          checkInspectionBasisAqlInfos:that.planHeaderColumns.map(item => {
+          key: that._uuid(),
+          startValue: '',
+          endValue: '',
+          checkInspectionBasisAqlInfos: that.planHeaderColumns.map(item => {
             return {
-              key:`${item.id}-${item.text}`,
-              ac:'',
-              parameterTermId:item.id,
-              parameterTermName:item.text
+              key: `${item.id}-${item.text}`,
+              ac: '',
+              parameterTermId: item.id,
+              parameterTermName: item.text
             }
           })
         })
         that.checkInspectionBasisAqls = checkInspectionBasisAqls
-      }else if(type === 'del'){
+      } else if (type === 'del') {
         that.checkInspectionBasisAqls = checkInspectionBasisAqls.filter(item => item.key !== record.key)
       }
     },
-    query(type,record){
+    query(type, record) {
       const that = this
       that.type = type
       that.form = {}
       that.checkInspectionBasisAqls = []
       that.aqlList = []
       that.visible = true
-      if(that.isAdd){
-        return
-      }else{
-        checkInspectionBasisDetail({id:record.id}).then(res => {
+      if (that.isAdd) {
+
+      } else {
+        checkInspectionBasisDetail({ id: record.id }).then(res => {
           debugger
-          let {id,inspectionBasis,inspectionGrade,remarks,checkInspectionBasisAqlDeatilVos} = res.data || {
-            checkInspectionBasisAqlDeatilVos:[]
+          const { id, inspectionBasis, inspectionGrade, remarks, checkInspectionBasisAqlDeatilVos } = res.data || {
+            checkInspectionBasisAqlDeatilVos: []
           }
           that.form = {
-            id,inspectionBasis,inspectionGrade,remarks
+            id,
+            inspectionBasis,
+            inspectionGrade,
+            remarks
           }
 
-          let aqlList = []
+          const aqlList = []
           that.checkInspectionBasisAqls = checkInspectionBasisAqlDeatilVos.map(item => {
             item.checkInspectionBasisAqlInfos = that.$_.cloneDeep(item.checkInspectionBasisAqlInfoDetailVos || [])
             item.checkInspectionBasisAqlInfos.map(info => {
@@ -291,45 +349,46 @@ export default {
         })
       }
     },
-    handlerDictionaryDataSource(list){
+    handlerDictionaryDataSource(list) {
       this.aqlDataSource = [...list]
       this.aqlList = list.map(item => +item.id)
-
     },
     handleOk() {
       const that = this
       that.$refs['ruleForm'].validate(valid => {
         if (valid) {
-          if(!that.validate()){
+          if (!that.validate()) {
             return
           }
           checkInspectionBasisAddOrUpdate({
             ...that.form,
-            checkInspectionBasisAqls:that.checkInspectionBasisAqls
-          }).then(res => {
-            if(res.code === 200){
-              that.$emit('ok')
-              that.visible = false
-            }
-            that.$message.info(res.msg)
-          }).catch(err => {
-            that.$message.error(err.message)
+            checkInspectionBasisAqls: that.checkInspectionBasisAqls
           })
+            .then(res => {
+              if (res.code === 200) {
+                that.$emit('ok')
+                that.visible = false
+              }
+              that.$message.info(res.msg)
+            })
+            .catch(err => {
+              that.$message.error(err.message)
+            })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     resetForm() {
       // this.$refs.ruleForm.resetFields();
     },
-    handleCancel(){
+    handleCancel() {
       // this.resetForm()
       this.visible = false
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style scoped>
 .custom-table-border th,

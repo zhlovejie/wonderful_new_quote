@@ -216,15 +216,15 @@ export default {
       const that = this
       // that.selectedTreeNode = treeNode
       return new Promise((resolve) => {
-        if (!isForceRefresh && treeNode.dataRef.children) {
-          treeNode.dataRef.isLeaf = true
-          treeNode.dataRef.children = []
-          that.selectedTreeNode = treeNode
-          that.orgTree = [...that.orgTree]
-          that.dataList = that.generateList(that.orgTree)
-          resolve()
-          return
-        }
+        // if (!isForceRefresh && treeNode.dataRef.children) {
+        //   treeNode.dataRef.isLeaf = true
+        //   treeNode.dataRef.children = []
+        //   that.selectedTreeNode = treeNode
+        //   that.orgTree = [...that.orgTree]
+        //   that.dataList = that.generateList(that.orgTree)
+        //   resolve()
+        //   return
+        // }
         checkParameterTermList({ parentId: treeNode.dataRef.value })
           .then(res => {
             if(res && res.code === 200 && Array.isArray(res.data) && res.data.length > 0){

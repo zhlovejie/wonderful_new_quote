@@ -26,12 +26,12 @@
               @click="search({ current: 1 })"
             >查询</a-button>
           </a-form-item>
-          <a-form-item style="float:right;">
+          <!-- <a-form-item style="float:right;">
             <a-button
               type="primary"
               @click="doAction('add', null)"
             >新增</a-button>
-          </a-form-item>
+          </a-form-item> -->
         </a-form>
       </div>
       <a-tabs
