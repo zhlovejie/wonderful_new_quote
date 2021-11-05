@@ -44,6 +44,9 @@
           :alert="false"
           :pagination="pagination"
         >
+          <div slot="defectiveRate" slot-scope="text">
+            <span>{{ text * 100 + '%' }}</span>
+          </div>
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
@@ -132,6 +135,7 @@ export default {
           title: '不良率（%）',
           align: 'center',
           dataIndex: 'defectiveRate',
+          scopedSlots: { customRender: 'defectiveRate' },
         },
         {
           title: '检验员',

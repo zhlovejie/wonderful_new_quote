@@ -157,7 +157,13 @@
                   message: '请输入合格数量',
                 }"
               >
-                <a-input-number v-if="!isDisabled" v-model="record.qualifiedNum" :min="0" :step="1" />
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.qualifiedNum"
+                  :max="record.checkNum"
+                  :min="0"
+                  :step="1"
+                />
                 <span v-else>{{ record.qualifiedNum | moneyFormatNumber }}</span>
               </a-form-model-item>
               <!-- @change="handleTravelRecordListChange" -->
@@ -246,7 +252,7 @@
               </tr>
               <tr>
                 <td>
-                  {{ { 1: '合格', 0: '不合格' }[CheckDetail.checkResult] }}
+                  {{ { 1: '返修', 2: '报废', 2: '再利用' }[CheckDetail.checkResult] }}
                 </td>
                 <td>
                   <a-form-model-item>
@@ -454,7 +460,7 @@ export default {
         this.checkNum = Math.max.apply(
           null,
           test.checkInspectionStandardDetailDetailVos.map((i) => {
-            return i.checkNum
+            return i.checkNum === '*' ? record.reportNum : i.checkNum
           })
         )
         that.form.checkResultHisBoList = test.checkInspectionStandardDetailDetailVos.map((i) => {
@@ -462,7 +468,7 @@ export default {
             key: that._uuid(),
             projectName: i.projectName,
             projectId: i.projectId,
-            checkNum: i.checkNum,
+            checkNum: i.checkNum === '*' ? Number(record.reportNum) : Number(i.checkNum),
             itemUrl: undefined,
             qualifiedNum: undefined,
             unqualifiedNum: undefined,

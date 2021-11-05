@@ -139,11 +139,19 @@ export default {
           align: 'center',
           dataIndex: 'materialName',
         },
+
         {
-          title: '规格型号',
+          title: '外协加工厂家',
           align: 'center',
-          dataIndex: 'materialModelType',
+          dataIndex: 'productName',
         },
+
+        {
+          title: '工序名称',
+          align: 'center',
+          dataIndex: 'craftName',
+        },
+
         {
           title: '收料仓库',
           align: 'center',

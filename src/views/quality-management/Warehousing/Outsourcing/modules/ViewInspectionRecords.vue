@@ -27,6 +27,18 @@
             {{ CheckDetail.checkResult === 1 ? '合格' : '不合格' }}
           </td>
         </tr>
+        <tr v-if="CheckDetail.checkResult !== 1">
+          <td>不合格数量</td>
+          <td>
+            {{ CheckDetail.unqualifiedNum }}
+          </td>
+        </tr>
+        <tr v-if="CheckDetail.checkResult !== 1">
+          <td>不合格原因</td>
+          <td>
+            {{ CheckDetail.unqualifiedReason }}
+          </td>
+        </tr>
       </tbody>
     </table>
     <XdocView ref="xdocView" />

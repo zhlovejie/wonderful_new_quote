@@ -24,7 +24,7 @@
         <tr>
           <td style="width: 150px">检验记录</td>
           <td>
-            {{ CheckDetail.checkResult === 1 ? '合格' : '不合格' }}
+            {{ CheckDetail.checkResult === 1 ? '返修' : CheckDetail.checkResult === 2 ? '报废' : '再利用' }}
           </td>
         </tr>
       </tbody>

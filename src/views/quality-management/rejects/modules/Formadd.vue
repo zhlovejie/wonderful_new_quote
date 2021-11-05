@@ -68,7 +68,7 @@
             </tr>
             <tr>
               <td style="width: 150px">
-                <span>报检人</span>
+                <span>检检人</span>
               </td>
               <td>
                 <a-form-model-item>
@@ -76,11 +76,11 @@
                 </a-form-model-item>
               </td>
               <td style="width: 150px">
-                <span>报检时间</span>
+                <span>检检时间</span>
               </td>
               <td colspan="3">
                 <a-form-model-item>
-                  {{ CheckDetail.checkTime }}
+                  {{ record.checkTime }}
                 </a-form-model-item>
               </td>
             </tr>
@@ -187,14 +187,18 @@
             <tbody>
               <tr>
                 <td style="width: 150px">检验结果</td>
-                <td>
+                <td style="width: 250px">
                   <a-form-model-item>
                     <span>{{ CheckDetail.checkResult === 1 ? '合格' : '不合格' }}</span>
                   </a-form-model-item>
                 </td>
-                <td style="width: 150px">不合格数量</td>
-                <td>
+                <td v-if="CheckDetail.checkResult !== 1" style="width: 150px">不合格数量</td>
+                <td v-if="CheckDetail.checkResult !== 1" style="width: 250px">
                   <span>{{ CheckDetail.unqualifiedNum }}</span>
+                </td>
+                <td style="width: 150px" v-if="CheckDetail.checkResult !== 1">不合格原因</td>
+                <td style="width: 250px" v-if="CheckDetail.checkResult !== 1">
+                  {{ CheckDetail.unqualifiedReason }}
                 </td>
               </tr>
             </tbody>

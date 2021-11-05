@@ -176,6 +176,11 @@ export default {
           dataIndex: 'reportTime',
         },
         {
+          title: '检验员',
+          align: 'center',
+          dataIndex: 'checkUserName',
+        },
+        {
           title: '单据状态',
           align: 'center',
           dataIndex: 'status',
@@ -184,7 +189,7 @@ export default {
         {
           title: '操作',
           align: 'center',
-          width: '200px',
+          width: '100px',
           scopedSlots: { customRender: 'action' },
         },
       ],

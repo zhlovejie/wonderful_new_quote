@@ -165,7 +165,13 @@
                   message: '请输入合格数量',
                 }"
               >
-                <a-input-number v-if="!isDisabled" v-model="record.qualifiedNum" :min="0" :step="1" />
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.qualifiedNum"
+                  :min="0"
+                  :max="record.checkNum"
+                  :step="1"
+                />
                 <span v-else>{{ record.qualifiedNum | moneyFormatNumber }}</span>
               </a-form-model-item>
               <!-- @change="handleTravelRecordListChange" -->
@@ -185,7 +191,9 @@
             </div>
             <div slot="unqualifiedRate" slot-scope="text, record, index">
               <span>
-                {{ (record.unqualifiedNum !== undefined && record.unqualifiedNum / record.checkNum) * 100 + '%' }}</span
+                {{
+                  record.unqualifiedNum !== undefined ? (record.unqualifiedNum / record.checkNum) * 100 + '%' : '0%'
+                }}</span
               >
             </div>
             <div slot="detectionResult" slot-scope="text, record, index">
@@ -236,13 +244,13 @@
                     </a-radio-group>
                   </a-form-model-item>
                 </td>
-                <td>不合格数量</td>
-                <td>
+                <td v-if="form.checkResult === 0">不合格数量</td>
+                <td v-if="form.checkResult === 0">
                   <a-form-model-item
                     prop="unqualifiedNum"
                     :rules="{
                       required: true,
-                      message: '请输入合格数量',
+                      message: '请输入不合格数量',
                     }"
                   >
                     <a-input-number
@@ -250,12 +258,13 @@
                       v-if="!isDisabled"
                       v-model="form.unqualifiedNum"
                       :min="0"
+                      :max="checkNum"
                       :step="1"
                     />
                   </a-form-model-item>
                 </td>
               </tr>
-              <tr>
+              <tr v-if="form.checkResult === 0">
                 <td>不合格原因</td>
                 <td colspan="3">
                   <a-form-model-item>
@@ -349,7 +358,7 @@ export default {
     return {
       visible: false,
       type: 'add',
-      record: {},
+      records: {},
       CheckDetail: {},
       testDetail: {},
       getMaterialId: {},
@@ -475,7 +484,7 @@ export default {
   methods: {
     moment,
     viewInspectionClick() {
-      this.$refs.viewInspectionCriteria.query(this.record)
+      this.$refs.viewInspectionCriteria.query(this.records)
     },
     viewInspectionRecordClick() {
       this.$refs.viewInspectionRecords.query(this.CheckDetail)
@@ -483,14 +492,14 @@ export default {
     query(type, record = {}, test) {
       const that = this
       that.type = type
-      that.record = { ...record }
+      that.records = { ...record }
       that.visible = true
       if (that.isHandle && record.firstInit === 1) {
         that.testDetail = test
         this.checkNum = Math.max.apply(
           null,
           test.checkInspectionStandardDetailDetailVos.map((i) => {
-            return i.checkNum
+            return i.checkNum === '*' ? record.reportNum : i.checkNum
           })
         )
         that.form.checkResultHisBoList = test.checkInspectionStandardDetailDetailVos.map((i) => {
@@ -498,7 +507,7 @@ export default {
             key: that._uuid(),
             projectName: i.projectName,
             projectId: i.projectId,
-            checkNum: i.checkNum,
+            checkNum: i.checkNum === '*' ? Number(record.reportNum) : Number(i.checkNum),
             itemUrl: undefined,
             qualifiedNum: undefined,
             unqualifiedNum: undefined,
@@ -559,18 +568,12 @@ export default {
       target[field] = fileList.length > 0 ? fileList[0].url : ''
 
       that.form = { ...that.form, checkResultHisBoList }
-      // console.log(arguments)
-      // this.form = {
-      //   ...this.form,
-      //   pictureUrl: fileList.map(f => f.url).join(',')
-      // }
     },
 
     handleSubmit(operationType) {
       const that = this
       that.$refs['ruleForm'].validate((valid) => {
         if (valid) {
-          // let {totalLongDistanceCost,totalSortDistanceCost,totalFoodCost,totalAccommodationCost} = that.form.__sum
           console.log(that.form)
 
           that.spinning = true
@@ -583,7 +586,7 @@ export default {
             inspectionStatus: that.testDetail.inspectionStatus,
             materialId: that.testDetail.materialId,
           }
-          params.id = that.record.id
+          params.id = that.records.id
           params.checkStandardHisDealBo = arr
           params.detailDealBoList = that.testDetail.checkInspectionStandardDetailDetailVos
           console.log(params)
@@ -614,110 +617,6 @@ export default {
     },
     handleCancel() {
       this.visible = false
-    },
-    doAction(type, record) {
-      const that = this
-      if (type === 'add-travelRecord') {
-        const travelRecordList = [...that.form.travelRecordList]
-        travelRecordList.push({
-          key: that._uuid(),
-          startTime: undefined,
-          departurePlace: [],
-          departureTime: undefined,
-          destination: [],
-          longDistanceVehicle: undefined,
-          longDistanceCost: 0,
-          sortDistanceVehicle: undefined,
-          sortDistanceCost: 0,
-          repastDays: 0,
-          foodCost: 0,
-          serialNum: 0,
-          accommodationDays: 0,
-          accommodationCost: 0,
-          totalCost: 0,
-        })
-        that.form = { ...that.form, travelRecordList }
-      } else if (type === 'remove') {
-        let travelRecordList = [...that.form.travelRecordList]
-        travelRecordList = travelRecordList.filter((item) => item.key !== record.key)
-        that.form = { ...that.form, travelRecordList }
-      }
-    },
-    handleAreaChange({ area, text }, field, record) {
-      const that = this
-      const travelRecordList = [...that.form.travelRecordList]
-      const target = travelRecordList.find((item) => item.key === record.key)
-      target[`${field}Name`] = text
-      that.form = { ...that.form, travelRecordList }
-      console.log(arguments)
-    },
-    handleTravelSelect(rows) {
-      console.log(arguments)
-      this.travelCaseList = rows.map((item) => {
-        item.key = this._uuid()
-        return item
-      })
-      this.form = { ...this.form, travelId: rows.map((item) => item.id) }
-    },
-    handleTravelCase(type, record) {
-      if (type === 'remove') {
-        this.travelCaseList = this.travelCaseList.filter((item) => item.key !== record.key)
-        this.form = {
-          ...this.form,
-          travelId: this.travelCaseList.map((item) => item.id).join(','),
-        }
-      }
-    },
-    //审批
-    approvalAction(type) {
-      const that = this
-      if (that.$refs['approvalForm']) {
-        that.$refs['approvalForm'].validate((valid) => {
-          if (valid) {
-            if (type === 1) {
-              that.passAction()
-            } else {
-              that.noPassAction()
-            }
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
-      } else {
-        if (type === 1) {
-          that.passAction()
-        } else {
-          that.noPassAction()
-        }
-      }
-    },
-    submitAction(opt = {}) {
-      const that = this
-
-      const values = Object.assign({}, opt, { ...that.approvalForm }, { approveId: that.record.id })
-      that.spinning = true
-      reimburseApproval(values)
-        .then((res) => {
-          that.spinning = false
-          that.visible = false
-          that.$message.info(res.msg)
-          that.$emit('finish')
-        })
-        .catch((err) => (that.spinning = false))
-    },
-    passAction(opt = {}) {
-      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
-    },
-    noPassAction() {
-      this.$refs.approval.query()
-    },
-    opinionChange(opinion) {
-      //审批意见
-      this.submitAction({
-        isAdopt: 1,
-        opinion: opinion,
-      })
     },
   },
 }

@@ -25,7 +25,7 @@
               <td style="width: 150px">
                 <span>优先级</span>
               </td>
-              <td>
+              <td style="width: 255px">
                 <a-form-model-item>
                   {{ { 1: '一般', 2: '紧急', 3: '特急' }[CheckDetail.emergenceLevel] }}
                 </a-form-model-item>
@@ -33,7 +33,7 @@
               <td style="width: 150px">
                 <span>生产厂家</span>
               </td>
-              <td>
+              <td style="width: 255px">
                 <a-form-model-item>
                   {{ CheckDetail.productName }}
                 </a-form-model-item>
@@ -88,7 +88,7 @@
               </td>
               <td>
                 <a-form-model-item>
-                  {{ CheckDetail.reportTime.substring(0, 10) }}
+                  {{ CheckDetail.reportTime }}
                 </a-form-model-item>
               </td>
             </tr>
@@ -173,7 +173,13 @@
                   message: '请输入合格数量',
                 }"
               >
-                <a-input-number v-if="!isDisabled" v-model="record.qualifiedNum" :min="0" :step="1" />
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.qualifiedNum"
+                  :min="0"
+                  :max="record.checkNum"
+                  :step="1"
+                />
                 <span v-else>{{ record.qualifiedNum | moneyFormatNumber }}</span>
               </a-form-model-item>
               <!-- @change="handleTravelRecordListChange" -->
@@ -244,8 +250,8 @@
                     </a-radio-group>
                   </a-form-model-item>
                 </td>
-                <td>不合格数量</td>
-                <td>
+                <td v-if="form.checkResult === 0">不合格数量</td>
+                <td v-if="form.checkResult === 0">
                   <a-form-model-item
                     prop="unqualifiedNum"
                     :rules="{
@@ -258,12 +264,13 @@
                       v-if="!isDisabled"
                       v-model="form.unqualifiedNum"
                       :min="0"
+                      :max="checkNum"
                       :step="1"
                     />
                   </a-form-model-item>
                 </td>
               </tr>
-              <tr>
+              <tr v-if="form.checkResult === 0">
                 <td>不合格原因</td>
                 <td colspan="3">
                   <a-form-model-item>
@@ -498,7 +505,7 @@ export default {
         this.checkNum = Math.max.apply(
           null,
           test.checkInspectionStandardDetailDetailVos.map((i) => {
-            return i.checkNum
+            return i.checkNum === '*' ? record.reportNum : i.checkNum
           })
         )
         that.form.checkResultHisBoList = test.checkInspectionStandardDetailDetailVos.map((i) => {
@@ -506,7 +513,7 @@ export default {
             key: that._uuid(),
             projectName: i.projectName,
             projectId: i.projectId,
-            checkNum: i.checkNum,
+            checkNum: i.checkNum === '*' ? Number(record.reportNum) : Number(i.checkNum),
             itemUrl: undefined,
             qualifiedNum: undefined,
             unqualifiedNum: undefined,

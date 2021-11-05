@@ -56,6 +56,20 @@
             <span v-if="+text === 0">待处理</span>
             <span v-if="+text === 1">完结</span>
           </div>
+          <div slot="materialCode" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
+          <div slot="materialModelType" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
 
           <span slot="action" slot-scope="text, record">
             <template v-if="record.status === 1">
@@ -114,7 +128,7 @@ export default {
           dataIndex: 'checkSerNum',
         },
         {
-          title: '收料编号',
+          title: '收料单号',
           align: 'center',
           dataIndex: 'receiveNum',
         },
@@ -138,6 +152,7 @@ export default {
           title: '物料代码',
           align: 'center',
           dataIndex: 'materialCode',
+          scopedSlots: { customRender: 'materialCode' },
         },
         {
           title: '物料名称',
@@ -145,14 +160,10 @@ export default {
           dataIndex: 'materialName',
         },
         {
-          title: '外协加工厂家',
+          title: '规格型号',
           align: 'center',
-          dataIndex: 'productName',
-        },
-        {
-          title: '工序名称',
-          align: 'center',
-          dataIndex: 'craftName',
+          dataIndex: 'materialModelType',
+          scopedSlots: { customRender: 'materialModelType' },
         },
         {
           title: '收料仓库',

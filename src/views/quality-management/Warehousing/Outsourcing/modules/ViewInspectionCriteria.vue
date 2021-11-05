@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="检验标准"
-    :width="1000"
+    :width="1200"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -91,7 +91,7 @@
           </td>
           <td>{{ item.inspectionBasisName }}</td>
           <td>{{ item.parameterTermAqlName }}</td>
-          <td>{{ item.inspectionGrade }}</td>
+          <td>{{ { 0: '正常', 1: '加严', 2: '放宽' }[item.inspectionGrade] }}</td>
         </tr>
       </tbody>
     </table>

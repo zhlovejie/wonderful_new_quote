@@ -71,6 +71,9 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+          <div slot="defectiveRate" slot-scope="text">
+            <span>{{ text * 100 + '%' }}</span>
+          </div>
           <div slot="status" slot-scope="text, record">
             <span v-if="+text === 0">待处理</span>
             <span v-if="+text === 1">完结</span>
@@ -166,11 +169,17 @@ export default {
           title: '不良率（%）',
           align: 'center',
           dataIndex: 'defectiveRate',
+          scopedSlots: { customRender: 'defectiveRate' },
         },
         {
           title: '让步接收数量',
           align: 'center',
           dataIndex: 'compromiseNum',
+        },
+        {
+          title: '让步接收原因',
+          align: 'center',
+          dataIndex: 'dealDesc',
         },
         {
           title: '检验日期',

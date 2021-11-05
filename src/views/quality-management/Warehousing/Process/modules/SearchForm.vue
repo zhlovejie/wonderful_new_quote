@@ -66,7 +66,7 @@
         </a-col>
 
         <a-col :span="24">
-          <a-form-item label="申请时间">
+          <a-form-item label="报检时间">
             <a-range-picker v-decorator="['sDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>
