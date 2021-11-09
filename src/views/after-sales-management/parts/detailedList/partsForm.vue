@@ -44,8 +44,8 @@
             <a-switch
               style="margin-left: 20px"
               disabled
-              checked-children="含税"
-              un-checked-children="不含税"
+              checked-children="开票"
+              un-checked-children="不开票"
               default-checked
               v-model="isTax"
               @change="onChange"
