@@ -42,6 +42,15 @@
         <span v-if="text === 0" style="color: blue">成功</span>
         <span v-if="text === 1" style="color: red">失败</span>
       </div>
+
+      <div slot="paymentMethod" slot-scope="text, record, index">
+        <span v-if="text === 0">支付宝</span>
+        <span v-if="text === 1">微信</span>
+      </div>
+      <div slot="isSettlement" slot-scope="text, record, index">
+        <span v-if="text === 0">结算</span>
+        <span v-if="text === 1">未结算</span>
+      </div>
     </s-table>
   </a-card>
 </template>
@@ -101,21 +110,17 @@ const columns = [
   {
     align: 'center',
     title: '支付方式',
-    key: 'modifierName',
-    dataIndex: 'modifierName',
+    key: 'paymentMethod',
+    dataIndex: 'paymentMethod',
+    scopedSlots: { customRender: 'paymentMethod' },
   },
   {
     align: 'center',
     title: '是否结算',
-    key: 'modifyTime',
-    dataIndex: 'modifyTime',
+    key: 'isSettlement',
+    dataIndex: 'isSettlement',
+    scopedSlots: { customRender: 'isSettlement' },
   },
-  // {
-  //   align: 'center',
-  //   title: '操作',
-  //   key: 'action',
-  //   scopedSlots: { customRender: 'action' },
-  // },
 ]
 
 export default {
