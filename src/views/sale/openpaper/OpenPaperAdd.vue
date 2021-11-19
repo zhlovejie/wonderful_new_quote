@@ -201,7 +201,7 @@
             <a-col class="col-border" :span="3" justify="center" align="middle">总金额(元)</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-form-item>
-                <a-input class="wdf-xyk" read-only="read-only" v-decorator="['totalAmount']" />
+                <a-input class="wdf-xyk" read-only="read-only" v-decorator="['contractAmount']" />
               </a-form-item>
             </a-col>
           </a-row>
@@ -330,7 +330,7 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       maxArrearsMoney: 0, //最大可输入欠款金额
       freightType: 1,
-      totalAmount: 0, //总金额 包含运费
+      contractAmount: 0, //总金额 包含运费
       totalAmountWidtoutFreight: 0, //总金额 不包含运费
       spinning: false,
     }
@@ -362,8 +362,8 @@ export default {
 
         this.freightType = res.data.freightType
         this.freightCharge = res.data.freightMoneyWithRate
-        this.totalAmount = res.data.totalAmount
-        this.totalAmountWidtoutFreight = (this.totalAmount * 100 - res.data.freightMoneyWithRate * 100) / 100
+        this.contractAmount = res.data.contractAmount
+        this.totalAmountWidtoutFreight = (this.contractAmount * 100 - res.data.freightMoneyWithRate * 100) / 100
         const listProduct = []
         let paperMoneyAll = 0
 
@@ -393,7 +393,7 @@ export default {
           contractNum: res.data.contractNum,
           customerName: res.data.customerName,
           contractId: res.data.id,
-          totalAmount: res.data.totalAmount,
+          contractAmount: res.data.contractAmount,
           paperMoney: paperMoneyAll + (res.data.freightType === 0 ? Number(res.data.freightMoneyWithRate) : 0),
           taxPayerNo: res.data.customerInfo.dutyParagraph,
           bankNoAccount: res.data.customerInfo.openingBank,
@@ -412,7 +412,7 @@ export default {
         })
         this.dataSource = listProduct
         //this.produceData = listProduct
-        this.maxArrearsMoney = Number(parseFloat(record.totalAmount) - parseFloat(record.refundMoney)).toFixed(2)
+        this.maxArrearsMoney = Number(parseFloat(record.contractAmount) - parseFloat(record.refundMoney)).toFixed(2)
       })
     },
     // 返回
