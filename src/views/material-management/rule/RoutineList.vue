@@ -55,10 +55,21 @@
             </a-form-item>
             <a-form-item>
               <a-select
-                placeholder="创建日期排序"
+                placeholder="日期排序"
                 :allowClear="true"
                 style="width: 130px;"
                 v-model="queryParam.orderCreatedTimeDesc"
+              >
+                  <a-select-option :value="1">降序</a-select-option>
+                  <a-select-option :value="2">升序</a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item>
+              <a-select
+                placeholder="code排序"
+                :allowClear="true"
+                style="width: 130px;"
+                v-model="queryParam.orderCodeDesc"
               >
                   <a-select-option :value="1">降序</a-select-option>
                   <a-select-option :value="2">升序</a-select-option>
@@ -104,6 +115,7 @@
 
           </div>
         </a-alert>
+        
         <a-table
           :columns="columns"
           :dataSource="dataSource"
@@ -132,8 +144,6 @@
             <span v-else>{{ text }}</span>
           </div>
 
-
-
         </a-table>
       </div>
     </div>
@@ -152,13 +162,14 @@ import {
   routineMaterialRulePageList,
   routineMaterialRulePageTreeList,
   routineMaterialRulePageTwoTierTreeList,
-  routineMaterialRulePageConditionTreeList
+  routineMaterialRulePageConditionTreeList,
+  routineMaterialRuleToggleSort
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
 import BatchTransferForm from './module/BatchTransferForm'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
-
+import Sortable from 'sortablejs'
 const columns = [
   {
     align: 'center',
@@ -235,7 +246,9 @@ export default {
       autoExpandParent: true,
 
       loading: false,
-      queryParam: {},
+      queryParam: {
+        orderCodeDesc:2
+      },
       pagination: {
         current: 1,
         pageSize: 10,
@@ -246,6 +259,8 @@ export default {
       },
       treeInputSearchDebounce: null,
       spinning:false,
+
+      sortableInstance:null
     }
   },
   watch: {
@@ -293,6 +308,61 @@ export default {
     },
   },
   methods: {
+    initSortable() {
+      const that = this;
+      const selector = ".material-management-rule-RoutineList .ant-table-tbody"
+      const ele = document.querySelector(selector);
+      if(!ele){
+        console.error(`selector:【${selector}】 no element matched.`)
+        return
+      }
+      if(that.sortableInstance !== null){
+        that.sortableInstance.destroy()
+        that.sortableInstance = null
+      }
+      that.sortableInstance = Sortable.create(ele, {
+        disabled: false,
+        ghostClass: "ghost",
+        animation: 150,
+        group: {
+          pull: false,
+          put: false,
+        },
+        onEnd(e) {
+          let { newIndex, oldIndex } = e;
+          if(newIndex === oldIndex){
+            return
+          }
+
+          let direction = newIndex < oldIndex ? 'up' : 'down'
+          let dataSource = [...that.dataSource];
+
+          let params = {
+            parentId:that.parentId,
+            orderCodeDesc:that.queryParam.orderCodeDesc || 2,
+            targetId: direction === 'up' 
+              ? (newIndex -1 < 0 ? 0 : dataSource[newIndex - 1].id) 
+              : (dataSource[newIndex].id),
+            transferId:dataSource[oldIndex].id
+          }
+          routineMaterialRuleToggleSort(params).then(res => {
+            // console.log(res)
+            // that.fetchTree()
+            // debugger
+            let target = that.findTreeNode(that.$refs.treeRef, that.parentId)
+            if (target) {
+              that.onLoadData(target, true)
+            }
+            that.search()
+          })
+          
+          // dataSource.splice(newIndex, 0, dataSource.splice(oldIndex, 1)[0]);
+          // that.$nextTick(() => {
+          //   that.dataSource = dataSource;
+          // });
+        },
+      });
+    },
     onExpand(expandedKeys) {
       this.expandedKeys = expandedKeys
       this.autoExpandParent = false
@@ -331,7 +401,6 @@ export default {
       // if (this.treeInputSearchDebounce === null) {
       //   this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
       // }
-
       this.parentId = 0
       this.selectedTreeNode = null
       this.queryParam = {
@@ -530,7 +599,7 @@ export default {
             return
           }
           that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
+            item.key = that._uuid()
             item.fullCode = that.parentCodes ? `${that.parentCodes}.${item.code}` : item.code
             return item
           })
@@ -547,6 +616,11 @@ export default {
             that.pagination = { ...pagination, current: pages }
             that.search()
           }
+
+          that.$nextTick(() => {
+            that.initSortable();
+          });
+
         })
         .catch((err) => {
           console.error(err)
@@ -752,6 +826,10 @@ export default {
 </script>
 
 <style scoped>
+.ghost {
+  background-color: rgba(250, 235, 215, 0.5);
+}
+
 .material-management-rule-RoutineList >>> .resize-column-wrapper {
   width: 100%;
   height: 100%;
