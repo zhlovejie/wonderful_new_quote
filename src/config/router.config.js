@@ -65,6 +65,8 @@ const __ROUTER_MAP__ = [
   bomManagement, //BOM管理
   afterManagement, //售后管理
   qualityManagement, // 质量管理
+  procurementModuleManagement, //采购管理
+  supplier, //供应商管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
