@@ -136,7 +136,7 @@ export default {
         {
           title: '委外单号',
           align: 'center',
-          dataIndex: 'trustNum',
+          dataIndex: 'orderNum',
         },
         {
           title: '物料代码',

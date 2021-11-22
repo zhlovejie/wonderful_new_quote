@@ -146,7 +146,6 @@ export default {
       return this.fileList.filter((f) => f.status === 'done').map((f) => Object.assign({}, f))
     },
     setFiles(files) {
-      debugger
       this.fileList = files.map((f) => {
         return {
           uid: f.uid || Math.random().toString(16).slice(-10),

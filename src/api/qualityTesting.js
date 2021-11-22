@@ -25,8 +25,48 @@ const api = {
   addAndUpdatePurchaseDisputeDeal: '/quality-purchase-dispute-deal/addAndUpdatePurchaseDisputeDeal', //处理或修改采购议价记录单
   sourceFinishCheck: '/quality-material-source-check/finishCheck', //完结
   finishCheck: '/quality-trust-check/finishCheck', //完结
+  warehousePageList: '/quality/enter-warehouse-check/pageList', //入库检验单分页列表的条件查询
+  warehousegetCheckDetail: '/quality/enter-warehouse-check/getCheckDetail', //入库检验单详情查询
+  warehousegetDealCheck: '/quality/enter-warehouse-check/dealCheck', //处理或修改入库检验单
+  warehousegetFinishCheck: '/quality/enter-warehouse-check/finishCheck', //入库检验单完结
 
 
+}
+//入库检验单完结
+export function warehousegetFinishCheck(parameter) {
+  return axios({
+    baseURL: baseURL,
+    url: api.warehousegetFinishCheck,
+    method: 'post',
+    data: parameter
+  })
+}
+//处理或修改入库检验单
+export function warehousegetDealCheck(parameter) {
+  return axios({
+    baseURL: baseURL,
+    url: api.warehousegetDealCheck,
+    method: 'post',
+    data: parameter
+  })
+}
+//入库检验单详情查询
+export function warehousegetCheckDetail(parameter) {
+  return axios({
+    baseURL: baseURL,
+    url: api.warehousegetCheckDetail,
+    method: 'get',
+    params: parameter
+  })
+}
+//入库检验单分页列表的条件查询
+export function warehousePageList(parameter) {
+  return axios({
+    baseURL: baseURL,
+    url: api.warehousePageList,
+    method: 'get',
+    params: parameter
+  })
 }
 //处理或修改采购议价记录单
 export function sourceFinishCheck(parameter) {

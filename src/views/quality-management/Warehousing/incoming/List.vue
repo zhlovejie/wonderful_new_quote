@@ -146,7 +146,7 @@ export default {
         {
           title: '采购单号/委托单号',
           align: 'center',
-          dataIndex: 'purchaseNum',
+          dataIndex: 'orderNum',
         },
         {
           title: '供应商',

@@ -54,7 +54,7 @@
               </td>
               <td>
                 <a-form-model-item>
-                  {{ CheckDetail.purchaseNum }}
+                  {{ CheckDetail.orderNum }}
                 </a-form-model-item>
               </td>
               <td style="width: 150px">

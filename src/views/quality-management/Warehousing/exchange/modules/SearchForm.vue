@@ -24,13 +24,27 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="收料单号">
-            <a-input v-decorator="['receiveNum']" placeholder="收料单号" :allowClear="true" />
+          <a-form-item label="入库申请单号">
+            <a-input v-decorator="['warehouseEnterNum']" placeholder="入库申请单号" :allowClear="true" />
           </a-form-item>
         </a-col>
+        <!-- <a-col :span="12">
+          <a-form-item label="生产车间">
+            <a-select placeholder="选择部门" v-decorator="['departmentId']" :allowClear="true">
+              <a-select-option v-for="item in saleUser" :key="item.id" :value="item.id">{{
+                item.departmentName
+              }}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col> -->
         <a-col :span="12">
-          <a-form-item label="供应商">
-            <a-input v-decorator="['supplierName']" placeholder="供应商" :allowClear="true" />
+          <a-form-item label="入库类型">
+            <a-select v-decorator="['warehouseEnterType']" placeholder="入库类型" :allowClear="true">
+              <a-select-option :value="1">赠送入库</a-select-option>
+              <a-select-option :value="2">产成品返修入库</a-select-option>
+              <a-select-option :value="3">安装不良品入库</a-select-option>
+              <a-select-option :value="4">退货入库</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
 
@@ -44,14 +58,23 @@
             <a-input v-decorator="['materialName']" placeholder="物料名称" :allowClear="true" />
           </a-form-item>
         </a-col>
+
         <a-col :span="12">
           <a-form-item label="报检人">
             <a-input v-decorator="['reportName']" placeholder="报检人" :allowClear="true" />
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-form-item label="需要入库仓库">
+            <a-select v-decorator="['storageId']" placeholder="需要入库仓库" :allowClear="true">
+              <a-select-option :value="1">1仓库</a-select-option>
+              <a-select-option :value="2">2仓库</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
 
         <a-col :span="24">
-          <a-form-item label="申请时间">
+          <a-form-item label="报检时间">
             <a-range-picker v-decorator="['sDate']" style="width: 100%" :allowClear="true" />
           </a-form-item>
         </a-col>
@@ -71,7 +94,7 @@
   </a-modal>
 </template>
 <script>
-import { getListSaleContractUser } from '@/api/contractListManagement'
+import { bonus_getDepartmentByType } from '@/api/bonus_management'
 export default {
   name: 'searchForm',
   components: {},
@@ -88,7 +111,7 @@ export default {
     query(tabKey) {
       this.isShowApproveStatus = +tabKey === 0
       this.visible = true
-      getListSaleContractUser().then((res) => (this.saleUser = res.data))
+      bonus_getDepartmentByType({ type: 3 }).then((res) => (this.saleUser = res.data))
     },
     handleCancel() {
       this.visible = false

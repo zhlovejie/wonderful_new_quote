@@ -119,7 +119,7 @@ export default {
           name: 'quality-management_Warehousing_exchange',
           component: () => import('@/views/quality-management/Warehousing/exchange/List'),
           meta: {
-            title: '退换货检验记录单',
+            title: '入库申请检验单',
             permission: ['permission']
           }
         },

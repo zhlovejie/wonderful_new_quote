@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
-    暂未开发
-    <!-- <div class="refund-receipt-list-wrapper">
+    <!-- 入库申请检验记录单 -->
+    <div class="refund-receipt-list-wrapper">
       <div class="search-wrapper">
         <a-button-group>
           <a-button type="primary" :class="{ currentDayWeekMonth: dayWeekMonth === 1 }" @click="simpleSearch(1)"
@@ -47,6 +47,13 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+
+          <div slot="warehouseEnterType" slot-scope="text, record">
+            <span v-if="text == 1">赠送入库</span>
+            <span v-if="text == 2">产成品返修入库</span>
+            <span v-if="text == 3">安装不良品入库</span>
+            <span v-if="text == 4">退货入库</span>
+          </div>
           <div slot="emergenceLevel" slot-scope="text, record">
             <span v-if="text == 1">一般</span>
             <span v-if="text == 2">紧急</span>
@@ -54,15 +61,27 @@
           </div>
           <div slot="status" slot-scope="text, record">
             <span v-if="+text === 0">待处理</span>
-            <span v-if="+text === 1">完结</span>
+            <span v-if="+text === 1">待提交</span>
+            <span v-if="+text === 2">待完结</span>
+            <span v-if="+text === 3">完结</span>
           </div>
 
           <span slot="action" slot-scope="text, record">
-            <template v-if="record.status === 1">
+            <template v-if="record.status !== 0">
               <a @click="handleVue('view', record)">查看</a>
             </template>
-            <template v-else>
+            <template v-if="record.status === 0">
               <a @click="handleVue('handle', record)">处理</a>
+            </template>
+            <template v-if="record.status === 1">
+              <a-divider type="vertical" />
+              <a @click="handleVue('edit', record)">修改</a>
+            </template>
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认完结该条数据吗?" @confirm="() => doAction(record)">
+                <a type="primary" href="javascript:;">完结</a>
+              </a-popconfirm>
             </template>
           </span>
         </s-table>
@@ -70,16 +89,15 @@
     </a-row>
 
     <Formadd ref="formadd" @finish="() => search()" />
-    <SearchForm ref="searchForm" @change="paramChangeHandler" /> -->
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
-import { quality_pageList, quality_getCheckGetMaterialId } from '@/api/qualityTesting'
+import { warehousePageList, quality_getCheckGetMaterialId, warehousegetFinishCheck } from '@/api/qualityTesting'
 import Formadd from './modules/Formadd'
 import SearchForm from './modules/SearchForm'
-import es from 'ant-design-vue/es'
 export default {
   name: 'OpenPaperList',
   components: {
@@ -110,24 +128,20 @@ export default {
           scopedSlots: { customRender: 'order' },
         },
         {
-          title: '检验编号',
+          title: '单据编号',
           align: 'center',
           dataIndex: 'checkSerNum',
         },
         {
-          title: '收料编号',
+          title: '入库申请单号',
           align: 'center',
-          dataIndex: 'receiveNum',
+          dataIndex: 'warehouseEnterNum',
         },
         {
-          title: '采购单号/委托单号',
+          title: '入库类型',
           align: 'center',
-          dataIndex: 'purchaseNum',
-        },
-        {
-          title: '供应商',
-          align: 'center',
-          dataIndex: 'supplierName',
+          dataIndex: 'warehouseEnterType',
+          scopedSlots: { customRender: 'warehouseEnterType' },
         },
         {
           title: '紧急程度',
@@ -135,8 +149,9 @@ export default {
           dataIndex: 'emergenceLevel',
           scopedSlots: { customRender: 'emergenceLevel' },
         },
+
         {
-          title: '物流代码',
+          title: '物料代码',
           align: 'center',
           dataIndex: 'materialCode',
         },
@@ -148,10 +163,10 @@ export default {
         {
           title: '规格型号',
           align: 'center',
-          dataIndex: 'materialModelType',
+          dataIndex: 'specification',
         },
         {
-          title: '收料仓库',
+          title: '需要入库仓库',
           align: 'center',
           dataIndex: 'storageName',
         },
@@ -166,6 +181,11 @@ export default {
           dataIndex: 'reportTime',
         },
         {
+          title: '检验员',
+          align: 'center',
+          dataIndex: 'checkUserName',
+        },
+        {
           title: '单据状态',
           align: 'center',
           dataIndex: 'status',
@@ -174,13 +194,13 @@ export default {
         {
           title: '操作',
           align: 'center',
-          width: '200px',
+          width: '100px',
           scopedSlots: { customRender: 'action' },
         },
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
-        return quality_pageList(Object.assign(parameter, this.queryParam)).then((res) => {
+        return warehousePageList(Object.assign(parameter, this.queryParam)).then((res) => {
           return res
         })
       },
@@ -191,12 +211,27 @@ export default {
   },
   watch: {
     $route(to, from) {
-      if (to.name == 'quality-management_Warehousing_incoming') {
+      if (to.name == 'quality-management_Warehousing_exchange') {
         this.search()
       }
     },
   },
   methods: {
+    doAction(record) {
+      const that = this
+      warehousegetFinishCheck(`checkId=${record.id}`)
+        .then((res) => {
+          if (res.code === 200) {
+            that.search()
+          } else {
+            that.$message.error(res.msg)
+            return
+          }
+        })
+        .catch((err) => {
+          that.$message.error(err.message)
+        })
+    },
     //高级筛选打开
     openSearchModel() {
       this.$refs.searchForm.query(this.contractState)
@@ -284,5 +319,8 @@ export default {
 .develop-wrap {
   background-color: #fff;
   padding: 12px;
+}
+.currentDayWeekMonth {
+  opacity: 0.7;
 }
 </style>
