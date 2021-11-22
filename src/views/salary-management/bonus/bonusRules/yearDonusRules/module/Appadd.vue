@@ -19,7 +19,7 @@
       <a-form :form="form" class="becoming-form-wrapper">
         <table class="custom-table custom-table-border">
           <tr>
-            <td>一期比列(%)：</td>
+            <!-- <td>一期比列(%)：</td>
             <td colspan="2">
               <a-form-item>
                 <a-input-number
@@ -91,7 +91,7 @@
                   v-decorator="['thrSendDate', { rules: [{ required: true, message: '请选择预提货日期' }] }]"
                 />
               </a-form-item>
-            </td>
+            </td> -->
           </tr>
         </table>
       </a-form>

@@ -56,10 +56,32 @@ const api = {
   addAndHandleMailRecord: '/csupport/accessories-mail-record/addAndHandleMailRecord', //邮寄处理
   taskDocumentStatusNum: '/csupport/task-document/taskDocumentStatusNum', //任务数量
   updateTaskDocument: '/csupport/task-document/updateTaskDocument', //任务修改
+  getAliPayQrCode: '/csupport/accessories-management/getAliPayQrCode', //支付宝
+  getWxPayQrCode: '/csupport/accessories-management/getWxPayQrCode', //微信
 
 
 
 }
+//微信
+export function getWxPayQrCode(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.getWxPayQrCode,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//支付宝
+export function getAliPayQrCode(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.getAliPayQrCode,
+    method: 'get',
+    params: parameter
+  })
+}
+
 //任务修改
 export function updateTaskDocument(parameter) {
   return axios({

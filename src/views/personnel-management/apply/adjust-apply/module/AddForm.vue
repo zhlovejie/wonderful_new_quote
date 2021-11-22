@@ -270,12 +270,12 @@
               <td>期望生效时间</td>
               <td colspan="3">
                 <a-form-item>
-                  <a-date-picker
+                  <a-month-picker
                     :disabled="isDisabled"
                     :disabledDate="disabledDate"
                     style="width: 100%"
                     v-decorator="['expectDate', { rules: [{ required: true, message: '输入期望生效时间' }] }]"
-                    format="YYYY-MM-DD"
+                    format="YYYY-MM"
                   />
                 </a-form-item>
               </td>
@@ -462,12 +462,12 @@
               <td>期望生效时间</td>
               <td colspan="3">
                 <a-form-item>
-                  <a-date-picker
+                  <a-month-picker
                     :disabled="isDisabled"
                     :disabledDate="disabledDate"
                     style="width: 100%"
                     v-decorator="['expectDate', { rules: [{ required: true, message: '输入期望生效时间' }] }]"
-                    format="YYYY-MM-DD"
+                    format="YYYY-MM"
                   />
                 </a-form-item>
               </td>
@@ -625,9 +625,7 @@ export default {
   methods: {
     moment: moment,
     disabledDate(current) {
-      // Can not select days before today and today
-      let startDate = current.clone().startOf('month')
-      return current.format('YYYY/MM/DD') !== startDate.format('YYYY/MM/DD') || current < moment().endOf('day')
+      return current && current < moment().startOf('month')
     },
     init() {
       let that = this
@@ -682,7 +680,7 @@ export default {
               expectBasicSalary: values.expectBasicSalary,
               applyUserId: this.survey.applyUserId,
             }
-
+            console.log(react)
             apiMap[that.operationStatus](react)
               .then((res) => {
                 that.spinning = false
@@ -725,6 +723,10 @@ export default {
           }
           //提交
           that.spinning = true
+
+          values.expectDate = values.expectDate.format('YYYY-MM') + '-01'
+          values.nEnterDate = values.nEnterDate.format('YYYY-MM-DD')
+          console.log(values)
           apiMap[that.operationStatus](values)
             .then((res) => {
               that.spinning = false

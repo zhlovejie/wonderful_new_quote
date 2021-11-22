@@ -56,8 +56,8 @@
             配件清单
             <a-switch
               style="margin-left: 20px"
-              checked-children="含税"
-              un-checked-children="不含税"
+              checked-children="开票"
+              un-checked-children="不开票"
               default-checked
               @change="onChange"
             />
@@ -95,13 +95,31 @@
                 :prop="'productInfoList.' + index + '.quantity'"
                 :rules="{
                   required: true,
-                  message: '请选择数量',
+                  message: '请输入数量',
                 }"
               >
                 <a-input-number
                   v-if="!isDisabled"
                   v-model="record.quantity"
                   @change="(value) => handleTravelRecordListChange(value, record)"
+                />
+              </a-form-model-item>
+            </div>
+            <div slot="unitPrice" slot-scope="text, record, index">
+              <a-form-model-item
+                :prop="'productInfoList.' + index + '.unitPrice'"
+                :rules="[
+                  {
+                    required: true,
+                    message: '请输入单价',
+                  },
+                  { pattern: /^(([0-9]+)|([0-9]+\.[0-9]{1,2}))$/, message: '单价保留两位小数' },
+                ]"
+              >
+                <a-input-number
+                  v-if="!isDisabled"
+                  v-model="record.unitPrice"
+                  @change="(value) => handleTravelRecordListChange1(value, record)"
                 />
               </a-form-model-item>
             </div>
@@ -432,6 +450,7 @@ export default {
         {
           title: '单价（元）',
           dataIndex: 'unitPrice',
+          scopedSlots: { customRender: 'unitPrice' },
           width: 150,
         },
         {
@@ -483,7 +502,16 @@ export default {
       const productInfoList = [...this.form.productInfoList]
       const target = productInfoList.find((item) => item.key === record.key)
       if (target) {
-        target['money'] = target.isWarranty === 0 ? 0 : e * record.unitPrice // 金额
+        target['money'] = record.isWarranty === 0 ? 0 : e * record.unitPrice // 金额
+        this.form.productInfoList = productInfoList
+      }
+    },
+    handleTravelRecordListChange1(e, record) {
+      console.log(e, record)
+      const productInfoList = [...this.form.productInfoList]
+      const target = productInfoList.find((item) => item.key === record.key)
+      if (target) {
+        target['money'] = record.isWarranty === 0 ? 0 : e * record.quantity // 金额
         this.form.productInfoList = productInfoList
       }
     },

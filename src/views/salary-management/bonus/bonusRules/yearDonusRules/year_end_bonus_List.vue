@@ -22,14 +22,16 @@
         @openChange="handleOpenChange2"
       />
       <a-select
-        placeholder="状态"
+        placeholder="审核状态"
         v-if="activeKey === 0"
-        v-model="queryParam.type"
+        v-model="queryParam.status"
         :allowClear="true"
         style="width: 200px; margin-right: 10px"
       >
-        <a-select-option :value="1">待处理</a-select-option>
-        <a-select-option :value="2">完结</a-select-option>
+        <a-select-option :value="1">待审批</a-select-option>
+        <a-select-option :value="2">审批通过</a-select-option>
+        <a-select-option :value="3">审批不通过</a-select-option>
+        <a-select-option :value="4">已撤回</a-select-option>
       </a-select>
       <a-button
         class="a-button"
@@ -39,10 +41,22 @@
         @click="searchAction({ current: 1 })"
         >查询</a-button
       >
-      <div style="float: right"></div>
+      <template v-if="$auth('year_end:add')">
+        <a-dropdown style="float: right">
+          <a-button type="primary" @click="showModal()"> <a-icon type="plus" />新增 </a-button>
+        </a-dropdown>
+      </template>
     </div>
     <div class="main-wrapper">
+      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
+        <a-tab-pane tab="我的" key="0" />
+        <template v-if="$auth('year_end:list')">
+          <a-tab-pane tab="待我审批" key="1" />
+          <a-tab-pane tab="我已审批" key="2" />
+        </template>
+      </a-tabs>
       <a-table
+        v-if="$auth('year_end:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
@@ -52,27 +66,78 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="type" slot-scope="text, record">
-          <a>{{ getStateText(text) }}</a>
+        <div slot="status" slot-scope="text, record">
+          <a @click="approvalPreview(record)">{{ getStateText(text) }}</a>
         </div>
+        <div slot="annualName" slot-scope="text, record">年终奖默认规则</div>
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- 公告审批状态：0 待审批，1 审批通过，2 审批驳回 -->
-          <template v-if="record.type === 1">
-            <a type="primary" @click="doAction('handle', record)">处理</a>
+          <template v-if="activeKey === 0">
+            <template v-if="$auth('year_end:view')">
+              <a type="primary" @click="doAction('view', record)">查看</a>
+            </template>
+            <template v-if="(record.status === 2 || record.status === 1) && +record.createdId === +userInfo.id">
+              <a-divider type="vertical" />
+              <template v-if="$auth('year_end:Withdraw')">
+                <a-popconfirm title="是否确定撤回" ok-text="确定" cancel-text="取消" @confirm="confirmWithdraw(record)">
+                  <a type="primary">撤回</a>
+                </a-popconfirm>
+              </template>
+            </template>
+            <template
+              v-if="
+                $auth('year_end:edit-salary') &&
+                (record.status === 3 || record.status === 4) &&
+                +record.createdId === +userInfo.id
+              "
+            >
+              <a-divider type="vertical" />
+              <a type="primary" @click="doAction('edit-salary', record)">修改</a>
+              <a-divider type="vertical" />
+              <a-popconfirm title="是否确定删除" ok-text="确定" cancel-text="取消" @confirm="confirmDelete(record)">
+                <a type="primary">删除</a>
+              </a-popconfirm>
+            </template>
           </template>
-          <template v-else>
+
+          <template v-if="activeKey === 1 && record.status === 1">
+            <a type="primary" @click="doAction('edit', record)">审核</a>
+          </template>
+
+          <template v-if="activeKey === 2">
             <a type="primary" @click="doAction('view', record)">查看</a>
           </template>
         </div>
       </a-table>
     </div>
+    <a-modal v-model="visible" title="新增年终奖金" @ok="handleOk">
+      <a-date-picker
+        style="width: 280px; margin-left: 90px"
+        mode="year"
+        placeholder="请选择年份"
+        format="YYYY"
+        v-model="yearPick1"
+        :open="yearPickShow1"
+        @panelChange="handlePanelChange1"
+        @openChange="handleOpenChange1"
+      />
+    </a-modal>
     <AddForm ref="addForm" @finish="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
+    <Appadd ref="appadd" />
   </div>
 </template>
 <script>
-import { salary_bonus_annual_page } from '@/api/bonus_management'
+import { departmentList } from '@/api/systemSetting'
+import {
+  bounsRules_List,
+  year_bonus_annua,
+  year_send_rule,
+  year_send_annual,
+  year_annual_addAnddel,
+} from '@/api/bonus_management'
 import AddForm from './module/Formadd'
+import Appadd from './module/Appadd'
 
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
@@ -86,28 +151,21 @@ const columns = [
   },
   {
     align: 'center',
-    title: '日期(年)',
+    title: '日期（年）',
     dataIndex: 'applyDate',
-    key: 'applyDate',
   },
   {
     align: 'center',
-    title: '批次号',
-    dataIndex: 'batchCode',
-    key: 'batchCode',
-  },
-  {
-    align: 'center',
-    title: '合计(元)',
-    dataIndex: 'grantAmount',
-    key: 'grantAmount',
+    title: '名称',
+    dataIndex: 'annualName',
+    scopedSlots: { customRender: 'annualName' },
   },
   {
     align: 'center',
     title: '状态',
-    key: 'type',
-    dataIndex: 'type',
-    scopedSlots: { customRender: 'type' },
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
   },
   {
     align: 'center',
@@ -123,6 +181,18 @@ const columns = [
   },
   {
     align: 'center',
+    title: '修改人',
+    key: 'modifierName',
+    dataIndex: 'modifierName',
+  },
+  {
+    align: 'center',
+    title: '修改时间',
+    dataIndex: 'modifyTime',
+    key: 'modifyTime',
+  },
+  {
+    align: 'center',
     title: '操作',
     key: 'action',
     scopedSlots: { customRender: 'action' },
@@ -132,19 +202,22 @@ const columns = [
 export default {
   name: 'NoticeList',
   components: {
+    Appadd,
     AddForm: AddForm,
     ApproveInfo: ApproveInfo,
   },
   data() {
     return {
       visible: false,
+      yearPick: null, //年选择器的值
+      yearPickShow: false, //年选择器的显示隐藏
+      yearPick1: null, //年选择器的值
+      yearPickShow1: false, //年选择器的显示隐藏
+      yearPick2: null, //年选择器的值
+      yearPickShow2: false, //年选择器的显示隐藏
       depList: [],
       queryParam: { current: 1 },
       pagination1: {},
-      yearPick: null, //年选择器的值
-      yearPickShow: false, //年选择器的显示隐藏
-      yearPick2: null, //年选择器的值
-      yearPickShow2: false, //年选择器的显示隐藏
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
@@ -169,7 +242,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'salary_year_bonus') {
+        if (to.name === 'bonusRules_yearDonusRules') {
           this.init()
         }
       },
@@ -178,6 +251,11 @@ export default {
   },
   methods: {
     moment,
+    init() {
+      let that = this
+      that.searchAction()
+    },
+
     // 得到年份选择器的值
     handlePanelChange(value) {
       this.yearPick = value
@@ -187,6 +265,14 @@ export default {
       this.yearPickShow = status
     },
     // 得到年份选择器的值
+    handlePanelChange1(value) {
+      this.yearPick1 = value
+      this.yearPickShow1 = false
+    },
+    handleOpenChange1(status) {
+      this.yearPickShow1 = status
+    },
+    // 得到年份选择器的值
     handlePanelChange2(value) {
       this.yearPick2 = value
       this.yearPickShow2 = false
@@ -194,27 +280,72 @@ export default {
     handleOpenChange2(status) {
       this.yearPickShow2 = status
     },
-    init() {
+
+    showModal() {
+      this.visible = true
+      // year_send_rule().then((res) => (this.rule_List = res.data))
+    },
+    handleOk(e) {
+      if (this.yearPick1) {
+        year_bonus_annua({ applyDate: moment(this.yearPick1).format('YYYY') }).then((res) => {
+          if (res.data.length == 0) {
+            this.visible = false
+            this.doAction('add', { applyDate: this.yearPick1 })
+          } else {
+            this.$message.error('此年份已添加')
+          }
+        })
+      } else {
+        this.$message.error('请选择年份')
+      }
+    },
+
+    // 删除
+    confirmDelete(record) {
       let that = this
-      that.searchAction()
+      year_annual_addAnddel({ id: record.id }).then((res) => {
+        if (res.code === 200) {
+          this.searchAction()
+          that.$message.info(res.msg)
+        } else {
+          that.$message.error(res.msg)
+        }
+      })
     },
     getStateText(state) {
       let stateMap = {
-        1: '待处理',
-        2: '完结',
+        1: '待审批',
+        2: '审核通过',
+        3: '审核未通过',
+        4: '已撤回',
+        5: '已完结',
       }
       return stateMap[state] || `未知状态:${state}`
+    },
+    //审批流组件
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId)
+    },
+
+    // 撤回
+    confirmWithdraw(record) {
+      let that = this
+      year_send_annual({ id: record.id }).then((res) => {
+        this.searchAction()
+        that.$message.info(res.msg)
+      })
     },
     searchAction(opt) {
       let that = this
       let arr1 = that.$_.cloneDeep(this.yearPick)
       let arr2 = that.$_.cloneDeep(this.yearPick2)
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {}, {
+        searchStatus: that.activeKey,
         startDate: arr1 !== undefined && arr1 !== null ? moment(arr1).format('YYYY') : undefined,
         endDate: arr2 !== undefined && arr2 !== null ? moment(arr2).format('YYYY') : undefined,
       })
       that.loading = true
-      salary_bonus_annual_page(_searchParam)
+      bounsRules_List(_searchParam)
         .then((res) => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -237,6 +368,7 @@ export default {
 
     doAction(type, record) {
       this.$refs.addForm.query(type, record)
+      //this.$message.info('功能尚未实现...')
     },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)

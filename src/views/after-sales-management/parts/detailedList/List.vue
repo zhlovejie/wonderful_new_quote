@@ -78,6 +78,10 @@
             <template v-if="queryParam.searchStatus === '1'">
               <a @click="handleAdd('edit', record)">处理</a>
             </template>
+            <template>
+              <a-divider type="vertical" />
+              <a @click="Payment(record)">付款码</a>
+            </template>
           </span>
 
           <a-table
@@ -130,12 +134,14 @@
     </a-row>
     <PartsForm ref="partsForm" @filet="searchAction"></PartsForm>
     <ApproveInfo ref="approveInfoCard" />
+    <Application ref="application" @filet="searchAction"></Application>
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
 import PartsForm from './partsForm'
+import Application from './application'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { accessoriesManagementPage } from '@/api/after-sales-management'
 const innerColumns = [
@@ -194,6 +200,7 @@ export default {
     // Tendering,
     // InvestigateNode,
     // ReceiptAdd,
+    Application,
     STable,
     ApproveInfo,
     PartsForm,
@@ -327,6 +334,9 @@ export default {
     },
   },
   methods: {
+    Payment(type, record) {
+      this.$refs.application.query(type, record)
+    },
     searchCheck() {
       this.isExpanded = true
       this.searchAction()

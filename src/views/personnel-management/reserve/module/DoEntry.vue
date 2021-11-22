@@ -708,7 +708,7 @@
                   </a-form-item>
                 </td>
               </tr>
-              <template v-if="monthlyCycle">
+              <!-- <template v-if="monthlyCycle">
                 <tr>
                   <td class="requiredMark">周期</td>
                   <td>
@@ -776,17 +776,10 @@
                         style="width: 100%"
                       />
 
-                      <!-- <a-select
-                        :disabled="isView"
-                        v-decorator="['cycle', { rules: [{ required: true, message: '选择周期' }] }]"
-                        placeholder="选择周期"
-                      >
-                        <a-select-option v-for="item in cycle" :key="item" :value="item">{{ item }}</a-select-option>
-                      </a-select> -->
                     </a-form-item>
                   </td>
                 </tr>
-              </template>
+              </template> -->
 
               <tr>
                 <td>个人印章</td>

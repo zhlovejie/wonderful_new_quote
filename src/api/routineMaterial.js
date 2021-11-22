@@ -1160,3 +1160,13 @@ export function materialInfoCheckK3Code(parameter) {
     params: parameter
   })
 }
+
+/**同级更换数据的code */
+export function routineMaterialRuleToggleSort(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/toggleSort',
+    method: 'get',
+    params: parameter
+  })
+}
