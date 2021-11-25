@@ -75,18 +75,45 @@
               ]"
             />
           </a-form-item>
-          <a-form-item label="名称">
-            <a-input
-              placeholder="名称"
-              v-decorator="[
-                'ruleName',
-                {
-                  initialValue: detail.ruleName,
-                  rules: [{ required: isInBatch ? false : true, message: '请输入名称' }],
-                },
-              ]"
-            />
-          </a-form-item>
+
+
+              <a-form-item label="名称前缀" v-if="getFieldValue('isColor')">
+                <a-select
+                  placeholder="选择名称前缀"
+                  :allowClear="true"
+                  style="width: 100%"
+                  v-decorator="[
+                    'ruleNamePrefix',
+                    {
+                      initialValue: detail.ruleNamePrefix,
+                      rules: [{ required: true, message: '请选择名称前缀' }],
+                    },
+                  ]"
+                >
+                  <a-select-option v-for="item in rulePrefixList" :key="item.id" :value="item.text">{{
+                    item.text
+                  }}</a-select-option>
+                </a-select>
+              </a-form-item>
+
+              <a-form-item label="名称">
+                <a-input
+                  placeholder="名称"
+                  v-decorator="[
+                    'ruleName',
+                    {
+                      initialValue: detail.ruleName,
+                      rules: [{ required: isInBatch ? false : true, message: '请输入名称' }],
+                    },
+                  ]"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          
+
+
+          
 
           <a-form-item label="规则说明">
             <a-textarea
@@ -101,6 +128,60 @@
               ]"
             />
           </a-form-item>
+
+          <template v-if="isNormal">
+            <a-form-item label="图片">
+              <a-upload
+                key=""
+                :action="uploadPath"
+                accept=".png, .jpg,.jpeg,.gif"
+                list-type="picture-card"
+                :file-list="fileList"
+                @preview="handlePreview"
+                @change="handleChange"
+              >
+                <div v-if="fileList.length < 1">
+                  <a-icon type="plus" />
+                  <div class="ant-upload-text">上传</div>
+                </div>
+              </a-upload>
+              <a-modal :visible="previewVisible" :footer="null" @cancel="previewVisible = false">
+                <img style="width: 100%" :src="previewImage" />
+              </a-modal>
+            </a-form-item>
+
+            <a-form-item label="是否线缆">
+              <a-switch
+                checked-children="是"
+                un-checked-children="否"
+                v-decorator="[
+                  'isCable',
+                  {
+                    initialValue: +detail.isCable === 1,
+                    valuePropName: 'checked',
+                    rules: [{ required: true, message: '请选择是否线缆' }],
+                  },
+                ]"
+              />
+            </a-form-item>
+
+            <a-form-item label="是否颜色">
+              <a-switch
+                checked-children="是"
+                un-checked-children="否"
+                v-decorator="[
+                  'isColor',
+                  {
+                    initialValue: +detail.isColor === 1,
+                    valuePropName: 'checked',
+                    rules: [{ required: true, message: '请选择是否颜色' }],
+                  },
+                ]"
+              />
+            </a-form-item>
+
+
+          </template>
 
           <template v-if="isNormalAdd || isNormalUpdate">
             <a-form-item label="是否为规格型号">
@@ -336,6 +417,8 @@ import {
   productMaterialRulePageTwoTierTreeList,
 } from '@/api/routineMaterial'
 import { getDictionary } from '@/api/common'
+import { getUploadPath2 } from '@/api/common'
+import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 const __API__ = {
   normal: {
     add: routineMaterialRuleAdd,
@@ -347,8 +430,21 @@ const __API__ = {
   },
 }
 
+const uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
+
 export default {
   name: 'RoutineAddForm',
+  components:{
+    CommonDictionarySelect
+  },
   data() {
     return {
       type: 'add',
@@ -363,6 +459,13 @@ export default {
       unitList: [],
       isInBatch: false,
       activeKey: 1,
+
+      previewVisible: false, // 图片预览框是否可见
+      previewImage: '', //  预览图片的src值
+      fileList: [],
+      uploadPath: getUploadPath2(), // 上传图片的url
+      rulePrefixList:[],
+      ruleNamePrefix:undefined // 物料规则名称前缀
     }
   },
   created() {},
@@ -396,15 +499,39 @@ export default {
     },
   },
   methods: {
+    handleChange({ fileList }) {
+      this.fileList = fileList
+    },
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
     async query(type, record) {
       const that = this
       that.type = type
       that.detail = {}
       that.isInBatch = false
       that.activeKey = 1
+      that.fileList = []
       that.visible = true
 
-      let { __selectItem, __treeData, __from } = record
+      let { __selectItem, __treeData, __from , picUrl, isColor, ruleName} = record
+
+      if(picUrl){
+        that.fileList = [
+          {
+            uid: uuid(),
+            name: picUrl,
+            status: 'done',
+            url: picUrl
+          }
+        ]
+      }
+      
+
       that.from = __from
       that.treeData = __treeData
       that._api = __API__[__from][type]
@@ -415,15 +542,27 @@ export default {
           await Promise.all([
             getDictionary({ text: '物料等差' }).then((res) => (that.differenceList = res.data)),
             getDictionary({ text: '物料单位' }).then((res) => (that.unitList = res.data)),
+            getDictionary({ text: '物料规则名称前缀' }).then((res) => (that.rulePrefixList = res.data)),
           ])
         }
         that.spinning = false
       }catch(err){
         that.spinning = false
       }
+
+      let __ruleName = ruleName
+      if(isColor === 1){ // 名字存在前缀
+        that.ruleNamePrefix = ruleName.split('_')[0]
+        __ruleName =  ruleName.replace(`${that.ruleNamePrefix}_`,'')
+      }else {
+        that.ruleNamePrefix = undefined
+      }
+
       that.detail = {
         isBringCode:1,
-         ...record
+         ...record,
+         ruleNamePrefix:that.ruleNamePrefix,
+         ruleName:__ruleName
       }
       that.$nextTick(() => {
         that.form.setFieldsValue({ parentId: __selectItem.key })
@@ -450,6 +589,21 @@ export default {
             param.isBringCode = param.isBringCode ? 1 : 2
           }
 
+          if ('isCable' in param) {
+            param.isCable = param.isCable ? 1 : 0
+          }
+
+          if ('isColor' in param) {
+            param.isColor = param.isColor ? 1 : 0
+          }
+          if(that.fileList.length > 0){
+            param.picUrl = that.fileList[0].response.data
+          }
+
+          if(param.ruleNamePrefix){
+            param.ruleName = `${param.ruleNamePrefix}_${param.ruleName}`
+          }
+
           if (that.isEdit) {
             param.newCode = param.code
             param.newCodeLength = param.codeLength
@@ -471,8 +625,10 @@ export default {
 
             param = `id=${param.copySourceParentId}&targetId=${param.copyToParentId}`
           }
+          
           let _api = isCopyAction ? routineMaterialRuleCopy : that._api
-
+          console.log(param)
+          // return
           _api(param)
             .then((res) => {
               that.spinning = false
@@ -609,12 +765,19 @@ export default {
       const that = this
       let isSpecification = that.form.getFieldValue('isSpecification')
       if(isSpecification){
-        that.$message.info('')
+        that.$message.info('该选项和规格型号相斥')
         that.$nextTick(() => {
           that.form.setFieldsValue({ isBringCode:false })
         })
       }
+    },
+    getFieldValue(fieldName){
+      return this.form.getFieldValue(fieldName)
+    },
+    handleDictionaryChange(item){
+      this.ruleNamePrefix = item ? item.text : ''
     }
+    
   },
 }
 </script>
@@ -622,6 +785,7 @@ export default {
 <style scoped>
 .routine-addform-wrapper >>> .ant-form-item {
   display: flex;
+  margin-bottom: 0;
 }
 .routine-addform-wrapper >>> .ant-form-item .ant-form-item-label {
   width: 140px;

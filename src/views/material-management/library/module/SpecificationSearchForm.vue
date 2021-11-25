@@ -55,6 +55,12 @@
           {{ record.newRuleName || record.ruleName }}
         </a>
       </div>
+      <div slot="picUrl" slot-scope="text, record, index">
+        <div>
+          <img v-if="text" :src="text" alt="物料图片" title="查看大图" @click="() => handleImgView(record.picUrl)" style="width:64px;height:auto;overflow:hidden;cursor: pointer;">
+          <span v-else>无</span>
+        </div>
+      </div>
 
     </a-table>
 
@@ -62,13 +68,14 @@
       ref="searchForm"
       @change="paramChangeHandler"
     />
+    <ImgView ref="imgView" />
   </a-modal>
 </template>
 
 <script>
 import { routineMaterialRuleSpecificationsPagerTreeList } from '@/api/routineMaterial'
 import SearchForm from './SearchForm'
-
+import ImgView from '@/components/CustomerList/ImgView'
 const columns = [
   {
     align: 'center',
@@ -87,13 +94,20 @@ const columns = [
     align: 'center',
     title: '代码',
     dataIndex: 'code'
-  }
+  },
+  {
+    align: 'center',
+    title: '图片',
+    dataIndex: 'picUrl',
+    scopedSlots: { customRender: 'picUrl' },
+  },
 ]
 
 export default {
   name:'SpecificationSearchForm',
   components: {
-    SearchForm
+    SearchForm,
+    ImgView
   },
   data() {
     return {
@@ -152,7 +166,7 @@ export default {
             return
           }
           that.dataSource = res.data.records.map((item, index) => {
-            item.key = index + 1
+            item.key = that._uuid()
             item.fullCode = that.parentCodes ? `${that.parentCodes}.${item.code}` : item.code
             item.specifications = `
               材质：${item.texture}
@@ -205,6 +219,9 @@ export default {
         that.handleCancel()
         that.$emit('selected', { parentItem:that.record, selectItem:{...record} })
       }
+    },
+    handleImgView(url){
+      this.$refs.imgView.show(url)
     }
   }
 }

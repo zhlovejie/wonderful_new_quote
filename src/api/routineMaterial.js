@@ -1170,3 +1170,24 @@ export function routineMaterialRuleToggleSort(parameter) {
     params: parameter
   })
 }
+
+/**返回最新的线缆代码编码 */
+export function getNewstCableCode(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialInfo/getNewstCableCode',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+/**判断相同规格类型表是否创建过物料，有返回true，没有返回false */
+export function checkSpecificationMaterial(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialInfo/checkSpecificationMaterial',
+    method: 'get',
+    params: parameter
+  })
+}

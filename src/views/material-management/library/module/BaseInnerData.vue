@@ -337,7 +337,8 @@ export default {
       const k3Code = that.form.k3Code
       return materialInfoCheckK3Code({
         k3Code,
-        _type:that.normalAddForm.isNormal ? 'normal' : 'product'
+        _type:that.normalAddForm.isNormal ? 'normal' : 'product',
+        materialInfoId:that.normalAddForm.submitParams.id
       }).then(res => {
         try{
           return !!res.data
