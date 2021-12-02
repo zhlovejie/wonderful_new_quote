@@ -175,10 +175,13 @@
               ref="estimateWeight"
               prop="estimateWeight"
             >
-              <a-input
+              <a-input-number
                 :disabled="normalAddForm.isView"
                 v-model="form.estimateWeight"
-                :allowClear="true"
+                :min="0"
+                :precision="2"
+                step="1"
+                style="width: 100%"
               />
             </a-form-model-item>
           </td>
@@ -281,7 +284,7 @@ export default {
         mainUnit: undefined,
         subUnit: undefined,
         conversionRate: undefined,
-        estimateWeight: undefined,
+        estimateWeight: 0,
         remark: undefined,
         k3Code: undefined,
         needCheck:2

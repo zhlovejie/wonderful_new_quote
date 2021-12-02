@@ -322,6 +322,7 @@ export default {
     },
   },
   methods: {
+    // 位置调整的代码
     initSortable() {
       const that = this;
       const selector = ".material-management-rule-RoutineList .ant-table-tbody"
@@ -631,9 +632,9 @@ export default {
             that.search()
           }
 
-          that.$nextTick(() => {
-            that.initSortable();
-          });
+          // that.$nextTick(() => {
+          //   that.initSortable();
+          // });
 
         })
         .catch((err) => {
