@@ -69,7 +69,7 @@
               v-decorator="[
                 'codeLength',
                 {
-                  initialValue: detail.codeLength,
+                  initialValue: detail.codeLength || 2,
                   rules: [{ required: true, message: '请输入代码' }],
                 },
               ]"
