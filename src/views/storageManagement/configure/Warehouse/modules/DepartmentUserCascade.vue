@@ -1,14 +1,28 @@
 <template>
   <a-row>
     <a-col :span="11">
-      <a-select style="width: 100%" :value="selfInfo.depId" @change="depChange" v-bind="$attrs" placeholder="部门">
+      <a-select
+        style="width: 100%"
+        :value="selfInfo.inspectorDepartmentId"
+        @change="depChange"
+        v-bind="$attrs"
+        placeholder="部门"
+      >
         <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
           item.departmentName
         }}</a-select-option>
       </a-select>
     </a-col>
     <a-col :span="11" :offset="2">
-      <a-select style="width: 100%" :value="selfInfo.userId" @change="userChange" v-bind="$attrs" placeholder="人员">
+      <!-- :default-value="selfInfo.userId" -->
+      <a-select
+        style="width: 100%"
+        mode="multiple"
+        v-model="selfInfo.inspectorUserId"
+        @change="userChange"
+        v-bind="$attrs"
+        placeholder="人员"
+      >
         <a-select-option v-for="item in userList" :key="item.id" :value="item.id">{{ item.trueName }}</a-select-option>
       </a-select>
     </a-col>
@@ -59,15 +73,14 @@ export default {
     that.depList = []
     that.userList = []
     that.initDepartment()
-    that.init()
+    // that.init()
   },
   methods: {
     init() {
       const that = this
-      const { depId, userId } = that.selfInfo
-      if (depId && userId) {
-        that.initUsers(depId)
-      }
+      // const { depId, userId } = that.selfInfo
+
+      that.initUsers(that.selfInfo.inspectorDepartmentId)
     },
     initDepartment() {
       const that = this
@@ -88,22 +101,33 @@ export default {
       const that = this
       const target = that.depList.find((dep) => dep.id === depId)
       that.initUsers(depId)
+      that.selfInfo.userId = []
+      that.selfInfo.userName = undefined
       that.$emit('update:info', {
-        depId,
-        depName: target ? target.departmentName : undefined,
-        userId: undefined,
-        userName: undefined,
+        inspectorDepartmentId: depId,
+        inspectorDepartmentName: target ? target.departmentName : undefined,
+        inspectorUserId: [],
+        inspectorUserName: undefined,
       })
     },
     userChange(userId) {
       const that = this
-      const target = that.userList.find((u) => u.id === userId)
+      console.log(userId)
+      const target = that.userList.filter((u) => {
+        return userId.includes(u.id)
+      })
+      console.log(target)
       that.$nextTick(() => {
         that.$emit('update:info', {
           ...that.selfInfo,
-          userId,
-          userName: target ? target.trueName : undefined,
-          mobile: target ? target.mobile : undefined,
+          inspectorUserId: userId,
+          inspectorUserName: target
+            ? target
+                .map((i) => {
+                  return i.trueName
+                })
+                .toString()
+            : undefined,
         })
       })
     },
