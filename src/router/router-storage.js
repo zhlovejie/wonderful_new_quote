@@ -1,14 +1,6 @@
 // 仓储管理
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { BasicLayout, BlankLayout, PageView, RouteView, UserLayout } from '@/layouts'
+import { bxAnaalyse } from '@/core/icons'
 
 export default {
   path: '/storageManagement',
@@ -20,7 +12,8 @@ export default {
     permission: ['permission']
   },
   redirect: '/storageManagement',
-  children: [{
+  children: [
+    {
       path: '/storageManagement/configure', // 访问路径
       name: 'configure',
       component: RouteView,
@@ -30,7 +23,8 @@ export default {
         keepAlive: true,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/storageManagement/configure/Warehouse',
           name: 'WarehouseList',
           component: () => import('@/views/storageManagement/configure/Warehouse/List'),
@@ -102,8 +96,7 @@ export default {
             keepAlive: false,
             permission: ['permission']
           }
-        },
-
+        }
       ]
     },
     {
@@ -117,7 +110,8 @@ export default {
         keepAlive: true,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/storageManagement/stock/immediate',
           name: 'immediateList',
           component: () => import('@/views/storageManagement/stock/immediate/List'),
@@ -164,7 +158,8 @@ export default {
             keepAlive: true,
             permission: ['permission']
           },
-          children: [{
+          children: [
+            {
               path: '/storageManagement/stock/Dull/Specification',
               name: 'SpecificationList',
               component: () => import('@/views/storageManagement/stock/Dull/Specification/List'),
@@ -181,11 +176,173 @@ export default {
                 title: '呆滞品列表',
                 permission: ['permission']
               }
-            },
+            }
           ]
-        },
+        }
       ]
     },
 
+
+
+    {
+      path: '/storageManagement/storageImport',
+      component: RouteView,
+      name: 'stock_management_import',
+      redirect: '/storageManagement/storageImport/materialRecord',
+      meta: {
+        title: '入库',
+        icon: 'book',
+        keepAlive: true,
+        permission: ['permission']
+      },
+      children: [
+        {
+          path: '/storageManagement/storageImport/materialRecord',
+          name: 'stock_management_import_material_record',
+          component: () => import('@/views/storageManagement/storage-import/material-record/List'),
+          meta: {
+            title: '收料单',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/storageManagement/storageImport/apply',
+          name: 'stock_management_import_apply',
+          component: () => import('@/views/storageManagement/storage-import/apply/List'),
+          meta: {
+            title: '入库申请单',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/storageManagement/storageImport/record',
+          name: 'stock_management_import_record',
+          component: () => import('@/views/storageManagement/storage-import/record/List'),
+          meta: {
+            title: '入库单',
+            permission: ['permission']
+          }
+        }
+      ]
+    },
+    {
+      path: '/storageManagement/storageExport',
+      component: RouteView,
+      name: 'stock_management_export',
+      redirect: '/storageManagement/storageExport/invoice',
+      meta: {
+        title: '出库',
+        icon: 'book',
+        keepAlive: true,
+        permission: ['permission']
+      },
+      children: [
+        {
+          path: '/storageManagement/storageExport/invoice',
+          name: 'stock_management_export_invoice',
+          component: () => import('@/views/storageManagement/storage-export/invoice/List'),
+          meta: {
+            title: '发货单',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/storageManagement/storageExport/apply',
+          name: 'stock_management_export_apply',
+          component: () => import('@/views/storageManagement/storage-export/apply/List'),
+          meta: {
+            title: '出库申请单',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/storageManagement/storageExport/record',
+          name: 'stock_management_export_record',
+          component: () => import('@/views/storageManagement/storage-export/record/List'),
+          meta: {
+            title: '出库单',
+            permission: ['permission']
+          }
+        }
+      ]
+    },
+    {
+      path: '/storageManagement/task',
+      component: RouteView,
+      name: 'stock_management_task',
+      redirect: '/storageManagement/task/smart',
+      meta: {
+        title: '任务',
+        icon: 'book',
+        keepAlive: true,
+        permission: ['permission']
+      },
+      children: [
+        {
+          path: '/storageManagement/task/smart',
+          component: RouteView,
+          name: 'stock_management_task_smart',
+          redirect: '/storageManagement/task/smart/checkplan',
+          meta: {
+            title: '智能盘点',
+            icon: 'book',
+            keepAlive: true,
+            permission: ['permission']
+          },
+          children: [
+            {
+              path: '/storageManagement/task/smart/checkplan',
+              name: 'stock_management_task_smart_check_plan',
+              component: () => import('@/views/storageManagement/task/smart/checkplan/List'),
+              meta: {
+                title: '盘点计划',
+                permission: ['permission']
+              }
+            },
+            {
+              path: '/storageManagement/task/smart/checkdetail',
+              name: 'stock_management_task_smart_check_detail',
+              component: () => import('@/views/storageManagement/task/smart/checkdetail/List'),
+              meta: {
+                title: '盘点详情',
+                permission: ['permission']
+              }
+            }
+          ]
+        },
+        {
+          path: '/storageManagement/task/handle',
+          component: RouteView,
+          name: 'stock_management_task_handle',
+          redirect: '/storageManagement/task/handle/checkplan',
+          meta: {
+            title: '人工盘点',
+            icon: 'book',
+            keepAlive: true,
+            permission: ['permission']
+          },
+          children: [
+            {
+              path: '/storageManagement/task/handle/checkplan',
+              name: 'stock_management_task_handle_check_plan',
+              component: () => import('@/views/storageManagement/task/handle/checkplan/List'),
+              meta: {
+                title: '盘点计划',
+                permission: ['permission']
+              }
+            },
+            {
+              path: '/storageManagement/task/handle/checkdetail',
+              name: 'stock_management_task_handle_check_detail',
+              component: () => import('@/views/storageManagement/task/handle/checkdetail/List'),
+              meta: {
+                title: '盘点详情',
+                permission: ['permission']
+              }
+            }
+          ]
+        }
+      ]
+    },
   ]
 }
