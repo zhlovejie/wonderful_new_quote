@@ -42,24 +42,9 @@
         </a-spin>
       </div>
       <!-- 附件 END-->
-      <p
-        style="margin-top:20px;text-align:center;"
-        v-if="normalAddForm.isAdd || normalAddForm.isEdit"
-      >
-        <a-button
-          type="primary"
-          @click="() => onSubmit(1)"
-          v-if="normalAddForm.isAdd"
-        >
-          上一步
-        </a-button>
-        <a-button
-          style="margin: 0 10px;"
-          type="primary"
-          @click="() => onSubmit(2)"
-        >
-          保存
-        </a-button>
+      <p style="margin-top: 20px; text-align: center" v-if="normalAddForm.isAdd || normalAddForm.isEdit">
+        <a-button type="primary" @click="() => onSubmit(1)" v-if="normalAddForm.isAdd"> 上一步 </a-button>
+        <a-button style="margin: 0 10px" type="primary" @click="() => onSubmit(2)"> 保存 </a-button>
         <!-- <a-button
           v-if="normalAddForm.isAdd"
           type="primary"
@@ -67,14 +52,9 @@
         >
           提交审核
         </a-button> -->
-        <a-button
-
-          @click="resetForm"
-        >
-          取消
-        </a-button>
+        <a-button @click="resetForm"> 取消 </a-button>
       </p>
-  </div>
+    </div>
   </div>
 </template>
 <script>
@@ -114,8 +94,9 @@ export default {
     async onSubmit(type) {
       const that = this
 
-      if(type === 1){ //返回上一步
-        that.$emit('change','prevStep')
+      if (type === 1) {
+        //返回上一步
+        that.$emit('change', 'prevStep')
         return
       }
 
@@ -141,7 +122,7 @@ export default {
             that.spinning = false
             that.$message.info(res.msg)
             if (res.code === 200) {
-              that.$emit('change','ok')
+              that.$emit('change', 'ok')
             }
           })
           .catch((err) => {
