@@ -136,6 +136,14 @@
             <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
           </div>
 
+          <div slot="isBringCode" slot-scope="text, record, index">
+            <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
+          </div>
+
+          <div slot="isSpecification" slot-scope="text, record, index">
+            <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
+          </div>
+
           <div slot="remark" slot-scope="text, record, index">
             <a-tooltip v-if="String(text).length > 15">
               <template slot="title">{{ text }}</template>
@@ -199,6 +207,18 @@ const columns = [
     title: '是否常用',
     dataIndex: 'useAlways',
     scopedSlots: { customRender: 'useAlways' },
+  },
+  {
+    align: 'center',
+    title: '是否规格型号',
+    dataIndex: 'isSpecification',
+    scopedSlots: { customRender: 'isSpecification' },
+  },
+  {
+    align: 'center',
+    title: '是否计入物料代码',
+    dataIndex: 'isBringCode',
+    scopedSlots: { customRender: 'isBringCode' },
   },
   {
     align: 'center',
