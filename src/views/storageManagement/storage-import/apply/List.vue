@@ -31,7 +31,7 @@
         <a-form-item>
           <a-select placeholder="入库类型" v-model="searchParam.type" style="width: 150px" :allowClear="true">
             <a-select-option :value="1">赠送入库</a-select-option>
-            <a-select-option :value="2">产品返修入库</a-select-option>
+            <a-select-option :value="2">产成品返修入库</a-select-option>
             <a-select-option :value="3">安装不良品入库</a-select-option>
             <a-select-option :value="4">退货入库</a-select-option>
             <a-select-option :value="5">采购入库</a-select-option>
@@ -203,7 +203,7 @@ export default {
       },
       loading: false,
       searchParam: {
-        flag:0
+        
       },
       activeKey: 1,
       userInfo: this.$store.getters.userInfo, // 当前登录人
