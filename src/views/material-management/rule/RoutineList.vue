@@ -444,6 +444,7 @@ export default {
               let children = that.margeNode(oldChildren, newChildren)
 
               treeNode.dataRef.children = newChildren
+              treeNode.dataRef.isLeaf = children.length === 0
               that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)

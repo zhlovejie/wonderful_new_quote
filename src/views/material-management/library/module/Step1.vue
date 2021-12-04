@@ -524,7 +524,13 @@ export default {
           return
         }
         //加载为规格型号的数据
-        let specificationsList = res.data.filter(item => item.isSpecification === 1)
+        let specificationsList = res.data.filter(item => {
+          // 规格型号
+          let case1 = +item.isSpecification === 1
+          // 已审核状态
+          let case2 = +item.auditStatus === 3
+          return case1 && case2
+        })
         specificationsList = specificationsList.map(item => {
           item.searchList = item.subList.slice(0,50)
           return item

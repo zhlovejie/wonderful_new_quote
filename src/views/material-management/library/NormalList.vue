@@ -415,7 +415,7 @@ export default {
               let children = that.margeNode(oldChildren, newChildren)
 
               treeNode.dataRef.children = children
-              treeNode.dataRef.isLeaf = children.length > 0
+              treeNode.dataRef.isLeaf = children.length === 0
               that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
@@ -553,17 +553,11 @@ export default {
             // })
 
             expandedKeys = [...new Set(expandedKeys)]
-            console.log(that.dataList.map(item =>item.key))
-
-            console.log(expandedKeys)
-
             Object.assign(that, {
               expandedKeys,
               autoExpandParent: true,
             })
           })
-
-
         })
         .catch((err) => {
           that.spinning = false
