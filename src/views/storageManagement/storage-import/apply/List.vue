@@ -4,20 +4,18 @@
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-select 
-            placeholder="选择物料" 
-            v-model="searchParam.materialId" 
-            style="width: 250px" 
+          <a-select
+            placeholder="选择物料"
+            v-model="searchParam.materialId"
+            style="width: 250px"
             :allowClear="true"
             show-search
             option-filter-prop="children"
             :filter-option="filterOption"
           >
-            <a-select-option 
-              v-for="val in storageMaterialList" 
-              :key="val.materialId" 
-              :value="val.materialId"
-            >{{ `${val.materialName}(${val.materialCode})` }}</a-select-option>
+            <a-select-option v-for="val in storageMaterialList" :key="val.materialId" :value="val.materialId">{{
+              `${val.materialName}(${val.materialCode})`
+            }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
@@ -47,7 +45,7 @@
         </a-form-item>
 
         <a-form-item style="float:right;">
-          <a-dropdown >
+          <a-dropdown>
             <a-menu slot="overlay" @click="handleMenuClick">
               <a-menu-item key="1">
                 赠品入库
@@ -59,7 +57,7 @@
                 安装不良品入库
               </a-menu-item>
             </a-menu>
-            <a-button icon="plus" type="primary" > 新增 <a-icon type="down" /> </a-button>
+            <a-button icon="plus" type="primary"> 新增 <a-icon type="down" /> </a-button>
           </a-dropdown>
         </a-form-item>
       </a-form>
@@ -85,43 +83,58 @@
           <a-popover title="物料信息">
             <template slot="content">
               <h3>规格型号</h3>
-              <p style="width:450px;">{{record.specification}}</p>
+              <p style="width:450px;">{{ record.specification }}</p>
               <h3>物料代码</h3>
-              <p style="width:450px;">{{record.materialCode}}</p>
+              <p style="width:450px;">{{ record.materialCode }}</p>
             </template>
-            <span>{{text}}</span>
+            <span>{{ text }}</span>
           </a-popover>
         </div>
 
         <div slot="status" slot-scope="text, record">
-          <a href="javascript:void(0);" @click="approvalPreview(record)">{{record.statusText}}</a>
+          <a href="javascript:void(0);" @click="approvalPreview(record)">{{ record.statusText }}</a>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
+          <!-- { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' } -->
           <a type="primary" @click="doAction('view', record)">查看</a>
-          <a-divider type="vertical" />
-          <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
-            <a type="primary" href="javascript:;">撤回</a>
-          </a-popconfirm>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-            <a type="primary" href="javascript:;">删除</a>
-          </a-popconfirm>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('approval', record)">审批</a>
+
+          <template v-if="+activeKey === 0">
+            <template v-if="[3, 4].includes(+record.status)">
+              <a-divider type="vertical" />
+              <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
+            </template>
+
+            <template v-if="[1].includes(+record.status)">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+                <a type="primary" href="javascript:;">撤回</a>
+              </a-popconfirm>
+            </template>
+
+            <template v-if="[3, 4].includes(+record.status)">
+              <a-divider type="vertical" />
+              <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
+                <a type="primary" href="javascript:;">删除</a>
+              </a-popconfirm>
+            </template>
+          </template>
+
+          <template v-if="+activeKey === 1">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('approval', record)">审批</a>
+          </template>
         </div>
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
     <!-- <CustomerInfo ref="customerInfoCard" /> -->
-    <AddForm ref="addForm" @finish="searchAction({ current: 1 })" />
+    <AddForm ref="addForm" @ok="() => searchAction()" />
   </div>
 </template>
 
 <script>
-import { storageList, storageMaterialList } from '@/api/storage_wzz'
+import { storageList, storageMaterialList, storageDelete, storageRevocation } from '@/api/storage_wzz'
 import AddForm from './AddForm'
 
 import moment from 'moment'
@@ -140,7 +153,7 @@ const columns = [
   },
   {
     title: '入库类型',
-    dataIndex: 'storageTypeText',
+    dataIndex: 'storageTypeText'
   },
   {
     title: '入库申请单号',
@@ -202,9 +215,7 @@ export default {
         showTotal: total => `共有 ${total} 条数据` //分页中显示总的数据
       },
       loading: false,
-      searchParam: {
-        
-      },
+      searchParam: {},
       activeKey: 1,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       storageMaterialList: []
@@ -231,11 +242,6 @@ export default {
       let queue = []
       let task1 = storageMaterialList().then(res => (that.storageMaterialList = res.data))
       queue.push(task1)
-
-      // let task2 = listUserBySale().then((res) => {
-      //   that.saleUsers = res.data
-      // })
-      // queue.push(task2)
       that.searchAction()
       return Promise.all(queue)
     },
@@ -253,9 +259,12 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            item.statusText = {1:'待审批',2:'通过',3:'不通过',4:'撤回'}[item.status] || '未知'
-            item.storageTypeText = {1:'赠送入库',2:'产品返修入库',3:'安装不良品入库',4:'退货入库',5:'采购入库'}[item.storageType] || '未知'
-            item.urgentTypeText = {1:'一般',2:'紧急',3:'特急'}[item.urgentType] || '未知'
+            item.statusText = { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' }[item.status] || '未知'
+            item.storageTypeText =
+              { 1: '赠送入库', 2: '产品返修入库', 3: '安装不良品入库', 4: '退货入库', 5: '采购入库' }[
+                item.storageType
+              ] || '未知'
+            item.urgentTypeText = { 1: '一般', 2: '紧急', 3: '特急' }[item.urgentType] || '未知'
             return item
           })
 
@@ -287,21 +296,15 @@ export default {
       this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    handleMenuClick(item){
-      if(item.key === '1'){
-
-      }else if(item.key === '2'){
-
-      }else if(item.key === '3'){
-
-      }
+    handleMenuClick(item) {
+      this.doAction('add', { storageType: +item.key })
     },
     doAction(actionType, record) {
       let that = this
       if (['add', 'view', 'edit', 'approval'].includes(actionType)) {
         that.$refs.addForm.query(actionType, record || {})
       } else if (actionType === 'del') {
-        businessdelete(`id=${record.id}`)
+        storageDelete({ id: record.id })
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -310,7 +313,7 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'withdraw') {
-        businessrevocation(`id=${record.id}`)
+        storageRevocation({ id: record.id, type: record.storageType })
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -322,17 +325,15 @@ export default {
     },
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
-      this.searchParam = { ...this.searchParam, queryType: this.activeKey }
+      this.searchParam = { ...this.searchParam, searchStatus: this.activeKey }
       this.searchAction({ current: 1 })
     },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
     },
     filterOption(input, option) {
-      return (
-        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      );
-    },
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    }
   }
 }
 </script>
