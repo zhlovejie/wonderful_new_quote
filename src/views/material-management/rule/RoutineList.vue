@@ -143,12 +143,18 @@
             </a-tooltip>
             <span v-else>{{ text }}</span>
           </div>
-
+          <div slot="picUrl" slot-scope="text, record, index">
+            <div>
+              <img v-if="text" :src="text" alt="物料图片" title="查看大图" @click="() => handleImgView(record.picUrl)" style="width:64px;height:auto;overflow:hidden;cursor: pointer;">
+              <span v-else>无</span>
+            </div>
+          </div>
         </a-table>
       </div>
     </div>
     <RoutineAddForm ref="routineAddForm" @finish="finishHandler" />
     <BatchTransferForm ref="batchTransferForm" @finish="() => searchAction(2)" />
+    <ImgView ref="imgView" />
   </a-card>
 </template>
 
@@ -170,6 +176,7 @@ import RoutineAddForm from './module/RoutineAddForm'
 import BatchTransferForm from './module/BatchTransferForm'
 import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import Sortable from 'sortablejs'
+import ImgView from '@/components/CustomerList/ImgView'
 const columns = [
   {
     align: 'center',
@@ -180,6 +187,12 @@ const columns = [
     align: 'center',
     title: '名称',
     dataIndex: 'ruleName',
+  },
+  {
+    align: 'center',
+    title: '图片',
+    dataIndex: 'picUrl',
+    scopedSlots: { customRender: 'picUrl' },
   },
   {
     align: 'center',
@@ -224,7 +237,8 @@ export default {
   name: 'material-management-rule-RoutineList',
   components: {
     RoutineAddForm,
-    BatchTransferForm
+    BatchTransferForm,
+    ImgView
   },
   data() {
     return {
@@ -308,6 +322,7 @@ export default {
     },
   },
   methods: {
+    // 位置调整的代码
     initSortable() {
       const that = this;
       const selector = ".material-management-rule-RoutineList .ant-table-tbody"
@@ -617,9 +632,9 @@ export default {
             that.search()
           }
 
-          that.$nextTick(() => {
-            that.initSortable();
-          });
+          // that.$nextTick(() => {
+          //   that.initSortable();
+          // });
 
         })
         .catch((err) => {
@@ -814,6 +829,9 @@ export default {
     },
     onLoadAction(loadedKeys){
       this.loadedKeys = loadedKeys
+    },
+    handleImgView(url){
+      this.$refs.imgView.show(url)
     }
   },
   beforeDestroy() {

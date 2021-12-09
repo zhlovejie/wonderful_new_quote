@@ -12,37 +12,45 @@
         label="位置/名称"
         prop="parentId"
       >
-        <div style="display:flex;">
-          <a-input
-            style="line-height: 40px;flex:1;"
-            placeholder="规则名称模糊查询"
-            v-model="searchValue"
-          />
-          <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
-          <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
-        </div>
-        <a-tree-select
-          ref="treeSelect"
-          v-model="form.parentId"
-          style="width: 100%"
-          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-          :loadData="onLoadData"
-          @load="onLoadAction"
-          :loadedKeys="loadedKeys"
-          :tree-data="treeData"
-          @select="handleClick"
-          :treeExpandedKeys="expandedKeys"
-          @treeExpand="onExpand"
-        >
-          <template slot="title" slot-scope="{ copyTitle }">
-            <span v-if="copyTitle.indexOf(searchValue) > -1">
-              {{ copyTitle.substr(0, copyTitle.indexOf(searchValue)) }}
-              <span style="color: #f50">{{ searchValue }}</span>
-              {{ copyTitle.substr(copyTitle.indexOf(searchValue) + searchValue.length) }}
-            </span>
-            <span v-else>{{ copyTitle }}</span>
-          </template>
-        </a-tree-select>
+        <a-row>
+          <a-col :span="18">
+            <div style="display:flex;">
+              <a-input
+                style="line-height: 40px;flex:1;"
+                placeholder="规则名称模糊查询"
+                v-model="searchValue"
+              />
+              <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
+              <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
+            </div>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="18">
+            <a-tree-select
+              ref="treeSelect"
+              v-model="form.parentId"
+              style="width: 100%"
+              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+              :loadData="onLoadData"
+              @load="onLoadAction"
+              :loadedKeys="loadedKeys"
+              :tree-data="treeData"
+              @select="handleClick"
+              :treeExpandedKeys="expandedKeys"
+              @treeExpand="onExpand"
+            >
+              <template slot="title" slot-scope="{ copyTitle }">
+                <span v-if="copyTitle.indexOf(searchValue) > -1">
+                  {{ copyTitle.substr(0, copyTitle.indexOf(searchValue)) }}
+                  <span style="color: #f50">{{ searchValue }}</span>
+                  {{ copyTitle.substr(copyTitle.indexOf(searchValue) + searchValue.length) }}
+                </span>
+                <span v-else>{{ copyTitle }}</span>
+              </template>
+            </a-tree-select>
+          </a-col>
+        </a-row>
       </a-form-model-item>
 
       <a-form-model-item
@@ -55,12 +63,25 @@
           message: `请选择${item.newRuleName || item.ruleName}`,
         }"
       >
-        <a-input
-          v-model="item.selectedLabel"
-          style="width: 100%"
-          read-only="read-only"
-          @click="doAction('specificationSearch',{...item})"
-        />
+        
+        
+        <a-row>
+          <a-col :span="18">
+            <a-input
+              v-model="item.selectedLabel"
+              style="width: 100%"
+              read-only="read-only"
+              @click="doAction('specificationSearch',{...item})"
+            />
+
+          </a-col>
+          <a-col :span="6">
+            <div style="margin-left:10px;">
+              <img v-if="item.selectedPicUrl" :src="item.selectedPicUrl" alt="物料图片" title="查看大图" @click="() => handleImgView(item.selectedPicUrl)" style="width:64px;height:auto;overflow:hidden;cursor: pointer;">
+            </div>
+            
+          </a-col>
+        </a-row>
 
         <!-- <a-select
           show-search
@@ -100,6 +121,7 @@
     </div>
 
     <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
+    <ImgView ref="imgView" />
   </div>
 </template>
 <script>
@@ -108,13 +130,15 @@ import {
   routineMaterialInfoTwoTierTreeList,
   routineMaterialInfoCheckCode,
   routineMaterialInfoCheckName,
-  routineMaterialRulePageConditionTreeList
+  routineMaterialRulePageConditionTreeList,
+  getNewstCableCode,
+  checkSpecificationMaterial
 } from '@/api/routineMaterial'
 import moment from 'moment'
 import VueQr from 'vue-qr'
 import { customUpload } from '@/api/common'
 import SpecificationSearchForm from './SpecificationSearchForm'
-
+import ImgView from '@/components/CustomerList/ImgView'
 const getParentKey = (key, tree) => {
   let parentKey
   for (let i = 0; i < tree.length; i++) {
@@ -134,7 +158,8 @@ export default {
   inject: ['normalAddForm'],
   components:{
     VueQr,
-    SpecificationSearchForm
+    SpecificationSearchForm,
+    ImgView
   },
   data() {
     return {
@@ -158,8 +183,6 @@ export default {
       widthList:[],
       lengthList:[],
 
-
-
       spinning:false,
       tip:'数据处理中...',
       // nextButtonDisable:true
@@ -178,11 +201,12 @@ export default {
     }
   },
   created() {
+    this.materialCodeMapCache = {}
     this.$nextTick(() => this.init())
   },
   methods: {
     moment,
-    async init(type, record) {
+    init(type, record) {
       const that = this
       that.nextButtonDisable = false
       that.form = that.normalAddForm.submitParams
@@ -199,7 +223,9 @@ export default {
         }else{
           let __selectItem = that.normalAddForm.getSelectNode()
           that.form = { ...that.form, parentId: __selectItem.key }
-          that.initSpecifications({...__selectItem})
+          // that.initSpecifications({...__selectItem})
+
+          that.handleClick([],{dataRef:__selectItem})
         }
       }
       try{
@@ -273,6 +299,7 @@ export default {
       })
     },
     parentCodes(_parentId,_dataList,joinSymbol=".") {
+      const that = this
       let arr = []
       let parentId = _parentId
       // if(+parentId === 0){
@@ -293,6 +320,14 @@ export default {
         //   arr.push({ ...target })
         // }
       }
+      // debugger
+      // for(let i=0,len = arr.length;i<len;i++){
+      //   let node = arr[i]
+      //   if(Object.keys(that.materialCodeMapCache).includes(node.key)){
+      //     node.code = that.materialCodeMapCache[node.key]
+      //   }
+      // }
+
       return arr
         .reverse()
         .map((item) => item.code)
@@ -320,24 +355,53 @@ export default {
       }
       return arr
     },
+    checkSpecificationMaterial(){
+      const that = this
+      const {parentId,specificationsList} = that.form
+      const specificationIds = specificationsList.map(item => item.selectedID).join(',')
+      return checkSpecificationMaterial({ruleId:parentId,specificationIds}).then(res => {
+        return res.data
+      }).catch(err => {
+        that.$message.error(err.message)
+        return false
+      })
+    },
     onSubmit() {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let ruleId = that.form.parentId
-          debugger
-          let dddd = that.getNode(ruleId)
-          let materialName = that.getNode(ruleId).sourceTitle
-          //成品物料库 物料代码不显示点
-          let materialCode = that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
-          // 去除物料代码的0
-          materialCode = that.formatMaterialCode(materialCode,".")
+          
+          let ruleItem = that.getNode(ruleId)
+          let ruleCode = undefined
+          let materialName = ruleItem.sourceTitle
+          let materialCode
+          if(+ruleItem.isCable === 1){ // 线缆类型使用接口生成的物料代码
+            materialCode = that.materialCodeMapCache[ruleId]
+            ruleCode = ruleItem.code
+          }else{ // 自上而下生成 物料代码
+            //成品物料库 物料代码不显示点
+            materialCode = await that.makeMaterialCode(that.normalAddForm.isProduct ? "" : ".")
+            // 去除物料代码的0
+            materialCode = that.formatMaterialCode(materialCode,".")
+          }
+
+          console.log(materialCode)
           that.tip = '检测物料代码是否重复...'
           that.spinning = true
-          let isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({materialCode}).then(res => res.data).catch(err => false)
+          const isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({materialCode}).then(res => res.data).catch(err => false)
           that.spinning = false
           if(isMaterialCodeDuplicate){
             that.$message.info('物料代码重复，禁止操作')
+            return
+          }
+
+          that.tip = '检测规格型号是否重复...'
+          that.spinning = true
+          const isSpecificationDuplicate = await that.checkSpecificationMaterial()
+          that.spinning = false
+          if(isSpecificationDuplicate){
+            that.$message.info('规格型号重复，禁止操作')
             return
           }
 
@@ -371,7 +435,10 @@ export default {
             // thickness:thicknessText,
             // width:widthText,
             // length:lengthText
-            specification:that.getSpecification()
+            specification:that.getSpecification(),
+            specificationIds:that.form.specificationsList.map(item => item.selectedID).join(','),
+            isCable:ruleItem.isCable,
+            ruleCode
           }
 
           that.normalAddForm.stepOneCacheData = {
@@ -425,9 +492,17 @@ export default {
       this.$refs.ruleForm.resetFields()
       this.$emit('change', { __action__: 'close', values: null })
     },
-    handleClick(selectedKeys, e) {
+    async handleClick(selectedKeys, e) {
       const that = this
       let node = {...e.dataRef}
+      if(+node.isCable === 1){
+        let code = await getNewstCableCode({code:node.code}).then(res => {
+          return res.data
+        })
+        that.materialCodeMapCache[node.key] = code
+      }else{
+        that.materialCodeMapCache[node.key] = node.code
+      }
       that.normalAddForm.selectNode = node
       that.form = {
         ...that.form,
@@ -436,9 +511,7 @@ export default {
         width: undefined,
         length: undefined,
       },
-      that.$nextTick(() => {
-        that.initSpecifications(node)
-      })
+      that.initSpecifications(node)
     },
     initSpecifications(node){
       const that = this
@@ -507,6 +580,8 @@ export default {
        * private Integer isBringCode;
        */
       obj.isBringCode = item.isBringCode || 1
+      obj.isColor = item.isColor
+      obj.isCable = item.isCable
       //坑 上面如果设置了title ，这里插槽 也是title 的 会忽略插槽， 这里吧上面的title注释了
       obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf
@@ -654,6 +729,7 @@ export default {
       let target = specificationsList.find(item => item.id === parentItem.id)
       if(target){
         target.selectedID = selectItem.id
+        target.selectedPicUrl = selectItem.picUrl
         target.selectedLabel = `${(selectItem.newRuleName || selectItem.ruleName)}(${selectItem.code})`
         target.subList = [selectItem]
         that.form = {
@@ -668,6 +744,9 @@ export default {
         that.$refs.specificationSearchForm.query(type,{...record})
         return
       }
+    },
+    handleImgView(url){
+      this.$refs.imgView.show(url)
     }
   }
 }

@@ -415,6 +415,7 @@ export default {
               let children = that.margeNode(oldChildren, newChildren)
 
               treeNode.dataRef.children = children
+              treeNode.dataRef.isLeaf = children.length > 0
               that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
@@ -650,6 +651,8 @@ export default {
       obj.codeLength = +item.codeLength
       obj.code = item.code
       obj.isBringCode = item.isBringCode || 1
+      obj.isColor = item.isColor
+      obj.isCable = item.isCable
       obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {

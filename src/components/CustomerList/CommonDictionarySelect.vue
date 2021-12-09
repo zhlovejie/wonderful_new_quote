@@ -74,6 +74,10 @@ export default {
         option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       );
     },
+    bindByText(text){
+      let target = this.dataSource.find(item => item.text === text)
+      this.dictionaryId = target.id
+    }
   }
 };
 </script>
