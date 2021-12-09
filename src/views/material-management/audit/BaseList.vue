@@ -74,7 +74,7 @@ import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
   {
     align: 'center',
-    title: '代码',
+    title: '路径码',
     dataIndex: 'allCode',
   },
   {
@@ -283,7 +283,7 @@ export default {
       tr.push(`<thead><tr>${arr_name.map(name => `<th>${name}</th>`).join('')}</tr></thead>`)
       tr.push(`<tbody><tr>${arr_code.map(code => `<td>${code}</td>`).join('')}</tr></tbody>`)
       let html = `
-        <table class="custom-path-format-table">
+        <table class="custom-path-format-table" style="margin: 0 auto;">
             ${tr.join('')}
         </table>
       `
