@@ -44,7 +44,7 @@
         </template>
         <div class="action-wrapper" style="float: right">
           <a-form-item>
-            <template v-if="$auth('networkManagement:add')">
+            <template v-if="$auth('container:add')">
               <a-button type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
             </template>
           </a-form-item>
@@ -60,18 +60,18 @@
       </div>
 
       <span slot="action" slot-scope="text, record">
-        <template v-if="$auth('networkManagement:view')">
+        <template v-if="$auth('container:view')">
           <a @click="handleAdd('view', record)">查看</a>
         </template>
-        <template v-if="$auth('networkManagement:edit')">
+        <template v-if="$auth('container:edit')">
           <a-divider type="vertical" />
           <a @click="handleAdd('edit', record)">修改</a>
         </template>
-        <template v-if="$auth('networkManagement:edit') && record.palletStatus === 1">
+        <template v-if="$auth('container:Unbound') && record.palletStatus === 1">
           <a-divider type="vertical" />
           <a @click="Unbound(record)">解绑</a>
         </template>
-        <template v-if="$auth('networkManagement:edit')">
+        <template v-if="$auth('container:del')">
           <a-divider type="vertical" />
           <a @click="del(record)">删除</a>
         </template>
