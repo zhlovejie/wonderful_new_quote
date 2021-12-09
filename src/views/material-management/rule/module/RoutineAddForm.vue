@@ -23,7 +23,7 @@
           <a-form-item label="上级菜单">
             <a-tree-select
               style="width: 100%"
-              :disabled="treeDisable"
+              :disabled="isDisabled || treeDisable"
               v-decorator="[
                 'parentId',
                 { initialValue: detail.parentId, rules: [{ required: true, message: '请选择上级菜单' }] },
@@ -45,6 +45,7 @@
           <template v-if="isProduct">
             <a-form-item label="代码">
               <a-input
+                :disabled="isDisabled"
                 placeholder="请输入代码"
                 v-decorator="[
                   'code',
@@ -61,6 +62,7 @@
           </template>
           <a-form-item label="下级代码位数">
             <a-input-number
+              :disabled="isDisabled"
               style="width: 100%"
               @change="codeLengthChange"
               :min="1"
@@ -75,10 +77,9 @@
               ]"
             />
           </a-form-item>
-
-
               <a-form-item label="名称前缀" v-if="getFieldValue('isColor')">
                 <a-select
+                  :disabled="isDisabled"
                   placeholder="选择名称前缀"
                   :allowClear="true"
                   style="width: 100%"
@@ -98,6 +99,7 @@
 
               <a-form-item label="名称">
                 <a-input
+                  :disabled="isDisabled"
                   placeholder="名称"
                   v-decorator="[
                     'ruleName',
@@ -117,6 +119,7 @@
 
           <a-form-item label="规则说明">
             <a-textarea
+              :disabled="isDisabled"
               placeholder="规则说明"
               :rows="2"
               v-decorator="[
@@ -132,6 +135,7 @@
           <template v-if="isNormal">
             <a-form-item label="图片">
               <a-upload
+                :disabled="isDisabled"
                 key=""
                 :action="uploadPath"
                 accept=".png, .jpg,.jpeg,.gif"
@@ -152,6 +156,7 @@
 
             <a-form-item label="是否线缆">
               <a-switch
+                :disabled="isDisabled"
                 checked-children="是"
                 un-checked-children="否"
                 v-decorator="[
@@ -167,6 +172,7 @@
 
             <a-form-item label="是否颜色">
               <a-switch
+                :disabled="isDisabled"
                 checked-children="是"
                 un-checked-children="否"
                 v-decorator="[
@@ -186,6 +192,7 @@
           <template v-if="isNormalAdd || isNormalUpdate">
             <a-form-item label="是否为规格型号">
               <a-switch
+                :disabled="isDisabled"
                 checked-children="是"
                 un-checked-children="否"
                 v-decorator="[
@@ -201,6 +208,7 @@
             </a-form-item>
             <a-form-item label="是否计入物料代码">
               <a-switch
+                :disabled="isDisabled"
                 checked-children="是"
                 un-checked-children="否"
                 v-decorator="[
@@ -220,6 +228,7 @@
 
             <a-form-item label="是否存在循环">
               <a-switch
+                :disabled="isDisabled"
                 checked-children="是"
                 un-checked-children="否"
                 @change="inBatchChange"
@@ -237,6 +246,7 @@
             <template v-if="isInBatch">
               <a-form-item label="最小值">
                 <a-input-number
+                  :disabled="isDisabled"
                   style="width: 100%"
                   :precision="2"
                   v-decorator="[
@@ -251,6 +261,7 @@
 
               <a-form-item label="等差">
                 <a-select
+                  :disabled="isDisabled"
                   placeholder="选择等差"
                   :allowClear="true"
                   style="width: 100%"
@@ -270,6 +281,7 @@
 
               <a-form-item label="单位">
                 <a-select
+                  :disabled="isDisabled"
                   placeholder="选择单位"
                   :allowClear="true"
                   style="width: 100%"
@@ -289,6 +301,7 @@
 
               <a-form-item label="最大值">
                 <a-input-number
+                  :disabled="isDisabled"
                   style="width: 100%"
                   :precision="2"
                   v-decorator="[
@@ -305,6 +318,7 @@
 
           <a-form-item label="是否常用">
             <a-switch
+              :disabled="isDisabled"
               checked-children="是"
               un-checked-children="否"
               v-decorator="[
@@ -324,7 +338,7 @@
           <a-form-item label="复制数据">
             <a-tree-select
               style="width: 100%"
-              :disabled="treeDisable"
+              :disabled="isDisabled || treeDisable"
               v-decorator="['copySourceParentId', { rules: [{ required: true, message: '请选择复制数据节点' }] }]"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :loadData="onLoadData"
@@ -334,7 +348,7 @@
           <a-form-item label="上级菜单(现位置)">
             <a-tree-select
               style="width: 100%"
-              :disabled="treeDisable"
+              :disabled="isDisabled || treeDisable"
               v-decorator="['copyToParentId', { rules: [{ required: true, message: '请选择上级菜单(现位置)' }] }]"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :loadData="onLoadData"
@@ -471,10 +485,13 @@ export default {
   created() {},
   computed: {
     modalTitle() {
-      return this.type === 'add' ? '新增' : '修改'
+      return this.isAdd ? '新增' : this.isEdit ? '修改' : '查看'
     },
     treeDisable() {
       return this.type === 'edit'
+    },
+    isView() {
+      return this.type === 'view'
     },
     isAdd() {
       return this.type === 'add'
@@ -497,6 +514,9 @@ export default {
     isProductAdd() {
       return this.isProduct && this.isAdd
     },
+    isDisabled(){
+      return this.isView
+    }
   },
   methods: {
     handleChange({ fileList }) {
@@ -570,6 +590,10 @@ export default {
     },
     handleSubmit() {
       const that = this
+      if(that.isView){
+        that.visible = false
+        return
+      }
       that.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true

@@ -3,44 +3,38 @@
     <div class="resize-column-wrapper">
       <div class="resize-column-left">
         <a-spin :spinning="spinning">
-        <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; max-height: 900px; min-height: 600px">
-          <div style="display:flex;">
-            <a-input
-              style="line-height: 40px;flex:1;"
-              placeholder="规则名称模糊查询"
-              v-model="searchValue"
-            />
-            <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
-            <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
+          <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; max-height: 900px; min-height: 600px">
+            <div style="display:flex;">
+              <a-input style="line-height: 40px;flex:1;" placeholder="规则名称模糊查询" v-model="searchValue" />
+              <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
+              <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
+            </div>
+
+            <a-tree
+              ref="treeRef"
+              key="k2"
+              :loadData="onLoadData"
+              @load="onLoadAction"
+              :loadedKeys="loadedKeys"
+              :treeData="orgTree"
+              :selectedKeys="treeSelectedKeys"
+              :defaultExpandAll="true"
+              @select="handleClick"
+              :expandedKeys="expandedKeys"
+              :autoExpandParent="autoExpandParent"
+              @expand="onExpand"
+              :showLine="true"
+            >
+              <template slot="title" slot-scope="{ title }">
+                <span v-if="title.indexOf(searchValue) > -1">
+                  {{ title.substr(0, title.indexOf(searchValue)) }}
+                  <span style="color: #f50">{{ searchValue }}</span>
+                  {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
+                </span>
+                <span v-else>{{ title }}</span>
+              </template>
+            </a-tree>
           </div>
-
-          <a-tree
-            ref="treeRef"
-            key="k2"
-            :loadData="onLoadData"
-            @load="onLoadAction"
-            :loadedKeys="loadedKeys"
-            :treeData="orgTree"
-            :selectedKeys="treeSelectedKeys"
-            :defaultExpandAll="true"
-            @select="handleClick"
-            :expandedKeys="expandedKeys"
-            :autoExpandParent="autoExpandParent"
-            @expand="onExpand"
-            :showLine="true"
-          >
-            <template slot="title" slot-scope="{ title }">
-              <span v-if="title.indexOf(searchValue) > -1">
-                {{ title.substr(0, title.indexOf(searchValue)) }}
-                <span style="color: #f50">{{ searchValue }}</span>
-                {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
-              </span>
-              <span v-else>{{ title }}</span>
-            </template>
-          </a-tree>
-
-
-        </div>
         </a-spin>
       </div>
       <div class="resize-column-control-bar"></div>
@@ -60,9 +54,9 @@
                 style="width: 130px;"
                 v-model="queryParam.orderCreatedTimeDesc"
               >
-                  <a-select-option :value="1">降序</a-select-option>
-                  <a-select-option :value="2">升序</a-select-option>
-                </a-select>
+                <a-select-option :value="1">降序</a-select-option>
+                <a-select-option :value="2">升序</a-select-option>
+              </a-select>
             </a-form-item>
             <a-form-item>
               <a-select
@@ -71,13 +65,24 @@
                 style="width: 130px;"
                 v-model="queryParam.orderCodeDesc"
               >
-                  <a-select-option :value="1">降序</a-select-option>
-                  <a-select-option :value="2">升序</a-select-option>
-                </a-select>
+                <a-select-option :value="1">降序</a-select-option>
+                <a-select-option :value="2">升序</a-select-option>
+              </a-select>
+            </a-form-item>
+
+            <a-form-item>
+              <a-select placeholder="监管状态" :allowClear="true" style="width: 130px;" v-model="queryParam.isCare">
+                <a-select-option :value="1">待执行</a-select-option>
+                <a-select-option :value="2">已监管</a-select-option>
+              </a-select>
             </a-form-item>
 
             <a-form-item>
               <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
+            </a-form-item>
+
+            <a-form-item v-if="$auth('routineMaterialRule:care')">
+              <a-button :disabled="!canUse" type="primary" @click="doAction('care', null)">监管</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialRule:add')">
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
@@ -112,10 +117,9 @@
             <span style="color: red; margin: 0 10px">红色禁用</span>
             <span style="font-weight: bold; margin: 0 10px">加粗常用</span>
             <span>黑色未审核</span>
-
           </div>
         </a-alert>
-        
+
         <a-table
           :columns="columns"
           :dataSource="dataSource"
@@ -133,15 +137,19 @@
           </div>
 
           <div slot="useAlways" slot-scope="text, record, index">
-            <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
+            <span>{{ { 1: '是', 2: '否' }[text] || '否' }}</span>
           </div>
 
           <div slot="isBringCode" slot-scope="text, record, index">
-            <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
+            <span>{{ { 1: '是', 2: '否' }[text] || '否' }}</span>
           </div>
 
           <div slot="isSpecification" slot-scope="text, record, index">
-            <span>{{ {1:'是',2:'否'}[text] || '否' }}</span>
+            <span>{{ { 1: '是', 2: '否' }[text] || '否' }}</span>
+          </div>
+
+          <div slot="isCare" slot-scope="text, record, index">
+            <span>{{ { 1: '待执行', 2: '已监管' }[text] || '否' }}</span>
           </div>
 
           <div slot="remark" slot-scope="text, record, index">
@@ -153,7 +161,14 @@
           </div>
           <div slot="picUrl" slot-scope="text, record, index">
             <div>
-              <img v-if="text" :src="text" alt="物料图片" title="查看大图" @click="() => handleImgView(record.picUrl)" style="width:64px;height:auto;overflow:hidden;cursor: pointer;">
+              <img
+                v-if="text"
+                :src="text"
+                alt="物料图片"
+                title="查看大图"
+                @click="() => handleImgView(record.picUrl)"
+                style="width:64px;height:auto;overflow:hidden;cursor: pointer;"
+              />
               <span v-else>无</span>
             </div>
           </div>
@@ -177,7 +192,8 @@ import {
   routineMaterialRulePageTreeList,
   routineMaterialRulePageTwoTierTreeList,
   routineMaterialRulePageConditionTreeList,
-  routineMaterialRuleToggleSort
+  routineMaterialRuleToggleSort,
+  routineMaterialRuleUpdateCareState
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -189,53 +205,59 @@ const columns = [
   {
     align: 'center',
     title: '代码',
-    dataIndex: 'fullCode',
+    dataIndex: 'fullCode'
   },
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'ruleName',
+    dataIndex: 'ruleName'
   },
   {
     align: 'center',
     title: '图片',
     dataIndex: 'picUrl',
-    scopedSlots: { customRender: 'picUrl' },
+    scopedSlots: { customRender: 'picUrl' }
   },
   {
     align: 'center',
     title: '是否常用',
     dataIndex: 'useAlways',
-    scopedSlots: { customRender: 'useAlways' },
+    scopedSlots: { customRender: 'useAlways' }
   },
   {
     align: 'center',
     title: '是否规格型号',
     dataIndex: 'isSpecification',
-    scopedSlots: { customRender: 'isSpecification' },
+    scopedSlots: { customRender: 'isSpecification' }
   },
   {
     align: 'center',
     title: '是否计入物料代码',
     dataIndex: 'isBringCode',
-    scopedSlots: { customRender: 'isBringCode' },
+    scopedSlots: { customRender: 'isBringCode' }
+  },
+  {
+    align: 'center',
+    title: '监管状态',
+    dataIndex: 'isCare',
+    scopedSlots: { customRender: 'isCare' }
   },
   {
     align: 'center',
     title: '规则说明',
     dataIndex: 'remark',
-    scopedSlots: { customRender: 'remark' },
+    scopedSlots: { customRender: 'remark' }
   },
   {
     align: 'center',
     title: '创建人',
-    dataIndex: 'createdName',
+    dataIndex: 'createdName'
   },
   {
     align: 'center',
     title: '创建时间',
-    dataIndex: 'createdTime',
-  },
+    dataIndex: 'createdTime'
+  }
 ]
 
 const getParentKey = (key, tree) => {
@@ -243,7 +265,7 @@ const getParentKey = (key, tree) => {
   for (let i = 0; i < tree.length; i++) {
     const node = tree[i]
     if (node.children) {
-      if (node.children.some((item) => item.key === key)) {
+      if (node.children.some(item => item.key === key)) {
         parentKey = node.key
       } else if (getParentKey(key, node.children)) {
         parentKey = getParentKey(key, node.children)
@@ -262,7 +284,7 @@ export default {
   },
   data() {
     return {
-      modelType:1, //1 全部 2条件搜索
+      modelType: 1, //1 全部 2条件搜索
       parentId: 0, // 父id
       parentItem: {},
       selectedTreeNode: null, //新增修改后刷新节点用
@@ -275,37 +297,37 @@ export default {
 
       dataList: [],
       expandedKeys: [],
-      loadedKeys:[],
+      loadedKeys: [],
       searchValue: '',
       autoExpandParent: true,
 
       loading: false,
       queryParam: {
-        orderCodeDesc:2
+        orderCodeDesc: 2
       },
       pagination: {
         current: 1,
         pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: this.onShowSizeChangeHandler,
+        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: this.onShowSizeChangeHandler
       },
       treeInputSearchDebounce: null,
-      spinning:false,
+      spinning: false,
 
-      sortableInstance:null
+      sortableInstance: null
     }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
+      handler: function(to, from) {
         if (to.name === 'material-rule-management-routine') {
           this.init()
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   computed: {
     canEdit() {
@@ -328,8 +350,8 @@ export default {
       let arr = []
       let parentId = this.parentId
       while (+parentId) {
-        let target = this.dataList.find((item) => +item.key === +parentId)
-        if(+target.isBringCode === 1){
+        let target = this.dataList.find(item => +item.key === +parentId)
+        if (+target.isBringCode === 1) {
           arr.push({ ...target })
         }
         // arr.push({ ...target })
@@ -337,48 +359,47 @@ export default {
       }
       return arr
         .reverse()
-        .map((item) => item.code)
+        .map(item => item.code)
         .join('.')
-    },
+    }
   },
   methods: {
     // 位置调整的代码
     initSortable() {
-      const that = this;
-      const selector = ".material-management-rule-RoutineList .ant-table-tbody"
-      const ele = document.querySelector(selector);
-      if(!ele){
+      const that = this
+      const selector = '.material-management-rule-RoutineList .ant-table-tbody'
+      const ele = document.querySelector(selector)
+      if (!ele) {
         console.error(`selector:【${selector}】 no element matched.`)
         return
       }
-      if(that.sortableInstance !== null){
+      if (that.sortableInstance !== null) {
         that.sortableInstance.destroy()
         that.sortableInstance = null
       }
       that.sortableInstance = Sortable.create(ele, {
         disabled: false,
-        ghostClass: "ghost",
+        ghostClass: 'ghost',
         animation: 150,
         group: {
           pull: false,
-          put: false,
+          put: false
         },
         onEnd(e) {
-          let { newIndex, oldIndex } = e;
-          if(newIndex === oldIndex){
+          let { newIndex, oldIndex } = e
+          if (newIndex === oldIndex) {
             return
           }
 
           let direction = newIndex < oldIndex ? 'up' : 'down'
-          let dataSource = [...that.dataSource];
+          let dataSource = [...that.dataSource]
 
           let params = {
-            parentId:that.parentId,
-            orderCodeDesc:that.queryParam.orderCodeDesc || 2,
-            targetId: direction === 'up' 
-              ? (newIndex -1 < 0 ? 0 : dataSource[newIndex - 1].id) 
-              : (dataSource[newIndex].id),
-            transferId:dataSource[oldIndex].id
+            parentId: that.parentId,
+            orderCodeDesc: that.queryParam.orderCodeDesc || 2,
+            targetId:
+              direction === 'up' ? (newIndex - 1 < 0 ? 0 : dataSource[newIndex - 1].id) : dataSource[newIndex].id,
+            transferId: dataSource[oldIndex].id
           }
           routineMaterialRuleToggleSort(params).then(res => {
             // console.log(res)
@@ -390,13 +411,13 @@ export default {
             }
             that.search()
           })
-          
+
           // dataSource.splice(newIndex, 0, dataSource.splice(oldIndex, 1)[0]);
           // that.$nextTick(() => {
           //   that.dataSource = dataSource;
           // });
-        },
-      });
+        }
+      })
     },
     onExpand(expandedKeys) {
       this.expandedKeys = expandedKeys
@@ -405,13 +426,13 @@ export default {
     searchAction(type) {
       const that = this
       const value = that.searchValue ? that.searchValue.trim() : ''
-      if(type === 1){
-        if(value.length === 0){
+      if (type === 1) {
+        if (value.length === 0) {
           return
-        }else{
+        } else {
           that.fetchTreeWithName(value)
         }
-      }else{
+      } else {
         that.searchValue = ''
         that.fetchTree()
       }
@@ -440,7 +461,7 @@ export default {
       this.selectedTreeNode = null
       this.queryParam = {
         ...this.queryParam,
-        parentId: this.parentId,
+        parentId: this.parentId
       }
       this.fetchTree()
       this.search()
@@ -451,16 +472,16 @@ export default {
     },
     onLoadData(treeNode, isForceRefresh = false) {
       const that = this
-      return new Promise((resolve,reject) => {
+      return new Promise((resolve, reject) => {
         if (!isForceRefresh && treeNode.dataRef.children) {
           resolve()
           return
         }
         routineMaterialRulePageTwoTierTreeList({ parentId: treeNode.dataRef.value })
-          .then((res) => {
-            if(res && res.code === 200 && Array.isArray(res.data) && res.data.length > 0){
+          .then(res => {
+            if (res && res.code === 200 && Array.isArray(res.data) && res.data.length > 0) {
               let oldChildren = [...(treeNode.dataRef.children || [])]
-              let newChildren = res.data.map((item) => that.formatTreeData(item))
+              let newChildren = res.data.map(item => that.formatTreeData(item))
               let children = that.margeNode(oldChildren, newChildren)
 
               treeNode.dataRef.children = newChildren
@@ -468,7 +489,7 @@ export default {
               that.selectedTreeNode = treeNode
               that.orgTree = [...that.orgTree]
               that.dataList = that.generateList(that.orgTree)
-            }else{
+            } else {
               treeNode.dataRef.isLeaf = true
               treeNode.dataRef.children = []
               that.selectedTreeNode = treeNode
@@ -478,7 +499,7 @@ export default {
             }
             resolve()
           })
-          .catch((err) => {
+          .catch(err => {
             reject()
             console.error(err)
           })
@@ -488,7 +509,7 @@ export default {
       let arr = []
       for (let i = 0; i < newChildren.length; i++) {
         let newNode = newChildren[i]
-        let oldNode = oldChildren.find((node) => node.value === newNode.value)
+        let oldNode = oldChildren.find(node => node.value === newNode.value)
         if (oldNode) {
           for (let key in newNode) {
             if (newNode.hasOwnProperty(key) && key !== 'children') {
@@ -512,9 +533,9 @@ export default {
       that.expandedKeys = []
       that.loadedKeys = []
       routineMaterialRulePageTwoTierTreeList({ parentId: 0 })
-        .then((res) => {
+        .then(res => {
           that.spinning = false
-          if(+res.code !== 200){
+          if (+res.code !== 200) {
             that.$message.info(res.msg)
             return
           }
@@ -526,8 +547,8 @@ export default {
             code: '0',
             codeLength: 10,
             parentId: 0,
-            children: res.data.map((item) => that.formatTreeData(item)),
-            scopedSlots: { title: 'title' },
+            children: res.data.map(item => that.formatTreeData(item)),
+            scopedSlots: { title: 'title' }
           }
           if (String(that.parentId) === '0') {
             that.parentItem = root
@@ -539,15 +560,15 @@ export default {
             that.orgTree = [root]
             that.dataList = that.generateList(that.orgTree)
             that.selectedTreeNode = {
-              dataRef:{
+              dataRef: {
                 ...root
               }
             }
 
-            Object.assign(that, {expandedKeys:['0'],autoExpandParent: true })
+            Object.assign(that, { expandedKeys: ['0'], autoExpandParent: true })
           })
         })
-        .catch((err) => {
+        .catch(err => {
           that.spinning = false
           that.$message.error(`调用接口[routineMaterialRulePageTreeList]时发生错误，错误信息:${err}`)
         })
@@ -561,10 +582,10 @@ export default {
       that.expandedKeys = []
       that.loadedKeys = []
       that.spinning = true
-      routineMaterialRulePageConditionTreeList({ ruleName: w,type:1 })
-        .then((res) => {
+      routineMaterialRulePageConditionTreeList({ ruleName: w, type: 1 })
+        .then(res => {
           that.spinning = false
-          if(+res.code !== 200){
+          if (+res.code !== 200) {
             that.$message.info(res.msg)
             return
           }
@@ -576,8 +597,8 @@ export default {
             code: '0',
             codeLength: 10,
             parentId: 0,
-            children: res.data.map((item) => that.formatTreeData(item)),
-            scopedSlots: { title: 'title' },
+            children: res.data.map(item => that.formatTreeData(item)),
+            scopedSlots: { title: 'title' }
           }
           that.orgTree = []
           that.dataList = []
@@ -587,15 +608,14 @@ export default {
           }
 
           that.$nextTick(() => {
-
             that.orgTree = [root]
             that.dataList = that.generateList(that.orgTree)
 
-
             let expandedKeys = that.dataList
-            .map((item) => {
-              return getParentKey(item.key, that.orgTree)
-            }).filter(item => item !== undefined && item !== null)
+              .map(item => {
+                return getParentKey(item.key, that.orgTree)
+              })
+              .filter(item => item !== undefined && item !== null)
 
             // let expandedKeys = that.dataList
             // .map((item) => {
@@ -603,19 +623,17 @@ export default {
             // })
 
             expandedKeys = [...new Set(expandedKeys)]
-            console.log(that.dataList.map(item =>item.key))
+            console.log(that.dataList.map(item => item.key))
 
             console.log(expandedKeys)
 
             Object.assign(that, {
               expandedKeys,
-              autoExpandParent: true,
+              autoExpandParent: true
             })
           })
-
-
         })
-        .catch((err) => {
+        .catch(err => {
           that.spinning = false
           that.$message.error(`调用接口[routineMaterialRulePageConditionTreeList]时发生错误，错误信息:${err}`)
         })
@@ -624,12 +642,12 @@ export default {
       const that = this
       let paginationParam = {
         current: that.pagination.current || 1,
-        size: that.pagination.pageSize || 10,
+        size: that.pagination.pageSize || 10
       }
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       routineMaterialRulePageList(_searchParam)
-        .then((res) => {
+        .then(res => {
           that.loading = false
           if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
             return
@@ -656,9 +674,8 @@ export default {
           // that.$nextTick(() => {
           //   that.initSortable();
           // });
-
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err)
           that.loading = false
         })
@@ -677,7 +694,7 @@ export default {
       obj.key = String(item.id)
 
       let ruleName = item.newRuleName || item.ruleName
-      let showCode = +item.isSpecification === 1 ? '' :  +item.isBringCode === 1 ? `(${item.code})` : ''
+      let showCode = +item.isSpecification === 1 ? '' : +item.isBringCode === 1 ? `(${item.code})` : ''
 
       obj.title = `${ruleName}${showCode}`
 
@@ -690,7 +707,7 @@ export default {
       obj.scopedSlots = { title: 'title' }
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {
-        obj.children = item.subList.map((v) => that.formatTreeData(v))
+        obj.children = item.subList.map(v => that.formatTreeData(v))
       }
       return obj
     },
@@ -718,7 +735,7 @@ export default {
           ...record,
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
-          __from: 'normal',
+          __from: 'normal'
         })
         return
       } else if (type === 'edit') {
@@ -726,15 +743,50 @@ export default {
           ...that.selectedRows[0],
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
-          __from: 'normal',
+          __from: 'normal'
         })
         return
-      } else if(type === 'transfer'){
-        that.$refs.batchTransferForm.query(type, {
-          selectedRows:[...that.selectedRows],
+      } else if (type === 'view') {
+        that.$refs.routineAddForm.query(type, {
+          ...record,
           __selectItem: that.parentItem,
           __treeData: [...that.orgTree],
-          __from: 'normal',
+          __from: 'normal'
+        })
+        return
+      } 
+      else if (type === 'transfer') {
+        that.$refs.batchTransferForm.query(type, {
+          selectedRows: [...that.selectedRows],
+          __selectItem: that.parentItem,
+          __treeData: [...that.orgTree],
+          __from: 'normal'
+        })
+        return
+      } else if (type === 'care') {
+        const arr = that.selectedRows.filter(item => +item.isCare === 1)
+        if (arr.length === 0) {
+          that.$message.info(`没有需要监管的数据`)
+          return
+        }
+        that.$confirm({
+          title: '提示',
+          content: `确定执行监管操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            routineMaterialRuleUpdateCareState({
+              isCare: 2,
+              ruleIdList: arr.map(item => item.id)
+            }).then(res => {
+              that.$message.info(res.msg)
+              if(+res.code === 200){
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err.message)
+            })
+          }
         })
         return
       } else {
@@ -742,37 +794,37 @@ export default {
           disable: {
             api: routineMaterialRuleForbidden,
             title: '禁用',
-            tpl: (names) => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`,
+            tpl: names => `禁用${names}后，其子规则也被禁用。确定要执行该操作吗？`
           },
           enable: {
             api: routineMaterialRuleStartUsing,
             title: '启用',
-            tpl: (names) => `确定要启用${names}吗？`,
+            tpl: names => `确定要启用${names}吗？`
           },
           del: {
             api: routineMaterialRuleDelete,
             title: '删除',
-            tpl: (names) => `确定要删除${names}吗？`,
+            tpl: names => `确定要删除${names}吗？`
           },
           approval: {
             api: routineMaterialRuleAudit,
             title: '审核',
-            tpl: (names) =>
-              `提交审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`,
+            tpl: names =>
+              `提交审核项目${names}后，将不能修改，同时该核算项目的所有直接上级项目都会被自动审核，是否继续？`
           },
           unapproval: {
             api: routineMaterialRuleAnnulAudit,
             title: '反审核',
-            tpl: (names) => `反审核项目${names}后，数据标记为未审核，是否继续？`,
-          },
+            tpl: names => `反审核项目${names}后，数据标记为未审核，是否继续？`
+          }
         }
         let target = m[type]
         if (!target) {
           that.$message.error(`不支持的操作类型:${type}`)
           return
         }
-        let itemNames = `【${that.selectedRows.map((item) => item.ruleName).join('，')}】`
-        let ids = that.selectedRows.map((item) => item.id).join(',')
+        let itemNames = `【${that.selectedRows.map(item => item.ruleName).join('，')}】`
+        let ids = that.selectedRows.map(item => item.id).join(',')
         that.$confirm({
           title: '提示',
           content: target.tpl(itemNames),
@@ -781,16 +833,16 @@ export default {
           onOk() {
             target
               .api(`ids=${ids}`)
-              .then((res) => {
+              .then(res => {
                 that.$message.info(res.msg)
                 if (res.code === 200) {
                   that.finishHandler({ key: that.parentItem.value })
                 }
               })
-              .catch((err) => {
+              .catch(err => {
                 that.$message.error(err.message)
               })
-          },
+          }
         })
       }
     },
@@ -820,38 +872,41 @@ export default {
       const that = this
       // auditStatus审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
-      let { auditStatus, forbidden ,useAlways} = record
+      let { auditStatus, forbidden, useAlways } = record
       return {
         style: {
           color: +forbidden === 1 ? 'red' : +auditStatus === 3 ? 'blue' : '',
           'font-weight': +useAlways === 1 ? 'bold' : 'normal'
         },
-        on:{
-          click:async event => {
-            try{
-              if(that.selectedTreeNode){
+        on: {
+          click: async event => {
+            try {
+              if (that.selectedTreeNode) {
                 let expandedKeys = [...that.expandedKeys]
                 Object.assign(that, {
-                  expandedKeys:[...new Set([...expandedKeys,that.selectedTreeNode.dataRef.key])],
-                  autoExpandParent: true,
+                  expandedKeys: [...new Set([...expandedKeys, that.selectedTreeNode.dataRef.key])],
+                  autoExpandParent: true
                 })
                 let children = that.selectedTreeNode.dataRef.children || []
                 let target = children.find(n => n.code === record.code)
-                if(target){
+                if (target) {
                   that.parentId = target.key
                 }
               }
-            }catch(err){
+            } catch (err) {
               console.log(err)
             }
+          },
+          dblclick: (event) => {
+            that.doAction('view',record)
           }
         }
       }
     },
-    onLoadAction(loadedKeys){
+    onLoadAction(loadedKeys) {
       this.loadedKeys = loadedKeys
     },
-    handleImgView(url){
+    handleImgView(url) {
       this.$refs.imgView.show(url)
     }
   },
@@ -860,7 +915,7 @@ export default {
       this._ResizeColumnInstance.destory()
       this._ResizeColumnInstance = null
     }
-  },
+  }
 }
 </script>
 
@@ -893,4 +948,3 @@ export default {
   flex: 1;
 }
 </style>
-
