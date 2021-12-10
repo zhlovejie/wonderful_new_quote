@@ -621,7 +621,9 @@ export default {
             param.isColor = param.isColor ? 1 : 0
           }
           if(that.fileList.length > 0){
-            param.picUrl = that.fileList[0].response.data
+            param.picUrl = that.fileList[0].url || that.fileList[0].response.data
+          }else{
+            param.picUrl = ''
           }
 
           if(param.ruleNamePrefix){
@@ -646,7 +648,6 @@ export default {
             // param.targetId = param.copyToParentId
             // delete param.copySourceParentId
             // delete param.copyToParentId
-
             param = `id=${param.copySourceParentId}&targetId=${param.copyToParentId}`
           }
           
