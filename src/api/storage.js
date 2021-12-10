@@ -90,8 +90,42 @@ const api = {
   productdelById: '/inventory/sluggish-product-rule/delById', // 呆滞品规则删除
   revocation: '/inventory/sluggish-product-rule/revocation', // 呆滞品规则撤回
   productapproval: '/inventory/sluggish-product-rule/approval', // 呆滞品规则审核
+  // 收料单
+  listReceive: '/warehouse/receive/listReceive', // 收料单
+  updateReceiveNum: '/warehouse/receive/updateReceiveNum', // 批量更新收料单数量
+  exportList: '/inventory/sluggish-product/exportList', // 批量更新收料单数量
 
 
+
+}
+// 呆滞品列表下载
+export function exportList(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.exportList,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+// 批量更新收料单数量
+export function updateReceiveNum(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.updateReceiveNum,
+    method: 'post',
+    data: parameter
+  })
+}
+// 收料单
+export function listReceive(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.listReceive,
+    method: 'get',
+    params: parameter
+  })
 }
 // 呆滞品规则审核
 export function productapproval(parameter) {
@@ -323,7 +357,7 @@ export function translocategetListByPage(parameter) {
 // 消费详情不带分页列表 导出使用
 export function exportInstantPositionList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: api.exportInstantPositionList,
     method: 'get',
     responseType: 'blob',

@@ -10,6 +10,7 @@
             :filter-option="filterOption"
             v-model="queryParam.warehouseId"
             allowClear
+            @change="warehchange"
             style="width: 180px"
           >
             <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
@@ -69,7 +70,7 @@
 </template>
 
 <script>
-import { getList, sluggishgetListByPage, ReservoiGetList, exportInstantPositionList } from '@/api/storage'
+import { getList, sluggishgetListByPage, ReservoiGetList, exportList } from '@/api/storage'
 import moment from 'moment'
 const columns = [
   {
@@ -174,14 +175,11 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'immediateList') {
-          this.searchAction()
+        if (to.name === 'DullList') {
           getList().then((res) => {
             this.warehouseList = res.data
           })
-          ReservoiGetList().then((res) => {
-            this.ReservoiList = res.data
-          })
+          this.searchAction()
         }
       },
       immediate: true,
@@ -190,6 +188,15 @@ export default {
 
   methods: {
     moment,
+    warehchange(opt) {
+      this.queryParam = {
+        ...this.queryParam,
+        reservoirAreaId: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     searchAction(opt) {
       let that = this
       this.queryParam.beginDate = undefined
@@ -227,16 +234,14 @@ export default {
     // 导出
     outPort() {
       let that = this
-      this.queryParam.newImmigrateLocationBeginTime = undefined
-      this.queryParam.newImmigrateLocationEndTime = undefined
+      this.queryParam.beginDate = undefined
+      this.queryParam.endDate = undefined
       if (Array.isArray(this.sDate) && this.sDate.length === 2) {
-        this.queryParam.newImmigrateLocationBeginTime =
-          this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        this.queryParam.newImmigrateLocationEndTime =
-          this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
+        this.queryParam.beginDate = this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
+        this.queryParam.endDate = this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
       }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 })
-      exportInstantPositionList(_searchParam)
+      exportList(_searchParam)
         .then((res) => {
           this.loading = false
           if (res instanceof Blob) {
@@ -250,7 +255,7 @@ export default {
               document.body.appendChild(a)
               a.style = 'display: none'
               a.href = objectUrl
-              a.download = '即时库存.xls'
+              a.download = '呆滞品列表.xls'
               a.click()
               document.body.removeChild(a)
               that.$message.info('下载成功')

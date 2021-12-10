@@ -4,6 +4,12 @@
     <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item>
+          <a-input v-model.trim="queryParam.materialCode" allowClear placeholder="物料代码" style="width: 180px" />
+        </a-form-item>
+        <a-form-item>
+          <a-input v-model.trim="queryParam.materialName" allowClear placeholder="物料名称" style="width: 180px" />
+        </a-form-item>
+        <a-form-item>
           <a-select
             placeholder="仓库名称"
             show-search
@@ -11,18 +17,20 @@
             v-model="queryParam.warehouseId"
             allowClear
             style="width: 180px"
+            @change="warehchange"
           >
             <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
               item.warehouseName
             }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item>
+        <a-form-item v-if="queryParam.warehouseId">
           <a-select
             placeholder="库区名称"
             show-search
             :filter-option="filterOption"
             v-model="queryParam.reservoirAreaId"
+            @change="reservoirchange"
             allowClear
             style="width: 180px"
           >
@@ -31,18 +39,28 @@
             }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item>
-          <a-input v-model.trim="queryParam.materialCode" allowClear placeholder="物料代码" style="width: 180px" />
+        <a-form-item v-if="queryParam.reservoirAreaId && queryParam.warehouseId">
+          <a-select
+            placeholder="库位名称"
+            show-search
+            :filter-option="filterOption"
+            v-model="queryParam.shelvesLocationId"
+            allowClear
+            style="width: 180px"
+          >
+            <a-select-option v-for="item in depList" :key="item.shelvesLocationId" :value="item.shelvesLocationId">{{
+              item.shelvesLocationName
+            }}</a-select-option>
+          </a-select>
         </a-form-item>
-        <a-form-item>
-          <a-input v-model.trim="queryParam.k3Code" allowClear placeholder="原K3物料代码" style="width: 180px" />
+        <a-form-item v-if="queryParam.reservoirAreaId && queryParam.warehouseId && queryParam.shelvesLocationId">
+          <a-select v-model="queryParam.positionRow" allowClear style="width: 180px">
+            <a-select-option v-for="(item, index) in shelvesColumnList" :key="item.index" :value="index + 1"
+              >第{{ index + 1 }}排</a-select-option
+            >
+          </a-select>
         </a-form-item>
-        <a-form-item>
-          <a-input v-model.trim="queryParam.materialName" allowClear placeholder="物料名称" style="width: 180px" />
-        </a-form-item>
-        <a-form-item>
-          <a-range-picker v-model="sDate" style="width: 280px" />
-        </a-form-item>
+
         <template>
           <a-form-item>
             <a-button type="primary" @click="searchAction">查询</a-button>
@@ -50,36 +68,54 @@
         </template>
       </a-form>
     </div>
-    <div v-for="(i, index) in dataSource" :key="i.key">
+    <div v-for="(i, index) in dataSource" :key="i.index">
       <h3>{{ i.shelvesLocationName }}</h3>
       <table class="custom-table custom-table-border" style="margin-top: 20px">
-        <tr>
-          <th v-for="(item, index) in i.shelvesColumn" :key="item.index">{{ index }}</th>
+        <tr style="border: none">
+          <th></th>
+          <th style="" v-for="(item, index) in i.shelvesColumn" :key="item.index">{{ index + 1 }}</th>
         </tr>
-        <tr v-for="(u, index) in i.shelvesRow" :key="u.key">
-          <td>{{ index + 1 }}</td>
-          <td v-for="(u, index) in i.shelvesColumn - 1" :key="u.index"></td>
+        <tr v-for="(u, x) in i.shelvesRow" :key="u.index">
+          <td>
+            {{ x + 1 }}
+          </td>
+          <td v-for="(t, y) in i.shelvesColumn" :key="t.index">
+            <span v-if="showContent(x + 1, y + 1, i) !== 0">
+              <a-popover>
+                <template slot="title">
+                  {{ showContenttitle(x + 1, y + 1, i, 'positionCode') }}
+                </template>
+                <template slot="content">
+                  <table class="custom-table custom-table-border">
+                    <tr>
+                      <th>托盘号</th>
+                      <th>物料代码</th>
+                      <th>物料名称</th>
+                      <th>辅计量单位</th>
+                      <th>库存数量</th>
+                    </tr>
+                    <tr>
+                      <td>{{ showContenttitle(x + 1, y + 1, i, 'palletCode') }}</td>
+                      <td>{{ showContenttitle(x + 1, y + 1, i, 'materialCode') }}</td>
+                      <td>{{ showContenttitle(x + 1, y + 1, i, 'materialName') }}</td>
+                      <td>{{ showContenttitle(x + 1, y + 1, i, 'subUnit') }}</td>
+                      <td>{{ showContenttitle(x + 1, y + 1, i, 'positionQuantity') }}</td>
+                    </tr>
+                  </table>
+                </template>
+                <a-icon type="check-circle" :style="{ fontSize: '25px' }" />
+              </a-popover>
+            </span>
+            <span v-else></span>
+          </td>
         </tr>
       </table>
     </div>
-
-    <!-- <a-table
-      :columns="columns"
-      :dataSource="dataSource"
-      :pagination="pagination"
-      :loading="loading"
-      @change="handleTableChange"
-    >
-      <div slot="order" slot-scope="text, record, index">
-        <span>{{ index + 1 }}</span>
-      </div>
-    </a-table> -->
   </a-card>
 </template>
 
 <script>
-import { getList, getVisualizationList, ReservoiGetList, exportInstantPositionList } from '@/api/storage'
-import moment from 'moment'
+import { getList, getVisualizationList, ReservoiGetList, translocateGetShelvesByAreaId } from '@/api/storage'
 const columns = [
   {
     align: 'center',
@@ -157,6 +193,8 @@ export default {
     return {
       visible: false,
       // 表头
+      depList: [],
+      shelvesColumnList: 0,
       warehouseList: [],
       ReservoiList: [],
       dataSource: [],
@@ -179,13 +217,10 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'visualizationList') {
-          this.searchAction()
           getList().then((res) => {
             this.warehouseList = res.data
           })
-          ReservoiGetList().then((res) => {
-            this.ReservoiList = res.data
-          })
+          this.searchAction()
         }
       },
       immediate: true,
@@ -193,43 +228,53 @@ export default {
   },
 
   methods: {
-    moment,
+    //
+    // 库区拿取库位
+    reservoirchange(opt) {
+      this.queryParam = {
+        ...this.queryParam,
+        shelvesLocationId: undefined,
+        positionRow: undefined,
+      }
+      translocateGetShelvesByAreaId({ areaId: opt }).then((res) => {
+        this.depList = res.data
+        this.shelvesColumnList = res.data[0].shelvesRow || 0
+      })
+    },
+    warehchange(opt) {
+      this.queryParam = {
+        ...this.queryParam,
+        reservoirAreaId: undefined,
+        shelvesLocationId: undefined,
+        positionRow: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     searchAction(opt) {
       let that = this
-      this.queryParam.newImmigrateLocationBeginTime = undefined
-      this.queryParam.newImmigrateLocationEndTime = undefined
-      if (Array.isArray(this.sDate) && this.sDate.length === 2) {
-        this.queryParam.newImmigrateLocationBeginTime =
-          this.sDate[0] instanceof moment ? this.sDate[0].format('YYYY-MM-DD') : undefined
-        this.queryParam.newImmigrateLocationEndTime =
-          this.sDate[1] instanceof moment ? this.sDate[1].format('YYYY-MM-DD') : undefined
-      }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
       that.loading = true
       getVisualizationList(_searchParam)
         .then((res) => {
           console.log(res)
           that.loading = false
-          that.dataSource = res.data.map((item, index) => {
-            item.key = index + 1
-            return item
-          })
-          //设置数据总条数
-          // const pagination = { ...that.pagination }
-          // pagination.total = res.data.total
-          // that.pagination = pagination
+          that.dataSource = res.data
         })
         .catch((err) => (that.loading = false))
-      // this.$refs.table.refresh(true)
     },
-    // 分页
-    // handleTableChange(pagination, filters, sorter) {
-    //   this.pagination1.size = pagination.pageSize
-    //   this.pagination1.current = pagination.current
-    //   this.searchAction()
-    // },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    showContenttitle(x, y, record, type) {
+      let react = record.positionModelVoList.find((i) => i.positionRow === x && i.positionColumn === y)
+      return react[type]
+    },
+
+    showContent(x, y, record) {
+      let react = record.positionModelVoList.find((i) => i.positionRow === x && i.positionColumn === y)
+      return (react && react.positionQuantity) || 0
     },
   },
 }

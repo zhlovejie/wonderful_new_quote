@@ -10,6 +10,7 @@
             :filter-option="filterOption"
             v-model="queryParam.warehouseId"
             allowClear
+            @change="warehchange"
             style="width: 180px"
           >
             <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
@@ -184,6 +185,15 @@ export default {
 
   methods: {
     moment,
+    warehchange(opt) {
+      this.queryParam = {
+        ...this.queryParam,
+        reservoirAreaId: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     searchAction(opt) {
       let that = this
       this.queryParam.newImmigrateLocationBeginTime = undefined

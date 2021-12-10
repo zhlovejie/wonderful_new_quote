@@ -10,6 +10,7 @@
             :filter-option="filterOption"
             v-model="queryParam.warehouseId"
             allowClear
+            @change="warehchange"
             style="width: 200px"
           >
             <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
@@ -213,11 +214,17 @@ export default {
     getList().then((res) => {
       this.warehouseList = res.data
     })
-    ReservoiGetList().then((res) => {
-      this.ReservoiList = res.data
-    })
   },
   methods: {
+    warehchange(opt) {
+      this.queryParam = {
+        ...this.queryParam,
+        reservoirAreaId: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     searchAction() {
       this.$refs.table.refresh(true)
     },
