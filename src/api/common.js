@@ -85,6 +85,16 @@ export function findApprovedNodeList(parameter) {
   })
 }
 
+//获取审批实例列表 - 物料审核专用
+export function findApprovedNodeListByMaterial(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/common/findApprovedNodeList',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //获取供应商审批实例列表
 export function findApprovedNodeListdep(parameter) {
   return axios({

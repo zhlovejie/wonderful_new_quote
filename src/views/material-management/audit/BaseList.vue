@@ -269,7 +269,7 @@ export default {
       })
     },
     approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId)
+      this.$refs.approveInfoCard.init(record.instanceId,'material')
     },
 
     pathFormat(record){

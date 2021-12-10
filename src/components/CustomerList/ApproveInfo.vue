@@ -17,7 +17,10 @@
 
 // import { getApprovedNodeList } from '@/api/contractListManagement'
 
-import {findApprovedNodeList} from '@/api/common'
+import {
+  findApprovedNodeList,
+  findApprovedNodeListByMaterial
+} from '@/api/common'
 const priewColumns = [
   {
     align: 'center',
@@ -56,13 +59,18 @@ export default {
     }
   },
   methods:{
-    init (instanceId) {
+    init (instanceId,type='normal') {
+      const __api = {
+        'normal':findApprovedNodeList,
+        'material':findApprovedNodeListByMaterial
+      }
+
       this.priewData = []
       if(instanceId === undefined) return
       this.visible = true
       this.loading = true
       // 获取审批预览信息
-      findApprovedNodeList({instanceId: instanceId})
+      __api[type]({instanceId: instanceId})
       .then(res => {
         this.priewData = res.data
         this.loading = false
