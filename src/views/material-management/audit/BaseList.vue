@@ -30,7 +30,7 @@
       </a-form>
     </div>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper material-rule-audit-wrapper">
       <a-tabs :activeKey="activeKey" :defaultActiveKey="1" @change="tabChange">
         <a-tab-pane tab="我的" :key="1" />
         <template v-if="$auth('materialRuleAudit:approval')">
@@ -51,6 +51,14 @@
         <div slot="status" slot-scope="text, record, index">
           <a @click="approvalPreview(record)">{{ { 1: '待审批', 2: '通过', 3: '不通过' }[text] }}</a>
         </div>
+
+
+        <div slot="allName" slot-scope="text, record, index">
+          <div v-html="record.pathFormatHTML"></div>
+        </div>
+
+
+        
       </a-table>
     </div>
     <Approval ref="approval" @opinionChange="opinionChange" />
@@ -66,13 +74,14 @@ import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 const columns = [
   {
     align: 'center',
-    title: '代码',
+    title: '路径码',
     dataIndex: 'allCode',
   },
   {
     align: 'center',
     title: '路径',
     dataIndex: 'allName',
+    scopedSlots: { customRender: 'allName' },
   },
   {
     align: 'center',
@@ -180,6 +189,7 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.pathFormatHTML = that.pathFormat(item)
             return item
           })
           //设置数据总条数
@@ -259,9 +269,45 @@ export default {
       })
     },
     approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId)
+      this.$refs.approveInfoCard.init(record.instanceId,'material')
     },
+
+    pathFormat(record){
+      const {allCode,allName} = record
+      let arr_code = allCode.split('.')
+      let arr_name = allName.split('-')
+      if(arr_code.length !== arr_name.length){
+        return allName
+      }
+      let tr = []
+      tr.push(`<thead><tr>${arr_name.map(name => `<th>${name}</th>`).join('')}</tr></thead>`)
+      tr.push(`<tbody><tr>${arr_code.map(code => `<td>${code}</td>`).join('')}</tr></tbody>`)
+      let html = `
+        <table class="custom-path-format-table" style="margin: 0 auto;">
+            ${tr.join('')}
+        </table>
+      `
+      return html
+    }
   },
 }
 </script>
+
+<style scoped>
+.material-rule-audit-wrapper >>> .custom-path-format-table{
+  width: auto;
+  border-collapse: collapse;
+}
+.material-rule-audit-wrapper >>> .custom-path-format-table th,
+.material-rule-audit-wrapper >>> .custom-path-format-table td{
+  border: 1px solid #ddd;
+  padding: 2px 10px;
+  text-align: center;
+}
+
+.material-rule-audit-wrapper >>> .custom-path-format-table td{
+  color: red;
+  font-weight: 700;
+}
+</style>
 

@@ -34,9 +34,11 @@
     <a-table
       :columns="columns"
       :dataSource="dataSource"
-      :pagination="pagination"
+      :pagination="false"
       :loading="loading"
       @change="handleTableChange"
+      :scroll="{ y: 500 }"
+      size="middle"
     >
       <div
         slot="order"
@@ -144,7 +146,7 @@ export default {
       that.pagination = {
         ...that.pagination,
         current: 1,
-        pageSize: 10
+        pageSize: 1000
       }
 
       that.$nextTick(() => {
@@ -165,7 +167,10 @@ export default {
           if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
             return
           }
-          that.dataSource = res.data.records.map((item, index) => {
+          let records = (res.data.records || []).filter(node => {
+            return +node.auditStatus === 3
+          })
+          that.dataSource = records.map((item) => {
             item.key = that._uuid()
             item.fullCode = that.parentCodes ? `${that.parentCodes}.${item.code}` : item.code
             item.specifications = `

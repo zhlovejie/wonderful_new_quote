@@ -1191,3 +1191,24 @@ export function checkSpecificationMaterial(parameter) {
     params: parameter
   })
 }
+
+
+/** 更新物料规则监管状态 */
+export function routineMaterialRuleUpdateCareState(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/updateCareState',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/** 更新物料规则监管状态 */
+export function routineMaterialInfoUpdateCareState(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialInfo/updateCareState',
+    method: 'post',
+    data: parameter
+  })
+}

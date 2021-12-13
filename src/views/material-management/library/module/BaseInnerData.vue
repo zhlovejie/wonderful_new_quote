@@ -87,7 +87,8 @@
               厚度：{{form.thickness}}&nbsp;&nbsp;
               宽度：{{form.width}}&nbsp;&nbsp;
               长度：{{form.length}} -->
-              {{form.specification}}
+              <!-- {{form.specification}} -->
+              <div v-html="form.specificationHTML"></div>
             </a-form-model-item>
           </td>
         </tr>
@@ -305,6 +306,12 @@ export default {
   created() {
     const that = this
     that.form = that.normalAddForm.submitParams
+
+    that.form = {
+      ...that.form,
+      specificationHTML:that.specificationFormat(that.form.specification)
+    }
+
     if(that.normalAddForm.isAdd){
       that.$nextTick(() => {
         that.form = {
@@ -353,6 +360,31 @@ export default {
         console.log(err)
         return false
       })
+    },
+    specificationFormat(sp){
+      if(sp){
+        let _sp = sp.replace(/\s+/g,'');
+        let _strList = String(_sp).split(',')
+        let maxWidth = 0,wordWidth = 16
+        _strList.map(v => {
+          v.split(':').map((e,idx) => {
+            if(idx === 0){
+              const w = e.length * wordWidth
+              maxWidth = w > maxWidth ? w : maxWidth
+            }
+          })
+        })
+        const HTML = _strList.map(v => {
+          let arr = [];
+          v.split(':').map((e,idx) => {
+            arr.push(`<div style="width:${idx === 0 ? maxWidth+'px' : 'auto'};text-align:left;">${idx === 1 ? ':&nbsp;&nbsp;' : ''}${e}</div>`)
+          })
+          return `<div style="display:flex;">${arr.join('')}</div>`
+        }).join('')
+
+        return HTML
+      }
+      return sp
     }
   }
 }
