@@ -176,3 +176,114 @@ export function storageRejectsApproval(parameter) {
     data: parameter
   })
 }
+
+
+
+// =========入库单==========
+export function storagePageList(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/listStorage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function storageDetail(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**入库记录 */
+export function storageRecords(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/listStorageLogByStorageId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**统计单据 */
+export function storageStatistics(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/statistics',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**添加入库单 */
+export function storageAddOrUpdate(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/saveStorage',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**单条入库操作 */
+export function storageSingleUpdate(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/updateStorage',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**批量入库操作 */
+export function storageBatchUpdate(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/updateStorageList',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**列表物料搜索 */
+export function storageMaterialList1(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/storageMaterialList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**仓位列表 */
+export function instantPositionList(parameter) {
+  return axios({
+    baseURL,
+    url: '/inventory/instant-position/getList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**容器托盘列表 */
+export function containerPalletList(parameter) {
+  return axios({
+    baseURL,
+    url: '/base/container-pallet/getList',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**根据库区id获取下级货架和库位信息 */
+export function getShelvesByAreaId(parameter) {
+  return axios({
+    baseURL,
+    url: '/inventory/instant-position/getShelvesByAreaId',
+    method: 'get',
+    params: parameter
+  })
+}
