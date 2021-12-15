@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1200"
+    :width="1300"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -24,29 +24,43 @@
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
-            <td style="width: 25%">移动单编号</td>
-            <td>{{ type !== 'add' ? record.translocateNum : '系统自动生成' }}</td>
+            <td style="width: 25%">调拨单编号</td>
+            <td>{{ type !== 'add' ? record.allocateNum : '系统自动生成' }}</td>
             <td>日期</td>
             <td>
               <a-form-model-item
-                prop="translocateDate"
+                prop="allocateDate"
                 :rules="{
                   required: true,
                   message: '请选择日期',
                 }"
               >
-                <a-date-picker :disabled="isDisabled" v-model="form.translocateDate" />
+                <a-date-picker v-model="form.allocateDate" />
               </a-form-model-item>
             </td>
           </tr>
         </table>
         <div style="margin-top: 20px">
           <h3>物料信息</h3>
-          <a-table :columns="travelColumns" :dataSource="form.materialList" :pagination="false" bordered size="small">
+          <a-table
+            :columns="travelColumns"
+            :dataSource="form.materialList"
+            :pagination="false"
+            bordered
+            size="small"
+            :scroll="{ x: 1500 }"
+          >
             <div slot="order" slot-scope="text, record, index">
               {{ index + 1 }}
             </div>
 
+            <div slot="removeWarehouseReservoir" slot-scope="text">
+              <a-tooltip v-if="String(text).length > 10">
+                <template slot="title">{{ text }}</template>
+                {{ String(text).slice(0, 10) }}...
+              </a-tooltip>
+              <span v-else>{{ text }}</span>
+            </div>
             <div slot="materialCode" slot-scope="text, record, index">
               <a-form-model-item
                 :prop="'materialList.' + index + '.materialCode'"
@@ -67,18 +81,39 @@
                 </span>
               </a-form-model-item>
             </div>
-
-            <div slot="planImmigrateNum" slot-scope="text, record, index">
+            <div slot="immigrateWarehouseReservoirId" slot-scope="text, record, index">
               <a-form-model-item
-                :prop="'materialList.' + index + '.planImmigrateNum'"
+                :prop="'materialList.' + index + '.immigrateWarehouseReservoirId'"
+                :rules="{
+                  required: true,
+                  message: '请选择移入仓库/库区',
+                }"
+              >
+                <DepartmentUser
+                  v-if="!isDisabled"
+                  allowClear
+                  :key="record.key"
+                  :info.sync="record.immigrateWarehouseReservoirId"
+                  :infoList.sync="record.immigrate"
+                  :infoName.sync="record.immigratename"
+                  :positionCode.sync="record.immigrateWarehouseReservoir"
+                />
+                <span v-else>
+                  {{ record.immigrateWarehouseReservoir + ',' + record.immigratename }}
+                </span>
+              </a-form-model-item>
+            </div>
+            <div slot="planAllocateNum" slot-scope="text, record, index">
+              <a-form-model-item
+                :prop="'materialList.' + index + '.planAllocateNum'"
                 :rules="{
                   required: true,
                   message: '请输入数量',
                 }"
               >
-                <a-input-number v-if="!isDisabled" v-model="record.planImmigrateNum" />
+                <a-input-number v-if="!isDisabled" v-model="record.planAllocateNum" />
                 <span v-else>
-                  {{ record.planImmigrateNum }}
+                  {{ record.planAllocateNum }}
                 </span>
               </a-form-model-item>
             </div>
@@ -94,22 +129,17 @@
                   v-if="!isDisabled"
                   allowClear
                   :key="record.key"
-                  :info.sync="record.immigratePositionId"
-                  :infoList.sync="record.shelvesLocationId"
+                  :info.sync="record.immigrateShelvesLocationId"
+                  :infoList.sync="record.immigrate"
+                  :PositionId.sync="record.immigratePositionId"
+                  :PositionName.sync="record.immigratePosition"
                   :materialId.sync="record.materialId"
                   :types.sync="record.type"
-                  :positionCode.sync="record.immigratePosition"
+                  :positionCode.sync="record.immigrateShelvesLocationName"
                 />
                 <span v-else>
-                  {{ record.immigratePosition }}
+                  {{ record.immigrateShelvesLocationName + ',' + record.immigratePosition }}
                 </span>
-                <!-- <a-select v-model="record.immigratePositionId" placeholder="带货方式">
-                  <a-select-option v-for="item in record.warehouseList" :key="item.id" :value="item.id">{{
-                    item.warehouseName
-                  }}</a-select-option>
-                  <a-select-option :value="0">自带</a-select-option>
-                  <a-select-option :value="1">邮寄</a-select-option>
-                </a-select> -->
               </a-form-model-item>
             </div>
             <div slot="doAction" slot-scope="text, record, index">
@@ -133,10 +163,11 @@
   </a-modal>
 </template>
 <script>
-import { translocateAddOrUpdate, translocateApprove, translocateGetDetailById } from '@/api/storage'
+import { allocateAddOrUpdate, allocateApprove, allocateGetDetailById } from '@/api/storage'
 import Approval from './Approval'
 import ProductModel from './productModel'
 import DepartmentUserCascade from './DepartmentUserCascade'
+import DepartmentUser from './DepartmentUser'
 import moment from 'moment'
 
 let uuid = () => Math.random().toString(32).slice(-10)
@@ -147,6 +178,7 @@ export default {
     Approval: Approval,
     ProductModel,
     DepartmentUserCascade,
+    DepartmentUser,
   },
   data() {
     return {
@@ -159,7 +191,7 @@ export default {
       spinning: false,
       form: {
         materialList: [],
-        translocateDate: moment(),
+        allocateDate: moment(),
       },
       type: 'view',
       record: {},
@@ -206,6 +238,7 @@ export default {
         },
         {
           title: '物料代码',
+          align: 'center',
           dataIndex: 'materialCode',
           scopedSlots: { customRender: 'materialCode' },
           width: 150,
@@ -218,30 +251,44 @@ export default {
         },
         {
           title: '辅计量单位',
+          align: 'center',
           dataIndex: 'subUnit',
           width: 100,
         },
         {
-          title: '仓库/库区',
-          dataIndex: 'warehouseReservoir',
+          title: '移除仓库/库区',
+          align: 'center',
+          dataIndex: 'removeWarehouseReservoir',
+          scopedSlots: { customRender: 'removeWarehouseReservoir' },
         },
         {
           title: '移出仓位',
+          align: 'center',
           dataIndex: 'removePosition',
         },
         {
-          title: '移入仓位',
-          dataIndex: 'immigratePositionId',
-          scopedSlots: { customRender: 'immigratePositionId' },
-          width: 150,
+          title: '移入仓库/库区',
+          align: 'center',
+          dataIndex: 'immigrateWarehouseReservoirId',
+          scopedSlots: { customRender: 'immigrateWarehouseReservoirId' },
+          width: 300,
         },
         {
-          title: '计划转移数量',
-          dataIndex: 'planImmigrateNum',
-          scopedSlots: { customRender: 'planImmigrateNum' },
+          title: '移入库位/仓位',
+          align: 'center',
+          dataIndex: 'immigratePositionId',
+          scopedSlots: { customRender: 'immigratePositionId' },
+          width: 300,
+        },
+        {
+          title: '调拨数量',
+          align: 'center',
+          dataIndex: 'planAllocateNum',
+          scopedSlots: { customRender: 'planAllocateNum' },
         },
         {
           title: '操作',
+          align: 'center',
           scopedSlots: { customRender: 'doAction' },
           width: 60,
         },
@@ -262,12 +309,12 @@ export default {
         target['materialCode'] = selectItem.materialCode // 物料代码
         target['materialName'] = selectItem.materialName // 物料名称
         target['subUnit'] = selectItem.subUnit // 辅计量单位
-        target['warehouseReservoir'] = selectItem.warehouseName + '/' + selectItem.warehouseName //仓库库区
+        target['removeWarehouseReservoir'] = selectItem.warehouseName + '/' + selectItem.warehouseName //仓库库区
         target['removePosition'] = selectItem.positionCode //移出
         target['removePositionId'] = selectItem.id //移出
-        target['shelvesLocationId'] = selectItem.shelvesLocationId //库区id
-        target['materialId'] = selectItem.materialId //库区id
-        target['type'] = selectItem.type //类型
+        target['reservoirAreaId'] = selectItem.reservoirAreaId //库区id
+        target['materialId'] = selectItem.materialId //物料id
+        target['warehouseId'] = selectItem.warehouseId //仓库id
 
         this.form.materialList = materialList
       }
@@ -280,25 +327,30 @@ export default {
       that.record = record
       this.form.materialList = []
       if (type !== 'add') {
-        translocateGetDetailById({ id: record.id }).then((res) => {
+        allocateGetDetailById({ id: record.id }).then((res) => {
           let detail = res.data
           that.form = {
-            translocateDate: moment(detail.translocateDate),
+            allocateDate: moment(detail.allocateDate),
             materialList: detail.materialListVo.map((i) => {
               return {
                 key: uuid(),
                 immigratePositionId: i.immigratePositionId,
                 immigratePosition: i.immigratePosition,
+                immigrateShelvesLocationId: i.immigrateShelvesLocationId,
+                immigrateShelvesLocationName: i.immigrateShelvesLocationName,
+                immigrateWarehouseReservoir: i.immigrateWarehouseReservoir.split(',')[0],
+                immigrateWarehouseReservoirId: Number(i.immigrateWarehouseReservoirId.split(',')[0]),
+                immigratename: i.immigrateWarehouseReservoir.split(',')[1],
+                immigrate: Number(i.immigrateWarehouseReservoirId.split(',')[1]),
                 materialCode: i.materialCode,
                 materialName: i.materialName,
                 materialId: i.materialId,
-                planImmigrateNum: i.planImmigrateNum,
+                planAllocateNum: i.planAllocateNum,
                 removePosition: i.removePosition,
                 subUnit: i.subUnit,
-                shelvesLocationId: Number(i.shelvesLocationId),
-                warehouseReservoir: i.warehouseReservoir,
+                reservoirAreaId: Number(i.reservoirAreaId),
+                removeWarehouseReservoir: i.removeWarehouseReservoir,
                 removePositionId: i.removePositionId,
-                type: i.type,
               }
             }),
           }
@@ -317,7 +369,7 @@ export default {
             if (that.type === 'edit-salary') {
               params.id = that.record.id
             }
-            params.translocateDate = params.translocateDate.format('YYYY-MM-DD')
+            params.allocateDate = params.allocateDate.format('YYYY-MM-DD')
             params.materialList = params.materialList.map((i) => {
               return {
                 immigratePositionId: i.immigratePositionId,
@@ -325,15 +377,19 @@ export default {
                 materialCode: i.materialCode,
                 materialName: i.materialName,
                 materialId: i.materialId,
-                planImmigrateNum: i.planImmigrateNum,
+                planAllocateNum: i.planAllocateNum,
                 removePosition: i.removePosition,
                 subUnit: i.subUnit,
-                warehouseReservoir: i.warehouseReservoir,
+                removeWarehouseReservoir: i.removeWarehouseReservoir,
                 removePositionId: i.removePositionId,
+                immigrateWarehouseReservoir: i.immigrateWarehouseReservoir + ',' + i.immigratename,
+                immigrateWarehouseReservoirId: i.immigrateWarehouseReservoirId + ',' + i.immigrate,
+                immigrateShelvesLocationId: i.immigrateShelvesLocationId,
+                immigrateShelvesLocationName: i.immigrateShelvesLocationName,
               }
             })
             console.log(params)
-            translocateAddOrUpdate(params)
+            allocateAddOrUpdate(params)
               .then((res) => {
                 if (res.code === 200) {
                   that.spinning = false
@@ -346,26 +402,6 @@ export default {
               .catch((err) => (that.spinning = false))
           }
         })
-        // that.form.validateFields((err, values) => {
-        //   if (!err) {
-        //     if (that.type === 'edit-salary') {
-        //       values.id = that.record.id
-        //     }
-        //     if (that.type === 'add' || that.type === 'edit-salary') {
-        //       that.spinning = true
-        //       other_addAndUpdate(values)
-        //         .then((res) => {
-        //           this.programme = []
-        //           this.visible = false
-        //           that.spinning = false
-        //           that.form.resetFields() // 清空表
-        //           that.$message.info(res.msg)
-        //           that.$emit('finish')
-        //         })
-        //         .catch((err) => (that.spinning = false))
-        //     }
-        //   }
-        // })
       }
     },
     handleCancel() {
@@ -381,14 +417,21 @@ export default {
           key: uuid(),
           materialCode: undefined,
           materialName: undefined,
-          removePosition: undefined,
           warehouseName: undefined,
+          materialId: null,
+          immigrateWarehouseReservoir: null,
+          immigrateWarehouseReservoirId: null,
           immigratePositionId: null,
           immigratePosition: null,
-          planImmigrateNum: null,
+          immigrate: null,
+          immigratename: null,
+          immigrateShelvesLocationId: null,
+          immigrateShelvesLocationName: null,
+          planAllocateNum: null,
           subUnit: undefined,
-          warehouseReservoir: undefined,
-          shelvesLocationId: null,
+          removeWarehouseReservoir: undefined,
+          reservoirAreaId: null,
+          removePosition: undefined,
         })
         that.form = { ...that.form, materialList }
       }
@@ -407,7 +450,7 @@ export default {
         opinion: opt.opinion,
       }
       that.spinning = true
-      translocateApprove(values)
+      allocateApprove(values)
         .then((res) => {
           that.spinning = false
           that.handleCancel()

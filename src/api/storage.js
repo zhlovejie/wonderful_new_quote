@@ -58,12 +58,306 @@ const api = {
   // 即时库存
   inventorygetListByPage: '/inventory/instant-position/getListByPage', // 即时库存列表
   exportInstantPositionList: '/inventory/instant-position/exportInstantPositionList', // 即时库存列表导出
+  inventorygetMoveMaterialList: '/inventory/instant-position/getMoveMaterialPageList', // 获取移位和调拨的物料列表
+  inventorygetList: '/inventory/instant-position/getList', // 不分页即时库存列表
 
+  // 库存移位
+  translocategetListByPage: '/inventory/translocate/getListByPage', // 库存移位列表
+  translocateAddOrUpdate: '/inventory/translocate/addOrUpdate', // 库存移位新增修改
+  translocateRevocation: '/inventory/translocate/revocation', // 库存移位撤回
+  translocateDelById: '/inventory/translocate/delById', // 库存移位删除
+  translocateGetDetailById: '/inventory/translocate/getDetailById', // 库存移位详情
+  translocateApprove: '/inventory/translocate/approve', // 库存移位审批
+  translocateIsEnd: '/inventory/translocate/isEnd', // 库存移位完结
+  translocateGetPositionList: '/inventory/instant-position/getPositionList', //根据库位id获取下级货架和库位信息
+  translocateGetShelvesByAreaId: '/inventory/instant-position/getShelvesByAreaId', //根据库区id获取下级货架和库位信息
+
+  // 库存调拨
+  allocategetListByPage: '/inventory/allocate/getListByPage', // 库存调拨列表
+  allocateAddOrUpdate: '/inventory/allocate/addOrUpdate', // 库存调拨新增
+  allocateGetDetailById: '/inventory/allocate/getDetailById', // 库存调拨详情
+  allocateApprove: '/inventory/allocate/approve', // 库存调拨审批
+  allocaterevocation: '/inventory/allocate/revocation', // 库存调拨撤回
+  allocatedelById: '/inventory/allocate/delById', // 库存调拨删除
+  allocateIsEnd: '/inventory/allocate/isEnd', // 库存调拨完结
+
+  // 可视化
+  getVisualizationList: '/inventory/instant-position/getVisualizationList', // 可视化
+  // 呆滞品
+  sluggishgetListByPage: '/inventory/sluggish-product/getListByPage', // 可视化
+  productRulegetListByPage: '/inventory/sluggish-product-rule/getListByPage', // 呆滞品规则列表
+  productRuleaddOrUpdate: '/inventory/sluggish-product-rule/addOrUpdate', // 呆滞品规则新增修改
+  productdelById: '/inventory/sluggish-product-rule/delById', // 呆滞品规则删除
+  revocation: '/inventory/sluggish-product-rule/revocation', // 呆滞品规则撤回
+  productapproval: '/inventory/sluggish-product-rule/approval', // 呆滞品规则审核
+  // 收料单
+  listReceive: '/warehouse/receive/listReceive', // 收料单
+  updateReceiveNum: '/warehouse/receive/updateReceiveNum', // 批量更新收料单数量
+  exportList: '/inventory/sluggish-product/exportList', // 批量更新收料单数量
+
+
+
+}
+// 呆滞品列表下载
+export function exportList(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: api.exportList,
+    method: 'get',
+    responseType: 'blob',
+    params: parameter
+  })
+}
+
+// 批量更新收料单数量
+export function updateReceiveNum(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.updateReceiveNum,
+    method: 'post',
+    data: parameter
+  })
+}
+// 收料单
+export function listReceive(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.listReceive,
+    method: 'get',
+    params: parameter
+  })
+}
+// 呆滞品规则审核
+export function productapproval(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.productapproval,
+    method: 'post',
+    data: parameter
+  })
+}
+// 呆滞品规则撤回
+export function revocation(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.revocation,
+    method: 'get',
+    params: parameter
+  })
+}
+// 呆滞品规则删除
+export function productdelById(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.productdelById,
+    method: 'get',
+    params: parameter
+  })
+}
+// 呆滞品规则新增修改
+export function productRuleaddOrUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.productRuleaddOrUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+// 呆滞品规则列表
+export function productRulegetListByPage(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.productRulegetListByPage,
+    method: 'get',
+    params: parameter
+  })
+}
+// 呆滞品列表
+export function sluggishgetListByPage(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.sluggishgetListByPage,
+    method: 'get',
+    params: parameter
+  })
+}
+// 可视化
+export function getVisualizationList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.getVisualizationList,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存调拨完结
+export function allocateIsEnd(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocateIsEnd,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存调拨删除
+export function allocatedelById(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocatedelById,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存调拨撤回
+export function allocaterevocation(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocaterevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 库存调拨审批
+export function allocateApprove(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocateApprove,
+    method: 'post',
+    data: parameter
+  })
+}
+// 根据库区id获取下级货架和库位信息
+export function translocateGetShelvesByAreaId(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateGetShelvesByAreaId,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 库存调拨详情
+export function allocateGetDetailById(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocateGetDetailById,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存调拨新增
+export function allocateAddOrUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocateAddOrUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+//根据库位id获取下级货架和库位信息
+export function translocateGetPositionList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateGetPositionList,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位完结
+export function allocategetListByPage(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.allocategetListByPage,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位完结
+export function translocateIsEnd(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateIsEnd,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位审批
+export function translocateApprove(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateApprove,
+    method: 'post',
+    data: parameter
+  })
+}
+// 库存移位详情
+export function translocateGetDetailById(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateGetDetailById,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位删除
+export function translocateDelById(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateDelById,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位撤回
+export function translocateRevocation(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateRevocation,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位新增修改
+export function translocateAddOrUpdate(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocateAddOrUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+// 不分页即时库存列表
+export function inventorygetList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.inventorygetList,
+    method: 'get',
+    params: parameter
+  })
+}
+// 获取移位和调拨的物料列表
+export function inventorygetMoveMaterialList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.inventorygetMoveMaterialList,
+    method: 'get',
+    params: parameter
+  })
+}
+// 库存移位列表
+export function translocategetListByPage(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: api.translocategetListByPage,
+    method: 'get',
+    params: parameter
+  })
 }
 // 消费详情不带分页列表 导出使用
 export function exportInstantPositionList(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: api.exportInstantPositionList,
     method: 'get',
     responseType: 'blob',

@@ -61,7 +61,7 @@
         </template>
         <div class="action-wrapper" style="float: right">
           <a-form-item>
-            <template v-if="$auth('networkManagement:add')">
+            <template v-if="$auth('liku:add')">
               <a-button type="primary" icon="plus" @click="handleAdd('add', null)">新增</a-button>
             </template>
           </a-form-item>
@@ -89,14 +89,14 @@
         <span>{{ text === 1 ? '是' : '否' }}</span>
       </div>
       <span slot="action" slot-scope="text, record">
-        <template v-if="$auth('networkManagement:view')">
+        <template v-if="$auth('liku:view')">
           <a @click="handleAdd('view', record)">查看</a>
         </template>
-        <template v-if="$auth('networkManagement:edit')">
+        <template v-if="$auth('liku:edit')">
           <a-divider type="vertical" />
           <a @click="handleAdd('edit', record)">修改</a>
         </template>
-        <template v-if="$auth('networkManagement:edit')">
+        <template v-if="$auth('liku:del')">
           <a-divider type="vertical" />
           <a @click="del(record)">删除</a>
         </template>

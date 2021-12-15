@@ -103,7 +103,6 @@ export default {
       path: '/storageManagement/stock',
       component: RouteView,
       name: 'stockManagement',
-      redirect: '/storageManagement/stock',
       meta: {
         title: '库存',
         icon: 'book',
@@ -151,7 +150,6 @@ export default {
           path: '/storageManagement/stock/Dull',
           component: RouteView,
           name: 'stock_Dull_Management',
-          redirect: '/storageManagement/stock/Dull',
           meta: {
             title: '呆滞料统计',
             icon: 'book',

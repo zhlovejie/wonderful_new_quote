@@ -13,7 +13,15 @@ const api = {
   devUploadPath: system.baseURL + '/devFileUpload/uploadFile',
   devDelPath: system.baseURL + '/devFileUpload/deleteFile',
 }
-
+//获取审批实例列表
+export function findApprovedList(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/common/findApprovedNodeList',
+    method: 'get',
+    params: parameter
+  })
+}
 /**
  * 研发专用文件上传接口
  * @returns
