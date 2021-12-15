@@ -210,11 +210,19 @@
           </template>
           <td class="icon-required">原K3物料代码</td>
           <td :colspan="normalAddForm.isNormal ? 1 : 3">
-            <a-form-model-item
+            <!-- <a-form-model-item
               ref="k3Code"
               prop="k3Code"
               has-feedback
             >
+              <a-input
+                :disabled="normalAddForm.isView"
+                v-model="form.k3Code"
+                :allowClear="true"
+              />
+            </a-form-model-item> -->
+
+            <a-form-model-item>
               <a-input
                 :disabled="normalAddForm.isView"
                 v-model="form.k3Code"
@@ -297,7 +305,7 @@ export default {
         subUnit: [{ required: true, message: '请选择辅计量单位' }],
         conversionRate: [{ required: true, message: '请输入换算率' }],
         // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
-        k3Code: [{ validator: checkK3Code, trigger: 'change' }],
+        // k3Code: [{ validator: checkK3Code, trigger: 'change' }],
         needCheck:[{ required: true, message: '请选择是否需要送检' }]
       },
       materialUnitList:[], //物料计量单位
