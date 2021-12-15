@@ -208,7 +208,7 @@
               </a-form-model-item>
             </td>
           </template>
-          <td class="icon-required">原K3物料代码</td>
+          <td >原K3物料代码</td>
           <td :colspan="normalAddForm.isNormal ? 1 : 3">
             <!-- <a-form-model-item
               ref="k3Code"
