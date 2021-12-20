@@ -76,7 +76,6 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
-        :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -94,22 +93,26 @@
           </a-popover>
         </div>
 
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <!-- { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' } -->
-          <a type="primary" @click="doAction('ruku', record)">入库</a>
-          <a-divider type="vertical" />
-          <a type="primary" @click="doAction('record', record)">入库记录</a>
+        
+        <div slot="warehouseName1" slot-scope="text, record, index">
+          <span>{{ record.positionCode }}</span>
         </div>
 
-        <template slot="footer">
-          <a-button type="primary" :disabled="selectedRows.length === 0" @click="doAction('batch', record)">批量入库</a-button>
-        </template>
+        <div slot="storageType" slot-scope="text, record, index">
+          <span>{{ record.actualNum === record.storageNum ? '完全入库' : '批次入库' }}</span>
+        </div>
+
+        
+
+        <div class="action-btns" slot="action" slot-scope="text, record">
+          <!-- { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' } -->
+          <a type="primary" @click="doAction('detail', record)">详情</a>
+          
+        </div>
+
       </a-table>
     </div>
-    <ApproveInfo ref="approveInfoCard" />
-    <!-- <CustomerInfo ref="customerInfoCard" /> -->
-    <AddForm ref="addForm" @ok="() => searchAction()" />
-    <Records ref="records" />
+    <RecordView ref="recordView" />
   </div>
 </template>
 
@@ -123,22 +126,18 @@ import {
   storageStatistics,
   storageAddOrUpdate,
   storageSingleUpdate,
-  storageBatchUpdate
+  storageBatchUpdate,
+  storageRevocation
   } from '@/api/storage_wzz'
-import AddForm from './AddForm'
-import Records from './Records'
+
 import moment from 'moment'
-import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import RecordView from './RecordView'
 const columns = [
   {
     title: '序号',
     key: 'order',
     width: '70px',
     scopedSlots: { customRender: 'order' }
-  },
-  {
-    title: '日期',
-    dataIndex: 'storageDate'
   },
   {
     title: '入库单号',
@@ -170,28 +169,24 @@ const columns = [
     dataIndex: 'specification'
   },
   {
-    title: '应入库数量',
-    dataIndex: 'actualNum'
-  },
-  {
     title: '实际入库数量',
     dataIndex: 'storageNum'
   },
   {
-    title: '未入库数量',
-    dataIndex: 'notNum'
+    title: '仓位',
+    scopedSlots: { customRender: 'warehouseName1' }
   },
   {
-    title: '产品重量',
-    dataIndex: 'weight'
+    title: '入库方式',
+    scopedSlots: { customRender: 'storageType' }
   },
   {
-    title: '检验员',
-    dataIndex: 'inspectionUserName'
+    title: '入库员',
+    dataIndex: 'storageUserName'
   },
   {
-    title: '检验时间',
-    dataIndex: 'inspectionDate'
+    title: '入库时间',
+    dataIndex: 'storageDate'
   },
   {
     title: '操作',
@@ -201,11 +196,9 @@ const columns = [
 ]
 
 export default {
-  name: 'stock_management_import_record',
+  name: 'stock_management_import_record_1',
   components: {
-    AddForm,
-    ApproveInfo,
-    Records
+    RecordView
   },
   data() {
     return {
@@ -220,23 +213,15 @@ export default {
         showTotal: total => `共有 ${total} 条数据` //分页中显示总的数据
       },
       loading: false,
-      searchParam: {},
+      searchParam: {
+        status:1
+      },
       activeKey: 1,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       storageMaterialList: [],
       warehouseList:[],
       selectedRowKeys: [],
       selectedRows: [],
-    }
-  },
-  watch: {
-    $route: {
-      handler: function(to) {
-        if (to.name === 'stock_management_import_record') {
-          this.init()
-        }
-      },
-      immediate: true
     }
   },
   mounted() {
@@ -265,13 +250,13 @@ export default {
       if(Array.isArray(date) && date.length === 2){
         that.searchParam = {
           ...that.searchParam,
-          stratDate:date[0].format('YYYY-MM-DD'),
+          startDate:date[0].format('YYYY-MM-DD'),
           endDate:date[1].format('YYYY-MM-DD')
         }
       }else{
         that.searchParam = {
           ...that.searchParam,
-          stratDate:undefined,
+          startDate:undefined,
           endDate:undefined
         }
       }
@@ -321,29 +306,13 @@ export default {
       this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
-    },
+
     doAction(actionType, record) {
       let that = this
-      if(actionType === 'ruku'){
-        that.$refs.addForm.query('add', [record])
+      if(actionType === 'detail'){
+        that.$refs.recordView.query(actionType,[record])
         return
-      }else if(actionType === 'record'){
-        that.$refs.records.query('view', [record])
-        return
-      }else if(actionType === 'batch'){
-        let hasDiffMaterialCode = [...new Set(that.selectedRows.map(item => item.materialCode))]
-        if(hasDiffMaterialCode.length > 1){
-          that.$message.info(`物料代码不一致,禁止操作`)
-          return
-        }
-        that.$refs.addForm.query('add', [...that.selectedRows])
       }
-    },
-    approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId)
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0

@@ -85,6 +85,16 @@ export function giftApproval(parameter) {
   })
 }
 
+/**撤销（type入库类型(1赠送入库，2产品返修入库,3安装不良品入库，4退货入库，5采购入库-来料检验,6委外检验)） */
+export function storageRevocation2(parameter) {
+  return axios({
+    baseURL,
+    url: '/storage/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 // 入库仓库
 export function getWarehouseList(parameter) {
@@ -282,8 +292,273 @@ export function containerPalletList(parameter) {
 export function getShelvesByAreaId(parameter) {
   return axios({
     baseURL,
-    url: '/inventory/instant-position/getShelvesByAreaId',
+    // url: '/inventory/instant-position/getShelvesByAreaId',
+    url: '/inventory/instant-position/getShelvesByAreaIdIsBinding',
     method: 'get',
     params: parameter
   })
 }
+
+// ======出库申请单
+
+/**审批 */
+export function exWarehouseApplyApproval(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**新增或修改 */
+export function exWarehouseApplyAddOrUpdate(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**删除 */
+export function exWarehouseApplyDelete(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/delete',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**查询详情 */
+export function exWarehouseApplyDetail(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**获取物料信息 */
+export function exWarehouseApplyGetMaterial(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/getMaterial',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**分页查询 */
+export function exWarehouseApplyPageList(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/listExWarehouse',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**撤销 */
+export function exWarehouseApplyRevocation(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouseApply/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+// ======出库申请单END
+
+
+// ======出库单
+
+/**查询详情 */
+export function exWarehouseDetail(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouse/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**查询物料信息 */
+export function exWarehouseGetMaterial(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouse/getMaterial',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**分页查询 */
+export function exWarehousePageList(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouse/listExWarehouse',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**出库记录 */
+export function exWarehouseRecords(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouse/listExWarehouseLogByExWarehouseId',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**统计单据 */
+export function exWarehouseStatistics(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouse/statistics',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**出库操作 */
+export function exWarehouseUpdate(parameter) {
+  return axios({
+    baseURL,
+    url: '/exWarehouse/updateExWarhouse',
+    method: 'post',
+    data: parameter
+  })
+}
+// ======出库单 END
+
+
+// ======人工盘点
+/**审批 */
+export function artificialInventoryApproval(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/approval',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**导入盘点详情 */
+export function artificialInventoryImportArtificialInventory(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/importArtificialInventory',
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**新增或修改 */
+export function artificialInventoryAddOrUpdate(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/saveAndUpdate',
+    method: 'post',
+    data: parameter
+  })
+}
+
+
+/**删除 */
+export function artificialInventoryDelete(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/delete',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**下载人工盘点 */
+export function artificialInventoryExportExcel(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/exportExcel',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**完结 */
+export function artificialInventoryFinish(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/finish',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**详情数据 */
+export function artificialInventoryGetDetail(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/getDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**盘点计划明细 */
+export function artificialInventoryGetListByPage(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/getListByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**盘点 */
+export function artificialInventoryInventory(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/inventory',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**盘点计划分页查询 */
+export function artificialInventoryListArtificialInventory(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/listArtificialInventory',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**盘点详情分页查询 */
+export function artificialInventoryListInventory(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/listInventory',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**撤回 */
+export function artificialInventoryRevocation(parameter) {
+  return axios({
+    baseURL,
+    url: '/artificialInventory/revocation',
+    method: 'get',
+    params: parameter
+  })
+}
+// ======人工盘点 END

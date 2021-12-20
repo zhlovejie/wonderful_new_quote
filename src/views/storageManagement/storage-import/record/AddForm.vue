@@ -145,6 +145,7 @@
 </template>
 
 <script>
+
 const columns = [
   {
     title: '序号',
@@ -207,6 +208,7 @@ export default {
   name: 'stock_management_import_record_addForm',
   data() {
     return {
+      userInfo: this.$store.getters.userInfo, // 当前登录人
       visible: false,
       spinning: false,
       type: 'view',
@@ -251,6 +253,9 @@ export default {
   methods: {
     query(type, records = []) {
       const that = this
+      that.form = {
+        materialTableList: [] //物料信息
+      }
       that.visible = true
       that.form.materialTableList = that.$_.cloneDeep(records.map(item => {
         item.storageNum = item.notNum
@@ -258,11 +263,24 @@ export default {
       }))
       that.type = type
 
+
+      
+
       getList().then(res => {
         that.warehouseList = res.data
       })
-      containerPalletList().then(res => {
-        that.containerPalletList = res.data
+      
+
+      storageDetail({id:records[0].id}).then(res => {
+        console.log(res)
+        const data = res.data
+        that.form = {
+          ...that.form,
+          makerName:data.makerName,
+          makerDate:data.makerDate,
+          storageUserName:data.storageUserName || that.userInfo.trueName,
+          storageTime:data.storageTime
+        }
       })
     },
 
@@ -340,13 +358,15 @@ export default {
         ...that.form,
         reservoirAreaId: id,
         reservoirCode: target.reservoirCode,
-        reservoirName: target.reservoirName
+        reservoirAreaName: target.reservoirName
       }
 
       that.$nextTick(() => {
-        const { reservoirAreaId } = that.form
+        const { reservoirAreaId , materialTableList} = that.form
+        const materialId = materialTableList[0].materialId
         getShelvesByAreaId({
-          areaId: reservoirAreaId
+          areaId: reservoirAreaId,
+          materialId
         }).then(res => {
           that.shelvesLocationList = res.data.map(item => {
             item.key = that._uuid()
@@ -372,12 +392,17 @@ export default {
     },
 
     handlePositionChange(id) {
-      let target = this.instantPositionList.find(item => item.id === id)
-      this.form = {
-        ...this.form,
+      const that = this
+      let target = that.instantPositionList.find(item => item.id === id)
+      that.form = {
+        ...that.form,
         positionId: id,
         positionCode: target.positionCode
       }
+
+      containerPalletList({palletCodeOne:target.positionCode}).then(res => {
+        that.containerPalletList = (res.data || [])
+      })
     },
 
     handleContainerPalletChange(id) {

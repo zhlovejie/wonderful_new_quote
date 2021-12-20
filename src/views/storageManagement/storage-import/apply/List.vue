@@ -216,7 +216,7 @@ export default {
       },
       loading: false,
       searchParam: {},
-      activeKey: 1,
+      activeKey: 0,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       storageMaterialList: []
     }

@@ -27,43 +27,43 @@ const columns = [
     scopedSlots: { customRender: 'order' }
   },
   {
-    title: '仓库名称',
-    dataIndex: 'warehouseName'
+    title: '物料代码',
+    dataIndex: 'materialCode'
   },
   {
-    title: '库区',
-    dataIndex: 'reservoirAreaName'
+    title: '物料名称',
+    dataIndex: 'materialName'
   },
   {
-    title: '货架/库位',
-    dataIndex: 'shelvesLocationName'
+    title: '规格型号',
+    dataIndex: 'specification'
   },
   {
-    title:'库位码',
-    dataIndex:'positionCode'
+    title: '辅计量单位',
+    dataIndex: 'subUnit'
   },
   {
-    title: '托盘',
-    dataIndex: 'containerName'
+    title: '出库数量',
+    dataIndex: 'exWarehouseNum'
   },
   {
-    title: '入库数量',
-    dataIndex: 'receiptNum'
+    title: '已出库数量',
+    dataIndex: 'alreadyExWarehouseNum'
   },
   {
-    title: '入库人员',
-    dataIndex: 'storageUserName'
+    title: '未出库数量',
+    dataIndex: 'notExWarehouseNum'
   },
-  {
-    title: '入库时间',
-    dataIndex: 'storageTime'
-  }
+  // {
+  //   title: '入库时间',
+  //   dataIndex: 'storageTime'
+  // }
 ]
 
-import { storageRecords } from '@/api/storage_wzz'
+import { exWarehouseRecords } from '@/api/storage_wzz'
 
 export default {
-  name: 'stock_management_import_record_records',
+  name: 'stock_management_export_record_records',
   data() {
     return {
       visible: false,
@@ -75,7 +75,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      return '入库记录'
+      return '出库记录'
     }
   },
   methods: {
@@ -85,7 +85,7 @@ export default {
       that.type = type
       that.materialTableList = []
       that.spinning = true
-      storageRecords({ storageId: records[0].id }).then(res => {
+      exWarehouseRecords({ id: records.id }).then(res => {
         that.spinning = false
         that.materialTableList = (res.data || []).map(item => {
           item.key = that._uuid()

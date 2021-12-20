@@ -1,20 +1,32 @@
 <template>
-  <!-- 出库单 -->
-  <div class="wdf-custom-wrapper" id="stock_management_export_record">
-    <a-tabs :activeKey="activeKey" @change="handlerTabChange">
-       <a-tab-pane v-for="tab in tabList" :key="tab.key" :tab="tab.label" />
-     </a-tabs>
+  <!-- 入库单 -->
+  <div class="wdf-custom-wrapper" id="stock_management_import_record">
     <div class="search-wrapper">
       <a-form layout="inline">
-        <a-form-item>
-          <a-select placeholder="出库类型" v-model="searchParam.exWarehouseType" style="width: 150px" :allowClear="true">
-            <a-select-option :value="1">基建出库</a-select-option>
-            <a-select-option :value="2">研发出库</a-select-option>
+        <a-form-item >
+          <a-select
+            v-model="searchParam.warehouseId"
+            placeholder="入库仓库"
+            style="width:150px;"
+          >
+            <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
+              item.warehouseName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item>
-          <a-input placeholder="单号模糊搜索" v-model="searchParam.exWarehouseCode" style="width:180px;" />
+          <a-select placeholder="入库类型" v-model="searchParam.type" style="width: 150px" :allowClear="true">
+            <a-select-option :value="1">赠送入库</a-select-option>
+            <a-select-option :value="2">产成品返修入库</a-select-option>
+            <a-select-option :value="3">安装不良品入库</a-select-option>
+            <a-select-option :value="4">退货入库</a-select-option>
+            <a-select-option :value="5">采购入库</a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item>
+          <a-input placeholder="单号模糊搜索" v-model="searchParam.storageCode" style="width:180px;" />
         </a-form-item>
 
         <a-form-item>
@@ -42,6 +54,13 @@
         </a-form-item>
 
         <a-form-item>
+          <a-select placeholder="入库策略" v-model="searchParam.aaa" style="width: 150px" :allowClear="true">
+            <a-select-option :value="1">单品策略</a-select-option>
+            <a-select-option :value="2">同品策略</a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item>
           <a-range-picker style="width:220px;" v-model="searchParam.date" />
         </a-form-item>
         
@@ -57,6 +76,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       >
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
@@ -76,42 +96,18 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' } -->
-          <template v-if="+activeKey === 0">
-            <a type="primary" @click="doAction('chuku', record)">出库</a>
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('record', record)">出库记录</a>
-          </template>
-          <template v-if="+activeKey === 1">
-            <a type="primary" @click="doAction('view', record)">详情</a>
-          </template>
-          
+          <a type="primary" @click="doAction('ruku', record)">入库</a>
+          <a-divider type="vertical" />
+          <a type="primary" @click="doAction('record', record)">入库记录</a>
+          <a-divider type="vertical" />
+          <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+            <a type="primary" href="javascript:;">撤回</a>
+          </a-popconfirm>
         </div>
 
-        <a-table
-          slot="expandedRowRender"
-          slot-scope="record, index, indent, expanded"
-          :columns="innerColumns"
-          :dataSource="record.exWarehouseApplyMaterials"
-          :pagination="false"
-          size="small"
-        >
-          <div slot="order" slot-scope="text, record, index">
-            {{ index + 1 }}
-          </div>
-          <div slot="materialName" slot-scope="text, record">
-            <a-popover title="物料信息">
-              <template slot="content">
-                <h3>物料名称</h3>
-                <p style="width:450px;">{{ record.materialName }}</p>
-                <h3>规格型号</h3>
-                <p style="width:450px;">{{ record.specification }}</p>
-                <h3>物料代码</h3>
-                <p style="width:450px;">{{ record.materialCode }}</p>
-              </template>
-              <span>{{ text }}</span>
-            </a-popover>
-          </div>
-        </a-table>
+        <template slot="footer">
+          <a-button type="primary" :disabled="selectedRows.length === 0" @click="doAction('batch', record)">批量入库</a-button>
+        </template>
       </a-table>
     </div>
     <ApproveInfo ref="approveInfoCard" />
@@ -123,14 +119,17 @@
 
 <script>
 import { 
+  storageMaterialList1,
   getWarehouseList,
-  exWarehouseDetail,
-  exWarehouseGetMaterial,
-  exWarehousePageList,
-  exWarehouseRecords,
-  exWarehouseStatistics,
-  exWarehouseUpdate
-} from '@/api/storage_wzz'
+  storagePageList,
+  storageRevocation2,
+  storageDetail,
+  storageRecords,
+  storageStatistics,
+  storageAddOrUpdate,
+  storageSingleUpdate,
+  storageBatchUpdate
+  } from '@/api/storage_wzz'
 import AddForm from './AddForm'
 import Records from './Records'
 import moment from 'moment'
@@ -144,23 +143,60 @@ const columns = [
   },
   {
     title: '日期',
-    dataIndex: 'exWarehouseDate'
+    dataIndex: 'storageDate'
   },
   {
-    title: '出库单号',
-    dataIndex: 'exWarehouseCode'
+    title: '入库单号',
+    dataIndex: 'storageCode'
   },
   {
-    title: '出库类型',
-    dataIndex: 'exWarehouseTypeText'
+    title: '入库仓库',
+    dataIndex: 'warehouseName'
   },
   {
-    title: '提交人',
-    dataIndex: 'createdName'
+    title: '入库类型',
+    dataIndex: 'storageTypeText'
   },
   {
-    title: '提交时间',
-    dataIndex: 'createdTime'
+    title: '紧急程度',
+    dataIndex: 'urgentTypeText'
+  },
+  {
+    title: '物料代码',
+    dataIndex: 'materialCode',
+  },
+  {
+    title: '物料名称',
+    dataIndex: 'materialName',
+    scopedSlots: { customRender: 'materialName' }
+  },
+  {
+    title: '规格型号',
+    dataIndex: 'specification'
+  },
+  {
+    title: '应入库数量',
+    dataIndex: 'actualNum'
+  },
+  {
+    title: '实际入库数量',
+    dataIndex: 'storageNum'
+  },
+  {
+    title: '未入库数量',
+    dataIndex: 'notNum'
+  },
+  {
+    title: '产品重量',
+    dataIndex: 'weight'
+  },
+  {
+    title: '检验员',
+    dataIndex: 'inspectionUserName'
+  },
+  {
+    title: '检验时间',
+    dataIndex: 'inspectionDate'
   },
   {
     title: '操作',
@@ -169,40 +205,8 @@ const columns = [
   }
 ]
 
-const innerColumns= [
-  {
-    title: '序号',
-    key: 'order',
-    width: '70px',
-    scopedSlots: { customRender: 'order' }
-  },
-  {
-    title: '物料代码',
-    dataIndex: 'materialCode',
-    scopedSlots: { customRender: 'materialCode' }
-  },
-  {
-    title: '仓位代码',
-    dataIndex: 'positionCode'
-  },
-  {
-    title: '物料名称',
-    dataIndex: 'materialName',
-    scopedSlots: { customRender: 'materialName' }
-  },
-  {
-    title: '辅计量单位',
-    dataIndex: 'subUnit'
-  },
-  {
-    title: '实际出库数量',
-    dataIndex: 'exWarehouseNum',
-    scopedSlots: { customRender: 'exWarehouseNum' }
-  }
-]
-
 export default {
-  name: 'stock_management_export_record',
+  name: 'stock_management_import_record_2',
   components: {
     AddForm,
     ApproveInfo,
@@ -210,19 +214,7 @@ export default {
   },
   data() {
     return {
-      activeKey:0,
-      tabList:[
-        {
-          key:0,
-          label:'待出库'
-        },
-        {
-          key:1,
-          label:'已出库'
-        },
-      ],
-      columns,
-      innerColumns,
+      columns: columns,
       dataSource: [],
       pagination: {
         current: 1,
@@ -234,17 +226,20 @@ export default {
       },
       loading: false,
       searchParam: {
-        type:0
+        status:0
       },
+      activeKey: 1,
       userInfo: this.$store.getters.userInfo, // 当前登录人
       storageMaterialList: [],
       warehouseList:[],
+      selectedRowKeys: [],
+      selectedRows: [],
     }
   },
   watch: {
     $route: {
       handler: function(to) {
-        if (to.name === 'stock_management_export_record') {
+        if (to.name === 'stock_management_import_record') {
           this.init()
         }
       },
@@ -256,19 +251,11 @@ export default {
   },
   methods: {
     moment,
-    handlerTabChange(key){
-      this.activeKey = key
-      this.searchParam = {
-        ...this.searchParam,
-        type:this.activeKey
-      }
-      this.searchAction()
-    },
     init() {
       let that = this
       that.searchParam = { ...that.searchParam, searchStatus: that.activeKey }
       let queue = []
-      let task1 = exWarehouseGetMaterial().then(res => (that.storageMaterialList = res.data))
+      let task1 = storageMaterialList1().then(res => (that.storageMaterialList = res.data))
       queue.push(task1)
       let task2 = getWarehouseList().then(res => (this.warehouseList = res.data))
       queue.push(task2)
@@ -299,12 +286,17 @@ export default {
       let _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      exWarehousePageList(_searchParam)
+      storagePageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            item.exWarehouseTypeText = { 1: '基建出库', 2: '研发出库' }[item.exWarehouseType] || '未知'
+            item.statusText = { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' }[item.status] || '未知'
+            item.storageTypeText =
+              { 1: '赠送入库', 2: '产品返修入库', 3: '安装不良品入库', 4: '退货入库', 5: '采购入库',6:'委外检验' }[
+                item.type
+              ] || '未知'
+            item.urgentTypeText = { 1: '一般', 2: '紧急', 3: '特急' }[item.urgentType] || '未知'
             return item
           })
 
@@ -336,16 +328,34 @@ export default {
       this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
+    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
     doAction(actionType, record) {
       let that = this
-      if(actionType === 'chuku'){
-        that.$refs.addForm.query('edit', record)
-        return
-      }else if(actionType === 'view'){
-        that.$refs.addForm.query('view', record)
+      if(actionType === 'ruku'){
+        that.$refs.addForm.query('add', [record])
         return
       }else if(actionType === 'record'){
-        that.$refs.records.query('record', record)
+        that.$refs.records.query('view', [record])
+        return
+      }else if(actionType === 'batch'){
+        let hasDiffMaterialCode = [...new Set(that.selectedRows.map(item => item.materialCode))]
+        if(hasDiffMaterialCode.length > 1){
+          that.$message.info(`物料代码不一致,禁止操作`)
+          return
+        }
+        that.$refs.addForm.query('add', [...that.selectedRows])
+      }else if(actionType === 'withdraw'){
+        storageRevocation2({id:record.id,type:record.type}).then(res => {
+          that.$message.info(res.msg)
+          if(+res.code === 200){
+            this.searchAction()
+          }
+        }).catch(err => {
+          that.$message.error(err.message)
+        })
         return
       }
     },
