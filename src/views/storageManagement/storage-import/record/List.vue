@@ -39,7 +39,7 @@ export default {
     $route: {
       handler: function (to, from) {
         if (to.name === 'stock_management_import_record') {
-          handlerTabChange(1)
+          this.handlerTabChange(1)
         }
       },
       immediate: true,

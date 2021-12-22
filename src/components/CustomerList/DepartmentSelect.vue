@@ -42,6 +42,8 @@ export default {
     },
     depChange(depId) {
       this.$emit("update:depId", depId);
+      let target = this.depList.find(item => item.id === depId)
+      this.$emit("change", target);
     },
     filterOption(input, option) {
       return (

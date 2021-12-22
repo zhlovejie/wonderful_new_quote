@@ -35,7 +35,7 @@
         </a-form-item>
 
         <a-form-item style="float:right;">
-          <a-button icon="plus" type="primary" @click="doAction('add',{})"> 新增出库单申请 </a-button>
+          <a-button icon="plus" type="primary" @click="doAction('add',{})"> 新增 </a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -65,7 +65,7 @@
           <a type="primary" @click="doAction('view', record)">查看</a>
 
           <template v-if="+activeKey === 0">
-            <template v-if="[3, 4].includes(+record.status)">
+            <template v-if="[0, 3, 4].includes(+record.status)">
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
             </template>
@@ -77,7 +77,7 @@
               </a-popconfirm>
             </template>
 
-            <template v-if="[3, 4].includes(+record.status)">
+            <template v-if="[0, 3, 4].includes(+record.status)">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
@@ -191,7 +191,6 @@ export default {
         flag:0
       },
       userInfo: this.$store.getters.userInfo, // 当前登录人
-      storageMaterialList: []
     }
   },
   watch: {
@@ -213,8 +212,7 @@ export default {
       let that = this
       that.searchParam = { ...that.searchParam, searchStatus: that.activeKey }
       let queue = []
-      let task1 = exWarehouseApplyGetMaterial().then(res => (that.storageMaterialList = res.data))
-      queue.push(task1)
+      
       that.searchAction()
       return Promise.all(queue)
     },

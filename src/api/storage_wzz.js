@@ -299,6 +299,16 @@ export function getShelvesByAreaId(parameter) {
   })
 }
 
+/**根据库区id获取下级货架和库位信息 */
+export function getShelvesByAreaId2(parameter) {
+  return axios({
+    baseURL,
+    url: '/inventory/instant-position/getShelvesByAreaId',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // ======出库申请单
 
 /**审批 */
@@ -457,6 +467,7 @@ export function artificialInventoryImportArtificialInventory(parameter) {
     baseURL,
     url: '/artificialInventory/importArtificialInventory',
     method: 'post',
+    responseType:'blob',
     data: parameter
   })
 }
@@ -488,6 +499,7 @@ export function artificialInventoryExportExcel(parameter) {
     baseURL,
     url: '/artificialInventory/exportExcel',
     method: 'get',
+    responseType:'blob',
     params: parameter
   })
 }

@@ -18,126 +18,123 @@
           <div class="__bd">
             <table class="custom-table custom-table-border">
               <tr>
-                <td style="width:150px;">出库单号</td>
+                <td style="width:150px;">盘点计划单号</td>
                 <td style="width:350px;">
                   <a-form-model-item>
-                    <span v-if="form.exWarehouseApplyCode">{{ form.exWarehouseApplyCode }}</span>
+                    <span v-if="form.inventoryCode">{{ form.inventoryCode }}</span>
                     <span v-else style="color:#bfbfbf;">系统自动生成</span>
                   </a-form-model-item>
                 </td>
-                <td style="width:150px;">出库类型</td>
+                <td style="width:150px;">盘点方式</td>
                 <td style="width:350px;">
-                  <a-form-model-item prop="exWarehouseType">
-                    <a-select
-                      v-if="!isDisabled"
-                      v-model="form.exWarehouseType"
-                      placeholder="出库类型"
-                      style="width:100%;"
-                    >
-                      <a-select-option :value="1">基建出库</a-select-option>
-                      <a-select-option :value="2">研发出库</a-select-option>
+                  <a-form-model-item prop="type">
+                    <a-select v-if="!isDisabled" v-model="form.type" placeholder="盘点方式" style="width:100%;">
+                      <a-select-option :value="0">全盘</a-select-option>
+                      <a-select-option :value="1">循环盘</a-select-option>
                     </a-select>
-                    <span v-else>{{ {1:'基建出库',2:'研发出库'}[form.exWarehouseType] }}</span>
+                    <span v-else>{{ { 0: '全盘', 1: '循环盘' }[form.type] }}</span>
                   </a-form-model-item>
                 </td>
               </tr>
               <tr>
-                <td>日期</td>
-                <td colspan="3">
+                <td>盘点部门</td>
+                <td>
                   <a-form-model-item prop="exWarehouseDate">
-                    <a-date-picker v-if="!isDisabled" :disabled="isDisabled" style="width:100%;" v-model="form.exWarehouseDate" />
-                    <span v-else>{{ form.exWarehouseDate }}</span>
+                    <DepartmentSelect v-if="!isDisabled" @change="handleDepartmentSelectChange" :depId="form.deptId" />
+                    <span v-else>{{ form.deptName }}</span>
+                  </a-form-model-item>
+                </td>
+                <td>日期</td>
+                <td>
+                  <a-form-model-item prop="inventoryDate">
+                    <a-date-picker
+                      v-if="!isDisabled"
+                      :disabled="isDisabled"
+                      style="width:100%;"
+                      v-model="form.inventoryDate"
+                    />
+                    <span v-else>{{ form.inventoryDate }}</span>
                   </a-form-model-item>
                 </td>
               </tr>
             </table>
           </div>
 
-          <div class="__hd">物料信息</div>
+          <div class="__hd">盘点计划明细</div>
           <div class="__bd">
-            <a-table :columns="columns" :dataSource="form.materialTableList" :pagination="false" size="small">
-              <div slot="order" slot-scope="text, record, index">
-                {{ index + 1 }}
-              </div>
-
-              <div slot="materialCode" slot-scope="text, record, index">
-                <a-form-model-item
-                  v-if="!isDisabled"
-                  :prop="`materialTableList.${index}.materialCode`"
-                  :rules="{ required: true, message: '请选择物料' }"
-                >
+            <a-row :gutter="20" v-if="!isDisabled">
+              <a-col :span="6">
+                <a-form-model-item prop="warehouseId">
                   <a-select
-                    :disabled="isDisabled"
-                    placeholder="请选择物料"
-                    style="width:200px;"
-                    :value="record.positionId"
-                    @change="id => handlerMaterialChange(id, record)"
+                    style="width:100%;"
+                    placeholder="选择仓库"
+                    v-model="form.warehouseId"
+                    @change="handleWarehouseChange"
                   >
-                    <a-select-option v-for="item in instantPositionList" :key="item.id" :value="item.id">{{
-                      item.materialCode
+                    <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
+                      item.warehouseName
                     }}</a-select-option>
                   </a-select>
                 </a-form-model-item>
-                <span v-else>{{text}}</span>
-              </div>
+              </a-col>
 
-              <div slot="materialName" slot-scope="text, record">
-                <a-popover title="物料信息">
-                  <template slot="content">
-                    <h3>物料名称</h3>
-                    <p style="width:450px;">{{ record.materialName }}</p>
-                    <h3>规格型号</h3>
-                    <p style="width:450px;">{{ record.specification }}</p>
-                    <h3>物料代码</h3>
-                    <p style="width:450px;">{{ record.materialCode }}</p>
-                  </template>
-                  <span>{{ text }}</span>
-                </a-popover>
-              </div>
-              <div slot="exWarehouseNum" slot-scope="text, record, index">
-                <a-form-model-item
-                  v-if="!isDisabled"
-                  :prop="`materialTableList.${index}.exWarehouseNum`"
-                  :rules="{ required: true, message: '请输入出库数量' }"
-                >
-                  <a-input-number
-                    :disabled="isDisabled"
-                    style="width:80px;text-align:center;"
-                    :min="0"
-                    :max="record.alreadyExWarehouseNum"
-                    :step="1"
-                    :precision="0"
-                    :value="record.exWarehouseNum"
-                    @change="(val) => handleExWarehouseNumChange(index,record,val)"
-                  />
+              <a-col :span="6">
+                <a-form-model-item prop="reservoirAreaId">
+                  <a-select
+                    style="width:100%;"
+                    placeholder="选择库区"
+                    v-model="form.reservoirAreaId"
+                    @change="handleReservoirAreaChange"
+                  >
+                    <a-select-option v-for="item in reservoiList" :key="item.id" :value="item.id">{{
+                      item.reservoirName
+                    }}</a-select-option>
+                  </a-select>
                 </a-form-model-item>
-                <span v-else>{{text}}</span>
-              </div>
+              </a-col>
 
-
-              <div slot="action" slot-scope="text, record">
-                <a-button type="link" @click="actionItem('delete', record)">删除</a-button>
+              <a-col :span="6">
+                <a-form-model-item prop="shelvesLocationId">
+                  <a-select
+                    style="width:100%;"
+                    placeholder="选择货架"
+                    v-model="form.shelvesLocationId"
+                    @change="handleShelvesLocationChange"
+                  >
+                    <a-select-option
+                      v-for="item in shelvesLocationList"
+                      :key="item.shelvesLocationId"
+                      :value="item.shelvesLocationId"
+                      >{{ item.shelvesLocationName }}</a-select-option
+                    >
+                  </a-select>
+                </a-form-model-item>
+              </a-col>
+            </a-row>
+            <a-table
+              :columns="columns"
+              :dataSource="instantPositionList"
+              :pagination="false"
+              size="small"
+              :rowSelection="
+                !isDisabled ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
+              "
+              :scroll="{ y: 450 }"
+            >
+              <div slot="order" slot-scope="text, record, index">
+                {{ index + 1 }}
               </div>
             </a-table>
-            <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="actionItem('add')"
-              >添加</a-button
-            >
           </div>
-          <div class="__hd">备注</div>
-          <div class="__bd">
-            <a-form-model-item>
-              <a-textarea v-if="!isDisabled" :disabled="isDisabled" v-model="form.remarks" placeholder="备注" :rows="4" />
-              <span v-else>{{ form.remarks }}</span>
-            </a-form-model-item>
-          </div>
-
           <div class="__footer">
             <a-button @click="handleSubmit('cancel')">取消</a-button>
-            <a-button v-if="isAdd || isEdit" @click="handleSubmit('submit')" type="primary">提交</a-button>
+            <a-button v-if="isAdd || isEdit" @click="handleSubmit" type="primary">保存</a-button>
+            <a-button v-if="isAdd || isEdit" @click="handleSubmit" type="primary">提交审批</a-button>
             <template v-if="isApproval">
               <a-button type="primary" @click="passAction">通过</a-button>
               <a-button @click="noPassAction" style="margin:0 10px;">不通过</a-button>
             </template>
+            <a-button v-if="isPandian" @click="handleSubmit" type="primary">保存</a-button>
           </div>
         </div>
       </a-form-model>
@@ -147,17 +144,21 @@
 </template>
 
 <script>
+import { getList, ReservoiGetList } from '@/api/storage'
+
+import { getShelvesByAreaId2, containerPalletList } from '@/api/storage_wzz'
+
 import {
-  exWarehouseApplyAddOrUpdate,
-  exWarehouseApplyApproval,
-  exWarehouseApplyDetail,
-  instantPositionList
+  artificialInventoryApproval,
+  artificialInventoryAddOrUpdate,
+  artificialInventoryGetDetail
 } from '@/api/storage_wzz'
 
+import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
 import moment from 'moment'
 import Approval from './Approval'
 
-const base_columns = [
+const columns = [
   {
     title: '序号',
     key: 'order',
@@ -165,66 +166,77 @@ const base_columns = [
     scopedSlots: { customRender: 'order' }
   },
   {
-    title: '物料代码',
-    dataIndex: 'materialCode',
-    scopedSlots: { customRender: 'materialCode' }
-  },
-  {
-    title: '仓位代码',
+    title: '库位码',
     dataIndex: 'positionCode'
   },
   {
+    title: '仓库',
+    dataIndex: 'warehouseName'
+  },
+  {
+    title: '库区',
+    dataIndex: 'reservoirAreaName'
+  },
+  {
+    title: '状态',
+    dataIndex: 'isLock'
+  },
+  {
+    title: '物料代码',
+    dataIndex: 'materialCode'
+  },
+  {
     title: '物料名称',
-    dataIndex: 'materialName',
-    scopedSlots: { customRender: 'materialName' }
+    dataIndex: 'materialName'
   },
   {
     title: '辅计量单位',
     dataIndex: 'subUnit'
   },
   {
-    title: '出库数量',
-    dataIndex: 'exWarehouseNum',
-    scopedSlots: { customRender: 'exWarehouseNum' }
-  },
-  {
-    title: '操作',
-    scopedSlots: { customRender: 'action' }
+    title: '数量',
+    dataIndex: 'positionQuantity'
   }
 ]
 
 export default {
-  name: 'GiftForm',
+  name: 'stock_management_task_handle_check_plan_addForm',
   components: {
-    Approval
+    Approval,
+    DepartmentSelect
   },
   data() {
     return {
+      columns,
       visible: false,
       spinning: false,
       record: {},
       type: 'view',
       form: {
         exWarehouseType: 1,
-        exWarehouseDate: moment(),
-        materialTableList: [] //物料信息
+        inventoryDate: moment()
       },
       rules: {
         // routeName: [{ required: true, message: '请输入工艺路线名称' }],
         // defaultStatus: [{ required: true, message: '请选择缺省状态' }],
         // materialCode: [{ required: true, message: '请选择物料代码' }]
       },
+      detail: {},
+
+      warehouseList: [],
+      reservoiList: [],
+      shelvesLocationList: [],
       instantPositionList: [],
-      detail: {}
+      containerPalletList: [],
+
+      selectedRowKeys: [],
+      selectedRows: []
     }
   },
   computed: {
     modalTitle() {
-      const type = this.record.storageType
-
       const action = this.isView ? '查看' : this.isEdit ? '编辑' : this.isApproval ? '审批' : '新增'
-
-      return `${action}-出库申请单`
+      return `${action}-盘点计划`
     },
     isView() {
       return this.type === 'view'
@@ -238,43 +250,15 @@ export default {
     isApproval() {
       return this.type === 'approval'
     },
+    isPandian() {
+      return this.type === 'pandian'
+    },
     isDisabled() {
       return this.isView || this.isApproval
-    },
-    columns(){
-      let columns = [...base_columns]
-      return this.isDisabled ? columns.slice(0,-1) : columns
     }
   },
   methods: {
     moment,
-    handleExWarehouseNumChange(index,record,val){
-      const that = this
-      let materialTableList = [...that.form.materialTableList]
-      let target = materialTableList[index]
-      target.exWarehouseNum = val
-
-      that.form = {
-        ...that.form,
-        materialTableList
-      }
-    },
-    actionItem(type, record) {
-      const that = this
-      let materialTableList = [...that.form.materialTableList]
-      if (type === 'add') {
-        materialTableList.push({
-          key: that._uuid()
-        })
-        
-      } else if (type === 'delete') {
-        materialTableList = materialTableList.filter(item => item.key !== record.key)
-      }
-      that.form = {
-        ...that.form,
-        materialTableList
-      }
-    },
     async query(type, record) {
       const that = this
       that.visible = true
@@ -283,67 +267,48 @@ export default {
 
       that.form = {
         exWarehouseType: 1,
-        exWarehouseDate: moment(),
-        materialTableList: [] //物料信息
+        inventoryDate: moment()
       }
 
-      instantPositionList({ materialType: 1 }).then(res => {
-        that.instantPositionList = res.data
-      })
+      that.spinning = true
+      await getList().then(res => (that.warehouseList = res.data))
 
-      if (that.isAdd) {
-      } else {
-        if (this.record) {
-          exWarehouseApplyDetail({ id: this.record.id }).then(res => {
-            const data = res.data
-            that.form = {
-              id: data.id,
-              exWarehouseApplyCode: data.exWarehouseApplyCode,
-              exWarehouseType: data.exWarehouseType,
-              exWarehouseDate: that.isDisabled ? data.exWarehouseDate : moment(data.exWarehouseDate),
-              remarks: data.remarks,
-              materialTableList: data.exWarehouseApplyMaterials
+      try {
+        if (that.isAdd) {
+        } else {
+          if (this.record) {
+            await artificialInventoryGetDetail({ id: this.record.id }).then(res => {
+              const data = res.data
+              that.form = {
+                ...data,
+                inventoryDate: that.isDisabled ? data.inventoryDate : moment(data.inventoryDate)
+              }
+              // that.instantPositionList = data.artificialInventoryInfos || []
+            })
+
+            const artificialInventoryInfos = that.form.artificialInventoryInfos || []
+
+            if (artificialInventoryInfos.length > 0) {
+              const { warehouseId, reservoirAreaId, shelvesLocationId } = artificialInventoryInfos[0]
+              await that.handleWarehouseChange(warehouseId)
+              await that.handleReservoirAreaChange(reservoirAreaId)
+              await that.handleShelvesLocationChange(shelvesLocationId)
+
+              that.selectedRowKeys = artificialInventoryInfos.map(item => String(item.positionId))
+              that.selectedRows = that.instantPositionList.filter(item => {
+                return that.selectedRowKeys.includes(String(item.positionId))
+              })
             }
-          })
+          }
         }
+      } catch (err) {
+        console.log(err)
       }
+      that.spinning = false
     },
-    handlerMaterialChange(positionId, record) {
-      debugger
-      const that = this
-      const target = that.instantPositionList.find(item => item.id === positionId)
-      if (!target) {
-        return
-      }
-      const {
-        positionCode,
-        materialId,
-        materialName,
-        materialCode,
-        specification,
-        subUnit,
-        positionQuantity,
-        k3Code
-      } = target
-
-      let materialTableList = [...that.form.materialTableList]
-      let item = materialTableList.find(item => item.key === record.key)
-      item.positionId = positionId
-      item.positionCode = positionCode
-      item.materialId = materialId
-      item.materialName = materialName
-      item.materialCode = materialCode
-      item.specification = specification
-      item.subUnit = subUnit
-      item.exWarehouseNum = positionQuantity
-      item.notExWarehouseNum = positionQuantity
-      item.alreadyExWarehouseNum = positionQuantity
-      item.k3Code = k3Code
-
-      that.form = {
-        ...that.form,
-        materialTableList
-      }
+    rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     },
 
     handleSubmit(type) {
@@ -351,22 +316,26 @@ export default {
       if (type === 'cancel') {
         that.handleCancel()
         return
-      } else if (type === 'submit') {
+      } else {
+        if (that.selectedRows.length === 0) {
+          that.$message.info('请至少选择一条盘点计划明细')
+          return
+        }
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
             const params = {
               ...that.form,
-              exWarehouseApplyMaterials:that.form.materialTableList.map(item => {
-                item.notExWarehouseNum = item.alreadyExWarehouseNum - item.exWarehouseNum
-                return {...item}
-              }),
-              exWarehouseDate: moment(that.form.exWarehouseDate).format('YYYY-MM-DD HH:mm:ss')
+              inventoryDate: moment(that.form.inventoryDate).format('YYYY-MM-DD HH:mm:ss'),
+              status: type === 'save' ? 0 : 1
             }
+            params.artificialInventoryInfos = that.selectedRows.map(item => {
+              item.id = that.form.id
+              return item
+            })
 
-            delete params.materialTableList
             console.log(params)
             that.spinning = true
-            exWarehouseApplyAddOrUpdate(params)
+            artificialInventoryAddOrUpdate(params)
               .then(res => {
                 that.spinning = false
                 that.$message.info(res.msg)
@@ -391,15 +360,102 @@ export default {
     handleCancel() {
       const that = this
       that.$nextTick(() => {
+        that.form = {
+          exWarehouseType: 1,
+          inventoryDate: moment()
+        }
+
+        that.detail = {}
+
+        that.warehouseList = []
+        that.reservoiList = []
+        that.shelvesLocationList = []
+        that.instantPositionList = []
+        that.containerPalletList = []
+
+        that.selectedRowKeys = []
+        that.selectedRows = []
+
         that.visible = false
       })
+    },
+
+    handleDepartmentSelectChange(item) {
+      this.form = {
+        ...this.form,
+        deptId: item.id,
+        deptName: item.departmentName
+      }
+    },
+    handleWarehouseChange(id) {
+      const that = this
+      let target = that.warehouseList.find(item => item.id === id)
+      that.form = {
+        ...that.form,
+        warehouseId: id,
+        warehouseName: target.warehouseName
+      }
+
+      return ReservoiGetList({ warehouseId: id }).then(res => {
+        that.reservoiList = res.data
+      })
+    },
+
+    handleReservoirAreaChange(id) {
+      const that = this
+      let target = that.reservoiList.find(item => item.id === id)
+      that.form = {
+        ...that.form,
+        reservoirAreaId: id,
+        reservoirCode: target.reservoirCode,
+        reservoirAreaName: target.reservoirName
+      }
+
+      const { reservoirAreaId } = that.form
+      return getShelvesByAreaId2({
+        areaId: reservoirAreaId
+      }).then(res => {
+        that.shelvesLocationList = res.data.map(item => {
+          item.key = that._uuid()
+          return item
+        })
+      })
+    },
+
+    handleShelvesLocationChange(shelvesLocationId) {
+      const that = this
+      let target = that.shelvesLocationList.find(item => item.shelvesLocationId === shelvesLocationId)
+      if (target) {
+        const { warehouseId, warehouseName, reservoirAreaId, reservoirAreaName } = that.form
+        that.instantPositionList = (target.positionModelVoList || []).map(item => {
+          item.key = String(item.id)
+          item.isLock = +target.type === 1 ? (+target.isLock === 1 ? '是' : '否') : '-'
+          item.type = target.type
+          item.warehouseId = warehouseId
+          item.warehouseName = warehouseName
+          item.reservoirAreaId = reservoirAreaId
+          item.reservoirAreaName = reservoirAreaName
+          item.shelvesLocationId = target.shelvesLocationId
+          item.shelvesLocationName = target.shelvesLocationName
+          item.positionId = item.id
+          item.stockAmount = item.positionQuantity
+          return item
+        })
+
+        that.form = {
+          ...that.form,
+          shelvesLocationId: target.shelvesLocationId,
+          shelvesLocationName: target.shelvesLocationName,
+          shelvesLocationType: target.type
+        }
+      }
     },
 
     submitAction(opt) {
       let that = this
       let values = Object.assign({}, opt || {}, { approveId: that.form.id })
       that.spinning = true
-      exWarehouseApplyApproval(values)
+      artificialInventoryApproval(values)
         .then(res => {
           that.spinning = false
           that.$message.info(res.msg)
