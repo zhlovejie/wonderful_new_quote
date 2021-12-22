@@ -206,20 +206,20 @@ export default {
       type: [Number, String],
       default: () => {
         return null
-      },
+      }
     },
     prefix: {
       type: String,
       default: () => {
         return ''
-      },
+      }
     },
     modelType: {
       type: Object,
       default: () => {
         return {}
-      },
-    },
+      }
+    }
   },
   data() {
     return {
@@ -231,7 +231,7 @@ export default {
 
       optControlSelected: null,
       optControlSelectedDefault: undefined,
-      controlResult: {},
+      controlResult: {}
     }
   },
   computed: {
@@ -242,16 +242,22 @@ export default {
       return this.calcItems()
     },
     viewDataSource() {
-      let { optStand, optSelect, optChoice, control_optStand, control_optSelect, control_optChoice } =
-        this.getChoiceProducts()
+      let {
+        optStand,
+        optSelect,
+        optChoice,
+        control_optStand,
+        control_optSelect,
+        control_optChoice
+      } = this.getChoiceProducts()
       return {
         optInfo: { ...this.optInfo, optControl: this.optControlSelected },
         optStand: [...optStand],
         optSelect: [...optSelect, ...optChoice],
         optControlStand: [...control_optStand],
-        optControlSelect: [...control_optSelect, ...control_optChoice],
+        optControlSelect: [...control_optSelect, ...control_optChoice]
       }
-    },
+    }
   },
   methods: {
     optStandChoiceCheckChange(idx, e) {
@@ -264,7 +270,7 @@ export default {
     optChoiceDataSourceChange(index, val) {
       //debugger
       let _optChoice = [...this.optChoice]
-      let target = _optChoice[index].dataSource.find((item) => item.id === val)
+      let target = _optChoice[index].dataSource.find(item => item.id === val)
       if (target) {
         if (target.price === null) {
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
@@ -292,7 +298,7 @@ export default {
     },
     optSelectCheckChange(id, e) {
       let _optSelect = [...this.optSelect]
-      let target = _optSelect.find((item) => item.id === id)
+      let target = _optSelect.find(item => item.id === id)
       if (target) {
         if (target.price === null) {
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
@@ -307,7 +313,7 @@ export default {
       //debugger
       let controlResult = { ...this.controlResult }
       let _optChoice = controlResult.optChoice
-      let target = _optChoice[index].dataSource.find((item) => item.id === val)
+      let target = _optChoice[index].dataSource.find(item => item.id === val)
       if (target) {
         if (target.price === null) {
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
@@ -334,7 +340,7 @@ export default {
     controlResultOptSelectCheckChange(id, e) {
       let controlResult = { ...this.controlResult }
       let _optSelect = controlResult.optSelect
-      let target = _optSelect.find((item) => item.id === id)
+      let target = _optSelect.find(item => item.id === id)
       if (target) {
         if (target.price === null) {
           this.$message.info(`【${target.itemName}】 没有价格，请联系管理员`)
@@ -360,13 +366,13 @@ export default {
         bprice,
         cprice,
         retailPrice,
-        remarks,
+        remarks
       }
-      that.optStand = sysConfigList.optStand.map((item) => {
+      that.optStand = sysConfigList.optStand.map(item => {
         item.checked = true
         return item
       })
-      that.optSelect = sysConfigList.optSelect.map((item) => {
+      that.optSelect = sysConfigList.optSelect.map(item => {
         item.checked = false
         return item
       })
@@ -400,21 +406,32 @@ export default {
       that.controlResult = {
         optStand: [],
         optSelect: [],
-        optChoice: [],
+        optChoice: []
       }
       that.optControlSelected = null
       if (parseInt(controlID, 10) === -1) {
         return
       }
 
-      that.optControlSelected = this.optControl.find((item) => item.id === controlID)
-      priceAdjustZktConfigDetail({ id: controlID, isPrice: true }).then((res) => {
+      that.optControlSelected = this.optControl.find(item => item.id === controlID)
+      priceAdjustZktConfigDetail({ id: controlID, isPrice: true }).then(res => {
         if (res.code !== 200) {
           that.$message.info(res.msg)
           return
         }
-        let { name, model, productPic, type, price, remarks, sysConfigList, aprice, bprice, cprice, retailPrice } =
-          res.data
+        let {
+          name,
+          model,
+          productPic,
+          type,
+          price,
+          remarks,
+          sysConfigList,
+          aprice,
+          bprice,
+          cprice,
+          retailPrice
+        } = res.data
         let { optStandData, optSelectData, optChoiceData } = that.controlFormatData(sysConfigList)
         that.controlResult = {
           optInfo: {
@@ -427,14 +444,14 @@ export default {
             bprice,
             cprice,
             retailPrice,
-            remarks,
+            remarks
           },
           optStand: optStandData,
-          optSelect: optSelectData.map((item) => {
+          optSelect: optSelectData.map(item => {
             item.checked = false
             return item
           }),
-          optChoice: optChoiceData.map((item) => {
+          optChoice: optChoiceData.map(item => {
             item.target = Object.assign({}, item.dataSource[0])
             item.target.checked = item.target.isRequire
 
@@ -443,12 +460,12 @@ export default {
             }
 
             return item
-          }),
+          })
         }
       })
     },
     controlFormatData(data) {
-      let formatDataItem = (data) => {
+      let formatDataItem = data => {
         //返回的列表数据格式转换成需要的数据格式
         return data.map((item, index) => {
           let _item = {
@@ -463,7 +480,7 @@ export default {
             aprice: item.aprice,
             bprice: item.bprice,
             cprice: item.cprice,
-            retailPrice: item.retailPrice,
+            retailPrice: item.retailPrice
           }
           // if ([4, 5].includes(item.type)) {
           //   _item.isRequire = item.type === 4 ? true : false
@@ -473,31 +490,31 @@ export default {
         })
       }
       let optStandData = data
-        .filter((item) => item.mainBody === 1 && item.type === 1)
+        .filter(item => item.mainBody === 1 && item.type === 1)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optSelectData = data
-        .filter((item) => item.mainBody === 1 && item.type === 2)
+        .filter(item => item.mainBody === 1 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
-      let optChoiceData = data.filter((item) => item.mainBody === 1 && [4, 5, 6].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 1 && [4, 5, 6].includes(item.type))
 
-      let groups = [...new Set(optChoiceData.map((item) => item.groupId))].sort()
+      let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
-      groups.map((groupId) => {
-        let dataSource = optChoiceData.filter((item) => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
+      groups.map(groupId => {
+        let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
         if (dataSource.length > 0) {
           res.push({
-            dataSource: formatDataItem(dataSource),
+            dataSource: formatDataItem(dataSource)
           })
         }
       })
       return {
         optStandData: formatDataItem(optStandData),
         optSelectData: formatDataItem(optSelectData),
-        optChoiceData: res,
+        optChoiceData: res
       }
     },
     productFormatData(data) {
-      let formatDataItem = (data) => {
+      let formatDataItem = data => {
         //返回的列表数据格式转换成需要的数据格式
         return data.map((item, index) => {
           let _item = {
@@ -514,7 +531,7 @@ export default {
             cprice: item.cprice,
             retailPrice: item.retailPrice,
             isProduct: item.isProduct === 1 ? true : false,
-            introduction: item.introduction || '',
+            introduction: item.introduction || ''
           }
           // if ([4, 5].includes(item.type)) {
           //   _item.isRequire = item.type === 4 ? true : false
@@ -524,24 +541,24 @@ export default {
         })
       }
       let optStandData = data
-        .filter((item) => item.mainBody === 2 && item.type === 1)
+        .filter(item => item.mainBody === 2 && item.type === 1)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optSelectData = data
-        .filter((item) => item.mainBody === 2 && item.type === 2)
+        .filter(item => item.mainBody === 2 && item.type === 2)
         .sort((a, b) => a.orderNo - b.orderNo)
       let optControlData = data
-        .filter((item) => item.mainBody === 2 && item.type === 3)
+        .filter(item => item.mainBody === 2 && item.type === 3)
         .sort((a, b) => a.orderNo - b.orderNo)
 
-      let optChoiceData = data.filter((item) => item.mainBody === 2 && [4, 5, 6].includes(item.type))
+      let optChoiceData = data.filter(item => item.mainBody === 2 && [4, 5, 6].includes(item.type))
 
-      let groups = [...new Set(optChoiceData.map((item) => item.groupId))].sort()
+      let groups = [...new Set(optChoiceData.map(item => item.groupId))].sort()
       let res = []
-      groups.map((groupId) => {
-        let dataSource = optChoiceData.filter((item) => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
+      groups.map(groupId => {
+        let dataSource = optChoiceData.filter(item => item.groupId === groupId).sort((a, b) => a.orderNo - b.orderNo)
         if (dataSource.length > 0) {
           res.push({
-            dataSource: formatDataItem(dataSource),
+            dataSource: formatDataItem(dataSource)
           })
         }
       })
@@ -549,23 +566,23 @@ export default {
         optStandData: formatDataItem(optStandData),
         optSelectData: formatDataItem(optSelectData),
         optControlData: formatDataItem(optControlData),
-        optChoiceData: res,
+        optChoiceData: res
       }
     },
     getChoiceProducts() {
       let that = this
       let optStand = this.optStand
-      let optSelect = this.optSelect.map((item) => Object.assign({}, item)).filter((item) => item.checked)
-      let optChoice = this.optChoice.map((item) => Object.assign({}, item.target)).filter((item) => item.checked)
+      let optSelect = this.optSelect.map(item => Object.assign({}, item)).filter(item => item.checked)
+      let optChoice = this.optChoice.map(item => Object.assign({}, item.target)).filter(item => item.checked)
 
       let control_optStand = this.controlResult.optStand
-        ? this.controlResult.optStand.map((item) => Object.assign({}, item))
+        ? this.controlResult.optStand.map(item => Object.assign({}, item))
         : []
       let control_optSelect = this.controlResult.optSelect
-        ? this.controlResult.optSelect.map((item) => Object.assign({}, item)).filter((item) => item.checked)
+        ? this.controlResult.optSelect.map(item => Object.assign({}, item)).filter(item => item.checked)
         : []
       let control_optChoice = this.controlResult.optChoice
-        ? this.controlResult.optChoice.map((item) => Object.assign({}, item.target)).filter((item) => item.checked)
+        ? this.controlResult.optChoice.map(item => Object.assign({}, item.target)).filter(item => item.checked)
         : []
       return {
         optInfo: Object.assign({}, that.optInfo),
@@ -575,7 +592,7 @@ export default {
         control_optInfo: Object.assign({}, that.controlResult.optInfo),
         control_optStand,
         control_optSelect,
-        control_optChoice,
+        control_optChoice
       }
     },
     calcItems(type = '4d0') {
@@ -587,11 +604,11 @@ export default {
         control_optInfo,
         control_optStand,
         control_optSelect,
-        control_optChoice,
+        control_optChoice
       } = this.getChoiceProducts()
 
       //参与价格计算 去除为产品的 防止计算重复
-      optChoice = optChoice.filter((o) => !o.isProduct)
+      optChoice = optChoice.filter(o => !o.isProduct)
 
       let result = [...optSelect, ...optChoice, ...control_optSelect, ...control_optChoice].flat()
       let priceResult = {
@@ -600,7 +617,7 @@ export default {
           aprice: 0,
           bprice: 0,
           cprice: 0,
-          retailPrice: 0,
+          retailPrice: 0
         },
         standPrice = {
           //标配总价
@@ -608,7 +625,7 @@ export default {
           aprice: 0,
           bprice: 0,
           cprice: 0,
-          retailPrice: 0,
+          retailPrice: 0
         },
         unStandPrice = {
           //非标配总价
@@ -616,7 +633,7 @@ export default {
           aprice: 0,
           bprice: 0,
           cprice: 0,
-          retailPrice: 0,
+          retailPrice: 0
         }
 
       result.reduce((calc, item) => {
@@ -635,7 +652,7 @@ export default {
 
       if (optStand.length >= 0) {
         //debugger
-        if (type === '4d0') {
+        if (['4d0', '5d0', '6d0'].includes(type)) {
           //4.0 计算标配价格不动
           console.log(
             `【标配】 ${optInfo.name} 成本价：${optInfo.price} A价：${optInfo.aprice} B价：${optInfo.bprice} C价：${optInfo.cprice} 销售价：${optInfo.retailPrice}`
@@ -650,7 +667,7 @@ export default {
         if (type === '2d0') {
           //用标配总价格 - 未选中单项的价格
           let optStandUnCheckedPrice = optStand
-            .filter((item) => !item.checked)
+            .filter(item => !item.checked)
             .reduce(
               (calc, item) => {
                 //console.log(`${item.itemName} 成本价：${item.price} A价：${item.aprice} B价：${item.bprice} C价：${item.cprice} 销售价：${item.retailPrice}`)
@@ -666,7 +683,7 @@ export default {
                 aprice: 0,
                 bprice: 0,
                 cprice: 0,
-                retailPrice: 0,
+                retailPrice: 0
               }
             )
 
@@ -695,7 +712,7 @@ export default {
         aprice: parseFloat(priceResult.aprice - unStandPrice.aprice),
         bprice: parseFloat(priceResult.bprice - unStandPrice.bprice),
         cprice: parseFloat(priceResult.cprice - unStandPrice.cprice),
-        retailPrice: parseFloat(priceResult.retailPrice - unStandPrice.retailPrice),
+        retailPrice: parseFloat(priceResult.retailPrice - unStandPrice.retailPrice)
       }
 
       // let formatPrice = n => {
@@ -720,14 +737,14 @@ export default {
       return {
         totalPrice: priceResult,
         standPrice: standPrice,
-        unStandPrice: unStandPrice,
+        unStandPrice: unStandPrice
       }
     },
     query(id) {
       let that = this
       that.reset()
       priceAdjustProductConfigDetail({ id: id, isPrice: true })
-        .then((res) => {
+        .then(res => {
           that.$emit('loaded')
           that.loading = false
 
@@ -754,11 +771,11 @@ export default {
               optStand: optStandData,
               optSelect: optSelectData,
               optChoice: optChoiceData,
-              optControl: optControlData,
-            },
+              optControl: optControlData
+            }
           })
         })
-        .catch((err) => {
+        .catch(err => {
           that.$emit('loaded')
           that.reset()
           that.$message.info(`请求失败：${err.message}`)
@@ -771,8 +788,8 @@ export default {
       this.optChoice = []
       this.optControl = []
       this.controlResult = {}
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -800,4 +817,3 @@ export default {
   background-color: rgba(170, 210, 240, 0.3);
 }
 </style>
-
