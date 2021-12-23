@@ -69,10 +69,13 @@
       </a-form>
     </div>
     <div v-for="(i, index) in dataSource" :key="i.index">
-      <h3>{{ i.shelvesLocationName }}</h3>
+      <h3 style="margin-top: 20px">{{ i.shelvesLocationName }}</h3>
       <table class="custom-table custom-table-border" style="margin-top: 20px">
         <tr style="border: none">
-          <th></th>
+          <th style="width: 128px" id="lineTd">
+            <span style="float: left; margin-top: 20px">行</span>
+            <span style="float: right; margin-top: -10px">列</span>
+          </th>
           <th style="" v-for="(item, index) in i.shelvesColumn" :key="item.index">{{ index + 1 }}</th>
         </tr>
         <tr v-for="(u, x) in i.shelvesRow" :key="u.index">
@@ -281,6 +284,11 @@ export default {
 </script>
 
 <style scoped>
+#lineTd {
+  background: #fff
+    url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjEwMCUiIHkyPSIxMDAlIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=)
+    no-repeat 100% center;
+}
 .custom-table {
   margin-bottom: 0;
 }
@@ -288,6 +296,7 @@ export default {
 .custom-table-border th,
 .custom-table-border td {
   padding: 15px 10px;
+  border: 1px solid #aaa;
 }
 
 .custom-table >>> .custom-table {

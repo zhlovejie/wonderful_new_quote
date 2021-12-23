@@ -167,20 +167,11 @@ export default {
       this.visible = true
       this.addOredit = type
       this.record = record
-      this.form.remark = ''
-      // await getList().then((res) => {
-      //   this.warehouseList = res.data
-      // })
-      // await ReservoiGetList().then((res) => {
-      //   this.ReservoiList = res.data
-      // })
-      // await roadwaygetList().then((res) => {
-      //   this.roadwaygetList = res.data
-      // })
-
+      this.form = {
+        palletStatus: 0,
+      }
       if (type !== 'add') {
         let that = this
-
         await palletdelValidation({ id: record.id }).then((res) => {
           if (+res.code === 200) {
             that.ifdelvali = false
