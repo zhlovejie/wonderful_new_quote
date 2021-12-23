@@ -389,6 +389,7 @@ export default {
               }
             })
             console.log(params)
+            that.spinning = true
             allocateAddOrUpdate(params)
               .then((res) => {
                 if (res.code === 200) {

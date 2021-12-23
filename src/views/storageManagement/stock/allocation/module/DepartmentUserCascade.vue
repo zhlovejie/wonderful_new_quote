@@ -65,6 +65,15 @@ export default {
       deep: true,
       immediate: true,
     },
+    PositionId: {
+      handler(val, oldval) {
+        // this.depChange()
+        // this.initDepartment()
+        console.log(val)
+      },
+      deep: true,
+      immediate: true,
+    },
     infoList: {
       handler(val, oldval) {
         console.log(val)

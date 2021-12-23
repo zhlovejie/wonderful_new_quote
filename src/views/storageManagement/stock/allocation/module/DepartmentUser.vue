@@ -94,6 +94,8 @@ export default {
       that.$emit('update:info', depId)
       const target = that.depList.find((u) => u.id === depId)
       that.$emit('update:positionCode', target.warehouseName)
+      that.$emit('update:infoList', null)
+      that.$emit('update:infoName', null)
       this.initDepartment(depId)
     },
     userChange(userId) {
