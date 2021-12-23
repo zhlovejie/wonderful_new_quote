@@ -49,16 +49,18 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
 
-          <a-divider type="vertical" />
+          <!-- 盘点先不做
+            <a-divider type="vertical" />
           <a-popconfirm title="确认盘点吗?" @confirm="() => doAction('pandian', record)">
             <a type="primary" href="javascript:;">盘点</a>
           </a-popconfirm>
+           -->
           <a-divider type="vertical" />
           <a type="primary" href="javascript:;" @click="doAction('download', record)">下载</a>
           <a-divider type="vertical" />
 
           <a-upload :beforeUpload="file => beforeUpload(file,record)" :showUploadList="false">
-            <a-button class="a-button" type="link" :loading="uploading">上传</a-button>
+            <a-button style="padding:0;" type="link" :loading="uploading">上传</a-button>
           </a-upload>
 
           <!-- <a type="primary" href="javascript:;" @click="doAction('upload', record)">上传</a> -->

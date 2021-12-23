@@ -34,6 +34,14 @@
                   />
                 </a-form-model-item>
               </div>
+
+              <template slot="footer" >
+                <div style="text-align:right;margin-right:10px;font-size:16px;">
+                  <span>合计：</span>
+                  <span style="margin:0 5px;">应入库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.actualNum) || 0),0)  }} </span>
+                  <span>本次入库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.storageNum) || 0),0) }}</span>
+                </div>
+              </template>
             </a-table>
           </div>
           <div class="__hd">基本信息</div>
@@ -137,7 +145,21 @@
         <div class="__footer">
           <a-button @click="handleSubmit('cancel')">取消</a-button>
           <a-button type="primary" @click="handleSubmit('submit')">提交</a-button>
-          <a-button type="primary" @click="handleSubmit('qrcode')">打印物料入库码</a-button>
+
+          <a-popover title="物料入库码" trigger="click" placement="top" >
+            <a slot="content" id="ant-popover-qrcode">
+              <div :style="{width:qrSize+'px',height:qrSize+'px'}">
+                <vue-qr :text="qrText" :size="qrSize" />
+              </div>
+            </a>
+            <a-button type="primary" @click="handleSubmit('qrcode')">
+              打印物料入库码
+            </a-button>
+          </a-popover>
+
+          <!-- <a-button type="primary" @click="handleSubmit('qrcode')">打印物料入库码</a-button> -->
+
+          
         </div>
       </a-form-model>
     </a-spin>
@@ -191,7 +213,8 @@ const columns = [
     scopedSlots: { customRender: 'storageNum' }
   }
 ]
-
+import VueQr from 'vue-qr'
+import util from '@/components/_util/util'
 import { getList, ReservoiGetList } from '@/api/storage'
 
 import { getShelvesByAreaId, containerPalletList } from '@/api/storage_wzz'
@@ -206,6 +229,9 @@ import {
 
 export default {
   name: 'stock_management_import_record_addForm',
+  components:{
+    VueQr
+  },
   data() {
     return {
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -228,6 +254,8 @@ export default {
       shelvesLocationList: [],
       instantPositionList: [],
       containerPalletList: [],
+      qrText: '',
+      qrSize: 200,
     }
   },
   computed: {
@@ -291,7 +319,24 @@ export default {
         return
       }
       if(type === 'qrcode'){
-        that.$message.info('功能尚未开发...')
+        
+        that.$nextTick(() => {
+          const {materialTableList} = that.form
+          if(materialTableList.length > 0){
+            that.qrText = materialTableList[0].storageCode
+
+            if(that.qrText.length > 0){
+              setTimeout(function(){
+                util.handleWindowPrint(`#ant-popover-qrcode`, '物料入库码')
+              },500)
+            }
+          }else{
+            that.qrText = ''
+          }
+        })
+
+        
+        
         return
       }
       that.$refs.ruleForm.validate(valid => {

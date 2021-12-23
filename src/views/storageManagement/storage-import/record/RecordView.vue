@@ -19,6 +19,13 @@
               <div slot="order" slot-scope="text, record, index">
                 {{ index + 1 }}
               </div>
+              <template slot="footer" >
+                <div style="text-align:right;margin-right:10px;font-size:16px;">
+                  <span>合计：</span>
+                  <span style="margin:0 5px;">应入库数量 &nbsp;{{ materialTableList.reduce((adder,item) => adder + (parseFloat(item.actualNum) || 0),0)  }} </span>
+                  <span>本次入库数量 &nbsp;{{ materialTableList.reduce((adder,item) => adder + (parseFloat(item.storageNum) || 0),0) }}</span>
+                </div>
+              </template>
             </a-table>
           </div>
           <div class="__hd">收料信息</div>

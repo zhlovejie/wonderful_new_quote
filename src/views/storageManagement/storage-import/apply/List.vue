@@ -57,7 +57,7 @@
                 安装不良品入库
               </a-menu-item>
             </a-menu>
-            <a-button icon="plus" type="primary"> 新增 <a-icon type="down" /> </a-button>
+            <a-button v-if="$auth('storageApplyList:add')" icon="plus" type="primary"> 新增 <a-icon type="down" /> </a-button>
           </a-dropdown>
         </a-form-item>
       </a-form>
@@ -97,22 +97,22 @@
 
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' } -->
-          <a type="primary" @click="doAction('view', record)">查看</a>
+          <a type="primary" v-if="$auth('storageApplyList:view')" @click="doAction('view', record)">查看</a>
 
           <template v-if="+activeKey === 0">
-            <template v-if="[3, 4].includes(+record.status)">
+            <template v-if="[3, 4].includes(+record.status) && $auth('storageApplyList:edit')">
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
             </template>
 
-            <template v-if="[1].includes(+record.status)">
+            <template v-if="[1].includes(+record.status) && $auth('storageApplyList:withdraw')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
 
-            <template v-if="[3, 4].includes(+record.status)">
+            <template v-if="[3, 4].includes(+record.status) && $auth('storageApplyList:delete')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
@@ -120,7 +120,7 @@
             </template>
           </template>
 
-          <template v-if="+activeKey === 1">
+          <template v-if="+activeKey === 1 && $auth('storageApplyList:approval')">
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('approval', record)">审批</a>
           </template>

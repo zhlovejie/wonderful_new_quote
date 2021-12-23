@@ -118,6 +118,15 @@
               <div slot="action" slot-scope="text, record">
                 <a-button type="link" @click="actionItem('delete', record)">删除</a-button>
               </div>
+
+              <template slot="footer" >
+                <div style="text-align:right;margin-right:10px;font-size:16px;">
+                  <span>合计：</span>
+                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.exWarehouseNum) || 0),0)  }} </span>
+                </div>
+              </template>
+
+
             </a-table>
             <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="actionItem('add')"
               >添加</a-button

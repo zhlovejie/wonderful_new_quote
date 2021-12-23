@@ -28,7 +28,7 @@
                 <td style="width:150px;">盘点方式</td>
                 <td style="width:350px;">
                   <a-form-model-item prop="type">
-                    <a-select v-if="!isDisabled" v-model="form.type" placeholder="盘点方式" style="width:100%;">
+                    <a-select v-if="!isDisabled && !isPandian" v-model="form.type" placeholder="盘点方式" style="width:100%;">
                       <a-select-option :value="0">全盘</a-select-option>
                       <a-select-option :value="1">循环盘</a-select-option>
                     </a-select>
@@ -40,7 +40,7 @@
                 <td>盘点部门</td>
                 <td>
                   <a-form-model-item prop="exWarehouseDate">
-                    <DepartmentSelect v-if="!isDisabled" @change="handleDepartmentSelectChange" :depId="form.deptId" />
+                    <DepartmentSelect v-if="!isDisabled && !isPandian" @change="handleDepartmentSelectChange" :depId="form.deptId" />
                     <span v-else>{{ form.deptName }}</span>
                   </a-form-model-item>
                 </td>
@@ -48,8 +48,7 @@
                 <td>
                   <a-form-model-item prop="inventoryDate">
                     <a-date-picker
-                      v-if="!isDisabled"
-                      :disabled="isDisabled"
+                      v-if="!isDisabled && !isPandian"
                       style="width:100%;"
                       v-model="form.inventoryDate"
                     />
@@ -124,17 +123,49 @@
               <div slot="order" slot-scope="text, record, index">
                 {{ index + 1 }}
               </div>
+
+              <div slot="inventoryAmount" slot-scope="text, record, index">
+                <a-form-model-item
+                  :prop="`instantPositionList.${index}.inventoryAmount`"
+                  :rules="{ required: true, message: '请输入盘点数量' }"
+                >
+                  <a-input-number
+                    style="width:80px;text-align:center;"
+                    :min="0"
+                    :max="record.stockAmount"
+                    :step="1"
+                    :precision="0"
+                    v-model="record.inventoryAmount"
+                  />
+                </a-form-model-item>
+              </div>
+
+              <div slot="abnormalAmount" slot-scope="text, record, index">
+                <a-form-model-item
+                  :prop="`instantPositionList.${index}.abnormalAmount`"
+                  :rules="{ required: true, message: '请输入异常数量' }"
+                >
+                  <a-input-number
+                    :disabled="isDisabled"
+                    style="width:80px;text-align:center;"
+                    :min="0"
+                    :step="1"
+                    :precision="0"
+                    v-model="record.abnormalAmount"
+                  />
+                </a-form-model-item>
+              </div>
             </a-table>
           </div>
           <div class="__footer">
             <a-button @click="handleSubmit('cancel')">取消</a-button>
-            <a-button v-if="isAdd || isEdit" @click="handleSubmit" type="primary">保存</a-button>
-            <a-button v-if="isAdd || isEdit" @click="handleSubmit" type="primary">提交审批</a-button>
+            <a-button v-if="isAdd || isEdit" @click="handleSubmit('save')" type="primary">保存</a-button>
+            <a-button v-if="isAdd || isEdit" @click="handleSubmit('submit')" type="primary">提交审批</a-button>
             <template v-if="isApproval">
               <a-button type="primary" @click="passAction">通过</a-button>
               <a-button @click="noPassAction" style="margin:0 10px;">不通过</a-button>
             </template>
-            <a-button v-if="isPandian" @click="handleSubmit" type="primary">保存</a-button>
+            <a-button v-if="isPandian" @click="handleSubmit('pandian')" type="primary">盘点</a-button>
           </div>
         </div>
       </a-form-model>
@@ -151,14 +182,15 @@ import { getShelvesByAreaId2, containerPalletList } from '@/api/storage_wzz'
 import {
   artificialInventoryApproval,
   artificialInventoryAddOrUpdate,
-  artificialInventoryGetDetail
+  artificialInventoryGetDetail,
+  artificialInventoryInventory
 } from '@/api/storage_wzz'
 
 import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
 import moment from 'moment'
 import Approval from './Approval'
 
-const columns = [
+const base_columns = [
   {
     title: '序号',
     key: 'order',
@@ -207,7 +239,7 @@ export default {
   },
   data() {
     return {
-      columns,
+      
       visible: false,
       spinning: false,
       record: {},
@@ -235,8 +267,14 @@ export default {
   },
   computed: {
     modalTitle() {
-      const action = this.isView ? '查看' : this.isEdit ? '编辑' : this.isApproval ? '审批' : '新增'
-      return `${action}-盘点计划`
+      const m = {
+        'view':'查看',
+        'add':'新增',
+        'edit':'编辑',
+        'approval':'审批',
+        'pandian':'盘点',
+      }
+      return `${m[this.type]}`
     },
     isView() {
       return this.type === 'view'
@@ -255,6 +293,27 @@ export default {
     },
     isDisabled() {
       return this.isView || this.isApproval
+    },
+    columns(){
+      let columns = [...base_columns]
+      if(this.isPandian){
+        columns = columns.filter(item => item.dataIndex !== 'positionQuantity')
+        columns.push({
+          title: '库存数量',
+          dataIndex: 'stockAmount',
+        })
+        columns.push({
+          title: '盘点数量',
+          dataIndex: 'inventoryAmount',
+          scopedSlots: { customRender: 'inventoryAmount' }
+        })
+        columns.push({
+          title: '异常数量',
+          dataIndex: 'abnormalAmount',
+          scopedSlots: { customRender: 'abnormalAmount' }
+        })
+      }
+      return columns
     }
   },
   methods: {
@@ -317,10 +376,12 @@ export default {
         that.handleCancel()
         return
       } else {
-        if (that.selectedRows.length === 0) {
+
+        if ((that.isAdd || that.isEdit) && that.selectedRows.length === 0) {
           that.$message.info('请至少选择一条盘点计划明细')
           return
         }
+
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
             const params = {
@@ -328,14 +389,16 @@ export default {
               inventoryDate: moment(that.form.inventoryDate).format('YYYY-MM-DD HH:mm:ss'),
               status: type === 'save' ? 0 : 1
             }
+
             params.artificialInventoryInfos = that.selectedRows.map(item => {
               item.id = that.form.id
               return item
             })
 
             console.log(params)
+            const _API_ = that.isPandian ? artificialInventoryInventory : artificialInventoryAddOrUpdate
             that.spinning = true
-            artificialInventoryAddOrUpdate(params)
+            _API_(params)
               .then(res => {
                 that.spinning = false
                 that.$message.info(res.msg)
