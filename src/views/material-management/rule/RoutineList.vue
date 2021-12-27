@@ -1,10 +1,10 @@
 <template>
   <a-card :bordered="false" class="material-management-rule-RoutineList">
     <div class="resize-column-wrapper">
-      <div class="resize-column-left">
+      <div id="split-0">
         <a-spin :spinning="spinning">
           <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; max-height: 900px; min-height: 600px">
-            <div style="display:flex;">
+            <div style="display:flex;margin-top:4px;">
               <a-input style="line-height: 40px;flex:1;" placeholder="规则名称模糊查询" v-model="searchValue" />
               <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
               <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
@@ -37,8 +37,7 @@
           </div>
         </a-spin>
       </div>
-      <div class="resize-column-control-bar"></div>
-      <div class="resize-column-right">
+      <div id="split-1">
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
@@ -198,9 +197,9 @@ import {
 
 import RoutineAddForm from './module/RoutineAddForm'
 import BatchTransferForm from './module/BatchTransferForm'
-import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import Sortable from 'sortablejs'
 import ImgView from '@/components/CustomerList/ImgView'
+import Split from 'split.js'
 const columns = [
   {
     align: 'center',
@@ -454,20 +453,29 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
-      // if (this.treeInputSearchDebounce === null) {
-      //   this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
+      const that = this
+      // if (that.treeInputSearchDebounce === null) {
+      //   that.treeInputSearchDebounce = that.$_.debounce(that.onChange, 2000)
       // }
-      this.parentId = 0
-      this.selectedTreeNode = null
-      this.queryParam = {
-        ...this.queryParam,
-        parentId: this.parentId
+      that.parentId = 0
+      that.selectedTreeNode = null
+      that.queryParam = {
+        ...that.queryParam,
+        parentId: that.parentId
       }
-      this.fetchTree()
-      this.search()
+      that.fetchTree()
+      that.search()
 
-      this.$nextTick(() => {
-        this._ResizeColumnInstance = new ResizeColumn()
+      that.$nextTick(() => {
+        that.splitClear()
+        that.splitInstance = Split(['#split-0', '#split-1'], {
+          gutter: function(i, gutterDirection) {
+            var gut = document.createElement('div')
+            gut.className = '_wdf_split_gutter _wdf_split_gutter-' + gutterDirection
+            return gut
+          },
+          sizes: [20, 80]
+        })
       })
     },
     onLoadData(treeNode, isForceRefresh = false) {
@@ -754,8 +762,7 @@ export default {
           __from: 'normal'
         })
         return
-      } 
-      else if (type === 'transfer') {
+      } else if (type === 'transfer') {
         that.$refs.batchTransferForm.query(type, {
           selectedRows: [...that.selectedRows],
           __selectItem: that.parentItem,
@@ -778,14 +785,16 @@ export default {
             routineMaterialRuleUpdateCareState({
               isCare: 2,
               ruleIdList: arr.map(item => item.id)
-            }).then(res => {
-              that.$message.info(res.msg)
-              if(+res.code === 200){
-                that.search()
-              }
-            }).catch(err => {
-              that.$message.error(err.message)
             })
+              .then(res => {
+                that.$message.info(res.msg)
+                if (+res.code === 200) {
+                  that.search()
+                }
+              })
+              .catch(err => {
+                that.$message.error(err.message)
+              })
           }
         })
         return
@@ -897,8 +906,8 @@ export default {
               console.log(err)
             }
           },
-          dblclick: (event) => {
-            that.doAction('view',record)
+          dblclick: event => {
+            that.doAction('view', record)
           }
         }
       }
@@ -908,13 +917,21 @@ export default {
     },
     handleImgView(url) {
       this.$refs.imgView.show(url)
+    },
+    splitClear() {
+      try {
+        if (this.splitInstance !== null) {
+          this.splitInstance.destroy()
+          this.splitInstance = null
+        }
+      } catch (err) {
+        this.splitInstance = null
+        console.log(err)
+      }
     }
   },
   beforeDestroy() {
-    if (this._ResizeColumnInstance) {
-      this._ResizeColumnInstance.destory()
-      this._ResizeColumnInstance = null
-    }
+    this.splitClear()
   }
 }
 </script>
@@ -931,20 +948,8 @@ export default {
   display: flex;
   overflow: hidden;
 }
-
-.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-control-bar {
-  width: 10px;
-  background-color: #f5f5f5;
-  cursor: col-resize;
-  box-shadow: 0 0px 3px 1px #ddd;
-  border-radius: 6px;
-  margin: 0 10px;
-}
-
-.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-left {
-  overflow: auto;
-}
-.material-management-rule-RoutineList >>> .resize-column-wrapper .resize-column-right {
-  flex: 1;
+#split-0,
+#split-1 {
+  padding: 0 5px;
 }
 </style>

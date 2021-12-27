@@ -61,7 +61,7 @@
 
           <div class="__hd">盘点计划明细</div>
           <div class="__bd">
-            <a-row :gutter="20" v-if="!isDisabled">
+            <a-row :gutter="20" v-if="!(isDisabled || isPandian)">
               <a-col :span="6">
                 <a-form-model-item prop="warehouseId">
                   <a-select
@@ -116,7 +116,7 @@
               :pagination="false"
               size="small"
               :rowSelection="
-                !isDisabled ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
+                !(isDisabled || isPandian) ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
               "
               :scroll="{ y: 450 }"
             >
@@ -124,7 +124,7 @@
                 {{ index + 1 }}
               </div>
 
-              <div slot="inventoryAmount" slot-scope="text, record, index">
+              <!-- <div slot="inventoryAmount" slot-scope="text, record, index">
                 <a-form-model-item
                   :prop="`instantPositionList.${index}.inventoryAmount`"
                   :rules="{ required: true, message: '请输入盘点数量' }"
@@ -138,9 +138,9 @@
                     v-model="record.inventoryAmount"
                   />
                 </a-form-model-item>
-              </div>
+              </div> -->
 
-              <div slot="abnormalAmount" slot-scope="text, record, index">
+              <!-- <div slot="abnormalAmount" slot-scope="text, record, index">
                 <a-form-model-item
                   :prop="`instantPositionList.${index}.abnormalAmount`"
                   :rules="{ required: true, message: '请输入异常数量' }"
@@ -154,7 +154,7 @@
                     v-model="record.abnormalAmount"
                   />
                 </a-form-model-item>
-              </div>
+              </div> -->
             </a-table>
           </div>
           <div class="__footer">
@@ -165,7 +165,7 @@
               <a-button type="primary" @click="passAction">通过</a-button>
               <a-button @click="noPassAction" style="margin:0 10px;">不通过</a-button>
             </template>
-            <a-button v-if="isPandian" @click="handleSubmit('pandian')" type="primary">盘点</a-button>
+            <!-- <a-button v-if="isPandian" @click="handleSubmit('pandian')" type="primary">盘点</a-button> -->
           </div>
         </div>
       </a-form-model>
@@ -342,21 +342,27 @@ export default {
                 ...data,
                 inventoryDate: that.isDisabled ? data.inventoryDate : moment(data.inventoryDate)
               }
-              // that.instantPositionList = data.artificialInventoryInfos || []
+              if(!that.isEdit){
+                that.instantPositionList = data.artificialInventoryInfos || []
+              }
             })
 
-            const artificialInventoryInfos = that.form.artificialInventoryInfos || []
+            if(that.isEdit){
+              const artificialInventoryInfos = that.form.artificialInventoryInfos || []
+  
+              if (artificialInventoryInfos.length > 0) {
+                const { warehouseId, reservoirAreaId, shelvesLocationId } = artificialInventoryInfos[0]
+                await that.handleWarehouseChange(warehouseId)
+                await that.handleReservoirAreaChange(reservoirAreaId)
+                await that.handleShelvesLocationChange(shelvesLocationId)
+  
+                that.selectedRowKeys = artificialInventoryInfos.map(item => String(item.positionId))
+                that.selectedRows = that.instantPositionList.filter(item => {
+                  return that.selectedRowKeys.includes(String(item.positionId))
+                })
+              }
+            }else{
 
-            if (artificialInventoryInfos.length > 0) {
-              const { warehouseId, reservoirAreaId, shelvesLocationId } = artificialInventoryInfos[0]
-              await that.handleWarehouseChange(warehouseId)
-              await that.handleReservoirAreaChange(reservoirAreaId)
-              await that.handleShelvesLocationChange(shelvesLocationId)
-
-              that.selectedRowKeys = artificialInventoryInfos.map(item => String(item.positionId))
-              that.selectedRows = that.instantPositionList.filter(item => {
-                return that.selectedRowKeys.includes(String(item.positionId))
-              })
             }
           }
         }

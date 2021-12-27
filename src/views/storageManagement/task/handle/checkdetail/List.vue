@@ -47,7 +47,7 @@
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('view', record)">查看</a>
+          <a type="primary" @click="doAction('pandian', record)">查看</a>
 
           <!-- 盘点先不做
             <a-divider type="vertical" />
@@ -55,19 +55,21 @@
             <a type="primary" href="javascript:;">盘点</a>
           </a-popconfirm>
            -->
-          <a-divider type="vertical" />
-          <a type="primary" href="javascript:;" @click="doAction('download', record)">下载</a>
-          <a-divider type="vertical" />
 
-          <a-upload :beforeUpload="file => beforeUpload(file,record)" :showUploadList="false">
-            <a-button style="padding:0;" type="link" :loading="uploading">上传</a-button>
-          </a-upload>
+          <template v-if="+activeKey === 2">
+            <a-divider type="vertical" />
+            <a type="primary" href="javascript:;" @click="doAction('download', record)">下载</a>
+            <a-divider type="vertical" />
 
-          <!-- <a type="primary" href="javascript:;" @click="doAction('upload', record)">上传</a> -->
-          <a-divider type="vertical" />
-          <a-popconfirm title="确认完结吗?" @confirm="() => doAction('over', record)">
-            <a type="primary" href="javascript:;">完结</a>
-          </a-popconfirm>
+            <a-upload :beforeUpload="file => beforeUpload(file,record)" :showUploadList="false">
+              <a-button style="padding:0;" type="link" :loading="uploading">上传</a-button>
+            </a-upload>
+
+            <a-divider type="vertical" />
+            <a-popconfirm title="确认完结吗?" @confirm="() => doAction('over', record)">
+              <a type="primary" href="javascript:;">完结</a>
+            </a-popconfirm>
+          </template>
         </div>
       </a-table>
     </div>
@@ -189,7 +191,7 @@ export default {
     moment,
     init() {
       let that = this
-      that.searchParam = { ...that.searchParam, searchStatus: that.activeKey }
+      that.searchParam = { ...that.searchParam, status: that.activeKey }
       let queue = []
 
       that.searchAction()

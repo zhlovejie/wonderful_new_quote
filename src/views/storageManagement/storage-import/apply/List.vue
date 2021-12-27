@@ -32,7 +32,7 @@
             <a-select-option :value="2">产成品返修入库</a-select-option>
             <a-select-option :value="3">安装不良品入库</a-select-option>
             <a-select-option :value="4">退货入库</a-select-option>
-            <a-select-option :value="5">采购入库</a-select-option>
+            <!-- <a-select-option :value="5">采购入库</a-select-option> -->
           </a-select>
         </a-form-item>
 

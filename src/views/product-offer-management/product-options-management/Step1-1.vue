@@ -4,7 +4,7 @@
     class="material-rule-management-library-normal"
   >
     <div class="resize-column-wrapper">
-      <div class="resize-column-left">
+      <div id="split-0">
         <div
           class="menu-tree-list-wrapper"
           style="width: 100%; overflow: auto; height: auto; min-height: 600px"
@@ -40,11 +40,8 @@
           </a-tree>
         </div>
       </div>
-      <div class="resize-column-control-bar"></div>
-      <div class="resize-column-right">
-
+      <div id="split-1">
         <div class="selected-items">{{parentItem.title}}</div>
-
       </div>
     </div>
 
@@ -65,7 +62,6 @@ import {
   productMaterialInfoTwoTierTreeList,
   __MaterialInfoExport
 } from '@/api/routineMaterial'
-import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 
 const columns = [
   {
@@ -204,17 +200,26 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
-      this.parentId = 0
-      this.selectedTreeNode = null
-      this.queryParam = {
-        ...this.queryParam,
-        ruleId: this.parentId
+      const that = this
+      that.parentId = 0
+      that.selectedTreeNode = null
+      that.queryParam = {
+        ...that.queryParam,
+        ruleId: that.parentId
       }
-      this.fetchTree()
+      that.fetchTree()
       // this.search()
 
-      this.$nextTick(() => {
-        this._ResizeColumnInstance = new ResizeColumn()
+      that.$nextTick(() => {
+        that.splitClear()
+        that.splitInstance = Split(['#split-0', '#split-1'], {
+          gutter: function(i, gutterDirection) {
+            var gut = document.createElement('div')
+            gut.className = '_wdf_split_gutter _wdf_split_gutter-' + gutterDirection
+            return gut
+          },
+          sizes: [20, 80]
+        })
       })
     },
     onLoadData(treeNode, isForceRefresh = false) {
@@ -410,13 +415,21 @@ export default {
       let {productSeries} = that.addForm.form
       that.parentItem = {title:productSeries}
       that.parentId = -1
+    },
+    splitClear() {
+      try {
+        if (this.splitInstance !== null) {
+          this.splitInstance.destroy()
+          this.splitInstance = null
+        }
+      } catch (err) {
+        this.splitInstance = null
+        console.log(err)
+      }
     }
   },
   beforeDestroy() {
-    if (this._ResizeColumnInstance) {
-      this._ResizeColumnInstance.destory()
-      this._ResizeColumnInstance = null
-    }
+    this.splitClear()
   }
 }
 </script>
@@ -430,25 +443,6 @@ export default {
   overflow: hidden;
 }
 
-.material-rule-management-library-normal >>> .resize-column-wrapper .resize-column-control-bar {
-  width: 10px;
-  background-color: #f5f5f5;
-  cursor: col-resize;
-  box-shadow: 0 0px 3px 1px #ddd;
-  border-radius: 6px;
-  margin: 0 10px;
-}
-
-.material-rule-management-library-normal >>> .resize-column-wrapper .resize-column-left {
-  overflow: auto;
-}
-.material-rule-management-library-normal >>> .resize-column-wrapper .resize-column-right {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .selected-items{
   border: 2px solid rgb(233, 148, 148);
   border-radius: 6px;
@@ -456,6 +450,20 @@ export default {
   margin-top: -50px;
   background-color: #f0f0f0;
   font-size: 36px;
+}
+
+
+#split-0,
+#split-1 {
+  padding: 0 5px;
+}
+#split-0{
+  overflow: auto;
+}
+#split-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 

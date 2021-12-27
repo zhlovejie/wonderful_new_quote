@@ -4,7 +4,7 @@
     class="bom-management_list"
   >
     <div class="resize-column-wrapper">
-      <div class="resize-column-left">
+      <div id="split-0">
         <div
           class="menu-tree-list-wrapper"
           style="width: 100%; overflow: auto; height: auto; min-height: 600px"
@@ -30,8 +30,7 @@
           </a-tree>
         </div>
       </div>
-      <div class="resize-column-control-bar"></div>
-      <div class="resize-column-right">
+      <div id="split-1">
         <template v-if="routeView">
           <FormView ref="formView" />
         </template>
@@ -335,11 +334,11 @@ import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './modules/AddForm'
 import FormView from './modules/FormView'
 
-
-import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import AddGroupForm from './modules/AddGroupForm'
 import SearchForm from './modules/SearchForm'
 import BatchUpdate from './modules/BatchUpdate'
+import Split from 'split.js'
+
 let uuid = () => Math.random().toString(16).slice(2);
 const columns = [
   {
@@ -627,21 +626,30 @@ export default {
       this.selectedRows = selectedRows
     },
     init() {
+      const that = this
       // if (this.treeInputSearchDebounce === null) {
       //   this.treeInputSearchDebounce = this.$_.debounce(this.onChange, 2000)
       // }
 
-      this.parentId = 0
-      this.selectedTreeNode = null
-      this.queryParam = {
-        ...this.queryParam,
-        groupId: this.parentId
+      that.parentId = 0
+      that.selectedTreeNode = null
+      that.queryParam = {
+        ...that.queryParam,
+        groupId: that.parentId
       }
-      this.fetchTree()
-      this.search()
+      that.fetchTree()
+      that.search()
 
-      this.$nextTick(() => {
-        this._ResizeColumnInstance = new ResizeColumn()
+      that.$nextTick(() => {
+        that.splitClear()
+        that.splitInstance = Split(['#split-0', '#split-1'], {
+          gutter: function(i, gutterDirection) {
+            var gut = document.createElement('div')
+            gut.className = '_wdf_split_gutter _wdf_split_gutter-' + gutterDirection
+            return gut
+          },
+          sizes: [20, 80]
+        })
       })
     },
 
@@ -1105,13 +1113,21 @@ export default {
     paramChangeHandler(params) {
       this.queryParam = { ...this.queryParam, ...params }
       this.search()
+    },
+    splitClear() {
+      try {
+        if (this.splitInstance !== null) {
+          this.splitInstance.destroy()
+          this.splitInstance = null
+        }
+      } catch (err) {
+        this.splitInstance = null
+        console.log(err)
+      }
     }
   },
   beforeDestroy() {
-    if (this._ResizeColumnInstance) {
-      this._ResizeColumnInstance.destory()
-      this._ResizeColumnInstance = null
-    }
+     this.splitClear()
   }
 }
 </script>
@@ -1125,24 +1141,13 @@ export default {
   overflow: hidden;
 }
 
-.bom-management_list >>> .resize-column-wrapper .resize-column-control-bar {
-  width: 10px;
-  background-color: #f5f5f5;
-  cursor: col-resize;
-  box-shadow: 0 0px 3px 1px #ddd;
-  border-radius: 6px;
-  margin: 0 10px;
-}
-
-.bom-management_list >>> .resize-column-wrapper .resize-column-left {
-  overflow: auto;
-}
-.bom-management_list >>> .resize-column-wrapper .resize-column-right {
-  flex: 1;
-}
-
 .bom-management_list >>> .tr-bg-e6f7ff{
   background-color: #e6f7ff;
+}
+
+#split-0,
+#split-1 {
+  padding: 0 5px;
 }
 </style>
 
