@@ -97,6 +97,8 @@
                   :infoList.sync="record.immigrate"
                   :infoName.sync="record.immigratename"
                   :positionCode.sync="record.immigrateWarehouseReservoir"
+                  :immigrateShelvesLocationId.sync="record.immigrateShelvesLocationId"
+                  :immigratePositionId.sync="record.immigratePositionId"
                 />
                 <span v-else>
                   {{ record.immigrateWarehouseReservoir + ',' + record.immigratename }}
@@ -293,7 +295,64 @@ export default {
           width: 60,
         },
       ]
-      return baseColumns
+      const baseColumns1 = [
+        {
+          title: '序号',
+          scopedSlots: { customRender: 'order' },
+          width: 60,
+        },
+        {
+          title: '物料代码',
+          align: 'center',
+          dataIndex: 'materialCode',
+          scopedSlots: { customRender: 'materialCode' },
+          width: 150,
+        },
+        {
+          title: '物料名称',
+          align: 'center',
+          dataIndex: 'materialName',
+          width: 100,
+        },
+        {
+          title: '辅计量单位',
+          align: 'center',
+          dataIndex: 'subUnit',
+          width: 100,
+        },
+        {
+          title: '移除仓库/库区',
+          align: 'center',
+          dataIndex: 'removeWarehouseReservoir',
+          scopedSlots: { customRender: 'removeWarehouseReservoir' },
+        },
+        {
+          title: '移出仓位',
+          align: 'center',
+          dataIndex: 'removePosition',
+        },
+        {
+          title: '移入仓库/库区',
+          align: 'center',
+          dataIndex: 'immigrateWarehouseReservoirId',
+          scopedSlots: { customRender: 'immigrateWarehouseReservoirId' },
+          width: 300,
+        },
+        {
+          title: '移入库位/仓位',
+          align: 'center',
+          dataIndex: 'immigratePositionId',
+          scopedSlots: { customRender: 'immigratePositionId' },
+          width: 300,
+        },
+        {
+          title: '调拨数量',
+          align: 'center',
+          dataIndex: 'planAllocateNum',
+          scopedSlots: { customRender: 'planAllocateNum' },
+        },
+      ]
+      return this.isView !== true ? baseColumns : baseColumns1
     },
   },
   methods: {

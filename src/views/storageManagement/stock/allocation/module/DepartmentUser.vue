@@ -96,6 +96,8 @@ export default {
       that.$emit('update:positionCode', target.warehouseName)
       that.$emit('update:infoList', null)
       that.$emit('update:infoName', null)
+      that.$emit('update:immigrateShelvesLocationId', null)
+      that.$emit('update:immigratePositionId', null)
       this.initDepartment(depId)
     },
     userChange(userId) {
@@ -103,6 +105,8 @@ export default {
       that.$emit('update:infoList', userId)
       const target = that.userList.find((u) => u.id === userId)
       that.$emit('update:infoName', target.reservoirName)
+      that.$emit('update:immigrateShelvesLocationId', null)
+      that.$emit('update:immigratePositionId', null)
     },
   },
 }

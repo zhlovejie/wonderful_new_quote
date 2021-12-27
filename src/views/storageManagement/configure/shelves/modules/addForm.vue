@@ -19,7 +19,7 @@
                 <a-input
                   v-model="form.shelvesCode"
                   :disabled="ifdelvali"
-                  :maxLength="4"
+                  :maxLength="10"
                   @blur="
                     () => {
                       $refs.shelvesCode.onFieldBlur()

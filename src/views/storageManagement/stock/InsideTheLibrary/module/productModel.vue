@@ -107,6 +107,7 @@ export default {
       // console.log('query record' + JSON.stringify(record))
       this.recordParam = record
       this.visible = true
+      this.search()
     },
     // 查询
     search() {
