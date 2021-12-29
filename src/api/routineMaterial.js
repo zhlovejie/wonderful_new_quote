@@ -526,6 +526,16 @@ export function routineMaterialRuleSpecificationsPagerTreeList(parameter) {
   })
 }
 
+/**规格代码变更历史记录查询 */
+export function codeChangeLogPageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/material/routine-code-change-his/listCodeChangeHis',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 成品物料规则--------------------------
 
 
@@ -1210,5 +1220,15 @@ export function routineMaterialInfoUpdateCareState(parameter) {
     url: '/routineMaterialInfo/updateCareState',
     method: 'post',
     data: parameter
+  })
+}
+
+/**获取物料代码规格组成 */
+export function getRoutineMaterialInfoCode(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialInfo/getRoutineMaterialInfoCode',
+    method: 'get',
+    params: parameter
   })
 }

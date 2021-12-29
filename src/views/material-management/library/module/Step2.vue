@@ -8,6 +8,7 @@
             <a-tab-pane tab="工艺资料" :key="2" />
             <a-tab-pane tab="采购资料" :key="3" />
             <a-tab-pane tab="附件" :key="4" />
+            <a-tab-pane tab="物料代码变更记录" :key="5" />
             <a-button v-if="$attrs.ShowReturnButton || false" @click="goback" slot="tabBarExtraContent">
               返回
             </a-button>
@@ -35,6 +36,11 @@
             <AppendData ref="appendData" />
           </div>
           <!-- 附件 END-->
+          <!-- 附件 -->
+          <div v-show="activeKey === 5">
+            <CodeChangeRecords ref="codeChangeRecords" />
+          </div>
+          <!-- 附件 END-->
           <!-- <p style="margin-top: 20px; text-align: center" v-if="normalAddForm.isAdd || normalAddForm.isEdit">
             <a-button type="primary" @click="onSubmit"> 保存 </a-button>
             <a-button style="margin-left: 10px" @click="resetForm"> 取消 </a-button>
@@ -49,7 +55,7 @@
         <a-button
           type="primary"
           @click="() => onSubmit(1)"
-          v-if="normalAddForm.isAdd"
+          v-if="normalAddForm.isAdd || normalAddForm.isEdit"
         >
           上一步
         </a-button>
@@ -82,6 +88,7 @@ import BaseData from './BaseData'
 import TechnologyData from './TechnologyData'
 import ShoppingData from './ShoppingData'
 import AppendData from './AppendData'
+import CodeChangeRecords from './CodeChangeRecords'
 import {
   routineMaterialInfoAdd,
   routineMaterialInfoUpdate,
@@ -96,6 +103,7 @@ export default {
     TechnologyData,
     ShoppingData,
     AppendData,
+    CodeChangeRecords
   },
   data() {
     return {

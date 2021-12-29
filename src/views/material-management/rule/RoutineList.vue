@@ -671,9 +671,9 @@ export default {
             that.search()
           }
 
-          // that.$nextTick(() => {
-          //   that.initSortable();
-          // });
+          that.$nextTick(() => {
+            that.initSortable();
+          });
         })
         .catch(err => {
           console.error(err)
