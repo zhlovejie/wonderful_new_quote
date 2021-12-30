@@ -218,6 +218,10 @@ const innerColumns= [
     dataIndex: 'subUnit'
   },
   {
+    title: '规格型号',
+    dataIndex: 'specification'
+  },
+  {
     title: '出库数量',
     dataIndex: 'exWarehouseNum',
     scopedSlots: { customRender: 'exWarehouseNum' }

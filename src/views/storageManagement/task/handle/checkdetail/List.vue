@@ -27,7 +27,7 @@
       </a-form>
     </div>
     <div class="main-wrapper">
-      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="2" @change="tabChange">
+      <a-tabs :activeKey="String(activeKey)" :defaultActiveKey="String(activeKey)" @change="tabChange">
         <a-tab-pane tab="待盘点" key="2" />
         <a-tab-pane tab="已盘点" key="5" />
       </a-tabs>

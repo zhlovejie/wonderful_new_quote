@@ -279,11 +279,17 @@ export default {
     }
   },
   methods: {
-    query(type, records = []) {
+    async query(type, records = []) {
       const that = this
       that.form = {
         materialTableList: [] //物料信息
       }
+      that.warehouseList = []
+      that.reservoiList = []
+      that.shelvesLocationList = []
+      that.instantPositionList = []
+      that.containerPalletList = []
+
       that.visible = true
       that.form.materialTableList = that.$_.cloneDeep(records.map(item => {
         item.storageNum = item.notNum
@@ -291,14 +297,10 @@ export default {
       }))
       that.type = type
 
-
-      
-
       getList().then(res => {
         that.warehouseList = res.data
       })
       
-
       storageDetail({id:records[0].id}).then(res => {
         console.log(res)
         const data = res.data

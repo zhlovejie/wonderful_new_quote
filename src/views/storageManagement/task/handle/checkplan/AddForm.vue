@@ -28,7 +28,13 @@
                 <td style="width:150px;">盘点方式</td>
                 <td style="width:350px;">
                   <a-form-model-item prop="type">
-                    <a-select v-if="!isDisabled && !isPandian" v-model="form.type" placeholder="盘点方式" style="width:100%;">
+                    <a-select 
+                      v-if="!isDisabled && !isPandian" 
+                      v-model="form.type" 
+                      placeholder="盘点方式" 
+                      style="width:100%;"
+                      @change="handleTypeChange"
+                    >
                       <a-select-option :value="0">全盘</a-select-option>
                       <a-select-option :value="1">循环盘</a-select-option>
                     </a-select>
@@ -61,7 +67,7 @@
 
           <div class="__hd">盘点计划明细</div>
           <div class="__bd">
-            <a-row :gutter="20" v-if="!(isDisabled || isPandian)">
+            <a-row :gutter="20" v-if="!(isDisabled || isPandian) && +form.type === 1">
               <a-col :span="6">
                 <a-form-model-item prop="warehouseId">
                   <a-select
@@ -177,7 +183,7 @@
 <script>
 import { getList, ReservoiGetList } from '@/api/storage'
 
-import { getShelvesByAreaId2, containerPalletList } from '@/api/storage_wzz'
+import { getShelvesByAreaId2, containerPalletList ,instantPositionList} from '@/api/storage_wzz'
 
 import {
   artificialInventoryApproval,
@@ -330,7 +336,11 @@ export default {
       }
 
       that.spinning = true
-      await getList().then(res => (that.warehouseList = res.data))
+      
+      await getList().then(res => {
+        //人工盘点只显示平面库信息   warehouseType 2平面库 1智能库
+        that.warehouseList = res.data.filter(item => +item.warehouseType === 2)
+      })
 
       try {
         if (that.isAdd) {
@@ -517,6 +527,21 @@ export default {
           shelvesLocationName: target.shelvesLocationName,
           shelvesLocationType: target.type
         }
+      }
+    },
+
+    handleTypeChange(val){
+      const that = this
+
+      that.instantPositionList = []
+
+      if(+val === 0){
+        instantPositionList({
+          materialType:1, // 是否查询只含有物料的信息（0否，1是）
+          type:0 // 用于盘点计划1是查立体库，0是查非立体库
+        }).then(res => {
+          that.instantPositionList = res.data
+        })
       }
     },
 
