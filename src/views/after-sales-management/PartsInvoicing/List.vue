@@ -26,13 +26,15 @@
         >
         <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         <div class="table-operator fl-r">
-          <template v-if="$auth('paper:add')">
+          <template v-if="$auth('PartsInvoicing:add')">
             <a-dropdown>
-              <a-menu slot="overlay" @click="handleAdd">
+              <!-- <a-menu slot="overlay" @click="handleAdd">
                 <a-menu-item key="1"><a-icon type="file" />销售合同开票单</a-menu-item>
                 <a-menu-item key="2"><a-icon type="file" />软件合同开票单</a-menu-item>
-              </a-menu>
-              <a-button type="primary" style="margin-left: 8px"> 新建 <a-icon type="plus" /> </a-button>
+              </a-menu> -->
+              <a-button type="primary" style="margin-left: 8px" @click="handleAdd">
+                售后合同开票单 <a-icon type="plus" />
+              </a-button>
             </a-dropdown>
           </template>
         </div>
@@ -44,7 +46,7 @@
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
-            <template v-if="$auth('paper:approval')">
+            <template v-if="$auth('PartsInvoicing:approval')">
               <a-tab-pane tab="待我审批" key="5"> </a-tab-pane>
               <a-tab-pane tab="我已审批" key="2"> </a-tab-pane>
             </template>
@@ -84,16 +86,16 @@
             <span v-if="text == 2">已完结</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('paper:one')">
+            <template v-if="$auth('PartsInvoicing:one')">
               <a @click="handleVue(record)">查看</a>
             </template>
-            <template v-if="$auth('paper:edit')">
+            <template v-if="$auth('PartsInvoicing:edit')">
               <a-divider v-if="audit" type="vertical" />
               <a v-if="audit" @click="handleAudit(record)">审核</a>
             </template>
             <template
               v-if="
-                $auth('paper:del') &&
+                $auth('PartsInvoicing:del') &&
                 (+record.paperStatue === 2 || +record.paperStatue === 9) &&
                 record.createdId === userInfo.id
               "
@@ -103,7 +105,7 @@
             </template>
             <template
               v-if="
-                $auth('paper:edit') &&
+                $auth('PartsInvoicing:edits') &&
                 (+record.paperStatue === 3 || +record.paperStatue === 9) &&
                 record.createdId === userInfo.id
               "
@@ -111,7 +113,7 @@
               <a-divider type="vertical" />
               <a @click="handleEdit(record)">修改</a>
             </template>
-            <template v-if="+record.paperStatue === 1">
+            <template v-if="+record.paperStatue === 1 && contractState === 0">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -131,9 +133,9 @@
 import { STable } from '@/components'
 import { getServiceList, openPaperDelete, revocationOpenpaper } from '@/api/openpaper'
 import { openpaperGetSumAmountByList } from '@/api/receipt'
-import InvestigateNode from '../record/InvestigateNode'
-import Tendering from '../record/TenderingUnit'
-import SearchForm from './modules/SearchForm'
+import InvestigateNode from './InvestigateNode'
+import Tendering from './TenderingUnit'
+import SearchForm from './SearchForm'
 import { getListSaleContractUser } from '@/api/contractListManagement'
 import { exprotAction } from '@/api/receipt'
 export default {
@@ -249,7 +251,7 @@ export default {
   },
   watch: {
     $route(to, from) {
-      if (to.name == 'openPaperList') {
+      if (to.name == 'after-sales-management_PartsInvoicing') {
         this.search()
       }
       if (
@@ -308,12 +310,8 @@ export default {
           that.$message.error(err.message)
         })
     },
-    handleAdd(e) {
-      if (e.key === '1') {
-        this.$router.push({ name: 'openPaperAdd' })
-      } else if (e.key === '2') {
-        this.$router.push({ name: 'softwareOpenPaperAdd' })
-      }
+    handleAdd() {
+      this.$router.push({ name: 'PartsInvoicingPaperAdd' })
     },
     handleClick(record) {
       console.log('JSON.stringify(record) :' + JSON.stringify(record))
@@ -363,25 +361,10 @@ export default {
     },
     handleEdit(e) {
       // 重新提交
-      const contractType = e.contractType
-      if (contractType == 1) {
-        this.$router.push({ name: 'editPaperVue', params: { id: e.id, auditBoolean: false } })
-      } else if (contractType == 2) {
-        this.$router.push({ name: 'editSoftwareOpenPaper', params: { id: e.id } })
-      } else if (contractType == 6) {
-        this.$router.push({ name: 'PartsInvoicingeditPaperVue', params: { id: e.id, auditBoolean: false } })
-      }
+      this.$router.push({ name: 'PartsInvoicingeditPaperVue', params: { id: e.id, auditBoolean: false } })
     },
     handleVue(e) {
-      console.log(e)
-      const contractType = e.contractType
-      if (contractType == 1) {
-        this.$router.push({ name: 'openPaperVue', params: { id: e.id, auditBoolean: false } })
-      } else if (contractType == 2) {
-        this.$router.push({ name: 'softwareOpenPaperView', params: { id: e.id, auditBoolean: false } })
-      } else if (contractType == 6) {
-        this.$router.push({ name: 'PartsInvoicingOpenPaperVue', params: { id: e.id, auditBoolean: false } })
-      }
+      this.$router.push({ name: 'PartsInvoicingOpenPaperVue', params: { id: e.id, auditBoolean: false } })
     },
     handleAudit(e) {
       const contractType = e.contractType
@@ -389,13 +372,11 @@ export default {
         this.$message.info('你没有审批权限，不可以审批')
         return
       }
-      if (contractType == 1) {
-        this.$router.push({ name: 'openPaperVue', params: { id: e.id, auditBoolean: true } })
-      } else if (contractType == 2) {
-        this.$router.push({ name: 'softwareOpenPaperView', params: { id: e.id, auditBoolean: true } })
-      } else if (contractType == 6) {
-        this.$router.push({ name: 'PartsInvoicingOpenPaperVue', params: { id: e.id, auditBoolean: true } })
-      }
+      // if (contractType == 1) {
+      this.$router.push({ name: 'PartsInvoicingOpenPaperVue', params: { id: e.id, auditBoolean: true } })
+      // } else if (contractType == 2) {
+      //   this.$router.push({ name: 'softwareOpenPaperView', params: { id: e.id, auditBoolean: true } })
+      // }
     },
     doAction(type, record) {
       let that = this

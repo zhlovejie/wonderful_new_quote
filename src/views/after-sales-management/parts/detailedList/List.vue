@@ -75,6 +75,10 @@
             <template v-if="queryParam.searchStatus !== '1'">
               <a @click="handleAdd('veiw', record)">查看</a>
             </template>
+            <template v-if="queryParam.searchStatus === '0' && record.productInfoList.some((i) => i.isWarranty === 1)">
+              <a-divider type="vertical" />
+              <a @click="accessorAdd('add', record)">配件销售合同</a>
+            </template>
             <template v-if="queryParam.searchStatus === '1'">
               <a @click="handleAdd('edit', record)">处理</a>
             </template>
@@ -132,6 +136,7 @@
         </a-table>
       </a-col>
     </a-row>
+    <AccessorForm ref="accessorForm" @filet="searchAction"></AccessorForm>
     <PartsForm ref="partsForm" @filet="searchAction"></PartsForm>
     <ApproveInfo ref="approveInfoCard" />
     <Application ref="application" @filet="searchAction"></Application>
@@ -141,6 +146,8 @@
 <script>
 import { STable } from '@/components'
 import PartsForm from './partsForm'
+import AccessorForm from './AccessorForm'
+
 import Application from './application'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import { accessoriesManagementPage } from '@/api/after-sales-management'
@@ -200,6 +207,7 @@ export default {
     // Tendering,
     // InvestigateNode,
     // ReceiptAdd,
+    AccessorForm,
     Application,
     STable,
     ApproveInfo,
@@ -212,7 +220,7 @@ export default {
       userInfo: this.$store.getters.userInfo,
       // 查询参数
       queryParam: {
-        searchStatus: 0,
+        searchStatus: '0',
       },
       recordResult: {},
       queryRecord: {},
@@ -344,6 +352,10 @@ export default {
     handleAdd(type, record) {
       this.$refs.partsForm.query(type, record)
     },
+    accessorAdd(type, record) {
+      this.$refs.accessorForm.query(type, record)
+    },
+
     searchAction(opt) {
       let that = this
       let _searchParam = Object.assign({}, { ...that.queryParam }, { ...that.pagination1 }, opt || {})

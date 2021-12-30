@@ -58,9 +58,70 @@ const api = {
   updateTaskDocument: '/csupport/task-document/updateTaskDocument', //任务修改
   getAliPayQrCode: '/csupport/accessories-management/getAliPayQrCode', //支付宝
   getWxPayQrCode: '/csupport/accessories-management/getWxPayQrCode', //微信
+  accessoriesAddOrUpdate: '/csupport/accessories-contract/addOrUpdate', //配件销售合同新增或修改
+  accessoriesgetListByPage: '/csupport/accessories-contract/getListByPage', //配件销售合同分页列表
+  accessoriesRevocation: '/csupport/accessories-contract/revocation', //配件销售合同撤回
+  accessoriesGetDetailById: '/csupport/accessories-contract/getDetailById', //配件销售合同详情
+  accessoriesdelById: '/csupport/accessories-contract/delById', //配件销售合同删除
+  accessoriesApproval: '/csupport/accessories-contract/approval', //配件销售合同审批
 
 
 
+}
+//配件销售合同审批
+export function accessoriesApproval(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesApproval,
+    method: 'post',
+    data: parameter
+  })
+}
+//配件销售合同删除
+export function accessoriesdelById(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesdelById,
+    method: 'get',
+    params: parameter
+  })
+}
+
+//配件销售合同详情
+export function accessoriesGetDetailById(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesGetDetailById,
+    method: 'get',
+    params: parameter
+  })
+}
+//配件销售合同撤回
+export function accessoriesRevocation(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesRevocation,
+    method: 'post',
+    data: parameter
+  })
+}
+//配件销售合同分页列表
+export function accessoriesgetListByPage(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesgetListByPage,
+    method: 'get',
+    params: parameter
+  })
+}
+//配件销售合同新增或修改
+export function accessoriesAddOrUpdate(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesAddOrUpdate,
+    method: 'post',
+    data: parameter
+  })
 }
 //微信
 export function getWxPayQrCode(parameter) {

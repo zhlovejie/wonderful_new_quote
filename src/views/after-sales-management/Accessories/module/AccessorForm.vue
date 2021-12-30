@@ -1,0 +1,413 @@
+<template>
+  <a-modal
+    :title="modalTitle"
+    :width="1300"
+    :visible="visible"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    :maskClosable="false"
+    :confirmLoading="spinning"
+  >
+    <template slot="footer">
+      <template v-if="isEdit">
+        <a-button class="a-button" type="primary" icon="close" @click="noPassAction(recordDetails)">不通过</a-button>
+        <a-button class="a-button" type="primary" icon="check" @click="passAction()">通过</a-button>
+      </template>
+      <template v-else>
+        <a-button key="back" @click="handleCancel">取消</a-button>
+        <a-button key="submit" type="primary" :loading="spinning" @click="handleOk">确定</a-button>
+      </template>
+    </template>
+
+    <a-spin :spinning="spinning">
+      <a-form-model ref="ruleForm" :model="form" class="routine-addform-wrapper-baseInnerData">
+        <h3>基本信息</h3>
+        <table class="custom-table custom-table-border">
+          <tr>
+            <td style="width: 250px">配件销售合同编号</td>
+            <td>{{ (record.accessoriesContractNum && record.accessoriesContractNum) || '系统生成' }}</td>
+            <td style="width: 250px">配件清单编号</td>
+            <td>{{ record.accessoriesNum }}</td>
+          </tr>
+          <tr>
+            <td>客户名称</td>
+            <td>{{ record.customerName }}</td>
+            <td>售后人员</td>
+            <td>{{ record.createdName }}</td>
+          </tr>
+          <tr>
+            <td>开票类型</td>
+            <td>
+              <a-form-model-item
+                prop="invoiceType"
+                :rules="{
+                  required: true,
+                  message: '请选择开票类型',
+                }"
+              >
+                <a-radio-group v-if="!isDisabled" v-model="form.invoiceType">
+                  <a-radio :value="2">增票</a-radio>
+                  <a-radio :value="1">普票</a-radio>
+                </a-radio-group>
+                <span v-else>{{ form.invoiceType === 1 ? '普票' : '增票' }}</span>
+              </a-form-model-item>
+            </td>
+            <td>签订日期</td>
+            <td>
+              <a-form-model-item
+                prop="signDate"
+                :rules="{
+                  required: true,
+                  message: '请选择签订日期',
+                }"
+              >
+                <a-date-picker v-if="!isDisabled" v-model="form.signDate" />
+                <span v-else :style="{ color: moment().format('YYYY-MM-DD') !== form.signDate ? 'red' : '' }">{{
+                  form.signDate
+                }}</span>
+              </a-form-model-item>
+            </td>
+          </tr>
+        </table>
+        <div style="margin-top: 20px">
+          <h3>合同信息</h3>
+          <a-table
+            :columns="travelColumns"
+            :dataSource="form.productInfoList"
+            :pagination="false"
+            bordered
+            size="small"
+          >
+            <div slot="order" slot-scope="text, record, index">
+              {{ index + 1 }}
+            </div>
+
+            <div slot="money" slot-scope="text, record, index">
+              {{ record.isWarranty === 0 ? '0' : record.quantity * record.unitPrice }}
+            </div>
+            <div slot="footer" slot-scope="text, record, index">
+              <div style="text-align: right; font-size: 16px; color: red">
+                <span>数量合计：{{ totalPrice }}</span>
+                <span style="margin: 0 10px">单价合计：{{ totalPhase | moneyFormatNumber }}</span>
+                <span>金额合计：{{ details.totalAmount | moneyFormatNumber }}</span>
+              </div>
+            </div>
+          </a-table>
+        </div>
+        <h3>开票信息</h3>
+        <table class="custom-table custom-table-border">
+          <tr>
+            <td style="width: 250px">地址</td>
+            <td>
+              <a-form-model-item
+                prop="address"
+                :rules="{
+                  required: true,
+                  message: '请输入地址',
+                }"
+              >
+                <a-input v-if="!isDisabled" v-model="form.address" />
+                <span v-else>{{ form.address }}</span>
+              </a-form-model-item>
+            </td>
+            <td style="width: 250px">电话</td>
+            <td>
+              <a-form-model-item
+                prop="telephone"
+                :rules="{
+                  required: true,
+                  message: '请输入电话',
+                }"
+              >
+                <a-input v-if="!isDisabled" v-model="form.telephone" />
+                <span v-else>{{ form.telephone }}</span>
+              </a-form-model-item>
+            </td>
+          </tr>
+          <tr>
+            <td>开户行名称</td>
+            <td>
+              <a-form-model-item
+                prop="bankName"
+                :rules="{
+                  required: true,
+                  message: '请输入开户行名称',
+                }"
+              >
+                <a-input v-if="!isDisabled" v-model="form.bankName" />
+                <span v-else>{{ form.bankName }}</span>
+              </a-form-model-item>
+            </td>
+            <td>账号</td>
+            <td>
+              <a-form-model-item
+                prop="accountNum"
+                :rules="{
+                  required: true,
+                  message: '请输入账号',
+                }"
+              >
+                <a-input v-if="!isDisabled" v-model="form.accountNum" />
+                <span v-else>{{ form.accountNum }}</span>
+              </a-form-model-item>
+            </td>
+          </tr>
+        </table>
+        <Approval ref="approval" @opinionChange="opinionChange" />
+      </a-form-model>
+    </a-spin>
+  </a-modal>
+</template>
+<script>
+import {
+  accessoriesManagementDetail,
+  accessoriesAddOrUpdate,
+  accessoriesGetDetailById,
+  accessoriesApproval,
+} from '@/api/after-sales-management' //机构名称
+import Approval from './Approval'
+import moment from 'moment'
+export default {
+  name: 'BecomingForm',
+  components: {
+    Approval,
+  },
+  data() {
+    return {
+      details: {},
+      form: {
+        productInfoList: [],
+        signDate: moment(),
+      },
+      isWarranty: undefined,
+      record: {},
+      recordDetails: {},
+      visible: false,
+      spinning: false,
+      type: 'add',
+      userInfo: this.$store.getters.userInfo,
+    }
+  },
+  computed: {
+    modalTitle() {
+      let txt = this.isAdd ? '新增' : this.isVeiw ? '详情' : '修改'
+      return `${txt}配件销售合同`
+    },
+    isAdd() {
+      return this.type === 'add'
+    },
+    isVeiw() {
+      return this.type === 'veiw'
+    },
+    isEditSalary() {
+      //修改
+      return this.type === 'edit-salary'
+    },
+    isEdit() {
+      return this.type === 'edit'
+    },
+    isDisabled() {
+      return this.isVeiw || this.isEdit
+    },
+    totalPrice() {
+      return this.form.productInfoList.reduce((addr, item) => {
+        addr = Number(addr) + Number(item.quantity)
+        return parseFloat(addr).toFixed(2)
+      }, 0)
+    },
+    totalPhase() {
+      return this.form.productInfoList.reduce((addr, item) => {
+        addr = Number(addr) + Number(item.unitPrice || 0)
+        return parseFloat(addr).toFixed(2)
+      }, 0)
+    },
+    travelColumns() {
+      const baseColumns = [
+        {
+          title: '序号',
+          scopedSlots: { customRender: 'order' },
+          width: 60,
+          align: 'center',
+        },
+        {
+          title: '物料代码',
+          dataIndex: 'materialCode',
+          width: 150,
+          align: 'center',
+        },
+        {
+          title: '物料名称',
+          dataIndex: 'materialName',
+          width: 130,
+          align: 'center',
+        },
+        {
+          title: '规格型号',
+          dataIndex: 'specification',
+          width: 340,
+          align: 'center',
+        },
+        {
+          title: '单位',
+          dataIndex: 'company',
+          align: 'center',
+        },
+        {
+          title: '数量',
+          dataIndex: 'quantity',
+          align: 'center',
+        },
+        {
+          title: '单价（元）',
+          dataIndex: 'unitPrice',
+          align: 'center',
+        },
+        {
+          title: '金额（元）',
+          dataIndex: 'money',
+          scopedSlots: { customRender: 'money' },
+          align: 'center',
+        },
+      ]
+      return baseColumns
+    },
+  },
+
+  created() {},
+  methods: {
+    moment,
+    // 审批
+    submitAction(opt) {
+      let that = this
+      let values = {
+        approveId: this.record.id,
+        isAdopt: opt.isAdopt,
+        opinion: opt.opinion,
+      }
+      that.spinning = true
+      accessoriesApproval(values)
+        .then((res) => {
+          that.spinning = false
+          that.handleCancel()
+          that.$message.info(res.msg)
+          that.$emit('filet')
+        })
+        .catch((err) => (that.spinning = false))
+    },
+    passAction() {
+      this.submitAction({
+        isAdopt: 0,
+        // opinion: '通过',
+      })
+    },
+    noPassAction() {
+      let that = this
+      that.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion,
+      })
+    },
+    query(type, record) {
+      this.visible = true
+      this.form = {
+        productInfoList: [],
+        signDate: moment(),
+      }
+      this.type = type
+      this.record = record
+      accessoriesGetDetailById({ id: record.id }).then((res) => {
+        this.spinning = false
+        this.details = res.data
+        if (this.isEditSalary) {
+          res.data.signDate = moment(res.data.signDate)
+        }
+
+        this.form = { ...this.form, ...res.data }
+      })
+    },
+    handleOk() {
+      console.log('你是要提交')
+      let that = this
+      if (this.isVeiw) {
+        return (this.visible = false)
+      }
+      that.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          let ret = {}
+          const params = that.$_.cloneDeep(that.form || {})
+          ret.id = params.id
+          ret.instanceId = this.record.instanceId
+          ret.accessoriesId = params.accessoriesId
+          ret.customerId = params.customerId
+          ret.saleUserId = params.saleUserId
+          ret.afterUserId = params.createdId
+          ret.afterUserName = params.createdName
+          ret.customerName = params.customerName
+          ret.productInfoList = params.productInfoList
+          ret.invoiceType = params.invoiceType
+          ret.signDate = params.signDate.format('YYYY-MM-DD')
+          ret.address = params.address
+          ret.telephone = params.telephone
+          ret.bankName = params.bankName
+          ret.accountNum = params.accountNum
+          accessoriesAddOrUpdate(ret)
+            .then((res) => {
+              if (res.code === 200) {
+                that.spinning = false
+                that.visible = false
+                that.$message.info(res.msg)
+                that.$emit('filet')
+              }
+            })
+            .catch((err) => (that.spinning = false))
+        }
+      })
+    },
+    handleCancel() {
+      this.visible = false
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+  },
+}
+</script>
+<style scoped>
+/*自定义table样式*/
+.custom-table {
+  margin-bottom: 0;
+}
+.ant-form-item {
+  margin-bottom: 0;
+}
+.custom-table-border th,
+.custom-table-border td {
+  padding: 15px 10px;
+}
+
+.custom-table >>> .custom-table {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: calc(100% + 2px);
+  margin-bottom: -2px;
+}
+.custom-table >>> .custom-table td {
+  text-align: left;
+}
+.becoming-form-wrapper >>> .ant-form-item {
+  margin-bottom: 0;
+}
+
+.bank-card-list-wrapper {
+  display: flex;
+}
+.bank-card-list-wrapper >>> .ant-form-item {
+  display: flex;
+  margin: 0 7px;
+}
+</style>

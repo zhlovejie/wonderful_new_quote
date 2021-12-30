@@ -265,7 +265,7 @@ import {
   updatePaper,
 } from '@/api/openpaper'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
-import ReceiptSaleContract from '../receipt/ReceiptSaleContract'
+import ReceiptSaleContract from './modules/ReceiptSaleContract'
 import ARow from 'ant-design-vue/es/grid/Row'
 import moment from 'moment'
 
@@ -348,6 +348,7 @@ export default {
     this.init()
   },
   methods: {
+    moment,
     init() {
       let that = this
       console.log('init this.$route.params ' + JSON.stringify(this.$route.params))
@@ -355,29 +356,54 @@ export default {
       this.auditBoolean = this.$route.params.auditBoolean
       this.id = this.$route.params.id
       openPaperDetail(params).then((res) => {
-        that.saleContract = res.data.saleContractDetail.id
-        that.freightType = res.data.saleContractDetail.freightType
-        //that.freightCharge = res.data.freightCharge || res.data.saleContractDetail.freightCharge
-        that.freightCharge = res.data.saleContractDetail.freightMoneyWithRate
-        that.totalAmount = res.data.saleContractDetail.totalAmount
-        that.totalAmountWidtoutFreight = that.totalAmount - that.freightCharge
+        // that.saleContract = res.data.saleContractDetail.id
+        // that.freightType = res.data.saleContractDetail.freightType
+        // //that.freightCharge = res.data.freightCharge || res.data.saleContractDetail.freightCharge
+        // that.freightCharge = res.data.saleContractDetail.freightMoneyWithRate
+        // that.totalAmount = res.data.saleContractDetail.totalAmount
+        // that.totalAmountWidtoutFreight = that.totalAmount - that.freightCharge
 
+        // const record = {
+        //   remark: res.data.remark,
+        //   paperCode: res.data.paperCode,
+        //   contractNum: res.data.saleContractDetail.contractNum,
+        //   customerName: res.data.saleContractDetail.customerName,
+        //   contractId: res.data.saleContractDetail.id,
+        //   totalAmount: res.data.saleContractDetail.totalAmount,
+        //   taxPayerNo: res.data.taxPayerNo,
+        //   bankNoAccount: res.data.bankNoAccount,
+        //   customerTel: res.data.customerTel,
+        //   customerAddress: res.data.customerAddress,
+        //   refundMoney: res.data.saleContractDetail.returnedMoney,
+        //   //'paperMoney': res.data.paperMoney + (that.freightType === 0 ? Number(that.freightCharge) * 1.13 : 0),
+        //   paperMoney: res.data.paperMoney,
+        //   arrearsMoney: res.data.arrearsMoney,
+        //   deliveryTime: moment(res.data.deliveryTime),
+        //   paperDetail: res.data.paperDetail,
+        //   paperQuality: res.data.paperQuality,
+        //   paperType: res.data.paperType,
+        //   approveName: res.data.approveName,
+        //   createdTime: res.data.createdTime,
+        //   createdName: res.data.createdName,
+        //   approveTime: res.data.approveTime,
+        //   freightCharge: res.data.saleContractDetail.freightMoneyWithRate,
+        //   openUnit: res.data.openUnit,
+        // }
         const record = {
-          remark: res.data.remark,
           paperCode: res.data.paperCode,
-          contractNum: res.data.saleContractDetail.contractNum,
-          customerName: res.data.saleContractDetail.customerName,
-          contractId: res.data.saleContractDetail.id,
-          totalAmount: res.data.saleContractDetail.totalAmount,
+          contractNum: res.data.accessoriesContractDetailVo.accessoriesContractNum,
+          totalAmount: res.data.accessoriesContractDetailVo.totalAmount,
+          customerName: res.data.saleCustomerName,
+          contractId: res.data.id,
+          // totalAmount: res.data.totalAmount,
           taxPayerNo: res.data.taxPayerNo,
           bankNoAccount: res.data.bankNoAccount,
           customerTel: res.data.customerTel,
           customerAddress: res.data.customerAddress,
-          refundMoney: res.data.saleContractDetail.returnedMoney,
-          //'paperMoney': res.data.paperMoney + (that.freightType === 0 ? Number(that.freightCharge) * 1.13 : 0),
+          refundMoney: res.data.returnedMoney,
           paperMoney: res.data.paperMoney,
           arrearsMoney: res.data.arrearsMoney,
-          deliveryTime: moment(res.data.deliveryTime),
+          deliveryTime:moment(res.data.deliveryTime) ,
           paperDetail: res.data.paperDetail,
           paperQuality: res.data.paperQuality,
           paperType: res.data.paperType,
@@ -385,8 +411,8 @@ export default {
           createdTime: res.data.createdTime,
           createdName: res.data.createdName,
           approveTime: res.data.approveTime,
-          freightCharge: res.data.saleContractDetail.freightMoneyWithRate,
-          openUnit: res.data.openUnit,
+          remark: res.data.remark,
+          openUnit: res.data.openUnit || '',
         }
         if (res.data.approveName != undefined && res.data.approveTime != undefined) {
           that.approveVueBoolean = true
@@ -399,8 +425,8 @@ export default {
           })
         })
 
-        that.maxArrearsMoney = parseFloat(record.totalAmount) - parseFloat(record.refundMoney)
-        console.log('getContractOne : ' + JSON.stringify(res))
+        // that.maxArrearsMoney = parseFloat(record.totalAmount) - parseFloat(record.refundMoney)
+        // console.log('getContractOne : ' + JSON.stringify(res))
       })
 
       /**
@@ -442,8 +468,9 @@ export default {
     // 返回
     goBackPricing() {
       // 点击返回，返回列表页
-      this.$router.push({ name: 'openPaperList' })
-      this.$destroy('openPaperVue')
+      this.$router.go(-1)
+      // this.$router.push({ name: 'openPaperList' })
+      // this.$destroy('openPaperVue')
     },
     writeAccountNum(record) {
       const data = { accountNum: record.bankNum }
@@ -455,9 +482,7 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
-          console.log('values :' + JSON.stringify(values))
-          console.log('json values :', JSON.stringify(values))
-          this.$set(values, 'contractType', 1) // 1销售合同，2软件合同
+          this.$set(values, 'contractType', 6) // 1销售合同，2软件合同
           this.$set(values, 'deliveryTime', values.deliveryTime.format('YYYY-MM-DD'))
 
           openPaperSave(values).then((res) => {
@@ -594,7 +619,7 @@ export default {
         // 验证表单没错误
         if (!err) {
           console.log('json values :', JSON.stringify(values))
-          this.$set(values, 'contractType', 1) // 1销售合同，2软件合同
+          this.$set(values, 'contractType', 6) // 1销售合同，2软件合同
           that.$set(values, 'products', that.dataSource)
           that.$set(values, 'deliveryTime', values.deliveryTime.format('YYYY-MM-DD'))
           that.$set(values, 'id', that.id)
