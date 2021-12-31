@@ -97,32 +97,32 @@
               <div slot="exWarehouseNum" slot-scope="text, record, index">
                 <a-form-model-item
                   v-if="!isDisabled"
-                  :prop="`materialTableList.${index}.exWarehouseNum`"
+                  :prop="`materialTableList.${index}.alreadyExWarehouseNum`"
                   :rules="{ required: true, message: '请输入出库数量' }"
                 >
                   <a-input-number
                     :disabled="isDisabled"
                     style="width:80px;text-align:center;"
                     :min="0"
-                    :max="record.alreadyExWarehouseNum"
+                    :max="record.exWarehouseNum"
                     :step="1"
                     :precision="0"
-                    :value="record.exWarehouseNum"
+                    :value="record.alreadyExWarehouseNum"
                     @change="(val) => handleExWarehouseNumChange(index,record,val)"
                   />
                 </a-form-model-item>
-                <span v-else>{{text}}</span>
+                <span v-else>{{record.alreadyExWarehouseNum}}</span>
               </div>
 
 
-              <div slot="action" slot-scope="text, record">
+              <!-- <div slot="action" slot-scope="text, record">
                 <a-button type="link" @click="actionItem('delete', record)">删除</a-button>
-              </div>
+              </div> -->
 
               <template slot="footer" >
                 <div style="text-align:right;margin-right:10px;font-size:16px;">
                   <span>合计：</span>
-                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.exWarehouseNum) || 0),0)  }} </span>
+                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.alreadyExWarehouseNum) || 0),0)  }} </span>
                 </div>
               </template>
 
@@ -196,10 +196,10 @@ const base_columns = [
     dataIndex: 'exWarehouseNum',
     scopedSlots: { customRender: 'exWarehouseNum' }
   },
-  {
-    title: '操作',
-    scopedSlots: { customRender: 'action' }
-  }
+  // {
+  //   title: '操作',
+  //   scopedSlots: { customRender: 'action' }
+  // }
 ]
 
 export default {
@@ -252,7 +252,8 @@ export default {
     },
     columns(){
       let columns = [...base_columns]
-      return this.isDisabled ? columns.slice(0,-1) : columns
+      // return this.isDisabled ? columns.slice(0,-1) : columns
+      return columns
     }
   },
   methods: {
@@ -311,7 +312,10 @@ export default {
               exWarehouseType: data.exWarehouseType,
               exWarehouseDate: that.isDisabled ? data.exWarehouseDate : moment(data.exWarehouseDate),
               remarks: data.remarks,
-              materialTableList: data.exWarehouseApplyMaterials
+              materialTableList: data.exWarehouseApplyMaterials.map(item => {
+                item.__maxExWarehouseNum = item.notExWarehouseNum
+                return item
+              })
             }
           })
         }
@@ -345,8 +349,9 @@ export default {
       item.specification = specification
       item.subUnit = subUnit
       item.exWarehouseNum = positionQuantity
-      item.notExWarehouseNum = positionQuantity
-      item.alreadyExWarehouseNum = positionQuantity
+      item.notExWarehouseNum = 0
+      item.alreadyExWarehouseNum = 0
+      item.__maxExWarehouseNum = positionQuantity
       item.k3Code = k3Code
 
       that.form = {
@@ -366,7 +371,8 @@ export default {
             const params = {
               ...that.form,
               exWarehouseApplyMaterials:that.form.materialTableList.map(item => {
-                item.notExWarehouseNum = item.alreadyExWarehouseNum - item.exWarehouseNum
+                // item.notExWarehouseNum = item.alreadyExWarehouseNum - item.exWarehouseNum
+                item.notExWarehouseNum = (Number(item.exWarehouseNum) || 0) - (Number(item.alreadyExWarehouseNum) || 0)
                 return {...item}
               }),
               exWarehouseDate: moment(that.form.exWarehouseDate).format('YYYY-MM-DD HH:mm:ss')
