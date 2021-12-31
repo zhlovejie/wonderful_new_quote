@@ -111,7 +111,7 @@
               <a-divider type="vertical" />
               <a @click="handleEdit(record)">修改</a>
             </template>
-            <template v-if="+record.paperStatue === 1">
+            <template v-if="+record.paperStatue === 1 && contractState === 0">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
