@@ -6,6 +6,7 @@
     v-model="collapsed"
     :trigger="null">
     <logo />
+    <MenuSearch />
     <s-menu
       :collapsed="collapsed"
       :menu="menus"
@@ -20,11 +21,12 @@
 <script>
 import Logo from '@/components/tools/Logo'
 import SMenu from './index'
+import MenuSearch from '@/components/CustomerList/MenuSearch' 
 import { mixin, mixinDevice } from '@/utils/mixin'
 
 export default {
   name: 'SideMenu',
-  components: { Logo, SMenu },
+  components: { Logo, SMenu ,MenuSearch},
   mixins: [mixin, mixinDevice],
   props: {
     mode: {
