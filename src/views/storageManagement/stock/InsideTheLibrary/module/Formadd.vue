@@ -246,7 +246,50 @@ export default {
           width: 60,
         },
       ]
-      return baseColumns
+      const baseColumns1 = [
+        {
+          title: '序号',
+          scopedSlots: { customRender: 'order' },
+          width: 60,
+        },
+        {
+          title: '物料代码',
+          dataIndex: 'materialCode',
+          scopedSlots: { customRender: 'materialCode' },
+          width: 150,
+        },
+        {
+          title: '物料名称',
+          align: 'center',
+          dataIndex: 'materialName',
+          width: 100,
+        },
+        {
+          title: '辅计量单位',
+          dataIndex: 'subUnit',
+          width: 100,
+        },
+        {
+          title: '仓库/库区',
+          dataIndex: 'warehouseReservoir',
+        },
+        {
+          title: '移出仓位',
+          dataIndex: 'removePosition',
+        },
+        {
+          title: '移入仓位',
+          dataIndex: 'immigratePositionId',
+          scopedSlots: { customRender: 'immigratePositionId' },
+          width: 150,
+        },
+        {
+          title: '计划转移数量',
+          dataIndex: 'planImmigrateNum',
+          scopedSlots: { customRender: 'planImmigrateNum' },
+        },
+      ]
+      return this.isView !== true ? baseColumns : baseColumns1
     },
   },
   methods: {

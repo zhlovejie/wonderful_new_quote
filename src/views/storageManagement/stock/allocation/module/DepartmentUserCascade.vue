@@ -99,22 +99,28 @@ export default {
         translocateGetShelvesByAreaId({ areaId: that.infoList, materialId: that.materialId }).then((res) => {
           that.depList = res.data
           if (res.code == 200 && that.info) {
-            const target = that.depList.find((u) => u.shelvesLocationId === that.info)
-            that.userList = target.positionModelVoList || []
+            this.initDepartment({ react: that.info, type: this.type })
+            // const target = that.depList.find((u) => u.shelvesLocationId === that.info)
+            // that.userList = target.positionModelVoList || []
           }
         })
       }
     },
     initDepartment(depId) {
       const that = this
-      const target = that.depList.find((u) => u.shelvesLocationId === depId)
-      that.userList = target.positionModelVoList || []
+      translocateGetPositionList({
+        shelvesLocationId: depId.react,
+        materialId: that.materialId,
+        type: depId.type,
+      }).then((res) => {
+        that.userList = res.data || []
+      })
     },
     depChange(depId) {
       const that = this
       that.$emit('update:info', depId)
-      this.initDepartment(depId)
       const target = that.depList.find((u) => u.shelvesLocationId === depId)
+      this.initDepartment({ react: that.info, type: target.type })
       that.$emit('update:positionCode', target.shelvesLocationName)
       that.$emit('update:PositionId', null)
       that.$emit('update:PositionName', null)
