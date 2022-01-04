@@ -51,10 +51,10 @@
       </a-form>
     </div>
     <h3 v-if="+activeKey === 0">
-      未入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;未出库数：{{countInfo.notNum || 0}}
+      未出库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;未出库数：{{countInfo.notNum || 0}}
     </h3>
     <h3 v-if="+activeKey === 1">
-      已入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;已出库数：{{countInfo.alreadyNum || 0}}
+      已出库单据：{{countInfo.singleNum || 0}}
     </h3>
     <div class="main-wrapper">
       <a-table
@@ -334,7 +334,7 @@ export default {
           }
         })
         .catch(err => (that.loading = false))
-      exWarehouseStatistics({status:that.activeKey}).then(res => {
+      exWarehouseStatistics({type:that.activeKey}).then(res => {
         const {alreadyNum,notNum,singleNum} = res.data
         that.countInfo = {
           alreadyNum,notNum,singleNum

@@ -97,21 +97,22 @@
               <div slot="exWarehouseNum" slot-scope="text, record, index">
                 <a-form-model-item
                   v-if="!isDisabled"
-                  :prop="`materialTableList.${index}.alreadyExWarehouseNum`"
+                  :prop="`materialTableList.${index}.exWarehouseNum`"
                   :rules="{ required: true, message: '请输入出库数量' }"
                 >
                   <a-input-number
                     :disabled="isDisabled"
                     style="width:80px;text-align:center;"
                     :min="0"
-                    :max="record.exWarehouseNum"
+                    :max="record.__maxExWarehouseNum"
                     :step="1"
                     :precision="0"
-                    :value="record.alreadyExWarehouseNum"
+                    :value="record.exWarehouseNum"
                     @change="(val) => handleExWarehouseNumChange(index,record,val)"
                   />
                 </a-form-model-item>
-                <span v-else>{{record.alreadyExWarehouseNum}}</span>
+                <!-- <span v-else>{{record.alreadyExWarehouseNum}}</span> -->
+                <span v-else>{{record.exWarehouseNum}}</span>
               </div>
 
 
@@ -122,10 +123,9 @@
               <template slot="footer" >
                 <div style="text-align:right;margin-right:10px;font-size:16px;">
                   <span>合计：</span>
-                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.alreadyExWarehouseNum) || 0),0)  }} </span>
+                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.exWarehouseNum) || 0),0)  }} </span>
                 </div>
               </template>
-
 
             </a-table>
             <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="actionItem('add')"

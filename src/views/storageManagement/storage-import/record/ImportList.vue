@@ -71,7 +71,7 @@
       </a-form>
     </div>
     <h3 >
-      已入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;已出库数：{{countInfo.alreadyNum || 0}}
+      已入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;已入库数：{{countInfo.alreadyNum || 0}}
     </h3>
     <div class="main-wrapper">
       <a-table
@@ -105,6 +105,11 @@
         <div slot="storageType" slot-scope="text, record, index">
           <span>{{ record.actualNum === record.storageNum ? '完全入库' : '批次入库' }}</span>
         </div>
+
+        <div slot="storageNum" slot-scope="text, record, index">
+          <span>{{ record.actualNum - record.notNum }}</span>
+        </div>
+        
 
         
 
@@ -168,7 +173,8 @@ const columns = [
   },
   {
     title: '实际入库数量',
-    dataIndex: 'storageNum'
+    dataIndex: 'storageNum',
+    scopedSlots: { customRender: 'storageNum' }
   },
   {
     title: '仓位',

@@ -71,7 +71,7 @@
       </a-form>
     </div>
     <h3 >
-      未入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;未出库数：{{countInfo.notNum || 0}}
+      未入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;未入库数：{{countInfo.notNum || 0}}
     </h3>
     <div class="main-wrapper">
       <a-table
@@ -96,6 +96,10 @@
             </template>
             <span>{{ text }}</span>
           </a-popover>
+        </div>
+
+        <div slot="storageNum" slot-scope="text, record, index">
+          <span>{{ record.actualNum - record.notNum }}</span>
         </div>
 
         <div class="action-btns" slot="action" slot-scope="text, record">
@@ -179,7 +183,8 @@ const columns = [
   },
   {
     title: '实际入库数量',
-    dataIndex: 'storageNum'
+    dataIndex: 'storageNum',
+    scopedSlots: { customRender: 'storageNum' }
   },
   {
     title: '未入库数量',
