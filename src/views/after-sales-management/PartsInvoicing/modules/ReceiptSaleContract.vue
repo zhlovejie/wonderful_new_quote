@@ -140,7 +140,7 @@ export default {
       // })
     },
     search() {
-      // this.$set(this.queryParam, 'customerName', this.customerName)
+      this.$set(this.queryParam, 'customerName', this.customerName)
       // this.$set(this.queryParam, 'userId', this.userId)
       // this.$set(this.queryParam, 'isTax', this.isTax)
       this.$refs.table.refresh(true)

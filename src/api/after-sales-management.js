@@ -64,10 +64,21 @@ const api = {
   accessoriesGetDetailById: '/csupport/accessories-contract/getDetailById', //配件销售合同详情
   accessoriesdelById: '/csupport/accessories-contract/delById', //配件销售合同删除
   accessoriesApproval: '/csupport/accessories-contract/approval', //配件销售合同审批
+  accessoriesgetCustomerById: '/csupport/accessories-contract/getCustomerById', //根据客户id获取最新的客户开票信息
 
 
 
 }
+//根据客户id获取最新的客户开票信息
+export function accessoriesgetCustomerById(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.accessoriesgetCustomerById,
+    method: 'get',
+    params: parameter
+  })
+}
+
 //配件销售合同审批
 export function accessoriesApproval(parameter) {
   return axios({

@@ -31,7 +31,24 @@
           </tr>
           <tr>
             <td>客户名称</td>
-            <td>{{ record.customerName }}</td>
+            <td>
+              <a-form-model-item
+                prop="address"
+                :rules="{
+                  required: false,
+                  message: '客户名称',
+                }"
+              >
+                <a-input
+                  read-only
+                  placeholder="客户名称"
+                  :allowClear="true"
+                  @click="selectCustomer"
+                  v-model="form.customerName"
+                />
+                <!-- <a-input v-if="!isDisabled" v-model="form.customerName" /> -->
+              </a-form-model-item>
+            </td>
             <td>售后人员</td>
             <td>{{ record.createdName }}</td>
           </tr>
@@ -101,7 +118,7 @@
               <a-form-model-item
                 prop="address"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入地址',
                 }"
               >
@@ -113,7 +130,7 @@
               <a-form-model-item
                 prop="telephone"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入电话',
                 }"
               >
@@ -127,7 +144,7 @@
               <a-form-model-item
                 prop="bankName"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入开户行名称',
                 }"
               >
@@ -139,7 +156,7 @@
               <a-form-model-item
                 prop="accountNum"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入账号',
                 }"
               >
@@ -149,20 +166,31 @@
           </tr>
         </table>
       </a-form-model>
+      <CustomerList ref="customerList" @selected="customerSelected" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { accessoriesManagementDetail, accessoriesAddOrUpdate } from '@/api/after-sales-management' //机构名称
+import {
+  accessoriesManagementDetail,
+  accessoriesAddOrUpdate,
+  accessoriesgetCustomerById,
+} from '@/api/after-sales-management' //机构名称
+//客户列表选择
+import CustomerList from '@/components/CustomerList/CustomerList'
 import moment from 'moment'
 export default {
   name: 'BecomingForm',
+  components: {
+    CustomerList,
+  },
   data() {
     return {
       details: {},
       form: {
         productInfoList: [],
         signDate: moment(),
+        invoiceType: 2,
       },
       isWarranty: undefined,
       record: {},
@@ -258,11 +286,22 @@ export default {
   created() {},
   methods: {
     moment,
+    selectCustomer() {
+      this.$refs.customerList.init()
+    },
+    customerSelected(record) {
+      let that = this
+      console.log(record)
+      if (record) {
+        this.form = { ...this.form, ...{ customerName: record.name, customerId: record.id } }
+      }
+    },
     query(type, record) {
       this.visible = true
       this.form = {
         productInfoList: [],
         signDate: moment(),
+        invoiceType: 2,
       }
       this.type = type
       this.record = record
@@ -272,6 +311,12 @@ export default {
           this.spinning = false
           this.details = res.data
           res.data.productInfoList = res.data.productInfoList.filter((i) => i.isWarranty === 1)
+          // this.form.customerName = record.customerName
+          // this.form.customerId = record.customerId
+          this.form = { ...this.form, ...res.data }
+          this.form = { ...this.form, ...{ customerName: record.customerName, customerId: record.customerId } }
+        })
+        accessoriesgetCustomerById({ id: record.customerId }).then((res) => {
           this.form = { ...this.form, ...res.data }
         })
       }
@@ -284,11 +329,12 @@ export default {
           let ret = {}
           const params = that.$_.cloneDeep(that.form || {})
           ret.accessoriesId = this.record.id
-          ret.customerId = this.record.customerId
+          ret.customerName = params.customerName
+          ret.customerId = params.customerId
           ret.saleUserId = this.record.saleUserId
           ret.afterUserId = this.record.createdId
           ret.afterUserName = this.record.createdName
-          ret.customerName = this.record.customerName
+
           ret.productInfoList = params.productInfoList
           ret.invoiceType = params.invoiceType
           ret.signDate = params.signDate.format('YYYY-MM-DD')

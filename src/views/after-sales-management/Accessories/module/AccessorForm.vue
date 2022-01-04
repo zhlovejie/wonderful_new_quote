@@ -31,7 +31,26 @@
           </tr>
           <tr>
             <td>客户名称</td>
-            <td>{{ record.customerName }}</td>
+            <td>
+              <a-form-model-item
+                prop="address"
+                :rules="{
+                  required: false,
+                  message: '客户名称',
+                }"
+              >
+                <a-input
+                  v-if="!isDisabled"
+                  read-only
+                  placeholder="客户名称"
+                  :allowClear="true"
+                  @click="selectCustomer"
+                  v-model="form.customerName"
+                />
+                <span>{{ record.customerName }}</span>
+              </a-form-model-item>
+            </td>
+
             <td>售后人员</td>
             <td>{{ record.createdName }}</td>
           </tr>
@@ -102,7 +121,7 @@
               <a-form-model-item
                 prop="address"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入地址',
                 }"
               >
@@ -115,7 +134,7 @@
               <a-form-model-item
                 prop="telephone"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入电话',
                 }"
               >
@@ -130,7 +149,7 @@
               <a-form-model-item
                 prop="bankName"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入开户行名称',
                 }"
               >
@@ -143,7 +162,7 @@
               <a-form-model-item
                 prop="accountNum"
                 :rules="{
-                  required: true,
+                  required: false,
                   message: '请输入账号',
                 }"
               >
@@ -154,6 +173,7 @@
           </tr>
         </table>
         <Approval ref="approval" @opinionChange="opinionChange" />
+        <CustomerList ref="customerList" @selected="customerSelected" />
       </a-form-model>
     </a-spin>
   </a-modal>
@@ -165,12 +185,15 @@ import {
   accessoriesGetDetailById,
   accessoriesApproval,
 } from '@/api/after-sales-management' //机构名称
+//客户列表选择
+import CustomerList from '@/components/CustomerList/CustomerList'
 import Approval from './Approval'
 import moment from 'moment'
 export default {
   name: 'BecomingForm',
   components: {
     Approval,
+    CustomerList,
   },
   data() {
     return {
@@ -275,6 +298,16 @@ export default {
 
   created() {},
   methods: {
+    selectCustomer() {
+      this.$refs.customerList.init()
+    },
+    customerSelected(record) {
+      let that = this
+      console.log(record)
+      if (record) {
+        this.form = { ...this.form, ...{ customerName: record.name, customerId: record.id } }
+      }
+    },
     moment,
     // 审批
     submitAction(opt) {

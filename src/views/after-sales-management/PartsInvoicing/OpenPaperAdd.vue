@@ -390,6 +390,7 @@ export default {
         console.log(res)
         this.dataSource = res.data.productInfoList.map((i) => {
           return {
+            key: ++_ukey,
             productName: i.materialName,
             productCode: i.materialCode,
             company: i.company,
