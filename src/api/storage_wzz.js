@@ -96,6 +96,8 @@ export function storageRevocation2(parameter) {
 }
 
 
+
+
 // 入库仓库
 export function getWarehouseList(parameter) {
   return axios({

@@ -42,6 +42,7 @@
                     :needOptions="needOptions"
                     :options="customerSelectOptions"
                     @selected="handleCustomerSelected"
+                    @inputClear="handleCustomerSelected"
                   />
                   <span v-else>{{ form.customerName }}</span>
                 </a-form-model-item>
@@ -140,12 +141,23 @@
                 :prop="`materialTableList.${index}.materialCode`"
                 :rules="{ required: true, message: '请选择物料' }"
               >
-                <MaterialFuzzySearch
+                <a-select
+                  :disabled="isDisabled"
+                  :value="record.materialId"
+                  placeholder="选择物料"
+                  style="width:180px;"
+                  @change="handlerMaterialChange"
+                >
+                  <a-select-option v-for="item in sendTableList" :key="item.id">
+                    {{item.productModel}}
+                  </a-select-option>
+                </a-select>
+                <!-- <MaterialFuzzySearch
                   :disabled="isDisabled"
                   :materialInfo="form.materialTableList[0]"
                   style="width:250px;"
                   @change="handlerMaterialChange"
-                />
+                /> -->
               </a-form-model-item>
             </div>
 
@@ -422,6 +434,8 @@ export default {
               ]
             }
 
+            that.handleInvoiceChange(data.invoiceId)
+
             that.$refs.customerSelect &&
               that.$refs.customerSelect.fill({
                 id: data.customerId,
@@ -431,18 +445,19 @@ export default {
         }
       }
     },
-    handlerMaterialChange(item) {
+    handlerMaterialChange(id) {
       // debugger
       const that = this
+      const item = that.sendTableList.find(item => item.id === id)
       let materialTableList = [...that.form.materialTableList]
       let target = materialTableList[0]
-      target.materialId = item.materialId
-      target.materialCode = item.materialCode
-      target.materialName = item.materialName
-      target.subUnit = item.materialUnit
-      target.weight = item.weight || 0
-      target.specification = item.modelType
-      target.k3Code = item.k3Code
+      target.materialId = item.id
+      target.materialCode = item.productModel
+      target.materialName = item.productName
+      target.subUnit = {0:'套',1:'台',2:'个',3:'块',4:'条',5:'根',6:'张',7:'卷'}[item.company] || '未知'
+      // target.weight = item.weight || 0
+      target.specification = item.productStandard
+      target.k3Code = item.k3Code || ''
 
       that.form = {
         ...that.form,
@@ -488,6 +503,23 @@ export default {
     },
     saleUserChange(saleUserId) {
       const that = this
+      if(!saleUserId){
+        that.form = {
+          ...that.form,
+          salesManagerId: undefined,
+          salesManagerName: undefined,
+          customerId: undefined,
+          customerName: undefined,
+          salesContractId:undefined,
+          salesContractNum: undefined,
+          invoiceId:undefined
+        }
+        that.contractList = []
+        that.sendTableList = []
+        that.$refs.customerSelect && that.$refs.customerSelect.handleClear()
+        return
+      }
+
       let target = that.saleUsers.find(u => u.userId === saleUserId)
       that.needOptions = { userId: saleUserId }
       that.$refs.customerSelect && that.$refs.customerSelect.handleClear()
@@ -522,7 +554,17 @@ export default {
       that.form = {
         ...that.form,
         customerId: item && item.id ? item.id : undefined,
-        customerName: item.name
+        customerName: item && item.name ? item.name : undefined
+      }
+      if(!item){
+        that.form = {
+          ...that.form,
+          salesContractId:undefined,
+          salesContractNum: undefined,
+          invoiceId:undefined
+        }
+        that.contractList = []
+        that.sendTableList = []
       }
       that.$nextTick(() => {
         that.$refs.ruleForm.validateField(['customerId'])
@@ -534,8 +576,10 @@ export default {
       that.form = {
         ...that.form,
         salesContractId,
-        salesContractNum: target.contractNum
+        salesContractNum: target.contractNum,
+        invoiceId:undefined
       }
+      that.sendTableList = []
 
       return getInvoiceList({ contractId: salesContractId, current: 1, size: 1000 })
         .then(res => {

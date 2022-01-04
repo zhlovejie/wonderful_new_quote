@@ -8,6 +8,7 @@
             v-model="searchParam.warehouseId"
             placeholder="入库仓库"
             style="width:150px;"
+            :allowClear="true"
           >
             <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
               item.warehouseName
@@ -29,13 +30,13 @@
           <a-input placeholder="单号模糊搜索" v-model="searchParam.storageCode" style="width:180px;" />
         </a-form-item>
 
-        <a-form-item>
+        <!-- <a-form-item>
           <a-select placeholder="紧急程度" v-model="searchParam.urgentType" style="width: 150px" :allowClear="true">
             <a-select-option :value="1">一般</a-select-option>
             <a-select-option :value="2">紧急</a-select-option>
             <a-select-option :value="3">特急</a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-item> -->
 
         <a-form-item>
           <a-select
@@ -53,22 +54,25 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item>
+        <!-- <a-form-item>
           <a-select placeholder="入库策略" v-model="searchParam.aaa" style="width: 150px" :allowClear="true">
             <a-select-option :value="1">单品策略</a-select-option>
             <a-select-option :value="2">同品策略</a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-item> -->
 
-        <a-form-item>
+        <!-- <a-form-item>
           <a-range-picker style="width:220px;" v-model="searchParam.date" />
-        </a-form-item>
+        </a-form-item> -->
         
         <a-form-item>
           <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
       </a-form>
     </div>
+    <h3 >
+      未入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;未出库数：{{countInfo.notNum || 0}}
+    </h3>
     <div class="main-wrapper">
       <a-table
         :columns="columns"
@@ -123,12 +127,7 @@ import {
   getWarehouseList,
   storagePageList,
   storageRevocation2,
-  storageDetail,
-  storageRecords,
-  storageStatistics,
-  storageAddOrUpdate,
-  storageSingleUpdate,
-  storageBatchUpdate
+  storageStatistics
   } from '@/api/storage_wzz'
 import AddForm from './AddForm'
 import Records from './Records'
@@ -216,6 +215,7 @@ export default {
     return {
       columns: columns,
       dataSource: [],
+      countInfo:{},
       pagination: {
         current: 1,
         _prePageSize: 10,
@@ -315,6 +315,13 @@ export default {
           }
         })
         .catch(err => (that.loading = false))
+
+      storageStatistics({status:0}).then(res => {
+        const {alreadyNum,notNum,singleNum} = res.data
+        that.countInfo = {
+          alreadyNum,notNum,singleNum
+        }
+      })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

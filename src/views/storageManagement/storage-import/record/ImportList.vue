@@ -8,6 +8,7 @@
             v-model="searchParam.warehouseId"
             placeholder="入库仓库"
             style="width:150px;"
+            :allowClear="true"
           >
             <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
               item.warehouseName
@@ -69,6 +70,9 @@
         </a-form-item>
       </a-form>
     </div>
+    <h3 >
+      已入库单据：{{countInfo.singleNum || 0}} &nbsp;&nbsp;已出库数：{{countInfo.alreadyNum || 0}}
+    </h3>
     <div class="main-wrapper">
       <a-table
         :columns="columns"
@@ -121,13 +125,7 @@ import {
   storageMaterialList1,
   getWarehouseList,
   storagePageList,
-  storageDetail,
-  storageRecords,
-  storageStatistics,
-  storageAddOrUpdate,
-  storageSingleUpdate,
-  storageBatchUpdate,
-  storageRevocation
+  storageStatistics
   } from '@/api/storage_wzz'
 
 import moment from 'moment'
@@ -204,6 +202,7 @@ export default {
     return {
       columns: columns,
       dataSource: [],
+      countInfo:{},
       pagination: {
         current: 1,
         _prePageSize: 10,
@@ -293,6 +292,13 @@ export default {
           }
         })
         .catch(err => (that.loading = false))
+      
+      storageStatistics({status:1}).then(res => {
+        const {alreadyNum,notNum,singleNum} = res.data
+        that.countInfo = {
+          alreadyNum,notNum,singleNum
+        }
+      })
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {

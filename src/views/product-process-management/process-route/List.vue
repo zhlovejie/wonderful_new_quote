@@ -4,7 +4,7 @@
     class="product-process-management_process-route-management_route"
   >
     <div class="resize-column-wrapper">
-      <div class="resize-column-left">
+      <div id="split-0">
         <div
           class="menu-tree-list-wrapper"
           style="width: 100%; overflow: auto; height: auto; min-height: 600px"
@@ -26,8 +26,7 @@
           </a-tree>
         </div>
       </div>
-      <div class="resize-column-control-bar"></div>
-      <div class="resize-column-right">
+      <div id="split-1">
         <template v-if="routeView">
           <RouteViewFrom ref="routeViewFrom" />
         </template>
@@ -259,9 +258,8 @@ import {
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import AddForm from './module/AddForm'
 import RouteViewFrom from './module/RouteView'
-import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import SearchForm from './module/SearchForm'
-
+import Split from 'split.js'
 const columns = [
   {
     align: 'center',
@@ -510,7 +508,15 @@ export default {
       this.search()
 
       that.$nextTick(() => {
-        that._ResizeColumnInstance = new ResizeColumn()
+        that.splitClear()
+        that.splitInstance = Split(['#split-0', '#split-1'], {
+          gutter: function(i, gutterDirection) {
+            var gut = document.createElement('div')
+            gut.className = '_wdf_split_gutter _wdf_split_gutter-' + gutterDirection
+            return gut
+          },
+          sizes: [20, 80]
+        })
       })
 
       craftRouteGetAllWorkshop().then(res => {
@@ -933,13 +939,21 @@ export default {
       const that = this
       const target = that.allWorkshop.find(item => String(item.id) === String(id))
       return target.departmentName
+    },
+    splitClear() {
+      try {
+        if (this.splitInstance !== null) {
+          this.splitInstance.destroy()
+          this.splitInstance = null
+        }
+      } catch (err) {
+        this.splitInstance = null
+        console.log(err)
+      }
     }
   },
   beforeDestroy() {
-    if (this._ResizeColumnInstance) {
-      this._ResizeColumnInstance.destory()
-      this._ResizeColumnInstance = null
-    }
+    this.splitClear()
   }
 }
 </script>
@@ -961,20 +975,9 @@ export default {
   overflow: hidden;
 }
 
-.product-process-management_process-route-management_route >>> .resize-column-wrapper .resize-column-control-bar {
-  width: 10px;
-  background-color: #f5f5f5;
-  cursor: col-resize;
-  box-shadow: 0 0px 3px 1px #ddd;
-  border-radius: 6px;
-  margin: 0 10px;
-}
-
-.product-process-management_process-route-management_route >>> .resize-column-wrapper .resize-column-left {
-  overflow: auto;
-}
-.product-process-management_process-route-management_route >>> .resize-column-wrapper .resize-column-right {
-  flex: 1;
+#split-0,
+#split-1 {
+  padding: 0 5px;
 }
 </style>
 

@@ -207,10 +207,10 @@ const base_columns = [
     scopedSlots: { customRender: 'alreadyExWarehouseNum' }
   },
   
-  {
-    title: '操作',
-    scopedSlots: { customRender: 'action' }
-  }
+  // {
+  //   title: '操作',
+  //   scopedSlots: { customRender: 'action' }
+  // }
 ]
 
 export default {

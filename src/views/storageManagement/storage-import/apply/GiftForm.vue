@@ -85,6 +85,21 @@
                 <span>{{ text }}</span>
               </a-popover>
             </div>
+            <div slot="weight" slot-scope="text, record, index">
+              <a-form-model-item
+                :prop="`materialTableList.${index}.weight`"
+                :rules="{ required: true, message: '请输产品重量' }"
+              >
+                <a-input-number
+                  :disabled="isDisabled"
+                  style="width:80px;text-align:center;"
+                  :min="0"
+                  :step="1"
+                  :precision="0"
+                  v-model="record.weight"
+                />
+              </a-form-model-item>
+            </div>
             <div slot="storageNum" slot-scope="text, record, index">
               <a-form-model-item
                 :prop="`materialTableList.${index}.storageNum`"
@@ -157,7 +172,8 @@ const columns = [
   },
   {
     title: '产品重量',
-    dataIndex: 'weight'
+    dataIndex: 'weight',
+    scopedSlots: { customRender: 'weight' }
   },
   {
     title: '入库数量',

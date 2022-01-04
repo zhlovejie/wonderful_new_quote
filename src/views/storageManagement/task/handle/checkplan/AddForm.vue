@@ -28,7 +28,13 @@
                 <td style="width:150px;">盘点方式</td>
                 <td style="width:350px;">
                   <a-form-model-item prop="type">
-                    <a-select v-if="!isDisabled && !isPandian" v-model="form.type" placeholder="盘点方式" style="width:100%;">
+                    <a-select 
+                      v-if="!isDisabled && !isPandian" 
+                      v-model="form.type" 
+                      placeholder="盘点方式" 
+                      style="width:100%;"
+                      @change="handleTypeChange"
+                    >
                       <a-select-option :value="0">全盘</a-select-option>
                       <a-select-option :value="1">循环盘</a-select-option>
                     </a-select>
@@ -61,7 +67,7 @@
 
           <div class="__hd">盘点计划明细</div>
           <div class="__bd">
-            <a-row :gutter="20" v-if="!isDisabled">
+            <a-row :gutter="20" v-if="!(isDisabled || isPandian) && +form.type === 1">
               <a-col :span="6">
                 <a-form-model-item prop="warehouseId">
                   <a-select
@@ -116,7 +122,7 @@
               :pagination="false"
               size="small"
               :rowSelection="
-                !isDisabled ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
+                !(isDisabled || isPandian) ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
               "
               :scroll="{ y: 450 }"
             >
@@ -124,7 +130,7 @@
                 {{ index + 1 }}
               </div>
 
-              <div slot="inventoryAmount" slot-scope="text, record, index">
+              <!-- <div slot="inventoryAmount" slot-scope="text, record, index">
                 <a-form-model-item
                   :prop="`instantPositionList.${index}.inventoryAmount`"
                   :rules="{ required: true, message: '请输入盘点数量' }"
@@ -138,9 +144,9 @@
                     v-model="record.inventoryAmount"
                   />
                 </a-form-model-item>
-              </div>
+              </div> -->
 
-              <div slot="abnormalAmount" slot-scope="text, record, index">
+              <!-- <div slot="abnormalAmount" slot-scope="text, record, index">
                 <a-form-model-item
                   :prop="`instantPositionList.${index}.abnormalAmount`"
                   :rules="{ required: true, message: '请输入异常数量' }"
@@ -154,7 +160,7 @@
                     v-model="record.abnormalAmount"
                   />
                 </a-form-model-item>
-              </div>
+              </div> -->
             </a-table>
           </div>
           <div class="__footer">
@@ -165,7 +171,7 @@
               <a-button type="primary" @click="passAction">通过</a-button>
               <a-button @click="noPassAction" style="margin:0 10px;">不通过</a-button>
             </template>
-            <a-button v-if="isPandian" @click="handleSubmit('pandian')" type="primary">盘点</a-button>
+            <!-- <a-button v-if="isPandian" @click="handleSubmit('pandian')" type="primary">盘点</a-button> -->
           </div>
         </div>
       </a-form-model>
@@ -177,7 +183,7 @@
 <script>
 import { getList, ReservoiGetList } from '@/api/storage'
 
-import { getShelvesByAreaId2, containerPalletList } from '@/api/storage_wzz'
+import { getShelvesByAreaId2, containerPalletList ,instantPositionList} from '@/api/storage_wzz'
 
 import {
   artificialInventoryApproval,
@@ -330,7 +336,11 @@ export default {
       }
 
       that.spinning = true
-      await getList().then(res => (that.warehouseList = res.data))
+      
+      await getList().then(res => {
+        //人工盘点只显示平面库信息   warehouseType 2平面库 1智能库
+        that.warehouseList = res.data.filter(item => +item.warehouseType === 2)
+      })
 
       try {
         if (that.isAdd) {
@@ -342,21 +352,27 @@ export default {
                 ...data,
                 inventoryDate: that.isDisabled ? data.inventoryDate : moment(data.inventoryDate)
               }
-              // that.instantPositionList = data.artificialInventoryInfos || []
+              if(!that.isEdit){
+                that.instantPositionList = data.artificialInventoryInfos || []
+              }
             })
 
-            const artificialInventoryInfos = that.form.artificialInventoryInfos || []
+            if(that.isEdit){
+              const artificialInventoryInfos = that.form.artificialInventoryInfos || []
+  
+              if (artificialInventoryInfos.length > 0) {
+                const { warehouseId, reservoirAreaId, shelvesLocationId } = artificialInventoryInfos[0]
+                await that.handleWarehouseChange(warehouseId)
+                await that.handleReservoirAreaChange(reservoirAreaId)
+                await that.handleShelvesLocationChange(shelvesLocationId)
+  
+                that.selectedRowKeys = artificialInventoryInfos.map(item => String(item.positionId))
+                that.selectedRows = that.instantPositionList.filter(item => {
+                  return that.selectedRowKeys.includes(String(item.positionId))
+                })
+              }
+            }else{
 
-            if (artificialInventoryInfos.length > 0) {
-              const { warehouseId, reservoirAreaId, shelvesLocationId } = artificialInventoryInfos[0]
-              await that.handleWarehouseChange(warehouseId)
-              await that.handleReservoirAreaChange(reservoirAreaId)
-              await that.handleShelvesLocationChange(shelvesLocationId)
-
-              that.selectedRowKeys = artificialInventoryInfos.map(item => String(item.positionId))
-              that.selectedRows = that.instantPositionList.filter(item => {
-                return that.selectedRowKeys.includes(String(item.positionId))
-              })
             }
           }
         }
@@ -511,6 +527,21 @@ export default {
           shelvesLocationName: target.shelvesLocationName,
           shelvesLocationType: target.type
         }
+      }
+    },
+
+    handleTypeChange(val){
+      const that = this
+
+      that.instantPositionList = []
+
+      if(+val === 0){
+        instantPositionList({
+          materialType:1, // 是否查询只含有物料的信息（0否，1是）
+          type:0 // 用于盘点计划1是查立体库，0是查非立体库
+        }).then(res => {
+          that.instantPositionList = res.data
+        })
       }
     },
 
