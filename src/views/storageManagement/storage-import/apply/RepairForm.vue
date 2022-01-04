@@ -143,7 +143,7 @@
               >
                 <a-select
                   :disabled="isDisabled"
-                  v-model="form.warehouseId"
+                  :value="record.materialId"
                   placeholder="选择物料"
                   style="width:180px;"
                   @change="handlerMaterialChange"
@@ -434,6 +434,8 @@ export default {
               ]
             }
 
+            that.handleInvoiceChange(data.invoiceId)
+
             that.$refs.customerSelect &&
               that.$refs.customerSelect.fill({
                 id: data.customerId,
@@ -453,7 +455,7 @@ export default {
       target.materialCode = item.productModel
       target.materialName = item.productName
       target.subUnit = {0:'套',1:'台',2:'个',3:'块',4:'条',5:'根',6:'张',7:'卷'}[item.company] || '未知'
-      target.weight = item.weight || 0
+      // target.weight = item.weight || 0
       target.specification = item.productStandard
       target.k3Code = item.k3Code || ''
 
