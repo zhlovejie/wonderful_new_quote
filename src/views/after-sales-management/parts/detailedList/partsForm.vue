@@ -142,7 +142,12 @@
               {{ form.remark }}
             </td>
           </tr>
-          <tr v-if="details.formKey === '1' || details.handlerResult === 0 || details.handlerResult === 1">
+          <tr
+            v-if="
+              form.paymentType !== 3 &&
+              (details.formKey === '1' || details.handlerResult === 0 || details.handlerResult === 1)
+            "
+          >
             <td>是否愿意担保</td>
             <td>
               <a-switch
@@ -176,7 +181,7 @@ export default {
       birthplaceOptions: [], //籍贯 级联 省市
       personincharge: [], //销售负责人
       labelName: undefined,
-      isAdopt: true,
+      isAdopt: false,
       isTax: true,
       form: {
         productInfoList: [],
@@ -335,7 +340,7 @@ export default {
           this.details = res.data
           this.form = { ...this.form, ...res.data }
           this.isTax = res.data.isTax === 0 ? true : false
-          this.isAdopt = res.data.handlerResult === 0 || res.data.handlerResult === null ? true : false
+          this.isAdopt = res.data.handlerResult === 1 || res.data.handlerResult === null ? false : true
           // this.form.mailRecord = res.data.mailRecord
         })
       }

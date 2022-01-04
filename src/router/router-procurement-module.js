@@ -7,15 +7,14 @@ import {
 export default { //采购模块
   path: '/procurement-module-management',
   name: 'procurement-module-management',
-  redirect:'/procurement-module-management/apply',
+  redirect: '/procurement-module-management/apply',
   component: PageView,
   meta: {
     title: '采购管理',
     icon: 'dollar',
     permission: ['permission'],
   },
-  children:[
-    {
+  children: [{
       path: '/procurement-module-management/apply',
       name: 'procurement-module-management-apply',
       component: () => import('@/views/procurement-module-management/apply/List'),

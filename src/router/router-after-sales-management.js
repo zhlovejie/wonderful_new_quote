@@ -34,6 +34,57 @@ export default { //售后管理
       },
     },
     {
+      path: '/after-sales-management/Accessories',
+      name: 'after-sales-management_Accessories',
+      component: () => import('@/views/after-sales-management/Accessories/List'),
+      meta: {
+        title: '配件销售合同',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/after-sales-management/PartsInvoicing',
+      name: 'after-sales-management_PartsInvoicing',
+      component: () => import('@/views/after-sales-management/PartsInvoicing/List'),
+      meta: {
+        title: '售后开票单',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    }, {
+      path: '/after-sales-management/PartsInvoicing/OpenPaperAdd',
+      name: 'PartsInvoicingPaperAdd',
+      hidden: true,
+      component: () => import('@/views/after-sales-management/PartsInvoicing/OpenPaperAdd'),
+      meta: {
+        title: '售后开票申请',
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/after-sales-management/PartsInvoicing/OpenPaperVue',
+      name: 'PartsInvoicingOpenPaperVue',
+      hidden: true,
+      component: () => import('@/views/after-sales-management/PartsInvoicing/OpenPaperVue'),
+      meta: {
+        title: '售后开票申请',
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/after-sales-management/PartsInvoicing/EditPaperVue',
+      name: 'PartsInvoicingeditPaperVue',
+      hidden: true,
+      component: () => import('@/views/after-sales-management/PartsInvoicing/EditPaperVue'),
+      meta: {
+        title: '修改售后开票申请',
+        permission: ['permission']
+      }
+    },
+    {
       path: '/after-sales-management/taskList',
       name: 'after-sales-management_taskList',
       component: RouteView,

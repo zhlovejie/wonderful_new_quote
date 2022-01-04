@@ -1,7 +1,7 @@
 <template>
   <!-- 收料记录 -->
   <div class="product-process-management_workshop-management">
-    <!-- <div class="main-wrapper">
+    <div class="main-wrapper">
       <a-table
         :columns="columns"
         :dataSource="dataSource"
@@ -12,14 +12,21 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <div slot="urgencyDegree" slot-scope="text, record, index">
-          <span>{{ text === 1 ? '一般' : text === 2 ? '加急' : '特级' }}</span>
+        <div slot="emergenceLevel" slot-scope="text, record, index">
+          <span>{{ text === 1 ? '一般' : text === 2 ? '紧急' : '特级' }}</span>
         </div>
         <div slot="nakedPrice" slot-scope="text, record, index">
           <span>{{ text === 1 ? '含税运' : '含税不含运' }}</span>
         </div>
+        <div slot="specification" slot-scope="text">
+          <a-tooltip v-if="String(text).length > 8">
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 8) }}...
+          </a-tooltip>
+          <span v-else>{{ text }}</span>
+        </div>
       </a-table>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -47,8 +54,8 @@ const columns = [
   {
     align: 'center',
     title: '紧急程度',
-    dataIndex: 'urgencyDegree',
-    scopedSlots: { customRender: 'urgencyDegree' },
+    dataIndex: 'emergenceLevel',
+    scopedSlots: { customRender: 'emergenceLevel' },
   },
   {
     align: 'center',
@@ -58,7 +65,8 @@ const columns = [
   {
     align: 'center',
     title: '规格型号',
-    dataIndex: 'materialModelType',
+    dataIndex: 'specification',
+    scopedSlots: { customRender: 'specification' },
   },
   {
     align: 'center',
@@ -68,17 +76,17 @@ const columns = [
   {
     align: 'center',
     title: '包装方式',
-    dataIndex: 'packMethod',
+    dataIndex: 'packageType',
   },
   {
     align: 'center',
     title: '包内数量',
-    dataIndex: 'pageNum',
+    dataIndex: 'packageCount',
   },
   {
     align: 'center',
     title: '采购数量',
-    dataIndex: 'requestNum',
+    dataIndex: 'purchseCount',
   },
   {
     align: 'center',
@@ -103,14 +111,8 @@ const columns = [
   {
     align: 'center',
     title: '收料时间',
-    dataIndex: 'recieveTime',
+    dataIndex: 'receiveTime',
   },
-  // {
-  //   align: 'center',
-  //   title: '操作',
-  //   key: 'action',
-  //   scopedSlots: { customRender: 'action' },
-  // },
 ]
 export default {
   name: 'product-process-management_mould-management',
@@ -123,6 +125,7 @@ export default {
       Warehouse: [],
       Position: [],
       loading: false,
+      record: {},
       pagination: {
         current: 1,
         pageSize: 10,
@@ -137,7 +140,8 @@ export default {
   methods: {
     init(record) {
       const that = this
-      that.searchAction({ supplierId: record.id })
+      that.record = record
+      that.searchAction()
     },
     searchAction(opt = {}) {
       let that = this
@@ -145,7 +149,12 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10,
       }
-      let _searchParam = Object.assign({}, { ...this.searchParam }, opt, paginationParam)
+      let _searchParam = Object.assign(
+        { supplierId: that.record.id, status: 2 },
+        { ...this.searchParam },
+        opt,
+        paginationParam
+      )
       that.loading = true
       listMaterialReceivingRecord(_searchParam)
         .then((res) => {

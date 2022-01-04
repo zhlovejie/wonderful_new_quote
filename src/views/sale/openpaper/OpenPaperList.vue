@@ -111,7 +111,7 @@
               <a-divider type="vertical" />
               <a @click="handleEdit(record)">修改</a>
             </template>
-            <template v-if="+record.paperStatue === 1">
+            <template v-if="+record.paperStatue === 1 && contractState === 0">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -368,14 +368,19 @@ export default {
         this.$router.push({ name: 'editPaperVue', params: { id: e.id, auditBoolean: false } })
       } else if (contractType == 2) {
         this.$router.push({ name: 'editSoftwareOpenPaper', params: { id: e.id } })
+      } else if (contractType == 6) {
+        this.$router.push({ name: 'PartsInvoicingeditPaperVue', params: { id: e.id, auditBoolean: false } })
       }
     },
     handleVue(e) {
+      console.log(e)
       const contractType = e.contractType
       if (contractType == 1) {
         this.$router.push({ name: 'openPaperVue', params: { id: e.id, auditBoolean: false } })
       } else if (contractType == 2) {
         this.$router.push({ name: 'softwareOpenPaperView', params: { id: e.id, auditBoolean: false } })
+      } else if (contractType == 6) {
+        this.$router.push({ name: 'PartsInvoicingOpenPaperVue', params: { id: e.id, auditBoolean: false } })
       }
     },
     handleAudit(e) {
@@ -388,6 +393,8 @@ export default {
         this.$router.push({ name: 'openPaperVue', params: { id: e.id, auditBoolean: true } })
       } else if (contractType == 2) {
         this.$router.push({ name: 'softwareOpenPaperView', params: { id: e.id, auditBoolean: true } })
+      } else if (contractType == 6) {
+        this.$router.push({ name: 'PartsInvoicingOpenPaperVue', params: { id: e.id, auditBoolean: true } })
       }
     },
     doAction(type, record) {

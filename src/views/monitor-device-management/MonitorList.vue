@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false" class="monitor-device-management-device-monitor monitor-list-wrapper">
     <div class="resize-column-wrapper">
-      <div class="resize-column-left">
+      <div id="split-0">
         <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
           <a-tree
             ref="treeRef"
@@ -18,8 +18,7 @@
           </a-tree>
         </div>
       </div>
-      <div class="resize-column-control-bar"></div>
-      <div class="resize-column-right">
+      <div id="split-1">
         <div class="device-wrapper">
         <h3>不知道如何使用？点击查看<a href="#" @click="showGuid">功能使用说明</a></h3>
         <a-row >
@@ -47,9 +46,9 @@ import {
   monitoringEquipmentTreeList
 } from '@/api/monitorDeviceManagement'
 
-import ResizeColumn from '@/components/CustomerList/ResizeColumn'
 import {MonitorDevice,CAMERA_API} from '@/components/CustomerList/MonitorDevice'
 import GuidForm from '@/components/CustomerList/MonitorDevice/Guid'
+import Split from 'split.js'
 let uuid = () => Math.random().toString(16).slice(-6) + Math.random().toString(16).slice(-6)
 
 const getParentKey = (key, tree) => {
@@ -127,10 +126,20 @@ export default {
       this.autoExpandParent = true
     },
     init() {
-      this.parentId = 0
-      this.fetchTree()
-      this.$nextTick(() => {
-        this._ResizeColumnInstance = new ResizeColumn()
+      const that = this
+      that.parentId = 0
+      that.fetchTree()
+
+      that.$nextTick(() => {
+        that.splitClear()
+        that.splitInstance = Split(['#split-0', '#split-1'], {
+          gutter: function(i, gutterDirection) {
+            var gut = document.createElement('div')
+            gut.className = '_wdf_split_gutter _wdf_split_gutter-' + gutterDirection
+            return gut
+          },
+          sizes: [20, 80]
+        })
       })
     },
 
@@ -264,13 +273,20 @@ export default {
         resolve()
       })
     },
-  },
-
-  beforeDestroy() {
-    if (this._ResizeColumnInstance) {
-      this._ResizeColumnInstance.destory()
-      this._ResizeColumnInstance = null
+    splitClear() {
+      try {
+        if (this.splitInstance !== null) {
+          this.splitInstance.destroy()
+          this.splitInstance = null
+        }
+      } catch (err) {
+        this.splitInstance = null
+        console.log(err)
+      }
     }
+  },
+  beforeDestroy() {
+    this.splitClear()
   }
 }
 </script>
@@ -284,20 +300,9 @@ export default {
   overflow: hidden;
 }
 
-.monitor-list-wrapper >>> .resize-column-wrapper .resize-column-control-bar {
-  width: 10px;
-  background-color: #f5f5f5;
-  cursor: col-resize;
-  box-shadow: 0 0px 3px 1px #ddd;
-  border-radius: 6px;
-  margin: 0 10px;
-}
-
-.monitor-list-wrapper >>> .resize-column-wrapper .resize-column-left {
-  overflow: auto;
-}
-.monitor-list-wrapper >>> .resize-column-wrapper .resize-column-right {
-  flex: 1;
+#split-0,
+#split-1 {
+  padding: 0 5px;
 }
 
 .monitor-list-wrapper .device-wrapper .device-item{

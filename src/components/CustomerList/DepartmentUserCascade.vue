@@ -1,36 +1,15 @@
 <template>
   <a-row>
     <a-col :span="11">
-      <a-select
-        style="width: 100%;"
-        :value="selfInfo.depId"
-        @change="depChange"
-        v-bind="$attrs"
-        placeholder="部门"
-      >
-        <a-select-option
-          v-for="item in depList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.departmentName }}</a-select-option>
+      <a-select style="width: 100%" :value="selfInfo.depId" @change="depChange" v-bind="$attrs" placeholder="部门">
+        <a-select-option v-for="item in depList" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
     </a-col>
-    <a-col
-      :span="11"
-      :offset="2"
-    >
-      <a-select
-        style="width: 100%;"
-        :value="selfInfo.userId"
-        @change="userChange"
-        v-bind="$attrs"
-        placeholder="人员"
-      >
-        <a-select-option
-          v-for="item in userList"
-          :key="item.id"
-          :value="item.id"
-        >{{ item.trueName }}</a-select-option>
+    <a-col :span="11" :offset="2">
+      <a-select style="width: 100%" :value="selfInfo.userId" @change="userChange" v-bind="$attrs" placeholder="人员">
+        <a-select-option v-for="item in userList" :key="item.id" :value="item.id">{{ item.trueName }}</a-select-option>
       </a-select>
     </a-col>
   </a-row>
@@ -42,7 +21,7 @@
  */
 import {
   departmentList, //所有部门
-  getUserByDep //获取人员
+  getUserByDep, //获取人员
 } from '@/api/systemSetting'
 
 export default {
@@ -50,14 +29,14 @@ export default {
   props: {
     info: {
       type: Object,
-      default: () => {}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
       depList: [],
       userList: [],
-      depListLoaded: false
+      depListLoaded: false,
     }
   },
   computed: {
@@ -65,15 +44,15 @@ export default {
       get() {
         return { ...this.info }
       },
-      set() {}
-    }
+      set() {},
+    },
   },
   watch: {
     info: {
       handler() {
         this.init()
-      }
-    }
+      },
+    },
   },
   created() {
     const that = this
@@ -92,7 +71,7 @@ export default {
     },
     initDepartment() {
       const that = this
-      departmentList().then(res => {
+      departmentList().then((res) => {
         that.depList = res.data
       })
     },
@@ -103,22 +82,32 @@ export default {
       if (!depId) {
         return
       }
-      getUserByDep({ departmentId: depId }).then(res => (that.userList = res.data))
+      getUserByDep({ departmentId: depId }).then((res) => (that.userList = res.data))
     },
     depChange(depId) {
       const that = this
-      const target = that.depList.find(dep => dep.id === depId)
+      const target = that.depList.find((dep) => dep.id === depId)
       that.initUsers(depId)
-      that.$emit('update:info', { depId, depName: target ? target.departmentName : undefined, userId: undefined, userName: undefined })
+      that.$emit('update:info', {
+        depId,
+        depName: target ? target.departmentName : undefined,
+        userId: undefined,
+        userName: undefined,
+      })
     },
     userChange(userId) {
       const that = this
-      const target = that.userList.find(u => u.id === userId)
+      const target = that.userList.find((u) => u.id === userId)
       that.$nextTick(() => {
-        that.$emit('update:info', { ...that.selfInfo, userId, userName: target ? target.trueName : undefined })
+        that.$emit('update:info', {
+          ...that.selfInfo,
+          userId,
+          userName: target ? target.trueName : undefined,
+          mobile: target ? target.mobile : undefined,
+        })
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

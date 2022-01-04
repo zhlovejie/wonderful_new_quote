@@ -38,7 +38,8 @@ import afterManagement from '@/router/router-after-sales-management'
 
 import procurementModuleManagement from '@/router/router-procurement-module'
 import supplier from '@/router/router-supplier'
-
+import qualityManagement from '@/router/router-quality-management'
+import storageManagement from '@/router/router-storage'
 
 const __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
@@ -64,8 +65,10 @@ const __ROUTER_MAP__ = [
   productProcessManagement, //工艺管理
   bomManagement, //BOM管理
   afterManagement, //售后管理
+  qualityManagement, // 质量管理
   procurementModuleManagement, //采购管理
   supplier, //供应商管理
+  storageManagement, //仓储管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
