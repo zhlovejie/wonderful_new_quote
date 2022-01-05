@@ -78,19 +78,19 @@
           <a type="primary" v-if="$auth('exWarehouseApplyList:view')" @click="doAction('view', record)">查看</a>
 
           <template v-if="+activeKey === 0">
-            <template v-if="[3, 4].includes(+record.status) && $auth('exWarehouseApplyList:edit')">
+            <template v-if="[3, 4].includes(+record.status) && (+userInfo.id === +record.createdId) && $auth('exWarehouseApplyList:edit')">
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
             </template>
 
-            <template v-if="[1].includes(+record.status) && $auth('exWarehouseApplyList:withdraw')">
+            <template v-if="[1].includes(+record.status) && (+userInfo.id === +record.createdId) && $auth('exWarehouseApplyList:withdraw')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
 
-            <template v-if="[3, 4].includes(+record.status) && $auth('exWarehouseApplyList:delete')">
+            <template v-if="[3, 4].includes(+record.status) && (+userInfo.id === +record.createdId) && $auth('exWarehouseApplyList:delete')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>

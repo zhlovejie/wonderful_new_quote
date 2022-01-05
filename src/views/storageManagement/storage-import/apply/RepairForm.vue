@@ -182,6 +182,7 @@
                 <a-input-number
                   :disabled="isDisabled"
                   style="width:80px;text-align:center;"
+                  :max="record.__maxRepairNum"
                   :min="0"
                   :step="1"
                   :precision="0"
@@ -399,7 +400,6 @@ export default {
         if (that.record) {
           await storageRepairDetail({ id: that.record.storageApplyId }).then(async res => {
             const data = res.data
-
             await that.saleUserChange(data.salesManagerId)
             await that.handleContractChange(data.salesContractId)
             that.form = {
@@ -436,11 +436,17 @@ export default {
 
             that.handleInvoiceChange(data.invoiceId)
 
+            that.handlerMaterialChange(data.materialId)
+
             that.$refs.customerSelect &&
               that.$refs.customerSelect.fill({
                 id: data.customerId,
                 name: data.customerName
               })
+
+            that.$nextTick(() => {
+              that.$refs.ruleForm.validateField(['customerId'])
+            })
           })
         }
       }
@@ -458,6 +464,7 @@ export default {
       // target.weight = item.weight || 0
       target.specification = item.productStandard
       target.k3Code = item.k3Code || ''
+      target.__maxRepairNum = item.invoiceCount
 
       that.form = {
         ...that.form,

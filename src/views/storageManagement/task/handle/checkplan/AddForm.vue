@@ -151,11 +151,11 @@
               <div slot="abnormalAmount" slot-scope="text, record, index">
                 <span
                   style="color:red;"
-                  v-if="(parseFloat(record.inventoryAmount) || 0) - (parseFloat(record.stockAmount) || 0) !== 0"
-                  >{{((parseFloat(record.inventoryAmount) || 0) - (parseFloat(record.stockAmount) || 0))}}
+                  v-if="text > 0"
+                  >{{text}}
                 </span>
                 <span v-else>
-                  {{((parseFloat(record.inventoryAmount) || 0) - (parseFloat(record.stockAmount) || 0))}}
+                  {{text}}
                 </span>
               </div>
             </a-table>
@@ -539,7 +539,11 @@ export default {
           materialType: 1, // 是否查询只含有物料的信息（0否，1是）
           type: 0 // 用于盘点计划1是查立体库，0是查非立体库
         }).then(res => {
-          that.instantPositionList = res.data
+          that.instantPositionList = res.data.map(item => {
+              item.positionId = item.id
+              item.stockAmount = item.positionQuantity
+            return item
+          })
         })
       }
     },

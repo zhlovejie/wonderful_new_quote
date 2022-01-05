@@ -98,21 +98,21 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <!-- { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' } -->
           <a type="primary" v-if="$auth('storageApplyList:view')" @click="doAction('view', record)">查看</a>
-
+          
           <template v-if="+activeKey === 0">
-            <template v-if="[3, 4].includes(+record.status) && $auth('storageApplyList:edit')">
+            <template v-if="[3, 4].includes(+record.status) && (+userInfo.id === +record.createdId) && $auth('storageApplyList:edit')">
               <a-divider type="vertical" />
               <a type="primary" href="javascript:;" @click="doAction('edit', record)">修改</a>
             </template>
 
-            <template v-if="[1].includes(+record.status) && $auth('storageApplyList:withdraw')">
+            <template v-if="[1].includes(+record.status) && (+userInfo.id === +record.createdId) && $auth('storageApplyList:withdraw')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
                 <a type="primary" href="javascript:;">撤回</a>
               </a-popconfirm>
             </template>
 
-            <template v-if="[3, 4].includes(+record.status) && $auth('storageApplyList:delete')">
+            <template v-if="[3, 4].includes(+record.status) && (+userInfo.id === +record.createdId) && $auth('storageApplyList:delete')">
               <a-divider type="vertical" />
               <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
                 <a type="primary" href="javascript:;">删除</a>
@@ -231,6 +231,7 @@ export default {
       immediate: true
     }
   },
+
   mounted() {
     this.init()
   },
