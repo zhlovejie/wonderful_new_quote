@@ -67,7 +67,7 @@
             </div>
 
             <div slot="deliveryMode" slot-scope="text, record, index">
-              {{ text === 0 ? '自带' : '邮寄' }}
+              {{ { 0: '自带', 1: '邮寄' }[record.deliveryMode] || '未知' }}
             </div>
             <div slot="isWarranty" slot-scope="text, record, index">
               <span v-if="record.isWarranty === 0">否</span>
