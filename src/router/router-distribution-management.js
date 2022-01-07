@@ -1,9 +1,17 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {
+  BasicLayout,
+  BlankLayout,
+  PageView,
+  RouteView,
+  UserLayout
+} from '@/layouts'
+import {
+  bxAnaalyse
+} from '@/core/icons'
 
-export default {//物流管理
-        
+export default { //物流管理
+
   path: '/distribution-management',
   name: 'distribution-management',
   component: PageView,
@@ -44,6 +52,17 @@ export default {//物流管理
         title: '新增物流信息登记',
         permission: ['permission']
       },
-    }
+    },
+    {
+      path: '/distribution-management/Invoice',
+      name: 'distribution_Invoice',
+      component: () => import('@/views/distribution-management/Invoice/List'),
+      meta: {
+        title: '发货单',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
   ]
 }
