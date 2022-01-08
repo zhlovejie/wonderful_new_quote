@@ -110,7 +110,7 @@
                 {{ CheckDetail.materialName }}
               </td>
               <td>
-                {{ CheckDetail.materialModelType }}
+                {{ CheckDetail.specification }}
               </td>
               <td>
                 {{ CheckDetail.packageType }}

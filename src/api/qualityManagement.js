@@ -2,7 +2,7 @@ import {
   axios
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
-const baseurl = system.baseURL
+const baseurl = system.materialBaseUrl
 
 //  质量管理-检验参数配置
 

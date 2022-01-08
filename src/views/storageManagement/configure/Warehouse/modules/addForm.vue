@@ -16,7 +16,7 @@
             <td style="width: 200px" class="requiredMark">仓库类型</td>
             <td>
               <a-form-model-item prop="warehouseType" v-if="!isDisabled">
-                <a-select v-model="form.warehouseType">
+                <a-select v-model="form.warehouseType" :disabled="AshSetting">
                   <a-select-option :value="1">自动化立库</a-select-option>
                   <a-select-option :value="2">平面库</a-select-option>
                 </a-select>
@@ -31,6 +31,7 @@
             <td>
               <a-form-model-item ref="warehouseCode" prop="warehouseCode" v-if="!isDisabled">
                 <a-input
+                  :disabled="AshSetting"
                   v-model="form.warehouseCode"
                   @blur="
                     () => {
@@ -50,6 +51,7 @@
               <a-form-model-item ref="warehouseName" prop="warehouseName" v-if="!isDisabled">
                 <a-input
                   v-model="form.warehouseName"
+                  :disabled="AshSetting"
                   @blur="
                     () => {
                       $refs.warehouseName.onFieldBlur()
@@ -106,7 +108,7 @@
 </template>
 
 <script>
-import { addOrUpdate, getDetailById } from '@/api/storage'
+import { addOrUpdate, getDetailById, delValidation } from '@/api/storage'
 import DepartmentUserCascade from '@/components/CustomerList/DepartmentUserCascade'
 import DepartmentUser from './DepartmentUserCascade'
 
@@ -121,14 +123,15 @@ export default {
       Warehouse: [],
       visible: false,
       confirmLoading: false,
+      AshSetting: false,
       addOredit: 'add',
       record: {},
       form: {},
       detail: {},
       rules: {
         warehouseType: [{ required: true, message: '请选择仓库类型', trigger: 'change' }],
-        applyUser: [{ required: true, message: '请选择负责人', trigger: 'change' }],
-        applyUsers: [{ required: true, message: '请选择质检人', trigger: 'change' }],
+        applyUser: [{ required: true, message: '请选择负责人' }],
+        applyUsers: [{ required: true, message: '请选择质检人' }],
         warehouseCode: [{ required: true, message: '请输入仓库代码', trigger: 'blur' }],
         warehouseName: [{ required: true, message: '请输入仓库名称', trigger: 'blur' }],
       },
@@ -158,7 +161,7 @@ export default {
     async query(type, record) {
       this.visible = true
       this.addOredit = type
-      this.form.remark = undefined
+      this.form = {}
       this.record = record
       if (type !== 'add') {
         let that = this
@@ -189,6 +192,11 @@ export default {
             that.spinning = false
             that.$message.error(err)
           })
+        delValidation({ id: record.id }).then((res) => {
+          if (+res.code === 500) {
+            this.AshSetting = true
+          }
+        })
       }
     },
 

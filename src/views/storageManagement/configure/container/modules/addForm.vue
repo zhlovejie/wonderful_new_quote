@@ -35,6 +35,7 @@
             <td>
               <a-form-model-item ref="palletName" prop="palletName" v-if="!isDisabled">
                 <a-input
+                  :disabled="ifdelvali"
                   v-model="form.palletName"
                   @blur="
                     () => {

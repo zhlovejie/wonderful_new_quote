@@ -27,7 +27,14 @@
         <a-select-option :value="2">委外订单</a-select-option>
       </a-select>
       <a-input
-        placeholder="收料单号/采购单号"
+        placeholder="收料单号"
+        v-if="activeKey === 1"
+        v-model="queryParam.recieveNum"
+        allowClear
+        style="width: 200px; margin-right: 10px"
+      />
+      <a-input
+        placeholder="采购单号/委托单号"
         v-if="activeKey === 1"
         v-model="queryParam.orderNum"
         allowClear

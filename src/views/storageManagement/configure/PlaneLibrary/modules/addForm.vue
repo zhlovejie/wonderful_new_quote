@@ -36,6 +36,7 @@
               <a-form-model-item ref="planeName" prop="planeName" v-if="!isDisabled">
                 <a-input
                   v-model="form.planeName"
+                  :disabled="ifdelvali"
                   @blur="
                     () => {
                       $refs.planeName.onFieldBlur()
@@ -52,7 +53,7 @@
             <td style="width: 160px" class="requiredMark">所属仓库</td>
             <td>
               <a-form-model-item prop="warehouseId" v-if="!isDisabled">
-                <a-select v-model="form.warehouseId">
+                <a-select :disabled="ifdelvali" v-model="form.warehouseId" @change="warehchange">
                   <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
                     item.warehouseName
                   }}</a-select-option>
@@ -65,7 +66,7 @@
             <td style="width: 160px" class="requiredMark">所属库区</td>
             <td>
               <a-form-model-item prop="reservoirAreaId" v-if="!isDisabled">
-                <a-select v-model="form.reservoirAreaId">
+                <a-select :disabled="ifdelvali" v-model="form.reservoirAreaId">
                   <a-select-option v-for="item in ReservoiList" :key="item.id" :value="item.id">{{
                     item.reservoirName
                   }}</a-select-option>
@@ -129,7 +130,6 @@
 import {
   getList,
   ReservoiGetList,
-  roadwaygetList,
   planegetaddOrUpdate,
   planegetgetDetailById,
   planegetdelValidation,
@@ -146,7 +146,6 @@ export default {
       Warehouse: [],
       warehouseList: [],
       ReservoiList: [],
-      roadwaygetList: [],
       visible: false,
       ifdelvali: false,
       confirmLoading: false,
@@ -196,19 +195,22 @@ export default {
     },
   },
   methods: {
+    warehchange(opt) {
+      this.form = {
+        ...this.form,
+        reservoirAreaId: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     async query(type, record) {
       this.visible = true
       this.addOredit = type
       this.record = record
       this.form.remark = ''
-      getList().then((res) => {
+      getList({ warehouseType: 2 }).then((res) => {
         this.warehouseList = res.data
-      })
-      ReservoiGetList().then((res) => {
-        this.ReservoiList = res.data
-      })
-      roadwaygetList().then((res) => {
-        this.roadwaygetList = res.data
       })
 
       if (type !== 'add') {
@@ -224,6 +226,7 @@ export default {
           .then((res) => {
             that.spinning = false
             that.detail = res.data
+            this.warehchange(res.data.warehouseId)
             that.form = {
               ...that.detail,
               applyUser: {
