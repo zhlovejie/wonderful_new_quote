@@ -64,5 +64,26 @@ export default { //物流管理
         permission: ['permission']
       },
     },
+
+    {
+      path: '/sale/invoice/modules',
+      name: 'distribution_InvoiceModules',
+      hidden: true,
+      component: () => import('@/views/distribution-management/Invoice/modules/invoiceModules'),
+      meta: {
+        title: '发货单申请',
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/sale/invoice/modules',
+      name: 'distribution_InvoiceApproval',
+      hidden: true,
+      component: () => import('@/views/distribution-management/Invoice/modules/invoiceApproval'),
+      meta: {
+        title: '发货单审批',
+        permission: ['permission']
+      }
+    },
   ]
 }
