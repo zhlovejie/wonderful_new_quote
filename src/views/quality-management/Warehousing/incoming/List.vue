@@ -64,7 +64,7 @@
             </a-tooltip>
             <span v-else>{{ text }}</span>
           </div>
-          <div slot="materialModelType" slot-scope="text">
+          <div slot="specification" slot-scope="text">
             <a-tooltip v-if="String(text).length > 5">
               <template slot="title">{{ text }}</template>
               {{ String(text).slice(0, 5) }}...
@@ -173,8 +173,8 @@ export default {
         {
           title: '规格型号',
           align: 'center',
-          dataIndex: 'materialModelType',
-          scopedSlots: { customRender: 'materialModelType' },
+          dataIndex: 'specification',
+          scopedSlots: { customRender: 'specification' },
         },
         {
           title: '收料仓库',
