@@ -282,11 +282,11 @@ export default {
             that.$message.info(msg)
             return false
           }
-          if (!checkRange(startValue, endValue, ac)) {
-            const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】且范围在【${startValue}~${endValue}】之间`
-            that.$message.info(msg)
-            return false
-          }
+          // if (!checkRange(startValue, endValue, ac)) {
+          //   const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】且范围在【${startValue}~${endValue}】之间`
+          //   that.$message.info(msg)
+          //   return false
+          // }
         }
       }
       return true
