@@ -125,6 +125,7 @@
                 <a-radio-group
                   :disabled="isDisabled"
                   v-model="form.inspectionType"
+                  @change="handleInspectionTypeChange"
                 >
                   <a-radio :value="1">
                     检验
@@ -140,6 +141,11 @@
               <a-form-model-item
                 label="检验方案"
                 prop="inspectionSchemeId"
+                :rules="{ 
+                  required: +form.inspectionType === 1, 
+                  message: '请选择检验方案', 
+                  trigger: 'change' 
+                }"
               >
                 <a-select
                   v-model="form.inspectionSchemeId"
@@ -331,9 +337,9 @@ export default {
         inspectionType: [
           { required: true, message: '请选择是否检验', trigger: 'change' },
         ],
-        inspectionSchemeId: [
-          { required: true, message: '请选择检验方案', trigger: 'change' },
-        ]
+        // inspectionSchemeId: [
+        //   { required: true, message: '请选择检验方案', trigger: 'change' },
+        // ]
       },
       type:'add',
       record:{},
@@ -457,10 +463,10 @@ export default {
       let checkInspectionStandardDetails = [...that.checkInspectionStandardDetails]
       for(let i=0;i<checkInspectionStandardDetails.length;i++){
         let {mainPoint,toolId,methodId,frequencyId} = checkInspectionStandardDetails[i]
-        if(!mainPoint){
-          that.$message.info('请完善检验要点标注信息')
-          return false
-        }
+        // if(!mainPoint){
+        //   that.$message.info('请完善检验要点标注信息')
+        //   return false
+        // }
         if(!toolId){
           that.$message.info('请选择检验工具')
           return false
@@ -682,6 +688,11 @@ export default {
       let item = list.find(item => item.id === val)
       target[keyName] = item.termName
       that.checkInspectionStandardDetails = checkInspectionStandardDetails
+    },
+    handleInspectionTypeChange(val){
+      this.$nextTick(() => {
+        this.$refs.ruleForm.validateField(['inspectionSchemeId'])
+      })
     }
   },
 };

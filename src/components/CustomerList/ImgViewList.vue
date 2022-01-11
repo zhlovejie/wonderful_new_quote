@@ -4,7 +4,7 @@
     :width="800"
     :visible="previewVisible" 
     :footer="null" 
-    @cancel="() => previewVisible = false"
+    @cancel="handleCancel"
   >
     <div class="img-list">
       <a-row :gutter="16">
@@ -35,6 +35,10 @@ export default {
     show(imgUrlList){
       this.previewVisible = true
       this.imgUrlList = [...imgUrlList || []]
+    },
+    handleCancel(){
+      this.imgUrlList = []
+      this.previewVisible = false
     }
   }
 }

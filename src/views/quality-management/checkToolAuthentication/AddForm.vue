@@ -17,9 +17,9 @@
           <tbody>
             <tr>
               <td style="width:150px;">
-                <span>检验工具</span>
+                <span class="icon-required">检验工具</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="parameterTermName">
                   <a-select
                     v-if="isAdd"
@@ -42,7 +42,7 @@
               <td style="width:150px;">
                 <span>工具编号</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item>
                   <a-input
                     v-if="!isDisabled"
@@ -57,9 +57,9 @@
             </tr>
             <tr>
               <td style="width:150px;">
-                <span>认证周期(月)</span>
+                <span class="icon-required">认证周期(月)</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="authenticationCycle">
                   <a-input-number
                     v-if="!isDisabled"
@@ -76,7 +76,7 @@
               <td style="width:150px;">
                 <span class="icon-required">认证处</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="authenticationOffice">
                   <a-select
                     v-if="!isDisabled"
@@ -95,7 +95,7 @@
               <td style="width:150px;">
                 <span class="icon-required">认证结果</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="authenticationResult">
                   <a-radio-group
                     v-if="!isDisabled"
@@ -112,7 +112,7 @@
               <td style="width:150px;">
                 <span class="icon-required">工具状态</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="type">
                   <a-select
                     v-if="!isDisabled"
@@ -130,7 +130,7 @@
               <td style="width:150px;">
                 <span class="icon-required">二维码</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item>
                   <vue-qr
                     ref="qr"
@@ -140,7 +140,7 @@
                 </a-form-model-item>
               </td>
               <td style="width:150px;">
-                <span class="icon-required">备注</span>
+                <span>备注</span>
               </td>
               <td colspan="3">
                 <a-form-model-item prop="remarks">
@@ -148,7 +148,7 @@
                     v-if="!isDisabled"
                     placeholder="备注"
                     allow-clear
-                    autoSize
+                    :auto-size="{ minRows: 3, maxRows: 5 }"
                     v-model="form.remarks"
                   />
                   <span v-else> {{form.remarks}}</span>
@@ -158,12 +158,13 @@
             </tr>
             <tr>
               <td style="width:150px;">
-                <span>认证证书</span>
+                <span class="icon-required">认证证书</span>
               </td>
               <td
                 colspan="3"
                 style="text-align:left;"
               >
+              <a-form-model-item prop="authenticationCertificate">
                 <UploadFile
                   v-if="!isDisabled"
                   key="image"
@@ -178,6 +179,7 @@
                   >预览图片</a-button>
                   <span v-else>未上传图片</span>
                 </div>
+              </a-form-model-item>
               </td>
             </tr>
             <tr>
@@ -282,8 +284,9 @@ export default {
         type: 0
       },
       rules: {
-        parameterTermId: [{ required: true, message: '请选择检验工具', trigger: 'change' }],
-        authenticationCycle: [{ required: true, message: '请输入认证周期', trigger: 'change' }]
+        parameterTermName: [{ required: true, message: '请选择检验工具', trigger: 'change' }],
+        authenticationCycle: [{ required: true, message: '请输入认证周期', trigger: 'change' }],
+        authenticationCertificate:[{ required: true, message: '请上传认证证书', trigger: 'change' }],
       },
       spinning: false,
       visible: false,
@@ -304,7 +307,7 @@ export default {
         }
       },
       uploadVedioConfig: {
-        maxFileCount: 1,
+        maxFileCount: 10,
         fileType: 'file', // file img
         enableCompress: false,
         enablePreview: false,
@@ -390,10 +393,14 @@ export default {
               return { url }
             })
             that.$refs.uploadImage && that.$refs.uploadImage.setFiles(picFiles)
+          }else{
+            that.$refs.uploadImage && that.$refs.uploadImage.setFiles([])
           }
           if (detail.annexUrl) {
             const videoFiles = [{ url: detail.annexUrl }]
             that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles(videoFiles)
+          }else{
+            that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles([])
           }
         })
       }
@@ -404,6 +411,9 @@ export default {
     handleCancel() {
       const that = this
       that.form = {}
+      that.qrText = ''
+      that.$refs.uploadImage && that.$refs.uploadImage.setFiles([])
+      that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles([])
       that.visible = false
       that.$emit('finish')
     },
@@ -456,7 +466,6 @@ export default {
       this.$refs.imgViewList.show(imgList)
     },
     handleAnnexUrl() {
-      debugger
       const pictureUrl = this.form.annexUrl
       const imgList = pictureUrl.split(',').map(url => decodeURIComponent(url))
       this.$refs.fileViewList.show(imgList)

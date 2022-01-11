@@ -92,7 +92,7 @@
             slot="action"
             slot-scope="text, record, index"
           >
-            <a-divider type="vertical" />
+            
             <template v-if="+activeKey === 0">
               <a @click="doAction('add',record)">制定标准</a>
             </template>
@@ -160,14 +160,14 @@ const columns = [
     scopedSlots: { customRender: 'status' }
   },
 
-  {
-    title: '创建人',
-    dataIndex: 'createdName'
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createdTime'
-  },
+  // {
+  //   title: '创建人',
+  //   dataIndex: 'createdName'
+  // },
+  // {
+  //   title: '创建时间',
+  //   dataIndex: 'createdTime'
+  // },
   {
     title: '操作',
     scopedSlots: { customRender: 'action' }
