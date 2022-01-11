@@ -64,6 +64,13 @@
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
       </div>
+      <div slot="specification" slot-scope="text">
+        <a-tooltip v-if="String(text).length > 25">
+          <template slot="title">{{ text }}</template>
+          {{ String(text).slice(0, 25) }}...
+        </a-tooltip>
+        <span v-else>{{ text }}</span>
+      </div>
     </a-table>
   </a-card>
 </template>
@@ -102,6 +109,7 @@ const columns = [
     title: '规格型号',
     key: 'specification',
     dataIndex: 'specification',
+    scopedSlots: { customRender: 'specification' },
   },
   {
     align: 'center',
