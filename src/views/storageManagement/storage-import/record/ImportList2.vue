@@ -23,6 +23,7 @@
             <a-select-option :value="3">安装不良品入库</a-select-option>
             <a-select-option :value="4">退货入库</a-select-option>
             <a-select-option :value="5">采购入库</a-select-option>
+            <a-select-option :value="6">委外入库</a-select-option>
           </a-select>
         </a-form-item>
 
@@ -107,10 +108,12 @@
           <a type="primary" @click="doAction('ruku', record)">入库</a>
           <a-divider type="vertical" />
           <a type="primary" @click="doAction('record', record)">入库记录</a>
-          <a-divider type="vertical" />
-          <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
-            <a type="primary" href="javascript:;">撤回</a>
-          </a-popconfirm>
+          <template v-if="[1,2,3,4].includes(+record.type)">
+            <a-divider type="vertical" />
+            <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+              <a type="primary" href="javascript:;">撤回</a>
+            </a-popconfirm>
+          </template>
         </div>
 
         <template slot="footer">
@@ -298,7 +301,7 @@ export default {
             item.key = index + 1
             item.statusText = { 1: '待审批', 2: '通过', 3: '不通过', 4: '撤回' }[item.status] || '未知'
             item.storageTypeText =
-              { 1: '赠送入库', 2: '产品返修入库', 3: '安装不良品入库', 4: '退货入库', 5: '采购入库',6:'委外检验' }[
+              { 1: '赠送入库', 2: '产品返修入库', 3: '安装不良品入库', 4: '退货入库', 5: '采购入库',6:'委外入库' }[
                 item.type
               ] || '未知'
             item.urgentTypeText = { 1: '一般', 2: '紧急', 3: '特急' }[item.urgentType] || '未知'

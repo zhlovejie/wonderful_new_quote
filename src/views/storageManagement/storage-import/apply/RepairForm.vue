@@ -234,6 +234,7 @@
 </template>
 
 <script>
+import { getOrderList } from '@api/order'
 import { getSalesList /* 销售合同 */ } from '@/api/contractListManagement'
 import { getInvoiceList /* 发货单 */ } from '@/api/invoice'
 //销售人员接口
@@ -537,24 +538,6 @@ export default {
         customerId: undefined,
         customerName: undefined
       }
-
-      return getSalesList({
-        customerId: saleUserId,
-        contractStatus: 1,
-        approveStatus: 2,
-        current: 1,
-        size: 1000
-      })
-        .then(res => {
-          that.contractList = res.data.records || []
-          if (that.contractList.length === 0) {
-            that.$message.info(`未找到销售经理【${target.salesmanName}】对应的合同`)
-          }
-        })
-        .catch(err => {
-          that.$message.error(err.message)
-          that.contractList = []
-        })
     },
     handleCustomerSelected(item) {
       const that = this
@@ -576,6 +559,24 @@ export default {
       that.$nextTick(() => {
         that.$refs.ruleForm.validateField(['customerId'])
       })
+
+      return getOrderList({
+        customerId: item.id,
+        contractStatus: 1,
+        approveStatus: 2,
+        current: 1,
+        size: 1000
+      })
+        .then(res => {
+          that.contractList = res.data.records || []
+          if (that.contractList.length === 0) {
+            that.$message.info(`未找到客户【${item.name}】对应的合同`)
+          }
+        })
+        .catch(err => {
+          that.$message.error(err.message)
+          that.contractList = []
+        })
     },
     handleContractChange(salesContractId) {
       const that = this
