@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="1200"
+    :width="1300"
     :visible="visible"
     :destroyOnClose="true"
     @ok="handleSubmit"
@@ -20,13 +20,29 @@
               <div slot="order" slot-scope="text, record, index">
                 {{ index + 1 }}
               </div>
+              <div slot="specification" slot-scope="text">
+                <a-tooltip v-if="String(text).length > 25">
+                  <template slot="title">{{ text }}</template>
+                  {{ String(text).slice(0, 25) }}...
+                </a-tooltip>
+                <span v-else>{{ text }}</span>
+              </div>
+              <div slot="storageCode" slot-scope="text, record, index">
+                <template v-if="[1, 2, 3, 4].includes(record.type)">
+                  {{ record.storageApplyCode }}
+                </template>
+                <template v-if="[5, 6].includes(record.type)">
+                  {{ record.receiveCode }}
+                </template>
+              </div>
+
               <div slot="storageNum" slot-scope="text, record, index">
                 <a-form-model-item
                   :prop="`materialTableList.${index}.storageNum`"
                   :rules="{ required: true, message: '请输入库数量' }"
                 >
                   <a-input-number
-                    style="width:80px;text-align:center;"
+                    style="width: 80px; text-align: center"
                     :min="0"
                     :step="1"
                     :precision="0"
@@ -35,11 +51,19 @@
                 </a-form-model-item>
               </div>
 
-              <template slot="footer" >
-                <div style="text-align:right;margin-right:10px;font-size:16px;">
+              <template slot="footer">
+                <div style="text-align: right; margin-right: 10px; font-size: 16px">
                   <span>合计：</span>
-                  <span style="margin:0 5px;">应入库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.actualNum) || 0),0)  }} </span>
-                  <span>本次入库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.storageNum) || 0),0) }}</span>
+                  <span style="margin: 0 5px"
+                    >应入库数量 &nbsp;{{
+                      form.materialTableList.reduce((adder, item) => adder + (parseFloat(item.actualNum) || 0), 0)
+                    }}
+                  </span>
+                  <span
+                    >本次入库数量 &nbsp;{{
+                      form.materialTableList.reduce((adder, item) => adder + (parseFloat(item.storageNum) || 0), 0)
+                    }}</span
+                  >
                 </div>
               </template>
             </a-table>
@@ -48,12 +72,17 @@
           <div class="__bd">
             <table class="custom-table custom-table-border">
               <tr>
-                <td style="width:150px;">入库仓库/库区</td>
+                <td style="width: 150px">入库仓库/库区</td>
                 <td colspan="3">
                   <a-row :gutter="20">
                     <a-col :span="6">
                       <a-form-model-item prop="warehouseId">
-                        <a-select style="width:100%;" placeholder="选择仓库" v-model="form.warehouseId" @change="handleWarehouseChange">
+                        <a-select
+                          style="width: 100%"
+                          placeholder="选择仓库"
+                          v-model="form.warehouseId"
+                          @change="handleWarehouseChange"
+                        >
                           <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
                             item.warehouseName
                           }}</a-select-option>
@@ -63,10 +92,10 @@
 
                     <a-col :span="6">
                       <a-form-model-item prop="reservoirAreaId">
-                        <a-select 
-                          style="width:100%;"
-                          placeholder="选择库区" 
-                          v-model="form.reservoirAreaId" 
+                        <a-select
+                          style="width: 100%"
+                          placeholder="选择库区"
+                          v-model="form.reservoirAreaId"
                           @change="handleReservoirAreaChange"
                         >
                           <a-select-option v-for="item in reservoiList" :key="item.id" :value="item.id">{{
@@ -78,15 +107,18 @@
 
                     <a-col :span="6">
                       <a-form-model-item prop="shelvesLocationId">
-                        <a-select 
-                          style="width:100%;"
-                          placeholder="选择货架" 
-                          v-model="form.shelvesLocationId" 
+                        <a-select
+                          style="width: 100%"
+                          placeholder="选择货架"
+                          v-model="form.shelvesLocationId"
                           @change="handleShelvesLocationChange"
                         >
-                          <a-select-option v-for="item in shelvesLocationList" :key="item.shelvesLocationId" :value="item.shelvesLocationId">{{
-                            item.shelvesLocationName
-                          }}</a-select-option>
+                          <a-select-option
+                            v-for="item in shelvesLocationList"
+                            :key="item.shelvesLocationId"
+                            :value="item.shelvesLocationId"
+                            >{{ item.shelvesLocationName }}</a-select-option
+                          >
                         </a-select>
                       </a-form-model-item>
                     </a-col>
@@ -97,7 +129,7 @@
                           :disabled="isDisabled"
                           v-model="form.positionId"
                           placeholder="选择仓位"
-                          style="width:100%;"
+                          style="width: 100%"
                           @change="handlePositionChange"
                         >
                           <a-select-option v-for="item in instantPositionList" :key="item.id" :value="item.id">{{
@@ -116,7 +148,7 @@
                     <a-select
                       v-model="form.containerId"
                       placeholder="选择容器/托盘"
-                      style="width:100%;"
+                      style="width: 100%"
                       @change="handleContainerPalletChange"
                     >
                       <a-select-option v-for="item in containerPalletList" :key="item.id" :value="item.id">
@@ -128,15 +160,15 @@
               </tr>
               <tr>
                 <td>制单员</td>
-                <td>{{form.makerName || '-'}}</td>
+                <td>{{ form.makerName || '-' }}</td>
                 <td>制单时间</td>
-                <td>{{form.makerDate || '-' }}</td>
+                <td>{{ form.makerDate || '-' }}</td>
               </tr>
               <tr>
                 <td>入库员</td>
-                <td>{{form.storageUserName || '-'}}</td>
+                <td>{{ form.storageUserName || '-' }}</td>
                 <td>入库时间</td>
-                <td>{{form.storageTime || '-'}}</td>
+                <td>{{ form.storageTime || '-' }}</td>
               </tr>
             </table>
           </div>
@@ -146,20 +178,16 @@
           <a-button @click="handleSubmit('cancel')">取消</a-button>
           <a-button type="primary" @click="handleSubmit('submit')">提交</a-button>
 
-          <a-popover title="物料入库码" trigger="click" placement="top" >
+          <a-popover title="物料入库码" trigger="click" placement="top">
             <a slot="content" id="ant-popover-qrcode">
-              <div :style="{width:qrSize+'px',height:qrSize+'px'}">
+              <div :style="{ width: qrSize + 'px', height: qrSize + 'px' }">
                 <vue-qr :text="qrText" :size="qrSize" />
               </div>
             </a>
-            <a-button type="primary" @click="handleSubmit('qrcode')">
-              打印物料入库码
-            </a-button>
+            <a-button type="primary" @click="handleSubmit('qrcode')"> 打印物料入库码 </a-button>
           </a-popover>
 
           <!-- <a-button type="primary" @click="handleSubmit('qrcode')">打印物料入库码</a-button> -->
-
-          
         </div>
       </a-form-model>
     </a-spin>
@@ -167,51 +195,52 @@
 </template>
 
 <script>
-
 const columns = [
   {
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    scopedSlots: { customRender: 'order' },
   },
   {
     title: '入库类型',
-    dataIndex: 'storageTypeText'
+    dataIndex: 'storageTypeText',
   },
   {
-    title: '入库单号',
-    dataIndex: 'storageCode'
+    title: '单号',
+    dataIndex: 'storageCode',
+    scopedSlots: { customRender: 'storageCode' },
   },
   {
     title: '紧急程度',
-    dataIndex: 'urgentTypeText'
+    dataIndex: 'urgentTypeText',
   },
   {
     title: '物料代码',
-    dataIndex: 'materialCode'
+    dataIndex: 'materialCode',
   },
   {
     title: '物料名称',
-    dataIndex: 'materialName'
+    dataIndex: 'materialName',
   },
   {
     title: '规格型号',
-    dataIndex: 'specification'
+    dataIndex: 'specification',
+    scopedSlots: { customRender: 'specification' },
   },
   {
     title: '应入库数量',
-    dataIndex: 'actualNum'
+    dataIndex: 'actualNum',
   },
   {
     title: '产品重量',
-    dataIndex: 'weight'
+    dataIndex: 'weight',
   },
   {
     title: '本次入库数量',
     dataIndex: 'storageNum',
-    scopedSlots: { customRender: 'storageNum' }
-  }
+    scopedSlots: { customRender: 'storageNum' },
+  },
 ]
 import VueQr from 'vue-qr'
 import util from '@/components/_util/util'
@@ -219,18 +248,18 @@ import { getList, ReservoiGetList } from '@/api/storage'
 
 import { getShelvesByAreaId, containerPalletList } from '@/api/storage_wzz'
 
-import { 
+import {
   storageDetail,
   storageRecords,
   storageStatistics,
   storageSingleUpdate,
-  storageBatchUpdate
+  storageBatchUpdate,
 } from '@/api/storage_wzz'
 
 export default {
   name: 'stock_management_import_record_addForm',
-  components:{
-    VueQr
+  components: {
+    VueQr,
   },
   data() {
     return {
@@ -240,14 +269,14 @@ export default {
       type: 'view',
       columns,
       form: {
-        materialTableList: [] //物料信息
+        materialTableList: [], //物料信息
       },
       rules: {
-        warehouseId: [{ required: true, message: '请选择仓库' ,trigger: 'change'}],
-        reservoirAreaId: [{ required: true, message: '请选择库区' ,trigger: 'change'}],
-        shelvesLocationId: [{ required: true, message: '请选择货架' ,trigger: 'change'}],
-        positionId: [{ required: true, message: '请选择仓位' ,trigger: 'change'}],
-        containerId: [{ required: true, message: '请选择容器/托盘' ,trigger: 'change'}],
+        warehouseId: [{ required: true, message: '请选择仓库', trigger: 'change' }],
+        reservoirAreaId: [{ required: true, message: '请选择库区', trigger: 'change' }],
+        shelvesLocationId: [{ required: true, message: '请选择货架', trigger: 'change' }],
+        positionId: [{ required: true, message: '请选择仓位', trigger: 'change' }],
+        containerId: [{ required: true, message: '请选择容器/托盘', trigger: 'change' }],
       },
       warehouseList: [],
       reservoiList: [],
@@ -276,13 +305,13 @@ export default {
     },
     isDisabled() {
       return this.isView || this.isApproval
-    }
+    },
   },
   methods: {
     async query(type, records = []) {
       const that = this
       that.form = {
-        materialTableList: [] //物料信息
+        materialTableList: [], //物料信息
       }
       that.warehouseList = []
       that.reservoiList = []
@@ -291,88 +320,95 @@ export default {
       that.containerPalletList = []
 
       that.visible = true
-      that.form.materialTableList = that.$_.cloneDeep(records.map(item => {
-        item.storageNum = item.notNum
-        return item
-      }))
+
       that.type = type
 
-      getList().then(res => {
+      getList().then((res) => {
         that.warehouseList = res.data
       })
-      
-      storageDetail({id:records[0].id}).then(res => {
+
+      storageDetail({ id: records[0].id }).then((res) => {
         console.log(res)
         const data = res.data
+        let reat = []
+        reat.push(res.data)
+        that.form.materialTableList = that.$_.cloneDeep(
+          reat.map((item) => {
+            item.storageNum = item.notNum
+            item.storageTypeText = records[0].storageTypeText
+            item.urgentTypeText = records[0].urgentTypeText
+
+            return item
+          })
+        )
         that.form = {
           ...that.form,
-          makerName:data.makerName,
-          makerDate:data.makerDate,
-          storageUserName:data.storageUserName || that.userInfo.trueName,
-          storageTime:data.storageTime
+          makerName: data.makerName,
+          makerDate: data.makerDate,
+          storageUserName: data.storageUserName || that.userInfo.trueName,
+          storageTime: data.storageTime,
         }
       })
     },
 
     handleSubmit(type) {
       const that = this
-      if(type === 'cancel'){
+      if (type === 'cancel') {
         that.handleCancel()
         return
       }
-      if(type === 'qrcode'){
-        
+      if (type === 'qrcode') {
         that.$nextTick(() => {
-          const {materialTableList} = that.form
-          if(materialTableList.length > 0){
+          const { materialTableList } = that.form
+          if (materialTableList.length > 0) {
             that.qrText = materialTableList[0].storageCode
 
-            if(that.qrText.length > 0){
-              setTimeout(function(){
+            if (that.qrText.length > 0) {
+              setTimeout(function () {
                 util.handleWindowPrint(`#ant-popover-qrcode`, '物料入库码')
-              },500)
+              }, 500)
             }
-          }else{
+          } else {
             that.qrText = ''
           }
         })
 
-        
-        
         return
       }
-      that.$refs.ruleForm.validate(valid => {
+      that.$refs.ruleForm.validate((valid) => {
         if (valid) {
           let storageUpdateBos = []
-          let params = {...that.form}
+          let params = { ...that.form }
           let materialTableList = params.materialTableList
           delete params.materialTableList
-          materialTableList.map(item => {
+          materialTableList.map((item) => {
             storageUpdateBos.push({
               ...params,
-              notNum:item.notNum,
-              storageNum:item.storageNum,
-              id:item.id
+              notNum: item.notNum,
+              storageNum: item.storageNum,
+              id: item.id,
             })
           })
 
           storageBatchUpdate({
-            storageUpdateBos
-          }).then(res => {
-            that.$message.success(res.msg)
-            if(res.code === 200){
-              that.handleCancel()
-              that.$emit('ok')
-            }
-            console.log(res)
-          }).catch(err => {
-            that.$message.error(err.message)
+            storageUpdateBos,
           })
+            .then((res) => {
+              that.$message.success(res.msg)
+              if (res.code === 200) {
+                that.handleCancel()
+                that.$emit('ok')
+              }
+              console.log(res)
+            })
+            .catch((err) => {
+              that.$message.error(err.message)
+            })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
       // that.handleCancel()
     },
     handleCancel() {
@@ -384,15 +420,15 @@ export default {
 
     handleWarehouseChange(id) {
       const that = this
-      let target = that.warehouseList.find(item => item.id === id)
+      let target = that.warehouseList.find((item) => item.id === id)
       that.form = {
         ...that.form,
         warehouseId: id,
-        warehouseName: target.warehouseName
+        warehouseName: target.warehouseName,
       }
 
       that.$nextTick(() => {
-        ReservoiGetList({ warehouseId: id }).then(res => {
+        ReservoiGetList({ warehouseId: id }).then((res) => {
           that.reservoiList = res.data
         })
       })
@@ -400,22 +436,22 @@ export default {
 
     handleReservoirAreaChange(id) {
       const that = this
-      let target = that.reservoiList.find(item => item.id === id)
+      let target = that.reservoiList.find((item) => item.id === id)
       that.form = {
         ...that.form,
         reservoirAreaId: id,
         reservoirCode: target.reservoirCode,
-        reservoirAreaName: target.reservoirName
+        reservoirAreaName: target.reservoirName,
       }
 
       that.$nextTick(() => {
-        const { reservoirAreaId , materialTableList} = that.form
+        const { reservoirAreaId, materialTableList } = that.form
         const materialId = materialTableList[0].materialId
         getShelvesByAreaId({
           areaId: reservoirAreaId,
-          materialId
-        }).then(res => {
-          that.shelvesLocationList = res.data.map(item => {
+          materialId,
+        }).then((res) => {
+          that.shelvesLocationList = res.data.map((item) => {
             item.key = that._uuid()
             return item
           })
@@ -425,7 +461,7 @@ export default {
 
     handleShelvesLocationChange(shelvesLocationId) {
       const that = this
-      let target = that.shelvesLocationList.find(item => item.shelvesLocationId === shelvesLocationId)
+      let target = that.shelvesLocationList.find((item) => item.shelvesLocationId === shelvesLocationId)
       if (target) {
         that.instantPositionList = target.positionModelVoList || []
 
@@ -433,34 +469,34 @@ export default {
           ...that.form,
           shelvesLocationId: target.shelvesLocationId,
           shelvesLocationName: target.shelvesLocationName,
-          shelvesLocationType: target.type
+          shelvesLocationType: target.type,
         }
       }
     },
 
     handlePositionChange(id) {
       const that = this
-      let target = that.instantPositionList.find(item => item.id === id)
+      let target = that.instantPositionList.find((item) => item.id === id)
       that.form = {
         ...that.form,
         positionId: id,
-        positionCode: target.positionCode
+        positionCode: target.positionCode,
       }
 
-      containerPalletList({palletCodeOne:target.positionCode}).then(res => {
-        that.containerPalletList = (res.data || [])
+      containerPalletList({ palletCodeOne: target.positionCode }).then((res) => {
+        that.containerPalletList = res.data || []
       })
     },
 
     handleContainerPalletChange(id) {
-      let target = this.containerPalletList.find(item => item.id === id)
+      let target = this.containerPalletList.find((item) => item.id === id)
       this.form = {
         ...this.form,
         containerId: id,
-        containerName: target.palletName
+        containerName: target.palletName,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
