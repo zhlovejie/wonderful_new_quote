@@ -68,7 +68,10 @@
         </template>
       </a-form>
     </div>
-    <div v-for="(i, index) in dataSource" :key="i.index">
+    <div style="margin-top: 200px; margin-bottom: 200px" v-if="dataSource.length === 0">
+      <a-empty />
+    </div>
+    <div v-else v-for="(i, index) in dataSource" :key="i.index">
       <h3 style="margin-top: 20px">{{ i.shelvesLocationName }}</h3>
       <table class="custom-table custom-table-border" style="margin-top: 20px">
         <tr style="border: none">
@@ -223,7 +226,7 @@ export default {
           getList().then((res) => {
             this.warehouseList = res.data
           })
-          this.searchAction()
+          // this.searchAction()
         }
       },
       immediate: true,
