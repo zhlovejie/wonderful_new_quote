@@ -122,7 +122,7 @@ export default {
     handleChange(info) {
       const that = this
       let fileList = [...info.fileList]
-      fileList = fileList.slice(-3)
+      // fileList = fileList.slice(-3)
       fileList = fileList.map(file => {
         if (file.response) {
           if (file.response.code === 200) {
