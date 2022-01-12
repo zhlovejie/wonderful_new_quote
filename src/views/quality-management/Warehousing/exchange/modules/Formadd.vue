@@ -80,8 +80,8 @@
               <th><a-form-model-item>物料代码 </a-form-model-item></th>
               <th>物料名称</th>
               <th>规格型号</th>
-              <th>包装方式</th>
-              <th>包内数量</th>
+              <!-- <th>包装方式</th>
+              <th>包内数量</th> -->
               <th>报检数量</th>
               <th>备注</th>
             </tr>
@@ -102,12 +102,12 @@
                 </a-tooltip>
                 <span v-else>{{ CheckDetail.specification }}</span>
               </td>
-              <td>
+              <!-- <td>
                 {{ CheckDetail.packageType }}
               </td>
               <td>
                 {{ CheckDetail.packageCount }}
-              </td>
+              </td> -->
               <td>
                 {{ CheckDetail.reportNum }}
               </td>
