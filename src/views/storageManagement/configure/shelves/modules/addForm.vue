@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">货架代码</td>
             <td>
-              <a-form-model-item ref="shelvesCode" prop="shelvesCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesCode"
-                  :disabled="ifdelvali"
-                  :maxLength="10"
-                  @blur="
-                    () => {
-                      $refs.shelvesCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesCode" v-if="!isDisabled">
+                <a-input v-model="form.shelvesCode" :disabled="ifdelvali" :maxLength="10" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesCode }}
@@ -33,16 +24,8 @@
             </td>
             <td class="requiredMark">货架名称</td>
             <td>
-              <a-form-model-item ref="shelvesName" prop="shelvesName" v-if="!isDisabled">
-                <a-input
-                  :disabled="ifdelvali"
-                  v-model="form.shelvesName"
-                  @blur="
-                    () => {
-                      $refs.shelvesName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesName" v-if="!isDisabled">
+                <a-input :disabled="ifdelvali" v-model="form.shelvesName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesName }}
@@ -96,16 +79,8 @@
           <tr>
             <td class="requiredMark">列</td>
             <td>
-              <a-form-model-item ref="shelvesColumn" prop="shelvesColumn" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesColumn"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.shelvesColumn.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesColumn" v-if="!isDisabled">
+                <a-input v-model="form.shelvesColumn" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesColumn }}
@@ -113,16 +88,8 @@
             </td>
             <td class="requiredMark">行</td>
             <td>
-              <a-form-model-item ref="shelvesRow" prop="shelvesRow" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesRow"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.shelvesRow.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesRow" v-if="!isDisabled">
+                <a-input v-model="form.shelvesRow" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesRow }}

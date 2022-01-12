@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">站台代码</td>
             <td>
-              <a-form-model-item ref="platformCode" prop="platformCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.platformCode"
-                  :disabled="isEdit"
-                  :maxLength="4"
-                  @blur="
-                    () => {
-                      $refs.platformCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="platformCode" v-if="!isDisabled">
+                <a-input v-model="form.platformCode" :disabled="isEdit" :maxLength="4" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.platformCode }}
@@ -33,15 +24,8 @@
             </td>
             <td class="requiredMark">站台名称</td>
             <td>
-              <a-form-model-item ref="platformName" prop="platformName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.platformName"
-                  @blur="
-                    () => {
-                      $refs.platformName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="platformName" v-if="!isDisabled">
+                <a-input v-model="form.platformName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.platformName }}

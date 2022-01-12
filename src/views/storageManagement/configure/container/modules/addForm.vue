@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">容器/托盘代码</td>
             <td>
-              <a-form-model-item ref="palletCode" prop="palletCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.palletCode"
-                  :disabled="ifdelvali"
-                  :maxLength="4"
-                  @blur="
-                    () => {
-                      $refs.palletCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="palletCode" v-if="!isDisabled">
+                <a-input v-model="form.palletCode" :disabled="ifdelvali" :maxLength="4" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.palletCode }}
@@ -33,16 +24,8 @@
             </td>
             <td class="requiredMark">容器/托盘名称</td>
             <td>
-              <a-form-model-item ref="palletName" prop="palletName" v-if="!isDisabled">
-                <a-input
-                  :disabled="ifdelvali"
-                  v-model="form.palletName"
-                  @blur="
-                    () => {
-                      $refs.palletName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="palletName" v-if="!isDisabled">
+                <a-input :disabled="ifdelvali" v-model="form.palletName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.palletName }}
