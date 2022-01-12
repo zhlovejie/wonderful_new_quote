@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">平面库位代码</td>
             <td>
-              <a-form-model-item ref="planeCode" prop="planeCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.planeCode"
-                  :disabled="ifdelvali"
-                  :maxLength="4"
-                  @blur="
-                    () => {
-                      $refs.planeCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="planeCode" v-if="!isDisabled">
+                <a-input v-model="form.planeCode" :disabled="ifdelvali" :maxLength="4" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.planeCode }}
@@ -34,15 +25,7 @@
             <td class="requiredMark">平面库位名称</td>
             <td>
               <a-form-model-item ref="planeName" prop="planeName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.planeName"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.planeName.onFieldBlur()
-                    }
-                  "
-                />
+                <a-input v-model="form.planeName" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.planeName }}
@@ -88,14 +71,7 @@
             <td>负责人电话</td>
             <td>
               <a-form-model-item ref="headUserPhone" prop="headUserPhone" v-if="!isDisabled">
-                <a-input
-                  v-model="form.headUserPhone"
-                  @blur="
-                    () => {
-                      $refs.headUserPhone.onFieldBlur()
-                    }
-                  "
-                />
+                <a-input v-model="form.headUserPhone" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.headUserPhone }}
@@ -169,7 +145,8 @@ export default {
   watch: {
     form: {
       handler(newValue, oldValue) {
-        this.form.headUserPhone = newValue.applyUser && newValue.applyUser.mobile ? newValue.applyUser.mobile : ''
+        this.form.headUserPhone =
+          newValue.applyUser && newValue.applyUser.mobile ? newValue.applyUser.mobile : this.form.headUserPhone
       },
       deep: true,
     },

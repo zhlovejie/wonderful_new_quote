@@ -110,7 +110,11 @@
                 {{ CheckDetail.materialName }}
               </td>
               <td>
-                {{ CheckDetail.materialModelType }}
+                <a-tooltip v-if="String(CheckDetail.specification).length > 5">
+                  <template slot="title">{{ CheckDetail.specification }}</template>
+                  {{ String(CheckDetail.specification).slice(0, 5) }}...
+                </a-tooltip>
+                <span v-else>{{ CheckDetail.specification }}</span>
               </td>
               <td>
                 {{ CheckDetail.packageType }}

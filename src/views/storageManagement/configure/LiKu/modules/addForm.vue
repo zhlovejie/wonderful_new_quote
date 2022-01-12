@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">立体货架号</td>
             <td>
-              <a-form-model-item ref="stereoscopicCode" prop="stereoscopicCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.stereoscopicCode"
-                  :disabled="ifdelvali"
-                  :maxLength="4"
-                  @blur="
-                    () => {
-                      $refs.stereoscopicCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="stereoscopicCode" v-if="!isDisabled">
+                <a-input v-model="form.stereoscopicCode" :disabled="ifdelvali" :maxLength="4" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.stereoscopicCode }}
@@ -33,16 +24,8 @@
             </td>
             <td class="requiredMark">立体货架名称</td>
             <td>
-              <a-form-model-item ref="stereoscopicName" prop="stereoscopicName" v-if="!isDisabled">
-                <a-input
-                  :disabled="ifdelvali"
-                  v-model="form.stereoscopicName"
-                  @blur="
-                    () => {
-                      $refs.stereoscopicName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="stereoscopicName" v-if="!isDisabled">
+                <a-input :disabled="ifdelvali" v-model="form.stereoscopicName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.stereoscopicName }}
@@ -120,16 +103,8 @@
           <tr>
             <td class="requiredMark">列</td>
             <td>
-              <a-form-model-item ref="locationColumn" prop="locationColumn" v-if="!isDisabled">
-                <a-input
-                  v-model="form.locationColumn"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.locationColumn.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="locationColumn" v-if="!isDisabled">
+                <a-input v-model="form.locationColumn" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.locationColumn }}
@@ -137,16 +112,8 @@
             </td>
             <td class="requiredMark">行</td>
             <td>
-              <a-form-model-item ref="locationRow" prop="locationRow" v-if="!isDisabled">
-                <a-input
-                  v-model="form.locationRow"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.locationRow.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="locationRow" v-if="!isDisabled">
+                <a-input v-model="form.locationRow" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.locationRow }}

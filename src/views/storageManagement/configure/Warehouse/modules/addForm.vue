@@ -29,16 +29,8 @@
           <tr>
             <td class="requiredMark">仓库代码</td>
             <td>
-              <a-form-model-item ref="warehouseCode" prop="warehouseCode" v-if="!isDisabled">
-                <a-input
-                  :disabled="AshSetting"
-                  v-model="form.warehouseCode"
-                  @blur="
-                    () => {
-                      $refs.warehouseCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="warehouseCode" v-if="!isDisabled">
+                <a-input :disabled="AshSetting" v-model="form.warehouseCode" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.warehouseCode }}
@@ -48,16 +40,8 @@
           <tr>
             <td class="requiredMark">仓库名称</td>
             <td>
-              <a-form-model-item ref="warehouseName" prop="warehouseName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.warehouseName"
-                  :disabled="AshSetting"
-                  @blur="
-                    () => {
-                      $refs.warehouseName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="warehouseName" v-if="!isDisabled">
+                <a-input v-model="form.warehouseName" :disabled="AshSetting" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.warehouseName }}
