@@ -33,7 +33,7 @@
             <tr>
               <td>紧急程度</td>
               <td>
-                <a-form-model-item prop="useStatus">
+                <a-form-model-item prop="urgentType">
                   <a-select :disabled="isDisabled" v-model="form.urgentType" placeholder="状态" style="width:100%;">
                     <a-select-option :value="1">一般</a-select-option>
                     <a-select-option :value="2">紧急</a-select-option>
@@ -63,27 +63,24 @@
                 :prop="`materialTableList.${index}.materialCode`"
                 :rules="{ required: true, message: '请选择物料' }"
               >
-                <MaterialFuzzySearch
+                <!-- <MaterialFuzzySearch
                   :disabled="isDisabled"
                   style="width:250px;"
                   :materialInfo="form.materialTableList[0]"
                   @change="handlerMaterialChange"
+                /> -->
+                <a-input
+                  read-only="read-only"
+                  :disabled="isDisabled"
+                  @click="openModel(record)"
+                  placeholder="请选择物料代码"
+                  :value="record.materialCode"
                 />
               </a-form-model-item>
             </div>
 
             <div slot="materialName" slot-scope="text, record">
-              <a-popover title="物料信息">
-                <template slot="content">
-                  <h3>物料名称</h3>
-                  <p style="width:450px;">{{ record.materialName }}</p>
-                  <h3>规格型号</h3>
-                  <p style="width:450px;">{{ record.specification }}</p>
-                  <h3>物料代码</h3>
-                  <p style="width:450px;">{{ record.materialCode }}</p>
-                </template>
-                <span>{{ text }}</span>
-              </a-popover>
+              <span>{{ text }}</span>
             </div>
             <div slot="weight" slot-scope="text, record, index">
               <a-form-model-item
@@ -96,7 +93,8 @@
                   :min="0"
                   :step="1"
                   :precision="0"
-                  v-model="record.weight"
+                  :value="record.weight"
+                  @change="handleWeightChange"
                 />
               </a-form-model-item>
             </div>
@@ -117,7 +115,7 @@
             </div>
             <div slot="remarks" slot-scope="text, record">
               <a-form-model-item>
-                <a-textarea :disabled="isDisabled" v-model="record.remarks" placeholder="备注" auto-size />
+                <a-textarea :disabled="isDisabled" v-model="record.materialRemarks" placeholder="备注" auto-size />
               </a-form-model-item>
             </div>
           </a-table>
@@ -140,6 +138,7 @@
       </div>
     </a-form-model>
     <Approval ref="approval" @opinionChange="opinionChange" />
+    <MaterialSelect ref="materialSelect" @custom-change="productChange"/>
   </a-spin>
 </template>
 
@@ -147,8 +146,8 @@
 import { giftSaveAndUpdate, giftApproval, getWarehouseList, giftDetail } from '@/api/storage_wzz'
 import moment from 'moment'
 import Approval from './Approval'
-import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
-
+// import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
+import MaterialSelect from './MaterialSelect'
 const columns = [
   {
     title: '序号',
@@ -190,8 +189,9 @@ const columns = [
 export default {
   name: 'GiftForm',
   components: {
-    MaterialFuzzySearch,
-    Approval
+    // MaterialFuzzySearch,
+    Approval,
+    MaterialSelect
   },
   inject: ['addForm'],
   data() {
@@ -203,9 +203,9 @@ export default {
         materialTableList: [{}] //物料信息
       },
       rules: {
-        // routeName: [{ required: true, message: '请输入工艺路线名称' }],
-        // defaultStatus: [{ required: true, message: '请选择缺省状态' }],
-        // materialCode: [{ required: true, message: '请选择物料代码' }]
+        warehouseId: [{ required: true, message: '请选择入库仓库' }],
+        storageDate: [{ required: true, message: '请选择日期' }],
+        urgentType: [{ required: true, message: '请选择紧急程度' }]
       },
       warehouseList: [],
       spinning: false,
@@ -265,10 +265,42 @@ export default {
   },
   methods: {
     moment,
+    openModel(record) {
+      this.$refs.materialSelect.query(record)
+    },
     fetchgetWarehouseList() {
       getWarehouseList().then(res => (this.warehouseList = res.data))
     },
-    handlerMaterialChange(item) {
+    handleWeightChange(val){
+      const that = this
+      let materialTableList = [...that.form.materialTableList]
+      let target = materialTableList[0]
+      target.weight = val
+      that.form = {
+        ...that.form,
+        materialTableList
+      }
+    },
+    // productChange(data) {
+    //   let { selectItem, recordParam } = data
+    //   const materialList = [...this.form.materialList]
+    //   const target = materialList.find((item) => item.key === recordParam.key)
+    //   if (target) {
+    //     target['materialCode'] = selectItem.materialCode // 物料代码
+    //     target['materialName'] = selectItem.materialName // 物料名称
+    //     target['subUnit'] = selectItem.subUnit // 辅计量单位
+    //     target['warehouseReservoir'] = selectItem.warehouseName + '/' + selectItem.warehouseName //仓库库区
+    //     target['removePosition'] = selectItem.positionCode //移出
+    //     target['removePositionId'] = selectItem.id //移出
+    //     target['shelvesLocationId'] = selectItem.shelvesLocationId //库区id
+    //     target['materialId'] = selectItem.materialId //库区id
+    //     target['type'] = selectItem.type //类型
+
+    //     this.form.materialList = materialList
+    //   }
+    // },
+    productChange({selectItem, recordParam}) {
+      let item = selectItem
       // debugger
       const that = this
       let materialTableList = [...that.form.materialTableList]
@@ -276,8 +308,8 @@ export default {
       target.materialId = item.materialId
       target.materialCode = item.materialCode
       target.materialName = item.materialName
-      target.subUnit = item.materialUnit
-      target.weight = item.weight || 0
+      target.subUnit = item.subUnit
+      target.weight = item.weight || undefined
       target.specification = item.modelType
       target.k3Code = item.k3Code
       that.form = {
