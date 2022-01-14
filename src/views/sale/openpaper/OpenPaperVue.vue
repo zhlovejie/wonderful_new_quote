@@ -291,7 +291,7 @@ export default {
 
         {
           title: '产品代码',
-          dataIndex: 'productTypeName',
+          dataIndex: 'productCode',
         },
         {
           title: '单位',
@@ -382,7 +382,7 @@ export default {
           listProduct.push({
             id: product.id,
             productName: product.productName,
-            productTypeName: product.productType,
+            productCode: product.productCode,
             receivable: product.count * product.unitPrice,
             company: product.company,
             count: product.count,

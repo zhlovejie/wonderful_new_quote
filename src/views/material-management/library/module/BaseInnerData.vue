@@ -1,10 +1,5 @@
 <template>
-  <a-form-model
-    ref="ruleForm"
-    :model="form"
-    :rules="rules"
-    class="routine-addform-wrapper-baseInnerData"
-  >
+  <a-form-model ref="ruleForm" :model="form" :rules="rules" class="routine-addform-wrapper-baseInnerData">
     <h3>基本数据</h3>
     <table class="custom-table custom-table-border">
       <tbody>
@@ -13,29 +8,16 @@
             <span class="icon-required">物料代码</span>
           </td>
           <td>
-            <a-form-model-item
-              ref="materialCode"
-              prop="materialCode"
-            >
-              <a-input
-                v-model="form.materialCode"
-                placeholder="系统生成"
-                disabled="disabled"
-              />
+            <a-form-model-item ref="materialCode" prop="materialCode">
+              <a-input v-model="form.materialCode" placeholder="系统生成" disabled="disabled" />
             </a-form-model-item>
           </td>
           <td style="width:150px;">
             <span class="icon-required">物料名称</span>
           </td>
           <td>
-            <a-form-model-item
-              ref="materialName"
-              prop="materialName"
-            >
-              <a-input
-                v-model="form.materialName"
-                :disabled="normalAddForm.isView"
-              />
+            <a-form-model-item ref="materialName" prop="materialName">
+              <a-input v-model="form.materialName" :disabled="normalAddForm.isView" />
             </a-form-model-item>
           </td>
         </tr>
@@ -105,12 +87,8 @@
                 placeholder="请选择主计量单位"
                 :allowClear="true"
               >
-                <a-select-option
-                  v-for="item in materialUnitList"
-                  :key="item.text"
-                  :value="item.text"
-                >
-                {{item.text}}
+                <a-select-option v-for="item in materialUnitList" :key="item.text" :value="item.text">
+                  {{ item.text }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
@@ -126,12 +104,8 @@
                 placeholder="请选择辅计量单位"
                 :allowClear="true"
               >
-                <a-select-option
-                  v-for="item in materialUnitList"
-                  :key="item.text"
-                  :value="item.text"
-                >
-                {{item.text}}
+                <a-select-option v-for="item in materialUnitList" :key="item.text" :value="item.text">
+                  {{ item.text }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
@@ -146,18 +120,12 @@
                   换算率是一个主计量单位等于多少个辅计量单位
                 </template>
                 <span class="icon-required">换算率</span>
-                <a-icon
-                  type="question-circle"
-                  style="margin-left:5px;color:#1890ff;"
-                />
+                <a-icon type="question-circle" style="margin-left:5px;color:#1890ff;" />
               </a-tooltip>
             </span>
           </td>
           <td>
-            <a-form-model-item
-              ref="conversionRate"
-              prop="conversionRate"
-            >
+            <a-form-model-item ref="conversionRate" prop="conversionRate">
               <a-input-number
                 :disabled="normalAddForm.isView"
                 v-model="form.conversionRate"
@@ -172,10 +140,7 @@
             <span>预估重量(克)</span>
           </td>
           <td>
-            <a-form-model-item
-              ref="estimateWeight"
-              prop="estimateWeight"
-            >
+            <a-form-model-item ref="estimateWeight" prop="estimateWeight">
               <a-input-number
                 :disabled="normalAddForm.isView"
                 v-model="form.estimateWeight"
@@ -193,24 +158,17 @@
               <span class="icon-required">是否需要送检</span>
             </td>
             <td>
-              <a-form-model-item
-                ref="needCheck"
-                prop="needCheck"
-              >
-                <a-radio-group
-                  :disabled="normalAddForm.isView"
-                  name="radioGroup"
-                  v-model="form.needCheck"
-                >
+              <a-form-model-item ref="needCheck" prop="needCheck">
+                <a-radio-group :disabled="normalAddForm.isView" name="radioGroup" v-model="form.needCheck">
                   <a-radio :value="1">是</a-radio>
                   <a-radio :value="2">否</a-radio>
                 </a-radio-group>
               </a-form-model-item>
             </td>
           </template>
-          <td class="icon-required">原K3物料代码</td>
+          <td>原K3物料代码</td>
           <td :colspan="normalAddForm.isNormal ? 1 : 3">
-            <a-form-model-item
+            <!-- <a-form-model-item
               ref="k3Code"
               prop="k3Code"
               has-feedback
@@ -220,22 +178,29 @@
                 v-model="form.k3Code"
                 :allowClear="true"
               />
+            </a-form-model-item> -->
+
+            <a-form-model-item>
+              <a-input :disabled="normalAddForm.isView" v-model="form.k3Code" :allowClear="true" />
             </a-form-model-item>
           </td>
         </tr>
         <tr>
           <td>备注</td>
           <td colspan="3">
-            <a-form-model-item
-              ref="remark"
-              prop="remark"
-            >
-              <a-input
-                :disabled="normalAddForm.isView"
-                v-model="form.remark"
-                type="textarea"
-                :allowClear="true"
-              />
+            <a-form-model-item ref="remark" prop="remark">
+              <a-input :disabled="normalAddForm.isView" v-model="form.remark" type="textarea" :allowClear="true" />
+            </a-form-model-item>
+          </td>
+        </tr>
+
+        <tr v-if="normalAddForm.isEdit && isShowMaterialReason()">
+          <td>
+            <span class="icon-required">物料代码变更原因</span>
+          </td>
+          <td colspan="3">
+            <a-form-model-item ref="reason" prop="reason">
+              <a-input v-model="form.reason" type="textarea" :allowClear="true" />
             </a-form-model-item>
           </td>
         </tr>
@@ -246,9 +211,7 @@
 <script>
 import { getDictionary } from '@/api/common'
 
-import {
-  materialInfoCheckK3Code
-} from '@/api/routineMaterial'
+import { materialInfoCheckK3Code } from '@/api/routineMaterial'
 
 export default {
   name: 'BaseInnerData',
@@ -257,20 +220,19 @@ export default {
     const that = this
     let checkPending
     let checkK3Code = (rule, value, callback) => {
-      clearTimeout(checkPending);
+      clearTimeout(checkPending)
       if (!value) {
-        return callback(new Error('请输入原K3物料代码'));
+        return callback(new Error('请输入原K3物料代码'))
       }
       checkPending = setTimeout(() => {
         that.checkk3code(value).then(res => {
-
-          if(res){
-            return callback(new Error('K3物料代码重复'));
-          }else{
-            callback();
+          if (res) {
+            return callback(new Error('K3物料代码重复'))
+          } else {
+            callback()
           }
         })
-      }, 1000);
+      }, 1000)
     }
 
     return {
@@ -288,7 +250,7 @@ export default {
         estimateWeight: 0,
         remark: undefined,
         k3Code: undefined,
-        needCheck:2
+        needCheck: 2
       },
       rules: {
         materialSource: [{ required: true, message: '请选择物料来源属性' }],
@@ -297,10 +259,11 @@ export default {
         subUnit: [{ required: true, message: '请选择辅计量单位' }],
         conversionRate: [{ required: true, message: '请输入换算率' }],
         // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
-        k3Code: [{ validator: checkK3Code, trigger: 'change' }],
-        needCheck:[{ required: true, message: '请选择是否需要送检' }]
+        // k3Code: [{ validator: checkK3Code, trigger: 'change' }],
+        needCheck: [{ required: true, message: '请选择是否需要送检' }],
+        reason: [{ required: true, message: '请输入物料代码变更原因' }]
       },
-      materialUnitList:[], //物料计量单位
+      materialUnitList: [] //物料计量单位
     }
   },
   created() {
@@ -309,24 +272,35 @@ export default {
 
     that.form = {
       ...that.form,
-      specificationHTML:that.specificationFormat(that.form.specification)
+      specificationHTML: that.specificationFormat(that.form.specification)
     }
 
-    if(that.normalAddForm.isAdd){
+    if (that.normalAddForm.isAdd) {
       that.$nextTick(() => {
         that.form = {
           ...that.form,
-          useStatus:2,
-          needCheck:2
+          useStatus: 2,
+          needCheck: 2
         }
       })
     }
 
-    getDictionary({ text: '物料计量单位' }).then((res) => {
+    getDictionary({ text: '物料计量单位' }).then(res => {
       that.materialUnitList = res.data
     })
   },
   methods: {
+    isShowMaterialReason() {
+      const that = this
+      try {
+        const { materialCode, __materialCodeCache } = that.normalAddForm.submitParams
+        console.log(`materialCode:${materialCode}---__materialCodeCache:${__materialCodeCache}`)
+        return materialCode !== __materialCodeCache
+      } catch (err) {
+        console.error(err)
+        return false
+      }
+    },
     validate() {
       const that = this
       return new Promise((resolve, reject) => {
@@ -342,45 +316,54 @@ export default {
     reset() {
       this.$refs.ruleForm.resetFields()
     },
-    checkk3code(e){
+    checkk3code(e) {
       const that = this
       const k3Code = that.form.k3Code
       return materialInfoCheckK3Code({
         k3Code,
-        _type:that.normalAddForm.isNormal ? 'normal' : 'product',
-        materialInfoId:that.normalAddForm.submitParams.id
-      }).then(res => {
-        try{
-          return !!res.data
-        }catch(err){
+        _type: that.normalAddForm.isNormal ? 'normal' : 'product',
+        materialInfoId: that.normalAddForm.submitParams.id
+      })
+        .then(res => {
+          try {
+            return !!res.data
+          } catch (err) {
+            console.log(err)
+            return false
+          }
+        })
+        .catch(err => {
           console.log(err)
           return false
-        }
-      }).catch(err => {
-        console.log(err)
-        return false
-      })
+        })
     },
-    specificationFormat(sp){
-      if(sp){
-        let _sp = sp.replace(/\s+/g,'');
+    specificationFormat(sp) {
+      if (sp) {
+        let _sp = sp.replace(/\s+/g, '')
         let _strList = String(_sp).split(',')
-        let maxWidth = 0,wordWidth = 16
+        let maxWidth = 0,
+          wordWidth = 16
         _strList.map(v => {
-          v.split(':').map((e,idx) => {
-            if(idx === 0){
+          v.split(':').map((e, idx) => {
+            if (idx === 0) {
               const w = e.length * wordWidth
               maxWidth = w > maxWidth ? w : maxWidth
             }
           })
         })
-        const HTML = _strList.map(v => {
-          let arr = [];
-          v.split(':').map((e,idx) => {
-            arr.push(`<div style="width:${idx === 0 ? maxWidth+'px' : 'auto'};text-align:left;">${idx === 1 ? ':&nbsp;&nbsp;' : ''}${e}</div>`)
+        const HTML = _strList
+          .map(v => {
+            let arr = []
+            v.split(':').map((e, idx) => {
+              arr.push(
+                `<div style="width:${idx === 0 ? maxWidth + 'px' : 'auto'};text-align:left;">${
+                  idx === 1 ? ':&nbsp;&nbsp;' : ''
+                }${e}</div>`
+              )
+            })
+            return `<div style="display:flex;">${arr.join('')}</div>`
           })
-          return `<div style="display:flex;">${arr.join('')}</div>`
-        }).join('')
+          .join('')
 
         return HTML
       }

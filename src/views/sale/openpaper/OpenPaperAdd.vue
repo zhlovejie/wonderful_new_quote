@@ -288,6 +288,7 @@ export default {
       memberLoading: false,
       moneyTypes: [],
       loading: false,
+      details: {},
       visibleBoolean: false,
       queryBoolean: false,
       produceData: [],
@@ -303,7 +304,7 @@ export default {
 
         {
           title: '产品代码',
-          dataIndex: 'productTypeName',
+          dataIndex: 'productCode',
         },
         {
           title: '单位',
@@ -359,7 +360,7 @@ export default {
       const paramter = { id: data.contractId }
       getContractOne(paramter).then((res) => {
         console.log(res)
-
+        this.details = res.data
         this.freightType = res.data.freightType
         this.freightCharge = res.data.freightMoneyWithRate
         this.contractAmount = res.data.contractAmount
@@ -377,7 +378,7 @@ export default {
             key: ++_ukey,
             productId: product.productId,
             productName: product.contractProductPo.productName,
-            productTypeName: product.contractProductPo.productModel,
+            productCode: product.contractProductPo.productModel,
             receivable: countP,
             company: product.company,
             count: product.count,
@@ -434,6 +435,10 @@ export default {
           this.$set(values, 'contractType', 1) // 1销售合同，2软件合同
           this.$set(values, 'products', this.dataSource)
           this.$set(values, 'deliveryTime', values.deliveryTime.format('YYYY-MM-DD'))
+          values.saleCustomerName = this.details.customerName
+          values.saleCustomerId = this.details.customerId
+          values.saleUserName = this.details.saleUserTrueName
+          values.saleUserId = this.details.saleUserId
 
           this.spinning = true
           openPaperSave(values)

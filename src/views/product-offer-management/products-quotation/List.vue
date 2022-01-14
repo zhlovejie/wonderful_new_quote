@@ -27,14 +27,14 @@
           @extendProductChange="extendProductChange"
           @loaded="() => (spinning = false)"
           prefix="产品系列-"
-          :modelType="{ is2d0: is2d0, is4d0: is4d0 }"
+          :modelType="{ is2d0: is2d0, is4d0: is4d0, is5d0: is5d0, is6d0: is6d0 }"
         />
 
         <ProductConfig
           ref="productConfigSub"
           @loaded="() => (spinning = false)"
           prefix="产品-"
-          :modelType="{ is2d0: is2d0, is4d0: is4d0 }"
+          :modelType="{ is2d0: is2d0, is4d0: is4d0, is5d0: is5d0, is6d0: is6d0 }"
         />
 
         <div style="text-align: center; margin-top: 10px">
@@ -50,7 +50,7 @@
       title="产品评估"
       :width="800"
       :visible="visible"
-      @cancel="visible = false"
+      @cancel="() => {visible = false;expandedRowKeys=[];}"
       :maskClosable="false"
       :destroyOnClose="true"
       :footer="null"
@@ -161,7 +161,7 @@ export default {
     SelectProductView,
     SelectProductViewHTML,
     ProductConfig,
-    PriceForm,
+    PriceForm
   },
   data() {
     return {
@@ -169,48 +169,48 @@ export default {
         {
           align: 'center',
           title: '序号',
-          scopedSlots: { customRender: 'order' },
+          scopedSlots: { customRender: 'order' }
         },
         {
           align: 'center',
           title: '区间值名称',
-          dataIndex: 'intervalValueName',
+          dataIndex: 'intervalValueName'
         },
         {
           align: 'center',
           title: '提成比率',
-          dataIndex: 'commissionRate',
+          dataIndex: 'commissionRate'
         },
         {
           align: 'center',
           title: '销售价格',
-          dataIndex: 'price',
-        },
+          dataIndex: 'price'
+        }
       ],
       columns: [
         {
           align: 'center',
           title: '序号',
-          scopedSlots: { customRender: 'order' },
+          scopedSlots: { customRender: 'order' }
         },
         {
           align: 'center',
           title: '区间值名称',
           dataIndex: 'intervalValueName',
-          scopedSlots: { customRender: 'intervalValueName' },
+          scopedSlots: { customRender: 'intervalValueName' }
         },
         {
           align: 'center',
           title: '提成比率',
           dataIndex: 'commissionRate',
-          scopedSlots: { customRender: 'commissionRate' },
+          scopedSlots: { customRender: 'commissionRate' }
         },
         {
           align: 'center',
           title: '销售价格',
           dataIndex: 'price',
-          scopedSlots: { customRender: 'price' },
-        },
+          scopedSlots: { customRender: 'price' }
+        }
       ],
       activeKey: 1,
       optInfo: {},
@@ -228,7 +228,7 @@ export default {
 
       isPriceViewCost: false, //是否点击的 成本价预览
       spinning: false,
-      spinTips: '数据加载中...',
+      spinTips: '数据加载中...'
     }
   },
   computed: {
@@ -237,11 +237,11 @@ export default {
         __config: {
           showTitle: true,
           costPrice: this.dataSource,
-          costPriceAll: Object.assign({}, this.costPriceAll),
+          costPriceAll: Object.assign({}, this.costPriceAll)
         },
         optInfo: {},
         optStand: [],
-        optSelect: [],
+        optSelect: []
       }
       this.viewDataSource.map((p, idx) => {
         if (Array.isArray(p.optStand)) {
@@ -266,7 +266,7 @@ export default {
         __config: { ...res.__config },
         optInfo: { ...res.optInfo },
         optStand: [...res.optStand],
-        optSelect: [...res.optSelect],
+        optSelect: [...res.optSelect]
       }
       result.__config.showTitle = false
       return result
@@ -277,7 +277,7 @@ export default {
         1: '2d0', //2.0报价参数标志
         2: '4d0', //4.0报价参数标志
         3: '5d0', //5.0报价参数标志
-        4: '6d0', //厨余系列报价参数标志
+        4: '6d0' //厨余系列报价参数标志
       }
       return m[this.activeKey]
     },
@@ -292,17 +292,17 @@ export default {
     },
     is6d0() {
       return +this.activeKey === 3
-    },
+    }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
+      handler: function(to, from) {
         if (to.name === 'pom-products-quotation') {
           this.init()
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   methods: {
     customRowFunction(record) {
@@ -310,8 +310,8 @@ export default {
       let { rateType } = record
       return {
         style: {
-          'background-color': rateType === 1 ? '#E6F7FF ' : +rateType === 2 ? '#FFFBE6' : '#FFF1F0',
-        },
+          'background-color': rateType === 1 ? '#E6F7FF ' : +rateType === 2 ? '#FFFBE6' : '#FFF1F0'
+        }
       }
     },
 
@@ -348,28 +348,28 @@ export default {
         productEvaluation({
           rangeId: record.rangeId,
           id: this.productTypeConfigId,
-          sumPrice: this.costPrice.price,
-        }).then((res) => {
+          sumPrice: this.costPrice.price
+        }).then(res => {
           if (res.code === 200) {
-            let react = this.dataSource.find((item) => item.key === record.key)
+            let react = this.dataSource.find(item => item.key === record.key)
             react.innerData = res.data
           } else {
             this.$message.error(res.msg)
           }
         })
       } else {
-        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
+        this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
       }
     },
     assessment() {
-      productEvaluation({ id: this.productTypeConfigId, sumPrice: this.costPrice.price }).then((res) => {
+      productEvaluation({ id: this.productTypeConfigId, sumPrice: this.costPrice.price }).then(res => {
         if (res.code === 200) {
           this.dataSource = res.data.map((item, index) => {
             item.key = index + 1
             item.innerData = []
             return item
           })
-          this.expandedRowKeys = that.dataSource.map((item) => item.key) || []
+          this.expandedRowKeys = that.dataSource.map(item => item.key) || []
           // this.dataSource = res.data.sort(function (a, b) {
           //   return a.rateType - b.rateType
           // })
@@ -381,7 +381,7 @@ export default {
     selectedHandler(record) {
       this.reset()
       this.optInfo = {
-        name: record.name,
+        name: record.name
       }
       this.productTypeConfigId = record.id
       this.spinning = true
@@ -397,6 +397,7 @@ export default {
         this.reset()
       } else if (type === 'price-ok') {
         this.visible = false
+        this.expandedRowKeys = []
         this.dataSource = []
       } else if (['price-view', 'price-view-cost'].includes(type)) {
         this.assessment()
@@ -422,7 +423,7 @@ export default {
           price: 0,
           tax: 1,
           _costPrice: Object.assign({}, this.costPrice),
-          _viewDataSource: { ...this.viewDataSourceHTMLWithoutTitle },
+          _viewDataSource: { ...this.viewDataSourceHTMLWithoutTitle }
         }
 
         this.hackReset = false
@@ -445,16 +446,16 @@ export default {
           productModel: __viewDataSourceHTML.optInfo.model,
           productPic: __viewDataSourceHTML.optInfo.productPic,
           unitPrice: this.unitPriceView,
-          standardItem: __viewDataSourceHTML.optStand.map((p) => {
+          standardItem: __viewDataSourceHTML.optStand.map(p => {
             return { itemName: p.itemName, type: 1, introduction: p.introduction }
           }),
-          optionalItem: __viewDataSourceHTML.optSelect.map((p) => {
+          optionalItem: __viewDataSourceHTML.optSelect.map(p => {
             return { itemName: p.itemName, type: 2, introduction: p.introduction }
-          }),
+          })
         }
         that.spinningView = true
         priceAdjustProductQuoteDownload(values)
-          .then((res) => {
+          .then(res => {
             that.spinningView = false
             console.log(res)
             if (res instanceof Blob) {
@@ -475,7 +476,7 @@ export default {
               } else if (isJson) {
                 //返回json处理
                 var reader = new FileReader()
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                   let _res = null
                   try {
                     _res = JSON.parse(e.target.result)
@@ -499,7 +500,7 @@ export default {
               }
             }
           })
-          .catch((err) => (that.spinningView = true))
+          .catch(err => (that.spinningView = true))
         return
       }
     },
@@ -519,22 +520,22 @@ export default {
           aprice: 0,
           bprice: 0,
           cprice: 0,
-          retailPrice: 0,
+          retailPrice: 0
         },
         standPrice: {
           price: 0,
           aprice: 0,
           bprice: 0,
           cprice: 0,
-          retailPrice: 0,
+          retailPrice: 0
         },
         unStandPrice: {
           price: 0,
           aprice: 0,
           bprice: 0,
           cprice: 0,
-          retailPrice: 0,
-        },
+          retailPrice: 0
+        }
       }
       let totalPrice = [Object.assign({}, mainPrice.totalPrice), Object.assign({}, subPrice.totalPrice)]
       let standPrice = [Object.assign({}, mainPrice.standPrice), Object.assign({}, subPrice.standPrice)]
@@ -566,13 +567,13 @@ export default {
         return calc
       }, priceResult.unStandPrice)
 
-      let formatPrice = (n) => {
+      let formatPrice = n => {
         let _n = Math.round(parseFloat(n))
         if (_n < 10) return _n
         return (parseInt(_n / 10, 10) + (_n % 10 >= 5 ? 1 : 0)) * 10
       }
       //debugger
-      Object.keys(priceResult.totalPrice).map((key) => {
+      Object.keys(priceResult.totalPrice).map(key => {
         priceResult.totalPrice[key] =
           key !== 'price' ? formatPrice(priceResult.totalPrice[key]) : priceResult.totalPrice[key]
         // priceResult.totalPrice[key] = formatPrice(priceResult.totalPrice[key])
@@ -583,20 +584,20 @@ export default {
     },
     makeViewDataSource() {
       let that = this
-      let makeProducts = (key) => that.$refs[key].viewDataSource
+      let makeProducts = key => that.$refs[key].viewDataSource
       let main = makeProducts('productConfigMain')
       if (main) {
         main.__config = {
           showTitle: true,
           prefix: '产品系列-',
-          costPrice: { ...that.costPrice }, //总的产品评估报价
+          costPrice: { ...that.costPrice } //总的产品评估报价
         }
       }
       let sub = makeProducts('productConfigSub')
       if (sub) {
         sub.__config = {
           showTitle: false,
-          prefix: '产品-',
+          prefix: '产品-'
         }
       }
       this.viewDataSource = [makeProducts('productConfigMain'), makeProducts('productConfigSub')]
@@ -605,7 +606,7 @@ export default {
       let that = this
       let keys = ['productConfigMain', 'productConfigSub']
       that.optInfo = {}
-      keys.map((key) => {
+      keys.map(key => {
         try {
           that.$refs[key].reset()
         } catch (err) {
@@ -622,8 +623,8 @@ export default {
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
       this.reset()
-    },
-  },
+    }
+  }
 }
 </script>
 

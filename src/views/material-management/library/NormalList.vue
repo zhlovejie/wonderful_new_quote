@@ -93,7 +93,6 @@
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:edit')">
               <a-button
-
                 type="primary"
                 @click="doAction('edit', null)"
               >修改</a-button>
@@ -715,6 +714,10 @@ export default {
         })
         return
       } else if (type === 'edit') {
+        if(+that.selectedRows[0].auditStatus !== 1){
+          that.$message.info('只允许修改未审核的物料')
+          return;
+        }
         that.normalAddFormKeyCount = that.normalAddFormKeyCount + 1
         that.$nextTick(() => {
           that.$refs.NormalAddForm.query(type, {

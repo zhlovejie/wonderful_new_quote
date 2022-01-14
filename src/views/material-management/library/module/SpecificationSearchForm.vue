@@ -148,6 +148,7 @@ export default {
         current: 1,
         pageSize: 1000
       }
+      that.dataSource = []
 
       that.$nextTick(() => {
         that.search()

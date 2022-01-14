@@ -11,10 +11,13 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
+        <!-- <template v-if="!isVeiw"> -->
         <a-button v-if="details.formKey === '3'" key="submit1" type="primary" @click="handleOk()">完结</a-button>
-        <a-popconfirm v-else-if="details.formKey === '1'" title="确认是否愿意担保吗?" @confirm="() => handleOk()">
-          <a-button key="submit" type="primary">确定</a-button>
-        </a-popconfirm>
+        <a-button v-if="details.formKey === '1'" key="submit1" type="primary" @click="handleOk()">确定</a-button>
+        <!-- <a-popconfirm v-else-if="details.formKey === '1'" title="确认是否愿意担保吗?" @confirm="() => handleOk()">
+            <a-button key="submit" type="primary">确定</a-button>
+          </a-popconfirm> -->
+        <!-- </template> -->
         <a-button v-else key="submit1" type="primary" @click="handleOk()">确定</a-button>
       </template>
     </template>
@@ -67,7 +70,7 @@
             </div>
 
             <div slot="deliveryMode" slot-scope="text, record, index">
-              {{ text === 0 ? '自带' : '邮寄' }}
+              {{ { 0: '自带', 1: '邮寄' }[record.deliveryMode] || '未知' }}
             </div>
             <div slot="isWarranty" slot-scope="text, record, index">
               <span v-if="record.isWarranty === 0">否</span>
@@ -132,7 +135,7 @@
               }}
             </td>
           </tr>
-          <tr v-if="form.paymentType === 0 || form.paymentType === 2">
+          <tr v-if="form.paymentType === 0 || form.paymentType === 3">
             <td>处理人</td>
             <td>{{ form.handlerUser.split(',')[1] }}</td>
           </tr>
@@ -142,7 +145,12 @@
               {{ form.remark }}
             </td>
           </tr>
-          <tr v-if="details.formKey === '1' || details.handlerResult === 0 || details.handlerResult === 1">
+          <tr
+            v-if="
+              (form.paymentType === 3 || form.paymentType === 0) &&
+              (details.formKey === '1' || details.handlerResult === 0 || details.handlerResult === 1)
+            "
+          >
             <td>是否愿意担保</td>
             <td>
               <a-switch
@@ -176,7 +184,7 @@ export default {
       birthplaceOptions: [], //籍贯 级联 省市
       personincharge: [], //销售负责人
       labelName: undefined,
-      isAdopt: true,
+      isAdopt: false,
       isTax: true,
       form: {
         productInfoList: [],
@@ -335,7 +343,7 @@ export default {
           this.details = res.data
           this.form = { ...this.form, ...res.data }
           this.isTax = res.data.isTax === 0 ? true : false
-          this.isAdopt = res.data.handlerResult === 0 || res.data.handlerResult === null ? true : false
+          this.isAdopt = res.data.handlerResult === 1 || res.data.handlerResult === null ? false : true
           // this.form.mailRecord = res.data.mailRecord
         })
       }
@@ -343,18 +351,19 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
+      if (this.isVeiw) {
+        return (that.visible = false)
+      }
       that.$refs['ruleForm'].validate((valid) => {
         if (valid) {
           let ret = {}
           const params = that.$_.cloneDeep(that.form || {})
-          // params.mailRecord.province = params.mailRecord.province.toString()
-          // params.mailRecord.provinceName = this.labelName
-          // params.totalAmount = this.totalPhase1
-          // let react = this.personincharge.find((i) => i.id === params.handlerUser)
-          // params.handlerUser = react.id + ',' + react.trueName
-          // params.taskDocumentId = this.record.id
-          // console.log(params)
-          ret.isAdopt = this.isAdopt === true ? 0 : 1
+          if (params.paymentType === 0 || params.paymentType === 3) {
+            ret.isAdopt = this.isAdopt === true ? 0 : 1
+          } else {
+            ret.isAdopt = 0
+          }
+
           ret.approveId = this.record.id
           approvalAccessoriesManagement(ret)
             .then((res) => {

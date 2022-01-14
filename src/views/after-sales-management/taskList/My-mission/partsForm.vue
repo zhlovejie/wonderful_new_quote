@@ -295,7 +295,7 @@
           </a-select>
         </a-form-model-item>
         <a-form-model-item
-          v-if="form.paymentType === 0 || form.paymentType === 2"
+          v-if="form.paymentType === 0 || form.paymentType === 3"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
           label="处理人"
@@ -477,7 +477,15 @@ export default {
       return baseColumns
     },
   },
-
+  watch: {
+    totalPhase1(val) {
+      if (val === '0.00') {
+        this.form.paymentType = 2
+      } else {
+        this.form.paymentType = undefined
+      }
+    },
+  },
   created() {},
   methods: {
     onChange(checked) {

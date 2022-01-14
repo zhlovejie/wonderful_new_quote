@@ -2,7 +2,18 @@
   <a-spin :spinning="spinning">
     <div class="top-right clearfix">
       <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
-      <a-button class="fl-r" type="primary" @click="editPaper" icon="check-circle">重新提交</a-button>
+      <a-button v-if="auditBoolean" class="fl-r" type="primary" @click="receiptAudit('2')" icon="check-circle"
+        >通过
+      </a-button>
+      <a-button
+        v-if="auditBoolean"
+        class="fl-r"
+        type="primary"
+        @click="receiptAudit('3')"
+        :loading="loading"
+        icon="close-circle"
+        >不通过
+      </a-button>
     </div>
     <a-card class="card" :bordered="false">
       <a-form :form="form" class="form">
@@ -30,13 +41,13 @@
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">客户名称</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['customerName']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['customerName']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">开票单位名称</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <!-- <span>江苏万德福公共设施科技有限公司</span> -->
               <a-form-item>
-                <a-input class="wdf-xyk" v-decorator="['openUnit']" />
+                <a-input class="wdf-xyk" read-only="read-only" v-decorator="['openUnit']" />
               </a-form-item>
             </a-col>
           </a-row>
@@ -45,14 +56,24 @@
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">发票类型</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-radio-group class="wdf-xyk" v-decorator="['paperType', {}]">
+              <a-radio-group
+                class="wdf-xyk"
+                read-only="read-only"
+                :disabled="queryBoolean"
+                v-decorator="['paperType', {}]"
+              >
                 <a-radio :value="2">增票</a-radio>
                 <a-radio :value="1">普票</a-radio>
               </a-radio-group>
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">开票性质</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-radio-group class="wdf-xyk" v-decorator="['paperQuality', {}]">
+              <a-radio-group
+                class="wdf-xyk"
+                read-only="read-only"
+                :disabled="queryBoolean"
+                v-decorator="['paperQuality', {}]"
+              >
                 <a-radio :value="1">常规开票</a-radio>
                 <a-radio :value="2">特殊开票</a-radio>
               </a-radio-group>
@@ -63,11 +84,11 @@
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">开户行及账号</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['bankNoAccount']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['openingBank']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">纳税人识别号</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['taxPayerNo']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['dutyParagraph']" />
             </a-col>
           </a-row>
         </a-form-item>
@@ -75,23 +96,16 @@
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">客户地址</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['customerAddress']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['address']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">联系电话</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['customerTel']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['mobile']" />
             </a-col>
           </a-row>
         </a-form-item>
-        <a-table
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="false"
-          :rowKey="(record) => record.productId"
-          :loading="memberLoading"
-          bordered
-        >
-          <div slot="company" slot-scope="text, record">
+        <a-table :columns="columns" :dataSource="dataSource" :pagination="false" :loading="memberLoading" bordered>
+          <div slot="company" slot-scope="text">
             <span v-if="text == 0">套</span>
             <span v-if="text == 1">台</span>
             <span v-if="text == 2">个</span>
@@ -101,39 +115,16 @@
             <span v-if="text == 6">张</span>
             <span v-if="text == 7">卷</span>
           </div>
-
-          <div slot="count" slot-scope="text, record, index">
-            <!-- <input  @change="quantityChange(record,$event)"  v-model="record.count"></input> -->
-            <a-input
-              type="number"
-              placeholder="请输入数量"
-              @change="quantityChange(record, $event)"
-              :value="record.count"
-            />
-          </div>
-
-          <div slot="unitPrice" slot-scope="text, record, index">
-            <!-- <input @change="unitPriceChange(record,$event)" v-model="record.unitPrice"></input> -->
-            <a-input
-              type="number"
-              placeholder="请输入价格"
-              @change="unitPriceChange(record, $event)"
-              :value="record.unitPrice"
-            />
-          </div>
         </a-table>
         <a-form-item>
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">实际发货日期</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-date-picker
-                class="wdf-xyk"
-                v-decorator="['deliveryTime', { rules: [{ required: true, message: '请选择实际发货日期' }] }]"
-              />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['deliveryTime']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">开票金额(元)</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['paperMoney']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['paperMoney']" />
             </a-col>
           </a-row>
         </a-form-item>
@@ -141,7 +132,12 @@
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">回款情况</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-radio-group class="wdf-xyk" v-decorator="['paperDetail', {}]">
+              <a-radio-group
+                class="wdf-xyk"
+                read-only="read-only"
+                :disabled="queryBoolean"
+                v-decorator="['paperDetail', {}]"
+              >
                 <a-radio :value="1">部分付款</a-radio>
                 <a-radio :value="2">已付全款</a-radio>
                 <a-radio :value="3">未付款</a-radio>
@@ -149,7 +145,7 @@
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">总金额(元)</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['totalAmount']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['totalAmount']" />
             </a-col>
           </a-row>
         </a-form-item>
@@ -157,78 +153,55 @@
           <a-row>
             <a-col class="col-border" :span="3" justify="center" align="middle">已回款金额(元)</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['refundMoney']" />
+              <a-input class="wdf-xyk" disabled v-decorator="['refundMoney']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">欠款金额(元)</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <!--fix 0543 欠款金额不能大于总金额 -->
-              <a-input-number
-                :min="0"
-                :max="maxArrearsMoney"
-                @change="arrearsMoneyChange"
-                class="wdf-xyk"
-                placeholder="请输入欠款金额"
-                v-decorator="['arrearsMoney', { rules: [{ required: true, message: '请输入欠款金额' }] }]"
-              />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['arrearsMoney']" />
             </a-col>
           </a-row>
         </a-form-item>
-        <a-row type="flex" style="border-bottom: 1px solid #ddd" v-if="freightType === 0">
-          <a-col class="col-border" :span="3" justify="center" align="middle">运费(元)</a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle">
-            <a-form-item>
-              <a-input-number
-                style="width: 50%"
-                :min="0"
-                :step="0.1"
-                :precision="2"
-                placeholder="运费"
-                @change="freightChargeChange"
-                v-decorator="['freightCharge']"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col class="col-border" :span="3" justify="center" align="middle"></a-col>
-          <a-col class="col-border" :span="9" justify="center" align="middle"></a-col>
-        </a-row>
+
         <a-row type="flex" style="border-bottom: 1px solid #ddd">
           <a-col class="col-border" :span="3" justify="center" align="middle">备注</a-col>
           <a-col class="col-border" :span="21" justify="center" align="middle">
             <a-form-item>
               <a-textarea
                 placeholder="备注"
+                read-only="read-only"
                 :rows="3"
                 v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"
               />
             </a-form-item>
           </a-col>
         </a-row>
+
         <a-form-item>
-          <a-row>
+          <a-row style="border-bottom: 1px solid #ddd">
             <a-col class="col-border" :span="3" justify="center" align="middle">创建人</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" placeholder="创建人" v-decorator="['createdName']" />
+              <a-input class="wdf-xyk" read-only="read-only" placeholder="创建人" v-decorator="['createdName']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">创建日期</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" placeholder="创建日期" v-decorator="['createdTime']" />
+              <a-input class="wdf-xyk" read-only="read-only" placeholder="创建日期" v-decorator="['createdTime']" />
             </a-col>
           </a-row>
         </a-form-item>
         <a-form-item v-if="approveVueBoolean">
-          <a-row class="wdf-row">
+          <a-row class="wdf-row" style="border-bottom: 1px solid #ddd">
             <a-col class="col-border" :span="3" justify="center" align="middle">审批人</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['approveName']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['approveName']" />
             </a-col>
             <a-col class="col-border" :span="3" justify="center" align="middle">审批日期</a-col>
             <a-col class="col-border" :span="9" justify="center" align="middle">
-              <a-input class="wdf-xyk" v-decorator="['approveTime']" />
+              <a-input class="wdf-xyk" read-only="read-only" v-decorator="['approveTime']" />
             </a-col>
           </a-row>
         </a-form-item>
       </a-form>
-      <receipt-sale-contract ref="receiptContract" @custom-change="contractChange"></receipt-sale-contract>
+      <!-- <receipt-sale-contract ref="receiptContract" @custom-change="contractChange"></receipt-sale-contract> -->
       <a-modal
         title="不通过"
         @ok="handleOk"
@@ -256,25 +229,17 @@
 </template>
 
 <script>
-import {
-  getContractOne,
-  openPaperAudit,
-  openPaperDetail,
-  openPaperSave,
-  getPaperProduct,
-  updatePaper,
-} from '@/api/openpaper'
+import { getContractOne, openPaperAudit, openPaperDetail, openPaperSave, getPaperProduct } from '@/api/openpaper'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
-import ReceiptSaleContract from '../receipt/ReceiptSaleContract'
+// import ReceiptSaleContract from '../receipt/ReceiptSaleContract'
 import ARow from 'ant-design-vue/es/grid/Row'
-import moment from 'moment'
 
 const data = []
 export default {
-  name: 'EditPaperVue',
+  name: 'OpenPaperVue',
   components: {
     ARow,
-    ReceiptSaleContract,
+    // ReceiptSaleContract,
     AFormItem,
   },
   data() {
@@ -301,9 +266,10 @@ export default {
           title: '产品名称',
           dataIndex: 'productName',
         },
+
         {
           title: '产品代码',
-          dataIndex: 'productCode',
+          dataIndex: 'productTypeName',
         },
         {
           title: '单位',
@@ -313,12 +279,10 @@ export default {
         {
           title: '数量',
           dataIndex: 'count',
-          scopedSlots: { customRender: 'count' },
         },
         {
           title: '含税单价',
           dataIndex: 'unitPrice',
-          scopedSlots: { customRender: 'unitPrice' },
         },
         {
           title: '含税金额(元)',
@@ -327,22 +291,9 @@ export default {
       ],
       dataSource: [],
       queryParam: [],
-      // 加载数据方法 必须为 Promise 对象
-
-      saleContract: null, //合同ID
-      maxArrearsMoney: 0, //最大可输入欠款金额
-      freightType: 1,
-      totalAmount: 0, //总金额 包含运费
-      totalAmountWidtoutFreight: 0, //总金额 不包含运费
       spinning: false,
+      // 加载数据方法 必须为 Promise 对象
     }
-  },
-  watch: {
-    $route(to, from) {
-      if (to.name === 'editPaperVue') {
-        this.init()
-      }
-    },
   },
   mounted() {
     this.init()
@@ -350,34 +301,26 @@ export default {
   methods: {
     init() {
       let that = this
-      console.log('init this.$route.params ' + JSON.stringify(this.$route.params))
-      const params = { id: this.$route.params.id }
-      this.auditBoolean = this.$route.params.auditBoolean
-      this.id = this.$route.params.id
+      console.log('init this.$route.params ' + JSON.stringify(that.$route.params))
+      const params = { id: that.$route.params.id }
+      that.auditBoolean = that.$route.params.auditBoolean
+      that.id = that.$route.params.id
       openPaperDetail(params).then((res) => {
-        that.saleContract = res.data.saleContractDetail.id
-        that.freightType = res.data.saleContractDetail.freightType
-        //that.freightCharge = res.data.freightCharge || res.data.saleContractDetail.freightCharge
-        that.freightCharge = res.data.saleContractDetail.freightMoneyWithRate
-        that.totalAmount = res.data.saleContractDetail.totalAmount
-        that.totalAmountWidtoutFreight = that.totalAmount - that.freightCharge
-
         const record = {
-          remark: res.data.remark,
           paperCode: res.data.paperCode,
-          contractNum: res.data.saleContractDetail.contractNum,
-          customerName: res.data.saleContractDetail.customerName,
-          contractId: res.data.saleContractDetail.id,
-          totalAmount: res.data.saleContractDetail.totalAmount,
-          taxPayerNo: res.data.taxPayerNo,
-          bankNoAccount: res.data.bankNoAccount,
-          customerTel: res.data.customerTel,
-          customerAddress: res.data.customerAddress,
-          refundMoney: res.data.saleContractDetail.returnedMoney,
-          //'paperMoney': res.data.paperMoney + (that.freightType === 0 ? Number(that.freightCharge) * 1.13 : 0),
+          contractNum: res.data.accessoriesContractDetailVo.accessoriesContractNum,
+          totalAmount: res.data.accessoriesContractDetailVo.totalAmount,
+          customerName: res.data.saleCustomerName,
+          contractId: res.data.id,
+          // totalAmount: res.data.totalAmount,
+          dutyParagraph: res.data.taxPayerNo,
+          openingBank: res.data.bankNoAccount,
+          mobile: res.data.customerTel,
+          address: res.data.customerAddress,
+          refundMoney: res.data.returnedMoney,
           paperMoney: res.data.paperMoney,
           arrearsMoney: res.data.arrearsMoney,
-          deliveryTime: moment(res.data.deliveryTime),
+          deliveryTime: res.data.deliveryTime.substring(0, 10),
           paperDetail: res.data.paperDetail,
           paperQuality: res.data.paperQuality,
           paperType: res.data.paperType,
@@ -385,8 +328,8 @@ export default {
           createdTime: res.data.createdTime,
           createdName: res.data.createdName,
           approveTime: res.data.approveTime,
-          freightCharge: res.data.saleContractDetail.freightMoneyWithRate,
-          openUnit: res.data.openUnit,
+          remark: res.data.remark,
+          openUnit: res.data.openUnit || '',
         }
         if (res.data.approveName != undefined && res.data.approveTime != undefined) {
           that.approveVueBoolean = true
@@ -399,8 +342,7 @@ export default {
           })
         })
 
-        that.maxArrearsMoney = parseFloat(record.totalAmount) - parseFloat(record.refundMoney)
-        console.log('getContractOne : ' + JSON.stringify(res))
+        //console.log('getContractOne : ' + JSON.stringify(res))
       })
 
       /**
@@ -409,20 +351,20 @@ export default {
        */
       const paperIdParam = { paperId: this.$route.params.id }
       getPaperProduct(paperIdParam).then((res) => {
-        let _key = 0
         const listProduct = []
         for (const productKey in res.data) {
           console.log('productKey ...' + JSON.stringify(productKey))
           const product = res.data[productKey]
           listProduct.push({
-            key: ++_key,
             id: product.id,
             productName: product.productName,
-            productCode: product.productCode,
+            productTypeName: product.productCode,
             receivable: product.count * product.unitPrice,
             company: product.company,
             count: product.count,
             unitPrice: product.unitPrice,
+            targetName: product.targetName,
+            targetId: product.targetId,
           })
         }
         console.log('listProduct :' + JSON.stringify(listProduct))
@@ -442,8 +384,9 @@ export default {
     // 返回
     goBackPricing() {
       // 点击返回，返回列表页
-      this.$router.push({ name: 'openPaperList' })
-      this.$destroy('openPaperVue')
+      this.$router.go(-1)
+      // this.$router.push({ name: 'after-sales-management_PartsInvoicing' })
+      // this.$destroy('PartsInvoicingOpenPaperVue')
     },
     writeAccountNum(record) {
       const data = { accountNum: record.bankNum }
@@ -457,9 +400,7 @@ export default {
         if (!err) {
           console.log('values :' + JSON.stringify(values))
           console.log('json values :', JSON.stringify(values))
-          this.$set(values, 'contractType', 1) // 1销售合同，2软件合同
           this.$set(values, 'deliveryTime', values.deliveryTime.format('YYYY-MM-DD'))
-
           openPaperSave(values).then((res) => {
             if (res.code == 200) {
               this.goBackPricing()
@@ -474,7 +415,7 @@ export default {
     },
     receiptAudit(type) {
       console.log(type)
-      if (type == 2) {
+      if (type == 3) {
         this.hidden = false
         this.visibleTwo = true
         this.beforeValueBoolean = true
@@ -484,16 +425,28 @@ export default {
         id: this.id,
         paperStatue: type,
       }
-      openPaperAudit(paramer).then((res) => {
-        if (res.code == 200) {
-          this.goBackPricing()
-        }
-      })
+      let that = this
+      that.spinning = true
+      openPaperAudit(paramer)
+        .then((res) => {
+          that.spinning = false
+          if (res.code == 200) {
+            that.goBackPricing()
+          } else {
+            try {
+              that.$message.error(res.msg)
+            } catch (err) {}
+          }
+        })
+        .catch((err) => {
+          that.spinning = false
+        })
     },
     handleCancelTwo(e) {
       this.form2.resetFields()
     },
     handleOk() {
+      let that = this
       this.form2.validateFields((err, values) => {
         console.log(values)
         if (this.beforeValueBoolean) {
@@ -508,129 +461,20 @@ export default {
           paperStatue: 3,
           rejected: values.rejected,
         }
-        openPaperAudit(paramer).then((res) => {
-          if (res.code == 200) {
-            this.goBackPricing()
-          }
-        })
+        that.confirmLoadingTwo = true
+        openPaperAudit(paramer)
+          .then((res) => {
+            that.confirmLoadingTwo = false
+            if (res.code == 200) {
+              that.goBackPricing()
+            } else {
+              that.$message.error(res.msg)
+            }
+          })
+          .catch((err) => {
+            that.confirmLoadingTwo = false
+          })
       })
-    },
-    // 开票单产品数量变化
-    quantityChange(record, e) {
-      // const v = e.currentTarget.value
-
-      // const _index = this.dataSource.findIndex(item => item.key === record.key)
-      // if (_index >= 0) {
-      //   this.dataSource[_index]['count'] = v.trim().length === 0 ? 0 : parseInt(v.trim())
-      //   record.receivable = e.currentTarget.value * record.unitPrice;
-      // }
-      // console.log("countChange:" + JSON.stringify(this.dataSource))
-      // this.calMoney();
-
-      let v = e.currentTarget.value.trim()
-      let dataSource = [...this.dataSource]
-      let target = dataSource.find((item) => item.key === record.key)
-      if (target) {
-        v = v.trim()
-        let maxLength = 10
-        let isTooLong = v.length >= maxLength ? true : false
-        isTooLong && this.$message.warn('数量输入超出范围，请重新输入。')
-        v = isTooLong ? v.slice(0, maxLength) : v
-        target['count'] = v.trim().length === 0 ? 0 : parseInt(v)
-        target['receivable'] = (target['count'] * record.unitPrice).toFixed(2)
-        this.dataSource = dataSource
-        this.calMoney()
-      }
-    },
-    // 开票单产品价格变化
-    unitPriceChange(record, e) {
-      // const v = e.currentTarget.value
-      // const _index = this.dataSource.findIndex(item => item.key === record.key)
-      // if (_index >= 0) {
-      //   this.dataSource[_index]['unitPrice'] = v.trim().length === 0 ? 0 : v.trim()
-      //   record.receivable = e.currentTarget.value * record.count;
-      // }
-      // console.log("unitPriceChange:" + JSON.stringify(this.dataSource))
-      // this.calMoney();
-      let v = e.currentTarget.value.trim()
-      let dataSource = [...this.dataSource]
-      let target = dataSource.find((item) => item.key === record.key)
-      if (target) {
-        v = v.trim()
-        let maxLength = 10
-        let isTooLong = v.length >= maxLength ? true : false
-        isTooLong && this.$message.warn('含税单价输入超出范围，请重新输入。')
-        v = isTooLong ? v.slice(0, maxLength) : v
-        target['unitPrice'] = v.trim().length === 0 ? 0 : parseFloat(v)
-        target['receivable'] = (target['unitPrice'] * record.count).toFixed(2)
-        this.dataSource = dataSource
-        this.calMoney()
-      }
-    },
-    calMoney() {
-      /**
-       * 计算开票金额
-       * @type {number}
-       */
-      let paperMoneyAll = 0
-      for (const productKey in this.dataSource) {
-        const product = this.dataSource[productKey]
-        paperMoneyAll = paperMoneyAll + product.count * product.unitPrice
-      }
-      paperMoneyAll = Number(paperMoneyAll) + (this.freightType === 0 ? Number(this.freightCharge) : 0)
-      paperMoneyAll = Number(paperMoneyAll).toFixed(2)
-      const recordForm = {
-        paperMoney: paperMoneyAll,
-      }
-      this.$nextTick(() => {
-        this.form.setFieldsValue({ ...recordForm })
-      })
-    },
-    editPaper() {
-      console.log('editPaper called.....')
-      let that = this
-      //dataSource
-      this.form.validateFields((err, values) => {
-        // 验证表单没错误
-        if (!err) {
-          console.log('json values :', JSON.stringify(values))
-          this.$set(values, 'contractType', 1) // 1销售合同，2软件合同
-          that.$set(values, 'products', that.dataSource)
-          that.$set(values, 'deliveryTime', values.deliveryTime.format('YYYY-MM-DD'))
-          that.$set(values, 'id', that.id)
-          values.saleContract = that.saleContract
-          console.log(values)
-
-          that.spinning = true
-          updatePaper(values)
-            .then((res) => {
-              that.spinning = false
-              if (res.code == 200) {
-                that.goBackPricing()
-              } else {
-                that.$message.error(res.msg)
-              }
-            })
-            .catch((err) => {
-              that.spinning = false
-            })
-        }
-      })
-    },
-    arrearsMoneyChange(e) {
-      let maxArrearsMoney = this.maxArrearsMoney || 0
-      let number = parseFloat(e)
-      if (number > maxArrearsMoney) {
-        this.$message.warn(`欠款金额不能大于 总金额 减去 已付金额，可输入的最大欠款金额为：${maxArrearsMoney}`)
-      }
-    },
-    freightChargeChange(e) {
-      if (this.freightType !== 0) return
-      this.freightCharge = Number(e) || 0
-      this.form.setFieldsValue({
-        freightCharge: this.freightCharge,
-      })
-      this.$nextTick(() => this.calMoney())
     },
   },
 }

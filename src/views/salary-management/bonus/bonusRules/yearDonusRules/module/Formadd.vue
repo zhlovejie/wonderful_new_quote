@@ -48,7 +48,7 @@
                 <a-date-picker
                   :disabled="isDisabled"
                   :defaultPickerValue="
-                    index === 0 ? moment(`${year}-01-01`, dateFormat) : moment(planList[index - 1].grantDate)
+                    index === 0 ? moment(`${Number(year) + 1}-01-01`, dateFormat) : moment(planList[index - 1].grantDate)
                   "
                   :disabled-date="(currentDate) => disabledDate(currentDate, index)"
                   @change="inputChanges($event, item._key, 'grantDate')"
@@ -340,16 +340,34 @@ export default {
     },
 
     // 规则
+    // disabledDate(current, index) {
+    //   let prevDate = index === 0 ? undefined : moment(this.planList[index - 1].grantDate)
+    //   console.log(prevDate)
+    //   if (prevDate === undefined) {
+    //     let arr = this.isEditSalary ? this.record.applyDate : this.record.applyDate.format('YYYY')
+    //     return current.format('YYYY') !== arr
+    //   } else {
+    //     let react = this.isEditSalary
+    //       ? this.record.applyDate + '-12-31'
+    //       : this.record.applyDate.format('YYYY') + '12-31'
+    //     return current.format('YYYY-MM-DD') < prevDate.format('YYYY-MM-DD') || current.format('YYYY-MM-DD') > react
+    //   }
+    // },
+       // 规则
     disabledDate(current, index) {
       let prevDate = index === 0 ? undefined : moment(this.planList[index - 1].grantDate)
       console.log(prevDate)
       if (prevDate === undefined) {
-        let arr = this.isEditSalary ? this.record.applyDate : this.record.applyDate.format('YYYY')
+        let rest = this.isEditSalary
+          ? Number(this.record.applyDate) + 1
+          : Number(this.record.applyDate.format('YYYY')) + 1
+        let arr = rest.toString()
         return current.format('YYYY') !== arr
       } else {
-        let react = this.isEditSalary
-          ? this.record.applyDate + '-12-31'
-          : this.record.applyDate.format('YYYY') + '12-31'
+        let rest = this.isEditSalary
+          ? Number(this.record.applyDate) + 1
+          : Number(this.record.applyDate.format('YYYY')) + 1
+        let react = this.isEditSalary ? rest.toString() + '-12-31' : rest.toString() + '12-31'
         return current.format('YYYY-MM-DD') < prevDate.format('YYYY-MM-DD') || current.format('YYYY-MM-DD') > react
       }
     },

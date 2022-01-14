@@ -57,6 +57,10 @@
           <div v-html="record.pathFormatHTML"></div>
         </div>
 
+        <div slot="oldPath" slot-scope="text, record, index">
+          <div v-html="record.oldPathFormatHTML"></div>
+        </div>
+
       </a-table>
     </div>
     <Approval ref="approval" @opinionChange="opinionChange" />
@@ -85,7 +89,7 @@ import {
 import Approval from './Approval'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from '../module/NormalAddForm'
-const columns = [
+const base_columns = [
   {
     align: 'center',
     title: '物料代码',
@@ -96,6 +100,22 @@ const columns = [
     title: '路径',
     dataIndex: 'path',
     scopedSlots: { customRender: 'path' },
+  },
+  {
+    align: 'center',
+    title: '原物料代码',
+    dataIndex: 'oldMaterialCode',
+  },
+  {
+    align: 'center',
+    title: '原路径',
+    dataIndex: 'oldPath',
+    scopedSlots: { customRender: 'oldPath' },
+  },
+  {
+    align: 'center',
+    title: '变更原因',
+    dataIndex: 'reason',
   },
   {
     align: 'center',
@@ -155,7 +175,6 @@ export default {
       loading: false,
       queryParam: {},
       activeKey: 1,
-      columns,
       selectedRowKeys: [],
       selectedRows: [],
 
@@ -169,6 +188,65 @@ export default {
       },
       spinning:false,
       normalAddFormKeyCount:1
+    }
+  },
+  computed:{
+    columns(){
+      let base_columns = [
+        {
+          align: 'center',
+          title: '物料代码',
+          dataIndex: 'materialCode',
+        },
+        {
+          align: 'center',
+          title: '路径',
+          dataIndex: 'path',
+          scopedSlots: { customRender: 'path' },
+        },
+        {
+          align: 'center',
+          title: '中文名称',
+          dataIndex: 'materialName',
+        },
+
+        {
+          align: 'center',
+          title: '提交人',
+          dataIndex: 'createdName',
+        },
+        {
+          align: 'center',
+          title: '提交时间',
+          dataIndex: 'createdTime',
+        },
+        {
+          align: 'center',
+          title: '审核结果',
+          dataIndex: 'status',
+          scopedSlots: { customRender: 'status' },
+        }
+      ]
+
+      if(+this.type === 1){
+        base_columns.splice(2,0,{
+          align: 'center',
+          title: '原物料代码',
+          dataIndex: 'oldMaterialCode',
+        },
+        {
+          align: 'center',
+          title: '原路径',
+          dataIndex: 'oldPath',
+          scopedSlots: { customRender: 'oldPath' },
+        },
+        {
+          align: 'center',
+          title: '变更原因',
+          dataIndex: 'reason',
+        })
+      }
+      return base_columns
     }
   },
   watch: {
@@ -218,7 +296,12 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            item.pathFormatHTML = that.pathFormat(item)
+            if(item.materialCode && item.path){
+              item.pathFormatHTML = that.pathFormat(item.materialCode,item.path)
+            }
+            if(item.oldMaterialCode && item.oldPath){
+              item.oldPathFormatHTML = that.pathFormat(item.oldMaterialCode,item.oldPath)
+            }
             return item
           })
           //设置数据总条数
@@ -322,8 +405,7 @@ export default {
         }
       }
     },
-    pathFormat(record){
-      const {materialCode,path} = record
+    pathFormat(materialCode,path){
       let arr_code = materialCode.split('.')
       let arr_name = path.split('-')
       if(arr_code.length !== arr_name.length){

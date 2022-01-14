@@ -1,5 +1,5 @@
 <template>
-  <div style="overflow:hidden;" class="__wdf-custom-upload-wrapper">
+  <div style="overflow: hidden" class="__wdf-custom-upload-wrapper">
     <a-upload
       name="file"
       :list-type="listType"
@@ -9,14 +9,16 @@
       :fileList="fileList"
       @preview="handlePreview"
       @change="handleChange"
-      :class="{'ant-upload-list-hidden':!margeConfig.showFileList}"
+      :class="{ 'ant-upload-list-hidden': !margeConfig.showFileList }"
     >
-      <div v-if="fileList.length < (margeConfig.maxFileCount)">
-        <a-button :type="margeConfig.btn.attr.type" :icon="margeConfig.btn.attr.icon">{{margeConfig.btn.text}}</a-button>
+      <div v-if="fileList.length < margeConfig.maxFileCount">
+        <a-button :type="margeConfig.btn.attr.type" :icon="margeConfig.btn.attr.icon">{{
+          margeConfig.btn.text
+        }}</a-button>
       </div>
     </a-upload>
     <template v-if="margeConfig.enablePreview">
-      <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+      <a-modal title="查看" :visible="previewVisible" :footer="null" @cancel="handleCancel">
         <img alt="example" style="width: 100%" :src="previewImage" />
       </a-modal>
     </template>
@@ -24,71 +26,69 @@
 </template>
 
 <script>
-
 function getBase64(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
 }
 
 import { getUploadPath2 } from '@/api/common'
 export default {
   name: 'uploadFile',
-  props:['config'],
+  props: ['config'],
   data() {
     return {
       uploadUrl: getUploadPath2(),
       fileList: [],
-      previewVisible:false,
-      previewImage:'',
+      previewVisible: false,
+      previewImage: '',
 
-      margeConfig:{
-        maxFileCount:1,
-        btn:{
-          text:'上传',
-          attr:{
-            'icon':'upload',
-            'type':'link'
-          }
+      margeConfig: {
+        maxFileCount: 1,
+        btn: {
+          text: '上传',
+          attr: {
+            icon: 'upload',
+            type: 'link',
+          },
         },
-        fileType:'file',// file img
-        enableCompress:false,
-        enablePreview:false,
-        showFileList:true,
-        fileValidate:() => true
+        fileType: 'file', // file img
+        enableCompress: false,
+        enablePreview: false,
+        showFileList: true,
+        fileValidate: () => true,
       },
     }
   },
-  created(){
-    this.margeConfig = Object.assign({},this.margeConfig,(this.config || {}))
+  created() {
+    this.margeConfig = Object.assign({}, this.margeConfig, this.config || {})
   },
-  watch:{
-    config:{
-      handler: function(obj) {
-        if(obj){
-          this.margeConfig = Object.assign({},this.margeConfig,(obj || {}))
+  watch: {
+    config: {
+      handler: function (obj) {
+        if (obj) {
+          this.margeConfig = Object.assign({}, this.margeConfig, obj || {})
         }
-
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
-  computed:{
-    listType(){
+  computed: {
+    listType() {
       return this.margeConfig.fileType === 'img' ? 'picture-card' : 'text'
-    }
+    },
   },
   methods: {
     beforeUpload(file) {
       const that = this
-      let {enableCompress,fileValidate} = that.margeConfig
-      if(typeof fileValidate === 'function'){
-        try{
+      let { enableCompress, fileValidate } = that.margeConfig
+      if (typeof fileValidate === 'function') {
+        try {
           fileValidate(file)
-        }catch(err){
+        } catch (err) {
           that.$message.info(err.message)
           return false
         }
@@ -105,19 +105,19 @@ export default {
       return enableCompress ? that.compressPictures(file) : true
     },
     handleCancel() {
-      this.previewVisible = false;
+      this.previewVisible = false
     },
     async handlePreview(file) {
       const that = this
-      let {enablePreview} = that.margeConfig
-      if(!enablePreview){
+      let { enablePreview } = that.margeConfig
+      if (!enablePreview) {
         return
       }
       if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj);
+        file.preview = await getBase64(file.originFileObj)
       }
-      that.previewImage = file.url || file.preview;
-      that.previewVisible = true;
+      that.previewImage = file.url || file.preview
+      that.previewVisible = true
     },
     handleChange(info) {
       const that = this
@@ -134,18 +134,18 @@ export default {
         return file
       })
       that.fileList = [...fileList]
-      that.$emit('change',[...that.fileList])
+      that.$emit('change', [...that.fileList])
     },
     getFiles() {
-      return this.fileList.filter(f =>f.status === 'done').map(f => Object.assign({}, f))
+      return this.fileList.filter((f) => f.status === 'done').map((f) => Object.assign({}, f))
     },
     setFiles(files) {
-      this.fileList = files.map(f => {
+      this.fileList = files.map((f) => {
         return {
           uid: f.uid || Math.random().toString(16).slice(-10),
           name: f.url,
           status: 'done',
-          url: f.url
+          url: f.url,
         }
       })
     },
@@ -154,10 +154,10 @@ export default {
         let reader = new FileReader(),
           img = new Image()
         reader.readAsDataURL(file)
-        reader.onload = e => {
+        reader.onload = (e) => {
           img.src = e.target.result
         }
-        img.onload = function() {
+        img.onload = function () {
           let canvas = document.createElement('canvas')
           let context = canvas.getContext('2d')
           let originWidth = this.width
@@ -180,7 +180,7 @@ export default {
           context.clearRect(0, 0, targetWidth, targetHeight)
           context.drawImage(img, 0, 0, targetWidth, targetHeight)
           canvas.toBlob(
-            blob => {
+            (blob) => {
               let newFile = new File([blob], file.name, { type: file.type })
               //由于缺少uid 导致 上传文件列表 渲染失败
               newFile.uid = file.uid
@@ -190,18 +190,17 @@ export default {
             0.7
           )
         }
-        img.onerror = function(err) {
+        img.onerror = function (err) {
           reject(err)
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-  .__wdf-custom-upload-wrapper  .ant-upload-list-hidden >>> .ant-upload-list{
-    display: none;
-  }
-
+.__wdf-custom-upload-wrapper .ant-upload-list-hidden >>> .ant-upload-list {
+  display: none;
+}
 </style>

@@ -12,7 +12,7 @@
     :forceRender="true"
   >
     <div v-if="isAdd || isEdit">
-      <StepOne v-show="isNormal && step === 1" @change="stepOneChange" />
+      <StepOne ref="stepOne" v-show="isNormal && step === 1" @change="stepOneChange" />
       <StepProduct v-show="isProduct && step === 1" @change="stepOneChange" />
       <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
@@ -32,6 +32,7 @@ import {
   routineMaterialAccessory,
   productMaterialAccessory,
   productMaterialInfo,
+  getRoutineMaterialInfoCode
 } from '@/api/routineMaterial'
 const modalTitleMap = { add: '新增', view: '查看', edit: '修改', loading: '加载中...' }
 let uuid = () => Math.random().toString(32).slice(-10)
@@ -99,14 +100,23 @@ export default {
       } else if (isView || isEdit) {
         that.step = 2
         let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
-        let accessory = await __APIAccessory({ materialId: record.id }).then((res) => res.data)
-
         let __APIInfo = that.isNormal ? routineMaterialInfo : productMaterialInfo
-        let result = await __APIInfo({ id: record.id }).then((res) => res.data)
+
+        let [accessory,result,stepOneData] = await Promise.all([
+          __APIAccessory({ materialId: record.id }).then((res) => res.data),
+          __APIInfo({ id: record.id }).then((res) => res.data),
+          getRoutineMaterialInfoCode({materialId:record.id}).then((res) => res.data)
+        ])
+        
+        // let accessory = await __APIAccessory({ materialId: record.id }).then((res) => res.data)
+        // let result = await __APIInfo({ id: record.id }).then((res) => res.data)
+        // let stepOneData = await getRoutineMaterialInfoCode({materialId:record.id}).then((res) => res.data)
 
         that.submitParams = {
           ...result,
           accessory,
+          stepOneData:stepOneData,
+          __materialCodeCache:result.materialCode
         }
       }
       that.$nextTick(() => {
@@ -130,7 +140,11 @@ export default {
         that.handleCancel()
         that.$emit('finish')
       }else if(type === 'prevStep'){
+        debugger
         that.step = 1
+        if(that.isEdit && that.$refs.stepOne){
+          that.$refs.stepOne.fillDate()
+        }
       }
     },
     handleSubmit() {

@@ -132,8 +132,10 @@ import {
   routineMaterialInfoCheckName,
   routineMaterialRulePageConditionTreeList,
   getNewstCableCode,
-  checkSpecificationMaterial
+  checkSpecificationMaterial,
+  routineMaterialRuleSpecificationsPagerTreeList
 } from '@/api/routineMaterial'
+
 import moment from 'moment'
 import VueQr from 'vue-qr'
 import { customUpload } from '@/api/common'
@@ -208,6 +210,7 @@ export default {
     moment,
     init(type, record) {
       const that = this
+      that.__hasFillDataFlag = false
       that.nextButtonDisable = false
       that.form = that.normalAddForm.submitParams
       that.qrText = ''
@@ -235,6 +238,7 @@ export default {
     async qrChangeHandler(dataUrl,id){
       const that = this
       console.log(`qrChangeHandler called`,arguments)
+      that.wuliaoQrUrl = null
       that.tip = '生成物料二维码...'
       that.spinning = true
       if(dataUrl){
@@ -254,7 +258,7 @@ export default {
             let fileType = 'image/png'
             canvas.toBlob(
               (blob) => {
-                resolve(new File([blob], 'wuliao_qr.png', { type: fileType }))
+                resolve(blob ? new File([blob], 'wuliao_qr.png', { type: fileType }) : null)
               },
               fileType,
               0.92
@@ -264,7 +268,10 @@ export default {
         if(file !== null){
           const formData = new FormData()
           formData.append('file', file)
-          let url = await customUpload(formData).then((res) => res.data)
+          let url = await customUpload(formData).then((res) => res.data).catch(err => {
+            that.$message.error(err.message)
+            return null
+          })
           that.spinning = false
           that.wuliaoQrUrl = url
           return url
@@ -359,7 +366,12 @@ export default {
       const that = this
       const {parentId,specificationsList} = that.form
       const specificationIds = specificationsList.map(item => item.selectedID).join(',')
-      return checkSpecificationMaterial({ruleId:parentId,specificationIds}).then(res => {
+      
+      return checkSpecificationMaterial({
+        ruleId:parentId,
+        specificationIds,
+        materialId:that.normalAddForm.detail.id
+      }).then(res => {
         return res.data
       }).catch(err => {
         that.$message.error(err.message)
@@ -389,13 +401,16 @@ export default {
           console.log(materialCode)
           that.tip = '检测物料代码是否重复...'
           that.spinning = true
-          const isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({materialCode}).then(res => res.data).catch(err => false)
+          const isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({
+            materialCode,
+            materialId:that.normalAddForm.detail.id
+          }).then(res => res.data).catch(err => false)
           that.spinning = false
           if(isMaterialCodeDuplicate){
             that.$message.info('物料代码重复，禁止操作')
             return
           }
-
+          
           that.tip = '检测规格型号是否重复...'
           that.spinning = true
           const isSpecificationDuplicate = await that.checkSpecificationMaterial()
@@ -459,7 +474,7 @@ export default {
 
       let arr = []
       that.form.specificationsList.map(item => {
-        let target = item.subList.find(s => s.id === item.selectedID)
+        let target = item.subList.find(s => +s.id === +item.selectedID)
         /**
          * @ApiModelProperty(value = "是否计入物料代码：1是，2否，默认值1")
          * private Integer isBringCode;
@@ -483,7 +498,7 @@ export default {
       const that = this
       let arr = []
       that.form.specificationsList.map(item => {
-        let target = item.subList.find(s => s.id === item.selectedID)
+        let target = item.subList.find(s => +s.id === +item.selectedID)
         arr.push(`${item.newRuleName || item.ruleName}:${(target.newRuleName || target.ruleName)}(${target.code})  `)
       })
       return arr.length > 0 ? arr.join(",") : '无'
@@ -511,12 +526,12 @@ export default {
         width: undefined,
         length: undefined,
       },
-      that.initSpecifications(node)
+      await that.initSpecifications(node)
     },
     initSpecifications(node){
       const that = this
       that.spinning = true
-      routineMaterialRulePageTwoTierTreeList({ parentId: node.value ,type:3}).then(res => {
+      return routineMaterialRulePageTwoTierTreeList({ parentId: node.value ,type:3}).then(res => {
         that.spinning = false
         // console.log(res)
         if(!res || res.code !== 200){
@@ -753,6 +768,70 @@ export default {
     },
     handleImgView(url){
       this.$refs.imgView.show(url)
+    },
+    async fillDate(){
+      const that = this
+      if(that.__hasFillDataFlag){
+        return
+      }
+      const {stepOneData} = that.normalAddForm.submitParams
+      if(!stepOneData){
+        return
+      }
+
+      const {ruleTreeListVo,specificationVolist} = stepOneData
+      // 1.生成树
+      const root = {
+          key: '0',
+          value: '0',
+          title: '常规物料库',
+          isLeaf: false,
+          code: '0',
+          codeLength: 10,
+          parentId: 0,
+          children: [ruleTreeListVo].map((item) => that.formatTreeData(item)),
+      }
+      that.treeData = [root]
+      that.dataList = that.generateList(that.treeData)
+      Object.assign(that, {
+        expandedKeys:['0']
+      })
+      that.dataList = that.generateList(that.treeData)
+      let __selectItem = that.dataList[that.dataList.length - 1]
+      that.form = { ...that.form, parentId: __selectItem.key }
+      // 2.渲染规格型号选择
+      try{
+        that.spinning = true
+        await that.handleClick([],{dataRef:__selectItem})
+        that.spinning = false
+      }catch(err){
+        console.error(err)
+        that.spinning = false
+      }
+      
+      // 3.回显规格型号
+      try{
+        that.spinning = true
+        let specificationsList = that.$_.cloneDeep(that.form.specificationsList || [])
+        specificationVolist.map(item => {
+          let target = specificationsList.find(node => +node.id === +item.specificationId)
+          target.selectedID = item.specificationValueId
+          target.selectedPicUrl = item.ruleTreeListVo ? item.ruleTreeListVo.picUrl : ''
+          target.selectedLabel = `${item.specificationValueData}(${item.specificationValueCode})`
+          target.subList = [item.ruleTreeListVo]
+        })
+
+        that.form = {
+          ...that.form,
+          specificationsList
+        }
+        that.spinning = false
+      }catch(err){
+        console.error(err)
+        that.spinning = false
+      }
+
+      that.__hasFillDataFlag = true
     }
   }
 }
