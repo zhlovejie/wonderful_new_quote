@@ -17,13 +17,13 @@
           <a-input placeholder="单号模糊搜索" v-model="searchParam.exWarehouseCode" style="width:180px;" />
         </a-form-item>
 
-        <a-form-item>
+        <!-- <a-form-item>
           <a-select placeholder="紧急程度" v-model="searchParam.urgentType" style="width: 150px" :allowClear="true">
             <a-select-option :value="1">一般</a-select-option>
             <a-select-option :value="2">紧急</a-select-option>
             <a-select-option :value="3">特急</a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-item> -->
 
         <a-form-item>
           <a-select
@@ -141,39 +141,7 @@ import AddForm from './AddForm'
 import Records from './Records'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
-const columns = [
-  {
-    title: '序号',
-    key: 'order',
-    width: '70px',
-    scopedSlots: { customRender: 'order' }
-  },
-  {
-    title: '日期',
-    dataIndex: 'exWarehouseDate'
-  },
-  {
-    title: '出库单号',
-    dataIndex: 'exWarehouseCode'
-  },
-  {
-    title: '出库类型',
-    dataIndex: 'exWarehouseTypeText'
-  },
-  {
-    title: '提交人',
-    dataIndex: 'createdName'
-  },
-  {
-    title: '提交时间',
-    dataIndex: 'createdTime'
-  },
-  {
-    title: '操作',
-    key: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
-]
+
 
 const innerColumns= [
   {
@@ -231,7 +199,6 @@ export default {
           label:'已出库'
         },
       ],
-      columns,
       innerColumns,
       dataSource: [],
       countInfo:{},
@@ -250,6 +217,48 @@ export default {
       userInfo: this.$store.getters.userInfo, // 当前登录人
       storageMaterialList: [],
       warehouseList:[],
+    }
+  },
+  computed:{
+    columns(){
+      let  base_columns = [
+        {
+          title: '序号',
+          key: 'order',
+          width: '70px',
+          scopedSlots: { customRender: 'order' }
+        },
+        {
+          title: '日期',
+          dataIndex: 'exWarehouseDate'
+        },
+        {
+          title: '出库单号',
+          dataIndex: 'exWarehouseCode'
+        },
+        {
+          title: '出库类型',
+          dataIndex: 'exWarehouseTypeText'
+        },
+        {
+          title: '提交人',
+          dataIndex: 'createdName'
+        },
+        {
+          title: '提交时间',
+          dataIndex: 'createdTime'
+        },
+        {
+          title: '操作',
+          key: 'action',
+          scopedSlots: { customRender: 'action' }
+        }
+      ]
+
+      if(+this.activeKey === 0){
+        base_columns.splice(1,1)
+      }
+      return base_columns
     }
   },
   watch: {

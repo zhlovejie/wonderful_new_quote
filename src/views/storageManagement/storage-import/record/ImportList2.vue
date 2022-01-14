@@ -82,24 +82,16 @@
         </div>
 
         <div slot="materialName" slot-scope="text, record">
-          <a-popover title="物料信息">
-            <template slot="content">
-              <h3>规格型号</h3>
-              <p style="width: 450px">{{ record.specification }}</p>
-              <h3>物料代码</h3>
-              <p style="width: 450px">{{ record.materialCode }}</p>
-            </template>
-            <span>{{ text }}</span>
-          </a-popover>
+          <span>{{ text }}</span>
         </div>
 
         <div slot="storageNum" slot-scope="text, record, index">
           <span>{{ record.actualNum - record.notNum }}</span>
         </div>
         <div slot="specification" slot-scope="text">
-          <a-tooltip v-if="String(text).length > 25">
+          <a-tooltip v-if="String(text).length > 5">
             <template slot="title">{{ text }}</template>
-            {{ String(text).slice(0, 25) }}...
+            {{ String(text).slice(0, 5) }}...
           </a-tooltip>
           <span v-else>{{ text }}</span>
         </div>
@@ -117,7 +109,7 @@
         </div>
 
         <template slot="footer">
-          <a-button type="primary" :disabled="selectedRows.length === 0" @click="doAction('batch', record)"
+          <a-button type="primary" :disabled="selectedRows.length < 2" @click="doAction('batch', {})"
             >批量入库</a-button
           >
         </template>
@@ -157,10 +149,10 @@ const columns = [
     title: '入库单号',
     dataIndex: 'storageCode',
   },
-  {
-    title: '入库仓库',
-    dataIndex: 'warehouseName',
-  },
+  // {
+  //   title: '入库仓库',
+  //   dataIndex: 'warehouseName',
+  // },
   {
     title: '入库类型',
     dataIndex: 'storageTypeText',

@@ -305,12 +305,12 @@ export default {
       const that = this
       let materialTableList = [...that.form.materialTableList]
       let target = materialTableList[0]
-      target.materialId = item.materialId
+      target.materialId = item.id
       target.materialCode = item.materialCode
       target.materialName = item.materialName
       target.subUnit = item.subUnit
-      target.weight = item.weight || undefined
-      target.specification = item.modelType
+      target.weight = item.weight
+      target.specification = item.specification
       target.k3Code = item.k3Code
       that.form = {
         ...that.form,

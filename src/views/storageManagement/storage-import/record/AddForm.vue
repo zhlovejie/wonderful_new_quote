@@ -21,9 +21,9 @@
                 {{ index + 1 }}
               </div>
               <div slot="specification" slot-scope="text">
-                <a-tooltip v-if="String(text).length > 25">
+                <a-tooltip v-if="String(text).length > 5">
                   <template slot="title">{{ text }}</template>
-                  {{ String(text).slice(0, 25) }}...
+                  {{ String(text).slice(0, 5) }}...
                 </a-tooltip>
                 <span v-else>{{ text }}</span>
               </div>
@@ -44,6 +44,7 @@
                   <a-input-number
                     style="width: 80px; text-align: center"
                     :min="0"
+                    :max="record.notNum"
                     :step="1"
                     :precision="0"
                     v-model="record.storageNum"
@@ -54,21 +55,13 @@
               <template slot="footer">
                 <div style="text-align: right; margin-right: 10px; font-size: 16px">
                   <span>合计：</span>
-                  <span style="margin: 0 5px"
-                    >应入库数量 &nbsp;{{
-                      form.materialTableList.reduce((adder, item) => adder + (parseFloat(item.actualNum) || 0), 0)
-                    }}
-                  </span>
-                  <span
-                    >本次入库数量 &nbsp;{{
-                      form.materialTableList.reduce((adder, item) => adder + (parseFloat(item.storageNum) || 0), 0)
-                    }}</span
-                  >
+                  <span style="margin: 0 5px">应入库数量 &nbsp;{{ t1 }} </span>
+                  <span :style="{ color: t2 > t1 ? 'red' : '' }">本次入库数量 &nbsp;{{ t2 }}</span>
                 </div>
               </template>
             </a-table>
           </div>
-          <div class="__hd">基本信息</div>
+          <div class="__hd">入库信息</div>
           <div class="__bd">
             <table class="custom-table custom-table-border">
               <tr>
@@ -152,22 +145,27 @@
                       @change="handleContainerPalletChange"
                     >
                       <a-select-option v-for="item in containerPalletList" :key="item.id" :value="item.id">
-                        {{ `${item.palletName}-(${item.palletCode})-${+item.palletStatus === 0 ? '闲置' : '使用'}` }}
+                        {{ `${item.palletName}-(${item.palletCode})` }}
                       </a-select-option>
                     </a-select>
                   </a-form-model-item>
                 </td>
               </tr>
+            </table>
+          </div>
+          <div class="__hd">操作记录</div>
+          <div class="__bd">
+            <table class="custom-table custom-table-border">
               <tr>
-                <td>制单员</td>
+                <td style="width: 150px">制单员</td>
                 <td>{{ form.makerName || '-' }}</td>
-                <td>制单时间</td>
+                <td style="width: 150px">制单时间</td>
                 <td>{{ form.makerDate || '-' }}</td>
               </tr>
               <tr>
-                <td>入库员</td>
+                <td style="width: 150px">入库员</td>
                 <td>{{ form.storageUserName || '-' }}</td>
-                <td>入库时间</td>
+                <td style="width: 150px">入库时间</td>
                 <td>{{ form.storageTime || '-' }}</td>
               </tr>
             </table>
@@ -200,47 +198,47 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' },
+    scopedSlots: { customRender: 'order' }
   },
   {
     title: '入库类型',
-    dataIndex: 'storageTypeText',
+    dataIndex: 'storageTypeText'
   },
   {
     title: '单号',
     dataIndex: 'storageCode',
-    scopedSlots: { customRender: 'storageCode' },
+    scopedSlots: { customRender: 'storageCode' }
   },
   {
     title: '紧急程度',
-    dataIndex: 'urgentTypeText',
+    dataIndex: 'urgentTypeText'
   },
   {
     title: '物料代码',
-    dataIndex: 'materialCode',
+    dataIndex: 'materialCode'
   },
   {
     title: '物料名称',
-    dataIndex: 'materialName',
+    dataIndex: 'materialName'
   },
   {
     title: '规格型号',
     dataIndex: 'specification',
-    scopedSlots: { customRender: 'specification' },
+    scopedSlots: { customRender: 'specification' }
   },
   {
     title: '应入库数量',
-    dataIndex: 'actualNum',
+    dataIndex: 'actualNum'
   },
   {
     title: '产品重量',
-    dataIndex: 'weight',
+    dataIndex: 'weight'
   },
   {
     title: '本次入库数量',
     dataIndex: 'storageNum',
-    scopedSlots: { customRender: 'storageNum' },
-  },
+    scopedSlots: { customRender: 'storageNum' }
+  }
 ]
 import VueQr from 'vue-qr'
 import util from '@/components/_util/util'
@@ -253,13 +251,13 @@ import {
   storageRecords,
   storageStatistics,
   storageSingleUpdate,
-  storageBatchUpdate,
+  storageBatchUpdate
 } from '@/api/storage_wzz'
 
 export default {
   name: 'stock_management_import_record_addForm',
   components: {
-    VueQr,
+    VueQr
   },
   data() {
     return {
@@ -269,14 +267,14 @@ export default {
       type: 'view',
       columns,
       form: {
-        materialTableList: [], //物料信息
+        materialTableList: [] //物料信息
       },
       rules: {
         warehouseId: [{ required: true, message: '请选择仓库', trigger: 'change' }],
         reservoirAreaId: [{ required: true, message: '请选择库区', trigger: 'change' }],
         shelvesLocationId: [{ required: true, message: '请选择货架', trigger: 'change' }],
         positionId: [{ required: true, message: '请选择仓位', trigger: 'change' }],
-        containerId: [{ required: true, message: '请选择容器/托盘', trigger: 'change' }],
+        containerId: [{ required: true, message: '请选择容器/托盘', trigger: 'change' }]
       },
       warehouseList: [],
       reservoiList: [],
@@ -284,7 +282,7 @@ export default {
       instantPositionList: [],
       containerPalletList: [],
       qrText: '',
-      qrSize: 200,
+      qrSize: 200
     }
   },
   computed: {
@@ -306,49 +304,55 @@ export default {
     isDisabled() {
       return this.isView || this.isApproval
     },
+    t1() {
+      return this.form.materialTableList.reduce((adder, item) => adder + (parseFloat(item.actualNum) || 0), 0)
+    },
+    t2() {
+      return this.form.materialTableList.reduce((adder, item) => adder + (parseFloat(item.storageNum) || 0), 0)
+    }
   },
   methods: {
     async query(type, records = []) {
       const that = this
       that.form = {
-        materialTableList: [], //物料信息
+        materialTableList: [] //物料信息
       }
       that.warehouseList = []
       that.reservoiList = []
       that.shelvesLocationList = []
       that.instantPositionList = []
       that.containerPalletList = []
-
       that.visible = true
-
       that.type = type
 
-      getList().then((res) => {
+      that.spinning = true
+      await getList().then(res => {
         that.warehouseList = res.data
       })
 
-      storageDetail({ id: records[0].id }).then((res) => {
-        console.log(res)
-        const data = res.data
-        let reat = []
-        reat.push(res.data)
-        that.form.materialTableList = that.$_.cloneDeep(
-          reat.map((item) => {
-            item.storageNum = item.notNum
-            item.storageTypeText = records[0].storageTypeText
-            item.urgentTypeText = records[0].urgentTypeText
-
-            return item
+      let arrResult = await Promise.all(
+        records.map(item => {
+          return storageDetail({ id: item.id }).then(res => {
+            return [res.data].map(_item => {
+              _item.storageNum = item.notNum
+              _item.storageTypeText = item.storageTypeText
+              _item.urgentTypeText = item.urgentTypeText
+              return _item
+            })
           })
-        )
-        that.form = {
-          ...that.form,
-          makerName: data.makerName,
-          makerDate: data.makerDate,
-          storageUserName: data.storageUserName || that.userInfo.trueName,
-          storageTime: data.storageTime,
-        }
-      })
+        })
+      )
+      that.spinning = false
+      let materialTableList = arrResult.flat(2)
+      let target = materialTableList[0]
+      that.form = {
+        ...that.form,
+        makerName: target.makerName,
+        makerDate: target.makerDate,
+        storageUserName: target.storageUserName || that.userInfo.trueName,
+        storageTime: target.storageTime,
+        materialTableList
+      }
     },
 
     handleSubmit(type) {
@@ -364,7 +368,7 @@ export default {
             that.qrText = materialTableList[0].storageCode
 
             if (that.qrText.length > 0) {
-              setTimeout(function () {
+              setTimeout(function() {
                 util.handleWindowPrint(`#ant-popover-qrcode`, '物料入库码')
               }, 500)
             }
@@ -375,25 +379,27 @@ export default {
 
         return
       }
-      that.$refs.ruleForm.validate((valid) => {
+      that.$refs.ruleForm.validate(valid => {
         if (valid) {
           let storageUpdateBos = []
           let params = { ...that.form }
           let materialTableList = params.materialTableList
           delete params.materialTableList
-          materialTableList.map((item) => {
+          materialTableList.map(item => {
             storageUpdateBos.push({
               ...params,
-              notNum: item.notNum,
+              notNum: item.notNum - item.storageNum,
               storageNum: item.storageNum,
-              id: item.id,
+              id: item.id
             })
           })
 
+          that.spinning = true
           storageBatchUpdate({
-            storageUpdateBos,
+            storageUpdateBos
           })
-            .then((res) => {
+            .then(res => {
+              that.spinning = false
               that.$message.success(res.msg)
               if (res.code === 200) {
                 that.handleCancel()
@@ -401,7 +407,8 @@ export default {
               }
               console.log(res)
             })
-            .catch((err) => {
+            .catch(err => {
+              that.spinning = false
               that.$message.error(err.message)
             })
         } else {
@@ -420,15 +427,15 @@ export default {
 
     handleWarehouseChange(id) {
       const that = this
-      let target = that.warehouseList.find((item) => item.id === id)
+      let target = that.warehouseList.find(item => item.id === id)
       that.form = {
         ...that.form,
         warehouseId: id,
-        warehouseName: target.warehouseName,
+        warehouseName: target.warehouseName
       }
 
       that.$nextTick(() => {
-        ReservoiGetList({ warehouseId: id }).then((res) => {
+        ReservoiGetList({ warehouseId: id }).then(res => {
           that.reservoiList = res.data
         })
       })
@@ -436,12 +443,12 @@ export default {
 
     handleReservoirAreaChange(id) {
       const that = this
-      let target = that.reservoiList.find((item) => item.id === id)
+      let target = that.reservoiList.find(item => item.id === id)
       that.form = {
         ...that.form,
         reservoirAreaId: id,
         reservoirCode: target.reservoirCode,
-        reservoirAreaName: target.reservoirName,
+        reservoirAreaName: target.reservoirName
       }
 
       that.$nextTick(() => {
@@ -449,9 +456,9 @@ export default {
         const materialId = materialTableList[0].materialId
         getShelvesByAreaId({
           areaId: reservoirAreaId,
-          materialId,
-        }).then((res) => {
-          that.shelvesLocationList = res.data.map((item) => {
+          materialId
+        }).then(res => {
+          that.shelvesLocationList = res.data.map(item => {
             item.key = that._uuid()
             return item
           })
@@ -461,7 +468,7 @@ export default {
 
     handleShelvesLocationChange(shelvesLocationId) {
       const that = this
-      let target = that.shelvesLocationList.find((item) => item.shelvesLocationId === shelvesLocationId)
+      let target = that.shelvesLocationList.find(item => item.shelvesLocationId === shelvesLocationId)
       if (target) {
         that.instantPositionList = target.positionModelVoList || []
 
@@ -469,34 +476,58 @@ export default {
           ...that.form,
           shelvesLocationId: target.shelvesLocationId,
           shelvesLocationName: target.shelvesLocationName,
-          shelvesLocationType: target.type,
+          shelvesLocationType: target.type
         }
       }
     },
 
     handlePositionChange(id) {
       const that = this
-      let target = that.instantPositionList.find((item) => item.id === id)
+      let target = that.instantPositionList.find(item => item.id === id)
       that.form = {
         ...that.form,
         positionId: id,
         positionCode: target.positionCode,
+
+        containerId: undefined,
+        containerName: undefined
       }
 
-      containerPalletList({ palletCodeOne: target.positionCode }).then((res) => {
-        that.containerPalletList = res.data || []
-      })
+      that.containerPalletList = []
+
+      that.spinning = true
+      containerPalletList({ palletCodeOne: target.positionCode })
+        .then(res => {
+          that.spinning = false
+          let data = res.data || []
+          let target = data.find(item => +item.palletStatus !== 0)
+
+          if (target) {
+            that.containerPalletList = [{ ...target }]
+            that.form = {
+              ...that.form,
+              containerId: target.id,
+              containerName: target.palletName
+            }
+          } else {
+            that.containerPalletList = data
+          }
+        })
+        .catch(err => {
+          that.$message.error(err.message)
+          that.spinning = false
+        })
     },
 
     handleContainerPalletChange(id) {
-      let target = this.containerPalletList.find((item) => item.id === id)
+      let target = this.containerPalletList.find(item => item.id === id)
       this.form = {
         ...this.form,
         containerId: id,
-        containerName: target.palletName,
+        containerName: target.palletName
       }
-    },
-  },
+    }
+  }
 }
 </script>
 
