@@ -186,7 +186,8 @@
                   :min="0"
                   :step="1"
                   :precision="0"
-                  v-model="record.repairNum"
+                  :value="record.repairNum || record.__maxRepairNum"
+                  @change="(val) => handleRepairNumChange(record,val)"
                 />
               </a-form-model-item>
             </div>
@@ -393,16 +394,39 @@ export default {
     moment,
     async init() {
       const that = this
-      await getWarehouseList().then(res => (that.warehouseList = res.data))
-      await getListSalesman().then(res => (that.saleUsers = res.data))
+
+      that.spinning = true
+      try{
+        await getWarehouseList().then(res => (that.warehouseList = res.data))
+        await getListSalesman().then(res => (that.saleUsers = res.data))
+      }catch(err){
+        that.spinning = false
+      }
 
       if (that.addForm.isAdd) {
+        that.spinning = false
       } else {
         if (that.record) {
+          that.spinning = true
           await storageRepairDetail({ id: that.record.storageApplyId }).then(async res => {
-            const data = res.data
-            await that.saleUserChange(data.salesManagerId)
-            await that.handleContractChange(data.salesContractId)
+            let data = res.data
+            try{
+              await that.saleUserChange(data.salesManagerId)
+              that.$refs.customerSelect &&
+                that.$refs.customerSelect.fill({
+                  id: data.customerId,
+                  name: data.customerName
+                })
+              await that.handleCustomerSelected({
+                  id: data.customerId,
+                  name: data.customerName
+                })
+              await that.handleContractChange(data.salesContractId)
+            }catch(err){
+              that.$message.error(err.message)
+            }finally{
+              that.spinning = false
+            }
             that.form = {
               id: data.id,
               salesManagerId: data.salesManagerId,
@@ -439,23 +463,38 @@ export default {
 
             that.handlerMaterialChange(data.materialId)
 
-            that.$refs.customerSelect &&
-              that.$refs.customerSelect.fill({
-                id: data.customerId,
-                name: data.customerName
-              })
-
-            that.$nextTick(() => {
-              that.$refs.ruleForm.validateField(['customerId'])
-            })
+            // that.$nextTick(() => {
+            //   that.$refs.ruleForm.validateField(['customerId'])
+            // })
+          }).catch(err => {
+            that.spinning = false
+            that.$message.error(err.message)
           })
         }
+      }
+    },
+    handleRepairNumChange(record,val){
+      const that = this
+      let materialTableList = [...that.form.materialTableList]
+      let target = materialTableList[0]
+      target.repairNum = val
+      that.form = {
+        ...that.form,
+        materialTableList
+      }
+
+      if(+val > target.__maxRepairNum){
+        that.$message.info(`返修数量不可超过最大数量: ${target.__maxRepairNum}`)
       }
     },
     handlerMaterialChange(id) {
       // debugger
       const that = this
       const item = that.sendTableList.find(item => item.id === id)
+      if(!item){
+        console.error(`handlerMaterialChange called error: can't found id:${id}`)
+        return 
+      }
       let materialTableList = [...that.form.materialTableList]
       let target = materialTableList[0]
       target.materialId = item.id

@@ -1,5 +1,5 @@
 <template>
-  <!-- 代理合同 -->
+  <!-- 入库申请单 -->
   <div class="wdf-custom-wrapper" id="agency-contract-wrapper">
     <div class="search-wrapper">
       <a-form layout="inline">

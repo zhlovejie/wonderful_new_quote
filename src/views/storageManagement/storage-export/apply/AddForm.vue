@@ -188,6 +188,11 @@ const base_columns = [
     scopedSlots: { customRender: 'materialName' }
   },
   {
+    title: '规格型号',
+    dataIndex: 'specification',
+    width:200
+  },
+  {
     title: '辅计量单位',
     dataIndex: 'subUnit'
   },
@@ -203,7 +208,7 @@ const base_columns = [
 ]
 
 export default {
-  name: 'GiftForm',
+  name: 'storage-export-apply-addForm',
   components: {
     Approval
   },
