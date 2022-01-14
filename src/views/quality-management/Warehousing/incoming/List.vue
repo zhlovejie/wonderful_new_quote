@@ -52,6 +52,10 @@
             <span v-if="text == 2">紧急</span>
             <span v-if="text == 3">特急</span>
           </div>
+          <div slot="checkUserName" slot-scope="text, record, index">
+            <span v-if="record.status === 0">{{ record.inspectorUserName }}</span>
+            <span v-else>{{ record.checkUserName }}</span>
+          </div>
           <div slot="status" slot-scope="text, record">
             <!-- <span v-if="+text === 0">待处理</span>
             <span v-if="+text === 1">完结</span> -->
@@ -190,6 +194,12 @@ export default {
           title: '报检时间',
           align: 'center',
           dataIndex: 'reportTime',
+        },
+        {
+          title: '检验员',
+          align: 'center',
+          dataIndex: 'checkUserName',
+          scopedSlots: { customRender: 'checkUserName' },
         },
         {
           title: '单据状态',
