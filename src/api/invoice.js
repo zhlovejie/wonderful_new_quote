@@ -139,3 +139,13 @@ export function revocationInvoice (parameter) {
     params: parameter
   })
 }
+
+/**发货单 -无权限 */
+export function getInvoicePageListDropDown (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/invoice/getPageListDropDown',
+    method: 'get',
+    params: parameter
+  })
+}

@@ -8,8 +8,12 @@
   >
     <div class="img-list">
       <a-row :gutter="16">
-        <a-col :span="24" v-for="(url,idx) in imgUrlList" :key="idx">
-          <a alt="图片" class="img-item" :href="url" target="_blank" >{{ getFileName(url) }}</a>
+        <a-col :span="24" >
+          <ol>
+            <li v-for="(url,idx) in imgUrlList" :key="idx" class="img-item">
+              <a alt="图片" :href="url" target="_blank" >{{ getFileName(url) }}</a>
+            </li>
+          </ol>
         </a-col>
       </a-row>
     </div>
@@ -41,10 +45,11 @@ export default {
 
 <style scoped>
 .img-item{
+  width: 100%;
+  word-break: break-all;
+  margin-bottom: 10px;
+}
+.img-item >>> img{
   width: auto;
-  max-width: 200px;
-  box-shadow: 0 0 6px 3px #ddd;
-  border-radius: 3px;
-  padding: 5px;
 }
 </style>
