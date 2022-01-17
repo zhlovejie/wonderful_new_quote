@@ -247,7 +247,7 @@
                 </td>
                 <td>
                   <a-form-model-item>
-                    {{ CheckDetail.reportName }}
+                    {{ CheckDetail.checkUserName }}
                   </a-form-model-item>
                 </td>
                 <td>
