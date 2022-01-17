@@ -385,7 +385,10 @@ export default {
       that.visible = true
       that.type = type
       that.record = record
-      this.form.materialList = []
+      this.form = {
+        materialList: [],
+        allocateDate: moment(),
+      }
       if (type !== 'add') {
         allocateGetDetailById({ id: record.id }).then((res) => {
           let detail = res.data
