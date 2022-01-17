@@ -66,7 +66,7 @@
                   :prop="`materialTableList.${index}.materialCode`"
                   :rules="{ required: true, message: '请选择物料' }"
                 >
-                  <a-select
+                  <!-- <a-select
                     :disabled="isDisabled"
                     placeholder="请选择物料"
                     style="width:200px;"
@@ -76,7 +76,16 @@
                     <a-select-option v-for="item in instantPositionList" :key="item.id" :value="item.id">{{
                       item.materialCode
                     }}</a-select-option>
-                  </a-select>
+                  </a-select> -->
+
+                  <a-input
+                    read-only="read-only"
+                    :disabled="isDisabled"
+                    @click="openModel(record)"
+                    placeholder="请选择物料代码"
+                    :value="record.materialCode"
+                  />
+                  
                 </a-form-model-item>
                 <span v-else>{{text}}</span>
               </div>
@@ -151,6 +160,7 @@
         </div>
       </a-form-model>
       <Approval ref="approval" @opinionChange="opinionChange" />
+      <MaterialSelect ref="materialSelect" @custom-change="handlerMaterialChange"/>
     </a-spin>
   </a-modal>
 </template>
@@ -165,7 +175,7 @@ import {
 
 import moment from 'moment'
 import Approval from './Approval'
-
+import MaterialSelect from './MaterialSelect'
 const base_columns = [
   {
     title: '序号',
@@ -210,7 +220,8 @@ const base_columns = [
 export default {
   name: 'storage-export-apply-addForm',
   components: {
-    Approval
+    Approval,
+    MaterialSelect
   },
   data() {
     return {
@@ -263,6 +274,9 @@ export default {
   },
   methods: {
     moment,
+    openModel(record) {
+      this.$refs.materialSelect.query(record)
+    },
     handleExWarehouseNumChange(index,record,val){
       const that = this
       let materialTableList = [...that.form.materialTableList]
@@ -326,14 +340,11 @@ export default {
         }
       }
     },
-    handlerMaterialChange(positionId, record) {
-      debugger
+
+    handlerMaterialChange({selectItem, recordParam}) {
       const that = this
-      const target = that.instantPositionList.find(item => item.id === positionId)
-      if (!target) {
-        return
-      }
       const {
+        id,
         positionCode,
         materialId,
         materialName,
@@ -342,11 +353,11 @@ export default {
         subUnit,
         positionQuantity,
         k3Code
-      } = target
+      } = selectItem
 
       let materialTableList = [...that.form.materialTableList]
-      let item = materialTableList.find(item => item.key === record.key)
-      item.positionId = positionId
+      let item = materialTableList.find(item => item.key === recordParam.key)
+      item.positionId = id
       item.positionCode = positionCode
       item.materialId = materialId
       item.materialName = materialName

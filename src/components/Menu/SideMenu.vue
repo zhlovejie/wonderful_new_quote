@@ -6,7 +6,7 @@
     v-model="collapsed"
     :trigger="null">
     <logo />
-    <MenuSearch />
+    <MenuSearch v-show="!collapsed"/>
     <s-menu
       :collapsed="collapsed"
       :menu="menus"

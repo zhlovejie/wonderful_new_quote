@@ -127,16 +127,18 @@
                 style="text-align:left;"
               >
               <a-form-model-item prop="authenticationCertificate">
-                <UploadFile
-                  v-if="!isDisabled"
-                  key="image"
-                  ref="uploadImage"
-                  :config="uploadImageConfig"
-                  @change="(fileList) => fileChange(fileList, 'image')"
-                />
-                <div v-else>
-                  <a-button v-if="form.authenticationCertificate" @click="handlerImageView">预览图片</a-button>
-                  <span v-else>未上传图片</span>
+                <div style="width:700px;overflow:hidden;">
+                  <UploadFile
+                    v-if="!isDisabled"
+                    key="image"
+                    ref="uploadImage"
+                    :config="uploadImageConfig"
+                    @change="(fileList) => fileChange(fileList, 'image')"
+                  />
+                  <div v-else>
+                    <a-button v-if="form.authenticationCertificate" @click="handlerImageView">预览图片</a-button>
+                    <span v-else>未上传图片</span>
+                  </div>
                 </div>
               </a-form-model-item>
               </td>
@@ -146,17 +148,18 @@
                 <span>附件</span>
               </td>
               <td colspan="3" style="text-align: left">
-                <UploadFile
-                  v-if="!isDisabled"
-                  key="file"
-                  ref="uploadFiles"
-                  :config="uploadVedioConfig"
-                  @change="(fileList) => fileChange(fileList, 'file')"
-                />
-                <div v-else>
-                  <a-button v-if="form.annexUrl" @click="handleAnnexUrl">查看附件</a-button>
-
-                  <span v-else>未上传附件</span>
+                <div style="width:700px;overflow:hidden;">
+                  <UploadFile
+                    v-if="!isDisabled"
+                    key="file"
+                    ref="uploadFiles"
+                    :config="uploadVedioConfig"
+                    @change="(fileList) => fileChange(fileList, 'file')"
+                  />
+                  <div v-else>
+                    <a-button v-if="form.annexUrl" @click="handleAnnexUrl">查看附件</a-button>
+                    <span v-else>未上传附件</span>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -332,14 +335,19 @@ export default {
         that.$nextTick(() => {
           if (detail.authenticationCertificate) {
             const picFiles = detail.authenticationCertificate.split(',').map((url) => {
-              return { url }
+              return { 
+                url,
+                name:url.split('/')[url.split('/').length -1]
+              }
             })
             that.$refs.uploadImage && that.$refs.uploadImage.setFiles(picFiles)
           }else{
             that.$refs.uploadImage && that.$refs.uploadImage.setFiles([])
           }
           if (detail.annexUrl) {
-            const videoFiles = [{ url: detail.annexUrl }]
+            const videoFiles = detail.annexUrl.split(',').map((url) => {
+              return { url ,name:url.split('/')[url.split('/').length -1]}
+            })
             that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles(videoFiles)
           }else{
             that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles([])

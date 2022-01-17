@@ -280,6 +280,16 @@ export function instantPositionList(parameter) {
   })
 }
 
+/**仓位列表 */
+export function instantPositionPageList(parameter) {
+  return axios({
+    baseURL,
+    url: '/inventory/instant-position/getListByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
 /**容器托盘列表 */
 export function containerPalletList(parameter) {
   return axios({

@@ -665,7 +665,8 @@ export default {
     //返回
     goBackPricing() {
       //点击返回，返回发货单，并销毁module
-      this.$router.push({ name: 'invoice' })
+      const __from__ = this.$route.params.__from__
+      this.$router.push({ name: __from__ })
       this.$destroy('invoiceModule')
     },
     settlementMethodChange(e) {

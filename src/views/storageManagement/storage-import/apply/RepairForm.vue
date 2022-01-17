@@ -235,9 +235,9 @@
 </template>
 
 <script>
-import { getOrderList } from '@api/order'
+import { queryOrderDropDown } from '@api/order'
 import { getSalesList /* 销售合同 */ } from '@/api/contractListManagement'
-import { getInvoiceList /* 发货单 */ } from '@/api/invoice'
+import { getInvoicePageListDropDown /* 发货单 */ } from '@/api/invoice'
 //销售人员接口
 import { getListSalesman } from '@/api/contractListManagement'
 //客户列表选择
@@ -599,7 +599,7 @@ export default {
         that.$refs.ruleForm.validateField(['customerId'])
       })
 
-      return getOrderList({
+      return queryOrderDropDown({
         customerId: item.id,
         contractStatus: 1,
         approveStatus: 2,
@@ -628,7 +628,7 @@ export default {
       }
       that.sendTableList = []
 
-      return getInvoiceList({ contractId: salesContractId, current: 1, size: 1000 })
+      return getInvoicePageListDropDown({ contractId: salesContractId, current: 1, size: 1000 })
         .then(res => {
           that.invoiceList = res.data.records || []
           if (that.invoiceList.length === 0) {
