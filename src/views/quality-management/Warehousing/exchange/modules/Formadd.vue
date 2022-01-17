@@ -274,7 +274,7 @@
                   </a-form-model-item>
                 </td>
                 <td>
-                  {{ CheckDetail.reportTime.slice(0, 10) }}
+                  {{ CheckDetail.modifyTime }}
                 </td>
                 <td>
                   <a @click="viewInspectionRecordClick"> 查看</a>
