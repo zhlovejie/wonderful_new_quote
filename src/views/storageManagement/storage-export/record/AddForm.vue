@@ -73,7 +73,6 @@
                     :disabled="isDisabled"
                     style="width:80px;text-align:center;"
                     :min="0"
-                    :max="record.exWarehouseNum"
                     :step="1"
                     :precision="0"
                     :value="record.alreadyExWarehouseNum"
@@ -274,11 +273,15 @@ export default {
       let materialTableList = [...that.form.materialTableList]
       let target = materialTableList[index]
       target.alreadyExWarehouseNum = val
-      target.notExWarehouseNum = (Number(target.exWarehouseNum) || 0) - (Number(target.alreadyExWarehouseNum) || 0)
+      target.notExWarehouseNum = (Number(target.__notExWarehouseNum) || 0) - (Number(target.alreadyExWarehouseNum) || 0)
 
       that.form = {
         ...that.form,
         materialTableList
+      }
+
+      if(+val > (Number(target.__notExWarehouseNum) || 0)){
+        that.$message.warning('本次出库数量大于未出库数量')
       }
     },
     query(type, record) {
@@ -298,7 +301,13 @@ export default {
           exWarehouseCode:data.exWarehouseCode,
           exWarehouseType: 1,
           exWarehouseDate: data.exWarehouseDate,
-          materialTableList: data.exWarehouseApplyMaterials || [],
+          materialTableList: (data.exWarehouseApplyMaterials || []).map(item => {
+            item.__exWarehouseNum = item.exWarehouseNum
+            item.__notExWarehouseNum = item.notExWarehouseNum
+            item.__alreadyExWarehouseNum = item.alreadyExWarehouseNum
+            item.alreadyExWarehouseNum = null
+            return item
+          }),
           exWarehouseTime:data.exWarehouseTime,
           userName:data.userName
         }
@@ -317,7 +326,7 @@ export default {
             const params = {
               ...that.form,
               exWarehouseApplyMaterials:that.form.materialTableList.map(item => {
-                item.notExWarehouseNum = (Number(item.exWarehouseNum) || 0) - (Number(item.alreadyExWarehouseNum) || 0)
+                item.notExWarehouseNum = (Number(item.__notExWarehouseNum) || 0) - (Number(item.alreadyExWarehouseNum) || 0)
                 return {...item}
               }),
               exWarehouseDate: that.form.exWarehouseDate || moment().format('YYYY-MM-DD HH:mm:ss')

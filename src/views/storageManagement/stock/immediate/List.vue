@@ -64,12 +64,24 @@
       <div slot="order" slot-scope="text, record, index">
         <span>{{ index + 1 }}</span>
       </div>
-      <div slot="specification" slot-scope="text">
-        <a-tooltip v-if="String(text).length > 25">
-          <template slot="title">{{ text }}</template>
-          {{ String(text).slice(0, 25) }}...
-        </a-tooltip>
-        <span v-else>{{ text }}</span>
+      <div slot="specification" slot-scope="text, record, index">
+        <div v-if="+record.specificationHTML === -1">
+          <a-tooltip v-if="String(text).length > 10">
+            <template slot="title">{{ text }}</template>
+            {{ String(text).slice(0, 10) }}...
+          </a-tooltip>
+          <div v-else>{{text}}</div>
+        </div>
+        <div v-else>
+          <a-popover title="规格型号">
+            <template slot="content">
+              <div v-html="record.specificationHTML"></div>
+            </template>
+            <span>
+              {{ String(text).slice(0, 10) }}...
+            </span>
+          </a-popover>
+        </div>
       </div>
     </a-table>
   </a-card>
@@ -219,6 +231,7 @@ export default {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
+            item.specificationHTML = that.specificationFormat(item.specification)
             return item
           })
           //设置数据总条数
@@ -298,9 +311,32 @@ export default {
         })
         .catch((err) => (this.loading = false))
     },
+    specificationFormat(specification){
+      let arr = String(specification).split(',')
+      if(arr.length < 2){
+        return -1
+      }
+      let arr_k = [],arr_v = []
+      arr.map(v => {
+        let _arr = v.split(':')
+        arr_k.push(_arr[0])
+        arr_v.push(_arr[1])
+      })
+      
+      let tr = []
+      tr.push(`<thead><tr>${arr_k.map(k => `<th style="padding: 2px 10px;">${k}</th>`).join('')}</tr></thead>`)
+      tr.push(`<tbody><tr>${arr_v.map(v => `<td style="padding: 2px 10px;">${v}</td>`).join('')}</tr></tbody>`)
+      let html = `
+        <table style="width: auto;border-collapse: collapse;">
+            ${tr.join('')}
+        </table>
+      `
+      return html
+    }
   },
 }
 </script>
 
-<style scoped>
+<style>
+
 </style>

@@ -44,10 +44,10 @@
                   <a-input-number
                     style="width: 80px; text-align: center"
                     :min="0"
-                    :max="record.notNum"
                     :step="1"
                     :precision="0"
                     v-model="record.storageNum"
+                    @change="(val) => handleStorageNumChange(index,record,val)"
                   />
                 </a-form-model-item>
               </div>
@@ -354,7 +354,12 @@ export default {
         materialTableList
       }
     },
-
+    handleStorageNumChange(index,record,val){
+      const that = this
+      if(+val > +record.notNum){
+        that.$message.warning(`本次入库数量已大于应入库数量`)
+      }
+    },
     handleSubmit(type) {
       const that = this
       if (type === 'cancel') {

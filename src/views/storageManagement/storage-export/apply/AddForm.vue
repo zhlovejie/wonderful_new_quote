@@ -113,7 +113,6 @@
                     :disabled="isDisabled"
                     style="width:80px;text-align:center;"
                     :min="0"
-                    :max="record.__maxExWarehouseNum"
                     :step="1"
                     :precision="0"
                     :value="record.exWarehouseNum"
@@ -286,6 +285,9 @@ export default {
       that.form = {
         ...that.form,
         materialTableList
+      }
+      if(+val > +record.__maxExWarehouseNum){
+        that.$message.warning(`出库数量已大于库存数量，库存数量为：${record.__maxExWarehouseNum}`)
       }
     },
     actionItem(type, record) {
