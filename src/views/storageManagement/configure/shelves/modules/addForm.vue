@@ -198,6 +198,7 @@ export default {
       this.addOredit = type
       this.record = record
       this.form.remark = ''
+      this.ifdelvali = false
       getList({ warehouseType: 2 }).then((res) => {
         this.warehouseList = res.data
       })

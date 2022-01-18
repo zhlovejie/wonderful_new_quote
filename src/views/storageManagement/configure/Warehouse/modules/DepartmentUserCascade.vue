@@ -5,6 +5,8 @@
         style="width: 100%"
         :value="selfInfo.inspectorDepartmentId"
         @change="depChange"
+        show-search
+        :filter-option="filterOption"
         v-bind="$attrs"
         placeholder="部门"
       >
@@ -76,6 +78,9 @@ export default {
     // that.init()
   },
   methods: {
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
     init() {
       const that = this
       // const { depId, userId } = that.selfInfo
