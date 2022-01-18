@@ -162,7 +162,7 @@ export default {
       this.visible = true
       this.addOredit = type
       this.record = record
-      this.reservoform.remark = ''
+      this.reservoform = {}
       getList().then((res) => {
         this.warehouseList = res.data
       })
