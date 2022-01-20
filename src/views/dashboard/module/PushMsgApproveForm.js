@@ -18,7 +18,7 @@ import ApproveBusinessBorrowing from '@views/sales-management/businessBorrowing/
 import ApproveBidBorrowing from '@views/sales-management/bidBorrowing/AddForm.vue'
 import ApproveAfterSales from '@views/sales-management/afterSales/AddForm.vue'
 
-import ApproveYearEndBonus from '@views/salary-management/bonus/year_end_bonus/module/Formadd.vue'
+import ApproveYearEndBonus from '@views/salary-management/bonus/bonusRules/yearDonusRules/module/Formadd.vue'
 import ApproveOtherBonus from '@/views/salary-management/bonus/other_bonus/module/Formadd.vue'
 import ApproveSeniorWorker from '@/views/Human-resource-management/senior_worker/module/Formadd.vue'
 
