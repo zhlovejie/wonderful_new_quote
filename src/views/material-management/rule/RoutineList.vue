@@ -128,11 +128,28 @@
           :customRow="customRowFunction"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
         >
-          <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
+
+          
+          <div slot="toggleTreeTitle">
+            <a-tooltip>
+              <template slot="title">
+                显示数据在左侧树中的位置
+              </template>
+              <a-icon type="environment" style="color:red;"/>
+            </a-tooltip>
           </div>
-          <div slot="customerName" slot-scope="text, record, index">
-            <a href="javascript:void(0);" @click="clickVue(record)">{{ text }}</a>
+          <div slot="toggleTree" slot-scope="text, record, index">
+            <a-tooltip>
+              <template slot="title">
+                <span>{{record.__showParent ? '折叠' : '展开'}}</span>
+              </template>
+              <span @click="showParentTree(record)"  style="padding:5px 10px;cursor: pointer;"> 
+                <a-icon type="up"  :style="{'transition': 'all .3s','transform':`rotate(${record.__showParent ? 180 : 0}deg)`}" />
+              </span>
+            </a-tooltip>
+          </div>
+          <div slot="fullCode" slot-scope="text, record, index">
+            <span>{{ text }}</span>
           </div>
 
           <div slot="useAlways" slot-scope="text, record, index">
@@ -192,7 +209,8 @@ import {
   routineMaterialRulePageTwoTierTreeList,
   routineMaterialRulePageConditionTreeList,
   routineMaterialRuleToggleSort,
-  routineMaterialRuleUpdateCareState
+  routineMaterialRuleUpdateCareState,
+  routineMaterialRuleParentTree
 } from '@/api/routineMaterial'
 
 import RoutineAddForm from './module/RoutineAddForm'
@@ -203,8 +221,14 @@ import Split from 'split.js'
 const columns = [
   {
     align: 'center',
+    slots: { title: 'toggleTreeTitle' },
+    scopedSlots: { customRender: 'toggleTree' }
+  },
+  {
+    align: 'center',
     title: '代码',
-    dataIndex: 'fullCode'
+    dataIndex: 'fullCode',
+    scopedSlots: { customRender: 'fullCode' }
   },
   {
     align: 'center',
@@ -449,6 +473,7 @@ export default {
     },
 
     rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      debugger
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
@@ -485,6 +510,7 @@ export default {
           resolve()
           return
         }
+
         routineMaterialRulePageTwoTierTreeList({ parentId: treeNode.dataRef.value })
           .then(res => {
             if (res && res.code === 200 && Array.isArray(res.data) && res.data.length > 0) {
@@ -535,7 +561,7 @@ export default {
       const that = this
       that.modelType = 1
       that.spinning = true
-      that.dataSource = []
+      // that.dataSource = []
       that.selectedRowKeys = []
       that.selectedRows = []
       that.expandedKeys = []
@@ -654,6 +680,9 @@ export default {
       }
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      if (+_searchParam.parentId === 0) {
+        _searchParam.parentId = undefined
+      }
       routineMaterialRulePageList(_searchParam)
         .then(res => {
           that.loading = false
@@ -680,8 +709,8 @@ export default {
           }
 
           that.$nextTick(() => {
-            that.initSortable();
-          });
+            that.initSortable()
+          })
         })
         .catch(err => {
           console.error(err)
@@ -713,6 +742,10 @@ export default {
       obj.codeLength = +item.codeLength
       obj.code = item.code
       obj.scopedSlots = { title: 'title' }
+      obj.isSpecification = item.isSpecification
+      obj.departmentId = item.departmentId
+      obj.stationIds = item.stationIds
+      obj.isLeaf = +item.isSpecification === 1
       //obj.__selectable = obj.isLeaf
       if (Array.isArray(item.subList) && item.subList.length > 0) {
         obj.children = item.subList.map(v => that.formatTreeData(v))
@@ -928,6 +961,75 @@ export default {
         this.splitInstance = null
         console.log(err)
       }
+    },
+    showParentTree(record) {
+      const that = this
+      let dataSource = [...that.dataSource]
+      dataSource = dataSource.map(item => {
+        if(item.key !== record.key){
+          item.__showParent = false
+        }
+        return item
+      })
+      let target = dataSource.find(item => item.key === record.key)
+      target.__showParent = !target.__showParent
+      that.dataSource = dataSource
+
+      if(target.__showParent){
+        that.spinning = true
+        routineMaterialRuleParentTree({ ruleId: record.id })
+        .then(res => {
+          that.spinning = false
+          if (res.code === 200) {
+            that.buildTree(res.data)
+          }
+        })
+        .catch(err => {
+          that.spinning = false
+          that.$message.error(err.message)
+        })
+      }else{
+        that.searchAction(2)
+      }
+    },
+
+    buildTree(data) {
+      const that = this
+      that.modelType = 1
+      // that.dataSource = []
+      that.selectedRowKeys = []
+      that.selectedRows = []
+      that.expandedKeys = []
+      that.loadedKeys = []
+
+      const root = {
+        key: '0',
+        value: '0',
+        title: '常规物料规则',
+        isLeaf: false,
+        code: '0',
+        codeLength: 10,
+        parentId: 0,
+        children: [data].map(item => that.formatTreeData(item)),
+        scopedSlots: { title: 'title' }
+      }
+      if (String(that.parentId) === '0') {
+        that.parentItem = root
+      }
+      that.orgTree = []
+      that.dataList = []
+
+      that.$nextTick(() => {
+        that.orgTree = [root]
+        that.dataList = that.generateList(that.orgTree)
+        that.selectedTreeNode = {
+          dataRef: {
+            ...root
+          }
+        }
+        const __expandedKeys = that.dataList.map(item => String(item.key))
+        Object.assign(that, { expandedKeys: __expandedKeys, autoExpandParent: true })
+      })
     }
   },
   beforeDestroy() {
