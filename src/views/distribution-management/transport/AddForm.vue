@@ -17,69 +17,54 @@
 
     <a-spin :spinning="spinning">
       <a-form :form="form" class="becoming-form-wrapper">
+        <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
-          <tr>
-            <td colspan="4">
-              <b>配货站信息</b>
-            </td>
-          </tr>
           <tr>
             <td>物流公司名称</td>
             <td>
               <a-form-item>
                 <a-input
                   :disabled="isSee"
-                  placeholder="物流名称"
-                  v-decorator="[
-                    'logisticsCompanyName',
-                    { rules: [{ required: true, max: 40, message: '请输入物流名称' }] },
-                  ]"
-                  allowClear
-                  style="width：300px"
+                  placeholder="姓名"
+                  v-decorator="['userName', { rules: [{ required: true, message: '请输入姓名' }] }]"
+                  style="width: 100%"
                 />
               </a-form-item>
             </td>
-            <td>负责人</td>
+            <td>电话</td>
             <td>
               <a-form-item>
                 <a-input
-                  :disabled="isSee"
-                  placeholder="负责人名称"
-                  v-decorator="[
-                    'personChargeName',
-                    { rules: [{ required: true, max: 10, message: '请输入负责人名称' }] },
-                  ]"
-                  allowClear
-                  style="width：300px"
+                  placeholder="电话"
+                  v-decorator="['phone', { rules: [{ required: true, message: '请输入电话' }] }]"
+                  style="width: 100%"
                 />
               </a-form-item>
             </td>
           </tr>
           <tr>
-            <td>负责人电话</td>
+            <td>车辆类型</td>
             <td>
               <a-form-item>
-                <a-input
-                  :disabled="isSee"
-                  placeholder="负责人电话"
-                  v-decorator="[
-                    'personChargeTelephone',
-                    { rules: [{ required: true, max: 20, message: '请输入负责人电话' }] },
-                  ]"
-                  allowClear
-                  style="width：300px"
-                />
+                <a-select
+                  v-decorator="['vehicleTypeId', { rules: [{ required: true, message: '请选择车辆类型' }] }]"
+                  style="width: 100%"
+                  placeholder="车辆类型"
+                >
+                  <a-select-option v-for="item in assetTypeList" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
+                </a-select>
               </a-form-item>
             </td>
-            <td>微信号</td>
+            <td>运输费（元）</td>
             <td>
               <a-form-item>
-                <a-input
+                <a-input-number
+                  style="width: 100%"
                   :disabled="isSee"
-                  placeholder="微信号"
-                  v-decorator="['wechatNumber', { rules: [{ required: false, max: 30, message: '请输入微信号' }] }]"
-                  allowClear
-                  style="width：300px"
+                  placeholder="运输费（元）"
+                  v-decorator="['price', { rules: [{ required: true, message: '请输入运输费（元）' }] }]"
                 />
               </a-form-item>
             </td>
@@ -95,7 +80,7 @@
                         <a-select
                           :disabled="isSee"
                           placeholder="省"
-                          v-decorator="['provinces', { rules: [{ required: true, message: '请选择省！' }] }]"
+                          v-decorator="['provinceId', { rules: [{ required: true, message: '请选择省！' }] }]"
                         >
                           <a-select-option
                             @click="getCity(1, province.id, province.area)"
@@ -112,7 +97,7 @@
                         <a-select
                           placeholder="市"
                           :disabled="isSee"
-                          v-decorator="['citys', { rules: [{ required: true, message: '请选择市！' }] }]"
+                          v-decorator="['cityId', { rules: [{ required: true, message: '请选择市！' }] }]"
                         >
                           <a-select-option
                             @click="getCity(2, city.id, city.area)"
@@ -129,7 +114,7 @@
                         <a-select
                           placeholder="区"
                           :disabled="isSee"
-                          v-decorator="['areas', { rules: [{ required: true, message: '请选择区！' }] }]"
+                          v-decorator="['areaId', { rules: [{ required: true, message: '请选择区！' }] }]"
                         >
                           <a-select-option
                             @click="getCity(3, null, item.area)"
@@ -147,7 +132,7 @@
                           :disabled="isSee"
                           placeholder="请输入详细地址"
                           v-decorator="[
-                            'detailedAddressName',
+                            'addressDetail',
                             { rules: [{ required: true, min: 5, max: 30, message: '详细地址最少为5个字符！' }] },
                           ]"
                         />
@@ -158,107 +143,41 @@
               </a-row>
             </td>
           </tr>
+        </table>
+        <h3 style="margin: 20px">
+          物流信息 <span> <a-button type="link" @click="onlogistics"> 新增物流单号 </a-button></span>
+        </h3>
+        <table class="custom-table custom-table-border">
           <tr>
-            <td colspan="4">
-              <b>营业执照</b>
-            </td>
+            <th>序号</th>
+            <th>物流单号</th>
+            <th>承运方</th>
+            <th>数量</th>
+            <th>方数</th>
           </tr>
-          <tr>
-            <td>营业执照</td>
-            <td colspan="3" style="padding-top: 30px">
-              <a-form-item>
-                <a-upload
-                  :disabled="isSee"
-                  :action="uploadPath"
-                  accept=".png, .jpg"
-                  list-type="picture-card"
-                  :file-list="fileList"
-                  @preview="handlePreview"
-                  @change="handleChange"
-                >
-                  <div v-if="fileList.length < 5">
-                    <a-icon type="plus" />
-                    <div class="ant-upload-text">上传</div>
-                  </div>
-                </a-upload>
-                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-                  <img alt="example" style="width: 100%" :src="previewImage" />
-                </a-modal>
-              </a-form-item>
-            </td>
+          <tr v-for="(item, index) in logisticsProductTransportMaterials" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.logisticsOrderNo }}</td>
+            <td>{{ item.carrier }}</td>
+            <td>{{ item.count }}</td>
+            <td>{{ item.squareNum }}</td>
           </tr>
-          <!-- <tr>
-            <td colspan="4">
-              <b>货物合同</b>
-              <Mdeol v-if="!isSee" style="float: right" ref="mdeol" @getmsg="getChildMsg" :statusId="2" />
-            </td>
-          </tr>
-          <tr>
-            <th colspan="3">合同</th>
-            <th>操作</th>
-          </tr>
-          <tr v-for="(item, index) in todayList" :key="index">
-            <td colspan="3">{{ item.name }}</td>
-            <td>
-              <template>
-                <a href="javascript:void(0);" @click="delSee(item.url)">查看</a>
-              </template>
-              <template v-if="!isSee">
-                <a-divider type="vertical" />
-                <a href="javascript:void(0);" @click="delItem('todayList', index)">删除</a>
-              </template>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <b>承接单位法律承诺书</b>
-              <Mdeol v-if="!isSee" style="float: right" ref="mdeol" @getmsg="getChildMsg" :statusId="3" />
-            </td>
-          </tr>
-          <tr>
-            <th colspan="3">承接单位法律承诺书</th>
-            <th>操作</th>
-          </tr>
-          <tr v-for="(item, index) in planList" :key="'plan' + index">
-            <td colspan="3">{{ item.name }}</td>
-            <td>
-              <template>
-                <a href="javascript:void(0);" @click="delSee(item.url)">查看</a>
-              </template>
-              <template v-if="!isSee">
-                <a-divider type="vertical" />
-                <a href="javascript:void(0);" @click="delItem('planList', index)">删除</a>
-              </template>
-            </td>
-          </tr> -->
         </table>
       </a-form>
-      <XdocView ref="xdocView" />
+      <Logistics ref="logistics" @filet="onchength" />
     </a-spin>
   </a-modal>
 </template>
 <script>
 import moment from 'moment'
-import { getAreaByParent, getUploadPath2 } from '@/api/common'
-import { DistributionAdd, DistributionInfot } from '@/api/distribution-management'
-import Mdeol from './upload'
-import XdocView from './XdocView'
-import vueLs from 'vue-ls'
-// import vuedraggable from 'vuedraggable'
-
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = (error) => reject(error)
-  })
-}
+import { getAreaByParent } from '@/api/common'
+import { saveProductTransport, DistributionInfot } from '@/api/distribution-management'
+import { getDictionaryList } from '@/api/workBox'
+import Logistics from './Logistics'
 export default {
   name: 'BecomingForm',
   components: {
-    Mdeol,
-    XdocView: XdocView,
+    Logistics,
   },
   data() {
     return {
@@ -270,19 +189,20 @@ export default {
         xs: { span: 20 },
         sm: { span: 20 },
       },
+      assetTypeList: [],
       provinces: [], // 省下拉框数据
       citys: [], // 城市下拉框数据
       areas: [], // 区下拉框数据
       province: '', //选择省名称
       city: '', //选择市名称
       area: '', // 选择区名称
-      uploadPath: getUploadPath2(), // 上传图片的url
       visible: false,
       spinning: false,
       // isDisabled: true,
       form: this.$form.createForm(this, { name: 'do_becoming' }),
       type: 'add',
       record: {},
+      logisticsProductTransportMaterials: [],
       postSelectDataSource: [],
       haveProcess: [],
       previewVisible: false,
@@ -328,20 +248,21 @@ export default {
   },
   methods: {
     moment: moment,
-    handleCancel() {
-      this.previewVisible = false
+    onchength(data) {
+      console.log(data)
+      data = data.map((i) => {
+        return {
+          logisticsOrderNo: i.logisticsOrderNo,
+          carrier: i.carrierType === 1 ? '配货站——' + i.logisticsCompanyName : '专车',
+          count: i.invoiceCount,
+          squareNum: i.squareNum,
+        }
+      })
+      this.logisticsProductTransportMaterials = data
     },
-    async handlePreview(file) {
-      if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj)
-      }
-      this.previewImage = file.url || file.preview
-      this.previewVisible = true
+    onlogistics() {
+      this.$refs.logistics.init()
     },
-    handleChange({ fileList }) {
-      this.fileList = fileList
-    },
-
     getCity(type, pId, name) {
       if (type != 3) {
         getAreaByParent({ pId: pId })
@@ -389,9 +310,12 @@ export default {
       that.visible = true
       that.type = type
       that.record = record
+      getDictionaryList({ parentId: '543' }).then((res) => {
+        this.assetTypeList = res.data
+      })
       if (that.isSee || that.isEditSalary) {
         //详情接口
-        this.fillData()
+        // this.fillData()
       }
     },
 
@@ -404,20 +328,6 @@ export default {
           that.getCity(1, arr[0], num[0])
           that.getCity(2, arr[1], num[1])
           that.getCity(3, arr[2], num[2])
-          that.fileList = res.data.data.businessLicenseList
-            ? res.data.data.businessLicenseList.map((item) => {
-                return {
-                  uid: item.id,
-                  id: item.id,
-                  url: item.url,
-                  statusType: item.statusType,
-                  status: 'done',
-                  name: '1',
-                }
-              })
-            : []
-          that.todayList = res.data.data.goodsContractList
-          that.planList = res.data.data.letterommitmentList
           that.form.setFieldsValue({
             logisticsCompanyName: res.data.data.logisticsCompanyName,
             personChargeName: res.data.data.personChargeName,
@@ -440,50 +350,16 @@ export default {
       } else {
         that.form.validateFields((err, values) => {
           if (!err) {
-            if (this.type === 'edit-salary') {
-              values.id = that.record.id
-            }
-            let arr = this.fileList
-              ? this.fileList.map((file) => {
-                  if (file.response && file.response.code === 200 && file.name != '1') {
-                    return {
-                      url: file.response.data,
-                      statusType: 1,
-                      name: file.name,
-                    }
-                  }
-                })
-              : []
-            arr = arr.filter((item) => item)
-            let arr1 = this.fileList
-              ? this.fileList.map((file) => {
-                  if (file.name === '1') {
-                    let arr = {
-                      url: file.url,
-                      statusType: 1,
-                      name: file.fileName,
-                    }
-                    return arr
-                  }
-                })
-              : []
-            arr1 = arr1.filter((item) => item)
-            if (arr || that.todayList || that.planList) {
-              values.annexList = [...arr, ...arr1, ...that.todayList, ...that.planList]
-            }
-            values.addressName = that.province + ',' + that.city + ',' + that.area
-            values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
-            delete values.provinces
-            delete values.citys
-            delete values.areas
+            values.address = that.province + ',' + that.city + ',' + that.area
+            // values.addressNumber = values.provinces + ',' + values.citys + ',' + values.areas
+            // delete values.provinces
+            // delete values.citys
+            // delete values.areas
+            values.logisticsProductTransportMaterials = this.logisticsProductTransportMaterials
             that.spinning = true
-            DistributionAdd(values).then((res) => {
+            saveProductTransport(values).then((res) => {
               that.spinning = false
-              that.fileList = []
-              that.todayList = []
-              that.planList = []
               that.form.resetFields() // 清空表
-              that.haveProcess = []
               that.visible = false
               that.$message.info(res.msg)
               that.$emit('finish')
@@ -499,13 +375,6 @@ export default {
       this.form.resetFields() // 清空表
       this.visible = false
     },
-    //清空
-    // processClearAction() {
-    //   this.haveProcess = []
-    //   this.form.setFieldsValue({
-    //     roomIds: [],
-    //   })
-    // },
   },
 }
 </script>

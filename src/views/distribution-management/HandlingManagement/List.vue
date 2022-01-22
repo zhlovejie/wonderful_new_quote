@@ -7,23 +7,15 @@
         allowClear
         style="width: 200px; margin-right: 10px"
       />
-      <a-input
-        placeholder="车牌号"
-        v-model="queryParam.licensePlateNumber"
-        allowClear
-        style="width: 200px; margin-right: 10px"
-      />
-      <a-input
-        placeholder="驾驶人姓名/手机号"
-        v-model="queryParam.fullNameOrDriveNo"
-        allowClear
-        style="width: 200px; margin-right: 10px"
-      />
+      <a-input placeholder="人员" v-model="queryParam.userName" allowClear style="width: 200px; margin-right: 10px" />
       <a-range-picker @change="dateChange" style="width: 400px; margin-right: 10px" v-model="queryParam.rangeDate" />
 
-      <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
+      <a-button style="margin-left: 10px; margin-right: 10px" type="primary" @click="searchAction({ current: 1 })"
+        >查询</a-button
+      >
+      <a-button class="a-button" type="primary" @click="outPort">下载</a-button>
       <template v-if="$auth('logistics:add')">
-        <a-button style="float: right" type="primary" icon="plus" @click="applyFor('add', null)">新增</a-button>
+        <a-button style="float: right" type="primary" @click="applyFor()">工价设置</a-button>
       </template>
     </div>
     <a-layout>
@@ -46,32 +38,22 @@
         </span>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="applyFor('see', record)">查看</a>
-          <a-divider type="vertical" />
-          <a class="ant-dropdown-link" :href="urls + record.id" target="_blank">下载</a>
-          <template v-if="$auth('logistics:add') && +record.createdId === +userInfo.id">
-            <a-divider type="vertical" />
-            <a @click="applyFor('edit-salary', record)">修改</a>
-            <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
-          </template>
-          <!-- <template v-if="$auth('logistics:returnV')">
-            <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="returnV(record.id)">回访记录</a>
-          </template> -->
+          <a @click="applyFor1(record)">查看</a>
         </span>
       </a-table>
     </a-layout>
 
-    <ReturnVisit ref="returnVisit" />
+    <AddForm ref="addForm" />
+    <AddForm1 ref="addForm1" />
   </a-card>
 </template>
 
 <script>
 import moment from 'moment'
 import system from '@/config/defaultSettings'
-import ReturnVisit from './module/returnVisit'
-import { logisticsList, logisticsDelete, adminList } from '@/api/distribution-management'
+import AddForm from './AddForm'
+import AddForm1 from './AddForm1'
+import { listCarryAdminInfo, logisticsDelete, exportExcel } from '@/api/distribution-management'
 const columns = [
   {
     dataIndex: 'name',
@@ -93,42 +75,22 @@ const columns = [
     align: 'center',
   },
   {
-    title: '物流类别',
+    title: '方数',
     dataIndex: 'logisticsTypeName',
     key: 'logisticsTypeName',
     align: 'center',
   },
   {
-    title: '车牌号',
-    dataIndex: 'licensePlateNumber',
-    key: 'licensePlateNumber',
+    title: '工价（元）',
+    dataIndex: 'wages',
+    key: 'wages',
     align: 'center',
   },
   {
-    title: '驾驶人姓名',
-    dataIndex: 'fullName',
-    key: 'fullName',
+    title: '人员',
+    dataIndex: 'userName',
+    key: 'userName',
     align: 'center',
-  },
-  {
-    title: '驾驶人手机号',
-    dataIndex: 'telephone',
-    key: 'telephone',
-    align: 'center',
-  },
-  {
-    title: '付款方',
-    dataIndex: 'payer',
-    key: 'payer',
-    align: 'center',
-    scopedSlots: { customRender: 'payer' },
-  },
-  {
-    title: '付款方式',
-    dataIndex: 'payerType',
-    key: 'payerType',
-    align: 'center',
-    scopedSlots: { customRender: 'payerType' },
   },
   {
     title: '提交人',
@@ -152,7 +114,10 @@ const columns = [
 ]
 export default {
   name: 'RoleManagement',
-  components: { ReturnVisit },
+  components: {
+    AddForm,
+    AddForm1,
+  },
   data() {
     return {
       urls: system.baseURL + '/logistics/logistics-information/download/LogisticsDownload?id=',
@@ -184,7 +149,7 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'distribution_logistics') {
+        if (to.name === 'Handling_management') {
           this.init()
         }
       },
@@ -196,6 +161,57 @@ export default {
     init() {
       this.searchAction()
     },
+    // 下载
+    outPort() {
+      let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 })
+      exportExcel(_searchParam)
+        .then((res) => {
+          this.loading = false
+          if (res instanceof Blob) {
+            const isFile = res.type === 'application/vnd.ms-excel'
+            //const isFile = res.type === 'application/msword'
+            const isJson = res.type === 'application/json'
+            if (isFile) {
+              //返回文件 则下载
+              const objectUrl = URL.createObjectURL(res)
+              const a = document.createElement('a')
+              document.body.appendChild(a)
+              a.style = 'display: none'
+              a.href = objectUrl
+              a.download = '搬运管理.xls'
+              a.click()
+              document.body.removeChild(a)
+              that.$message.info('下载成功')
+              return
+            } else if (isJson) {
+              //返回json处理
+              var reader = new FileReader()
+              reader.onload = function (e) {
+                let _res = null
+                try {
+                  _res = JSON.parse(e.target.result)
+                } catch (err) {
+                  _res = null
+                }
+                if (_res !== null) {
+                  if (_res.code !== 0) {
+                    that.$message.info(_res.message)
+                  } else {
+                    that.$message.info('下载成功')
+                  }
+                } else {
+                  that.$message.info('json解析出错 e.target.result：' + e.target.result)
+                  return
+                }
+              }
+              reader.readAsText(res)
+            } else {
+              that.$message.info('不支持的类型:' + res)
+            }
+          }
+        })
+        .catch((err) => (this.loading = false))
+    },
     dateChange(date, dateString) {
       // this.$set(this.queryParam, 'rangeDate', date)
       this.$set(this.queryParam, 'startDate', dateString[0])
@@ -204,15 +220,10 @@ export default {
     searchAction(opt) {
       let that = this
       that.loading = true
-      if (this.queryParam.Dates) {
-        let date = that.queryParam.Dates.format('YYYYMM')
-        this.queryParam.accountDate = date
-      }
       let _searchParam = Object.assign({}, { ...this.queryParam }, { ...this.pagination1 }, opt || {})
-      logisticsList(_searchParam)
+      listCarryAdminInfo(_searchParam)
         .then((res) => {
           that.loading = false
-          this.queryParam.accountDate = ''
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             return item
@@ -245,21 +256,11 @@ export default {
         }
       })
     },
-    applyFor(type, record) {
-      adminList().then((res) => {
-        if (res.data.length !== 0) {
-          this.$router.push({
-            name: 'basicInform',
-            params: { typeName: type, action: record },
-          })
-        } else {
-          this.$message.error('请设置搬运管理中工价设置')
-        }
-      })
+    applyFor() {
+      this.$refs.addForm.query()
     },
-
-    returnV(id) {
-      this.$refs.returnVisit.init(id)
+    applyFor1(type) {
+      this.$refs.addForm1.query(type)
     },
   },
 }

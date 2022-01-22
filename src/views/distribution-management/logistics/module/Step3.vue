@@ -7,23 +7,17 @@
       </a-row>
       <a-button v-if="!isSee" type="primary" icon="plus" @click="addInvoice()">新增</a-button>
       <a-form :form="form" class="form wdf-form">
-        <div v-for="(i ,index) in todayList" :key="index">
-          <h3 style="font-weight: 700; ">
-            发货单{{index+ 1}}
-            <a-button
-              v-if="!isSee"
-              style="margin-bottom:10px; float: right;"
-              type="primary"
-              @click="deleteItem(index)"
-            >删除</a-button>
+        <div v-for="(i, index) in todayList" :key="index">
+          <h3 style="font-weight: 700">
+            发货单{{ index + 1 }}
+            <a-button v-if="!isSee" style="margin-bottom: 10px; float: right" type="primary" @click="deleteItem(index)"
+              >删除</a-button
+            >
           </h3>
 
           <table class="custom-table custom-table-border">
             <tr>
-              <td
-                colspan="3"
-                style="text-align: Left;  border-top: none; border-left: none;border-right: none; "
-              >
+              <td colspan="3" style="text-align: Left; border-top: none; border-left: none; border-right: none">
                 <b>提货信息</b>
               </td>
             </tr>
@@ -33,12 +27,12 @@
               <th>电话</th>
             </tr>
             <tr>
-              <td>{{i.customerName}}</td>
-              <td>{{i.consignee}}</td>
-              <td>{{i.contactInformation}}</td>
+              <td>{{ i.customerName }}</td>
+              <td>{{ i.consignee }}</td>
+              <td>{{ i.contactInformation }}</td>
             </tr>
             <tr>
-              <td colspan="3" style="text-align: Left; border-left: none;border-right: none; ">
+              <td colspan="3" style="text-align: Left; border-left: none; border-right: none">
                 <b>货物信息</b>
               </td>
             </tr>
@@ -47,21 +41,21 @@
               <th>数量</th>
               <th>体积</th>
             </tr>
-            <tr v-for="(item ,index) in i.logisticsCargInformationList" :key="index">
-              <td>{{item.productName}}</td>
-              <td>{{item.invoiceCount}}</td>
+            <tr v-for="(item, index) in i.logisticsCargInformationList" :key="index">
+              <td>{{ item.productName }}</td>
+              <td>{{ item.invoiceCount }}</td>
               <td>
                 <a-input placeholder v-model="item.volume" :disabled="isSee" />
               </td>
             </tr>
           </table>
         </div>
-        <h3 style="width:150px;   font-weight: 700;">备注</h3>
+        <h3 style="width: 150px; font-weight: 700">备注</h3>
         <a-form-item>
           <a-textarea :rows="3" v-model="remarks" :disabled="isSee" />
         </a-form-item>
         <a-form-item class="btns-grop">
-          <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
+          <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
           <a-button type="primary" @click="nextStep">下一步</a-button>
         </a-form-item>
       </a-form>
@@ -141,6 +135,8 @@ export default {
           volume: red.volume || '',
           productName: red.productName,
           invoiceCount: red.invoiceCount,
+          materialCode: red.productModel,
+          materialName: red.productName,
         }
       })
       obj.logisticsCargInformationList = arr
