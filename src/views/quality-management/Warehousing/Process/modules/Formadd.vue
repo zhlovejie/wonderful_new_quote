@@ -128,7 +128,11 @@
                 {{ CheckDetail.materialName }}
               </td>
               <td>
-                {{ CheckDetail.materialModelType }}
+                <a-tooltip v-if="String(CheckDetail.specification).length > 5">
+                  <template slot="title">{{ CheckDetail.specification }}</template>
+                  {{ String(CheckDetail.specification).slice(0, 5) }}...
+                </a-tooltip>
+                <span v-else>{{ CheckDetail.specification }}</span>
               </td>
               <td>
                 {{ CheckDetail.packageType }}
@@ -297,11 +301,11 @@
                 </td>
                 <td>
                   <a-form-model-item>
-                    {{ CheckDetail.reportName }}
+                    {{ CheckDetail.checkUserName }}
                   </a-form-model-item>
                 </td>
                 <td>
-                  {{ CheckDetail.reportTime.slice(0, 10) }}
+                  {{ CheckDetail.modifyTime }}
                 </td>
                 <td>
                   <a @click="viewInspectionRecordClick"> 查看</a>

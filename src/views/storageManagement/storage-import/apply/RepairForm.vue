@@ -182,10 +182,12 @@
                 <a-input-number
                   :disabled="isDisabled"
                   style="width:80px;text-align:center;"
+                  :max="record.__maxRepairNum"
                   :min="0"
                   :step="1"
                   :precision="0"
-                  v-model="record.repairNum"
+                  :value="record.repairNum || record.__maxRepairNum"
+                  @change="(val) => handleRepairNumChange(record,val)"
                 />
               </a-form-model-item>
             </div>
@@ -233,8 +235,9 @@
 </template>
 
 <script>
+import { queryOrderDropDown } from '@api/order'
 import { getSalesList /* 销售合同 */ } from '@/api/contractListManagement'
-import { getInvoiceList /* 发货单 */ } from '@/api/invoice'
+import { getInvoicePageListDropDown /* 发货单 */ } from '@/api/invoice'
 //销售人员接口
 import { getListSalesman } from '@/api/contractListManagement'
 //客户列表选择
@@ -391,17 +394,39 @@ export default {
     moment,
     async init() {
       const that = this
-      await getWarehouseList().then(res => (that.warehouseList = res.data))
-      await getListSalesman().then(res => (that.saleUsers = res.data))
+
+      that.spinning = true
+      try{
+        await getWarehouseList().then(res => (that.warehouseList = res.data))
+        await getListSalesman().then(res => (that.saleUsers = res.data))
+      }catch(err){
+        that.spinning = false
+      }
 
       if (that.addForm.isAdd) {
+        that.spinning = false
       } else {
         if (that.record) {
+          that.spinning = true
           await storageRepairDetail({ id: that.record.storageApplyId }).then(async res => {
-            const data = res.data
-
-            await that.saleUserChange(data.salesManagerId)
-            await that.handleContractChange(data.salesContractId)
+            let data = res.data
+            try{
+              await that.saleUserChange(data.salesManagerId)
+              that.$refs.customerSelect &&
+                that.$refs.customerSelect.fill({
+                  id: data.customerId,
+                  name: data.customerName
+                })
+              await that.handleCustomerSelected({
+                  id: data.customerId,
+                  name: data.customerName
+                })
+              await that.handleContractChange(data.salesContractId)
+            }catch(err){
+              that.$message.error(err.message)
+            }finally{
+              that.spinning = false
+            }
             that.form = {
               id: data.id,
               salesManagerId: data.salesManagerId,
@@ -436,19 +461,40 @@ export default {
 
             that.handleInvoiceChange(data.invoiceId)
 
-            that.$refs.customerSelect &&
-              that.$refs.customerSelect.fill({
-                id: data.customerId,
-                name: data.customerName
-              })
+            that.handlerMaterialChange(data.materialId)
+
+            // that.$nextTick(() => {
+            //   that.$refs.ruleForm.validateField(['customerId'])
+            // })
+          }).catch(err => {
+            that.spinning = false
+            that.$message.error(err.message)
           })
         }
+      }
+    },
+    handleRepairNumChange(record,val){
+      const that = this
+      let materialTableList = [...that.form.materialTableList]
+      let target = materialTableList[0]
+      target.repairNum = val
+      that.form = {
+        ...that.form,
+        materialTableList
+      }
+
+      if(+val > target.__maxRepairNum){
+        that.$message.info(`返修数量不可超过最大数量: ${target.__maxRepairNum}`)
       }
     },
     handlerMaterialChange(id) {
       // debugger
       const that = this
       const item = that.sendTableList.find(item => item.id === id)
+      if(!item){
+        console.error(`handlerMaterialChange called error: can't found id:${id}`)
+        return 
+      }
       let materialTableList = [...that.form.materialTableList]
       let target = materialTableList[0]
       target.materialId = item.id
@@ -458,6 +504,7 @@ export default {
       // target.weight = item.weight || 0
       target.specification = item.productStandard
       target.k3Code = item.k3Code || ''
+      target.__maxRepairNum = item.invoiceCount
 
       that.form = {
         ...that.form,
@@ -530,24 +577,6 @@ export default {
         customerId: undefined,
         customerName: undefined
       }
-
-      return getSalesList({
-        customerId: saleUserId,
-        contractStatus: 1,
-        approveStatus: 2,
-        current: 1,
-        size: 1000
-      })
-        .then(res => {
-          that.contractList = res.data.records || []
-          if (that.contractList.length === 0) {
-            that.$message.info(`未找到销售经理【${target.salesmanName}】对应的合同`)
-          }
-        })
-        .catch(err => {
-          that.$message.error(err.message)
-          that.contractList = []
-        })
     },
     handleCustomerSelected(item) {
       const that = this
@@ -569,6 +598,24 @@ export default {
       that.$nextTick(() => {
         that.$refs.ruleForm.validateField(['customerId'])
       })
+
+      return queryOrderDropDown({
+        customerId: item.id,
+        contractStatus: 1,
+        approveStatus: 2,
+        current: 1,
+        size: 1000
+      })
+        .then(res => {
+          that.contractList = res.data.records || []
+          if (that.contractList.length === 0) {
+            that.$message.info(`未找到客户【${item.name}】对应的合同`)
+          }
+        })
+        .catch(err => {
+          that.$message.error(err.message)
+          that.contractList = []
+        })
     },
     handleContractChange(salesContractId) {
       const that = this
@@ -581,7 +628,7 @@ export default {
       }
       that.sendTableList = []
 
-      return getInvoiceList({ contractId: salesContractId, current: 1, size: 1000 })
+      return getInvoicePageListDropDown({ contractId: salesContractId, current: 1, size: 1000 })
         .then(res => {
           that.invoiceList = res.data.records || []
           if (that.invoiceList.length === 0) {

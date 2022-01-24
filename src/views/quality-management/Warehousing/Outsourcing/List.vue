@@ -275,7 +275,8 @@ export default {
         quality_getCheckGetMaterialId({ materialId: record.materialId, reportCheckNum: record.reportNum }).then(
           (res) => {
             if (res.data === null) {
-              this.$message.error('该物料没有配置检验标准')
+              let text = `该物料没配置报检数量为${record.reportNum}的检验标准`
+              this.$message.error(text)
             } else {
               this.$refs.formadd.query(type, record, res.data)
             }

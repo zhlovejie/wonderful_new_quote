@@ -49,14 +49,16 @@
           :key="1"
         />
 
-        <a-tab-pane
-          tab="待审批"
-          :key="2"
-        />
-        <a-tab-pane
-          tab="已审批"
-          :key="3"
-        />
+        <template v-if="$auth('inspectionStandardSet:approval')">
+          <a-tab-pane
+            tab="待审批"
+            :key="2"
+          />
+          <a-tab-pane
+            tab="已审批"
+            :key="3"
+          />
+        </template>
       </a-tabs>
       <div class="main-wrapper">
         <a-table
@@ -92,17 +94,17 @@
             slot="action"
             slot-scope="text, record, index"
           >
-            <a-divider type="vertical" />
-            <template v-if="+activeKey === 0">
+            
+            <template v-if="+activeKey === 0 && $auth('inspectionStandardSet:add')">
               <a @click="doAction('add',record)">制定标准</a>
             </template>
-            <template v-if="+activeKey === 1">
+            <template v-if="+activeKey === 1 && $auth('inspectionStandardSet:edit')">
               <a @click="doAction('edit',record)">修改</a>
             </template>
-            <template v-if="+activeKey === 2">
+            <template v-if="+activeKey === 2 && $auth('inspectionStandardSet:approval')">
               <a @click="doAction('approval',record)">审批</a>
             </template>
-            <template v-if="+activeKey === 3">
+            <template v-if="+activeKey === 3 && $auth('inspectionStandardSet:view')">
               <a @click="doAction('view',record)">查看标准</a>
             </template>
           </div>
@@ -160,14 +162,14 @@ const columns = [
     scopedSlots: { customRender: 'status' }
   },
 
-  {
-    title: '创建人',
-    dataIndex: 'createdName'
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createdTime'
-  },
+  // {
+  //   title: '创建人',
+  //   dataIndex: 'createdName'
+  // },
+  // {
+  //   title: '创建时间',
+  //   dataIndex: 'createdTime'
+  // },
   {
     title: '操作',
     scopedSlots: { customRender: 'action' }

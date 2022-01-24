@@ -99,6 +99,7 @@
                   :materialId.sync="record.materialId"
                   :types.sync="record.type"
                   :positionCode.sync="record.immigratePosition"
+                  :removePosition.sync="record.removePosition"
                 />
                 <span v-else>
                   {{ record.immigratePosition }}
@@ -321,7 +322,10 @@ export default {
       that.visible = true
       that.type = type
       that.record = record
-      this.form.materialList = []
+      this.form = {
+        materialList: [],
+        translocateDate: moment(),
+      }
       if (type !== 'add') {
         translocateGetDetailById({ id: record.id }).then((res) => {
           let detail = res.data
@@ -389,26 +393,6 @@ export default {
               .catch((err) => (that.spinning = false))
           }
         })
-        // that.form.validateFields((err, values) => {
-        //   if (!err) {
-        //     if (that.type === 'edit-salary') {
-        //       values.id = that.record.id
-        //     }
-        //     if (that.type === 'add' || that.type === 'edit-salary') {
-        //       that.spinning = true
-        //       other_addAndUpdate(values)
-        //         .then((res) => {
-        //           this.programme = []
-        //           this.visible = false
-        //           that.spinning = false
-        //           that.form.resetFields() // 清空表
-        //           that.$message.info(res.msg)
-        //           that.$emit('finish')
-        //         })
-        //         .catch((err) => (that.spinning = false))
-        //     }
-        //   }
-        // })
       }
     },
     handleCancel() {

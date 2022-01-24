@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">站台代码</td>
             <td>
-              <a-form-model-item ref="platformCode" prop="platformCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.platformCode"
-                  :disabled="isEdit"
-                  :maxLength="4"
-                  @blur="
-                    () => {
-                      $refs.platformCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="platformCode" v-if="!isDisabled">
+                <a-input v-model="form.platformCode" :disabled="isEdit" :maxLength="4" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.platformCode }}
@@ -33,15 +24,8 @@
             </td>
             <td class="requiredMark">站台名称</td>
             <td>
-              <a-form-model-item ref="platformName" prop="platformName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.platformName"
-                  @blur="
-                    () => {
-                      $refs.platformName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="platformName" v-if="!isDisabled">
+                <a-input v-model="form.platformName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.platformName }}
@@ -52,7 +36,7 @@
             <td style="width: 160px" class="requiredMark">站台位置</td>
             <td>
               <a-form-model-item prop="warehouseId" v-if="!isDisabled" style="width: 50%; float: left">
-                <a-select v-model="form.warehouseId">
+                <a-select v-model="form.warehouseId" @change="warehchange">
                   <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
                     item.warehouseName
                   }}</a-select-option>
@@ -82,8 +66,8 @@
             <td>
               <a-form-model-item v-if="!isDisabled">
                 <a-select placeholder="仓库类型" v-model="form.platformType">
-                  <a-select-option :value="0">进口站台</a-select-option>
-                  <a-select-option :value="1">出口站台</a-select-option>
+                  <a-select-option :value="0">收货</a-select-option>
+                  <a-select-option :value="1">发货</a-select-option>
                 </a-select>
               </a-form-model-item>
               <span v-else>
@@ -152,7 +136,7 @@ export default {
       rules: {
         warehouseId: [{ required: true, message: '请选择所属仓库', trigger: 'change' }],
         reservoirAreaId: [{ required: true, message: '请选择所属库区', trigger: 'change' }],
-        applyUser: [{ required: true, message: '请选择负责人', trigger: 'change' }],
+        applyUser: [{ required: true, message: '请选择负责人' }],
         platformCode: [{ required: true, message: '请输入站台代码', trigger: 'blur' }],
         platformName: [{ required: true, message: '请输入站台名称', trigger: 'blur' }],
       },
@@ -188,16 +172,23 @@ export default {
     },
   },
   methods: {
+    warehchange(opt) {
+      this.form = {
+        ...this.form,
+        reservoirAreaId: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     async query(type, record) {
       this.visible = true
       this.addOredit = type
       this.record = record
       this.form.remark = ''
+      this.ifdelvali = false
       await getList().then((res) => {
         this.warehouseList = res.data
-      })
-      await ReservoiGetList().then((res) => {
-        this.ReservoiList = res.data
       })
 
       if (type !== 'add') {
@@ -206,6 +197,7 @@ export default {
           .then((res) => {
             that.spinning = false
             that.detail = res.data
+            this.warehchange(res.data.warehouseId)
             that.form = {
               ...that.detail,
               applyUser: {

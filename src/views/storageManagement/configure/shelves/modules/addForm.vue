@@ -15,17 +15,8 @@
           <tr>
             <td class="requiredMark">货架代码</td>
             <td>
-              <a-form-model-item ref="shelvesCode" prop="shelvesCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesCode"
-                  :disabled="ifdelvali"
-                  :maxLength="10"
-                  @blur="
-                    () => {
-                      $refs.shelvesCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesCode" v-if="!isDisabled">
+                <a-input v-model="form.shelvesCode" :disabled="ifdelvali" :maxLength="10" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesCode }}
@@ -33,15 +24,8 @@
             </td>
             <td class="requiredMark">货架名称</td>
             <td>
-              <a-form-model-item ref="shelvesName" prop="shelvesName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesName"
-                  @blur="
-                    () => {
-                      $refs.shelvesName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesName" v-if="!isDisabled">
+                <a-input :disabled="ifdelvali" v-model="form.shelvesName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesName }}
@@ -52,7 +36,7 @@
             <td style="width: 160px" class="requiredMark">所属仓库</td>
             <td>
               <a-form-model-item prop="warehouseId" v-if="!isDisabled">
-                <a-select v-model="form.warehouseId">
+                <a-select :disabled="ifdelvali" v-model="form.warehouseId" @change="warehchange">
                   <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
                     item.warehouseName
                   }}</a-select-option>
@@ -65,7 +49,7 @@
             <td style="width: 160px" class="requiredMark">所属库区</td>
             <td>
               <a-form-model-item prop="reservoirAreaId" v-if="!isDisabled">
-                <a-select v-model="form.reservoirAreaId">
+                <a-select :disabled="ifdelvali" v-model="form.reservoirAreaId">
                   <a-select-option v-for="item in ReservoiList" :key="item.id" :value="item.id">{{
                     item.reservoirName
                   }}</a-select-option>
@@ -95,16 +79,8 @@
           <tr>
             <td class="requiredMark">列</td>
             <td>
-              <a-form-model-item ref="shelvesColumn" prop="shelvesColumn" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesColumn"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.shelvesColumn.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesColumn" v-if="!isDisabled">
+                <a-input v-model="form.shelvesColumn" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesColumn }}
@@ -112,16 +88,8 @@
             </td>
             <td class="requiredMark">行</td>
             <td>
-              <a-form-model-item ref="shelvesRow" prop="shelvesRow" v-if="!isDisabled">
-                <a-input
-                  v-model="form.shelvesRow"
-                  :disabled="ifdelvali"
-                  @blur="
-                    () => {
-                      $refs.shelvesRow.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="shelvesRow" v-if="!isDisabled">
+                <a-input v-model="form.shelvesRow" :disabled="ifdelvali" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.shelvesRow }}
@@ -216,17 +184,27 @@ export default {
     },
   },
   methods: {
+    warehchange(opt) {
+      this.form = {
+        ...this.form,
+        reservoirAreaId: undefined,
+      }
+      ReservoiGetList({ warehouseId: opt }).then((res) => {
+        this.ReservoiList = res.data
+      })
+    },
     async query(type, record) {
       this.visible = true
       this.addOredit = type
       this.record = record
       this.form.remark = ''
-      getList().then((res) => {
+      this.ifdelvali = false
+      getList({ warehouseType: 2 }).then((res) => {
         this.warehouseList = res.data
       })
-      ReservoiGetList().then((res) => {
-        this.ReservoiList = res.data
-      })
+      // ReservoiGetList().then((res) => {
+      //   this.ReservoiList = res.data
+      // })
       roadwaygetList().then((res) => {
         this.roadwaygetList = res.data
       })
@@ -243,6 +221,7 @@ export default {
         shelvesDetailById({ id: record.id })
           .then((res) => {
             that.spinning = false
+            this.warehchange(res.data.warehouseId)
             that.detail = res.data
             that.form = {
               ...that.detail,

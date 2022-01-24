@@ -11,10 +11,13 @@
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
+        <!-- <template v-if="!isVeiw"> -->
         <a-button v-if="details.formKey === '3'" key="submit1" type="primary" @click="handleOk()">完结</a-button>
-        <a-popconfirm v-else-if="details.formKey === '1'" title="确认是否愿意担保吗?" @confirm="() => handleOk()">
-          <a-button key="submit" type="primary">确定</a-button>
-        </a-popconfirm>
+        <a-button v-if="details.formKey === '1'" key="submit1" type="primary" @click="handleOk()">确定</a-button>
+        <!-- <a-popconfirm v-else-if="details.formKey === '1'" title="确认是否愿意担保吗?" @confirm="() => handleOk()">
+            <a-button key="submit" type="primary">确定</a-button>
+          </a-popconfirm> -->
+        <!-- </template> -->
         <a-button v-else key="submit1" type="primary" @click="handleOk()">确定</a-button>
       </template>
     </template>
@@ -132,7 +135,7 @@
               }}
             </td>
           </tr>
-          <tr v-if="form.paymentType === 0 || form.paymentType === 2">
+          <tr v-if="form.paymentType === 0 || form.paymentType === 3">
             <td>处理人</td>
             <td>{{ form.handlerUser.split(',')[1] }}</td>
           </tr>
@@ -144,7 +147,7 @@
           </tr>
           <tr
             v-if="
-              form.paymentType !== 3 &&
+              (form.paymentType === 3 || form.paymentType === 0) &&
               (details.formKey === '1' || details.handlerResult === 0 || details.handlerResult === 1)
             "
           >
@@ -348,18 +351,19 @@ export default {
     handleOk() {
       console.log('你是要提交')
       let that = this
+      if (this.isVeiw) {
+        return (that.visible = false)
+      }
       that.$refs['ruleForm'].validate((valid) => {
         if (valid) {
           let ret = {}
           const params = that.$_.cloneDeep(that.form || {})
-          // params.mailRecord.province = params.mailRecord.province.toString()
-          // params.mailRecord.provinceName = this.labelName
-          // params.totalAmount = this.totalPhase1
-          // let react = this.personincharge.find((i) => i.id === params.handlerUser)
-          // params.handlerUser = react.id + ',' + react.trueName
-          // params.taskDocumentId = this.record.id
-          // console.log(params)
-          ret.isAdopt = this.isAdopt === true ? 0 : 1
+          if (params.paymentType === 0 || params.paymentType === 3) {
+            ret.isAdopt = this.isAdopt === true ? 0 : 1
+          } else {
+            ret.isAdopt = 0
+          }
+
           ret.approveId = this.record.id
           approvalAccessoriesManagement(ret)
             .then((res) => {

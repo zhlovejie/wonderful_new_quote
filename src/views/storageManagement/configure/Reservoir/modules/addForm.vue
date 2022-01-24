@@ -9,21 +9,22 @@
     :maskClosable="false"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form-model ref="ruleForm" :model="form" :rules="rules" class="addform-wrapper">
+      <a-form-model ref="ruleForm" :model="reservoform" class="addform-wrapper">
         <h3>基本信息</h3>
         <table class="custom-table custom-table-border">
           <tr>
             <td class="requiredMark">库区代码</td>
             <td>
-              <a-form-model-item ref="reservoirCode" prop="reservoirCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.reservoirCode"
-                  @blur="
-                    () => {
-                      $refs.reservoirCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item
+                prop="reservoirCode"
+                :rules="{
+                  required: true,
+                  message: '请输入库区代码',
+                  trigger: 'blur',
+                }"
+                v-if="!isDisabled"
+              >
+                <a-input :disabled="AshSetting" v-model="reservoform.reservoirCode" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.reservoirCode }}
@@ -33,15 +34,16 @@
           <tr>
             <td class="requiredMark">库区名称</td>
             <td>
-              <a-form-model-item ref="reservoirName" prop="reservoirName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.reservoirName"
-                  @blur="
-                    () => {
-                      $refs.reservoirName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item
+                prop="reservoirName"
+                :rules="{
+                  required: true,
+                  message: '请输入库区名称',
+                  trigger: 'blur',
+                }"
+                v-if="!isDisabled"
+              >
+                <a-input :disabled="AshSetting" v-model="reservoform.reservoirName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.reservoirName }}
@@ -51,8 +53,16 @@
           <tr>
             <td style="width: 200px" class="requiredMark">所属仓库</td>
             <td>
-              <a-form-model-item prop="warehouseId" v-if="!isDisabled">
-                <a-select v-model="form.warehouseId">
+              <a-form-model-item
+                prop="warehouseId"
+                :rules="{
+                  required: true,
+                  message: '请选择所属仓库',
+                  trigger: 'change',
+                }"
+                v-if="!isDisabled"
+              >
+                <a-select :disabled="AshSetting" v-model="reservoform.warehouseId">
                   <a-select-option v-for="item in warehouseList" :key="item.id" :value="item.id">{{
                     item.warehouseName
                   }}</a-select-option>
@@ -66,8 +76,16 @@
           <tr>
             <td class="requiredMark">负责人</td>
             <td>
-              <a-form-model-item prop="applyUser" v-if="!isDisabled">
-                <DepartmentUserCascade allowClear :info.sync="form.applyUser" />
+              <a-form-model-item
+                prop="applyUser"
+                :rules="{
+                  required: true,
+                  message: '请选择负责人',
+                  trigger: 'change',
+                }"
+                v-if="!isDisabled"
+              >
+                <DepartmentUserCascade allowClear :info.sync="reservoform.applyUser" />
               </a-form-model-item>
               <span v-else> {{ detail.headDepartmentName }}----{{ detail.headUserName }} </span>
             </td>
@@ -76,7 +94,7 @@
             <td>负责人电话</td>
             <td>
               <span>
-                {{ form.applyUser && form.applyUser.mobile ? form.applyUser.mobile : '系统带入' }}
+                {{ reservoform.applyUser && reservoform.applyUser.mobile ? reservoform.applyUser.mobile : '系统带入' }}
               </span>
             </td>
           </tr>
@@ -84,7 +102,7 @@
             <td>备注</td>
             <td>
               <a-form-model-item v-if="!isDisabled">
-                <a-input v-model="form.remark" type="textarea" />
+                <a-input v-model="reservoform.remark" type="textarea" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.remark }}
@@ -98,7 +116,7 @@
 </template>
 
 <script>
-import { getList, ReservoiAddOrUpdatee, ReservoigetDetailById } from '@/api/storage'
+import { getList, ReservoiAddOrUpdatee, ReservoigetDetailById, ReservoidelValidation } from '@/api/storage'
 import DepartmentUserCascade from '@/components/CustomerList/DepartmentUserCascade'
 
 export default {
@@ -111,17 +129,12 @@ export default {
       Warehouse: [],
       warehouseList: [],
       visible: false,
+      AshSetting: false,
       confirmLoading: false,
       addOredit: 'add',
       record: {},
-      form: {},
+      reservoform: {},
       detail: {},
-      rules: {
-        warehouseId: [{ required: true, message: '请选择所属仓库', trigger: 'change' }],
-        applyUser: [{ required: true, message: '请选择负责人', trigger: 'change' }],
-        reservoirCode: [{ required: true, message: '请输入库区代码', trigger: 'blur' }],
-        reservoirName: [{ required: true, message: '请输入库区名称', trigger: 'blur' }],
-      },
     }
   },
 
@@ -149,7 +162,7 @@ export default {
       this.visible = true
       this.addOredit = type
       this.record = record
-      this.form.remark = ''
+      this.reservoform = {}
       getList().then((res) => {
         this.warehouseList = res.data
       })
@@ -159,7 +172,7 @@ export default {
           .then((res) => {
             that.spinning = false
             that.detail = res.data
-            that.form = {
+            that.reservoform = {
               ...that.detail,
               applyUser: {
                 depId: that.detail.headDepartmentId,
@@ -174,6 +187,11 @@ export default {
             that.spinning = false
             that.$message.error(err)
           })
+        ReservoidelValidation({ id: record.id }).then((res) => {
+          if (+res.code === 500) {
+            this.AshSetting = true
+          }
+        })
       }
     },
 
@@ -189,8 +207,8 @@ export default {
       }
       _this.$refs.ruleForm.validate(async (valid) => {
         if (valid) {
-          let { depId, depName, userId, userName, mobile } = _this.form.applyUser
-          let { remark, warehouseId, reservoirCode, reservoirName } = _this.form
+          let { depId, depName, userId, userName, mobile } = _this.reservoform.applyUser
+          let { remark, warehouseId, reservoirCode, reservoirName } = _this.reservoform
           let react = this.warehouseList.find((i) => i.id === warehouseId)
           let baseInfo = {
             remark,

@@ -17,7 +17,7 @@
           <a-range-picker style="width:220px;" v-model="searchParam.date" />
         </a-form-item>
 
-        <a-form-item label="盘点结束时间">
+        <a-form-item v-if="+activeKey === 5" label="盘点结束时间">
           <a-range-picker style="width:220px;" v-model="searchParam.dateEnd" />
         </a-form-item>
 
@@ -98,7 +98,7 @@ import AddForm from '../checkplan/AddForm'
 import moment from 'moment'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 // import CustomerSelect from '@/components/CustomerList/CustomerSelect'
-const columns = [
+const base_columns = [
   {
     title: '序号',
     key: 'order',
@@ -150,7 +150,6 @@ export default {
   data() {
     return {
       activeKey: 2,
-      columns,
       dataSource: [],
       pagination: {
         current: 1,
@@ -182,6 +181,22 @@ export default {
         }
       },
       immediate: true
+    }
+  },
+  computed:{
+    columns(){
+      let columns = [...base_columns]
+      if(+this.activeKey === 5){
+        let idx = columns.findIndex(item => {
+          debugger
+          return item.dataIndex === 'inventoryStartDate'
+        })
+        columns.splice(idx+1,0,{
+          title: '盘点结束时间',
+          dataIndex: 'inventoryEndDate'
+        })
+      }
+      return columns
     }
   },
   mounted() {

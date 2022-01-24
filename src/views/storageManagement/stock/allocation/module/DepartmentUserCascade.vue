@@ -46,6 +46,10 @@ export default {
       type: Number,
       default: '',
     },
+    removePosition: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -113,14 +117,14 @@ export default {
         materialId: that.materialId,
         type: depId.type,
       }).then((res) => {
-        that.userList = res.data || []
+        that.userList = res.data.filter((i) => i.positionCode !== that.removePosition) || []
       })
     },
     depChange(depId) {
       const that = this
       that.$emit('update:info', depId)
       const target = that.depList.find((u) => u.shelvesLocationId === depId)
-      this.initDepartment({ react: that.info, type: target.type })
+      this.initDepartment({ react: depId, type: target.type })
       that.$emit('update:positionCode', target.shelvesLocationName)
       that.$emit('update:PositionId', null)
       that.$emit('update:PositionName', null)

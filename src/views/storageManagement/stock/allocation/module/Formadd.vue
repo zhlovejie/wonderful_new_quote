@@ -138,6 +138,7 @@
                   :materialId.sync="record.materialId"
                   :types.sync="record.type"
                   :positionCode.sync="record.immigrateShelvesLocationName"
+                  :removePosition.sync="record.removePosition"
                 />
                 <span v-else>
                   {{ record.immigrateShelvesLocationName + ',' + record.immigratePosition }}
@@ -203,10 +204,10 @@ export default {
   computed: {
     modalTitle() {
       if (this.isEditSalary) {
-        return '修改仓位移位申请'
+        return '修改库存调拨申请'
       }
       let txt = this.isView ? '查看' : this.isEdit ? '审核' : this.isView5 ? '查看' : '新增'
-      return `${txt}仓位移位申请`
+      return `${txt}库存调拨申请`
     },
     isView() {
       //查看
@@ -384,7 +385,10 @@ export default {
       that.visible = true
       that.type = type
       that.record = record
-      this.form.materialList = []
+      this.form = {
+        materialList: [],
+        allocateDate: moment(),
+      }
       if (type !== 'add') {
         allocateGetDetailById({ id: record.id }).then((res) => {
           let detail = res.data

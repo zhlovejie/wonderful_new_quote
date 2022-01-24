@@ -66,7 +66,7 @@
                   :prop="`materialTableList.${index}.materialCode`"
                   :rules="{ required: true, message: '请选择物料' }"
                 >
-                  <a-select
+                  <!-- <a-select
                     :disabled="isDisabled"
                     placeholder="请选择物料"
                     style="width:200px;"
@@ -76,7 +76,16 @@
                     <a-select-option v-for="item in instantPositionList" :key="item.id" :value="item.id">{{
                       item.materialCode
                     }}</a-select-option>
-                  </a-select>
+                  </a-select> -->
+
+                  <a-input
+                    read-only="read-only"
+                    :disabled="isDisabled"
+                    @click="openModel(record)"
+                    placeholder="请选择物料代码"
+                    :value="record.materialCode"
+                  />
+                  
                 </a-form-model-item>
                 <span v-else>{{text}}</span>
               </div>
@@ -97,21 +106,21 @@
               <div slot="exWarehouseNum" slot-scope="text, record, index">
                 <a-form-model-item
                   v-if="!isDisabled"
-                  :prop="`materialTableList.${index}.alreadyExWarehouseNum`"
+                  :prop="`materialTableList.${index}.exWarehouseNum`"
                   :rules="{ required: true, message: '请输入出库数量' }"
                 >
                   <a-input-number
                     :disabled="isDisabled"
                     style="width:80px;text-align:center;"
                     :min="0"
-                    :max="record.exWarehouseNum"
                     :step="1"
                     :precision="0"
-                    :value="record.alreadyExWarehouseNum"
+                    :value="record.exWarehouseNum"
                     @change="(val) => handleExWarehouseNumChange(index,record,val)"
                   />
                 </a-form-model-item>
-                <span v-else>{{record.alreadyExWarehouseNum}}</span>
+                <!-- <span v-else>{{record.alreadyExWarehouseNum}}</span> -->
+                <span v-else>{{record.exWarehouseNum}}</span>
               </div>
 
 
@@ -122,10 +131,9 @@
               <template slot="footer" >
                 <div style="text-align:right;margin-right:10px;font-size:16px;">
                   <span>合计：</span>
-                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.alreadyExWarehouseNum) || 0),0)  }} </span>
+                  <span style="margin:0 5px;">出库数量 &nbsp;{{ form.materialTableList.reduce((adder,item) => adder + (parseFloat(item.exWarehouseNum) || 0),0)  }} </span>
                 </div>
               </template>
-
 
             </a-table>
             <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="actionItem('add')"
@@ -151,6 +159,7 @@
         </div>
       </a-form-model>
       <Approval ref="approval" @opinionChange="opinionChange" />
+      <MaterialSelect ref="materialSelect" @custom-change="handlerMaterialChange"/>
     </a-spin>
   </a-modal>
 </template>
@@ -165,7 +174,7 @@ import {
 
 import moment from 'moment'
 import Approval from './Approval'
-
+import MaterialSelect from './MaterialSelect'
 const base_columns = [
   {
     title: '序号',
@@ -188,6 +197,11 @@ const base_columns = [
     scopedSlots: { customRender: 'materialName' }
   },
   {
+    title: '规格型号',
+    dataIndex: 'specification',
+    width:200
+  },
+  {
     title: '辅计量单位',
     dataIndex: 'subUnit'
   },
@@ -203,9 +217,10 @@ const base_columns = [
 ]
 
 export default {
-  name: 'GiftForm',
+  name: 'storage-export-apply-addForm',
   components: {
-    Approval
+    Approval,
+    MaterialSelect
   },
   data() {
     return {
@@ -258,6 +273,9 @@ export default {
   },
   methods: {
     moment,
+    openModel(record) {
+      this.$refs.materialSelect.query(record)
+    },
     handleExWarehouseNumChange(index,record,val){
       const that = this
       let materialTableList = [...that.form.materialTableList]
@@ -267,6 +285,9 @@ export default {
       that.form = {
         ...that.form,
         materialTableList
+      }
+      if(+val > +record.__maxExWarehouseNum){
+        that.$message.warning(`出库数量已大于库存数量，库存数量为：${record.__maxExWarehouseNum}`)
       }
     },
     actionItem(type, record) {
@@ -321,14 +342,11 @@ export default {
         }
       }
     },
-    handlerMaterialChange(positionId, record) {
-      debugger
+
+    handlerMaterialChange({selectItem, recordParam}) {
       const that = this
-      const target = that.instantPositionList.find(item => item.id === positionId)
-      if (!target) {
-        return
-      }
       const {
+        id,
         positionCode,
         materialId,
         materialName,
@@ -337,11 +355,11 @@ export default {
         subUnit,
         positionQuantity,
         k3Code
-      } = target
+      } = selectItem
 
       let materialTableList = [...that.form.materialTableList]
-      let item = materialTableList.find(item => item.key === record.key)
-      item.positionId = positionId
+      let item = materialTableList.find(item => item.key === recordParam.key)
+      item.positionId = id
       item.positionCode = positionCode
       item.materialId = materialId
       item.materialName = materialName

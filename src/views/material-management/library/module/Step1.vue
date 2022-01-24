@@ -238,6 +238,7 @@ export default {
     async qrChangeHandler(dataUrl,id){
       const that = this
       console.log(`qrChangeHandler called`,arguments)
+      that.wuliaoQrUrl = null
       that.tip = '生成物料二维码...'
       that.spinning = true
       if(dataUrl){
@@ -257,7 +258,7 @@ export default {
             let fileType = 'image/png'
             canvas.toBlob(
               (blob) => {
-                resolve(new File([blob], 'wuliao_qr.png', { type: fileType }))
+                resolve(blob ? new File([blob], 'wuliao_qr.png', { type: fileType }) : null)
               },
               fileType,
               0.92
@@ -267,7 +268,10 @@ export default {
         if(file !== null){
           const formData = new FormData()
           formData.append('file', file)
-          let url = await customUpload(formData).then((res) => res.data)
+          let url = await customUpload(formData).then((res) => res.data).catch(err => {
+            that.$message.error(err.message)
+            return null
+          })
           that.spinning = false
           that.wuliaoQrUrl = url
           return url
@@ -407,13 +411,15 @@ export default {
             return
           }
           
-          that.tip = '检测规格型号是否重复...'
-          that.spinning = true
-          const isSpecificationDuplicate = await that.checkSpecificationMaterial()
-          that.spinning = false
-          if(isSpecificationDuplicate){
-            that.$message.info('规格型号重复，禁止操作')
-            return
+          if(that.normalAddForm.isNormal){
+            that.tip = '检测规格型号是否重复...'
+            that.spinning = true
+            const isSpecificationDuplicate = await that.checkSpecificationMaterial()
+            that.spinning = false
+            if(isSpecificationDuplicate){
+              that.$message.info('规格型号重复，禁止操作')
+              return
+            }
           }
 
           // let isMaterialNameDuplicate = await routineMaterialInfoCheckName({materialName,ruleId}).then(res => res.data).catch(err => false)
@@ -470,7 +476,7 @@ export default {
 
       let arr = []
       that.form.specificationsList.map(item => {
-        let target = item.subList.find(s => s.id === item.selectedID)
+        let target = item.subList.find(s => +s.id === +item.selectedID)
         /**
          * @ApiModelProperty(value = "是否计入物料代码：1是，2否，默认值1")
          * private Integer isBringCode;
@@ -494,7 +500,7 @@ export default {
       const that = this
       let arr = []
       that.form.specificationsList.map(item => {
-        let target = item.subList.find(s => s.id === item.selectedID)
+        let target = item.subList.find(s => +s.id === +item.selectedID)
         arr.push(`${item.newRuleName || item.ruleName}:${(target.newRuleName || target.ruleName)}(${target.code})  `)
       })
       return arr.length > 0 ? arr.join(",") : '无'
@@ -521,8 +527,10 @@ export default {
         thickness: undefined,
         width: undefined,
         length: undefined,
-      },
-      await that.initSpecifications(node)
+      }
+      if(that.normalAddForm.isNormal){
+        await that.initSpecifications(node)
+      }
     },
     initSpecifications(node){
       const that = this
@@ -809,33 +817,14 @@ export default {
       try{
         that.spinning = true
         let specificationsList = that.$_.cloneDeep(that.form.specificationsList || [])
-        let queue = []
         specificationVolist.map(item => {
           let target = specificationsList.find(node => +node.id === +item.specificationId)
-          target && queue.push(new Promise((resolve) => {
-            routineMaterialRuleSpecificationsPagerTreeList({
-              current:1,
-              size:1,
-              ruleName:item.specificationValueData,
-              parentId:item.specificationId
-            }).then(res => {
-              if(res.code === 200 && Array.isArray(res.data.records) && res.data.records.length > 0){
-                const _item = res.data.records[0]
-                target.selectedID = _item.id
-                target.selectedPicUrl = _item.picUrl
-                target.selectedLabel = `${(_item.newRuleName || _item.ruleName)}(${_item.code})`
-                target.subList = [_item]
-              }
-              resolve()
-            }).catch(err => {
-              console.error(err)
-              resolve()
-            })
-          }))
+          target.selectedID = item.specificationValueId
+          target.selectedPicUrl = item.ruleTreeListVo ? item.ruleTreeListVo.picUrl : ''
+          target.selectedLabel = `${item.specificationValueData}(${item.specificationValueCode})`
+          target.subList = [item.ruleTreeListVo]
         })
-  
-        await Promise.all(queue)
-  
+
         that.form = {
           ...that.form,
           specificationsList

@@ -219,6 +219,12 @@ const innerColumns = [
 
 export default {
   name: 'Invoice',
+  props:{
+    pageFrom:{
+      type:String,
+      default:'invoice'
+    }
+  },
   components: {
     Tendering,
     InvestigateNode,
@@ -431,13 +437,13 @@ export default {
       console.log(key)
     },
     handleAdd() {
-      this.$router.push({ name: 'invoiceModules', params: { type: 'Add' } })
+      this.$router.push({ name: 'invoiceModules', params: { type: 'Add' ,__from__:this.pageFrom} })
     },
     handleSee(e) {
-      this.$router.push({ name: 'invoiceApproval', params: { record: e, type: 'See' } })
+      this.$router.push({ name: 'invoiceApproval', params: { record: e, type: 'See' ,__from__:this.pageFrom} })
     },
     handleApproval(e) {
-      this.$router.push({ name: 'invoiceApproval', params: { record: e, type: 'Approval' } })
+      this.$router.push({ name: 'invoiceApproval', params: { record: e, type: 'Approval' ,__from__:this.pageFrom} })
     },
     handleAuditOk() {
       this.searchAction()
@@ -446,7 +452,7 @@ export default {
       this.searchAction()
     },
     updateInvoice(record) {
-      this.$router.push({ name: 'invoiceModules', params: { record, type: 'Edit' } })
+      this.$router.push({ name: 'invoiceModules', params: { record, type: 'Edit' ,__from__:this.pageFrom} })
     },
     openModel() {
       console.log('openModel click')

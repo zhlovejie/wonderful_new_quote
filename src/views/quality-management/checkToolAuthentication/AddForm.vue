@@ -5,10 +5,10 @@
         <table class="custom-table custom-table-border">
           <tbody>
             <tr>
-              <td style="width: 150px">
-                <span>检验工具</span>
+              <td style="width:150px;">
+                <span class="icon-required">检验工具</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="parameterTermName">
                   <a-select v-if="isAdd" style="width: 100%" :value="form.parameterTermId" @change="handlerToolsSelect">
                     <a-select-option v-for="item in parameterTermList" :key="item.id">
@@ -22,7 +22,7 @@
               <td style="width: 150px">
                 <span>工具编号</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item>
                   <a-input v-if="!isDisabled" v-model="form.code" placeholder="系统生成" disabled="disabled" />
                   <span v-else>{{ form.code }}</span>
@@ -30,10 +30,10 @@
               </td>
             </tr>
             <tr>
-              <td style="width: 150px">
-                <span>认证周期(月)</span>
+              <td style="width:150px;">
+                <span class="icon-required">认证周期(月)</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="authenticationCycle">
                   <a-input-number
                     v-if="!isDisabled"
@@ -50,7 +50,7 @@
               <td style="width: 150px">
                 <span class="icon-required">认证处</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="authenticationOffice">
                   <a-select v-if="!isDisabled" v-model="form.authenticationOffice">
                     <a-select-option :value="0">质监局</a-select-option>
@@ -65,7 +65,7 @@
               <td style="width: 150px">
                 <span class="icon-required">认证结果</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="authenticationResult">
                   <a-radio-group
                     v-if="!isDisabled"
@@ -82,7 +82,7 @@
               <td style="width: 150px">
                 <span class="icon-required">工具状态</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item prop="type">
                   <a-select v-if="!isDisabled" v-model="form.type">
                     <a-select-option :value="0">正常</a-select-option>
@@ -97,37 +97,50 @@
               <td style="width: 150px">
                 <span class="icon-required">二维码</span>
               </td>
-              <td>
+              <td style="width:350px;">
                 <a-form-model-item>
                   <vue-qr ref="qr" :text="qrText" :size="qrSize"></vue-qr>
                 </a-form-model-item>
               </td>
-              <td style="width: 150px">
-                <span class="icon-required">备注</span>
+              <td style="width:150px;">
+                <span>备注</span>
               </td>
               <td colspan="3">
                 <a-form-model-item prop="remarks">
-                  <a-textarea v-if="!isDisabled" placeholder="备注" allow-clear autoSize v-model="form.remarks" />
-                  <span v-else> {{ form.remarks }}</span>
+                  <a-textarea
+                    v-if="!isDisabled"
+                    placeholder="备注"
+                    allow-clear
+                    :auto-size="{ minRows: 3, maxRows: 5 }"
+                    v-model="form.remarks"
+                  />
+                  <span v-else> {{form.remarks}}</span>
                 </a-form-model-item>
               </td>
             </tr>
             <tr>
-              <td style="width: 150px">
-                <span>认证证书</span>
+              <td style="width:150px;">
+                <span class="icon-required">认证证书</span>
               </td>
-              <td colspan="3" style="text-align: left">
-                <UploadFile
-                  v-if="!isDisabled"
-                  key="image"
-                  ref="uploadImage"
-                  :config="uploadImageConfig"
-                  @change="(fileList) => fileChange(fileList, 'image')"
-                />
-                <div v-else>
-                  <a-button v-if="form.authenticationCertificate" @click="handlerImageView">预览图片</a-button>
-                  <span v-else>未上传图片</span>
+              <td
+                colspan="3"
+                style="text-align:left;"
+              >
+              <a-form-model-item prop="authenticationCertificate">
+                <div style="width:700px;overflow:hidden;">
+                  <UploadFile
+                    v-if="!isDisabled"
+                    key="image"
+                    ref="uploadImage"
+                    :config="uploadImageConfig"
+                    @change="(fileList) => fileChange(fileList, 'image')"
+                  />
+                  <div v-else>
+                    <a-button v-if="form.authenticationCertificate" @click="handlerImageView">预览图片</a-button>
+                    <span v-else>未上传图片</span>
+                  </div>
                 </div>
+              </a-form-model-item>
               </td>
             </tr>
             <tr>
@@ -135,17 +148,18 @@
                 <span>附件</span>
               </td>
               <td colspan="3" style="text-align: left">
-                <UploadFile
-                  v-if="!isDisabled"
-                  key="file"
-                  ref="uploadFiles"
-                  :config="uploadVedioConfig"
-                  @change="(fileList) => fileChange(fileList, 'file')"
-                />
-                <div v-else>
-                  <a-button v-if="form.annexUrl" @click="handleAnnexUrl">查看附件</a-button>
-
-                  <span v-else>未上传附件</span>
+                <div style="width:700px;overflow:hidden;">
+                  <UploadFile
+                    v-if="!isDisabled"
+                    key="file"
+                    ref="uploadFiles"
+                    :config="uploadVedioConfig"
+                    @change="(fileList) => fileChange(fileList, 'file')"
+                  />
+                  <div v-else>
+                    <a-button v-if="form.annexUrl" @click="handleAnnexUrl">查看附件</a-button>
+                    <span v-else>未上传附件</span>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -215,8 +229,9 @@ export default {
         type: 0,
       },
       rules: {
-        parameterTermId: [{ required: true, message: '请选择检验工具', trigger: 'change' }],
+        parameterTermName: [{ required: true, message: '请选择检验工具', trigger: 'change' }],
         authenticationCycle: [{ required: true, message: '请输入认证周期', trigger: 'change' }],
+        authenticationCertificate:[{ required: true, message: '请上传认证证书', trigger: 'change' }],
       },
       spinning: false,
       visible: false,
@@ -237,7 +252,7 @@ export default {
         },
       },
       uploadVedioConfig: {
-        maxFileCount: 1,
+        maxFileCount: 10,
         fileType: 'file', // file img
         enableCompress: false,
         enablePreview: false,
@@ -320,13 +335,22 @@ export default {
         that.$nextTick(() => {
           if (detail.authenticationCertificate) {
             const picFiles = detail.authenticationCertificate.split(',').map((url) => {
-              return { url }
+              return { 
+                url,
+                name:url.split('/')[url.split('/').length -1]
+              }
             })
             that.$refs.uploadImage && that.$refs.uploadImage.setFiles(picFiles)
+          }else{
+            that.$refs.uploadImage && that.$refs.uploadImage.setFiles([])
           }
           if (detail.annexUrl) {
-            const videoFiles = [{ url: detail.annexUrl }]
+            const videoFiles = detail.annexUrl.split(',').map((url) => {
+              return { url ,name:url.split('/')[url.split('/').length -1]}
+            })
             that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles(videoFiles)
+          }else{
+            that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles([])
           }
         })
       }
@@ -337,6 +361,9 @@ export default {
     handleCancel() {
       const that = this
       that.form = {}
+      that.qrText = ''
+      that.$refs.uploadImage && that.$refs.uploadImage.setFiles([])
+      that.$refs.uploadFiles && that.$refs.uploadFiles.setFiles([])
       that.visible = false
       that.$emit('finish')
     },
@@ -389,7 +416,6 @@ export default {
       this.$refs.imgViewList.show(imgList)
     },
     handleAnnexUrl() {
-      debugger
       const pictureUrl = this.form.annexUrl
       const imgList = pictureUrl.split(',').map((url) => decodeURIComponent(url))
       this.$refs.fileViewList.show(imgList)

@@ -122,8 +122,8 @@ export default {
     handleChange(info) {
       const that = this
       let fileList = [...info.fileList]
-      fileList = fileList.slice(-3)
-      fileList = fileList.map((file) => {
+      // fileList = fileList.slice(-3)
+      fileList = fileList.map(file => {
         if (file.response) {
           if (file.response.code === 200) {
             file.url = file.response.data
@@ -143,7 +143,7 @@ export default {
       this.fileList = files.map((f) => {
         return {
           uid: f.uid || Math.random().toString(16).slice(-10),
-          name: f.url,
+          name: f.name || f.url,
           status: 'done',
           url: f.url,
         }

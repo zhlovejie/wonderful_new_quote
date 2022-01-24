@@ -205,20 +205,6 @@ export default {
         },
       })
     },
-    delvali(record) {
-      let that = this
-      ReservoidelById({ id: record.id })
-        .then((res) => {
-          that.$message.info(res.msg)
-          if (+res.code === 200) {
-            that.searchAction()
-          }
-        })
-        .catch((err) => {
-          console.error(err)
-          that.$message.error(err)
-        })
-    },
     confirmModel(opt) {
       const that = this
       let { title, content, success, attrs } = opt

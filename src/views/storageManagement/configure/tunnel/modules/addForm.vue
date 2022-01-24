@@ -15,15 +15,8 @@
           <tr>
             <td class="requiredMark">巷道代码</td>
             <td>
-              <a-form-model-item ref="roadwayCode" prop="roadwayCode" v-if="!isDisabled">
-                <a-input
-                  v-model="form.roadwayCode"
-                  @blur="
-                    () => {
-                      $refs.roadwayCode.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="roadwayCode" v-if="!isDisabled">
+                <a-input v-model="form.roadwayCode" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.roadwayCode }}
@@ -33,15 +26,8 @@
           <tr>
             <td class="requiredMark">巷道名称</td>
             <td>
-              <a-form-model-item ref="roadwayName" prop="roadwayName" v-if="!isDisabled">
-                <a-input
-                  v-model="form.roadwayName"
-                  @blur="
-                    () => {
-                      $refs.roadwayName.onFieldBlur()
-                    }
-                  "
-                />
+              <a-form-model-item prop="roadwayName" v-if="!isDisabled">
+                <a-input v-model="form.roadwayName" />
               </a-form-model-item>
               <span v-else>
                 {{ detail.roadwayName }}

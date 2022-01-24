@@ -35,6 +35,10 @@ export default {
       type: String,
       default: '',
     },
+    removePosition: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -77,7 +81,7 @@ export default {
           materialId: that.materialId,
           type: that.types,
         }).then((res) => {
-          that.depList = res.data
+          that.depList = res.data.filter((i) => i.positionCode !== that.removePosition)
         })
       }
     },

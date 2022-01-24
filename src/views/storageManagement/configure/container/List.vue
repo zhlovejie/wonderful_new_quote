@@ -233,20 +233,35 @@ export default {
       that.confirmModel({
         content: '容器/托盘名称（容器/托盘代码）确定要进行解绑吗？确定解绑后所在仓库库位信息将会被清空！',
         success: () => {
-          palletunbindById({ id: record.id })
+          palletdelValidation({ id: record.id })
             .then((res) => {
-              that.$message.info(res.msg)
               if (+res.code === 200) {
-                that.searchAction()
+                that.palletun(record)
+              } else {
+                that.$message.error('非闲置状态不能解绑')
               }
             })
             .catch((err) => {
               console.error(err)
               that.$message.error(err)
             })
+
           return
         },
       })
+    },
+    palletun(record) {
+      palletunbindById({ id: record.id })
+        .then((res) => {
+          that.$message.info(res.msg)
+          if (+res.code === 200) {
+            that.searchAction()
+          }
+        })
+        .catch((err) => {
+          console.error(err)
+          that.$message.error(err)
+        })
     },
     del(record) {
       let that = this

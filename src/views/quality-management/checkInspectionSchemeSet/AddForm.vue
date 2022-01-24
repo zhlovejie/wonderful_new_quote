@@ -1,45 +1,23 @@
 <template>
-  <a-modal
-    :title="modalTitle"
-    :visible="visible"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    :width="1400"
-  >
+  <a-modal :title="modalTitle" :visible="visible" @ok="handleOk" @cancel="handleCancel" :width="1400">
     <a-spin :spinning="spinning">
-      <a-form-model
-        ref="ruleForm"
-        :model="form"
-        :rules="rules"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
+      <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-row>
           <a-col :span="24">
             <a-form-model-item
               label="检验方案"
-              :label-col="{span:2}"
-              :wrapper-col="{span:22}"
+              :label-col="{ span: 2 }"
+              :wrapper-col="{ span: 22 }"
               prop="inspectionScheme"
             >
-              <a-input
-                v-if="!isDisabled"
-                allow-clear
-                v-model="form.inspectionScheme"
-                placeholder="检验方案"
-              />
-              <span v-else>{{form.inspectionScheme}}</span>
+              <a-input v-if="!isDisabled" allow-clear v-model="form.inspectionScheme" placeholder="检验方案" />
+              <span v-else>{{ form.inspectionScheme }}</span>
             </a-form-model-item>
           </a-col>
         </a-row>
         <a-row type="flex">
           <a-col :span="24">
-            <a-form-model-item
-              label="备注信息"
-              :label-col="{span:2}"
-              :wrapper-col="{span:22}"
-              prop="remarks"
-            >
+            <a-form-model-item label="备注信息" :label-col="{ span: 2 }" :wrapper-col="{ span: 22 }" prop="remarks">
               <a-textarea
                 v-if="!isDisabled"
                 placeholder="备注"
@@ -48,7 +26,7 @@
                 autoSize
                 v-model="form.remarks"
               />
-              <span v-else>{{form.remarks}}</span>
+              <span v-else>{{ form.remarks }}</span>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -61,10 +39,7 @@
             <th colspan="2">检验项目信息</th>
             <th colspan="3">检验标准参数</th>
             <th rowspan="2">备注</th>
-            <th
-              rowspan="2"
-              v-if="!isDisabled"
-            >操作</th>
+            <th rowspan="2" v-if="!isDisabled">操作</th>
           </tr>
 
           <tr>
@@ -76,66 +51,50 @@
           </tr>
         </thead>
         <tbody>
-
-          <tr
-            v-for="(item,idx) in checkInspectionSchemeSetProjects"
-            :key="item.key"
-          >
-            <td>{{idx + 1}}</td>
+          <tr v-for="(item, idx) in checkInspectionSchemeSetProjects" :key="item.key">
+            <td>{{ idx + 1 }}</td>
             <td>
               <a-select
                 v-if="!isDisabled"
                 style="width:200px;"
                 :value="item.parameterTermId"
-                @change="(val) => handlerToolsSelect(val,item.key)"
+                @change="val => handlerToolsSelect(val, item.key)"
               >
-                <a-select-option
-                  v-for="item in parameterTermList"
-                  :key="item.id"
-                >
-                  {{item.termName}}
+                <a-select-option v-for="item in parameterTermList" :key="item.id">
+                  {{ item.termName }}
                 </a-select-option>
               </a-select>
-              <span v-else>{{item.parameterTermName}}</span>
-
+              <span v-else>{{ item.parameterTermName }}</span>
             </td>
-            <td>{{item.parameterTermRemarks}}</td>
+            <td>{{ item.parameterTermRemarks }}</td>
             <td>
               <a-select
                 v-if="!isDisabled"
                 style="width:200px;"
                 v-model="item.inspectionBasisId"
-                @change="(val) => handlerInspectionBasisChange(val,item.key)"
+                @change="val => handlerInspectionBasisChange(val, item.key)"
               >
-                <a-select-option
-                  v-for="_base in inspectionBasisList"
-                  :key="_base.id"
-                  :value="_base.id"
-                >
-                  {{_base.inspectionBasis}}
+                <a-select-option v-for="_base in inspectionBasisList" :key="_base.id" :value="_base.id">
+                  {{ _base.inspectionBasis }}
                 </a-select-option>
               </a-select>
-              <span v-else>{{item.inspectionBasisName}}</span>
+              <span v-else>{{ item.inspectionBasisName }}</span>
             </td>
             <td>
               <a-select
                 v-if="!isDisabled"
                 style="width:150px;"
                 v-model="item.parameterTermAqlId"
-                @change="(val) => handlerAQLChange(val,item.key)"
+                @change="val => handlerAQLChange(val, item.key)"
               >
-                <a-select-option
-                  v-for="_base in item.aqlList"
-                  :key="_base.id"
-                  :value="_base.id"
-                >
-                  {{_base.text}}
+                <a-select-option v-for="_base in item.aqlList" :key="_base.id" :value="_base.id">
+                  {{ _base.termName }}
                 </a-select-option>
               </a-select>
-              <span v-else>{{item.parameterTermAqlName}}</span>
+              <span v-else>{{ item.parameterTermAqlName }}</span>
             </td>
             <td>
-              {{ {0:'正常',1:'加严',2:'放宽'}[item.inspectionGrade] }}
+              {{ { 0: '正常', 1: '加严', 2: '放宽' }[item.inspectionGrade] }}
             </td>
             <td>
               <a-textarea
@@ -146,24 +105,17 @@
                 autoSize
                 v-model="item.remarks"
               />
-              <span v-else>{{item.remarks}}</span>
+              <span v-else>{{ item.remarks }}</span>
             </td>
             <td v-if="!isDisabled">
-              <a
-                href="javascript:void(0);"
-                @click="doAction('del',item)"
-              >删除</a>
+              <a href="javascript:void(0);" @click="doAction('del', item)">删除</a>
             </td>
           </tr>
         </tbody>
       </table>
-      <a-button
-        v-if="!isDisabled"
-        style="width: 100%"
-        type="dashed"
-        icon="plus"
-        @click="doAction('add',null)"
-      >新增行</a-button>
+      <a-button v-if="!isDisabled" style="width: 100%" type="dashed" icon="plus" @click="doAction('add', null)"
+        >新增行</a-button
+      >
     </a-spin>
   </a-modal>
 </template>
@@ -175,7 +127,7 @@ import {
   checkInspectionSchemeSetDetail,
   checkInspectionSchemeSetAddOrUpdate
 } from '@/api/qualityManagement'
-import { getDictionary } from '@/api/common'
+
 import ToolsSingleSelect from '../checkToolAuthentication/ToolsSingleSelect'
 export default {
   components: {
@@ -247,9 +199,28 @@ export default {
     },
     fetchAQL() {
       const that = this
-      return getDictionary({ text: 'AQL值' }).then(res => {
-        that.aqlDataSource = res.data
+      return that.fetchAQLTermList('AQL值', 'aqlDataSource', function(arr) {
+        return [...arr].sort((item1, item2) => Number(item1.termName) - Number(item2.termName))
       })
+    },
+    async fetchAQLTermList(termName, fieldName, sortFn) {
+      const that = this
+      const id = await checkParameterTermList({ termName })
+        .then(res => {
+          return Array.isArray(res.data) && res.data.length > 0 ? res.data[0].id : null
+        })
+        .catch(err => {
+          return null
+        })
+
+      const list = await checkParameterTermList({ parentId: id })
+        .then(res => {
+          return Array.isArray(res.data) && res.data.length > 0 ? res.data : []
+        })
+        .catch(err => {
+          return []
+        })
+      that[fieldName] = typeof sortFn === 'function' ? sortFn(list) : list
     },
     fetchInspectionBasis() {
       const that = this
@@ -279,7 +250,7 @@ export default {
       if (target) {
         const item = target.aqlList.find(item => item.id === val)
         target.parameterTermAqlId = item.id
-        target.parameterTermAqlName = item.text
+        target.parameterTermAqlName = item.termName
         that.checkInspectionSchemeSetProjects = checkInspectionSchemeSetProjects
       }
     },

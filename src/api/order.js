@@ -74,3 +74,13 @@ export function save (data) {
     data: data
   })
 }
+
+// 销售订单分页列表-无权限
+export function queryOrderDropDown (parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/sale-contract/queryOrderDropDown',
+    method: 'get',
+    params: parameter
+  })
+}

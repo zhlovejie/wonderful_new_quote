@@ -189,7 +189,7 @@ export default {
   },
 
   created() {
-    getList().then((res) => {
+    getList({ warehouseType: 2 }).then((res) => {
       this.warehouseList = res.data
     })
   },

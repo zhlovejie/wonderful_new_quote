@@ -5,8 +5,8 @@
       <a-form layout="inline">
         <a-form-item>
           <a-select placeholder="类别" v-model="queryParam.platformType" allowClear style="width: 200px">
-            <a-select-option :value="0">进口站台</a-select-option>
-            <a-select-option :value="1">出口站台</a-select-option>
+            <a-select-option :value="0">收货</a-select-option>
+            <a-select-option :value="1">发货</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>

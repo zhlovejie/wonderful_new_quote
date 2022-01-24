@@ -47,7 +47,18 @@
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
+          <div slot="checkUserName" slot-scope="text, record, index">
+            <span v-if="record.status === 0">{{ record.inspectorUserName }}</span>
+            <span v-else>{{ record.checkUserName }}</span>
+          </div>
 
+          <div slot="specification" slot-scope="text">
+            <a-tooltip v-if="String(text).length > 5">
+              <template slot="title">{{ text }}</template>
+              {{ String(text).slice(0, 5) }}...
+            </a-tooltip>
+            <span v-else>{{ text }}</span>
+          </div>
           <div slot="warehouseEnterType" slot-scope="text, record">
             <span v-if="text == 1">赠送入库</span>
             <span v-if="text == 2">产成品返修入库</span>
@@ -164,6 +175,7 @@ export default {
           title: '规格型号',
           align: 'center',
           dataIndex: 'specification',
+          scopedSlots: { customRender: 'specification' },
         },
         {
           title: '需要入库仓库',
@@ -184,6 +196,7 @@ export default {
           title: '检验员',
           align: 'center',
           dataIndex: 'checkUserName',
+          scopedSlots: { customRender: 'checkUserName' },
         },
         {
           title: '单据状态',
@@ -284,7 +297,8 @@ export default {
         quality_getCheckGetMaterialId({ materialId: record.materialId, reportCheckNum: record.reportNum }).then(
           (res) => {
             if (res.data === null) {
-              this.$message.error('该物料没有配置检验标准')
+              let text = `该物料没配置报检数量为${record.reportNum}的检验标准`
+              this.$message.error(text)
             } else {
               this.$refs.formadd.query(type, record, res.data)
             }

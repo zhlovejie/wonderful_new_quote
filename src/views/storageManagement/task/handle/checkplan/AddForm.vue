@@ -28,10 +28,10 @@
                 <td style="width:150px;">盘点方式</td>
                 <td style="width:350px;">
                   <a-form-model-item prop="type">
-                    <a-select 
-                      v-if="!isDisabled && !isPandian" 
-                      v-model="form.type" 
-                      placeholder="盘点方式" 
+                    <a-select
+                      v-if="!isDisabled && !isPandian"
+                      v-model="form.type"
+                      placeholder="盘点方式"
                       style="width:100%;"
                       @change="handleTypeChange"
                     >
@@ -46,19 +46,19 @@
                 <td>盘点部门</td>
                 <td>
                   <a-form-model-item prop="exWarehouseDate">
-                    <DepartmentSelect v-if="!isDisabled && !isPandian" @change="handleDepartmentSelectChange" :depId="form.deptId" />
+                    <DepartmentSelect
+                      v-if="!isDisabled && !isPandian"
+                      @change="handleDepartmentSelectChange"
+                      :depId="form.deptId"
+                    />
                     <span v-else>{{ form.deptName }}</span>
                   </a-form-model-item>
                 </td>
                 <td>日期</td>
                 <td>
                   <a-form-model-item prop="inventoryDate">
-                    <a-date-picker
-                      v-if="!isDisabled && !isPandian"
-                      style="width:100%;"
-                      v-model="form.inventoryDate"
-                    />
-                    <span v-else>{{ form.inventoryDate }}</span>
+                    <a-date-picker v-if="!isDisabled && !isPandian" style="width:100%;" v-model="form.inventoryDate" />
+                    <span v-else>{{ form.inventoryDate.format('YYYY-MM-DD HH:mm:ss') }}</span>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -122,7 +122,9 @@
               :pagination="false"
               size="small"
               :rowSelection="
-                !(isDisabled || isPandian) ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys } : null
+                !(isDisabled || isPandian)
+                  ? { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }
+                  : null
               "
               :scroll="{ y: 450 }"
             >
@@ -146,21 +148,16 @@
                 </a-form-model-item>
               </div> -->
 
-              <!-- <div slot="abnormalAmount" slot-scope="text, record, index">
-                <a-form-model-item
-                  :prop="`instantPositionList.${index}.abnormalAmount`"
-                  :rules="{ required: true, message: '请输入异常数量' }"
-                >
-                  <a-input-number
-                    :disabled="isDisabled"
-                    style="width:80px;text-align:center;"
-                    :min="0"
-                    :step="1"
-                    :precision="0"
-                    v-model="record.abnormalAmount"
-                  />
-                </a-form-model-item>
-              </div> -->
+              <div slot="abnormalAmount" slot-scope="text, record, index">
+                <span
+                  style="color:red;"
+                  v-if="text > 0"
+                  >{{text}}
+                </span>
+                <span v-else>
+                  {{text}}
+                </span>
+              </div>
             </a-table>
           </div>
           <div class="__footer">
@@ -183,7 +180,7 @@
 <script>
 import { getList, ReservoiGetList } from '@/api/storage'
 
-import { getShelvesByAreaId2, containerPalletList ,instantPositionList} from '@/api/storage_wzz'
+import { getShelvesByAreaId2, containerPalletList, instantPositionList } from '@/api/storage_wzz'
 
 import {
   artificialInventoryApproval,
@@ -231,9 +228,14 @@ const base_columns = [
     title: '辅计量单位',
     dataIndex: 'subUnit'
   },
+
+  // {
+  //   title: '数量',
+  //   dataIndex: 'positionQuantity'
+  // },
   {
     title: '数量',
-    dataIndex: 'positionQuantity'
+    dataIndex: 'stockAmount'
   }
 ]
 
@@ -245,7 +247,6 @@ export default {
   },
   data() {
     return {
-      
       visible: false,
       spinning: false,
       record: {},
@@ -274,11 +275,11 @@ export default {
   computed: {
     modalTitle() {
       const m = {
-        'view':'查看',
-        'add':'新增',
-        'edit':'编辑',
-        'approval':'审批',
-        'pandian':'盘点',
+        view: '查看',
+        add: '新增',
+        edit: '编辑',
+        approval: '审批',
+        pandian: '盘点'
       }
       return `${m[this.type]}`
     },
@@ -300,13 +301,13 @@ export default {
     isDisabled() {
       return this.isView || this.isApproval
     },
-    columns(){
+    columns() {
       let columns = [...base_columns]
-      if(this.isPandian){
+      if (this.isPandian) {
         columns = columns.filter(item => item.dataIndex !== 'positionQuantity')
         columns.push({
           title: '库存数量',
-          dataIndex: 'stockAmount',
+          dataIndex: 'stockAmount'
         })
         columns.push({
           title: '盘点数量',
@@ -336,7 +337,7 @@ export default {
       }
 
       that.spinning = true
-      
+
       await getList().then(res => {
         //人工盘点只显示平面库信息   warehouseType 2平面库 1智能库
         that.warehouseList = res.data.filter(item => +item.warehouseType === 2)
@@ -350,29 +351,28 @@ export default {
               const data = res.data
               that.form = {
                 ...data,
-                inventoryDate: that.isDisabled ? data.inventoryDate : moment(data.inventoryDate)
+                inventoryDate: moment(data.inventoryDate)
               }
-              if(!that.isEdit){
+              if (!that.isEdit) {
                 that.instantPositionList = data.artificialInventoryInfos || []
               }
             })
 
-            if(that.isEdit){
+            if (that.isEdit) {
               const artificialInventoryInfos = that.form.artificialInventoryInfos || []
-  
+
               if (artificialInventoryInfos.length > 0) {
                 const { warehouseId, reservoirAreaId, shelvesLocationId } = artificialInventoryInfos[0]
                 await that.handleWarehouseChange(warehouseId)
                 await that.handleReservoirAreaChange(reservoirAreaId)
                 await that.handleShelvesLocationChange(shelvesLocationId)
-  
+
                 that.selectedRowKeys = artificialInventoryInfos.map(item => String(item.positionId))
                 that.selectedRows = that.instantPositionList.filter(item => {
                   return that.selectedRowKeys.includes(String(item.positionId))
                 })
               }
-            }else{
-
+            } else {
             }
           }
         }
@@ -392,7 +392,6 @@ export default {
         that.handleCancel()
         return
       } else {
-
         if ((that.isAdd || that.isEdit) && that.selectedRows.length === 0) {
           that.$message.info('请至少选择一条盘点计划明细')
           return
@@ -530,17 +529,21 @@ export default {
       }
     },
 
-    handleTypeChange(val){
+    handleTypeChange(val) {
       const that = this
 
       that.instantPositionList = []
 
-      if(+val === 0){
+      if (+val === 0) {
         instantPositionList({
-          materialType:1, // 是否查询只含有物料的信息（0否，1是）
-          type:0 // 用于盘点计划1是查立体库，0是查非立体库
+          materialType: 1, // 是否查询只含有物料的信息（0否，1是）
+          type: 0 // 用于盘点计划1是查立体库，0是查非立体库
         }).then(res => {
-          that.instantPositionList = res.data
+          that.instantPositionList = res.data.map(item => {
+              item.positionId = item.id
+              item.stockAmount = item.positionQuantity
+            return item
+          })
         })
       }
     },

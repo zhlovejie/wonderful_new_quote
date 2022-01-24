@@ -10,8 +10,7 @@
       ref="ruleForm"
       :model="form"
       :rules="rules"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
+      class="checkInspectionBasisAddForm"
     >
       <a-row>
         <a-col :span="8">
@@ -49,45 +48,48 @@
           </a-form-model-item>
         </a-col>
       </a-row>
-      <a-row type="flex">
-        <a-col
-          flex="112.66px"
-          style="text-align:right;line-height: 38px;"
-        >AQL值：</a-col>
-        <a-col flex="auto">
-          <a-form-model-item
-            :label-col="{span:0}"
-            :wrapper-col="{span:24}"
-          >
-            <CommonDictionarySelect
-              style="width: 100%"
-              :disabled="isDisabled"
+      <a-row >
+        <a-col :span="16">
+          <a-form-model-item label="AQL值">
+            <a-select
               mode="multiple"
-              placeholder="AQL值"
-              :text="'AQL值'"
-              :dictionaryId.sync="aqlList"
-              @loaded="handlerDictionaryDataSource"
-              @selected="handlerDictionaryChange"
-            />
+              :value="aqlList"
+              @change="handlerDictionaryChange"
+              :filter-option="filterOption"
+              :disabled="isDisabled"
+            >
+              <a-select-option
+                v-for="item in aqlDataSourceAll"
+                :key="item.id"
+                :value="item.id"
+              >
+                <template v-if="item.__lost">
+                  <a-tooltip>
+                    <template slot="title">
+                      该条数据已经在【检验参数配置】的【AQL值】条目中被删除
+                    </template>
+                    <span>{{ item.termName }}</span>
+                    <a-tag color="red" style="margin:0 5px;">已废弃</a-tag>
+                  </a-tooltip>
+                </template>
+                <template v-else>
+                  <span>{{ item.termName }}</span>
+                </template>
+              </a-select-option>
+            </a-select>
+
           </a-form-model-item>
         </a-col>
       </a-row>
-      <a-row type="flex">
-        <a-col
-          flex="112.66px"
-          style="text-align:right;line-height: 30px;"
-        >备注信息：</a-col>
-        <a-col flex="auto">
-          <a-form-model-item
-            :label-col="{span:0}"
-            :wrapper-col="{span:24}"
-          >
+      <a-row >
+        <a-col :span="16">
+          <a-form-model-item label="备注信息">
             <a-textarea
               :disabled="isDisabled"
               placeholder="备注"
               style="width: 100%"
               allow-clear
-              autoSize
+              :auto-size="{ minRows: 3, maxRows: 5 }"
               v-model="form.remarks"
             />
           </a-form-model-item>
@@ -103,8 +105,8 @@
           <td style="width:200px;">AQL值</td>
           <td
             v-for="col in planHeaderColumns"
-            :key="col.text"
-          >{{col.text}}</td>
+            :key="col.termName"
+          >{{col.termName}}<a-tag v-if="col.__lost" color="red" style="margin:0 5px;">已废弃</a-tag></td>
           <td
             rowspan="3"
             v-if="!isDisabled"
@@ -179,21 +181,25 @@
   </a-modal>
 </template>
 <script>
-import { checkInspectionBasisDetail, checkInspectionBasisAddOrUpdate } from '@/api/qualityManagement'
+import { 
+  checkInspectionBasisDetail, 
+  checkInspectionBasisAddOrUpdate, 
+  checkParameterTermList
+} from '@/api/qualityManagement'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 export default {
+  name:'checkInspectionBasisAddForm',
   components: {
     CommonDictionarySelect
   },
   data() {
     return {
       visible: false,
-      labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
       form: {},
       checkInspectionBasisAqls: [],
-      aqlList: [],
+      aqlList:[],
       aqlDataSource: [],
+      aqlDataSource_result:[],
       rules: {
         inspectionBasis: [{ required: true, message: '请输入检验依据', trigger: 'blur' }],
         inspectionGrade: [{ required: true, message: '请选择检验等级', trigger: 'change' }]
@@ -215,33 +221,52 @@ export default {
       return this.type === 'view'
     },
     planHeaderColumns() {
-      const list = this.aqlDataSource.filter(item => this.aqlList.includes(item.id))
-      return [...list]
+      const that = this
+      let arr = []
+      that.aqlList.map(v => {
+        let target = that.aqlDataSourceAll.find(item => +item.id === +v)
+        if(target){
+          arr.push({...target})
+        }
+      })
+      return arr
+    },
+    aqlDataSourceAll(){
+      let arr = [...this.aqlDataSource]
+      this.aqlDataSource_result.map(a => {
+        if(!arr.find(b => b.id === a.id)){
+          arr.push({...a,__lost:true})
+        }
+      })
+      return arr
     },
     isDisabled() {
       return this.isView
     }
   },
   methods: {
-    handlerDictionaryChange() {
+    handlerDictionaryChange(arr) {
       const that = this
+      that.aqlList = arr
       const checkInspectionBasisAqls = [...that.checkInspectionBasisAqls]
-      that.checkInspectionBasisAqls = checkInspectionBasisAqls.map(aql => {
-        aql.checkInspectionBasisAqlInfos = that.planHeaderColumns.map(col => {
-          const key = `${col.id}-${col.text}`
-          const target = aql.checkInspectionBasisAqlInfos.find(info => info.key === key)
-          if (target) {
-            return { ...target }
-          } else {
-            return {
-              key,
-              ac: undefined,
-              parameterTermId: col.id,
-              parameterTermName: col.text
+      that.$nextTick(() => {
+        that.checkInspectionBasisAqls = checkInspectionBasisAqls.map(aql => {
+          aql.checkInspectionBasisAqlInfos = that.planHeaderColumns.map(col => {
+            const key = `${col.id}-${col.termName}`
+            const target = aql.checkInspectionBasisAqlInfos.find(info => info.key === key)
+            if (target) {
+              return { ...target }
+            } else {
+              return {
+                key,
+                ac: undefined,
+                parameterTermId: col.id,
+                parameterTermName: col.termName
+              }
             }
-          }
+          })
+          return aql
         })
-        return aql
       })
     },
     validate() {
@@ -282,11 +307,11 @@ export default {
             that.$message.info(msg)
             return false
           }
-          if (!checkRange(startValue, endValue, ac)) {
-            const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】且范围在【${startValue}~${endValue}】之间`
-            that.$message.info(msg)
-            return false
-          }
+          // if (!checkRange(startValue, endValue, ac)) {
+          //   const msg = `第${line}行第${line1}列【${parameterTermName}】输入不符合规则，只能输入【数字或*号】且范围在【${startValue}~${endValue}】之间`
+          //   that.$message.info(msg)
+          //   return false
+          // }
         }
       }
       return true
@@ -301,10 +326,10 @@ export default {
           endValue: '',
           checkInspectionBasisAqlInfos: that.planHeaderColumns.map(item => {
             return {
-              key: `${item.id}-${item.text}`,
+              key: `${item.id}-${item.termName}`,
               ac: '',
               parameterTermId: item.id,
-              parameterTermName: item.text
+              parameterTermName: item.termName
             }
           })
         })
@@ -313,18 +338,23 @@ export default {
         that.checkInspectionBasisAqls = checkInspectionBasisAqls.filter(item => item.key !== record.key)
       }
     },
-    query(type, record) {
+    async query(type, record) {
       const that = this
       that.type = type
       that.form = {}
       that.checkInspectionBasisAqls = []
-      that.aqlList = []
+      that.aqlDataSource_result = []
       that.visible = true
-      if (that.isAdd) {
 
+      await that.fetchParameterTermList('AQL值','aqlDataSource',function(arr){
+        return [...arr].sort((item1,item2) => Number(item1.termName) - Number(item2.termName))
+      })
+      
+      if (that.isAdd) {
+        that.aqlDataSource_result = that.aqlDataSource
+        that.aqlList = that.aqlDataSource_result.map(item => item.id)
       } else {
-        checkInspectionBasisDetail({ id: record.id }).then(res => {
-          debugger
+        await checkInspectionBasisDetail({ id: record.id }).then(res => {
           const { id, inspectionBasis, inspectionGrade, remarks, checkInspectionBasisAqlDeatilVos } = res.data || {
             checkInspectionBasisAqlDeatilVos: []
           }
@@ -335,24 +365,34 @@ export default {
             remarks
           }
 
-          const aqlList = []
-          that.checkInspectionBasisAqls = checkInspectionBasisAqlDeatilVos.map(item => {
-            item.checkInspectionBasisAqlInfos = that.$_.cloneDeep(item.checkInspectionBasisAqlInfoDetailVos || [])
-            item.checkInspectionBasisAqlInfos.map(info => {
-              aqlList.push(info.parameterTermId)
+          const aqlDataSource_result = []
+          that.checkInspectionBasisAqls = checkInspectionBasisAqlDeatilVos.map((item ,idx) => {
+            let checkInspectionBasisAqlInfos = that.$_.cloneDeep(item.checkInspectionBasisAqlInfoDetailVos || [])
+            
+            item.checkInspectionBasisAqlInfos = checkInspectionBasisAqlInfos.map(info => {
+              const {parameterTermId,parameterTermName} = info
+              info.key = `${parameterTermId}-${parameterTermName}`
+              return info
             })
+
+            if(idx === 0){
+              item.checkInspectionBasisAqlInfos.map(info => {
+                aqlDataSource_result.push({
+                  id:info.parameterTermId,
+                  termName:info.parameterTermName
+                })
+              })
+            }
+
             delete item.checkInspectionBasisAqlInfoDetailVos
             return item
           })
-
-          that.aqlList = aqlList
+          that.aqlDataSource_result = aqlDataSource_result
+          that.aqlList = that.aqlDataSource_result.map(item => item.id)
         })
       }
     },
-    handlerDictionaryDataSource(list) {
-      this.aqlDataSource = [...list]
-      this.aqlList = list.map(item => +item.id)
-    },
+
     handleOk() {
       const that = this
       that.$refs['ruleForm'].validate(valid => {
@@ -386,11 +426,44 @@ export default {
     handleCancel() {
       // this.resetForm()
       this.visible = false
-    }
+    },
+    async fetchParameterTermList(termName,fieldName,sortFn) {
+      const that = this
+      const id = await checkParameterTermList({ termName })
+        .then(res => {
+          return Array.isArray(res.data) && res.data.length > 0 ? res.data[0].id : null
+        })
+        .catch(err => {
+          return null
+        })
+
+      const list = await checkParameterTermList({ parentId: id })
+        .then(res => {
+          return Array.isArray(res.data) && res.data.length > 0 ? res.data : []
+        })
+        .catch(err => {
+          return []
+        })
+      that[fieldName] = typeof sortFn === 'function' ? sortFn(list) : list
+    },
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
   }
 }
 </script>
 <style scoped>
+.checkInspectionBasisAddForm >>> .ant-form-item{
+  display: flex;
+}
+.ant-form-item >>> .ant-form-item-label {
+  width: 120px;
+}
+.ant-form-item >>> .ant-form-item-control-wrapper {
+  flex: 1;
+}
 .custom-table-border th,
 .custom-table-border td {
   padding: 2px;

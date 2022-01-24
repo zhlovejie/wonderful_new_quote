@@ -277,20 +277,24 @@ export default {
           path: '/sale/invoice/modules',
           name: 'invoiceModules',
           hidden: true,
+          hideChildrenInMenu:true,
           component: () => import('@/views/sale/invoice/modules/invoiceModules'),
           meta: {
             title: '发货单申请',
-            permission: ['permission']
+            permission: ['permission'],
+            hidden:true,
           }
         },
         {
           path: '/sale/invoice/modules',
           name: 'invoiceApproval',
           hidden: true,
+          hideChildrenInMenu:true,
           component: () => import('@/views/sale/invoice/modules/invoiceApproval'),
           meta: {
             title: '发货单审批',
-            permission: ['permission']
+            permission: ['permission'],
+            hidden:true
           }
         },
         {

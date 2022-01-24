@@ -52,6 +52,10 @@
             <span v-if="text == 2">紧急</span>
             <span v-if="text == 3">特急</span>
           </div>
+          <div slot="checkUserName" slot-scope="text, record, index">
+            <span v-if="record.status === 0">{{ record.inspectorUserName }}</span>
+            <span v-else>{{ record.checkUserName }}</span>
+          </div>
           <div slot="status" slot-scope="text, record">
             <!-- <span v-if="+text === 0">待处理</span>
             <span v-if="+text === 1">完结</span> -->
@@ -64,7 +68,7 @@
             </a-tooltip>
             <span v-else>{{ text }}</span>
           </div>
-          <div slot="materialModelType" slot-scope="text">
+          <div slot="specification" slot-scope="text">
             <a-tooltip v-if="String(text).length > 5">
               <template slot="title">{{ text }}</template>
               {{ String(text).slice(0, 5) }}...
@@ -173,8 +177,8 @@ export default {
         {
           title: '规格型号',
           align: 'center',
-          dataIndex: 'materialModelType',
-          scopedSlots: { customRender: 'materialModelType' },
+          dataIndex: 'specification',
+          scopedSlots: { customRender: 'specification' },
         },
         {
           title: '收料仓库',
@@ -190,6 +194,12 @@ export default {
           title: '报检时间',
           align: 'center',
           dataIndex: 'reportTime',
+        },
+        {
+          title: '检验员',
+          align: 'center',
+          dataIndex: 'checkUserName',
+          scopedSlots: { customRender: 'checkUserName' },
         },
         {
           title: '单据状态',
@@ -290,7 +300,8 @@ export default {
         quality_getCheckGetMaterialId({ materialId: record.materialId, reportCheckNum: record.reportNum }).then(
           (res) => {
             if (res.data === null) {
-              this.$message.error('该物料没有配置检验标准')
+              let text = `该物料没配置报检数量为${record.reportNum}的检验标准`
+              this.$message.error(text)
             } else {
               this.$refs.formadd.query(type, record, res.data)
             }

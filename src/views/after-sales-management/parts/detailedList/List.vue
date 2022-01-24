@@ -64,7 +64,7 @@
           </span>
 
           <span slot="paymentType" slot-scope="text, record">
-            <span> {{ { 0: '完结付款', 1: '先付款', 2: '免付款' }[text] || '未知' }}</span>
+            <span> {{ { 0: '完结付款', 1: '先付款', 2: '免付款', 3: '赠送' }[text] || '未知' }}</span>
           </span>
           <div slot="status" slot-scope="text, record">
             <a @click="handleClick(record)">{{
