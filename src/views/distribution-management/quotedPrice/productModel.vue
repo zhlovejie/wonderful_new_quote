@@ -48,7 +48,7 @@
 <script>
 import { STable } from '@/components'
 import { getProductType } from '@/api/contractListManagement'
-import { costPricePricingGetMax } from '@/api/productOfferManagement'
+import { listMaterialInfoByCodes } from '@/api/distribution-management'
 
 export default {
   name: 'ProductModel',
@@ -190,11 +190,19 @@ export default {
     },
     // 点击产品代码执行关闭弹窗函数
     clickVue(data) {
-      this.$emit('custom-change', {
-        selectItem: data, //用户选择项目
-        recordParam: this.recordParam, //父页面传过来的项目
+      console.log(data)
+      listMaterialInfoByCodes({ codes: data.productModel }).then((res) => {
+        if (res.code === 200 && res.data[0]) {
+          data.squareNum = res.data[0].squareNum
+          this.$emit('custom-change', {
+            selectItem: data, //用户选择项目
+            recordParam: this.recordParam, //父页面传过来的项目
+          })
+          this.close()
+        } else {
+          this.$message.error('此数据没有配置方数')
+        }
       })
-      this.close()
     },
   },
 }

@@ -39,13 +39,13 @@
             <tr>
               <th>名称</th>
               <th>数量</th>
-              <th>体积</th>
+              <th>方数</th>
             </tr>
             <tr v-for="(item, index) in i.logisticsCargInformationList" :key="index">
               <td>{{ item.productName }}</td>
               <td>{{ item.invoiceCount }}</td>
               <td>
-                <a-input placeholder v-model="item.volume" :disabled="isSee" />
+                {{ item.squareNum }}
               </td>
             </tr>
           </table>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { logisticsaddAndUpdte } from '@/api/distribution-management'
+import { logisticsaddAndUpdte, listMaterialInfoByCodes } from '@/api/distribution-management'
 import moment from 'moment'
 import Invoice from './Invoice'
 
@@ -90,6 +90,7 @@ export default {
       remarks: '',
       queryonedata1: {},
       isSee: false,
+      materList: [],
     }
   },
   watch: {
@@ -130,16 +131,27 @@ export default {
       obj.consignee = record.consignee
       obj.contactInformation = record.contactInformation
       obj.saleInvoiceId = record.id
-      let arr = record.products.map((red) => {
-        return {
-          volume: red.volume || '',
-          productName: red.productName,
-          invoiceCount: red.invoiceCount,
-          materialCode: red.productModel,
-          materialName: red.productName,
-        }
+      let react = record.products
+        .map((i) => {
+          return i.productModel
+        })
+        .toString()
+      listMaterialInfoByCodes({ codes: react }).then((res) => {
+        console.log(res)
+        // this.materList = res.data
+        this.materList = record.products.map((red) => {
+          let react = res.data.find((i) => i.materialCode === red.productModel)
+          return {
+            volume: red.volume || '',
+            productName: red.productName,
+            invoiceCount: red.invoiceCount,
+            materialCode: red.productModel,
+            materialName: red.productName,
+            squareNum: react.squareNum || '',
+          }
+        })
       })
-      obj.logisticsCargInformationList = arr
+      obj.logisticsCargInformationList = this.materList
       this.todayList.push(obj)
     },
     // 点击下一步

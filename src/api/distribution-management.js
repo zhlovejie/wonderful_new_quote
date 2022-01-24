@@ -3,6 +3,18 @@ import {
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
 
+
+
+//  根据物流拿去方数
+export function listMaterialInfoByCodes(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/productMaterialInfo/listMaterialInfoByCodes',
+    method: 'get',
+    params: parameter
+  })
+}
+
 //---------------------物流管理模块-----------------------
 /**配货站信息列表接口 */
 export function DistributionList(parameter) {
