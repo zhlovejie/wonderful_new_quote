@@ -411,13 +411,15 @@ export default {
             return
           }
           
-          that.tip = '检测规格型号是否重复...'
-          that.spinning = true
-          const isSpecificationDuplicate = await that.checkSpecificationMaterial()
-          that.spinning = false
-          if(isSpecificationDuplicate){
-            that.$message.info('规格型号重复，禁止操作')
-            return
+          if(that.normalAddForm.isNormal){
+            that.tip = '检测规格型号是否重复...'
+            that.spinning = true
+            const isSpecificationDuplicate = await that.checkSpecificationMaterial()
+            that.spinning = false
+            if(isSpecificationDuplicate){
+              that.$message.info('规格型号重复，禁止操作')
+              return
+            }
           }
 
           // let isMaterialNameDuplicate = await routineMaterialInfoCheckName({materialName,ruleId}).then(res => res.data).catch(err => false)
@@ -525,8 +527,10 @@ export default {
         thickness: undefined,
         width: undefined,
         length: undefined,
-      },
-      await that.initSpecifications(node)
+      }
+      if(that.normalAddForm.isNormal){
+        await that.initSpecifications(node)
+      }
     },
     initSpecifications(node){
       const that = this

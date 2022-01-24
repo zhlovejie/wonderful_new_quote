@@ -29,7 +29,7 @@ export default {
   // baseURL: 'http://192.168.13.196:9992/oa',
   // baseURL: 'http://192.168.13.151:8998',
   // baseURL: 'http://192.168.13.150:8996/oa', //王利
-  baseURL: 'http://192.168.12.16:9995/cloud_development', //张恒
+  baseURL: 'http://192.168.12.16:8995/oa', //张恒
   // baseURL:'http://192.168.13.3:8999/oa',
 
   materialBaseUrl: 'http://192.168.12.16:9995/cloud_development', //物料规则专用地址

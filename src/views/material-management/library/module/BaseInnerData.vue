@@ -167,23 +167,29 @@
             </td>
           </template>
           <td>原K3物料代码</td>
-          <td :colspan="normalAddForm.isNormal ? 1 : 3">
-            <!-- <a-form-model-item
-              ref="k3Code"
-              prop="k3Code"
-              has-feedback
-            >
-              <a-input
-                :disabled="normalAddForm.isView"
-                v-model="form.k3Code"
-                :allowClear="true"
-              />
-            </a-form-model-item> -->
-
+          <td >
             <a-form-model-item>
               <a-input :disabled="normalAddForm.isView" v-model="form.k3Code" :allowClear="true" />
             </a-form-model-item>
           </td>
+          <template v-if="!normalAddForm.isNormal">
+          <td >
+            <span class="icon-required">方数<span style="margin:0 5px;">(m³)</span></span>
+          </td>
+          <td>
+              <a-form-item label="">
+              <a-input-number
+                :disabled="normalAddForm.isView"
+                style="width: 100%"
+                :min="0"
+                :step="1"
+                :precision="2"
+                v-model="form.squareNum"
+              />
+            </a-form-item>
+          </td>
+          </template>
+        </tr>
         </tr>
         <tr>
           <td>备注</td>
@@ -261,7 +267,9 @@ export default {
         // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         // k3Code: [{ validator: checkK3Code, trigger: 'change' }],
         needCheck: [{ required: true, message: '请选择是否需要送检' }],
-        reason: [{ required: true, message: '请输入物料代码变更原因' }]
+        reason: [{ required: true, message: '请输入物料代码变更原因' }],
+        squareNum:[{ required: true, message: '请输入方数' }],
+        estimateWeight:[{ required: true, message: '请输入方数' }]
       },
       materialUnitList: [] //物料计量单位
     }

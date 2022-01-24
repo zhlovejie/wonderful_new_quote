@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-spin :spinning="spinning" :tip="tip">
     <a-form-model
       ref="ruleForm"
       :model="form"
@@ -68,9 +69,10 @@
       </a-button>
     </p>
 
-    <div style="position: absolute;left: -99999px;" class="wuliao-qr-code-wrapper">
+    <div style="position: absolute;left: -99999px;" class="wuliao-qr-code-wrapper111">
       <vue-qr :text="qrText" :size="qrSize" :callback="qrChangeHandler" ></vue-qr>
     </div>
+    </a-spin>
   </div>
 </template>
 <script>
@@ -106,6 +108,8 @@ export default {
   },
   data() {
     return {
+      spinning:false,
+      tip:'数据处理中...',
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
       other: '',
@@ -149,11 +153,13 @@ export default {
     },
     async qrChangeHandler(dataUrl,id){
       const that = this
-
+      console.log(`qrChangeHandler called`,arguments)
+      that.wuliaoQrUrl = null
+      
       if(dataUrl){
         let file = await new Promise((resolve) => {
           setTimeout(function(){
-            let img = document.querySelector('.wuliao-qr-code-wrapper > img')
+            let img = document.querySelector('.wuliao-qr-code-wrapper111 > img')
             if(!img){
               resolve(null)
               return
@@ -167,7 +173,7 @@ export default {
             let fileType = 'image/png'
             canvas.toBlob(
               (blob) => {
-                resolve(new File([blob], 'wuliao_qr.png', { type: fileType }))
+                resolve(blob ? new File([blob], 'wuliao_qr.png', { type: fileType }) : null)
               },
               fileType,
               0.92
@@ -177,7 +183,10 @@ export default {
         if(file !== null){
           const formData = new FormData()
           formData.append('file', file)
-          let url = await customUpload(formData).then((res) => res.data)
+          let url = await customUpload(formData).then((res) => res.data).catch(err => {
+            that.$message.error(err.message)
+            return null
+          })
           that.wuliaoQrUrl = url
           return url
         }else{
@@ -192,13 +201,20 @@ export default {
     wuliaoQrUrlReady(){
       const that = this
       let timer = null
+      let t1 = Date.now()
+      let max = 1000 * 10
       return new Promise((resolve) =>{
         timer = setInterval(function(){
-          if(that.wuliaoQrUrl !== null){
+          if(typeof that.wuliaoQrUrl === 'string' && that.wuliaoQrUrl.length > 0){
             clearInterval(timer)
             resolve(that.wuliaoQrUrl)
           }
-        },100)
+          let t2 = Date.now()
+          if(t2 - t1 >= max){
+            clearInterval(timer)
+            resolve(null)
+          }
+        },250)
       })
     },
     parentCodes(_parentId,_dataList,joinSymbol=".") {
@@ -244,17 +260,34 @@ export default {
             that.$message.info('禁止在根节点增加成品物料')
             return
           }
+          that.spinning = true
+          //that.tip = '生成物料二维码...'
           let orderCode = await productMaterialInfoGetCode({ruleId}).then(res => res.data)
           if(!orderCode){
             that.$message.info('获取顺序的物料代码号失败')
+            that.spinning = false
             return
           }
           let materialCode = that.makeMaterialCode(orderCode)
-          that.qrText = materialCode
-          await that.wuliaoQrUrlReady()
-          let materialQrCode = that.wuliaoQrUrl
-          let materialName = that.getNode(ruleId).title
-          console.log(materialCode)
+          let materialQrCode = null
+          let materialName = null
+          try{
+            that.qrText = materialCode
+            await that.wuliaoQrUrlReady()
+            materialQrCode = that.wuliaoQrUrl
+            materialName = that.getNode(ruleId).title
+            console.log(materialCode)
+          }catch(err){
+            materialQrCode = null
+            materialName = null
+            that.$message.info(err.message)
+            that.spinning = false
+            return
+          }
+
+          if(!materialName){
+            return
+          }
 
           let params = {
             ...that.form,
@@ -263,7 +296,7 @@ export default {
             ruleId,
             materialName
           }
-
+          that.spinning = false
           that.$emit('change', { __action__: 'nextStep', values: params })
         } else {
           return false
@@ -331,7 +364,7 @@ export default {
       }
       return obj
     },
-        searchAction(type) {
+    searchAction(type) {
       const that = this
       const value = that.searchValue ? that.searchValue.trim() : ''
       if(type === 1){
