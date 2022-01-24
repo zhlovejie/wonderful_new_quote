@@ -31,7 +31,9 @@
         </a-form-item>
         <a-form-item style="float: right">
           <template>
-            <a-button type="primary" icon="plus" @click="applyFor('add', null)">新增</a-button>
+            <a-button type="primary" icon="plus" @click="applyFor('add', null)" v-if="$auth('quotedPrice:add')"
+              >新增</a-button
+            >
           </template>
         </a-form-item>
       </a-form>
@@ -69,7 +71,7 @@
           </span>
           <span slot="action" slot-scope="text, record">
             <template v-if="queryParam.status === '1'">
-              <template>
+              <template v-if="$auth('quotedPrice:offer')">
                 <a @click="applyFor('offer', record)">报价</a>
               </template>
             </template>

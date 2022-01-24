@@ -25,7 +25,7 @@
           <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
         <div class="table-operator fl-r">
-          <template v-if="$auth('invoice:add')">
+          <template v-if="$auth('invoices:add')">
             <a-button type="primary" icon="plus" @click="handleAdd">申请</a-button>
           </template>
         </div>
@@ -36,7 +36,7 @@
         <div>
           <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
-            <template v-if="$auth('invoice:approval')">
+            <template v-if="$auth('invoices:approval')">
               <a-tab-pane tab="待我审批" key="1"> </a-tab-pane>
               <a-tab-pane tab="我已审批" key="2"> </a-tab-pane>
             </template>
@@ -80,21 +80,21 @@
             <span v-if="text == 1">已完结</span>
           </a>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('invoice:one')">
+            <template v-if="$auth('invoices:one')">
               <a @click="handleSee(record)">查看</a>
             </template>
-            <template v-if="$auth('invoice:one')">
+            <template v-if="$auth('invoices:one')">
               <a-divider v-if="audit == 0" type="vertical" />
               <a target="_blank" v-if="audit == 0" :href="record.wordUrl">下载</a>
             </template>
-            <template v-if="$auth('invoice:one')">
+            <template v-if="$auth('invoices:one')">
               <a-divider v-if="audit == 1 && userInfo.id != 1" type="vertical" />
               <a v-if="audit == 1 && userInfo.id != 1" @click="handleApproval(record)">审核</a>
             </template>
 
             <template
               v-if="
-                $auth('invoice:edit') &&
+                $auth('invoices:edit') &&
                 (record.invoiceStatus === 3 || record.invoiceStatus === 9) &&
                 userInfo.id === record.createdId
               "
@@ -105,7 +105,7 @@
 
             <template
               v-if="
-                $auth('invoice:del') &&
+                $auth('invoices:del') &&
                 userInfo.id === record.createdId &&
                 (+record.invoiceStatus === 2 || +record.invoiceStatus === 9)
               "

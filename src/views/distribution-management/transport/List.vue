@@ -56,7 +56,7 @@
             <span>{{ record.createdTime.slice(0, 10) }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template>
+            <template v-if="$auth('transport:del')">
               <a @click="delete_list(record.id)">删除</a>
             </template>
           </span>

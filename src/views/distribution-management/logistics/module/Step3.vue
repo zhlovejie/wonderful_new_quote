@@ -125,12 +125,7 @@ export default {
     // 接收发货单数据
     handlerCustomerSelected(record) {
       console.log(record)
-      let obj = {}
-      obj.address = record.address
-      obj.customerName = record.customerName
-      obj.consignee = record.consignee
-      obj.contactInformation = record.contactInformation
-      obj.saleInvoiceId = record.id
+
       let react = record.products
         .map((i) => {
           return i.productModel
@@ -142,17 +137,23 @@ export default {
         this.materList = record.products.map((red) => {
           let react = res.data.find((i) => i.materialCode === red.productModel)
           return {
-            volume: red.volume || '',
+            volume: red.squareNum || '',
             productName: red.productName,
             invoiceCount: red.invoiceCount,
             materialCode: red.productModel,
             materialName: red.productName,
-            squareNum: react.squareNum || '',
+            squareNum: Number(react.squareNum) * Number(red.invoiceCount) || '',
           }
         })
+        let obj = {}
+        obj.address = record.address
+        obj.customerName = record.customerName
+        obj.consignee = record.consignee
+        obj.contactInformation = record.contactInformation
+        obj.saleInvoiceId = record.id
+        obj.logisticsCargInformationList = this.materList
+        this.todayList.push(obj)
       })
-      obj.logisticsCargInformationList = this.materList
-      this.todayList.push(obj)
     },
     // 点击下一步
     nextStep(status) {

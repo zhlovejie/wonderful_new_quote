@@ -218,7 +218,7 @@ export default {
       //     return '修改配货站信息登记'
       //   }
       let txt = this.isView ? '新增' : '修改'
-      return `${txt}配货站信息登记`
+      return `${txt}我方货物运输记录`
     },
     //查看
     isSee() {

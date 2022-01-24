@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="付款码" :width="800" :visible="visible" @ok="handleOk" @cancel="handleCancel" :maskClosable="false">
+  <a-modal title="收款码" :width="800" :visible="visible" @ok="handleOk" @cancel="handleCancel" :maskClosable="false">
     <template slot="footer">
       <template>
         <a-button key="back" @click="handleCancel">取消</a-button>
