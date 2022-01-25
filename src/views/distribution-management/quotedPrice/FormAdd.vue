@@ -34,10 +34,12 @@
           </tr>
           <tr>
             <td>出发地</td>
-            <td>江苏万德福公共卫生有限公司</td>
+            <td v-if="record.type === 2">江苏省徐州市铜山区万德福公共设施有限公司</td>
+            <td v-else>{{ form.departAddress }}</td>
             <td class="requiredMark">目的地</td>
             <td>
               <a-form-model-item
+                v-if="isAdd"
                 style="width: 100%; float: left"
                 prop="provinceId"
                 :rules="{
@@ -602,25 +604,26 @@ export default {
           this.logisList = res.data
           res.data.deliveryTime = moment(res.data.deliveryTime)
           res.data.provinceId = []
+          res.data.addressDetail = res.data.type === 1 ? res.data.address : res.data.address + res.data.addressDetail
           this.form = res.data
         })
-        if (this.logisList.addressIds) {
-          let _arr = this.logisList.addressIds.split(',').map(Number)
-          // _arr = _arr.map((v) => parseInt(v, 10))
-          let _areaCityData = await this.loadAreaAction(_arr[0])
-          let ctiyTargetOption = this.birthplaceOptions.find((p) => p.value == _arr[0])
-          if (ctiyTargetOption) {
-            ctiyTargetOption.children = _areaCityData
-            this.birthplaceOptions = [...this.birthplaceOptions]
-          }
-          let _areaAreaData = await this.loadAreaAction(_arr[1])
-          let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
-          if (areaTargetOption) {
-            areaTargetOption.children = _areaAreaData
-            this.birthplaceOptions = [...this.birthplaceOptions]
-          }
-          this.$nextTick(() => (this.form.provinceId = _arr))
-        }
+        // if (this.logisList.addressIds) {
+        //   let _arr = this.logisList.addressIds.split(',').map(Number)
+        //   // _arr = _arr.map((v) => parseInt(v, 10))
+        //   let _areaCityData = await this.loadAreaAction(_arr[0])
+        //   let ctiyTargetOption = this.birthplaceOptions.find((p) => p.value == _arr[0])
+        //   if (ctiyTargetOption) {
+        //     ctiyTargetOption.children = _areaCityData
+        //     this.birthplaceOptions = [...this.birthplaceOptions]
+        //   }
+        //   let _areaAreaData = await this.loadAreaAction(_arr[1])
+        //   let areaTargetOption = ctiyTargetOption.children.find((p) => p.value == _arr[1])
+        //   if (areaTargetOption) {
+        //     areaTargetOption.children = _areaAreaData
+        //     this.birthplaceOptions = [...this.birthplaceOptions]
+        //   }
+        //   this.$nextTick(() => (this.form.provinceId = _arr))
+        // }
       }
     },
 

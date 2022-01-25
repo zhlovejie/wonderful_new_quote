@@ -256,6 +256,7 @@ export default {
           carrier: i.carrierType === 1 ? '配货站——' + i.logisticsCompanyName : '专车',
           count: i.invoiceCount,
           squareNum: i.squareNum,
+          logisticsId: i.id,
         }
       })
       this.logisticsProductTransportMaterials = data

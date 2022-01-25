@@ -9,7 +9,8 @@
           <tr>
             <td>方数</td>
             <td>
-              <a-form-item>
+              1
+              <!-- <a-form-item>
                 <a-input
                   placeholder="方数"
                   :allowClear="true"
@@ -21,7 +22,7 @@
                     },
                   ]"
                 />
-              </a-form-item>
+              </a-form-item> -->
             </td>
           </tr>
           <tr>
@@ -86,6 +87,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           that.spinning = true
+          values.squareNum = 1
           adminsaveAndUpdate(values)
             .then((res) => {
               that.spinning = false

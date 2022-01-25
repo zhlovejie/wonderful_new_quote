@@ -71,6 +71,8 @@
                         <a-select-option :value="1">代付</a-select-option>
                         <a-select-option :value="2">包邮</a-select-option>
                         <a-select-option :value="3">到付</a-select-option>
+                        <a-select-option :value="4">回付</a-select-option>
+                        <a-select-option :value="5">现付</a-select-option>
                       </a-select>
                     </a-form-item>
                   </div>
