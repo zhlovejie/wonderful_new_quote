@@ -2,7 +2,7 @@
   <div class="content-wrap">
     <!-- <CustomerList ref="customerList" @selected="handlerCustomerSelected" /> -->
     <a-row>
-      <a-col :span="24" class="basic-tit" justify="center" align="middle">产品信息</a-col>
+      <a-col :span="24" class="basic-tit" justify="center" align="middle">承运方</a-col>
     </a-row>
     <div class="form wdf-form">
       <template>
@@ -227,7 +227,7 @@ export default {
       this.station = res.data
     })
     console.log(this.queryonedata1)
-    if (this.queryonedata1.licensePlateNumber) {
+    if (this.queryonedata1.carrierType) {
       if (this.isSee) {
         this.dataSource = this.queryonedata1.logisticsInformationCarryUsers
       }

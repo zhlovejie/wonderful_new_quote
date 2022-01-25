@@ -9,17 +9,11 @@
   >
     <div class="top-ation">
       <a-form layout="inline" :form="form">
-        <a-form-item label="产品代码">
-          <a-input style="width: 130px; margin-right: 10px" class="modal-input" v-model="productModel" />
+        <a-form-item label="物料代码">
+          <a-input style="width: 130px; margin-right: 10px" class="modal-input" v-model="materialCode" />
         </a-form-item>
-        <a-form-item label="产品名称">
-          <a-input style="width: 130px; margin-right: 10px" class="modal-input" v-model="productName" />
-        </a-form-item>
-        <a-form-item label="产品类型">
-          <a-select v-model="productType" allowClear style="width: 130px">
-            <a-select-option :value="0">常规成品</a-select-option>
-            <a-select-option :value="1">非常规产品</a-select-option>
-          </a-select>
+        <a-form-item label="物料名称">
+          <a-input style="width: 130px; margin-right: 10px" class="modal-input" v-model="materialName" />
         </a-form-item>
         <a-form-item label="客户名称" v-if="this.queryParam.productType === 1">
           <a-input class="modal-input" v-model="customerName" />
@@ -30,11 +24,11 @@
       </a-form>
     </div>
     <a-spin :spinning="confirmLoading" class="marg-t16">
-      <s-table ref="table" size="default" :columns="columnsData" :data="loadData" :alert="false" rowKey="id">
+      <s-table ref="table" size="default" :columns="columns" :data="loadData" :alert="false" rowKey="id">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <span slot="productModel" slot-scope="text, record">
+        <span slot="materialCode" slot-scope="text, record">
           <a @click="clickVue(record)">{{ text }}</a>
         </span>
         <!--        <template slot="productPic" slot-scope="text">-->
@@ -47,11 +41,11 @@
 
 <script>
 import { STable } from '@/components'
-import { getProductType } from '@/api/contractListManagement'
+import { productMaterialInfoPageList } from '@/api/routineMaterial'
 import { listMaterialInfoByCodes } from '@/api/distribution-management'
 
 export default {
-  name: 'ProductModel',
+  name: 'materialCode',
   components: {
     STable,
   },
@@ -66,7 +60,7 @@ export default {
       customerName: '',
       loading: true,
       saleUsers: [],
-      productName: '',
+      materialName: '',
       productType: 0,
       seriesFlag: '',
       userId: 0,
@@ -80,71 +74,38 @@ export default {
         },
         {
           title: '产品代码',
-          dataIndex: 'productModel',
-          width: 180,
-          scopedSlots: { customRender: 'productModel' },
+          dataIndex: 'materialCode',
+          scopedSlots: { customRender: 'materialCode' },
         },
         {
           title: '产品名称',
-          width: 180,
-          dataIndex: 'productName',
+          dataIndex: 'materialName',
         },
-        {
-          title: '规格型号',
-          dataIndex: 'productStandard',
-          key: 'productStandard',
-          scopedSlots: { customRender: 'productStandard' },
-        },
+        // {
+        //   title: '规格型号',
+        //   dataIndex: 'materialCode',
+        //   key: 'materialCode',
+        // },
       ],
-      columns1: [
-        {
-          align: 'center',
-          title: '序号',
-          key: 'order',
-          width: '70px',
-          scopedSlots: { customRender: 'order' },
-        },
-        {
-          title: '产品代码',
-          dataIndex: 'productModel',
-          scopedSlots: { customRender: 'productModel' },
-        },
-        {
-          title: '核价编号',
-          dataIndex: 'nuclearPriceModel',
-        },
-        {
-          title: '客户名称',
-          dataIndex: 'customerName',
-        },
-        {
-          title: '产品图片',
-          dataIndex: 'productStandard',
-          key: 'productStandard',
-          scopedSlots: { customRender: 'productStandard' },
-        },
-      ],
+
       columnsData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
         this.queryParam = {
-          productTypeConfigCode: '',
-          productType: this.productType || 0,
-          productModel: this.productModel || '',
-          productName: this.productName || '',
-          customerName: this.customerName || '',
-          valencyCode: this.valencyCode || '',
-          seriesFlag: this.seriesFlag,
+          auditStatus: 3,
+          materialCode: this.materialCode || '',
+          materialName: this.materialName || '',
+          isForbidden: 2,
         }
         console.log('---------开始加载列表数据' + JSON.stringify(this.queryParam))
         // 常规非常规产品 根据不同的产品获取产品代码和产品数据
-        return getProductType(Object.assign(parameter, this.queryParam)).then((res) => {
+        return productMaterialInfoPageList(Object.assign(parameter, this.queryParam)).then((res) => {
           console.log('res===', res)
           return res
           console.log('//常规非常规产品 根据不同的产品获取产品代码和产品数据res.data', res.data)
         })
       },
-      productModel: '', // 产品代码
+      materialCode: '', // 产品代码
       nuclearPriceModel: '', // 核价编号
       recordParam: null,
     }
@@ -157,14 +118,8 @@ export default {
     query(record) {
       // this.mdl = Object.assign({}, record)
       // debugger
-      console.log('query record' + JSON.stringify(record))
-      this.visible = true
-      this.productType = record.productType || 0
-      this.queryParam.productType = this.productType
       this.recordParam = record
-      this.seriesFlag = record.seriesFlag || ''
-
-      this.columnsData = Object.assign([], this.productType === 1 ? this.columns1 : this.columns)
+      this.visible = true
 
       try {
         console.log('---------seriesFlag:' + this.seriesFlag)
@@ -175,8 +130,8 @@ export default {
     search() {
       this.queryParam = {
         productType: this.productType,
-        productModel: this.productModel,
-        productName: this.productName,
+        materialCode: this.materialCode,
+        materialName: this.materialName,
         customerName: this.customerName || '',
         valencyCode: this.valencyCode || '',
         seriesFlag: this.seriesFlag || '',
@@ -191,18 +146,19 @@ export default {
     // 点击产品代码执行关闭弹窗函数
     clickVue(data) {
       console.log(data)
-      listMaterialInfoByCodes({ codes: data.productModel }).then((res) => {
-        if (res.code === 200 && res.data[0]) {
-          data.squareNum = res.data[0].squareNum
-          this.$emit('custom-change', {
-            selectItem: data, //用户选择项目
-            recordParam: this.recordParam, //父页面传过来的项目
-          })
-          this.close()
-        } else {
-          this.$message.error('此数据没有配置方数')
-        }
+      // listMaterialInfoByCodes({ codes: data.materialCode }).then((res) => {
+      //   if (res.code === 200 && res.data[0]) {
+      //     data.squareNum = res.data[0].squareNum
+      this.$emit('custom-change', {
+        selectItem: data, //用户选择项目
+        recordParam: this.recordParam, //父页面传过来的项目
+        //   })
+        //   this.close()
+        // } else {
+        //   this.$message.error('此数据没有配置方数')
+        // }
       })
+      this.close()
     },
   },
 }

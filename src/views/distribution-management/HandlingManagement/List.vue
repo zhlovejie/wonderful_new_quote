@@ -76,8 +76,8 @@ const columns = [
   },
   {
     title: '方数',
-    dataIndex: 'logisticsTypeName',
-    key: 'logisticsTypeName',
+    dataIndex: 'squareNum',
+    key: 'squareNum',
     align: 'center',
   },
   {

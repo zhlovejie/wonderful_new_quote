@@ -57,7 +57,7 @@
           </div>
           <span slot="action" slot-scope="text, record">
             <template>
-              <a @click="applyFor('offer', record)">物流详情</a>
+              <a @click="applyFor(record)">物流详情</a>
             </template>
           </span>
         </a-table>
@@ -288,8 +288,14 @@ export default {
 
       this.searchAction()
     },
-    applyFor(type, record) {
-      this.$refs.formadd.query(type, record)
+    applyFor(record) {
+      let arr = {
+        id: record.logisticsInformationId,
+      }
+      this.$router.push({
+        name: 'basicInform',
+        params: { typeName: 'see', action: arr },
+      })
     },
   },
 }

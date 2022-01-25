@@ -67,7 +67,7 @@
           </div>
 
           <span slot="type" slot-scope="text, record">
-            <span> {{ { 1: '发货报价', 2: '售后报价' }[text] || '未知' }}</span>
+            <span> {{ { 1: '发货报价', 2: '售前报价' }[text] || '未知' }}</span>
           </span>
           <span slot="action" slot-scope="text, record">
             <template v-if="queryParam.status === '1'">
@@ -92,6 +92,9 @@
           >
             <div slot="order" slot-scope="text, record, index">
               <span>{{ index + 1 }}</span>
+            </div>
+            <div slot="squareNum" slot-scope="text, record, index">
+              <span>{{ text * record.count }}</span>
             </div>
             <div slot="materialName" slot-scope="text">
               <a-tooltip v-if="String(text).length > 10">
@@ -167,6 +170,7 @@ const innerColumns = [
     title: '方数',
     dataIndex: 'squareNum',
     key: 'squareNum',
+    scopedSlots: { customRender: 'squareNum' },
   },
 ]
 // 表头

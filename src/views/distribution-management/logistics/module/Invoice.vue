@@ -182,7 +182,8 @@ export default {
         })
         .toString()
       listMaterialInfoByCodes({ codes: react }).then((res) => {
-        if (res.code === 200 && res.data.length > 0) {
+        let react = res.data.every((i) => i.squareNum)
+        if (res.code === 200 && res.data.length > 0 && react) {
           this.$emit('selected', record)
           this.visible = false
         } else {

@@ -9,14 +9,14 @@
 
         <a-form-item>
           <a-select placeholder="结果" v-model="queryParam.resultType" allowClear style="width: 200px">
-            <a-select-option :value="0">成功 </a-select-option>
-            <a-select-option :value="1">失败</a-select-option>
+            <a-select-option :value="1">成功 </a-select-option>
+            <a-select-option :value="2">失败</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
           <a-select placeholder="支付方式" v-model="queryParam.payType" allowClear style="width: 200px">
-            <a-select-option :value="0">支付宝 </a-select-option>
-            <a-select-option :value="1">微信</a-select-option>
+            <a-select-option :value="1">支付宝 </a-select-option>
+            <a-select-option :value="2">微信</a-select-option>
           </a-select>
         </a-form-item>
         <template>
@@ -31,13 +31,13 @@
         <span>{{ index + 1 }}</span>
       </div>
       <div slot="resultType" slot-scope="text, record, index">
-        <span v-if="text === 0" style="color: blue">成功</span>
-        <span v-if="text === 1" style="color: red">失败</span>
+        <span v-if="text === 1" style="color: blue">成功</span>
+        <span v-if="text === 2" style="color: red">失败</span>
       </div>
 
       <div slot="payType" slot-scope="text, record, index">
-        <span v-if="text === 0">支付宝</span>
-        <span v-if="text === 1">微信</span>
+        <span v-if="text === 1">支付宝</span>
+        <span v-if="text === 2">微信</span>
       </div>
     </s-table>
   </a-card>

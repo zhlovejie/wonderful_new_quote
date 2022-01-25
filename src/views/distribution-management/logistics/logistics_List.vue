@@ -52,8 +52,8 @@
           <template v-if="$auth('logistics:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="applyFor('edit-salary', record)">修改</a>
-            <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+            <!-- <a-divider type="vertical" />
+            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a> -->
           </template>
           <!-- <template v-if="$auth('logistics:returnV')">
             <a-divider type="vertical" />

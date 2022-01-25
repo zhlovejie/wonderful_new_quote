@@ -53,7 +53,7 @@
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="type" slot-scope="text, record, index">
-            <span> {{ { 1: '已回款', 2: '未回款' }[text] || '未知' }}</span>
+            <span> {{ { 2: '已回款', 1: '未回款' }[text] || '未知' }}</span>
           </div>
           <span slot="action" slot-scope="text, record">
             <a @click="Payment(record)">查看</a>

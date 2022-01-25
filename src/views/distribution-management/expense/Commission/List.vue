@@ -1,7 +1,7 @@
 <template>
   <div class="adjust-apply-list-wrapper">
     <div class="search-wrapper">
-      <template v-if="dataSource.length === 0 && activeKey === 0">
+      <template v-if="dataSource.length === 0 && activeKey === 0 && $auth('Commission:add')">
         <a-dropdown style="float: right">
           <a-button type="primary" @click="doAction('add', null)"> <a-icon type="plus" />新增 </a-button>
         </a-dropdown>
@@ -10,13 +10,13 @@
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
         <a-tab-pane tab="我的" key="0" />
-        <template v-if="$auth('other:list')">
+        <template v-if="$auth('Commission:list')">
           <a-tab-pane tab="待我审批" key="1" />
           <a-tab-pane tab="我已审批" key="2" />
         </template>
       </a-tabs>
       <a-table
-        v-if="$auth('other:lists')"
+        v-if="$auth('Commission:lists')"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"

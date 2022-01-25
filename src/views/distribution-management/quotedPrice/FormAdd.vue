@@ -28,13 +28,13 @@
             <td style="width: 30%">
               <span v-if="isAdd"> 售前报价 </span
               ><span v-else>
-                {{ { 1: '发货报价', 2: '售后报价' }[record.type] || '未知' }}
+                {{ { 1: '发货报价', 2: '售前报价' }[record.type] || '未知' }}
               </span>
             </td>
           </tr>
           <tr>
             <td>出发地</td>
-            <td v-if="record.type === 2">江苏省徐州市铜山区万德福公共设施有限公司</td>
+            <td v-if="isAdd || record.type === 2">江苏省徐州市铜山区万德福公共设施有限公司</td>
             <td v-else>{{ form.departAddress }}</td>
             <td class="requiredMark">目的地</td>
             <td>
@@ -200,7 +200,9 @@
                 />
               </a-form-model-item>
             </div>
-
+            <div slot="squareNum" slot-scope="text, record, index">
+              <span>{{ text * record.count }}</span>
+            </div>
             <div slot="count" slot-scope="text, record, index">
               <a-form-model-item
                 :prop="'logisticsOfferProducts.' + index + '.count'"
@@ -263,13 +265,33 @@
             </div>
             <div slot="distributionStationName" slot-scope="text, record, index">
               <a-form-model-item
+                v-if="record.carrierType === 2"
                 :prop="'logisticsOfferInfos.' + index + '.distributionStationName'"
                 :rules="{
-                  required: record.carrierType === 1 ? true : false,
+                  required: false,
                   message: '请输入配货站名称',
                 }"
               >
                 <a-input v-model="record.distributionStationName" placeholder="请输入配货站名称" />
+              </a-form-model-item>
+              <a-form-model-item
+                v-else
+                :prop="'logisticsOfferInfos.' + index + '.distributionStationName'"
+                :rules="{
+                  required: true,
+                  message: '请选择配货站名称',
+                }"
+              >
+                <a-select
+                  v-model="record.distributionStationName"
+                  placeholder="配货站"
+                  show-search
+                  :filter-option="filterOption"
+                >
+                  <a-select-option v-for="item in station" :key="item.id" :value="item.id">{{
+                    item.logisticsCompanyName
+                  }}</a-select-option>
+                </a-select>
               </a-form-model-item>
             </div>
 
@@ -314,6 +336,7 @@
                 <a-input-number v-model="record.price" />
               </a-form-model-item>
             </div>
+
             <div slot="lastOfferType" slot-scope="text, record, index">
               <a-form-model-item
                 :prop="'logisticsOfferInfos.' + index + '.lastOfferType'"
@@ -349,7 +372,12 @@
 </template>
 <script>
 import { getAreaByParent } from '@/api/common'
-import { logisticsSaveLogisticsOffer, logisticgetDetail, updateLogisticsOffer } from '@/api/distribution-management' //机构名称
+import {
+  logisticsSaveLogisticsOffer,
+  logisticgetDetail,
+  updateLogisticsOffer,
+  stationList,
+} from '@/api/distribution-management' //机构名称
 import { listUserBySale } from '@/api/systemSetting' //销售人员
 import { getDictionaryList } from '@/api/workBox'
 import moment from 'moment'
@@ -366,6 +394,7 @@ export default {
       admission: [], // 物料类别
       assetTypeList: [],
       personincharge: [],
+      station: [],
       record: {},
       logisList: {},
       type: 'add',
@@ -442,6 +471,7 @@ export default {
         {
           title: '方数',
           dataIndex: 'squareNum',
+          scopedSlots: { customRender: 'squareNum' },
         },
         {
           title: '操作',
@@ -559,10 +589,10 @@ export default {
       const logisticsOfferProducts = [...this.form.logisticsOfferProducts]
       const target = logisticsOfferProducts.find((item) => item.key === recordParam.key)
       if (target) {
-        target['materialCode'] = selectItem.productModel // 物料代码
-        target['materialName'] = selectItem.productName // 物料名称
-        target['specification'] = selectItem.productStandard // 规格型号
-        target['subUnit'] = '' //单位  后期添加
+        target['materialCode'] = selectItem.materialCode // 物料代码
+        target['materialName'] = selectItem.materialName // 物料名称
+        target['specification'] = selectItem.materialCode // 规格型号
+        target['subUnit'] = selectItem.subUnit //单位  后期添加
         target['squareNum'] = selectItem.squareNum //方数  后期添加
 
         this.form.logisticsOfferProducts = logisticsOfferProducts
@@ -592,7 +622,9 @@ export default {
       getDictionaryList({ parentId: '543' }).then((res) => {
         this.assetTypeList = res.data
       })
-
+      stationList().then((res) => {
+        this.station = res.data
+      })
       await listUserBySale().then((res) => (this.personincharge = res.data))
       let _areaData = await this.loadAreaAction(100000)
       this.birthplaceOptions = _areaData

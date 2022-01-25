@@ -35,12 +35,12 @@
         <tr>
           <th>名称</th>
           <th>数量</th>
-          <th>体积</th>
+          <th>方数</th>
         </tr>
         <tr v-for="(item, index) in i.logisticsCargInformationList" :key="index">
           <td>{{ item.productName }}</td>
           <td>{{ item.invoiceCount }}</td>
-          <td>{{ item.volume }}</td>
+          <td>{{ item.squareNum }}</td>
         </tr>
       </table>
     </div>
