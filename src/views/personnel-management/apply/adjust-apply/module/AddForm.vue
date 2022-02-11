@@ -654,7 +654,6 @@ export default {
       })
     },
     async handleOk() {
-      //debugger
       let that = this
       if (that.distribution) {
         this.form.validateFields((err, values) => {
@@ -723,10 +722,20 @@ export default {
           }
           //提交
           that.spinning = true
+          if(values.expectDate && values.expectDate instanceof moment){
+            values.expectDate = values.expectDate.format('YYYY-MM') + '-01'
+          }
 
-          values.expectDate = values.expectDate.format('YYYY-MM') + '-01'
-          values.nEnterDate = values.nEnterDate.format('YYYY-MM-DD')
+          if(values.nEnterDate && values.nEnterDate instanceof moment){
+            values.nEnterDate = values.nEnterDate.format('YYYY-MM-DD')
+          }
+
+          if(values.enterDate && values.enterDate instanceof moment){
+            values.enterDate = values.enterDate.format('YYYY-MM-DD')
+          }
+
           console.log(values)
+
           apiMap[that.operationStatus](values)
             .then((res) => {
               that.spinning = false
@@ -736,7 +745,10 @@ export default {
               that.$message.info(res.msg)
               that.$emit('finish')
             })
-            .catch((err) => (that.spinning = false))
+            .catch((err) => {
+              that.spinning = false
+              that.$message.error(err.message)
+            })
         }
       })
     },
