@@ -22,29 +22,17 @@
           <a-button class="a-button" type="primary" icon="search" @click="openSearchModel">高级筛选</a-button>
           <a-button class="a-button" type="primary" icon="download" @click="exportHandler">导出</a-button>
         </a-form-item>
-        <!-- <a-form-item label="客户名称">
-          <a-input v-model="customerName"/>
-        </a-form-item>
-        <a-form-item label="单据状态" v-show="showFlag">
-          <a-select  v-model="approveStatus" style="width: 150px" >
-            <a-select-option :value="0">请选择审批状态</a-select-option>
-            <a-select-option :value="1">待审批</a-select-option>
-            <a-select-option :value="2">通过</a-select-option>
-            <a-select-option :value="3">不通过</a-select-option>  </a-select>
-        </a-form-item>
-        <a-form-item>
-          <template v-if="$auth('receipt:list')">
-            <a-button class="a-button" type="primary" icon="search" @click="search">查询</a-button>
-          </template>
-        </a-form-item> -->
         <div class="table-operator fl-r">
-          <a-dropdown>
+          <!-- <a-dropdown>
             <a-menu slot="overlay" @click="handleAdd">
               <a-menu-item key="1"><a-icon type="file" />销售收款单</a-menu-item>
               <a-menu-item key="2"><a-icon type="file" />软件收款单</a-menu-item>
             </a-menu>
             <a-button type="primary" style="margin-left: 8px"> 新建 <a-icon type="plus" /> </a-button>
-          </a-dropdown>
+          </a-dropdown> -->
+          <a-button type="primary" style="margin-left: 8px" @click="handleAdd">
+            售后收款单 <a-icon type="plus" />
+          </a-button>
         </div>
       </a-form>
     </div>
@@ -52,13 +40,13 @@
       <a-alert :message="searchTotalMoney" type="info" />
       <a-col>
         <div>
-          <a-tabs :defaultActiveKey="contractState" @change="paramClick">
+          <a-tabs defaultActiveKey="0" @change="paramClick">
             <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
 
-            <template v-if="$auth('receipt:approval')">
+            <!-- <template v-if="$auth('AfterSalesReceipt:approval')">
               <a-tab-pane tab="待我审批" key="4"> </a-tab-pane>
               <a-tab-pane tab="我已审批" key="2"> </a-tab-pane>
-            </template>
+            </template> -->
           </a-tabs>
         </div>
         <a-table
@@ -86,16 +74,16 @@
             <a @click="handleClick(record)" v-if="text == 9">已撤回</a>
           </div>
           <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('receipt:one')">
+            <template v-if="$auth('AfterSalesReceipt:one')">
               <a @click="handleVue(record)">查看</a>
             </template>
-            <template v-if="$auth('receipt:edit') && contractState == '4'">
+            <template v-if="$auth('AfterSalesReceipt:edit') && audit">
               <a-divider type="vertical" />
               <a @click="handleAudit(record)">审核</a>
             </template>
             <template
               v-if="
-                $auth('receipt:edit') &&
+                $auth('AfterSalesReceipt:edit') &&
                 (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
                 userInfo.id === record.createdId
               "
@@ -105,8 +93,8 @@
             </template>
             <template
               v-if="
-                $auth('receipt:del') &&
-                contractState === '0' &&
+                $auth('AfterSalesReceipt:del') &&
+                !audit &&
                 userInfo.id === record.createdId &&
                 (+record.receiptStatus === 3 || +record.receiptStatus === 9)
               "
@@ -114,7 +102,7 @@
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="contractState === '0' && record.receiptStatus === 1">
+            <template v-if="!audit && record.receiptStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -180,8 +168,8 @@ import {
   receiptGetSumAmountByList,
 } from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
-import InvestigateNode from '../record/InvestigateNode'
-import Tendering from '../record/TenderingUnit'
+import InvestigateNode from './InvestigateNode'
+import Tendering from './TenderingUnit'
 import SearchForm from './SearchForm'
 import { exprotAction } from '@/api/receipt'
 const innerColumns = [
@@ -209,22 +197,22 @@ const innerColumns = [
     scopedSlots: { customRender: 'countMoney' },
     width: '120px',
   },
-  {
-    align: 'center',
-    title: '结算方式',
-    dataIndex: 'paidType',
-    key: 'paidType',
-    width: '100px',
-    scopedSlots: { customRender: 'paidType' },
-  },
-  {
-    align: 'center',
-    title: '运费',
-    dataIndex: 'freightCharge',
-    key: 'freightCharge',
-    scopedSlots: { customRender: 'freightCharge' },
-    width: '120px',
-  },
+  //   {
+  //     align: 'center',
+  //     title: '结算方式',
+  //     dataIndex: 'paidType',
+  //     key: 'paidType',
+  //     width: '100px',
+  //     scopedSlots: { customRender: 'paidType' },
+  //   },
+  //   {
+  //     align: 'center',
+  //     title: '运费',
+  //     dataIndex: 'freightCharge',
+  //     key: 'freightCharge',
+  //     scopedSlots: { customRender: 'freightCharge' },
+  //     width: '120px',
+  //   },
   {
     align: 'center',
     title: '本次实收金额',
@@ -258,6 +246,7 @@ export default {
       queryParam: {
         dayWeekMonth: 1,
         statue: 0,
+        contractType: 6,
       },
       recordResult: {},
       queryRecord: {},
@@ -379,12 +368,14 @@ export default {
   watch: {
     $route: {
       handler: function (to, from) {
-        if (to.name === 'receiptList' && to.params.queryParam === undefined) {
+        console.log(to.params.queryParam)
+
+        if (to.name === 'After_sales_receipt' && to.params.queryParam === undefined) {
           this.queryParam = { ...this.queryParam, dayWeekMonth: 1 }
           this.searchAction()
         } else {
           this.queryParam = to.params.queryParam
-          this.contractState = to.params.queryParam.statue
+          this
           this.searchAction()
         }
       },
@@ -438,13 +429,14 @@ export default {
       this.searchAction()
     },
     handleAdd(e) {
-      if (e.key === '1') {
-        //点击返回，返回核价单列表页
-        this.$router.push({ name: 'ReceiptAdd', params: { id: null, action: 'add', contractType: e.key } })
-      }
-      if (e.key === '2') {
-        this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: null, action: 'add', contractType: e.key } })
-      }
+      this.$router.push({ name: 'AfterSalesReceiptAdd', params: { id: null, action: 'add', contractType: e.key } })
+      //   if (e.key === '1') {
+      //     //点击返回，返回核价单列表页
+      //     this.$router.push({ name: 'ReceiptAdd', params: { id: null, action: 'add', contractType: e.key } })
+      //   }
+      //   if (e.key === '2') {
+      //     this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: null, action: 'add', contractType: e.key } })
+      //   }
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       console.log('onSelectChange 点击了')
@@ -549,44 +541,26 @@ export default {
       console.log(key)
     },
     handleVue(e) {
-      if (e.contractType === 1) {
-        this.$router.push({ name: 'ReceiptVue', params: { id: e.id, queryParam: this.queryParam } })
-      }
-      if (e.contractType === 2) {
-        this.$router.push({
-          name: 'ReceiptSoftwareVue',
-          params: { id: e.id, queryParam: this.queryParam },
-        })
-      }
       if (e.contractType === 6) {
-        this.$router.push({
-          name: 'AfterSalesReceiptVue',
-          params: { id: e.id, queryParam: this.queryParam },
-        })
+        this.$router.push({ name: 'AfterSalesReceiptVue', params: { id: e.id, queryParam: this.queryParam } })
       }
+      //   if (e.contractType === 2) {
+      //     this.$router.push({
+      //       name: 'ReceiptSoftwareVue',
+      //       params: { id: e.id, queryParam: this.queryParam },
+      //     })
+      //   }
     },
-    handleAudit(e) {
-      console.log(JSON.stringify(e))
-      if (this.$store.getters.userInfo.id == 1) {
-        this.$message.info('你没有审批权限，不可以审批')
-        return
-      }
-      if (e.contractType === 1) {
-        this.$router.push({ name: 'ReceiptAudit', params: { id: e.id, queryParam: this.queryParam } })
-      }
-      if (e.contractType === 2) {
-        this.$router.push({
-          name: 'ReceiptSoftwareAudit',
-          params: { id: e.id, queryParam: this.queryParam },
-        })
-      }
-      if (e.contractType === 6) {
-        this.$router.push({
-          name: 'AfterSalesReceiptAudit',
-          params: { id: e.id, queryParam: this.queryParam },
-        })
-      }
-    },
+    // handleAudit(e) {
+    //   console.log(JSON.stringify(e))
+    //   if (this.$store.getters.userInfo.id == 1) {
+    //     this.$message.info('你没有审批权限，不可以审批')
+    //     return
+    //   }
+    //   if (e.contractType === 6) {
+    //     this.$router.push({ name: 'AfterSalesReceiptAudit', params: { id: e.id, queryParam: this.queryParam } })
+    //   }
+    // },
     handleAuditOk() {
       this.searchAction()
     },
@@ -594,12 +568,11 @@ export default {
       this.searchAction()
     },
     handleEdit(record) {
-      if (record.contractType === 1) {
-        this.$router.push({ name: 'ReceiptAdd', params: { id: record.id, action: 'edit' } })
-      }
-      if (record.contractType === 2) {
-        this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: record.id, action: 'edit' } })
-      }
+      this.$router.push({ name: 'AfterSalesReceiptAdd', params: { id: record.id, action: 'edit' } })
+
+      //   if (record.contractType === 2) {
+      //     this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: record.id, action: 'edit' } })
+      //   }
     },
     getPayType(type) {
       let m = {
@@ -617,9 +590,8 @@ export default {
     },
     paramChangeHandler(params) {
       this.isExpanded = true
-      this.pagination = { ...{ current: 1 } }
       this.queryParam = { ...this.queryParam, ...params, dayWeekMonth: this.dayWeekMonth }
-      this.searchAction({ current: 1 })
+      this.searchAction()
     },
     simpleSearch(type) {
       if (type === 4) {

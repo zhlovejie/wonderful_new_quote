@@ -14,21 +14,6 @@
           <a-form-item label="负责人">
             <a-input v-decorator="['saleUserName']" placeholder="负责人" :allowClear="true" />
           </a-form-item>
-          <!-- <a-form-item label="销售经理">
-            <a-select
-              optionFilterProp="children"
-              showSearch
-              :allowClear="true"
-              :filterOption="filterSalersOption"
-              placeholder="销售经理"
-              style="width: 100%"
-              v-decorator="['saleUserId']"
-            >
-              <a-select-option v-for="item in saleUser" :value="item.userId" :key="item.userId">{{
-                item.salesmanName
-              }}</a-select-option>
-            </a-select>
-          </a-form-item> -->
         </a-col>
         <a-col :span="12">
           <a-form-item label="客户名称">

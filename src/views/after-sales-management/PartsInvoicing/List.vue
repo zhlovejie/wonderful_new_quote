@@ -103,6 +103,10 @@
               <a-divider type="vertical" />
               <a v-if="!audit" class="delete" @click="() => del(record)">删除</a>
             </template>
+            <template v-if="record.paperStatue === 2 && contractState === 0">
+              <a-divider type="vertical" />
+              <a v-download="record.wordUrl">下载</a>
+            </template>
             <template
               v-if="
                 $auth('PartsInvoicing:edits') &&

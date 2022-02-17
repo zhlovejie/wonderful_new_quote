@@ -21,7 +21,13 @@
 
     <a-spin :spinning="spinning">
       <a-form-model ref="ruleForm" :model="form" class="routine-addform-wrapper-baseInnerData">
-        <h3>基本信息</h3>
+        <h3>
+          基本信息
+          <span style="float: right; margin-bottom: 10px">
+            <a-button key="back" type="primary" @click="doAction('detail', record)">预览</a-button></span
+          >
+        </h3>
+
         <table class="custom-table custom-table-border">
           <tr>
             <td style="width: 250px">配件销售合同编号</td>
@@ -174,6 +180,7 @@
         </table>
         <Approval ref="approval" @opinionChange="opinionChange" />
         <CustomerList ref="customerList" @selected="customerSelected" />
+        <XdocView ref="xdocView" />
       </a-form-model>
     </a-spin>
   </a-modal>
@@ -189,11 +196,14 @@ import {
 import CustomerList from '@/components/CustomerList/CustomerList'
 import Approval from './Approval'
 import moment from 'moment'
+import XdocView from './XdocView'
+
 export default {
   name: 'BecomingForm',
   components: {
     Approval,
     CustomerList,
+    XdocView,
   },
   data() {
     return {
@@ -298,6 +308,17 @@ export default {
 
   created() {},
   methods: {
+    doAction(type, record) {
+      let that = this
+      if (type === 'detail') {
+        if (!record.wordUrl) {
+          that.$message.info('尚未上传文件')
+          return
+        }
+        that.$refs.xdocView.query(record.wordUrl)
+        return
+      }
+    },
     selectCustomer() {
       this.$refs.customerList.init()
     },

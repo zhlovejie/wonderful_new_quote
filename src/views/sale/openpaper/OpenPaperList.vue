@@ -91,6 +91,10 @@
               <a-divider v-if="audit" type="vertical" />
               <a v-if="audit" @click="handleAudit(record)">审核</a>
             </template>
+            <template v-if="record.paperStatue === 2 && contractState === 0">
+              <a-divider type="vertical" />
+              <a v-download="record.wordUrl">下载</a>
+            </template>
             <template
               v-if="
                 $auth('paper:del') &&

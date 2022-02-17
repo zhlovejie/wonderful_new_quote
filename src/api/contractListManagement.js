@@ -192,6 +192,14 @@ export function getListSalesman(parameter) {
     params: parameter
   })
 }
+export function getListByPage(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/csupport/accessories-contract/getListByPage',
+    method: 'get',
+    params: parameter
+  })
+}
 // 插入基本信息
 export function saveEssentialInformation(data) {
   return axios({
