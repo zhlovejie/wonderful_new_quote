@@ -65,9 +65,20 @@ const api = {
   accessoriesdelById: '/csupport/accessories-contract/delById', //配件销售合同删除
   accessoriesApproval: '/csupport/accessories-contract/approval', //配件销售合同审批
   accessoriesgetCustomerById: '/csupport/accessories-contract/getCustomerById', //根据客户id获取最新的客户开票信息
+  uploadWordUrl: '/csupport/accessories-contract/uploadWordUrl', //售后合同上传
 
 
 
+}
+
+//配件销售合同审批
+export function uploadWordUrl(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: api.uploadWordUrl,
+    method: 'post',
+    data: parameter
+  })
 }
 //根据客户id获取最新的客户开票信息
 export function accessoriesgetCustomerById(parameter) {

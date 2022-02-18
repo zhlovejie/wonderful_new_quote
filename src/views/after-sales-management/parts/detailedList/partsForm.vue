@@ -123,7 +123,8 @@
         <table class="custom-table custom-table-border">
           <tr>
             <td>付款方式</td>
-            <td>
+            <td v-if="details.formKey === '4'">先付款</td>
+            <td v-else>
               {{
                 form.paymentType === 0
                   ? '完结付款'
@@ -135,6 +136,13 @@
               }}
             </td>
           </tr>
+          <tr v-if="form.paymentType === 0 || form.paymentType === 1">
+            <td>付款形式</td>
+            <td>
+              {{ form.paymentForm === 0 ? '付款码' : '公户打款' }}
+            </td>
+          </tr>
+
           <tr v-if="form.paymentType === 0 || form.paymentType === 3">
             <td>处理人</td>
             <td>{{ form.handlerUser.split(',')[1] }}</td>
@@ -362,6 +370,9 @@ export default {
             ret.isAdopt = this.isAdopt === true ? 0 : 1
           } else {
             ret.isAdopt = 0
+          }
+          if (this.details.formKey === '4') {
+            ret.attachId = 1
           }
 
           ret.approveId = this.record.id

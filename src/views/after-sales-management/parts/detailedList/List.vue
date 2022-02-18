@@ -75,7 +75,13 @@
             <template v-if="queryParam.searchStatus !== '1'">
               <a @click="handleAdd('veiw', record)">查看</a>
             </template>
-            <template v-if="queryParam.searchStatus === '0' && record.productInfoList.some((i) => i.isWarranty === 1)">
+            <template
+              v-if="
+                queryParam.searchStatus === '0' &&
+                record.productInfoList.some((i) => i.isWarranty === 1) &&
+                (record.paymentType === 0 || record.paymentType === 1)
+              "
+            >
               <a-divider type="vertical" />
               <a @click="accessorAdd('add', record)">配件销售合同</a>
             </template>

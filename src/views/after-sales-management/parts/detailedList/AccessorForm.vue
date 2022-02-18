@@ -53,8 +53,40 @@
             <td>{{ record.createdName }}</td>
           </tr>
           <tr>
-            <td>开票类型</td>
+            <td>是否开票</td>
             <td>
+              <a-form-model-item
+                prop="needInvoice"
+                :rules="{
+                  required: true,
+                  message: '请选择开票类型',
+                }"
+              >
+                <a-radio-group v-if="!isDisabled" v-model="form.needInvoice">
+                  <a-radio :value="0">否</a-radio>
+                  <a-radio :value="1">是</a-radio>
+                </a-radio-group>
+              </a-form-model-item>
+            </td>
+            <td>是否需要鲜章</td>
+            <td>
+              <a-form-model-item
+                prop="needSignet"
+                :rules="{
+                  required: true,
+                  message: '请选择是否需要鲜章',
+                }"
+              >
+                <a-radio-group v-if="!isDisabled" v-model="form.needSignet">
+                  <a-radio :value="0">否</a-radio>
+                  <a-radio :value="1">是</a-radio>
+                </a-radio-group>
+              </a-form-model-item>
+            </td>
+          </tr>
+          <tr>
+            <td v-if="form.needInvoice === 1">开票类型</td>
+            <td v-if="form.needInvoice === 1">
               <a-form-model-item
                 prop="invoiceType"
                 :rules="{
@@ -69,7 +101,7 @@
               </a-form-model-item>
             </td>
             <td>签订日期</td>
-            <td>
+            <td :colspan="form.needSignet === 0 ? 3 : 0">
               <a-form-model-item
                 prop="signDate"
                 :rules="{
@@ -191,6 +223,8 @@ export default {
         productInfoList: [],
         signDate: moment(),
         invoiceType: 2,
+        needInvoice: 1,
+        needSignet: 0,
       },
       isWarranty: undefined,
       record: {},
@@ -302,6 +336,8 @@ export default {
         productInfoList: [],
         signDate: moment(),
         invoiceType: 2,
+        needInvoice: 1,
+        needSignet: 0,
       }
       this.type = type
       this.record = record
@@ -337,6 +373,8 @@ export default {
 
           ret.productInfoList = params.productInfoList
           ret.invoiceType = params.invoiceType
+          ret.needInvoice = params.needInvoice
+          ret.needSignet = params.needSignet
           ret.signDate = params.signDate.format('YYYY-MM-DD')
           ret.address = params.address
           ret.telephone = params.telephone
