@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="900"
+    :width="1200"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -182,7 +182,7 @@
                     placeholder="选择基本工资"
                     :allowClear="true"
                     disabled
-                    style="width: 50%"
+                    style="width: 33%"
                     v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -196,9 +196,10 @@
                     <a-select-option :value="4500">4500</a-select-option>
                     <a-select-option :value="5000">5000</a-select-option>
                   </a-select>
+
                   <a-input-number
                     placeholder="岗位工资"
-                    style="width: 50%"
+                    style="width: 33%"
                     :allowClear="true"
                     :min="0"
                     disabled
@@ -206,6 +207,18 @@
                     :precision="2"
                     v-decorator="['oldPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
                   />
+
+                  <a-input-number
+                    placeholder="考核工资"
+                    style="width: 33%"
+                    :allowClear="true"
+                    :min="0"
+                    disabled
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['oldAssessSalary', { rules: [{ required: false, message: '请输入考核工资(元)' }] }]"
+                  />
+
                 </a-form-item>
               </td>
               <td v-if="distribution">分配期望总薪资(元)</td>
@@ -213,7 +226,7 @@
                 <a-form-item>
                   <a-select
                     placeholder="选择基本工资"
-                    style="width: 50%"
+                    style="width: 33%"
                     :allowClear="true"
                     v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
@@ -230,12 +243,22 @@
                   </a-select>
                   <a-input-number
                     placeholder="岗位工资"
-                    style="width: 50%"
+                    style="width: 33%"
                     :allowClear="true"
                     :min="0"
                     :step="1"
                     :precision="2"
                     v-decorator="['expectPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
+                  />
+
+                  <a-input-number
+                    placeholder="考核工资"
+                    style="width: 33%"
+                    :allowClear="true"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['expectAssessSalary', { rules: [{ required: false, message: '请输入考核工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -385,7 +408,7 @@
                     placeholder="选择基本工资"
                     :allowClear="true"
                     disabled
-                    style="width: 50%"
+                    style="width: 33%"
                     v-decorator="['oldBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -403,11 +426,22 @@
                     placeholder="岗位工资"
                     :allowClear="true"
                     disabled
-                    style="width: 50%"
+                    style="width: 33%"
                     :min="0"
                     :step="1"
                     :precision="2"
                     v-decorator="['oldPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
+                  />
+
+                  <a-input-number
+                    placeholder="考核工资"
+                    :allowClear="true"
+                    disabled
+                    style="width: 33%"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['oldAssessSalary', { rules: [{ required: false, message: '请输入考核工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -418,7 +452,7 @@
                     placeholder="选择基本工资"
                     :allowClear="true"
                     :disabled="isView"
-                    style="width: 50%"
+                    style="width: 33%"
                     v-decorator="['expectBasicSalary', { rules: [{ required: true, message: '选择基本工资' }] }]"
                   >
                     <a-select-option :value="2500">2500</a-select-option>
@@ -436,11 +470,21 @@
                     placeholder="岗位工资"
                     :allowClear="true"
                     :disabled="isView"
-                    style="width: 50%"
+                    style="width: 33%"
                     :min="0"
                     :step="1"
                     :precision="2"
                     v-decorator="['expectPostSalary', { rules: [{ required: true, message: '请输入岗位工资(元)' }] }]"
+                  />
+                  <a-input-number
+                    placeholder="考核工资"
+                    :allowClear="true"
+                    :disabled="isView"
+                    style="width: 33%"
+                    :min="0"
+                    :step="1"
+                    :precision="2"
+                    v-decorator="['expectAssessSalary', { rules: [{ required: false, message: '请输入考核工资(元)' }] }]"
                   />
                 </a-form-item>
               </td>
@@ -655,14 +699,16 @@ export default {
     },
     async handleOk() {
       let that = this
+      debugger
       if (that.distribution) {
         this.form.validateFields((err, values) => {
           if (!err) {
-            if (Number(values.oldSalary) !== Number(values.oldBasicSalary) + Number(values.oldPostSalary)) {
-              return this.$message.error('原总工资 = 原基本工资 + 原岗位工资')
+            debugger
+            if (Number(values.oldSalary) !== Number(values.oldBasicSalary) + Number(values.oldPostSalary) + Number(values.oldAssessSalary)) {
+              return this.$message.error('原总工资 = 原基本工资 + 原岗位工资 + 原考核工资')
             }
-            if (Number(values.expectSalary) !== Number(values.expectBasicSalary) + Number(values.expectPostSalary)) {
-              return this.$message.error('期待总工资 = 期待基本工资 + 期待岗位工资')
+            if (Number(values.expectSalary) !== Number(values.expectBasicSalary) + Number(values.expectPostSalary) + Number(values.expectAssessSalary)) {
+              return this.$message.error('期待总工资 = 期待基本工资 + 期待岗位工资 + 期待考核工资')
             }
             let apiMap = {
               0: saveOrUpdatePositionChangeApply,
@@ -673,10 +719,12 @@ export default {
               id: that.record.id,
               oldBasicSalary: values.oldBasicSalary,
               oldPostSalary: values.oldPostSalary,
+              oldAssessSalary:values.oldAssessSalary,
               oldSalary: values.oldSalary,
               expectSalary: values.expectSalary,
               expectPostSalary: values.expectPostSalary,
               expectBasicSalary: values.expectBasicSalary,
+              expectAssessSalary:values.expectAssessSalary,
               applyUserId: this.survey.applyUserId,
             }
             console.log(react)
@@ -690,6 +738,8 @@ export default {
                 that.$emit('finish')
               })
               .catch((err) => (that.spinning = false))
+          }else{
+            console.log(err)
           }
         })
         return
@@ -699,6 +749,8 @@ export default {
         this.form.validateFields((err, values) => {
           if (!err) {
             that.passAction({ attachInfo: values.attachInfo })
+          }else{
+            console.log(err)
           }
         })
         return
@@ -894,7 +946,8 @@ export default {
             that.form.setFieldsValue({
               oldBasicSalary: res.data.realityBasicSalary,
               oldPostSalary: res.data.realityPostSalary,
-              oldSalary: Number(res.data.realityBasicSalary) + Number(res.data.realityPostSalary),
+              oldAssessSalary:res.data.realityAssessSalary,
+              oldSalary: Number(res.data.realityBasicSalary) + Number(res.data.realityPostSalary)+ Number(res.data.realityAssessSalary),
             })
           }
         })

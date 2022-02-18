@@ -156,6 +156,12 @@ const columns = [
         dataIndex: 'realityPostSalary',
         key: 'realityPostSalary',
       },
+      {
+        align: 'center',
+        title: '考核工资',
+        dataIndex: 'realityAssessSalary',
+        key: 'realityAssessSalary',
+      },
     ],
   },
 ]
