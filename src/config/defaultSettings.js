@@ -26,7 +26,7 @@ export default {
   // baseURL: 'http://192.168.13.158:8999/oa',
   //  baseURL:'http://106.14.194.64/cloud_new',
 
-  baseURL: 'http://192.168.12.16:8995/oa',
+  baseURL: 'http://192.168.13.196:9992/oa',
   // baseURL: 'http://192.168.13.151:8998',
   // baseURL: 'http://192.168.13.150:8996/oa', //王利
   // baseURL: 'http://106.14.194.64/cloud_new', //张恒
