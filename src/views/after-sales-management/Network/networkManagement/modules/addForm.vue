@@ -33,10 +33,10 @@
                       rules: [
                         {
                           required: true,
-                          message: '请输入正确网点名称!',
-                        },
-                      ],
-                    },
+                          message: '请输入正确网点名称!'
+                        }
+                      ]
+                    }
                   ]"
                 />
               </a-form-item>
@@ -82,10 +82,10 @@
                       rules: [
                         {
                           required: true,
-                          message: '请输入正确业务员名称!',
-                        },
-                      ],
-                    },
+                          message: '请输入正确业务员名称!'
+                        }
+                      ]
+                    }
                   ]"
                 />
               </a-form-item>
@@ -104,10 +104,10 @@
                       rules: [
                         {
                           required: true,
-                          message: '请输入正确业务员电话!',
-                        },
-                      ],
-                    },
+                          message: '请输入正确业务员电话!'
+                        }
+                      ]
+                    }
                   ]"
                 />
               </a-form-item>
@@ -137,6 +137,7 @@
             </td>
           </tr>
         </table>
+
         <h3>
           协议信息 <span><a href="">协议模板</a> </span><span>（请填写完基本信息后，点击下载协议模板）</span>
         </h3>
@@ -150,8 +151,13 @@
                   <a-button> <a-icon type="upload" /> 上传文件 </a-button>
                 </a-upload>
               </a-form-item>
-              <span v-else
-                ><a v-download="record.businessLicenseUrl">{{ record.businessLicenseUrl.substr(41, 300) }}</a>
+              <span v-else>
+                <template v-if="record.protocolFileUrl">
+                  <a v-download="record.protocolFileUrl">{{ record.protocolFileUrl.substr(41, 300) }}</a>
+                </template>
+                <template v-else>
+                  <span>无</span>
+                </template>
               </span>
             </td>
           </tr>
@@ -168,13 +174,16 @@ import { getUploadVideoPath } from '@/api/manage'
 import { getUploadPath2, getAreaByParent } from '@/api/common'
 import { queryCode } from '@/api/workBox'
 // import Dictionaries from './Dictionaries'
-let uuid = () => Math.random().toString(32).slice(-10)
+let uuid = () =>
+  Math.random()
+    .toString(32)
+    .slice(-10)
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = () => resolve(reader.result)
-    reader.onerror = (error) => reject(error)
+    reader.onerror = error => reject(error)
   })
 }
 export default {
@@ -186,11 +195,11 @@ export default {
     return {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 7 },
+        sm: { span: 7 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 13 },
+        sm: { span: 13 }
       },
       uploadUrl: getUploadPath2(),
       Warehouse: [],
@@ -208,7 +217,7 @@ export default {
       fileList: [],
       fileList1: [],
       labelName: undefined,
-      uploadPath: getUploadVideoPath(),
+      uploadPath: getUploadVideoPath()
     }
   },
   beforeCreate() {
@@ -234,7 +243,7 @@ export default {
     },
     isDisabled() {
       return this.isView
-    },
+    }
   },
   methods: {
     handleAdd() {
@@ -251,14 +260,14 @@ export default {
         if (record.territory) {
           let _arr = record.territory.split(',')
           let _arr1 = record.region.split(',').map(Number)
-          _arr = _arr.map((v) => parseInt(v, 10))
+          _arr = _arr.map(v => parseInt(v, 10))
           let _areaCityData = await that.loadAreaAction(_arr[0])
-          let ctiyTargetOption = that.birthplaceOptions.find((p) => p.value == _arr[0])
+          let ctiyTargetOption = that.birthplaceOptions.find(p => p.value == _arr[0])
           if (ctiyTargetOption) {
             ctiyTargetOption.children = _areaCityData
             that.birthplaceOptions = [...that.birthplaceOptions]
           }
-          getAreaByParent({ pId: _arr[1] }).then((res) => {
+          getAreaByParent({ pId: _arr[1] }).then(res => {
             this.areaList = res.data
             that.$nextTick(() => that.form.setFieldsValue({ region: _arr1 }))
           })
@@ -275,27 +284,27 @@ export default {
           this.form.setFieldsValue({
             networkName: record.networkName,
             contactInformation: record.serviceUserVoList[0].contactInformation,
-            serviceUserName: record.serviceUserVoList[0].serviceUserName,
+            serviceUserName: record.serviceUserVoList[0].serviceUserName
           })
           if (record.protocolFileUrl != null && record.protocolFileUrl.length > 0) {
             let react = record.protocolFileUrl.split(',')
-            this.fileList1 = react.map((i) => {
+            this.fileList1 = react.map(i => {
               return {
                 uid: uuid(),
                 name: i.substr(41, 300),
                 status: 'done',
-                url: i,
+                url: i
               }
             })
           }
           if (record.businessLicenseUrl != null && record.businessLicenseUrl.length > 0) {
             let react = record.businessLicenseUrl.split(',')
-            this.fileList = react.map((i) => {
+            this.fileList = react.map(i => {
               return {
                 uid: uuid(),
                 name: i.substr(41, 300),
                 status: 'done',
-                url: i,
+                url: i
               }
             })
           }
@@ -324,29 +333,28 @@ export default {
           }
           if (this.fileList.length !== 0) {
             values.businessLicenseUrl =
-              this.fileList.map((i) => (i.response && i.response.data) || i.url).toString() || ''
+              this.fileList.map(i => (i.response && i.response.data) || i.url).toString() || ''
           }
           if (this.fileList1.length !== 0) {
-            values.protocolFileUrl =
-              this.fileList1.map((i) => (i.response && i.response.data) || i.url).toString() || ''
+            values.protocolFileUrl = this.fileList1.map(i => (i.response && i.response.data) || i.url).toString() || ''
           }
           values.networkType = 0
           values.territory = values.territory.toString()
           values.territoryName = this.labelName || this.record.territoryName
           values.region = values.region.toString()
-          let arr = this.areaList.filter((i) => values.region.includes(i.id))
-          values.regionName = arr.map((i) => i.area).toString()
+          let arr = this.areaList.filter(i => values.region.includes(i.id))
+          values.regionName = arr.map(i => i.area).toString()
           values.serviceUserVoList = [
             {
               contactInformation: values.contactInformation,
-              serviceUserName: values.serviceUserName,
-            },
+              serviceUserName: values.serviceUserName
+            }
           ]
           delete values.contactInformation
           delete values.serviceUserName
           _this.confirmLoading = true
           addAndUpdateNetworkManagement(values)
-            .then((res) => {
+            .then(res => {
               if (res.code == 200) {
                 _this.$message.success('保存成功')
               } else {
@@ -402,7 +410,7 @@ export default {
     handleChange1(info) {
       let fileList = [...info.fileList]
       fileList = fileList.slice(-1)
-      fileList = fileList.map((file) => {
+      fileList = fileList.map(file => {
         if (file.response) {
           file.url = file.response.url
         }
@@ -418,55 +426,55 @@ export default {
       console.log('birthplaceCascaderChange called...')
       console.log(arguments)
       this.areaList = []
-      getAreaByParent({ pId: arrSelected[1] }).then((res) => {
+      getAreaByParent({ pId: arrSelected[1] }).then(res => {
         this.areaList = res.data
       })
-      this.labelName = arguments[1] !== undefined ? arguments[1].map((i) => i.label).toString() : ''
+      this.labelName = arguments[1] !== undefined ? arguments[1].map(i => i.label).toString() : ''
     },
     birthplaceCascaderLoadData(selectedOptions) {
       let that = this
       const targetOption = selectedOptions[selectedOptions.length - 1]
       targetOption.loading = true
       getAreaByParent({ pId: targetOption.value })
-        .then((res) => {
+        .then(res => {
           //城市
           targetOption.loading = false
-          targetOption.children = res.data.map((item) => {
+          targetOption.children = res.data.map(item => {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 2 ? true : false,
+              isLeaf: item.level === 2 ? true : false
             }
           })
           that.birthplaceOptions = [...that.birthplaceOptions]
         })
-        .catch(function (err) {
+        .catch(function(err) {
           console.log(err)
         })
     },
     loadAreaAction(pId) {
       const that = this
       return getAreaByParent({ pId: pId })
-        .then((res) => {
+        .then(res => {
           //城市
-          return res.data.map((item) => {
+          return res.data.map(item => {
             return {
               label: item.area,
               value: item.id,
-              isLeaf: item.level === 2 ? true : false,
+              isLeaf: item.level === 2 ? true : false
             }
           })
         })
-        .catch(function (err) {
+        .catch(function(err) {
           console.log(err)
           return []
         })
-    },
-  },
+    }
+  }
 }
 </script>
 
-<style scoped >
+<style scoped>
 /* you can make up upload button and sample style by using stylesheets */
 .requiredMark::before {
   display: inline-block;
