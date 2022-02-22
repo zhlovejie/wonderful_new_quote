@@ -517,6 +517,7 @@ export default {
   watch: {
     $route(to, from) {
       if (to.name === 'ReceiptAdd') {
+        this.contractType = this.$route.params.contractType
         this.init()
       }
     },

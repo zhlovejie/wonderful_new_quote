@@ -84,8 +84,8 @@
             <template
               v-if="
                 $auth('AfterSalesReceipt:edit') &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
-                userInfo.id === record.createdId
+                  (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
+                  userInfo.id === record.createdId
               "
             >
               <a-divider type="vertical" />
@@ -94,9 +94,9 @@
             <template
               v-if="
                 $auth('AfterSalesReceipt:del') &&
-                !audit &&
-                userInfo.id === record.createdId &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9)
+                  !audit &&
+                  userInfo.id === record.createdId &&
+                  (+record.receiptStatus === 3 || +record.receiptStatus === 9)
               "
             >
               <a-divider type="vertical" />
@@ -165,7 +165,7 @@ import {
   getContractOne,
   getServiceList,
   revocationReceipt,
-  receiptGetSumAmountByList,
+  receiptGetSumAmountByList
 } from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
 import InvestigateNode from './InvestigateNode'
@@ -179,7 +179,7 @@ const innerColumns = [
     dataIndex: 'productModel',
     key: 'productModel',
     width: '200px',
-    scopedSlots: { customRender: 'productModel' },
+    scopedSlots: { customRender: 'productModel' }
   },
   {
     align: 'center',
@@ -187,7 +187,7 @@ const innerColumns = [
     dataIndex: 'productName',
     key: 'productName',
     scopedSlots: { customRender: 'productName' },
-    width: '200px',
+    width: '200px'
   },
   {
     align: 'center',
@@ -195,7 +195,7 @@ const innerColumns = [
     dataIndex: 'countMoney',
     key: 'countMoney',
     scopedSlots: { customRender: 'countMoney' },
-    width: '120px',
+    width: '120px'
   },
   //   {
   //     align: 'center',
@@ -218,7 +218,7 @@ const innerColumns = [
     title: '本次实收金额',
     key: 'paidMoney1',
     scopedSlots: { customRender: 'paidMoney1' },
-    width: '120px',
+    width: '120px'
   },
   {
     align: 'center',
@@ -226,8 +226,8 @@ const innerColumns = [
     dataIndex: 'settlementDiscount',
     key: 'settlementDiscount',
     scopedSlots: { customRender: 'settlementDiscount' },
-    width: '120px',
-  },
+    width: '120px'
+  }
 ]
 export default {
   name: 'ReceiptList',
@@ -236,7 +236,7 @@ export default {
     InvestigateNode,
     ReceiptAdd,
     STable,
-    SearchForm,
+    SearchForm
   },
   data() {
     return {
@@ -246,7 +246,7 @@ export default {
       queryParam: {
         dayWeekMonth: 1,
         statue: 0,
-        contractType: 6,
+        contractType: 6
       },
       recordResult: {},
       queryRecord: {},
@@ -261,20 +261,20 @@ export default {
       contractStatus: [
         {
           id: 0,
-          name: '请选择状态',
+          name: '请选择状态'
         },
         {
           id: 1,
-          name: '待审批',
+          name: '待审批'
         },
         {
           id: 2,
-          name: '通过',
+          name: '通过'
         },
         {
           id: 3,
-          name: '不通过',
-        },
+          name: '不通过'
+        }
       ],
       // 表头
       columns: [
@@ -287,63 +287,63 @@ export default {
         // },
         {
           title: '收款编号',
-          dataIndex: 'receiptCode',
+          dataIndex: 'receiptCode'
         },
         {
           title: '合同编号',
           dataIndex: 'contractNum',
-          scopedSlots: { customRender: 'contractNum' },
+          scopedSlots: { customRender: 'contractNum' }
         },
         {
           title: '客户名称',
           dataIndex: 'customerName',
           scopedSlots: { customRender: 'customerName' },
-          width: '200px',
+          width: '200px'
         },
         {
           title: '负责人',
-          dataIndex: 'saleUserName',
+          dataIndex: 'saleUserName'
         },
         {
           title: '收款日期',
           dataIndex: 'receiptTime',
           scopedSlots: { customRender: 'receiptTime' },
-          width: 100,
+          width: 100
         },
         {
           title: '结算方式',
-          dataIndex: 'moneyTypeName',
+          dataIndex: 'moneyTypeName'
         },
         {
           title: '本次实收金额',
           dataIndex: 'paidMoney',
-          scopedSlots: { customRender: 'paidMoney' },
+          scopedSlots: { customRender: 'paidMoney' }
         },
         {
           title: '单据状态',
           dataIndex: 'receiptStatus',
-          scopedSlots: { customRender: 'receiptStatus' },
+          scopedSlots: { customRender: 'receiptStatus' }
         },
         {
           title: '申请人',
-          dataIndex: 'createName',
+          dataIndex: 'createName'
         },
         {
           title: '申请时间',
-          dataIndex: 'createTime',
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
           dataIndex: 'id',
 
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       innerColumns: innerColumns,
       // 加载数据方法 必须为 Promise 对象
-      loadData: (parameter) => {
+      loadData: parameter => {
         console.log('开始加载数据', JSON.stringify(this.queryParam))
-        return getServiceList(Object.assign(parameter, this.queryParam)).then((res) => {
+        return getServiceList(Object.assign(parameter, this.queryParam)).then(res => {
           return res
         })
       },
@@ -356,18 +356,18 @@ export default {
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction())
       },
       loading: false,
       isExpanded: false, //是否展开列表子数据
       expandedRowKeys: [],
-      searchTotalMoney: '',
+      searchTotalMoney: ''
     }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
+      handler: function(to, from) {
         console.log(to.params.queryParam)
 
         if (to.name === 'After_sales_receipt' && to.params.queryParam === undefined) {
@@ -379,8 +379,8 @@ export default {
           this.searchAction()
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   methods: {
     searchAction(opt) {
@@ -389,24 +389,24 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getServiceList(_searchParam)
-        .then((res) => {
+        .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             return item
           })
 
-          that.expandedRowKeys = that.isExpanded ? that.dataSource.map((item) => item.key) : []
+          that.expandedRowKeys = that.isExpanded ? that.dataSource.map(item => item.key) : []
 
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch((err) => (that.loading = false))
+        .catch(err => (that.loading = false))
 
       receiptGetSumAmountByList(_searchParam)
-        .then((res) => {
+        .then(res => {
           console.log(that, res)
           if (+res.code !== 200) {
             let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
@@ -418,7 +418,7 @@ export default {
           }
           that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
         })
-        .catch((err) => {
+        .catch(err => {
           that.$message.error(err.message)
         })
     },
@@ -428,8 +428,8 @@ export default {
       this.pagination1.current = pagination.current
       this.searchAction()
     },
-    handleAdd(e) {
-      this.$router.push({ name: 'AfterSalesReceiptAdd', params: { id: null, action: 'add', contractType: e.key } })
+    handleAdd() {
+      this.$router.push({ name: 'AfterSalesReceiptAdd', params: { id: null, action: 'add', contractType: 6 } })
       //   if (e.key === '1') {
       //     //点击返回，返回核价单列表页
       //     this.$router.push({ name: 'ReceiptAdd', params: { id: null, action: 'add', contractType: e.key } })
@@ -462,7 +462,7 @@ export default {
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          deleteReceipt({ id: row.id }).then((res) => {
+          deleteReceipt({ id: row.id }).then(res => {
             if (res.code == 200) {
               _this.searchAction()
             } else {
@@ -474,7 +474,7 @@ export default {
         },
         onCancel() {
           console.log('Cancel')
-        },
+        }
       })
     },
     tendering(record) {
@@ -483,16 +483,16 @@ export default {
         //软件合同
         this.$router.push({
           name: 'previewSoftwareContract',
-          params: { id: record.contractId, action: 'view', from: 'receiptList' },
+          params: { id: record.contractId, action: 'view', from: 'receiptList' }
         })
       } else if (record.contractType === 1) {
         //销售合同  又细分 产品订货单、销售合同、三方合同
-        getContractOne({ id: record.contractId }).then((res) => {
+        getContractOne({ id: record.contractId }).then(res => {
           if (res.data.contractAttribute === 1) {
             //选择三方合同
             this.$router.push({
               name: 'previewTripartiteContract',
-              params: { queryOneData: res.data, from: 'receiptList' },
+              params: { queryOneData: res.data, from: 'receiptList' }
             })
             console.log('queryOneData:record', record)
           } else {
@@ -500,13 +500,13 @@ export default {
               //含税--选择销售合同
               this.$router.push({
                 name: 'previewSalesContract',
-                params: { queryOneData: res.data, from: 'receiptList' },
+                params: { queryOneData: res.data, from: 'receiptList' }
               })
               console.log('queryOneData:record', record)
             } else {
               this.$router.push({
                 name: 'previewProductOrderForm',
-                params: { queryOneData: res.data, from: 'receiptList' },
+                params: { queryOneData: res.data, from: 'receiptList' }
               })
               console.log('queryOneData:record', record)
             }
@@ -542,7 +542,10 @@ export default {
     },
     handleVue(e) {
       if (e.contractType === 6) {
-        this.$router.push({ name: 'AfterSalesReceiptVue', params: { id: e.id, queryParam: this.queryParam } })
+        this.$router.push({
+          name: 'AfterSalesReceiptVue',
+          params: { id: e.id, queryParam: this.queryParam, contractType: 6 }
+        })
       }
       //   if (e.contractType === 2) {
       //     this.$router.push({
@@ -568,7 +571,7 @@ export default {
       this.searchAction()
     },
     handleEdit(record) {
-      this.$router.push({ name: 'AfterSalesReceiptAdd', params: { id: record.id, action: 'edit' } })
+      this.$router.push({ name: 'AfterSalesReceiptAdd', params: { id: record.id, action: 'edit', contractType: 6 } })
 
       //   if (record.contractType === 2) {
       //     this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: record.id, action: 'edit' } })
@@ -581,7 +584,7 @@ export default {
         2: '进度款',
         3: '验收款',
         4: '预付款',
-        5: '提货款',
+        5: '提货款'
       }
       return m[type] || '未知'
     },
@@ -612,13 +615,13 @@ export default {
       if (expanded) {
         this.expandedRowKeys = [...this.expandedRowKeys, record.key]
       } else {
-        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
+        this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
       }
     },
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        revocationReceipt({ id: record.id }).then((res) => {
+        revocationReceipt({ id: record.id }).then(res => {
           that.$message.info(res.msg)
           that.searchAction()
         })
@@ -630,8 +633,8 @@ export default {
       let res = await exprotAction(3, { ...that.queryParam }, '收款单')
       console.log(res)
       that.$message.info(res.msg)
-    },
-  },
+    }
+  }
 }
 </script>
 
