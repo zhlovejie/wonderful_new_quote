@@ -528,7 +528,7 @@ export default {
       } else {
         this.showFlag = false
       }
-      this.contractState = key
+      this.contractState = +key
 
       if (key == 4) {
         this.audit = true

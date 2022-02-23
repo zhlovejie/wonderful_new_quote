@@ -91,7 +91,7 @@
               <a-divider v-if="audit" type="vertical" />
               <a v-if="audit" @click="handleAudit(record)">审核</a>
             </template>
-            <template v-if="record.paperStatue === 2 && contractState === 0">
+            <template v-if="record.paperStatue === 2 && +contractState === 0">
               <a-divider type="vertical" />
               <a v-download="record.wordUrl">下载</a>
             </template>
@@ -115,7 +115,7 @@
               <a-divider type="vertical" />
               <a @click="handleEdit(record)">修改</a>
             </template>
-            <template v-if="+record.paperStatue === 1 && contractState === 0">
+            <template v-if="+record.paperStatue === 1 && +contractState === 0">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -360,7 +360,7 @@ export default {
         this.show = true
         this.audit = false
       }
-      this.contractState = key
+      this.contractState = +key
       this.queryParam = { state: key }
       this.$refs.table.refresh(true)
       this.fetchTotalMoney()

@@ -89,7 +89,7 @@
             <template v-if="$auth('receipt:one')">
               <a @click="handleVue(record)">查看</a>
             </template>
-            <template v-if="$auth('receipt:edit') && contractState == '4'">
+            <template v-if="$auth('receipt:edit') && +contractState === 4">
               <a-divider type="vertical" />
               <a @click="handleAudit(record)">审核</a>
             </template>
@@ -106,7 +106,7 @@
             <template
               v-if="
                 $auth('receipt:del') &&
-                  contractState === '0' &&
+                  +contractState === 0 &&
                   userInfo.id === record.createdId &&
                   (+record.receiptStatus === 3 || +record.receiptStatus === 9)
               "
@@ -114,7 +114,7 @@
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="contractState === '0' && record.receiptStatus === 1">
+            <template v-if="+contractState === 0 && record.receiptStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -536,7 +536,7 @@ export default {
       } else {
         this.showFlag = false
       }
-      this.contractState = key
+      this.contractState = +key
 
       if (key == 4) {
         this.audit = true

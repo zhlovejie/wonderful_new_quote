@@ -385,7 +385,7 @@ export default {
         this.show = true
         this.audit = false
       }
-      this.contractState = key
+      this.contractState = +key
       this.queryParam = { statue: key }
       this.$refs.table.refresh(true)
     },
