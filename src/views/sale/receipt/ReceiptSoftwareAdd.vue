@@ -308,6 +308,7 @@ export default {
         })
         //产品信息内的产品列表
         that.dataSourceSoftContract = productDataSource
+        that.visibleBoolean = true
       }else{ //原新增处理方式
         goAdd().then(res => that.form.setFieldsValue({ receiptCode: res.data }))
       }
@@ -358,6 +359,7 @@ export default {
           }
 
           this.dataSourceSoftContract = listProduct
+          this.visibleBoolean = true
         })
       // 获取当前合同客户的开户行信息
       getAccountBankList().then(res => {

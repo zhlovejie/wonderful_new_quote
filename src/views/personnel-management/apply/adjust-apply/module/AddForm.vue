@@ -553,7 +553,7 @@ import {
 } from '@/api/personnelManagement'
 import moment from 'moment'
 import Approval from './Approval'
-import SystemUserSelect from '@/components/CustomerList/SystemUserSelect'
+import SystemUserSelect from './SystemUserSelect'
 export default {
   name: 'AddForm',
   components: {

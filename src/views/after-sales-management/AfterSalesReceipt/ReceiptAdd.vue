@@ -552,6 +552,8 @@ export default {
         that.dataSource = productDataSource
         //总订货清单
         that.setDataSource(contractResult)
+
+        that.visibleBoolean = true
         //获取已发货产品
         // await getUnshipped({ receiptId: that.$route.params.id })
         //   .then((res) => {
@@ -652,6 +654,7 @@ export default {
             }
           })
           console.log('this.dataSource', this.dataSource)
+          this.visibleBoolean = true
           // 获取当前合同客户的开户行信息
           getAccountBankList().then((res) => {
             this.moneyTypes = res.data

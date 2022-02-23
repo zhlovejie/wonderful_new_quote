@@ -645,6 +645,7 @@ export default {
         })
         //产品信息内的产品列表
         that.dataSource = productDataSource
+
         //总订货清单
         that.setDataSource(contractResult)
         //获取已发货产品
@@ -673,6 +674,9 @@ export default {
           .catch((err) => {
             console.log(err)
           })
+
+        that.visibleBoolean = true
+        
       } else {
         //原新增处理方式
         goAdd().then((res) => that.form.setFieldsValue({ receiptCode: res.data }))
@@ -687,7 +691,6 @@ export default {
       }
       this.$refs.receiptContract.query({ type: 0 })
     },
-
     //接收弹出单据数据
     receiptChange(data) {
       this.Deduction = data
@@ -850,6 +853,9 @@ export default {
           }
 
           this.dataSource = listProduct.filter((item) => +item.receivable < +item.price)
+
+          this.visibleBoolean = true
+
           this.dataSourceContract = listProductContract
           //this.dataSourceUnshipped = JSON.parse(JSON.stringify(listProductContract))
           this.dataSourceUnshipped = listProductContract
@@ -1024,7 +1030,7 @@ export default {
         this.$message.error('请输入币率')
         return
       }
-      this.$message.info('保存成功')
+      // this.$message.info('保存成功')
       this.visibleBoolean = true
     },
     setDataSource(data) {
