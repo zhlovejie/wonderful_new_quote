@@ -4,8 +4,8 @@ import {
 } from '@/utils/request'
 import system from '@/config/defaultSettings'
 
-//const materialBaseUrl = system.materialBaseUrl
-const materialBaseUrl = system.baseURL
+const materialBaseUrl = system.materialBaseUrl
+// const materialBaseUrl = system.baseURL
 
 // BOM管理----------------------------------------
 

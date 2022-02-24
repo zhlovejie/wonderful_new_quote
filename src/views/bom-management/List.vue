@@ -762,7 +762,7 @@ export default {
         }
         let {isRule,isProduct,isSubProduct} = treeNode.dataRef
         if(isRule){
-          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data).catch(err => {
+          let ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value }).then(res => res.data || []).catch(err => {
             console.log(err)
             return []
           })
@@ -770,7 +770,7 @@ export default {
             treeNode.dataRef.children = ruleResult.map(item => that.formatRuleNode(item))
             that.orgTree = [...that.orgTree]
           }else{
-            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data).catch(err => {
+            let productResult = await getAllProductMaterial({ruleId:treeNode.dataRef.value}).then(res => res.data || []).catch(err => {
             console.log(err)
             return []
           })
@@ -781,7 +781,7 @@ export default {
           }
         }
         if(isProduct){
-          let subProductResult = await allListMaterialForm({groupId:treeNode.dataRef.__id}).then(res => res.data).catch(err => {
+          let subProductResult = await allListMaterialForm({groupId:treeNode.dataRef.__id}).then(res => res.data || []).catch(err => {
             console.log(err)
             return []
           })
