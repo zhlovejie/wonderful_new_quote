@@ -575,7 +575,7 @@ export default {
         const { isRule, isProduct, isSubProduct } = treeNode.dataRef
         if (isRule) {
           const ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
-            .then(res => res.data)
+            .then(res => res.data || [])
             .catch(err => {
               console.log(err)
               return []
@@ -585,7 +585,7 @@ export default {
             that.orgTree = [...that.orgTree]
           } else {
             const productResult = await getAllProductMaterial({ ruleId: treeNode.dataRef.value })
-              .then(res => res.data)
+              .then(res => res.data || [])
               .catch(err => {
                 console.log(err)
                 return []
@@ -598,7 +598,7 @@ export default {
         }
         if (isProduct) {
           const subProductResult = await craftRouteListByMaterial({ materialGroupId: treeNode.dataRef.__id })
-            .then(res => res.data)
+            .then(res => res.data || [])
             .catch(err => {
               console.log(err)
               return []
