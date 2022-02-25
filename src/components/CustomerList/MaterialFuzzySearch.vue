@@ -67,7 +67,19 @@ export default {
             if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
               return []
             }
-            return res.data.records
+            let records = (res.data.records || []).map(item => {
+              item.materialId = item.id
+              item.type = 1
+              return item
+            })
+
+            let arr = []
+            records.map(r => {
+              if(!arr.find(item => item.id === r.id)){
+                arr.push({...r})
+              }
+            })
+            return arr
           })
           .catch(err => {
             console.log(err)
@@ -75,11 +87,21 @@ export default {
           }),
         productMaterialInfoPageList(_searchParam)
           .then(res => {
-            // if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
-            //   return []
-            // }
-            // return res.data.records
-            return []
+            if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
+              return []
+            }
+            let records = (res.data.records || []).map(item => {
+              item.materialId = item.id
+              item.type = 1
+              return item
+            })
+            let arr = []
+            records.map(r => {
+              if(!arr.find(item => item.id === r.id)){
+                arr.push({...r})
+              }
+            })
+            return arr
           })
           .catch(err => {
             console.error(err)
@@ -117,11 +139,12 @@ export default {
       const that = this
       const target = that.materialFuzzySearch.list.find(item => item.materialCodeFormat === key)
       const param = {
+        type:target.type,
         materialId: target.id,
         materialCode: target.materialCodeFormat,
         materialName: target.materialName,
         materialProperty: target.materialSource,
-        materialUnit: target.mainUnit,
+        materialUnit: target.subUnit || '',
         modelType: 'specification' in target ? target.specification || target.specifications : '无',
         k3Code: target.k3Code,
         weight: target.weight
