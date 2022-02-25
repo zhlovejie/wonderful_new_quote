@@ -88,6 +88,11 @@
             <template v-if="queryParam.searchStatus === '1'">
               <a @click="handleAdd('edit', record)">处理</a>
             </template>
+            <!-- 已处理 待完结 也显示处理按钮 -->
+            <template v-if="+queryParam.searchStatus === 2 && +record.status === 2">
+              <a-divider type="vertical" />
+              <a @click="handleAdd('edit', record)">处理</a>
+            </template>
             <template>
               <a-divider type="vertical" />
               <a @click="Payment(record)">付款码</a>
