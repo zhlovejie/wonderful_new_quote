@@ -945,6 +945,7 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
+          debugger
           if (!this.visibleBoolean) {
             this.$message.error('请先补全产品信息数据')
             that.spinning = false
@@ -955,11 +956,17 @@ export default {
             return this.$message.error('抵扣金额必须小于等于预收款单金额 不得大于')
           }
           var money = Number(0)
-          for (const key in this.dataSource) {
-            // 需要数据转换
-            this.dataSource[key].payType = this.dataSource[key].payTypeNew
-            this.dataSource[key].currency = this.dataSource[key].currencyNew
-            money += Number(this.dataSource[key].paidMoney)
+
+          // 没有产品时特殊处理 取 本次收款金额 输入的金额
+          if(this.dataSource.length === 0){
+            money = Number(values.paidMoney) || 0
+          }else{
+            for (const key in this.dataSource) {
+              // 需要数据转换
+              this.dataSource[key].payType = this.dataSource[key].payTypeNew
+              this.dataSource[key].currency = this.dataSource[key].currencyNew
+              money += Number(this.dataSource[key].paidMoney)
+            }
           }
           this.$set(values, 'receiptDetails', this.dataSource)
           this.$set(values, 'paidMoney', money)
@@ -971,7 +978,7 @@ export default {
           values.receiptTime = values.receiptTime.format('YYYY-MM-DD')
           console.log(values)
           values.saleAdvancesId = this.Deduction.id
-          //return
+          // return
           if (that.isEdit) {
             values.id = that.$route.params.id
             that.spinning = true
