@@ -63,7 +63,7 @@
                 </td>
                 <td>物料代码</td>
                 <td>
-                  <a-form-model-item prop="materialCode">
+                  <!-- <a-form-model-item prop="materialCode">
                     <a-select
                       v-if="!isDisabled"
                       :disabled="!isAdd"
@@ -92,6 +92,26 @@
                       </a-select-option>
                     </a-select>
                     <span v-else>{{materialInfo.materialCodeFormat}}</span>
+                  </a-form-model-item> -->
+
+                  <a-form-model-item prop="materialCode">
+                    <a-select
+                      v-if="!isDisabled"
+                      :disabled="!isAdd"
+                      show-search
+                      :value="materialInfo.materialCode"
+                      style="width: 100%"
+                      @change="materialValueHandleChange"
+                    >
+                      <a-select-option
+                        v-for="d in materialValueList"
+                        :key="d.key"
+                        :value="d.materialCode"
+                      >
+                        {{ `${d.materialName}(${d.materialCode})` }}
+                      </a-select-option>
+                    </a-select>
+                    <span v-else>{{materialInfo.materialCode}}</span>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -105,7 +125,7 @@
                 <td>规格型号</td>
                 <td>
                   <a-form-model-item>
-                    {{materialInfo.specifications}}
+                    {{materialInfo.modelType || ''}}
                   </a-form-model-item>
                 </td>
               </tr>
@@ -113,7 +133,7 @@
                 <td>主计量单位</td>
                 <td>
                   <a-form-model-item>
-                    {{ {1:'支',2:'把',3:'件'}[materialInfo.mainUnit] || materialInfo.mainUnit }}
+                    {{ {1:'支',2:'把',3:'件'}[materialInfo.materialUnit] || materialInfo.materialUnit }}
                   </a-form-model-item>
                 </td>
                 <td>缺省状态</td>
@@ -382,8 +402,6 @@
 </template>
 
 <script>
-import { routineMaterialInfoPageList } from '@/api/routineMaterial'
-
 import {
   craftRouteGetCode,
   craftRouteGetAllWorkshop,
@@ -393,7 +411,8 @@ import {
   craftRouteDetail,
   craftRouteApprove,
   craftRouteGetDeviceFile,
-  craftRouteProcessDelete
+  craftRouteProcessDelete,
+  listMaterialFormChildDetail
 } from '@/api/craftRoute'
 import vuedraggable from 'vuedraggable'
 import ConfigRules from './ConfigRules'
@@ -421,7 +440,7 @@ export default {
     Approval: ApprovalForm
   },
   data() {
-    this.darkSearch = this.$_.debounce(this.darkSearch, 800)
+    // this.darkSearch = this.$_.debounce(this.darkSearch, 800)
     return {
       visible: false,
       actionType: 'view',
@@ -593,23 +612,20 @@ export default {
       }
     },
     materialValueHandleChange(value) {
+      debugger
       const that = this
-      const target = that.materialValueList.find(item => item.materialCodeFormat === value)
+      const target = that.materialValueList.find(item => item.materialCode === value)
       that.materialInfo = { ...target }
       that.form = {
         ...that.form,
-        materialCommonId: that.materialInfo.id,
-        materialCommonCaculatorUnit: that.materialInfo.mainUnit,
-        materialCode: that.materialInfo.materialCodeFormat,
-
-        materialCommonCode: that.materialInfo.materialCodeFormat,
+        materialCommonId: that.materialInfo.materialId,
+        materialCommonCaculatorUnit: that.materialInfo.materialUnit,
+        materialCode: that.materialInfo.materialCode,
+        materialCommonCode: that.materialInfo.materialCode,
         materialCommonName: that.materialInfo.materialName,
-        materialCommonType: that.materialInfo.specifications
+        materialCommonType: that.materialInfo.modelType || '',
+        type:that.materialInfo.___type
       }
-      Object.assign(that, {
-        materialValueList: [],
-        materiaFetching: false
-      })
     },
     async handleOk() {
       const that = this
@@ -676,6 +692,7 @@ export default {
       return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
     },
     async query(type, record = {}) {
+      debugger
       const that = this
       that.visible = true
       that.actionType = type
@@ -684,6 +701,9 @@ export default {
       await craftRouteGetAllWorkshop().then(res => {
         that.allWorkshop = res.data
       })
+
+      let ___type = (that.targetNode.isProduct || that.targetNode.isSubProduct || false) ? 1 : 2 
+      await that.darkSearch1(that.targetNode.__id,___type)
       if (that.isAdd) {
         await craftRouteGetCode().then(res => {
           that.form = {
@@ -724,11 +744,10 @@ export default {
 
             that.materialInfo = {
               id: that.form.materialCommonId,
-              mainUnit: that.form.materialCommonCaculatorUnit,
+              materialUnit: that.form.materialCommonCaculatorUnit,
               materialCode: that.form.materialCommonCode,
               materialName: that.form.materialCommonName,
-              specifications: that.form.materialCommonType,
-              materialCode: that.form.materialCommonCode,
+              modelType: that.form.materialCommonType,
               materialCodeFormat:that.form.materialCommonCode
             }
           })
@@ -811,15 +830,29 @@ export default {
         }
       })
     },
+
+    darkSearch1(materialId,type){
+      const that = this
+      return listMaterialFormChildDetail({materialId,type}).then(res => {
+        console.log(res)
+        //that.materialValueList = 
+        that.materialValueList = res.data.map(item => {
+          return {
+            key:uuid(),
+            '___type':item.type,
+            ...item.materialVo
+          }
+        })
+      })
+    },
     async darkSearch(wd) {
       const that = this
       const _searchParam = {
-        current: 1,
-        size: 10,
-        materialCode: wd
+        materialId: wd,
+        type:1
       }
       that.materiaFetching = true
-      const result = await routineMaterialInfoPageList(_searchParam).then(res => {
+      const result = await listMaterialFormChildDetail(_searchParam).then(res => {
         if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
           return []
         }
