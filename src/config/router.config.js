@@ -41,6 +41,8 @@ import supplier from '@/router/router-supplier'
 import qualityManagement from '@/router/router-quality-management'
 import storageManagement from '@/router/router-storage'
 
+import outsourcingManagement from '@/router/router-outsourcing-management'
+
 const __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
   systemSetting, //系统设置
@@ -69,6 +71,7 @@ const __ROUTER_MAP__ = [
   procurementModuleManagement, //采购管理
   supplier, //供应商管理
   storageManagement, //仓储管理
+  outsourcingManagement, // 委外管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示

@@ -1,5 +1,10 @@
 import Vue from 'vue'
+// 生产环境使用
 import { asyncRouterMap, constantRouterMap, notFoundRouter } from '@/config/router.config'
+
+//// 开发环境 优化webpack 启动使用
+// import { asyncRouterMap, constantRouterMap, notFoundRouter } from '@/config/router.config.dev'
+
 import {
   routerListByUser
 } from '@/api/login'

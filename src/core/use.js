@@ -29,4 +29,4 @@ function uuid(){
   return `${u()}-${u()}-${u()}-${u()}`
 }
 
-Vue.prototype._uuid = uuid
+Vue.prototype._uuid = Vue.prototype.$uuid = uuid
