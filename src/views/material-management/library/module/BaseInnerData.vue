@@ -38,6 +38,7 @@
                 <a-select-option :value="2">外购</a-select-option>
                 <a-select-option :value="3">委外</a-select-option>
                 <a-select-option :value="4">标准件</a-select-option>
+                <a-select-option :value="5">定制</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -52,10 +53,11 @@
                 placeholder="请选择使用状态"
                 :allowClear="true"
               >
-                <a-select-option :value="1">使用</a-select-option>
+                <a-select-option :value="1">常规使用</a-select-option>
                 <a-select-option :value="2">未使用</a-select-option>
-                <a-select-option :value="3">逐步淘汰</a-select-option>
+                <a-select-option :value="3">即将淘汰</a-select-option>
                 <a-select-option :value="4">已淘汰</a-select-option>
+                <a-select-option :value="5">实验室使用</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -77,14 +79,15 @@
 
         <tr>
           <td>
-            <span class="icon-required">主计量单位</span>
+            <span class="icon-required">采购计量单位</span>
           </td>
           <td>
             <a-form-model-item prop="mainUnit">
               <a-select
                 :disabled="normalAddForm.isView"
+                mode="multiple"
                 v-model="form.mainUnit"
-                placeholder="请选择主计量单位"
+                placeholder="请选择采购计量单位"
                 :allowClear="true"
               >
                 <a-select-option v-for="item in materialUnitList" :key="item.text" :value="item.text">
@@ -94,14 +97,14 @@
             </a-form-model-item>
           </td>
           <td>
-            <span class="icon-required">辅计量单位</span>
+            <span class="icon-required">使用计量单位</span>
           </td>
           <td>
             <a-form-model-item prop="subUnit">
               <a-select
                 :disabled="normalAddForm.isView"
                 v-model="form.subUnit"
-                placeholder="请选择辅计量单位"
+                placeholder="请选择使用计量单位"
                 :allowClear="true"
               >
                 <a-select-option v-for="item in materialUnitList" :key="item.text" :value="item.text">
@@ -113,7 +116,7 @@
         </tr>
 
         <tr>
-          <td>
+          <!-- <td>
             <span style="margin-left:5px;">
               <a-tooltip>
                 <template slot="title">
@@ -135,11 +138,11 @@
                 style="width:100%;"
               />
             </a-form-model-item>
-          </td>
+          </td> -->
           <td>
             <span>预估重量(克)</span>
           </td>
-          <td>
+          <td colspan="3">
             <a-form-model-item ref="estimateWeight" prop="estimateWeight">
               <a-input-number
                 :disabled="normalAddForm.isView"
@@ -155,7 +158,7 @@
         <tr>
           <template v-if="normalAddForm.isNormal">
             <td>
-              <span class="icon-required">是否需要送检</span>
+              <span class="icon-required">是否第三方送检</span>
             </td>
             <td>
               <a-form-model-item ref="needCheck" prop="needCheck">
@@ -250,9 +253,9 @@ export default {
         materialSource: undefined,
         useStatus: undefined,
 
-        mainUnit: undefined,
+        mainUnit: [],
         subUnit: undefined,
-        conversionRate: undefined,
+        conversionRate: '0',
         estimateWeight: 0,
         remark: undefined,
         k3Code: undefined,
@@ -263,25 +266,30 @@ export default {
         useStatus: [{ required: true, message: '请选择使用状态' }],
         mainUnit: [{ required: true, message: '请选择主计量单位' }],
         subUnit: [{ required: true, message: '请选择辅计量单位' }],
-        conversionRate: [{ required: true, message: '请输入换算率' }],
+        // conversionRate: [{ required: true, message: '请输入换算率' }],
         // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         // k3Code: [{ validator: checkK3Code, trigger: 'change' }],
         needCheck: [{ required: true, message: '请选择是否需要送检' }],
         reason: [{ required: true, message: '请输入物料代码变更原因' }],
         squareNum:[{ required: true, message: '请输入方数' }],
-        estimateWeight:[{ required: true, message: '请输入方数' }]
+        // estimateWeight:[{ required: false, message: '请输入方数' }]
       },
       materialUnitList: [] //物料计量单位
     }
   },
   created() {
     const that = this
-    that.form = that.normalAddForm.submitParams
-
+    let submitParams = that.normalAddForm.submitParams || {}
+    let mainUnit = []
+    if(submitParams.mainUnit){
+      mainUnit = String(submitParams.mainUnit).split(',')
+    }
     that.form = {
-      ...that.form,
+      ...that.normalAddForm.submitParams,
+      mainUnit:mainUnit,
       specificationHTML: that.specificationFormat(that.form.specification)
     }
+
 
     if (that.normalAddForm.isAdd) {
       that.$nextTick(() => {
@@ -314,7 +322,7 @@ export default {
       return new Promise((resolve, reject) => {
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
-            resolve({ ...that.form })
+            resolve({ ...that.form ,mainUnit:Array.isArray(that.form.mainUnit) ? that.form.mainUnit.join(','):''})
           } else {
             resolve(null)
           }
