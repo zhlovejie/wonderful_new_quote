@@ -255,7 +255,7 @@ export default {
 
         mainUnit: [],
         subUnit: undefined,
-        conversionRate: '0',
+        conversionRate: 0,
         estimateWeight: 0,
         remark: undefined,
         k3Code: undefined,
@@ -287,7 +287,7 @@ export default {
     that.form = {
       ...that.normalAddForm.submitParams,
       mainUnit:mainUnit,
-      specificationHTML: that.specificationFormat(that.form.specification)
+      specificationHTML: that.specificationFormat(submitParams.specification)
     }
 
 
@@ -354,6 +354,7 @@ export default {
         })
     },
     specificationFormat(sp) {
+      debugger
       if (sp) {
         let _sp = sp.replace(/\s+/g, '')
         let _strList = String(_sp).split(',')
@@ -384,6 +385,9 @@ export default {
         return HTML
       }
       return sp
+    },
+    fillData(){
+
     }
   }
 }
