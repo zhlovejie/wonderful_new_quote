@@ -289,7 +289,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '主计量单位',
+    title: '采购计量单位',
     dataIndex: 'materialCommonCaculatorUnit',
     scopedSlots: { customRender: 'materialCommonCaculatorUnit' }
   },
@@ -887,7 +887,7 @@ export default {
       this.search()
     },
     customRowFunction(record) {
-      // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
+      // useStatus 使用状态：{1:'常规使用',2:'未使用',3:'即将淘汰',4:'已淘汰',5:'实验室使用'}
       // isForbidden  是否禁用：1禁用，2启用
       const { useStatus, isForbidden } = record
       return {

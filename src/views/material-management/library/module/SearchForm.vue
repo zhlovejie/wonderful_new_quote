@@ -36,8 +36,8 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="辅计量单位">
-            <a-select v-decorator="['subUnit']" placeholder="辅计量单位">
+          <a-form-item label="使用计量单位">
+            <a-select v-decorator="['subUnit']" placeholder="使用计量单位">
               <a-select-option
                 v-for="item in materialUnitList"
                 :key="item.text"

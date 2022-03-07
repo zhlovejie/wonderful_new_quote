@@ -188,7 +188,7 @@ const base_columns = [
     scopedSlots: { customRender: 'materialName' }
   },
   {
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'subUnit'
   },
   

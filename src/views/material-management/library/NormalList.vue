@@ -146,7 +146,7 @@
           </div>
 
           <div slot="materialSource" slot-scope="text, record, index">
-            {{ { 1: '自制', 2: '外购', 3: '委外', 4: '标准件' }[text] }}
+            {{ {1:'自制',2:'外购',3:'委外',4:'标准件',5:'定制'}[text] }}
           </div>
 
           <div
@@ -172,7 +172,7 @@
             slot="useStatus"
             slot-scope="text, record, index"
           >
-            {{ {1:'使用中',2:'未使用',3:'逐步淘汰',4:'已淘汰'}[text] }}
+            {{ {1:'常规使用',2:'未使用',3:'即将淘汰',4:'已淘汰',5:'实验室使用'}[text] }}
           </div>
 
           <div slot="isCare" slot-scope="text, record, index">
@@ -235,7 +235,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'subUnit',
     scopedSlots: { customRender: 'subUnit' },
   },

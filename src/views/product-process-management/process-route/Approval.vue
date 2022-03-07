@@ -138,7 +138,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '主计量单位',
+    title: '采购计量单位',
     dataIndex: 'materialCommonCaculatorUnit',
     scopedSlots: { customRender: 'materialCommonCaculatorUnit' },
   },

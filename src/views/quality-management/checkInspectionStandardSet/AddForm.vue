@@ -85,7 +85,7 @@
                 prop="materialCode"
                 label="物料来源"
               >
-                {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[record.materialSource] }}
+                {{ {1:'自制',2:'外购',3:'委外',4:'标准件',5:'定制'}[record.materialSource] }}
               </a-form-model-item>
             </a-col>
           </a-row>

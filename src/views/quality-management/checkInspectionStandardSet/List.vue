@@ -78,7 +78,7 @@
             slot="materialSource"
             slot-scope="text, record, index"
           >
-            {{ {1:'自制',3:'委外',2:'外购',4:'标准件'}[text] }}
+            {{ {1:'自制',2:'外购',3:'委外',4:'标准件',5:'定制'}[text] }}
           </div>
 
           <div

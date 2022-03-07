@@ -120,7 +120,7 @@
             <span style="margin-left:5px;">
               <a-tooltip>
                 <template slot="title">
-                  换算率是一个主计量单位等于多少个辅计量单位
+                  换算率是一个采购计量单位等于多少个使用计量单位
                 </template>
                 <span class="icon-required">换算率</span>
                 <a-icon type="question-circle" style="margin-left:5px;color:#1890ff;" />
@@ -264,8 +264,8 @@ export default {
       rules: {
         materialSource: [{ required: true, message: '请选择物料来源属性' }],
         useStatus: [{ required: true, message: '请选择使用状态' }],
-        mainUnit: [{ required: true, message: '请选择主计量单位' }],
-        subUnit: [{ required: true, message: '请选择辅计量单位' }],
+        mainUnit: [{ required: true, message: '请选择采购计量单位' }],
+        subUnit: [{ required: true, message: '请选择使用计量单位' }],
         // conversionRate: [{ required: true, message: '请输入换算率' }],
         // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         // k3Code: [{ validator: checkK3Code, trigger: 'change' }],

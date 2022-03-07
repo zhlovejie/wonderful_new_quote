@@ -382,7 +382,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'materialUnit',
     scopedSlots: { customRender: 'materialUnit' }
   },
@@ -438,7 +438,7 @@ const columnsDetail = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'materialUnit',
     scopedSlots: { customRender: 'materialUnit' }
   },

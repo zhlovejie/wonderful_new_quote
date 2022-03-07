@@ -62,7 +62,7 @@
                 </td>
               </tr>
               <tr>
-                <td>辅计量单位</td>
+                <td>使用计量单位</td>
                 <td>
                   <a-form-model-item>
                     {{ {1:'支',2:'把',3:'件'}[form.materialUnit] || form.materialUnit }}
@@ -339,7 +339,7 @@ const columnsDetail = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'materialUnit',
     scopedSlots: { customRender: 'materialUnit' }
   },

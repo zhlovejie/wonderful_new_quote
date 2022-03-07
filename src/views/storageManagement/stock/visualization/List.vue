@@ -97,7 +97,7 @@
                       <th>托盘号</th>
                       <th>物料代码</th>
                       <th>物料名称</th>
-                      <th>辅计量单位</th>
+                      <th>使用计量单位</th>
                       <th>库存数量</th>
                     </tr>
                     <tr>
@@ -180,7 +180,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     key: 'subUnit',
     dataIndex: 'subUnit',
   },
