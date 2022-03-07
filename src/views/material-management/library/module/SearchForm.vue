@@ -32,6 +32,7 @@
               <a-select-option :value="2">外购</a-select-option>
               <a-select-option :value="3">委外</a-select-option>
               <a-select-option :value="4">标准件</a-select-option>
+              <a-select-option :value="5">定制</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
