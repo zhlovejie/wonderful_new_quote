@@ -823,6 +823,8 @@ export default {
               productName: product.contractProductPo.productName,
               productTypeName: product.productType,
               productStandard: product.contractProductPo.productModel,
+              productModel:product.contractProductPo.productModel,
+              countMoney:Number(__price).toFixed(2),
               //price: product.count * product.unitPrice*(product.taxRate/100+1),
               price: Number(__price).toFixed(2),
               receivable: Number(__receivable).toFixed(2),
@@ -846,9 +848,11 @@ export default {
               targetName: product.targetName,
               productType: product.productType,
               productStandard: product.contractProductPo.productModel,
+              productModel:product.contractProductPo.productModel,
               company: product.company,
               count: product.count,
               amountMoney: Math.round(product.count * product.unitPrice),
+              countMoney: Math.round(product.count * product.unitPrice),
             })
           }
 
@@ -892,6 +896,7 @@ export default {
               targetName: product.products.targetName,
               productType: product.products.productType,
               productStandard: product.products.contractProductPo.productModel,
+              productModel: product.products.contractProductPo.productModel,
               company: product.products.company,
               count: product.invoiceCount,
               amountMoney: Math.round(product.products.count * product.products.unitPrice),
