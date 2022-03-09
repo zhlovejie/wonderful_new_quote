@@ -53,11 +53,11 @@
                 placeholder="请选择使用状态"
                 :allowClear="true"
               >
-                <a-select-option :value="1">常规使用</a-select-option>
-                <a-select-option :value="2">未使用</a-select-option>
+                <a-select-option :value="1">常用</a-select-option>
+                <a-select-option :value="2">不常用</a-select-option>
                 <a-select-option :value="3">即将淘汰</a-select-option>
                 <a-select-option :value="4">已淘汰</a-select-option>
-                <a-select-option :value="5">实验室使用</a-select-option>
+                <a-select-option :value="5">呆滞</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
@@ -116,33 +116,11 @@
         </tr>
 
         <tr>
-          <!-- <td>
-            <span style="margin-left:5px;">
-              <a-tooltip>
-                <template slot="title">
-                  换算率是一个采购计量单位等于多少个使用计量单位
-                </template>
-                <span class="icon-required">换算率</span>
-                <a-icon type="question-circle" style="margin-left:5px;color:#1890ff;" />
-              </a-tooltip>
-            </span>
-          </td>
-          <td>
-            <a-form-model-item ref="conversionRate" prop="conversionRate">
-              <a-input-number
-                :disabled="normalAddForm.isView"
-                v-model="form.conversionRate"
-                :allowClear="true"
-                :min="0"
-                :step="1"
-                style="width:100%;"
-              />
-            </a-form-model-item>
-          </td> -->
+          
           <td>
             <span>预估重量(克)</span>
           </td>
-          <td colspan="3">
+          <td >
             <a-form-model-item ref="estimateWeight" prop="estimateWeight">
               <a-input-number
                 :disabled="normalAddForm.isView"
@@ -152,6 +130,27 @@
                 step="1"
                 style="width: 100%"
               />
+            </a-form-model-item>
+          </td>
+          <td>
+            <span class="icon-required">使用场景</span>
+          </td>
+          <td>
+            <a-form-model-item  prop="sceneType">
+              <a-select
+                :disabled="normalAddForm.isView"
+                v-model="form.sceneType"
+                placeholder="请选择使用场景"
+                :allowClear="true"
+              >
+                <a-select-option :value="1">生产用</a-select-option>
+                <a-select-option :value="2">办公用</a-select-option>
+                <a-select-option :value="3">后勤用</a-select-option>
+                <a-select-option :value="4">设备用</a-select-option>
+                <a-select-option :value="5">基建用</a-select-option>
+                <a-select-option :value="6">实验室用</a-select-option>
+                <a-select-option :value="7">劳保用</a-select-option>
+              </a-select>
             </a-form-model-item>
           </td>
         </tr>
@@ -273,6 +272,7 @@ export default {
         reason: [{ required: true, message: '请输入物料代码变更原因' }],
         squareNum:[{ required: true, message: '请输入方数' }],
         // estimateWeight:[{ required: false, message: '请输入方数' }]
+        sceneType:[{ required: true, message: '请选择使用场景' }]
       },
       materialUnitList: [] //物料计量单位
     }

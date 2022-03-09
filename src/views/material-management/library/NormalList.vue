@@ -88,6 +88,9 @@
             <a-form-item v-if="$auth('routineMaterialInfo:care')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('care', null)">监管</a-button>
             </a-form-item>
+            <a-form-item v-if="$auth('routineMaterialInfo:uncare')">
+              <a-button :disabled="!canUse" type="primary" @click="doAction('uncare', null)">反监管</a-button>
+            </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:add')">
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
@@ -172,7 +175,7 @@
             slot="useStatus"
             slot-scope="text, record, index"
           >
-            {{ {1:'常规使用',2:'未使用',3:'即将淘汰',4:'已淘汰',5:'实验室使用'}[text] }}
+            {{ {1:'常用',2:'不常用',3:'即将淘汰',4:'已淘汰',5:'呆滞'}[text] }}
           </div>
 
           <div slot="isCare" slot-scope="text, record, index">
@@ -760,6 +763,36 @@ export default {
             }).then(res => {
               that.$message.info(res.msg)
               if(+res.code === 200){
+                that.selectedRowKeys = []
+                that.selectedRows = []
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err.message)
+            })
+          }
+        })
+        return
+      }else if (type === 'uncare') {
+        const arr = that.selectedRows.filter(item => +item.isCare === 2)
+        if (arr.length === 0) {
+          that.$message.info(`没有需要反监管的数据`)
+          return
+        }
+        that.$confirm({
+          title: '提示',
+          content: `确定执行反监管操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            routineMaterialInfoUpdateCareState({
+              isCare: 1,
+              ruleIdList: arr.map(item => item.id)
+            }).then(res => {
+              that.$message.info(res.msg)
+              if(+res.code === 200){
+                that.selectedRowKeys = []
+                that.selectedRows = []
                 that.search()
               }
             }).catch(err => {
