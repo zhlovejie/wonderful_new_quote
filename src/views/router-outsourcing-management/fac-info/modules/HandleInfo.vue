@@ -69,7 +69,7 @@ export default {
     prev() {
       let current = 2,
         type = 'prev'
-      that.$emit('change', current, type, this.rangeVoList)
+      this.$emit('change', current, type, this.rangeVoList)
     },
     next() {
       const that = this

@@ -114,7 +114,7 @@ export default {
     },
     prev(){
       let current = 1,type = 'prev'
-      that.$emit('change',current,type,this.form)
+      this.$emit('change',current,type,this.form)
     },
     next(){
       const that = this

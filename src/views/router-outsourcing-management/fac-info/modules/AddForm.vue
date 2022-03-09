@@ -60,7 +60,7 @@ export default {
       visible: false,
       spinning: false,
       type: 'view',
-      current: 3,
+      current: 4,
       steps: [
         {
           title: '基础信息',
@@ -151,6 +151,7 @@ export default {
       })
     },
     handleCancel() {
+      this.current = 0
       this.$nextTick(() => (this.visible = false))
     },
     next() {
