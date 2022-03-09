@@ -42,6 +42,31 @@
               </a-select>
             </a-form-model-item>
           </td>
+          <td>
+            <span class="icon-required">使用场景</span>
+          </td>
+          <td>
+            <a-form-model-item  prop="sceneType">
+              <a-select
+                :disabled="normalAddForm.isView"
+                v-model="form.sceneType"
+                placeholder="请选择使用场景"
+                :allowClear="true"
+                @change="handleSceneChange"
+              >
+                <a-select-option :value="1">生产用</a-select-option>
+                <a-select-option :value="2">办公用</a-select-option>
+                <a-select-option :value="3">后勤用</a-select-option>
+                <a-select-option :value="4">设备用</a-select-option>
+                <a-select-option :value="5">基建用</a-select-option>
+                <a-select-option :value="6">实验室用</a-select-option>
+                <a-select-option :value="7">劳保用</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </td>
+          
+        </tr>
+        <tr>
           <td style="width:150px;">
             <span class="icon-required">使用状态</span>
           </td>
@@ -53,14 +78,15 @@
                 placeholder="请选择使用状态"
                 :allowClear="true"
               >
-                <a-select-option :value="1">常用</a-select-option>
+                <a-select-option :disabled="1 === 1" :value="1">常用</a-select-option>
                 <a-select-option :value="2">不常用</a-select-option>
-                <a-select-option :value="3">即将淘汰</a-select-option>
-                <a-select-option :value="4">已淘汰</a-select-option>
-                <a-select-option :value="5">呆滞</a-select-option>
+                <a-select-option :disabled="+form.sceneType === 6" :value="3">即将淘汰</a-select-option>
+                <a-select-option :disabled="+form.sceneType === 6" :value="4">已淘汰</a-select-option>
+                <a-select-option :disabled="1 === 1" :value="5">呆滞</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
+
         </tr>
 
         <tr v-if="normalAddForm.isNormal">
@@ -132,27 +158,7 @@
               />
             </a-form-model-item>
           </td>
-          <td>
-            <span class="icon-required">使用场景</span>
-          </td>
-          <td>
-            <a-form-model-item  prop="sceneType">
-              <a-select
-                :disabled="normalAddForm.isView"
-                v-model="form.sceneType"
-                placeholder="请选择使用场景"
-                :allowClear="true"
-              >
-                <a-select-option :value="1">生产用</a-select-option>
-                <a-select-option :value="2">办公用</a-select-option>
-                <a-select-option :value="3">后勤用</a-select-option>
-                <a-select-option :value="4">设备用</a-select-option>
-                <a-select-option :value="5">基建用</a-select-option>
-                <a-select-option :value="6">实验室用</a-select-option>
-                <a-select-option :value="7">劳保用</a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </td>
+          
         </tr>
         <tr>
           <template v-if="normalAddForm.isNormal">
@@ -250,8 +256,8 @@ export default {
         materialCode: undefined,
         materialName: undefined,
         materialSource: undefined,
-        useStatus: undefined,
-
+        useStatus: 2,
+        sceneType:6,
         mainUnit: [],
         subUnit: undefined,
         conversionRate: 0,
@@ -291,14 +297,19 @@ export default {
     }
 
 
+
+
     if (that.normalAddForm.isAdd) {
       that.$nextTick(() => {
         that.form = {
           ...that.form,
           useStatus: 2,
+          sceneType:6,
           needCheck: 2
         }
       })
+    }else{
+      that.handleSceneChange(that.form.sceneType)
     }
 
     getDictionary({ text: '物料计量单位' }).then(res => {
@@ -388,6 +399,14 @@ export default {
     },
     fillData(){
 
+    },
+    handleSceneChange(val){
+      if(+val === 6){
+        this.form = {
+          ...this.form,
+          useStatus:2
+        }
+      }
     }
   }
 }
