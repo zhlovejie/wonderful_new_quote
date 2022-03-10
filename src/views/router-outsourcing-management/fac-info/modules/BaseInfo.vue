@@ -39,13 +39,19 @@
         />
       </a-form-model-item>
       <a-form-model-item label="注册资金" prop="registerMon">
-        <a-input v-model="form.registerMon" />
+        <a-input-number
+          :precision="2"
+          :min="0"
+          v-model="form.registerMon"
+          style="width: 100%"
+          placeholder="注册资金(元)"
+        />
       </a-form-model-item>
       <a-form-model-item label="公司电话" prop="tel">
         <a-input v-model="form.tel" />
       </a-form-model-item>
       <a-form-model-item label="成立时间" prop="buildYear">
-        <a-input v-model="form.buildYear" />
+        <a-month-picker placeholder="成立时间" v-model="form.buildYear" style="width:100%;" />
       </a-form-model-item>
       <a-form-model-item label="诚信等级" prop="faithDicId">
         <CommonDictionarySelect
@@ -57,13 +63,31 @@
         />
       </a-form-model-item>
       <a-form-model-item label="职工人数" prop="employeeCount">
-        <a-input v-model="form.employeeCount" />
+        <a-input-number
+          :precision="0"
+          :min="1"
+          v-model="form.employeeCount"
+          style="width: 100%"
+          placeholder="职工人数"
+        />
       </a-form-model-item>
       <a-form-model-item label="场地范围" prop="groundRange">
-        <a-input v-model="form.groundRange" />
+        <a-input-number
+          :precision="2"
+          :min="0"
+          v-model="form.groundRange"
+          style="width: 100%"
+          placeholder="占地面积(平方米)"
+        />
       </a-form-model-item>
       <a-form-model-item label="年产值" prop="annualMon">
-        <a-input v-model="form.annualMon" />
+        <a-input-number
+          :precision="2"
+          :min="0"
+          v-model="form.annualMon"
+          style="width: 100%"
+          placeholder="年产值(元)"
+        />
       </a-form-model-item>
       <a-form-model-item label="商业风险" prop="riskDicId">
         <CommonDictionarySelect
@@ -75,11 +99,6 @@
         />
       </a-form-model-item>
     </a-form-model>
-    <div class="steps-action">
-      <a-button type="primary" @click="next">
-        下一步
-      </a-button>
-    </div>
   </div>
 </template>
 
@@ -112,7 +131,7 @@ export default {
         tel: '',
         buildYear: '',
         faithDicId: '',
-        employeeCount: 0,
+        employeeCount: '',
         groundRange: '',
         annualMon: '',
         riskDicId: ''
@@ -129,8 +148,43 @@ export default {
             trigger: 'change'
           }
         ],
-        resource: [{ required: true, message: 'Please select activity resource', trigger: 'change' }],
-        desc: [{ required: true, message: 'Please input activity form', trigger: 'blur' }]
+        proDicId: [{ required: true, message: '请选择公司性质', trigger: 'change' }],
+        juridicalName: [
+          { required: true, message: '请输入法人姓名', trigger: 'blur' },
+          { pattern:/[\u4e00-\u9fa5A-Za-z]{1,}/, message: '支持汉字和英文', trigger: 'blur' }
+        ],
+        juridicalCardNo:[
+          { required: true, message: '请输入法人身份证号码', trigger: 'blur' },
+          { pattern:/^\d{15}$|^\d{17}[0-9Xx]$/, message: '格式错误', trigger: 'blur' }
+        ],
+        licenseUrl:[
+          { required: true, message: '请上传营业执照', trigger: 'change' },
+        ],
+        registerMon:[
+          { required: true, message: '请输入注册资金', trigger: 'change' },
+        ],
+        tel:[
+          { required: true, message: '请输入公司电话', trigger: 'change' },
+        ],
+        buildYear:[
+          { required: true, message: '请选择成立时间', trigger: 'change' },
+        ],
+        faithDicId:[
+          { required: true, message: '请选择诚信等级', trigger: 'change' },
+        ],
+        employeeCount:[
+          { required: true, message: '请输入职工人数', trigger: 'blur' },
+        ],
+        groundRange:[
+          { required: true, message: '请输入场地范围', trigger: 'blur' },
+        ],
+        annualMon:[
+          { required: true, message: '请输入年产值', trigger: 'blur' },
+        ],
+        riskDicId:[
+          { required: true, message: '请选择商业风险', trigger: 'change' },
+        ]
+        
       },
       uploadImageConfig: {
         maxFileCount: 3,
@@ -180,18 +234,26 @@ export default {
         licenseUrl: fileList.map(f => f.url).join(',')
       }
     },
-    next() {
+    validate() {
       const that = this
-      that.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          let current = 0,type = 'next'
-          that.$emit('change',current,type,this.form)
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
+      return new Promise(resolve => {
+        that.$refs.ruleForm.validate(valid => {
+          if (valid) {
+            resolve({
+              code:0,
+              result:{
+                ...that.form
+              }
+            })
+          } else {
+            resolve({
+              code:500,
+              result:{}
+            })
+          }
+        });
+      })
+    }
   }
 }
 </script>

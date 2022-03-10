@@ -5,7 +5,6 @@
     :visible="visible"
     :destroyOnClose="true"
     @cancel="handleCancel"
-    :confirmLoading="spinning"
     :maskClosable="false"
     :footer="null"
   >
@@ -14,53 +13,81 @@
         <a-steps :current="current" size="small">
           <a-step v-for="item in steps" :key="item.title" :title="item.title" />
         </a-steps>
-
         <div class="steps-content">
-          <component :is="steps[current].content" @change="handleStepChange"></component>
+          <keep-alive>
+            <component ref="currentStep" :is="steps[current].content"></component>
+          </keep-alive>
         </div>
-        <!-- <div class="steps-action">
-          <a-button v-if="current < steps.length - 1" type="primary" @click="next">
-            下一步
-          </a-button>
-          <template v-if="current == steps.length - 1">
-            <a-button type="primary" @click="() => handleSubmit(1)">
-              提交审核
-            </a-button>
-            <a-button type="primary" @click="() => handleSubmit(2)">
-              保存
+        <div class="steps-action">
+          <template v-if="current > 0">
+            <a-button type="primary" @click="handleStepChange('prev')">
+              上一步
             </a-button>
           </template>
-          <a-button v-if="current > 0" style="margin-left: 8px" @click="prev">
-            上一步
+
+          <template v-if="current < steps.length - 1">
+            <a-button type="primary" @click="handleStepChange('next')">
+              下一步
+            </a-button>
+          </template>
+
+          <template v-if="current === steps.length - 1">
+            <template v-if="isAdd || isEdit">
+              <a-button type="primary" @click="handleSubmit(2)">
+                提交审核
+              </a-button>
+              <a-button type="primary" @click="handleSubmit(1)">
+                保存
+              </a-button>
+            </template>
+
+            <template v-if="isApprove">
+              <a-button type="primary" @click="passAction">
+                通过
+              </a-button>
+              <a-button type="primary" @click="noPassAction">
+                不通过
+              </a-button>
+            </template>
+          </template>
+          <a-button type="primary" @click="handleCancel">
+            关闭
           </a-button>
-        </div> -->
+        </div>
       </div>
+      <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { facInfoAddOrUpdate, facInfoApprove, facInfoDetail } from '@/api/outsourcingManagement'
+import { facInfoDetail, facInfoAddOrUpdate, facInfoApprove } from '@/api/outsourcingManagement'
 import BaseInfo from './BaseInfo'
 import BussessInfo from './BussessInfo'
 import HandleInfo from './HandleInfo'
 import CashInfo from './CashInfo'
 import RecordInfo from './RecordInfo'
-
+import Approval from './Approval'
 export default {
   name: 'AddForm',
+  provide() {
+    return {
+      addForm: this
+    }
+  },
   components: {
     BaseInfo,
     BussessInfo,
     HandleInfo,
     CashInfo,
-    RecordInfo
+    RecordInfo,
+    Approval
   },
   data() {
     return {
       visible: false,
       spinning: false,
       type: 'view',
-      current: 4,
+      current: 0,
       steps: [
         {
           title: '基础信息',
@@ -84,14 +111,12 @@ export default {
         }
       ],
       record: {},
-      detail: {
-        
-      }
+      detail: {}
     }
   },
   computed: {
     modalTitle() {
-      return `${this.isView ? '查看' : this.isAdd ? '新增' : '编辑'}加工商`
+      return `${this.isView ? '查看' : this.isAdd ? '新增' : isEdit ? '编辑' : '审批'}加工商`
     },
     isView() {
       return this.type === 'view'
@@ -101,11 +126,16 @@ export default {
     },
     isAdd() {
       return this.type === 'add'
+    },
+    isApprove() {
+      return this.type === 'approve'
+    },
+    isDisabled() {
+      return this.isView || this.isApprove
     }
   },
   methods: {
-    query(type, record) {
-      debugger
+    query(type, record = {}) {
       let that = this
       that.visible = true
       that.type = type
@@ -113,72 +143,124 @@ export default {
       if (type === 'add') {
         return
       }
-      facInfoDetail({ id: record.id }).then(res => {
-        that.detail = res.data
-      })
-    },
-    async fillData(resultData) {
-      let that = this
-
-      that.reportNum = resultData.dailyNum
-      that.departmentName = resultData.departmentName
-      that.stationName = resultData.stationName
-      that.trueName = resultData.userName
-      that.todayList = resultData.todayList || []
-      that.planList = resultData.planList || []
-      if (Array.isArray(resultData.annexList)) {
-        that.fileList = resultData.annexList.map((item, index) => {
-          return {
-            uid: String(index + 1),
-            name: item.workUrl,
-            status: 'done',
-            url: item.workUrl
-          }
+      that.spinning = true
+      facInfoDetail({ id: record.id })
+        .then(res => {
+          that.spinning = false
+          that.detail = res.data
         })
-      }
+        .catch(err => {
+          that.spinning = false
+          that.$message.error(err.message)
+        })
     },
-    handleSubmit() {
+    async handleSubmit(operationFlag) {
       let that = this
+      that.spinning = true
 
-      if (that.isView) {
-        that.handleCancel()
+      that.detail.addressIds = that.detail.addressIds.join(',')
+      that.detail.addressNames = that.detail.addressNames.join(',')
+
+      // 处理最后一步
+      let result = await that.$refs.currentStep.validate().then(({code,result}) => {
+        if(code === 0){
+          that.detail = {...that.detail,...result}
+        }
+        return code
+      })
+      if(result !== 0){
         return
       }
 
-      this.form.validateFields((err, values) => {
-        if (!err) {
-        }
+      await facInfoAddOrUpdate({
+        ...that.detail,
+        operationFlag
       })
+        .then(res => {
+          that.spinning = false
+          if(+res.code === 200){
+            that.visible = false
+            that.$emit('ok')
+          }
+          that.$message.info(res.msg)
+        })
+        .catch(err => {
+          that.spinning = false
+          that.$message.error(err.message)
+        })
+      return
     },
     handleCancel() {
       this.current = 0
       this.$nextTick(() => (this.visible = false))
     },
-    next() {
-      this.current++
-    },
-    prev() {
-      this.current--
-    },
-    handleStepChange(current,type,record) {
+    handleStepChange(type) {
       const that = this
-      let len = that.steps.length - 1
-      if(type === 'next' && current < len){
-        that.current ++
+      if (type === 'next') {
+        that.$refs.currentStep.validate().then(({code,result}) => {
+          if(code === 0){
+            that.detail = {...that.detail,...result}
+            that.current++
+          }
+        })
+        return
       }
-      if(type === 'prev' && current > 0 && current < len){
-        that.current --
+      if (type === 'prev') {
+        that.current--
+        return
       }
+    },
+    submitAction(opt) {
+      let that = this
+      let values = {
+        approveId: that.record.id,
+        isAdopt: opt.isAdopt,
+        opinion: opt.opinion
+      }
+      that.spinning = true
+      facInfoApprove(values)
+        .then(res => {
+          that.spinning = false
+          console.log(res)
+          that.visible = false
+          that.$message.info(res.msg)
+          that.$emit('ok')
+        })
+        .catch(err => {
+          that.spinning = false
+          that.$message.error(err.message)
+        })
+    },
+    passAction() {
+      this.submitAction({
+        isAdopt: 0,
+        opinion: '通过'
+      })
+    },
+    noPassAction() {
+      let that = this
+      //that.opinion = ''
+      that.$refs.approval.query()
+    },
+    opinionChange(opinion) {
+      //审批意见
+      this.submitAction({
+        isAdopt: 1,
+        opinion: opinion
+      })
     }
   }
 }
 </script>
 <style scoped>
-.steps-content{
+.steps-content {
   margin-top: 20px;
 }
 .steps-action {
   text-align: center;
   margin-top: 20px;
+}
+.steps-action >>> .ant-btn {
+  margin: 0 5px;
 }
 </style>

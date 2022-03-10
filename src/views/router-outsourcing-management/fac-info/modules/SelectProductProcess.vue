@@ -86,6 +86,7 @@ export default {
   name: 'select-product-process',
   data() {
     return {
+      loading:false,
       visible: false,
       columns: columns,
       dataSource: [],

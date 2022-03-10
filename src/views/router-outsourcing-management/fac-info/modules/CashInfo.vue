@@ -137,15 +137,6 @@
         <a-input v-model="form.fcontactMode" />
       </a-form-model-item>
     </a-form-model>
-
-    <div class="steps-action">
-      <a-button type="primary" @click="prev">
-        上一步
-      </a-button>
-      <a-button type="primary" @click="next">
-        下一步
-      </a-button>
-    </div>
   </div>
 </template>
 
@@ -197,7 +188,6 @@ export default {
     },
     handleAction(type, obj, item) {
       const that = this
-      debugger
       if (type === 'add') {
         let list = [...that.form[obj]]
         let target = {
@@ -226,22 +216,26 @@ export default {
         }
       }
     },
-    prev(){
-      let current = 3,type = 'prev'
-      this.$emit('change',current,type,this.form)
-    },
-    next(){
+    validate() {
       const that = this
-      that.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          let current = 3,type = 'next'
-          that.$emit('change',current,type,this.form)
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
+      return new Promise(resolve => {
+        that.$refs.ruleForm.validate(valid => {
+          if (valid) {
+            resolve({
+              code:0,
+              result:{
+                facInfoPayBo:{...that.form}
+              }
+            })
+          } else {
+            resolve({
+              code:500,
+              result:{}
+            })
+          }
+        });
+      })
+    }
   }
 }
 </script>

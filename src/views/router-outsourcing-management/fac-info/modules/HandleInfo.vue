@@ -8,27 +8,21 @@
         <td>工序名称</td>
         <td>操作</td>
       </tr>
-
-      <tr v-for="(item, idx) in rangeVoList">
-        <td>{{ idx + 1 }}</td>
-        <td>{{ item.workshopName }}</td>
-        <td>{{ item.processCode }}</td>
-        <td>{{ item.processName }}</td>
-        <td>
-          <a @click="handleAction('del', item)">删除</a>
-        </td>
-      </tr>
+      <template v-if="rangeVoList.length > 0">
+        <tr v-for="(item, idx) in rangeVoList" :key="idx">
+          <td>{{ idx + 1 }}</td>
+          <td>{{ item.workshopName }}</td>
+          <td>{{ item.processCode }}</td>
+          <td>{{ item.processName }}</td>
+          <td>
+            <a @click="handleAction('del', item)">删除</a>
+          </td>
+        </tr>
+      </template>
     </table>
 
     <a-button style="width: 100%" type="dashed" icon="plus" @click="openModel">新增工艺工序信息</a-button>
-    <div class="steps-action">
-      <a-button type="primary" @click="prev">
-        上一步
-      </a-button>
-      <a-button type="primary" @click="next">
-        下一步
-      </a-button>
-    </div>
+
     <SelectProductProcess ref="selectProductProcess" @change="handleProcessChange" />
   </div>
 </template>
@@ -66,17 +60,6 @@ export default {
     openModel() {
       this.$refs.selectProductProcess.init()
     },
-    prev() {
-      let current = 2,
-        type = 'prev'
-      this.$emit('change', current, type, this.rangeVoList)
-    },
-    next() {
-      const that = this
-      let current = 2,
-        type = 'next'
-      that.$emit('change', current, type, this.rangeVoList)
-    },
     handleProcessChange(items) {
       const that = this
       let list = [...that.rangeVoList]
@@ -92,6 +75,25 @@ export default {
         })
       })
       that.rangeVoList = list
+    },
+    validate() {
+      const that = this
+      return new Promise(resolve => {
+        if(that.rangeVoList.length > 0){
+          resolve({
+              code:0,
+              result:{
+                facInfoRangeBoList:[...that.rangeVoList]
+              }
+            })
+        }else{
+          that.$message.warning('请新增工艺工序信息')
+          resolve({
+              code:500,
+              result:{}
+            })
+        }
+      })
     }
   }
 }
