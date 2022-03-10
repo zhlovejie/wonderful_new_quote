@@ -28,6 +28,17 @@ export default { //委外管理
         keepAlive: false,
         permission: ['permission']
       },
+    },
+    {
+      path: '/router-outsourcing-management/fac-info-need',
+      name: 'outsourcing-fac-info-need',
+      component: () => import('@/views/router-outsourcing-management/fac-info-need/List'),
+      meta: {
+        title: '加工需求单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
     }
   ]
 }
