@@ -147,6 +147,7 @@ export default {
   components: {
     CommonDictionarySelect
   },
+  props:['detail','fill','disabled'],
   data() {
     return {
       labelCol: { span: 3 },
@@ -171,6 +172,12 @@ export default {
           { required: true, message: '请输入开户行', trigger: 'blur' }
         ],
       }
+    }
+  },
+  activated(){
+    if(this.fill){
+      let {facInfoPayVo} = this.detail
+      this.form = {...facInfoPayVo}
     }
   },
   methods: {

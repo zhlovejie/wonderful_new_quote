@@ -34,9 +34,18 @@ export default {
   components: {
     SelectProductProcess
   },
+  props:['detail','fill','disabled'],
   data() {
     return {
       rangeVoList: []
+    }
+  },
+  activated(){
+    if(this.fill){
+      let {rangeVoList} = this.detail
+      this.rangeVoList = rangeVoList.map(item => {
+        return {...item,key:this.$uuid()}
+      })
     }
   },
   methods: {

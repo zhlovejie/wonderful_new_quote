@@ -15,7 +15,13 @@
         </a-steps>
         <div class="steps-content">
           <keep-alive>
-            <component ref="currentStep" :is="steps[current].content"></component>
+            <component 
+            ref="currentStep" 
+            :is="steps[current].content" 
+            :detail="detail" 
+            :fill="!isAdd"
+            :disabled="isView || isApprove"
+            ></component>
           </keep-alive>
         </div>
         <div class="steps-action">
@@ -116,7 +122,7 @@ export default {
   },
   computed: {
     modalTitle() {
-      return `${this.isView ? '查看' : this.isAdd ? '新增' : isEdit ? '编辑' : '审批'}加工商`
+      return `${this.isView ? '查看' : this.isAdd ? '新增' : this.isEdit ? '编辑' : '审批'}加工商`
     },
     isView() {
       return this.type === 'view'
@@ -214,6 +220,7 @@ export default {
       let that = this
       let values = {
         approveId: that.record.id,
+        approveIdList:[that.record.id],
         isAdopt: opt.isAdopt,
         opinion: opt.opinion
       }
@@ -221,10 +228,11 @@ export default {
       facInfoApprove(values)
         .then(res => {
           that.spinning = false
-          console.log(res)
-          that.visible = false
+          if(res.code === 200){
+            that.visible = false
+            that.$emit('ok')
+          }
           that.$message.info(res.msg)
-          that.$emit('ok')
         })
         .catch(err => {
           that.spinning = false

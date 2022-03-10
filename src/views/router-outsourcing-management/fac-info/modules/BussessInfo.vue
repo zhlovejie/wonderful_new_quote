@@ -87,33 +87,33 @@
       >
 
       <h2>售后信息</h2>
-      <div v-for="(item, index) in form.csupportVoList" :key="item.key" class="__bussess_wrapper">
+      <div v-for="(item, index) in form.csupportBoList" :key="item.key" class="__bussess_wrapper">
         <h3>售后人员{{index + 1}}</h3>
-        <span class="__item_action_del" title="删除" @click="handleAction('del', 'csupportVoList', item)"
+        <span class="__item_action_del" title="删除" @click="handleAction('del', 'csupportBoList', item)"
           ><a-icon type="close-circle"
         /></span>
         <a-form-model-item label="售后姓名" prop="name"
-          :prop="'csupportVoList.' + index + '.name'"
+          :prop="'csupportBoList.' + index + '.name'"
           :rules="{
             required: true,
             message: '请输入售后姓名',
             trigger: 'blur',
           }"
         >
-          <a-input v-model="form.csupportVoList[index].name" />
+          <a-input v-model="form.csupportBoList[index].name" />
         </a-form-model-item>
         <a-form-model-item label="售后职务" 
-          :prop="'csupportVoList.' + index + '.position'"
+          :prop="'csupportBoList.' + index + '.position'"
           :rules="{
             required: true,
             message: '请输入售后职务',
             trigger: 'blur',
           }"
         >
-          <a-input v-model="form.csupportVoList[index].position" />
+          <a-input v-model="form.csupportBoList[index].position" />
         </a-form-model-item>
         <a-form-model-item label="售后手机号" 
-          :prop="'csupportVoList.' + index + '.tel'"
+          :prop="'csupportBoList.' + index + '.tel'"
           :rules="[
             {
               required: true,
@@ -127,20 +127,20 @@
             }
           ]"
         >
-          <a-input v-model="form.csupportVoList[index].tel" />
+          <a-input v-model="form.csupportBoList[index].tel" />
         </a-form-model-item>
         <a-form-model-item label="售后微信号" 
-          :prop="'csupportVoList.' + index + '.wxNo'"
+          :prop="'csupportBoList.' + index + '.wxNo'"
           :rules="{
             required: true,
             message: '请输入售后微信号',
             trigger: 'blur',
           }"
         >
-          <a-input v-model="form.csupportVoList[index].wxNo" />
+          <a-input v-model="form.csupportBoList[index].wxNo" />
         </a-form-model-item>
       </div>
-      <a-button style="width: 100%" type="dashed" icon="plus" @click="handleAction('add', 'csupportVoList', null)"
+      <a-button style="width: 100%" type="dashed" icon="plus" @click="handleAction('add', 'csupportBoList', null)"
         >添加</a-button
       >
     </a-form-model>
@@ -151,15 +151,29 @@
 export default {
   name: 'bussessInfo',
   components: {},
+  props:['detail','fill','disabled'],
   data() {
     return {
       labelCol: { span: 5 },
       wrapperCol: { span: 16 },
       form: {
-        csupportVoList: [],
+        csupportBoList: [],
         salemanList: []
       },
       rules: {}
+    }
+  },
+  activated(){
+    if(this.fill){
+      let {csupportVoList,salemanList} = this.detail
+      this.form = {
+        csupportBoList:csupportVoList.map(item => {
+          return {...item,key:this.$uuid()}
+        }),
+        salemanList:salemanList.map(item => {
+          return {...item,key:this.$uuid()}
+        })
+      }
     }
   },
   methods: {
@@ -196,8 +210,8 @@ export default {
     validate() {
       const that = this
       return new Promise(resolve => {
-        const {csupportVoList,salemanList} = that.form
-        if(csupportVoList.length === 0){
+        const {csupportBoList,salemanList} = that.form
+        if(csupportBoList.length === 0){
           that.$message.warning('请添加至少一条售后信息')
           resolve({code:500,result:{} })
           return

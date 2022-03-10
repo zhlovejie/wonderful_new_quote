@@ -66,9 +66,8 @@ export function facInfoPageList(parameter) {
 export function facInfoDelete(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/outsource/fac-info/remove',
+    url: `/outsource/fac-info/remove?${parameter}`,
     method: 'post',
-    data: parameter
   })
 }
 
@@ -86,7 +85,7 @@ export function facInfoStartOrStop(parameter) {
 export function facInfoWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/outsource/fac-info/withdraw',
+    url: `/outsource/fac-info/withdraw?${parameter}`,
     method: 'post',
     data: parameter
   })

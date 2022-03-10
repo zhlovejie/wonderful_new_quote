@@ -101,6 +101,7 @@ export default {
       searchParam: {},
       selectedRowKeys: [],
       selectedRows: [],
+      workshop:[]
     }
   },
   methods: {

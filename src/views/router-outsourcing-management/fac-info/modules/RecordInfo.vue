@@ -17,10 +17,10 @@
             </a-form-model-item>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="frontAnnex"
+                ref="frontAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'frontAnnex')"
               />
@@ -36,10 +36,10 @@
             </a-form-model-item>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="deviceAnnex"
+                ref="deviceAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'deviceAnnex')"
               />
@@ -55,10 +55,10 @@
             </a-form-model-item>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="sceneAnnex"
+                ref="sceneAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'sceneAnnex')"
               />
@@ -74,10 +74,10 @@
             </a-form-model-item>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="qualityAnnex"
+                ref="qualityAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'qualityAnnex')"
               />
@@ -93,10 +93,10 @@
             </a-form-model-item>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="manageAnnex"
+                ref="manageAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'manageAnnex')"
               />
@@ -112,10 +112,10 @@
             </a-form-model-item>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="certificationAnnex"
+                ref="certificationAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'certificationAnnex')"
               />
@@ -134,10 +134,10 @@
             </div>
           </td>
           <td style="text-align:left;">
-            <a-form-model-item label="">
+            <a-form-model-item label="" style="max-width:300px;">
               <UploadFile
-                key="image"
-                ref="uploadImage"
+                key="downsideAnnex"
+                ref="downsideAnnex"
                 :config="uploadImageConfig"
                 @change="fileList => fileChange(fileList, 'downsideAnnex')"
               />
@@ -177,6 +177,7 @@ export default {
   components: {
     UploadFile
   },
+  props:['detail','fill','disabled'],
   data() {
     return {
       form: {},
@@ -196,6 +197,34 @@ export default {
           }
         }
       }
+    }
+  },
+  activated(){
+    if(this.fill){
+      let {facInfoExploreVo} = this.detail
+      this.form = {...facInfoExploreVo}
+      let keys = [
+        'qualityAnnex',
+        'manageAnnex',
+        'certificationAnnex',
+        'frontAnnex',
+        'deviceAnnex',
+        'sceneAnnex',
+        'downsideAnnex'
+      ]
+
+      keys.map(key => {
+        let str = this.form[key]
+        if(str){
+          this.$refs[key].setFiles(str.split(',').map(url => {
+            let name = str.slice(str.lastIndexOf('/') + 1)
+            return {
+              name,
+              url
+            }
+          }))
+        }
+      })
     }
   },
   methods: {

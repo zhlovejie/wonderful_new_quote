@@ -30,7 +30,7 @@
       <a-form-model-item label="公司法人身份证号" prop="juridicalCardNo">
         <a-input v-model="form.juridicalCardNo" />
       </a-form-model-item>
-      <a-form-model-item label="营业执照" prop="licenseUrl">
+      <a-form-model-item label="营业执照" prop="licenseUrl" >
         <UploadFile
           key="image"
           ref="uploadImage"
@@ -114,6 +114,7 @@ export default {
     CommonDictionarySelect,
     UploadFile
   },
+  props:['detail','fill','disabled'],
   data() {
     return {
       labelCol: { span: 5 },
@@ -199,10 +200,43 @@ export default {
             type: 'link'
           }
         }
+      },
+      fillFlag:false
+    }
+  },
+  watch:{
+    detail(){
+      if(this.fill){
+        this.fillAction()
       }
     }
   },
   methods: {
+    fillAction(){
+      const that = this
+      let flag = false
+      function __action(){
+        if(flag){
+          return
+        }
+        let params = {...that.detail}
+        delete params.csupportVoList
+        delete params.salemanList
+        delete params.rangeVoList
+        delete params.facInfoPayVo
+        delete params.facInfoExploreVo
+        params.addressIds = params.addressIds.split(',').map(v => +v)
+        params.addressNames = params.addressNames.split(',')
+        that.form = params
+        that.$refs.uploadImage && that.$refs.uploadImage.setFiles(params.licenseUrl.split(',').map(url => {
+          return {
+            url
+          }
+        }))
+        flag = true
+      }
+      return __action()
+    },
     areaChange({ area, text }) {
       this.form = {
         ...this.form,

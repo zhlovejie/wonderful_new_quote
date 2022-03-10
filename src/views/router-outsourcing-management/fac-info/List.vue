@@ -40,7 +40,7 @@
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary">导入</a-button>
+            <a-button type="primary" @click="doAction('import',null)">导入</a-button>
           </a-form-item>
 
           <a-form-item>
@@ -344,7 +344,7 @@ export default {
         that.$refs.addForm.query(type,record)
         return 
       } else if (type === 'back') {
-        facInfoWithdraw({ idList: [record.id] })
+        facInfoWithdraw(`idList=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
             if (res.code === 200) {
@@ -356,7 +356,7 @@ export default {
           })
         return
       } else if (type === 'del') {
-        facInfoDelete({ idList: [record.id] })
+        facInfoDelete(`idList=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
             if (res.code === 200) {
@@ -368,9 +368,8 @@ export default {
           })
         return
       } else if (type === 'batchDel') {
-        console.log(that.selectedRows.map(row => row.id))
-        return
-        facInfoDelete({ idList: that.selectedRows.map(row => row.id) })
+        let str = that.selectedRows.map(row => `idList=${row.id}`).join('&')
+        facInfoDelete(str)
           .then(res => {
             that.$message.info(res.msg)
             if (res.code === 200) {
@@ -381,11 +380,14 @@ export default {
             that.$message.error(err)
           })
         return
+      } else if(type === 'import'){
+        that.$message.info('功能开发中...')
+        return
       }
     },
     handleOK(){
-
-    }
+      this.search()
+    },
     // submitAction(opt) {
     //   const that = this
     //   let values = Object.assign({}, opt || {}, { approveId: that.selectedRows[0].id })
@@ -429,9 +431,9 @@ export default {
     //     opinion: opinion
     //   })
     // },
-    // approvalPreview(record) {
-    //   this.$refs.approveInfoCard.init(record.instanceId, 'material')
-    // }
+    approvalPreview(record) {
+      this.$refs.approveInfoCard.init(record.instanceId, 'material')
+    }
   }
 }
 </script>
