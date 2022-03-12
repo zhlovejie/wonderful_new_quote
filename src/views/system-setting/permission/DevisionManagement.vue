@@ -77,6 +77,8 @@
             <a-select-option :value="6">工艺部</a-select-option>
             <a-select-option :value="7">实验室部</a-select-option>
             <a-select-option :value="8">生产部</a-select-option>
+            <a-select-option :value="9">供应商开发部</a-select-option>
+            <a-select-option :value="10">供应商管理部</a-select-option>
           </a-select>
         </a-form-item>
 
