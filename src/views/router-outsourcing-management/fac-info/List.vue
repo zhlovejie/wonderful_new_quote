@@ -432,7 +432,7 @@ export default {
     //   })
     // },
     approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId, 'material')
+      this.$refs.approveInfoCard.init(record.instanceId, 'dep')
     }
   }
 }

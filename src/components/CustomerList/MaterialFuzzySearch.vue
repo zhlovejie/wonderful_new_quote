@@ -46,7 +46,7 @@ export default {
   },
   watch: {
     materialInfo(val) {
-      this.form = { ...val }
+      this.form = {...this.form, ...val }
     }
   },
   created() {

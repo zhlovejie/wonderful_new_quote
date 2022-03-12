@@ -143,6 +143,8 @@ export default {
   methods: {
     query(type, record = {}) {
       let that = this
+      that.current = 0
+      that.detail = {}
       that.visible = true
       that.type = type
       that.record = Object.assign({}, record)
@@ -164,8 +166,8 @@ export default {
       let that = this
       that.spinning = true
 
-      that.detail.addressIds = that.detail.addressIds.join(',')
-      that.detail.addressNames = that.detail.addressNames.join(',')
+      that.detail.addressIds = Array.isArray(that.detail.addressIds) ? that.detail.addressIds.join(',') : that.detail.addressIds
+      that.detail.addressNames = Array.isArray(that.detail.addressNames) ? that.detail.addressNames.join(',') : that.detail.addressNames
 
       // 处理最后一步
       let result = await that.$refs.currentStep.validate().then(({code,result}) => {

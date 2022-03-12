@@ -3,31 +3,20 @@
     <a-spin :spinning="spinning">
       <div class="search-wrapper">
         <a-form layout="inline">
-          <a-form-item label="负面消息等级">
-            <a-select style="width: 150px" v-model="queryParam.downsideLevel">
-              <a-select-option :value="0">无</a-select-option>
-              <a-select-option :value="1">低</a-select-option>
-              <a-select-option :value="2">中</a-select-option>
-              <a-select-option :value="3">高</a-select-option>
-            </a-select>
+
+          <a-form-item>
+            <DepartmentSelect allowClear show-search placeholder="选择部门" :depId.sync="queryParam.applyDepartmentId" style="width: 140px" />
           </a-form-item>
 
-          <a-form-item label="诚信等级">
-            <CommonDictionarySelect
-              style="width: 150px"
-              placeholder="诚信等级"
-              :text="'诚信级别'"
-              :dictionaryId.sync="queryParam.faithDicId"
+          <a-form-item label="选择物料">
+            <MaterialFuzzySearch
+              style="width:250px;"
+              @change="handlerMaterialChange"
             />
           </a-form-item>
-          <a-form-item>
-            <a-input placeholder="公司代码模糊查询" v-model="queryParam.facInfoCode" allowClear style="width: 250px" />
-          </a-form-item>
-          <a-form-item>
-            <a-input placeholder="公司名称模糊查询" v-model="queryParam.name" allowClear style="width: 250px" />
-          </a-form-item>
+
           <a-form-item label="审批状态" v-if="+activeKey === 0">
-            <a-select style="width: 150px" v-model="queryParam.approveStatus">
+            <a-select style="width: 120px" v-model="queryParam.approveStatus" placeholder="审批状态">
               <a-select-option :value="1">待提交</a-select-option>
               <a-select-option :value="2">待审批</a-select-option>
               <a-select-option :value="3">通过</a-select-option>
@@ -35,16 +24,42 @@
               <a-select-option :value="5">已撤回</a-select-option>
             </a-select>
           </a-form-item>
+
+          <a-form-item label="">
+            <a-input-group compact>
+              <a-select v-model="queryParam.__type" style="width: 120px">
+                <a-select-option value="applyNo">
+                  需求单号
+                </a-select-option>
+                <a-select-option value="productTaskNo">
+                  任务单号
+                </a-select-option>
+                <a-select-option value="materialName">
+                  物料名称
+                </a-select-option>
+              </a-select>
+              <a-input style="width: 250px" placeholder="模糊查询" v-model="queryParam.__value" />
+            </a-input-group>
+          </a-form-item>
+
+          <!-- <a-form-item>
+            <a-input placeholder="需求单号模糊查询" v-model="queryParam.applyNo" allowClear style="width: 250px" />
+          </a-form-item>
+
+          <a-form-item>
+            <a-input placeholder="任务单号模糊查询" v-model="queryParam.productTaskNo" allowClear style="width: 250px" />
+          </a-form-item>
+
+          <a-form-item>
+            <a-input placeholder="物料名称模糊查询" v-model="queryParam.materialName" allowClear style="width: 250px" />
+          </a-form-item> -->
+
           <a-form-item>
             <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary" @click="doAction('import',null)">导入</a-button>
-          </a-form-item>
-
-          <a-form-item>
-            <a-button type="primary" @click="doAction('add',null)">新增供应商</a-button>
+            <a-button type="primary" @click="doAction('add',null)">申请委外加工</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -67,14 +82,6 @@
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
-          </div>
-
-          <div slot="downsideLevel" slot-scope="text, record, index">
-            <span>{{ { 0: '无', 1: '低', 2: '中', 3: '高' }[text] }}</span>
-          </div>
-
-          <div slot="startFlag" slot-scope="text, record, index">
-            <a @click="doAction('startFlag', record)">{{ { 0: '未启用', 1: '已启用' }[text] }}</a>
           </div>
 
           <div slot="approveStatus" slot-scope="text, record, index">
@@ -108,6 +115,23 @@
                   <a>撤回</a>
                 </a-popconfirm>
               </template>
+
+              <template v-if="[3].includes(+record.approveStatus)">
+                <a-divider type="vertical" />
+                <a-popconfirm
+                  title="确定撤回吗？确认撤回的数据可在我的列表中查看、编辑并重新提交审核。"
+                  @confirm="doAction('back', record)"
+                >
+                  <a>撤回</a>
+                </a-popconfirm>
+
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('materialChange', record)">换料</a>
+
+                <a-divider type="vertical" />
+                <a type="primary" @click="doAction('technologyChange', record)">变更工艺</a>
+              </template>
+
             </template>
             <template v-if="+activeKey === 1">
               <a-divider type="vertical" />
@@ -144,6 +168,8 @@ import {
 // import AddForm from './modules/AddForm'
 // import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
+import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
+import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
 const columns = [
   {
     align: 'center',
@@ -153,29 +179,48 @@ const columns = [
   },
   {
     align: 'center',
-    title: '加工商名称',
-    dataIndex: 'name'
+    title: '加工需求单号',
+    dataIndex: 'applyCode'
   },
   {
     align: 'center',
-    title: '加工商代码',
-    dataIndex: 'facInfoCode'
+    title: '关联任务单',
+    dataIndex: 'productTaskNo'
   },
   {
     align: 'center',
-    title: '成立时间',
-    dataIndex: 'buildYear'
+    title: '需求时间',
+    dataIndex: 'needDate'
   },
   {
     align: 'center',
-    title: '诚信级别',
-    dataIndex: 'faithDicName'
+    title: '成品物料名称',
+    dataIndex: 'materialName'
   },
   {
     align: 'center',
-    title: '负面消息等级',
-    dataIndex: 'downsideLevel',
-    scopedSlots: { customRender: 'downsideLevel' }
+    title: '成品物料编码',
+    dataIndex: 'materialCode'
+  },
+  {
+    align: 'center',
+    title: '加工数量',
+    dataIndex: 'processCount',
+  },
+  {
+    align: 'center',
+    title: '所需原料中类',
+    dataIndex: 'materialKinds',
+  },
+  {
+    align: 'center',
+    title: '所需原料数量',
+    dataIndex: 'materialCount',
+  },
+  {
+    align: 'center',
+    title: '委外工艺工序',
+    dataIndex: 'craftCount',
   },
   {
     align: 'center',
@@ -185,18 +230,22 @@ const columns = [
   },
   {
     align: 'center',
-    title: '使用状态',
-    dataIndex: 'startFlag',
-    scopedSlots: { customRender: 'startFlag' }
+    title: '申请人',
+    dataIndex: 'applyUserName'
   },
   {
     align: 'center',
-    title: '提交人',
+    title: '申请车间',
+    dataIndex: 'applyDepartmentName'
+  },
+  {
+    align: 'center',
+    title: '制单人',
     dataIndex: 'createdName'
   },
   {
     align: 'center',
-    title: '提交时间',
+    title: '制单时间',
     dataIndex: 'createdTime'
   },
   {
@@ -208,17 +257,21 @@ const columns = [
 ]
 
 export default {
-  name: 'outsourcing-fac-info',
+  name: 'outsourcing-fac-info-need',
   components: {
     // AddForm,
     // ApproveInfo,
-    CommonDictionarySelect
+    CommonDictionarySelect,
+    MaterialFuzzySearch,
+    DepartmentSelect
   },
   data() {
     return {
       dataSource: [],
       loading: false,
-      queryParam: {},
+      queryParam: {
+        __type:'applyNo'
+      },
       activeKey: 0,
       columns,
       selectedRowKeys: [],
@@ -238,7 +291,7 @@ export default {
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'outsourcing-fac-info') {
+        if (to.name === 'outsourcing-fac-info-need') {
           this.init()
         }
       },
@@ -265,6 +318,19 @@ export default {
       let paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
+      }
+      const {__type,__value} = that.queryParam
+      that.queryParam = {
+        ...that.queryParam,
+        applyNo:undefined,
+        productTaskNo:undefined,
+        materialName:undefined,
+      }
+      if(__type && __value){
+        that.queryParam = {
+          ...that.queryParam,
+          [__type]:__value
+        }
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       that.loading = true
@@ -382,7 +448,14 @@ export default {
             that.$message.error(err)
           })
         return
-      } else if(type === 'import'){
+      } else if(type === 'materialChange'){
+        that.$message.info('功能开发中...')
+        return
+      }else if(type === 'technologyChange'){
+        that.$message.info('功能开发中...')
+        return
+      }
+      else {
         that.$message.info('功能开发中...')
         return
       }
@@ -435,6 +508,13 @@ export default {
     // },
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId, 'material')
+    },
+    handlerMaterialChange(item){
+       this.queryParam = {
+         ...this.queryParam,
+         materialId:item ? item.materialId : undefined,
+         materialName:item ? item.materialName : undefined,
+       }
     }
   }
 }
