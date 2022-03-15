@@ -31,6 +31,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    materialType:{
+      type:[Number,String],
+      default:() => 0
     }
   },
   data() {
@@ -61,8 +65,9 @@ export default {
         materialCode: wd
       }
       that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: true }
-      let res = await Promise.all([
-        routineMaterialInfoPageList(_searchParam)
+
+      let fnRoutineMaterial = () => {
+        return routineMaterialInfoPageList(_searchParam)
           .then(res => {
             if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
               return []
@@ -84,8 +89,10 @@ export default {
           .catch(err => {
             console.log(err)
             return []
-          }),
-        productMaterialInfoPageList(_searchParam)
+          })
+      }
+      let fnProductMaterial = () => {
+        return productMaterialInfoPageList(_searchParam)
           .then(res => {
             if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
               return []
@@ -107,14 +114,27 @@ export default {
             console.error(err)
             return []
           })
-      ])
+      }
+
+
+      let queue = []
+      if(+that.materialType === 0){
+        queue.push(fnRoutineMaterial())
+        queue.push(fnProductMaterial())
+      }else if(+that.materialType === 1){
+        queue.push(fnRoutineMaterial())
+      }else if(+that.materialType === 2){
+        queue.push(fnProductMaterial())
+      }
+
+      let res = await Promise.all(queue)
       let result = []
       if (isFilter) {
         //显示 常规和成品的 自制和委外件，
-        result = [...res[0], ...res[1]].filter(item => [1, 3].includes(+item.materialSource))
+        result = res.flat(1).filter(item => [1, 3].includes(+item.materialSource))
       } else {
         //显示 常规件 ，不过滤
-        result = [...res[0]]
+        result = res.flat(1)
       }
       // console.log(res)
       result = result.map((item, index) => {

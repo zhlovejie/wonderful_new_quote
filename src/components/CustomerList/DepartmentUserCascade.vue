@@ -104,12 +104,14 @@ export default {
       const that = this
       const target = that.depList.find((dep) => dep.id === depId)
       that.initUsers(depId)
-      that.$emit('update:info', {
+      const params = {
         depId,
         depName: target ? target.departmentName : undefined,
         userId: undefined,
         userName: undefined,
-      })
+      }
+      that.$emit('update:info', params)
+      that.$emit('change', params)
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -117,13 +119,15 @@ export default {
     userChange(userId) {
       const that = this
       const target = that.userList.find((u) => u.id === userId)
+      const params = {
+        ...that.selfInfo,
+        userId,
+        userName: target ? target.trueName : undefined,
+        mobile: target ? target.mobile : undefined,
+      }
       that.$nextTick(() => {
-        that.$emit('update:info', {
-          ...that.selfInfo,
-          userId,
-          userName: target ? target.trueName : undefined,
-          mobile: target ? target.mobile : undefined,
-        })
+        that.$emit('update:info', params)
+        that.$emit('change', params)
       })
     },
   },

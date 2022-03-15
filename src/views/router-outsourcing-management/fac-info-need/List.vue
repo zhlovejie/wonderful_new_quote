@@ -146,8 +146,8 @@
           </div>
         </a-table>
       </div>
-      <!-- <ApproveInfo ref="approveInfoCard" />
-      <AddForm ref="addForm" @ok="handleOK" /> -->
+      <ApproveInfo ref="approveInfoCard" />
+      <AddForm ref="addForm" @ok="handleOK" />
     </a-spin>
   </a-card>
 </template>
@@ -165,8 +165,8 @@ import {
   facinfoneedUpdate,
   facinfoneedWithdraw
 } from '@/api/outsourcingManagement'
-// import AddForm from './modules/AddForm'
-// import ApproveInfo from '@/components/CustomerList/ApproveInfo'
+import AddForm from './modules/AddForm'
+import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
 import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
@@ -259,8 +259,8 @@ const columns = [
 export default {
   name: 'outsourcing-fac-info-need',
   components: {
-    // AddForm,
-    // ApproveInfo,
+    AddForm,
+    ApproveInfo,
     CommonDictionarySelect,
     MaterialFuzzySearch,
     DepartmentSelect
