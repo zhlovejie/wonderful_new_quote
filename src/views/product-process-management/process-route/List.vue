@@ -887,7 +887,7 @@ export default {
       this.search()
     },
     customRowFunction(record) {
-      // useStatus 使用状态：{1:'常用',2:'不常用',3:'即将淘汰',4:'已淘汰',5:'呆滞'}
+      // useStatus 使用状态：{1:'常用',2:'不常用',3:'即将淘汰',4:'生产淘汰',5:'呆滞',6:'生产淘汰（售后用）'}
       // isForbidden  是否禁用：1禁用，2启用
       const { useStatus, isForbidden } = record
       return {

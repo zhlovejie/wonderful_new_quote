@@ -886,7 +886,7 @@ export default {
     },
     customRowFunction(record) {
       const that = this
-      // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
+      // useStatus 使用状态：{1:'常用',2:'不常用',3:'即将淘汰',4:'生产淘汰',5:'呆滞',6:'生产淘汰（售后用）'}
       // isForbidden  是否禁用：1禁用，2启用
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       let { useStatus, isForbidden, auditStatus } = record
