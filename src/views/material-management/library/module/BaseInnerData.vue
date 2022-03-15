@@ -87,11 +87,11 @@
                 placeholder="请选择使用状态"
                 :allowClear="true"
               >
-                <a-select-option :disabled="1 === 1" :value="1">常用</a-select-option>
+                <a-select-option :value="1">常用</a-select-option>
                 <a-select-option :value="2">不常用</a-select-option>
                 <a-select-option :disabled="form.sceneType.includes('实验室用')" :value="3">即将淘汰</a-select-option>
                 <a-select-option :disabled="form.sceneType.includes('实验室用')" :value="4">已淘汰</a-select-option>
-                <a-select-option :disabled="1 === 1" :value="5">呆滞</a-select-option>
+                <a-select-option :value="5">呆滞</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
