@@ -153,7 +153,15 @@ export default {
         return item
       })
 
-      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: false, list: result }
+      // 存在物料代码重复情况,此处过滤下
+      let __result = []
+      result.map(item => {
+        if(!__result.find(r => r.materialCode === item.materialCode)){
+          __result.push(item)
+        }
+      })
+
+      that.materialFuzzySearch = { ...that.materialFuzzySearch, fetching: false, list: __result }
     },
     materialFuzzyHandleChange(key) {
       const that = this

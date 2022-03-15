@@ -251,7 +251,7 @@ const columns = [
   {
     align: 'center',
     title: '操作',
-    dataIndex: 'status',
+    dataIndex: 'action',
     scopedSlots: { customRender: 'action' }
   }
 ]

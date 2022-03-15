@@ -2,10 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // 生产环境使用
-// import { constantRouterMap, asyncRouterMap } from '@/config/router.config'
+import { constantRouterMap, asyncRouterMap } from '@/config/router.config'
 
 // 开发环境 优化webpack 启动使用
-import { constantRouterMap, asyncRouterMap } from '@/config/router.config.dev'
+// import { constantRouterMap, asyncRouterMap } from '@/config/router.config.dev'
 
 Vue.use(Router)
 
