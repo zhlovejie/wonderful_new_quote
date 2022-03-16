@@ -220,7 +220,9 @@ export default {
       sourceBoList:[],
 
       craftBoListSelectedRowKeys:[],
-      parameterBoListSelectedRowKeys:[]
+      craftBoListSelectedRows:[],
+      parameterBoListSelectedRowKeys:[],
+      parameterBoListSelectedRows:[]
     }
   },
   watch:{
@@ -282,11 +284,13 @@ export default {
         })
       })
     },
-    craftBoListRowSelectionChangeHnadler(rows){
-      this.craftBoListSelectedRowKeys = rows
+    craftBoListRowSelectionChangeHnadler(selectedRowKeys, selectedRows){
+      this.craftBoListSelectedRowKeys = selectedRowKeys
+      this.craftBoListSelectedRows = selectedRows
     },
-    parameterBoListRowSelectionChangeHnadler(rows){
-      this.parameterBoListSelectedRowKeys = rows
+    parameterBoListRowSelectionChangeHnadler(selectedRowKeys, selectedRows){
+      this.parameterBoListSelectedRowKeys = selectedRowKeys
+      this.parameterBoListSelectedRows = selectedRows
     },
     handleMaterialAction(type, item) {
       const that = this
