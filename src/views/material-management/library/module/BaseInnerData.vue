@@ -35,10 +35,11 @@
                 :allowClear="true"
               >
                 <a-select-option :value="1">自制</a-select-option>
-                <a-select-option :value="2">外购</a-select-option>
-                <a-select-option :value="3">委外</a-select-option>
+                <a-select-option :value="2">通用外购</a-select-option>
+                <a-select-option :value="4">定制外购</a-select-option>
+                <a-select-option :value="3">委外加工</a-select-option>
                 <!-- <a-select-option :value="4">标准件</a-select-option> -->
-                <a-select-option :value="5">定制</a-select-option>
+                <!-- <a-select-option :value="5">定制</a-select-option> -->
               </a-select>
             </a-form-model-item>
           </td>
@@ -70,6 +71,7 @@
                 <a-select-option value="基建用">基建用</a-select-option>
                 <a-select-option value="实验室用">实验室用</a-select-option>
                 <a-select-option value="劳保用">劳保用</a-select-option>
+                <a-select-option value="售后用">售后用</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
