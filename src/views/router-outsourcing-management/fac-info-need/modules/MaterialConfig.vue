@@ -31,9 +31,9 @@
       :rowSelection="{ onChange: parameterBoListRowSelectionChangeHnadler, selectedRowKeys: parameterBoListSelectedRowKeys }"
     >
       <div slot="action" slot-scope="text, record, index">
-        <a target="_blank" :href="item.fileUrl" style="margin:0 10px;">预览</a>
+        <a target="_blank" :href="record.fileUrl" style="margin:0 10px;">预览</a>
         <a-divider type="vertical" />
-        <a v-download="item.fileUrl">下载</a>
+        <a v-download="record.fileUrl">下载</a>
       </div>
     </a-table>
 
@@ -41,8 +41,8 @@
     <table class="custom-table custom-table-border">
       <tr>
         <td>序号</td>
-        <td>原料名称</td>
         <td>原料代码</td>
+        <td>原料名称</td>
         <td>规格型号</td>
         <td>单位</td>
         <td>单个加工原料量</td>
@@ -50,9 +50,25 @@
       </tr>
       <tr v-for="(item,idx) in sourceBoList" :key="item.key">
         <td>{{ idx + 1 }}</td>
+        <td>
+          <template v-if="item.isNative">
+            {{item.materialCode}}
+          </template>
+          <template v-else>
+            <MaterialFuzzySearch style="width:180px;" :materialType="2" @change="record => handlerMaterialChange(record, item)" />
+          </template>
+        </td>
         <td>{{item.materialName}}</td>
-        <td>{{item.materialCode}}</td>
-        <td>{{item.specification}}</td>
+        <td>
+          <a-popover title="规格型号" v-if="item.specification">
+              <template slot="content">
+                <p style="width:350px;">{{ item.specification }}</p>
+              </template>
+              <a-button size="small">
+                查看
+              </a-button>
+            </a-popover>
+        </td>
         <td>{{ item.subUnit }}</td>
         <td>
           <a-input-number
@@ -63,7 +79,7 @@
           />
         </td>
         <td>
-          <a href="javascript:void(0);" @click="handleMaterialAction('delete', item)" >删除</a>
+          <a v-if="!item.isNative" href="javascript:void(0);" @click="handleMaterialAction('delete', item)" >删除</a>
         </td>
       </tr>
     </table>
@@ -260,7 +276,8 @@ export default {
             materialName:item.materialName,
             specification:item.modelType,
             subUnit:item.materialUnit,
-            needCount:item.materialNum || 0
+            needCount:item.materialNum || 0,
+            isNative:true
           }
         })
       })
@@ -271,18 +288,19 @@ export default {
     parameterBoListRowSelectionChangeHnadler(rows){
       this.parameterBoListSelectedRowKeys = rows
     },
-    handleAction(type, item) {
+    handleMaterialAction(type, item) {
       const that = this
       let sourceBoList = [...that.sourceBoList]
       if(type === 'add'){
         sourceBoList.push({
           key:that.$uuid(),
-          materialId:item.materialId,
-          materialCode:item.materialCode,
-          materialName:item.materialName,
-          specification:item.modelType,
-          subUnit:item.materialUnit,
-          needCount:item.materialNum || 0
+          materialId:'',
+          materialCode:'',
+          materialName:'',
+          specification:'',
+          subUnit:'',
+          needCount:0,
+          isNative:false
         })
         that.sourceBoList = sourceBoList
       }else if(type === 'delete'){
@@ -291,8 +309,8 @@ export default {
     },
     handlerMaterialChange(record, item) {
       const that = this
-      let materialBoList = [...that.materialBoList]
-      let target = materialBoList.find(m => m.key === item.key)
+      let sourceBoList = [...that.sourceBoList]
+      let target = sourceBoList.find(m => m.key === item.key)
       if (target) {
         target.materialId = record.materialId
         target.materialName = record.materialName
@@ -300,7 +318,7 @@ export default {
         target.subUnit = record.materialUnit
         target.specification = record.modelType
         target.type = record.type || 1
-        that.materialBoList = materialBoList
+        that.sourceBoList = sourceBoList
       }
     },
     validate() {

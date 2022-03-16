@@ -10,7 +10,7 @@
   >
     <a-spin :spinning="spinning">
       <div>
-        <a-steps :current="current" size="small">
+        <a-steps :current="current" size="small" style="width: 50%;margin: 0 auto;">
           <a-step v-for="item in steps" :key="item.title" :title="item.title" />
         </a-steps>
         <div class="steps-content">
