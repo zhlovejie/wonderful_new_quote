@@ -189,7 +189,6 @@ export default {
       if (type === 'next') {
         that.$refs.currentStep.validate().then(({code,result}) => {
           if(code === 0){
-            debugger
             that.detail = {...that.detail,...result}
             that.current++
           }

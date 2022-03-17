@@ -7,13 +7,17 @@
       :pagination="false"
       size="small"
     >
+      <div slot="needDate" slot-scope="text, record, index">
+        <span>{{ moment(record.needDate).format('YYYY-MM-DD') }}</span>
+      </div>
+    
     </a-table>
 
     <h2>选择委外工序</h2>
     <a-table
       size="small"
       :columns="columns.craftBoList"
-      :dataSource="craftBoList"
+      :dataSource="material.craftBoList"
       :pagination="false"
       :rowSelection="{ onChange: craftBoListRowSelectionChangeHnadler, selectedRowKeys: craftBoListSelectedRowKeys }"
     >
@@ -26,7 +30,7 @@
     <a-table
       size="small"
       :columns="columns.parameterBoList"
-      :dataSource="parameterBoList"
+      :dataSource="material.parameterBoList"
       :pagination="false"
       :rowSelection="{ onChange: parameterBoListRowSelectionChangeHnadler, selectedRowKeys: parameterBoListSelectedRowKeys }"
     >
@@ -46,9 +50,10 @@
         <td>规格型号</td>
         <td>单位</td>
         <td>单个加工原料量</td>
+        <td>所需原料总量</td>
         <td>操作</td>
       </tr>
-      <tr v-for="(item,idx) in sourceBoList" :key="item.key">
+      <tr v-for="(item,idx) in material.sourceBoList" :key="item.key">
         <td>{{ idx + 1 }}</td>
         <td>
           <template v-if="item.isNative">
@@ -78,6 +83,7 @@
             :precision="0"
           />
         </td>
+        <td>{{ Number(item.needCount * material.processCount) || 0 }}</td>
         <td>
           <a v-if="!item.isNative" href="javascript:void(0);" @click="handleMaterialAction('delete', item)" >删除</a>
         </td>
@@ -93,11 +99,7 @@
 </template>
 
 <script>
-import {
-  getCraftFile,
-  listMaterialFormChildDetail,
-  
-} from '@/api/outsourcingManagement'
+
 import moment from 'moment'
 import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
 
@@ -141,7 +143,8 @@ const columns = {
     {
       align: 'center',
       title: '需求日期',
-      dataIndex: 'needDate'
+      dataIndex: 'needDate',
+      scopedSlots: { customRender: 'needDate' }
     },
     {
       align: 'center',
@@ -215,10 +218,6 @@ export default {
   data() {
     return {
       columns,
-      craftBoList: [],
-      parameterBoList:[],
-      sourceBoList:[],
-
       craftBoListSelectedRowKeys:[],
       craftBoListSelectedRows:[],
       parameterBoListSelectedRowKeys:[],
@@ -226,71 +225,31 @@ export default {
     }
   },
   watch:{
-    material:{
-      handler(val){
-        if(val && val.materialId && val.type){
-          this.init()
-        }
+    sourceBoList:{
+      handler(value){
+        this.$emit('change',{
+          ...this.material,
+          sourceBoList:[...value]
+        })
       },
+      deep:true,
       immediate:true
     }
   },
   methods: {
     moment,
-    init(){
-      const that = this
-      getCraftFile({
-        materialId:that.material.materialId,
-        materialType:that.material.type
-      }).then(res => {
-        let {fileVoList,routeDetailVo} = res.data
-        let {picFiles,processes,rangeProcesses} = routeDetailVo
-        that.craftBoList = processes.map(item => {
-          item.key = that.$uuid()
-          return item
-        })
-
-        let __parameterBoList = []
-        fileVoList.map(item => {
-          if(Array.isArray(item.fileList)){
-            item.fileList.map(file => {
-              __parameterBoList.push({
-                ...item,
-                ...file
-              })
-            })
-          }
-        })
-
-        that.parameterBoList = __parameterBoList
-        
-      })
-
-      listMaterialFormChildDetail({
-        materialId:that.material.materialId,
-        type:that.material.type
-      }).then(res => {
-        that.sourceBoList = res.data.map(item => {
-          return {
-            key:that.$uuid(),
-            materialId:item.materialId,
-            materialCode:item.materialCode,
-            materialName:item.materialName,
-            specification:item.modelType,
-            subUnit:item.materialUnit,
-            needCount:item.materialNum || 0,
-            isNative:true
-          }
-        })
-      })
-    },
     craftBoListRowSelectionChangeHnadler(selectedRowKeys, selectedRows){
       this.craftBoListSelectedRowKeys = selectedRowKeys
       this.craftBoListSelectedRows = selectedRows
+
+      let craftBoList = this.material.craftBoList
+      
     },
     parameterBoListRowSelectionChangeHnadler(selectedRowKeys, selectedRows){
       this.parameterBoListSelectedRowKeys = selectedRowKeys
       this.parameterBoListSelectedRows = selectedRows
+
+      
     },
     handleMaterialAction(type, item) {
       const that = this
@@ -310,6 +269,11 @@ export default {
       }else if(type === 'delete'){
         that.sourceBoList = sourceBoList.filter(p => p.key !== item.key)
       }
+
+      that.$emit('change',{
+        ...that.material,
+        sourceBoList:[...that.sourceBoList]
+      })
     },
     handlerMaterialChange(record, item) {
       const that = this
@@ -323,24 +287,50 @@ export default {
         target.specification = record.modelType
         target.type = record.type || 1
         that.sourceBoList = sourceBoList
+        that.$emit('change',{
+          ...that.material,
+          sourceBoList:[...that.sourceBoList]
+        })
       }
+    },
+    validate_self(){
+      const that = this
+      if(that.craftBoListSelectedRows.length === 0){
+        that.$message.info('请选择委外工序')
+        return false
+      }
+      if(that.parameterBoListSelectedRows.length === 0){
+        that.$message.info('请选择委外工艺参数')
+        return false
+      }
+
+      for(let i=0,len = that.sourceBoList.length;i<len;i++){
+        let item = that.sourceBoList[i]
+        if(!item.materialCode){
+          that.$message.info('请选择原料代码')
+          return false
+        }
+        if(!item.needCount){
+          that.$message.info('请输入单个加工原料量')
+          return false
+        }
+      }
+      return true
     },
     validate() {
       const that = this
       return new Promise(resolve => {
-        if (that.materialBoList.length > 0) {
+        if (that.validate_self()) {
           resolve({
             code: 0,
             result: {
-              materialBoList: [...that.materialBoList]
+              craftBoList: [...that.craftBoListSelectedRows],
+              parameterBoList:[...that.parameterBoListSelectedRows],
+              sourceBoList:[...that.sourceBoList],
             }
           })
         } else {
-          that.$message.warning('请添加物料')
-          resolve({
-            code: 500,
-            result: {}
-          })
+          resolve({code: 500,result: {} })
         }
       })
     }
