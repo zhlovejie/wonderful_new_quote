@@ -306,8 +306,10 @@ export default {
     if(submitParams.sceneType){
       sceneType = String(submitParams.sceneType).split(',')
     }
+    let _submitParams = that.$_.cloneDeep(submitParams || {})
+    delete _submitParams.materialDiagram
     that.form = {
-      ...that.normalAddForm.submitParams,
+      ..._submitParams,
       mainUnit,
       specificationHTML: that.specificationFormat(submitParams.specification),
       sceneType

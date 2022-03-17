@@ -95,14 +95,14 @@ const columns = [
   {
     align: 'center',
     title: '部门',
-    dataIndex: 'department.departmentName',
-    key: 'department.departmentName',
+    dataIndex: 'departmentName',
+    key: 'departmentName',
   },
   {
     align: 'center',
     title: '岗位',
-    dataIndex: 'station.stationName',
-    key: 'station.stationName',
+    dataIndex: 'stationName',
+    key: 'stationName',
   },
   {
     align: 'center',
