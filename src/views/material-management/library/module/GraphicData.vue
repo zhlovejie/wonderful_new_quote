@@ -224,6 +224,14 @@ export default {
       let isSp = 'materialPhoto' === field
       let _files = files.filter(f => f && f.status === 'done')
       if (_files && _files.length > 0) {
+        if(isSp){
+          that.materialDiagram = {
+            ...that.materialDiagram,
+            materialPhoto1: '',
+            materialPhoto2: '',
+            materialPhoto3: ''
+          }
+        }
         _files.map((_f, idx) => {
           that.materialDiagram[isSp ? `${field}${idx + 1}` : `${field}`] = _f.url
         })
