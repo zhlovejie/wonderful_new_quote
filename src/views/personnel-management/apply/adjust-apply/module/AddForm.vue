@@ -933,9 +933,10 @@ export default {
           applyUserId: record.id,
           applyUserName: record.trueName,
         })
-        that.oldDepartmentName = record.department.departmentName
-        that.oldStationName = record.station.stationName
-        that.oldStationId = record.station.id
+
+        that.oldDepartmentName = record.departmentName
+        that.oldStationName = record.stationName
+        that.oldStationId = record.stationId
 
         let _date = that.moment(record.entryDate)
         that.salary_entryDate = _date.isValid() ? that.moment(record.entryDate).format('YYYY-MM-DD') : ''

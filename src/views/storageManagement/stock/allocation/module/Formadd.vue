@@ -253,7 +253,7 @@ export default {
           width: 100,
         },
         {
-          title: '辅计量单位',
+          title: '使用计量单位',
           align: 'center',
           dataIndex: 'subUnit',
           width: 100,
@@ -316,7 +316,7 @@ export default {
           width: 100,
         },
         {
-          title: '辅计量单位',
+          title: '使用计量单位',
           align: 'center',
           dataIndex: 'subUnit',
           width: 100,
@@ -368,7 +368,7 @@ export default {
       if (target) {
         target['materialCode'] = selectItem.materialCode // 物料代码
         target['materialName'] = selectItem.materialName // 物料名称
-        target['subUnit'] = selectItem.subUnit // 辅计量单位
+        target['subUnit'] = selectItem.subUnit // 使用计量单位
         target['removeWarehouseReservoir'] = selectItem.warehouseName + '/' + selectItem.warehouseName //仓库库区
         target['removePosition'] = selectItem.positionCode //移出
         target['removePositionId'] = selectItem.id //移出

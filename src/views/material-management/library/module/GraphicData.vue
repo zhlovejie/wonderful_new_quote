@@ -224,6 +224,14 @@ export default {
       let isSp = 'materialPhoto' === field
       let _files = files.filter(f => f && f.status === 'done')
       if (_files && _files.length > 0) {
+        if(isSp){
+          that.materialDiagram = {
+            ...that.materialDiagram,
+            materialPhoto1: '',
+            materialPhoto2: '',
+            materialPhoto3: ''
+          }
+        }
         _files.map((_f, idx) => {
           that.materialDiagram[isSp ? `${field}${idx + 1}` : `${field}`] = _f.url
         })
@@ -246,8 +254,10 @@ export default {
           let id = that.normalAddForm.getId()
           resolve({
             ...that.materialDiagram,
-            materialQrCode: that.normalAddForm.submitParams.materialQrCode,
-            id
+            materialQrCode: that.materialDiagram.materialQrCode 
+              ? that.materialDiagram.materialQrCode  
+              : that.normalAddForm.submitParams.materialQrCode,
+            // id
           })
         // let { materialPhoto1, materialPhoto2, materialPhoto3 } = that.materialDiagram
         // if (materialPhoto1 || materialPhoto2 || materialPhoto3) {

@@ -88,6 +88,9 @@
             <a-form-item v-if="$auth('routineMaterialInfo:care')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('care', null)">监管</a-button>
             </a-form-item>
+            <a-form-item v-if="$auth('routineMaterialInfo:uncare')">
+              <a-button :disabled="!canUse" type="primary" @click="doAction('uncare', null)">反监管</a-button>
+            </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:add')">
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
@@ -146,7 +149,8 @@
           </div>
 
           <div slot="materialSource" slot-scope="text, record, index">
-            {{ { 1: '自制', 2: '外购', 3: '委外', 4: '标准件' }[text] }}
+            <!-- {{ {1:'自制',2:'外购',3:'委外',4:'标准件',5:'定制'}[text] }} -->
+            {{ {1:'自制',2:'通用外购',3:'委外加工',4:'定制外购'}[text] || `${text}(已弃用)` }}
           </div>
 
           <div
@@ -172,7 +176,7 @@
             slot="useStatus"
             slot-scope="text, record, index"
           >
-            {{ {1:'使用中',2:'未使用',3:'逐步淘汰',4:'已淘汰'}[text] }}
+            {{ {1:'常用',2:'不常用',3:'即将淘汰',4:'已淘汰',5:'呆滞'}[text] }}
           </div>
 
           <div slot="isCare" slot-scope="text, record, index">
@@ -235,7 +239,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'subUnit',
     scopedSlots: { customRender: 'subUnit' },
   },
@@ -760,6 +764,36 @@ export default {
             }).then(res => {
               that.$message.info(res.msg)
               if(+res.code === 200){
+                that.selectedRowKeys = []
+                that.selectedRows = []
+                that.search()
+              }
+            }).catch(err => {
+              that.$message.error(err.message)
+            })
+          }
+        })
+        return
+      }else if (type === 'uncare') {
+        const arr = that.selectedRows.filter(item => +item.isCare === 2)
+        if (arr.length === 0) {
+          that.$message.info(`没有需要反监管的数据`)
+          return
+        }
+        that.$confirm({
+          title: '提示',
+          content: `确定执行反监管操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            routineMaterialInfoUpdateCareState({
+              isCare: 1,
+              ruleIdList: arr.map(item => item.id)
+            }).then(res => {
+              that.$message.info(res.msg)
+              if(+res.code === 200){
+                that.selectedRowKeys = []
+                that.selectedRows = []
                 that.search()
               }
             }).catch(err => {
@@ -853,7 +887,7 @@ export default {
     },
     customRowFunction(record) {
       const that = this
-      // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
+      // useStatus 使用状态：{1:'常用',2:'不常用',3:'即将淘汰',4:'生产淘汰',5:'呆滞',6:'生产淘汰（售后用）'}
       // isForbidden  是否禁用：1禁用，2启用
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       let { useStatus, isForbidden, auditStatus } = record

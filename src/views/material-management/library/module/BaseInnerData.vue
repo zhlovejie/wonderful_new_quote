@@ -35,12 +35,49 @@
                 :allowClear="true"
               >
                 <a-select-option :value="1">自制</a-select-option>
-                <a-select-option :value="2">外购</a-select-option>
-                <a-select-option :value="3">委外</a-select-option>
-                <a-select-option :value="4">标准件</a-select-option>
+                <a-select-option :value="2">通用外购</a-select-option>
+                <a-select-option :value="4">定制外购</a-select-option>
+                <a-select-option :value="3">委外加工</a-select-option>
+                <!-- <a-select-option :value="4">标准件</a-select-option> -->
+                <!-- <a-select-option :value="5">定制</a-select-option> -->
               </a-select>
             </a-form-model-item>
           </td>
+          <td>
+            <span class="icon-required">使用场景</span>
+          </td>
+          <td>
+            <a-form-model-item  prop="sceneType">
+              <a-select
+                mode="multiple"
+                :disabled="normalAddForm.isView"
+                v-model="form.sceneType"
+                placeholder="请选择使用场景"
+                :allowClear="true"
+                @change="handleSceneChange"
+              >
+                <!-- <a-select-option :value="1">生产用</a-select-option>
+                <a-select-option :value="2">办公用</a-select-option>
+                <a-select-option :value="3">后勤用</a-select-option>
+                <a-select-option :value="4">设备用</a-select-option>
+                <a-select-option :value="5">基建用</a-select-option>
+                <a-select-option :value="6">实验室用</a-select-option>
+                <a-select-option :value="7">劳保用</a-select-option> -->
+
+                <a-select-option value="生产用">生产用</a-select-option>
+                <a-select-option value="办公用">办公用</a-select-option>
+                <a-select-option value="后勤用">后勤用</a-select-option>
+                <a-select-option value="设备用">设备用</a-select-option>
+                <a-select-option value="基建用">基建用</a-select-option>
+                <a-select-option value="实验室用">实验室用</a-select-option>
+                <a-select-option value="劳保用">劳保用</a-select-option>
+                <a-select-option value="售后用">售后用</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </td>
+          
+        </tr>
+        <tr>
           <td style="width:150px;">
             <span class="icon-required">使用状态</span>
           </td>
@@ -52,13 +89,17 @@
                 placeholder="请选择使用状态"
                 :allowClear="true"
               >
-                <a-select-option :value="1">使用</a-select-option>
-                <a-select-option :value="2">未使用</a-select-option>
-                <a-select-option :value="3">逐步淘汰</a-select-option>
-                <a-select-option :value="4">已淘汰</a-select-option>
+                <a-select-option :value="1">常用</a-select-option>
+                <a-select-option :value="2">不常用</a-select-option>
+                <a-select-option :disabled="form.sceneType.includes('实验室用')" :value="3">即将淘汰</a-select-option>
+                <!-- <a-select-option :disabled="form.sceneType.includes('实验室用')" :value="4">已淘汰</a-select-option> -->
+                <a-select-option :disabled="form.sceneType.includes('实验室用')" :value="4">生产淘汰</a-select-option>
+                <a-select-option :value="5">呆滞</a-select-option>
+                <a-select-option :disabled="form.sceneType.includes('实验室用')" :value="6">生产淘汰（售后用）</a-select-option>
               </a-select>
             </a-form-model-item>
           </td>
+
         </tr>
 
         <tr v-if="normalAddForm.isNormal">
@@ -77,14 +118,15 @@
 
         <tr>
           <td>
-            <span class="icon-required">主计量单位</span>
+            <span class="icon-required">采购计量单位</span>
           </td>
           <td>
             <a-form-model-item prop="mainUnit">
               <a-select
                 :disabled="normalAddForm.isView"
+                mode="multiple"
                 v-model="form.mainUnit"
-                placeholder="请选择主计量单位"
+                placeholder="请选择采购计量单位"
                 :allowClear="true"
               >
                 <a-select-option v-for="item in materialUnitList" :key="item.text" :value="item.text">
@@ -94,14 +136,14 @@
             </a-form-model-item>
           </td>
           <td>
-            <span class="icon-required">辅计量单位</span>
+            <span class="icon-required">使用计量单位</span>
           </td>
           <td>
             <a-form-model-item prop="subUnit">
               <a-select
                 :disabled="normalAddForm.isView"
                 v-model="form.subUnit"
-                placeholder="请选择辅计量单位"
+                placeholder="请选择使用计量单位"
                 :allowClear="true"
               >
                 <a-select-option v-for="item in materialUnitList" :key="item.text" :value="item.text">
@@ -113,33 +155,11 @@
         </tr>
 
         <tr>
-          <td>
-            <span style="margin-left:5px;">
-              <a-tooltip>
-                <template slot="title">
-                  换算率是一个主计量单位等于多少个辅计量单位
-                </template>
-                <span class="icon-required">换算率</span>
-                <a-icon type="question-circle" style="margin-left:5px;color:#1890ff;" />
-              </a-tooltip>
-            </span>
-          </td>
-          <td>
-            <a-form-model-item ref="conversionRate" prop="conversionRate">
-              <a-input-number
-                :disabled="normalAddForm.isView"
-                v-model="form.conversionRate"
-                :allowClear="true"
-                :min="0"
-                :step="1"
-                style="width:100%;"
-              />
-            </a-form-model-item>
-          </td>
+          
           <td>
             <span>预估重量(克)</span>
           </td>
-          <td>
+          <td >
             <a-form-model-item ref="estimateWeight" prop="estimateWeight">
               <a-input-number
                 :disabled="normalAddForm.isView"
@@ -151,11 +171,12 @@
               />
             </a-form-model-item>
           </td>
+          
         </tr>
         <tr>
           <template v-if="normalAddForm.isNormal">
             <td>
-              <span class="icon-required">是否需要送检</span>
+              <span class="icon-required">是否第三方送检</span>
             </td>
             <td>
               <a-form-model-item ref="needCheck" prop="needCheck">
@@ -248,11 +269,11 @@ export default {
         materialCode: undefined,
         materialName: undefined,
         materialSource: undefined,
-        useStatus: undefined,
-
-        mainUnit: undefined,
+        useStatus: 2,
+        sceneType:[6],
+        mainUnit: [],
         subUnit: undefined,
-        conversionRate: undefined,
+        conversionRate: 0,
         estimateWeight: 0,
         remark: undefined,
         k3Code: undefined,
@@ -261,36 +282,54 @@ export default {
       rules: {
         materialSource: [{ required: true, message: '请选择物料来源属性' }],
         useStatus: [{ required: true, message: '请选择使用状态' }],
-        mainUnit: [{ required: true, message: '请选择主计量单位' }],
-        subUnit: [{ required: true, message: '请选择辅计量单位' }],
-        conversionRate: [{ required: true, message: '请输入换算率' }],
+        mainUnit: [{ required: true, message: '请选择采购计量单位' }],
+        subUnit: [{ required: true, message: '请选择使用计量单位' }],
+        // conversionRate: [{ required: true, message: '请输入换算率' }],
         // k3Code: [{ required: true, message: '请输入原K3物料代码' }],
         // k3Code: [{ validator: checkK3Code, trigger: 'change' }],
         needCheck: [{ required: true, message: '请选择是否需要送检' }],
         reason: [{ required: true, message: '请输入物料代码变更原因' }],
         squareNum:[{ required: true, message: '请输入方数' }],
-        estimateWeight:[{ required: true, message: '请输入方数' }]
+        // estimateWeight:[{ required: false, message: '请输入方数' }]
+        sceneType:[{ required: true, message: '请选择使用场景' }]
       },
       materialUnitList: [] //物料计量单位
     }
   },
   created() {
     const that = this
-    that.form = that.normalAddForm.submitParams
-
-    that.form = {
-      ...that.form,
-      specificationHTML: that.specificationFormat(that.form.specification)
+    let submitParams = that.normalAddForm.submitParams || {}
+    let mainUnit = [],sceneType=[6]
+    if(submitParams.mainUnit){
+      mainUnit = String(submitParams.mainUnit).split(',')
     }
+    if(submitParams.sceneType){
+      sceneType = String(submitParams.sceneType).split(',')
+    }
+    let _submitParams = that.$_.cloneDeep(submitParams || {})
+    delete _submitParams.materialDiagram
+    delete _submitParams.blueprints
+    that.form = {
+      ..._submitParams,
+      mainUnit,
+      specificationHTML: that.specificationFormat(submitParams.specification),
+      sceneType
+    }
+
+
+
 
     if (that.normalAddForm.isAdd) {
       that.$nextTick(() => {
         that.form = {
           ...that.form,
           useStatus: 2,
+          sceneType:['实验室用'],
           needCheck: 2
         }
       })
+    }else{
+      that.handleSceneChange(that.form.sceneType || [])
     }
 
     getDictionary({ text: '物料计量单位' }).then(res => {
@@ -314,7 +353,11 @@ export default {
       return new Promise((resolve, reject) => {
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
-            resolve({ ...that.form })
+            resolve({ 
+              ...that.form ,
+              mainUnit:Array.isArray(that.form.mainUnit) ? that.form.mainUnit.join(','):'',
+              sceneType:Array.isArray(that.form.sceneType) ? that.form.sceneType.join(',') : ''
+            })
           } else {
             resolve(null)
           }
@@ -376,6 +419,17 @@ export default {
         return HTML
       }
       return sp
+    },
+    fillData(){
+
+    },
+    handleSceneChange(arr){
+      if(arr.includes('实验室用')){
+        this.form = {
+          ...this.form,
+          useStatus:2
+        }
+      }
     }
   }
 }

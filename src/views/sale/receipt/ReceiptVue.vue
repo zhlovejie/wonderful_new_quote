@@ -521,7 +521,6 @@ export default {
         }, {})
         aggregate.id = -1000
         //console.log(aggregate)
-
         this.dataSource = res.data.detailsList
         this.dataSource.push(aggregate)
       })

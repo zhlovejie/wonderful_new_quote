@@ -198,7 +198,8 @@
             slot="materialSource"
             slot-scope="text, record, index"
           >
-            {{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[text] }}
+            <!-- {{ {1:'自制',2:'外购',3:'委外',4:'标准件',5:'定制'}[text] }} -->
+            {{ {1:'自制',2:'通用外购',3:'委外加工',4:'定制外购'}[text] || `${text}(已弃用)` }}
           </div>
 
           <div
@@ -291,7 +292,7 @@ const columns = [
   // },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'subUnit',
     scopedSlots: { customRender: 'subUnit' }
   },
@@ -844,7 +845,7 @@ export default {
     },
     customRowFunction(record) {
       const that = this
-      // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
+      // useStatus 使用状态：{1:'常用',2:'不常用',3:'即将淘汰',4:'生产淘汰',5:'呆滞',6:'生产淘汰（售后用）'}
       // isForbidden  是否禁用：1禁用，2启用
       const { useStatus, isForbidden } = record
       return {

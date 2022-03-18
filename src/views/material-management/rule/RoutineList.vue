@@ -83,6 +83,9 @@
             <a-form-item v-if="$auth('routineMaterialRule:care')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('care', null)">监管</a-button>
             </a-form-item>
+            <a-form-item v-if="$auth('routineMaterialRule:uncare')">
+              <a-button :disabled="!canUse" type="primary" @click="doAction('uncare', null)">反监管</a-button>
+            </a-form-item>
             <a-form-item v-if="$auth('routineMaterialRule:add')">
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
@@ -789,6 +792,38 @@ export default {
               .then(res => {
                 that.$message.info(res.msg)
                 if (+res.code === 200) {
+                  that.selectedRowKeys = []
+                  that.selectedRows = []
+                  that.search()
+                }
+              })
+              .catch(err => {
+                that.$message.error(err.message)
+              })
+          }
+        })
+        return
+      }else if (type === 'uncare') {
+        const arr = that.selectedRows.filter(item => +item.isCare === 2)
+        if (arr.length === 0) {
+          that.$message.info(`没有需要反监管的数据`)
+          return
+        }
+        that.$confirm({
+          title: '提示',
+          content: `确定执行反监管操作吗?`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            routineMaterialRuleUpdateCareState({
+              isCare: 1,
+              ruleIdList: arr.map(item => item.id)
+            })
+              .then(res => {
+                that.$message.info(res.msg)
+                if (+res.code === 200) {
+                  that.selectedRowKeys = []
+                  that.selectedRows = []
                   that.search()
                 }
               })
