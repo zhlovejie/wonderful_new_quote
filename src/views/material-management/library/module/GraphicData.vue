@@ -246,8 +246,10 @@ export default {
           let id = that.normalAddForm.getId()
           resolve({
             ...that.materialDiagram,
-            // materialQrCode: that.normalAddForm.submitParams.materialQrCode,
-            id
+            materialQrCode: that.materialDiagram.materialQrCode 
+              ? that.materialDiagram.materialQrCode  
+              : that.normalAddForm.submitParams.materialQrCode,
+            // id
           })
         // let { materialPhoto1, materialPhoto2, materialPhoto3 } = that.materialDiagram
         // if (materialPhoto1 || materialPhoto2 || materialPhoto3) {

@@ -308,6 +308,7 @@ export default {
     }
     let _submitParams = that.$_.cloneDeep(submitParams || {})
     delete _submitParams.materialDiagram
+    delete _submitParams.blueprints
     that.form = {
       ..._submitParams,
       mainUnit,
@@ -388,7 +389,6 @@ export default {
         })
     },
     specificationFormat(sp) {
-      debugger
       if (sp) {
         let _sp = sp.replace(/\s+/g, '')
         let _strList = String(_sp).split(',')
@@ -424,7 +424,6 @@ export default {
 
     },
     handleSceneChange(arr){
-      debugger
       if(arr.includes('实验室用')){
         this.form = {
           ...this.form,
