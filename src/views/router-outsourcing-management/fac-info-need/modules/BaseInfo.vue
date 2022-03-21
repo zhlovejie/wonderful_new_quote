@@ -3,22 +3,35 @@
     <h2>委外加工申请人信息</h2>
     <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-model-item label="申请人" prop="applyUserId">
-        <DepartmentUserCascade 
-          allowClear 
-          :info.sync="form.applyUser" 
-          style="width:100%;" 
-          @change="handleDepartmentUserCascadeChange"
-        />
+        <template v-if="canEdit">
+          <DepartmentUserCascade 
+            allowClear 
+            :info.sync="form.applyUser" 
+            style="width:100%;" 
+            @change="handleDepartmentUserCascadeChange"
+          />
+        </template>
+        <template v-else>
+          <span>{{form.applyDepartmentName}}/{{form.applyUserName}}</span>
+        </template>
+        
       </a-form-model-item>
       <a-form-model-item label="申请原因" prop="reason">
-        <a-input v-model="form.reason" />
+        <a-input v-if="canEdit" v-model="form.reason" />
+        <span v-else>{{form.reason}}</span>
       </a-form-model-item>
       <a-form-model-item label="生产车间" prop="workDepartmentId">
-        <DepartmentSelect @change="handleDepartmentSelectChange" :depId="form.workDepartmentId" />
+        <template v-if="canEdit">
+          <DepartmentSelect @change="handleDepartmentSelectChange" :depId="form.workDepartmentId" />
+        </template>
+        <template v-else>
+          <span>{{form.workDepartmentName}}</span>
+        </template>
       </a-form-model-item>
 
       <a-form-model-item label="关联生产任务单">
         <a-select 
+          v-if="canEdit"
           style="width: 100%" 
           v-model="form.productTaskId" 
           placeholder="关联生产任务单"
@@ -26,13 +39,19 @@
         >
           <a-select-option v-for="item in productTaskList" :key="item.id">{{item.no}}</a-select-option>
         </a-select>
+        <span v-else>
+          -
+        </span>
       </a-form-model-item>
       <a-form-model-item label="需求日期" prop="needDate">
-        <a-date-picker v-model="form.needDate" format="YYYY-MM-DD" style="width:100%;" />
+        <a-date-picker v-if="canEdit" v-model="form.needDate" format="YYYY-MM-DD" style="width:100%;" />
+        <span v-else>
+          {{form.materialVo.needDate}}
+        </span>
       </a-form-model-item>
     </a-form-model>
 
-    <MaterialInfo ref="materialInfo" />
+    <MaterialInfo ref="materialInfo" :baseInfo="form"/>
   </div>
 </template>
 
@@ -47,12 +66,7 @@ export default {
     DepartmentSelect,
     MaterialInfo
   },
-  provide() {
-    return {
-      baseInfo: this
-    }
-  },
-  props: ['detail', 'fill', 'disabled'],
+  inject:['addForm'],
   data() {
     return {
       labelCol: { span: 5 },
@@ -77,37 +91,30 @@ export default {
       fillFlag: false
     }
   },
-  watch: {
-    detail() {
-      // if (this.fill) {
-      //   this.fillAction()
-      // }
+  computed:{
+    canEdit(){
+      return this.addForm.isAdd || this.addForm.isEdit
+    }
+  },
+  activated(){
+    console.log('activated baseinfo called....')
+    const that = this
+    if(that.addForm.isAdd){
+      return
+    }
+    let detail = that.$_.cloneDeep(that.addForm.detail || {}) 
+    // delete detail.materialVo
+    that.form = {
+      ...detail,
+      applyUser:{
+        userId:detail.applyUserId,
+        userName:detail.applyUserName,
+        depId:detail.applyDepartmentId,
+        depName:detail.applyDepartmentName
+      }
     }
   },
   methods: {
-    fillAction() {
-      const that = this
-      let flag = false
-      function __action() {
-        if (flag) {
-          return
-        }
-        let params = { ...that.detail }
-        params.addressIds = params.addressIds.split(',').map(v => +v)
-        params.addressNames = params.addressNames.split(',')
-        that.form = params
-        that.$refs.uploadImage &&
-          that.$refs.uploadImage.setFiles(
-            params.licenseUrl.split(',').map(url => {
-              return {
-                url
-              }
-            })
-          )
-        flag = true
-      }
-      return __action()
-    },
     handleDepartmentUserCascadeChange(applyUser){
       this.form = {
         ...this.form,
@@ -156,7 +163,6 @@ export default {
       let result_materialInfo = await that.$refs.materialInfo.validate()
 
       if(result.code === 0 && result_materialInfo.code === 0){
-        debugger
         return {
           code:0,
           result:{
@@ -164,8 +170,12 @@ export default {
             ...result_materialInfo.result
           }
         }
+      }else{
+        return {
+          code:500,
+          result:{}
+        }
       }
-      return result.code !== 0 ? result : result_materialInfo
     }
   }
 }

@@ -19,7 +19,7 @@
           <td>{{ idx + 1 }}</td>
           <td>-</td>
           <td>
-            <MaterialFuzzySearch style="width:180px;" :materialType="2" @change="record => handlerMaterialChange(record, item)" />
+            <MaterialFuzzySearch :materialInfo="{materialCode:item.materialCode}" style="width:180px;" :materialType="2" @change="record => handlerMaterialChange(record, item)" />
           </td>
           <td>{{ item.materialName }}</td>
           <td>
@@ -56,43 +56,32 @@ import moment from 'moment'
 import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
 export default {
   name: 'handleInfo',
+  inject:['addForm'],
+  props:['baseInfo'],
   components: {
     MaterialFuzzySearch
   },
-  inject:['baseInfo'],
-  props: ['detail', 'fill', 'disabled'],
   data() {
     return {
       materialBoList: []
     }
   },
-  // watch:{
-  //   'baseInfo':{
-  //     handler(detail){
-  //       if(detail){
-  //         const {applyNo,needDate} = detail
-  //         this.materialBoList = this.materialBoList.map(item => {
-  //           if(!item.applyNo){
-  //             item.applyNo = applyNo
-  //           }
-  //           if(!item.needDate){
-  //             item.needDate = moment(needDate).clone()
-  //           }
-  //           return item
-  //         })
-  //       }
-  //     },
-  //     deep:true
-  //   }
-  // },
-
+  mounted(){
+    const that = this
+    if(!that.addForm.isAdd){
+      that.materialBoList = that.$_.cloneDeep([that.addForm.detail.materialVo]).map(item => {
+        item.key = that.$uuid()
+        return item
+      })
+    }
+  },
   methods: {
     handleAction(type, item) {
       const that = this
       if (type === 'del') {
         that.materialBoList = that.materialBoList.filter(_item => _item.key !== item.key)
       } else if (type === 'add') {
-        const {productTaskId,productTaskNo,needDate} = that.baseInfo.form
+        const {productTaskId,productTaskNo,needDate} = that.baseInfo
         let list = [...that.materialBoList]
         list.push({
           key: that.$uuid(),

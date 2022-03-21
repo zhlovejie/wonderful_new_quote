@@ -1,6 +1,6 @@
 <template>
-  <div class="__fac_info_wrapper__">
-    <h2>委外成品物料信息{{material.order}}</h2>
+  <div class="__fac_info_wrapper__item">
+    <h2>委外成品物料信息&nbsp;-&nbsp;{{material.idx + 1}}</h2>
     <a-table
       :columns="columns.material"
       :dataSource="[material]"
@@ -10,10 +10,9 @@
       <div slot="needDate" slot-scope="text, record, index">
         <span>{{ moment(record.needDate).format('YYYY-MM-DD') }}</span>
       </div>
-    
     </a-table>
 
-    <h2>选择委外工序</h2>
+    <h3>选择委外工序</h3>
     <a-table
       size="small"
       :columns="columns.craftBoList"
@@ -26,7 +25,7 @@
       </div>
     </a-table>
 
-    <h2>选择委外工艺参数</h2>
+    <h3>选择委外工艺参数</h3>
     <a-table
       size="small"
       :columns="columns.parameterBoList"
@@ -41,7 +40,7 @@
       </div>
     </a-table>
 
-    <h2>选择所需原料信息</h2>
+    <h3>选择所需原料信息</h3>
     <table class="custom-table custom-table-border">
       <tr>
         <td>序号</td>
@@ -53,7 +52,7 @@
         <td>所需原料总量</td>
         <td>操作</td>
       </tr>
-      <tr v-for="(item,idx) in material.sourceBoList" :key="item.key">
+      <tr v-for="(item,idx) in sourceBoList" :key="item.key">
         <td>{{ idx + 1 }}</td>
         <td>
           <template v-if="item.isNative">
@@ -221,35 +220,22 @@ export default {
       craftBoListSelectedRowKeys:[],
       craftBoListSelectedRows:[],
       parameterBoListSelectedRowKeys:[],
-      parameterBoListSelectedRows:[]
+      parameterBoListSelectedRows:[],
+      sourceBoList:[]
     }
   },
-  watch:{
-    sourceBoList:{
-      handler(value){
-        this.$emit('change',{
-          ...this.material,
-          sourceBoList:[...value]
-        })
-      },
-      deep:true,
-      immediate:true
-    }
+  mounted(){
+    this.sourceBoList = [...this.material.sourceBoList]
   },
   methods: {
     moment,
     craftBoListRowSelectionChangeHnadler(selectedRowKeys, selectedRows){
       this.craftBoListSelectedRowKeys = selectedRowKeys
       this.craftBoListSelectedRows = selectedRows
-
-      let craftBoList = this.material.craftBoList
-      
     },
     parameterBoListRowSelectionChangeHnadler(selectedRowKeys, selectedRows){
       this.parameterBoListSelectedRowKeys = selectedRowKeys
       this.parameterBoListSelectedRows = selectedRows
-
-      
     },
     handleMaterialAction(type, item) {
       const that = this
@@ -269,11 +255,6 @@ export default {
       }else if(type === 'delete'){
         that.sourceBoList = sourceBoList.filter(p => p.key !== item.key)
       }
-
-      that.$emit('change',{
-        ...that.material,
-        sourceBoList:[...that.sourceBoList]
-      })
     },
     handlerMaterialChange(record, item) {
       const that = this
@@ -287,10 +268,6 @@ export default {
         target.specification = record.modelType
         target.type = record.type || 1
         that.sourceBoList = sourceBoList
-        that.$emit('change',{
-          ...that.material,
-          sourceBoList:[...that.sourceBoList]
-        })
       }
     },
     validate_self(){
@@ -324,6 +301,7 @@ export default {
           resolve({
             code: 0,
             result: {
+              ...that.material,
               craftBoList: [...that.craftBoListSelectedRows],
               parameterBoList:[...that.parameterBoListSelectedRows],
               sourceBoList:[...that.sourceBoList],
@@ -339,7 +317,7 @@ export default {
 </script>
 
 <style scoped>
-.__fac_info_wrapper__ >>> .ant-form-item {
+.__fac_info_wrapper__item >>> .ant-form-item {
   margin-bottom: 0;
 }
 .steps-action {
@@ -352,5 +330,12 @@ export default {
 .custom-table-border th,
 .custom-table-border td {
   padding: 10px;
+}
+.__fac_info_wrapper__item{
+  border: 2px dashed red;
+    padding: 20px;
+    border-radius: 3px;
+    border: 2px dashed #1890ff;
+    margin-bottom: 20px;
 }
 </style>

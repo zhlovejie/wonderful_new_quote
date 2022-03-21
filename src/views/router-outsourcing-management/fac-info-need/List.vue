@@ -148,6 +148,7 @@
       </div>
       <ApproveInfo ref="approveInfoCard" />
       <AddForm ref="addForm" @ok="handleOK" />
+      <ViewForm ref="viewForm" @ok="handleOK"/>
     </a-spin>
   </a-card>
 </template>
@@ -166,6 +167,7 @@ import {
   facinfoneedWithdraw
 } from '@/api/outsourcingManagement'
 import AddForm from './modules/AddForm'
+import ViewForm from './modules/ViewForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import DepartmentSelect from '@/components/CustomerList/DepartmentSelect'
@@ -260,6 +262,7 @@ export default {
   name: 'outsourcing-fac-info-need',
   components: {
     AddForm,
+    ViewForm,
     ApproveInfo,
     CommonDictionarySelect,
     MaterialFuzzySearch,
@@ -409,7 +412,11 @@ export default {
         })
         return
       } else if (['add', 'view', 'edit', 'approve'].includes(type)) {
-        that.$refs.addForm.query(type,record)
+        if(type === 'add'){
+          that.$refs.addForm.query(type,record)
+        }else{
+          that.$refs.viewForm.query(type,record)
+        }
         return 
       } else if (type === 'back') {
         facinfoneedWithdraw(`idList=${record.id}`)

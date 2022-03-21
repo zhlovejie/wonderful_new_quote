@@ -2,10 +2,7 @@
   <div class="__fac_info_wrapper__">
     <a-spin :spinning="spinning">
       <div v-for="(item,idx) in materialBoList">
-        <MaterialConfig :material.sync="materialBoList[idx]" @change="(val) => handleMaterialChange(val,item)" />
-        <div>
-          {{ JSON.stringify(materialBoList[idx],null,2) }}
-        </div>
+        <MaterialConfig ref="materials" :material="item" />
       </div>
     </a-spin>
   </div>
@@ -20,7 +17,7 @@ import MaterialConfig from './MaterialConfig'
 export default {
   name: 'bussessInfo',
   components: {MaterialConfig},
-  props:['detail','fill','disabled'],
+  inject:['addForm'],
   data() {
     return {
       materialBoList:[],
@@ -29,23 +26,21 @@ export default {
   },
   async activated(){
     const that = this
-    if(this.fill){
-      try{
-        let {materialBoList} = this.detail
-        let _materialBoList = []
-        let _count = -1
-        that.spinning = true
-        for(let item of materialBoList){
-          let _newItem = await that.fetchMaterialInfo(item)
-          _count ++
-          _newItem.idx = _count
-          _materialBoList.push(_newItem)
-        }
-        that.spinning = false
-        that.materialBoList = _materialBoList
-      }catch(err){
-        console.error(err)
+    try{
+      let {materialBoList} = that.addForm.detail
+      let _materialBoList = []
+      let _count = -1
+      that.spinning = true
+      for(let item of materialBoList){
+        let _newItem = await that.fetchMaterialInfo(item)
+        _count ++
+        _newItem.idx = _count
+        _materialBoList.push(_newItem)
       }
+      that.spinning = false
+      that.materialBoList = _materialBoList
+    }catch(err){
+      console.error(err)
     }
   },
   methods: {
@@ -115,39 +110,25 @@ export default {
       })
       return {...record,...obj}
     },
-
-
-    handleMaterialChange(val,item){
-      // const that = this
-      // let materialBoList = [...that.materialBoList]
-
-      // let idx = materialBoList.findIndex(p => p.key === item.key)
-      // if(idx >= 0){
-      //   materialBoList.splice(idx,1,{...val})
-      //   that.materialBoList = materialBoList
-      // }
-    },
     validate() {
       const that = this
-      return new Promise(resolve => {
+      return new Promise(async (resolve) => {
         if(that.materialBoList.length === 0){
           that.$message.warning('请完善物料信息')
           resolve({code:500,result:{} })
           return
         }
-        that.$refs.ruleForm.validate(valid => {
-          if (valid) {
-            resolve({
-              code:0,
-              result:{...that.materialBoList}
-            })
-          } else {
-            resolve({
-              code:500,
-              result:{}
-            })
+        let arr = []
+        for(let ref of that.$refs.materials){
+          let {code,result} = await ref.validate()
+          if(code === 0){
+            arr.push(result)
+          }else{
+            resolve({code:500,result:{} })
+            return
           }
-        });
+        }
+        resolve({code:0,result:{materialBoList:arr} })
       })
     }
   }

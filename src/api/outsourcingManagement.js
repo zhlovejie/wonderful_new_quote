@@ -155,7 +155,7 @@ export function listMaterialFormChildDetail(parameter) {
 export function facinfoneedDelete(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/outsource/fac-info-need/remove',
+    url: `/outsource/fac-info-need/remove?${parameter}`,
     method: 'post',
     data: parameter
   })
@@ -185,7 +185,7 @@ export function facinfoneedUpdate(parameter) {
 export function facinfoneedWithdraw(parameter) {
   return axios({
     baseURL: system.baseURL,
-    url: '/outsource/fac-info-need/withdraw',
+    url: `/outsource/fac-info-need/withdraw?${parameter}`,
     method: 'post',
     data: parameter
   })
