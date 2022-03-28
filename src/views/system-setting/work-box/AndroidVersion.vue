@@ -73,6 +73,14 @@
           </template>
         </template>
       </span>
+
+      <div slot="remark" slot-scope="text">
+        <a-tooltip v-if="String(text).length > 10">
+          <template slot="title">{{ text }}</template>
+          {{ String(text).slice(0, 10) }}...
+        </a-tooltip>
+        <span v-else>{{ text }}</span>
+      </div>
     </s-table>
     <Modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
   </a-card>
@@ -119,6 +127,14 @@ export default {
           title: '版本连接',
           dataIndex: 'downloadUrl',
           scopedSlots: { customRender: 'downloadUrl' },
+          // sorter: true
+        },
+        {
+          align: 'center',
+          title: '更新说明',
+          dataIndex: 'remark',
+          width: 400,
+          scopedSlots: { customRender: 'remark' },
           // sorter: true
         },
         {

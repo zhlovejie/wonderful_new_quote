@@ -32,14 +32,14 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="所属销售">
+        <a-form-item label="销售负责人">
           <a-select
             showSearch
             optionFilterProp="children"
             :filterOption="enterFilter"
             v-model.trim="queryParam.userId"
             :allowClear="true"
-            placeholder="根据所属销售查询"
+            placeholder="根据销售负责人查询"
           >
             <a-select-option v-for="enter in allEnter" :key="enter.index" :value="enter.id">{{ enter.trueName }}</a-select-option>
           </a-select>
@@ -190,7 +190,7 @@ export default {
           dataIndex: 'userName'
         },
         {
-          title: '所属销售',
+          title: '录入人',
           dataIndex: 'createName'
         },
         {
