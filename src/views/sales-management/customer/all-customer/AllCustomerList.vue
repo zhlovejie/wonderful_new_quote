@@ -32,14 +32,14 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="录入人">
+        <a-form-item label="所属销售">
           <a-select
             showSearch
             optionFilterProp="children"
             :filterOption="enterFilter"
             v-model.trim="queryParam.userId"
             :allowClear="true"
-            placeholder="根据录入人查询"
+            placeholder="根据所属销售查询"
           >
             <a-select-option v-for="enter in allEnter" :key="enter.index" :value="enter.id">{{ enter.trueName }}</a-select-option>
           </a-select>
@@ -190,7 +190,7 @@ export default {
           dataIndex: 'userName'
         },
         {
-          title: '录入人',
+          title: '所属销售',
           dataIndex: 'createName'
         },
         {
@@ -211,7 +211,7 @@ export default {
       customerTypes: [],
       sources: [], // 所有客户录入渠道
       getSources:[],// 客户获知渠道
-      allEnter: [], // 所有的客户录入人员
+      allEnter: [], // 所有的客户所属销售员
       salesJurisdiction: {}, // 当前用户销售权限
       allSalesman: [], // 所有销售人员
       // 加载数据方法 必须为 Promise 对象
