@@ -403,92 +403,94 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
-          let ruleId = that.form.parentId
+          try {
+            let ruleId = that.form.parentId
+            let ruleItem = that.getNode(ruleId)
+            let ruleCode = undefined
+            let materialName = ruleItem.sourceTitle
+            let materialCode
+            if (+ruleItem.isCable === 1) {
+              // 线缆类型使用接口生成的物料代码
+              materialCode = that.materialCodeMapCache[ruleId]
+              ruleCode = ruleItem.code
+            } else {
+              // 自上而下生成 物料代码
+              //成品物料库 物料代码不显示点
+              materialCode = await that.makeMaterialCode(that.normalAddForm.isProduct ? '' : '.')
+              // 去除物料代码的0
+              materialCode = that.formatMaterialCode(materialCode, '.')
+            }
+            console.log(materialCode)
 
-          let ruleItem = that.getNode(ruleId)
-          let ruleCode = undefined
-          let materialName = ruleItem.sourceTitle
-          let materialCode
-          if (+ruleItem.isCable === 1) {
-            // 线缆类型使用接口生成的物料代码
-            materialCode = that.materialCodeMapCache[ruleId]
-            ruleCode = ruleItem.code
-          } else {
-            // 自上而下生成 物料代码
-            //成品物料库 物料代码不显示点
-            materialCode = await that.makeMaterialCode(that.normalAddForm.isProduct ? '' : '.')
-            // 去除物料代码的0
-            materialCode = that.formatMaterialCode(materialCode, '.')
-          }
-
-          console.log(materialCode)
-          that.tip = '检测物料代码是否重复...'
-          that.spinning = true
-          const isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({
-            materialCode,
-            materialId: that.normalAddForm.detail.id
-          })
-            .then(res => res.data)
-            .catch(err => false)
-          that.spinning = false
-          if (isMaterialCodeDuplicate) {
-            that.$message.info('物料代码重复，禁止操作')
-            return
-          }
-
-          if (that.normalAddForm.isNormal) {
-            that.tip = '检测规格型号是否重复...'
+            that.tip = '检测物料代码是否重复...'
             that.spinning = true
-            const isSpecificationDuplicate = await that.checkSpecificationMaterial()
+            const isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({
+              materialCode,
+              materialId: that.normalAddForm.detail.id
+            })
+              .then(res => res.data)
+              .catch(err => false)
             that.spinning = false
-            if (isSpecificationDuplicate) {
-              that.$message.info('规格型号重复，禁止操作')
+            if (isMaterialCodeDuplicate) {
+              that.$message.info('物料代码重复，禁止操作')
               return
             }
+
+            if (that.normalAddForm.isNormal) {
+              that.tip = '检测规格型号是否重复...'
+              that.spinning = true
+              const isSpecificationDuplicate = await that.checkSpecificationMaterial()
+              that.spinning = false
+              if (isSpecificationDuplicate) {
+                that.$message.info('规格型号重复，禁止操作')
+                return
+              }
+            }
+
+            // let isMaterialNameDuplicate = await routineMaterialInfoCheckName({materialName,ruleId}).then(res => res.data).catch(err => false)
+            // if(isMaterialNameDuplicate){
+            //   that.$message.info('物料名称重复，禁止操作')
+            //   return
+            // }
+
+            that.qrText = materialCode
+            await that.wuliaoQrUrlReady()
+            let materialQrCode = that.wuliaoQrUrl
+            if (!materialQrCode) {
+              that.$message.info('物料二维码生成失败，请联系管理员。')
+              return
+            }
+
+            // let {texture,thickness,width,length} = that.form
+            // let textureText = that.textureList.find(item => item.code === texture).fullName
+            // let thicknessText = that.thicknessList.find(item => item.code === thickness).fullName
+            // let widthText = that.widthList.find(item => item.code === width).fullName
+            // let lengthText = that.lengthList.find(item => item.code === length).fullName
+            let params = {
+              ...that.form,
+              materialCode,
+              materialQrCode,
+              ruleId,
+              materialName,
+              // texture:textureText,
+              // thickness:thicknessText,
+              // width:widthText,
+              // length:lengthText
+              specification: that.getSpecification(),
+              specificationIds: that.form.specificationsList.map(item => item.selectedID).join(','),
+              isCable: ruleItem.isCable,
+              ruleCode
+            }
+
+            that.$emit('change', { __action__: 'nextStep', values: params })
+
+            that.normalAddForm.stepOneCacheData = {
+              cached: true,
+              form: that.$_.cloneDeep(that.form)
+            }
+          } catch (err) {
+            console.error(err)
           }
-
-          // let isMaterialNameDuplicate = await routineMaterialInfoCheckName({materialName,ruleId}).then(res => res.data).catch(err => false)
-          // if(isMaterialNameDuplicate){
-          //   that.$message.info('物料名称重复，禁止操作')
-          //   return
-          // }
-
-          that.qrText = materialCode
-          await that.wuliaoQrUrlReady()
-          let materialQrCode = that.wuliaoQrUrl
-          if (!materialQrCode) {
-            that.$message.info('物料二维码生成失败，请联系管理员。')
-            return
-          }
-
-          // let {texture,thickness,width,length} = that.form
-          // let textureText = that.textureList.find(item => item.code === texture).fullName
-          // let thicknessText = that.thicknessList.find(item => item.code === thickness).fullName
-          // let widthText = that.widthList.find(item => item.code === width).fullName
-          // let lengthText = that.lengthList.find(item => item.code === length).fullName
-
-          let params = {
-            ...that.form,
-            materialCode,
-            materialQrCode,
-            ruleId,
-            materialName,
-            // texture:textureText,
-            // thickness:thicknessText,
-            // width:widthText,
-            // length:lengthText
-            specification: that.getSpecification(),
-            specificationIds: that.form.specificationsList.map(item => item.selectedID).join(','),
-            isCable: ruleItem.isCable,
-            ruleCode
-          }
-
-          that.normalAddForm.stepOneCacheData = {
-            cached: true,
-            form: that.$_.cloneDeep(that.form)
-          }
-
-          that.$emit('change', { __action__: 'nextStep', values: params })
         } else {
           return false
         }

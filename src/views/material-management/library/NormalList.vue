@@ -127,9 +127,9 @@
         </div>
         <a-alert message="字体颜色说明" type="info" show-icon style="margin-top: 10px">
           <div slot="description">
-            <span style="color: blue">蓝色使用</span>
-            <span style="color: red; margin: 0 10px">红色禁用</span>
-            <span>黑色未使用/未检测</span>
+            <span style="color: blue">蓝色-常用</span>
+            <span style="color: red; margin: 0 10px">红色-呆滞</span>
+            <span>黑色-其它状态</span>
           </div>
         </a-alert>
         <a-table
@@ -893,7 +893,8 @@ export default {
       let { useStatus, isForbidden, auditStatus } = record
       return {
         style: {
-          color: +isForbidden === 1 ? 'red' : +useStatus === 1 ? 'blue' : '',
+          // color: +isForbidden === 1 ? 'red' : +useStatus === 1 ? 'blue' : '',
+          color: +useStatus === 1 ? 'blue' : +useStatus === 5 ? 'red' : ''
         },
         on: {
           click:async event => {
@@ -951,7 +952,7 @@ export default {
     },
     splitClear() {
       try {
-        if (this.splitInstance !== null) {
+        if (this.splitInstance) {
           this.splitInstance.destroy()
           this.splitInstance = null
         }

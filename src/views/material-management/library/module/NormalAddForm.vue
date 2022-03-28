@@ -124,6 +124,7 @@ export default {
       })
     },
     stepOneChange({ __action__, values }) {
+      debugger
       const that = this
       if (__action__ === 'nextStep') {
         that.submitParams = { ...that.submitParams, ...values }

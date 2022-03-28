@@ -66,17 +66,17 @@
 
     </a-table>
 
-    <SearchForm
+    <!-- <SearchForm
       ref="searchForm"
       @change="paramChangeHandler"
-    />
+    /> -->
     <ImgView ref="imgView" />
   </a-modal>
 </template>
 
 <script>
 import { routineMaterialRuleSpecificationsPagerTreeList } from '@/api/routineMaterial'
-import SearchForm from './SearchForm'
+// import SearchForm from './SearchForm'
 import ImgView from '@/components/CustomerList/ImgView'
 const columns = [
   {
@@ -108,7 +108,7 @@ const columns = [
 export default {
   name:'SpecificationSearchForm',
   components: {
-    SearchForm,
+    // SearchForm,
     ImgView
   },
   data() {
@@ -217,11 +217,13 @@ export default {
     },
     doAction(type, record) {
       const that = this
-      if (type === 'filter') {
-        that.$refs.searchForm.query({
-          __from: 'normal'
-        })
-      } else if (type === 'selected') {
+      // if (type === 'filter') {
+      //   that.$refs.searchForm.query({
+      //     __from: 'normal'
+      //   })
+      // } else 
+      
+      if (type === 'selected') {
         that.handleCancel()
         that.$emit('selected', { parentItem:that.record, selectItem:{...record} })
       }

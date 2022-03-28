@@ -43,19 +43,49 @@
             </a-select>
           </a-form-item>
         </a-col>
+
         <a-col :span="12">
-          <a-form-item label="使用计量单位">
-            <a-select v-decorator="['subUnit']" placeholder="使用计量单位">
-              <a-select-option
-                v-for="item in materialUnitList"
-                :key="item.text"
-                :value="item.text"
+          <a-form-item label="使用状态">
+            <a-select
+                v-decorator="['useStatus']"
+                placeholder="请选择使用状态"
+                :allowClear="true"
               >
-              {{item.text}}
-              </a-select-option>
+                <a-select-option :value="1">常用</a-select-option>
+                <a-select-option :value="2">不常用</a-select-option>
+                <a-select-option :value="3">即将淘汰</a-select-option>
+                <a-select-option :value="4">生产淘汰</a-select-option>
+                <a-select-option :value="5">呆滞</a-select-option>
+                <a-select-option :value="6">生产淘汰（售后用）</a-select-option>
+              </a-select>
+          </a-form-item>
+        </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="使用场景">
+            <a-select mode="multiple" v-decorator="['sceneType']" placeholder="使用场景">
+              <a-select-option value="生产用">生产用</a-select-option>
+              <a-select-option value="办公用">办公用</a-select-option>
+              <a-select-option value="后勤用">后勤用</a-select-option>
+              <a-select-option value="设备用">设备用</a-select-option>
+              <a-select-option value="基建用">基建用</a-select-option>
+              <a-select-option value="实验室用">实验室用</a-select-option>
+              <a-select-option value="劳保用">劳保用</a-select-option>
+              <a-select-option value="售后用">售后用</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="物料图片">
+            <a-select v-decorator="['materialPicFlag']" placeholder="物料图片">
+              <a-select-option :value="0">无</a-select-option>
+              <a-select-option :value="1">有</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
+        
         <a-col :span="12" >
           <a-form-item label="审核">
             <a-select v-decorator="['auditStatus']" placeholder="审核状态">
@@ -120,7 +150,7 @@ import { getDictionary } from '@/api/common'
 import moment from 'moment'
 
 export default {
-  name: 'searchForm',
+  name: 'material_common_searchForm',
   components: {SpecificationSearch},
   data() {
     return {
@@ -171,6 +201,12 @@ export default {
         }
         values.startTime = beginTime
         values.endTime = endTime
+
+        if(Array.isArray(values.sceneType)){
+          values.sceneType = values.sceneType.join(',')
+        }else{
+          values.sceneType = undefined
+        }
         console.log(values)
         this.$emit('change', values)
         this.handleCancel()
