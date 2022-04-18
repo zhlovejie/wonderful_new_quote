@@ -259,7 +259,17 @@ const columns = [
     align: 'center',
     title: '创建时间',
     dataIndex: 'createdTime'
-  }
+  },
+  {
+    align: 'center',
+    title: '修改人',
+    dataIndex: 'modifierName',
+  },
+  {
+    align: 'center',
+    title: '修改时间',
+    dataIndex: 'modifyTime',
+  },
 ]
 
 const getParentKey = (key, tree) => {
