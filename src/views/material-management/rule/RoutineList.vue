@@ -77,6 +77,19 @@
             </a-form-item>
 
             <a-form-item>
+              <a-select
+                placeholder="审核状态"
+                :allowClear="true"
+                style="width: 130px;"
+                v-model="queryParam.auditStatus"
+              >
+                <a-select-option :value="1">未审核</a-select-option>
+                <a-select-option :value="2">审批中</a-select-option>
+                <a-select-option :value="3">已审核</a-select-option>
+              </a-select>
+            </a-form-item>
+
+            <a-form-item>
               <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
             </a-form-item>
 
@@ -130,6 +143,8 @@
           @change="handleTableChange"
           :customRow="customRowFunction"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          :scroll="{ x: 1500 }"
+          size="middle"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -174,6 +189,9 @@
               <span v-else>无</span>
             </div>
           </div>
+          <a slot="auditStatus" slot-scope="text, record" @click="approvalPreview(record)">
+            {{ { 1: '未审核', 2: '审批中', 3: '已审核' }[text] }}
+          </a>
         </a-table>
       </div>
     </div>
@@ -207,69 +225,91 @@ const columns = [
   {
     align: 'center',
     title: '代码',
-    dataIndex: 'fullCode'
+    dataIndex: 'fullCode',
+    width: 80,
+    ellipsis: true
   },
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'ruleName'
+    dataIndex: 'ruleName',
+    width: 250,
+    ellipsis: true
   },
   {
     align: 'center',
     title: '图片',
     dataIndex: 'picUrl',
-    scopedSlots: { customRender: 'picUrl' }
+    scopedSlots: { customRender: 'picUrl' },
+    width: 80
   },
   {
     align: 'center',
     title: '是否常用',
     dataIndex: 'useAlways',
-    scopedSlots: { customRender: 'useAlways' }
+    scopedSlots: { customRender: 'useAlways' },
+    width: 100
   },
   {
     align: 'center',
     title: '是否规格型号',
     dataIndex: 'isSpecification',
-    scopedSlots: { customRender: 'isSpecification' }
+    scopedSlots: { customRender: 'isSpecification' },
+    width: 100
   },
   {
     align: 'center',
     title: '是否计入物料代码',
     dataIndex: 'isBringCode',
-    scopedSlots: { customRender: 'isBringCode' }
+    scopedSlots: { customRender: 'isBringCode' },
+    width: 140
   },
   {
     align: 'center',
     title: '监管状态',
     dataIndex: 'isCare',
-    scopedSlots: { customRender: 'isCare' }
+    scopedSlots: { customRender: 'isCare' },
+    width: 100
   },
   {
     align: 'center',
     title: '规则说明',
     dataIndex: 'remark',
-    scopedSlots: { customRender: 'remark' }
+    scopedSlots: { customRender: 'remark' },
+    width: 250,
+    ellipsis: true
   },
   {
     align: 'center',
     title: '创建人',
-    dataIndex: 'createdName'
+    dataIndex: 'createdName',
+    width: 100
   },
   {
     align: 'center',
     title: '创建时间',
-    dataIndex: 'createdTime'
+    dataIndex: 'createdTime',
+    width: 160
   },
   {
     align: 'center',
     title: '修改人',
     dataIndex: 'modifierName',
+    width: 100
   },
   {
     align: 'center',
     title: '修改时间',
     dataIndex: 'modifyTime',
+    width: 160
   },
+  {
+    align: 'center',
+    title: '审核状态',
+    dataIndex: 'auditStatus',
+    scopedSlots: { customRender: 'auditStatus' },
+    width: 100
+  }
 ]
 
 const getParentKey = (key, tree) => {
@@ -693,8 +733,8 @@ export default {
           }
 
           that.$nextTick(() => {
-            that.initSortable();
-          });
+            that.initSortable()
+          })
         })
         .catch(err => {
           console.error(err)
@@ -813,7 +853,7 @@ export default {
           }
         })
         return
-      }else if (type === 'uncare') {
+      } else if (type === 'uncare') {
         const arr = that.selectedRows.filter(item => +item.isCare === 2)
         if (arr.length === 0) {
           that.$message.info(`没有需要反监管的数据`)

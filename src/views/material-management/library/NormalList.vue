@@ -46,45 +46,7 @@
             <a-form-item>
               <a-input placeholder="原K3物料代码" v-model="queryParam.k3Code" allowClear style="width: 150px" />
             </a-form-item>
-            <a-form-item>
-              <a-select
-                placeholder="创建日期排序"
-                :allowClear="true"
-                style="width: 130px;"
-                v-model="queryParam.orderCreatedTimeDesc"
-                @change="handleCreatedTimeChange"
-              >
-                <a-select-option :value="1">降序</a-select-option>
-                <a-select-option :value="2">升序</a-select-option>
-              </a-select>
-            </a-form-item>
-
-            <a-form-item>
-              <a-select
-                placeholder="修改日期排序"
-                :allowClear="true"
-                style="width: 130px;"
-                v-model="queryParam.orderModifiedTimeDesc"
-                @change="handleModifiedTimeChange"
-              >
-                <a-select-option :value="1">降序</a-select-option>
-                <a-select-option :value="2">升序</a-select-option>
-              </a-select>
-            </a-form-item>
-
-            <a-form-item>
-              <a-select
-                placeholder="状态排序"
-                :allowClear="true"
-                style="width: 130px;"
-                v-model="queryParam.orderUseStatusDesc"
-                @change="handleUseStatusDescChange"
-              >
-                <a-select-option :value="1">降序</a-select-option>
-                <a-select-option :value="2">升序</a-select-option>
-              </a-select>
-            </a-form-item>
-
+            
             <a-form-item>
               <a-select placeholder="监管状态" :allowClear="true" style="width: 130px;" v-model="queryParam.isCare">
                 <a-select-option :value="1">待执行</a-select-option>
@@ -147,6 +109,7 @@
           @change="handleTableChange"
           :customRow="customRowFunction"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          :scroll="{ x: 1500 }"
         >
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -209,80 +172,7 @@ import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './module/NormalAddForm'
 import SearchForm from './module/SearchForm'
 import Split from 'split.js'
-const columns = [
-  // {
-  //   align: 'center',
-  //   title: '物料代码',
-  //   dataIndex: 'materialCode',
-  //   scopedSlots: { customRender: 'materialCode' }
-  // },
-  {
-    align: 'center',
-    title: '原K3物料代码',
-    dataIndex: 'k3Code'
-  },
-  {
-    align: 'center',
-    title: '中文名称',
-    dataIndex: 'materialName'
-  },
-  {
-    align: 'center',
-    title: '物料来源属性',
-    dataIndex: 'materialSource',
-    scopedSlots: { customRender: 'materialSource' }
-  },
-  {
-    align: 'center',
-    title: '规格型号',
-    dataIndex: 'specification',
-    scopedSlots: { customRender: 'specification' }
-  },
-  {
-    align: 'center',
-    title: '使用计量单位',
-    dataIndex: 'subUnit',
-    scopedSlots: { customRender: 'subUnit' }
-  },
-  {
-    align: 'center',
-    title: '使用状态',
-    dataIndex: 'useStatus',
-    scopedSlots: { customRender: 'useStatus' }
-  },
-  {
-    align: 'center',
-    title: '监管状态',
-    dataIndex: 'isCare',
-    scopedSlots: { customRender: 'isCare' }
-  },
-  {
-    align: 'center',
-    title: '录入人',
-    dataIndex: 'createdName'
-  },
-  {
-    align: 'center',
-    title: '录入时间',
-    dataIndex: 'createdTime'
-  },
-  {
-    align: 'center',
-    title: '修改人',
-    dataIndex: 'modifierName'
-  },
-  {
-    align: 'center',
-    title: '修改时间',
-    dataIndex: 'modifyTime'
-  },
-  {
-    align: 'center',
-    title: '审核状态',
-    dataIndex: 'auditStatus',
-    scopedSlots: { customRender: 'auditStatus' }
-  }
-]
+
 
 const getParentKey = (key, tree) => {
   let parentKey
@@ -311,8 +201,6 @@ export default {
       parentId: 0, // 父id
       parentItem: {},
       selectedTreeNode: null, //新增修改后刷新节点用
-      // 表头
-      columns,
       orgTree: [],
       dataSource: [],
       selectedRowKeys: [],
@@ -325,7 +213,10 @@ export default {
       autoExpandParent: true,
 
       loading: false,
-      queryParam: {},
+      queryParam: {
+        orderUseStatusDesc:2,
+        orderUseStatusStr:[1, 2, 5, 3, 6, 4].join(',')
+      },
       pagination: {
         current: 1,
         pageSize: 10,
@@ -336,7 +227,12 @@ export default {
       },
       treeInputSearchDebounce: null,
       normalAddFormKeyCount: 1,
-      spinning: false
+      spinning: false,
+      sortedInfo: {
+        columnKey: "useStatus",
+        field: "useStatus",
+        order: "descend",
+      },
     }
   },
   watch: {
@@ -350,6 +246,109 @@ export default {
     }
   },
   computed: {
+    columns(){
+      let sortedInfo = this.sortedInfo
+      return  [
+        // {
+        //   align: 'center',
+        //   title: '物料代码',
+        //   dataIndex: 'materialCode',
+        //   scopedSlots: { customRender: 'materialCode' }
+        // },
+        {
+          align: 'center',
+          title: '原K3物料代码',
+          dataIndex: 'k3Code',
+          width:120,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '中文名称',
+          dataIndex: 'materialName',
+          width:250,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '物料来源',
+          dataIndex: 'materialSource',
+          scopedSlots: { customRender: 'materialSource' },
+          width:100,
+        },
+        {
+          align: 'center',
+          title: '规格型号',
+          dataIndex: 'specification',
+          scopedSlots: { customRender: 'specification' },
+          width:100,
+        },
+        {
+          align: 'center',
+          title: '计量单位',
+          dataIndex: 'subUnit',
+          scopedSlots: { customRender: 'subUnit' },
+          width:100,
+        },
+        {
+          align: 'center',
+          title: '使用状态',
+          dataIndex: 'useStatus',
+          scopedSlots: { customRender: 'useStatus' },
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => 0,
+          defaultSortOrder: "descend",
+          sortOrder: sortedInfo && sortedInfo.columnKey === "useStatus" && sortedInfo.order,
+          width:120,
+        },
+        {
+          align: 'center',
+          title: '监管状态',
+          dataIndex: 'isCare',
+          scopedSlots: { customRender: 'isCare' },
+          width:100,
+        },
+        {
+          align: 'center',
+          title: '录入人',
+          dataIndex: 'createdName',
+          width:100,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '录入时间',
+          dataIndex: 'createdTime',
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => 0,
+          sortOrder: sortedInfo && sortedInfo.columnKey === "createdTime" && sortedInfo.order,
+          width:160,
+        },
+        {
+          align: 'center',
+          title: '修改人',
+          dataIndex: 'modifierName',
+          width:100,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '修改时间',
+          dataIndex: 'modifyTime',
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => 0,
+          sortOrder: sortedInfo && sortedInfo.columnKey === "modifyTime" && sortedInfo.order,
+          width:160,
+        },
+        {
+          align: 'center',
+          title: '审核状态',
+          dataIndex: 'auditStatus',
+          scopedSlots: { customRender: 'auditStatus' },
+          width:100,
+        }
+      ]
+    },
     canEdit() {
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
@@ -616,6 +615,7 @@ export default {
       }
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      console.log(JSON.stringify(_searchParam,null,2))
       routineMaterialInfoPageList(_searchParam)
         .then(res => {
           that.loading = false
@@ -631,6 +631,7 @@ export default {
               宽度：${item.width}
               长度：${item.length}
             `
+
             return item
           })
           //设置数据总条数
@@ -665,8 +666,44 @@ export default {
         .join(joinSymbol)
     },
     handleTableChange(pagination, filters, sorter) {
-      this.pagination = { ...this.pagination, current: pagination.current }
-      this.search()
+      const that = this
+      that.pagination = { ...that.pagination, current: pagination.current }
+      that.sortedInfo = sorter;
+      
+      if(sorter && sorter.columnKey === "useStatus"){
+        const sortList = [1, 2, 5, 3, 6, 4]
+        that.queryParam = {
+          ...that.queryParam,
+          orderUseStatusDesc: sorter.order ? (sorter.order === 'descend' ? 2 : 1) : undefined,
+          orderUseStatusStr: sorter.order ? sortList.join(',') : undefined,
+
+          orderCreatedTimeDesc:undefined,
+          orderModifiedTimeDesc:undefined
+        }
+      }
+      
+      if(sorter && sorter.columnKey === "createdTime"){
+        that.queryParam = {
+          ...that.queryParam,
+          orderCreatedTimeDesc: sorter.order ? (sorter.order === 'descend' ? 1 : 2) : undefined,
+
+          orderUseStatusDesc:undefined,
+          orderUseStatusStr:undefined,
+          orderModifiedTimeDesc:undefined
+        }
+      }
+      
+      if(sorter && sorter.columnKey === "modifyTime"){
+        that.queryParam = {
+          ...that.queryParam,
+          orderModifiedTimeDesc: sorter.order ? (sorter.order === 'descend' ? 1 : 2) : undefined,
+          orderUseStatusDesc:undefined,
+          orderUseStatusStr:undefined,
+          orderCreatedTimeDesc:undefined
+        }
+      }
+
+      that.search()
     },
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
@@ -973,52 +1010,6 @@ export default {
       } catch (err) {
         this.splitInstance = null
         console.log(err)
-      }
-    },
-    handleUseStatusDescChange(val) {
-      let sortList = [1, 2, 5, 3, 6, 4]
-      if (+val === 1) {
-        this.queryParam = {
-          ...this.queryParam,
-          orderUseStatusDesc: val,
-          orderUseStatusStr: sortList.join(','),
-          orderModifiedTimeDesc: undefined,
-          orderCreatedTimeDesc: undefined
-        }
-      } else if (+val === 2) {
-        this.queryParam = {
-          ...this.queryParam,
-          orderUseStatusDesc: val,
-          orderUseStatusStr: sortList.reverse().join(','),
-          orderModifiedTimeDesc: undefined,
-          orderCreatedTimeDesc: undefined
-        }
-      } else {
-        this.queryParam = {
-          ...this.queryParam,
-          orderModifiedTimeDesc: undefined,
-          orderCreatedTimeDesc: undefined,
-          orderUseStatusDesc: undefined,
-          orderUseStatusStr: undefined
-        }
-      }
-    },
-    handleCreatedTimeChange(val) {
-      this.queryParam = {
-        ...this.queryParam,
-        orderCreatedTimeDesc: val,
-        orderModifiedTimeDesc: undefined,
-        orderUseStatusDesc: undefined,
-        orderUseStatusStr: undefined
-      }
-    },
-    handleModifiedTimeChange(val) {
-      this.queryParam = {
-        ...this.queryParam,
-        orderCreatedTimeDesc: undefined,
-        orderModifiedTimeDesc: val,
-        orderUseStatusDesc: undefined,
-        orderUseStatusStr: undefined
       }
     }
   },

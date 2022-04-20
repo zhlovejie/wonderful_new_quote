@@ -1,32 +1,13 @@
 <template>
-  <a-card
-    :bordered="false"
-    class="material-rule-management-library-normal"
-  >
+  <a-card :bordered="false" class="material-rule-management-library-normal">
     <div class="resize-column-wrapper">
       <div id="split-0">
         <a-spin :spinning="spinning">
-          <div
-            class="menu-tree-list-wrapper"
-            style="width: 100%; overflow: auto; height: auto; min-height: 600px"
-          >
+          <div class="menu-tree-list-wrapper" style="width: 100%; overflow: auto; height: auto; min-height: 600px">
             <div style="display:flex;margin-top:4px;">
-              <a-input
-                style="line-height: 40px;flex:1;"
-                placeholder="规则名称模糊查询"
-                v-model="searchValue"
-              />
-              <a-button
-                title="查询"
-                style="margin:0 7px;"
-                icon="search"
-                @click="() => searchAction(1)"
-              ></a-button>
-              <a-button
-                title="重置"
-                icon="reload"
-                @click="() => searchAction(2)"
-              ></a-button>
+              <a-input style="line-height: 40px;flex:1;" placeholder="规则名称模糊查询" v-model="searchValue" />
+              <a-button title="查询" style="margin:0 7px;" icon="search" @click="() => searchAction(1)"></a-button>
+              <a-button title="重置" icon="reload" @click="() => searchAction(2)"></a-button>
             </div>
             <a-tree
               ref="treeRef"
@@ -42,10 +23,7 @@
               @expand="onExpand"
               :showLine="true"
             >
-              <template
-                slot="title"
-                slot-scope="{ title }"
-              >
+              <template slot="title" slot-scope="{ title }">
                 <span v-if="title.indexOf(searchValue) > -1">
                   {{ title.substr(0, title.indexOf(searchValue)) }}
                   <span style="color: #f50">{{ searchValue }}</span>
@@ -61,118 +39,49 @@
         <div class="search-wrapper">
           <a-form layout="inline">
             <a-form-item>
-              <a-input
-                placeholder="代码模糊查询"
-                v-model="queryParam.materialCode"
-                allowClear
-                style="width: 150px"
-              />
+              <a-input placeholder="代码模糊查询" v-model="queryParam.materialCode" allowClear style="width: 150px" />
             </a-form-item>
             <a-form-item>
-              <a-input
-                placeholder="名称模糊查询"
-                v-model="queryParam.materialName"
-                allowClear
-                style="width: 150px"
-              />
+              <a-input placeholder="名称模糊查询" v-model="queryParam.materialName" allowClear style="width: 150px" />
             </a-form-item>
             <a-form-item>
-              <a-input
-                placeholder="原K3物料代码"
-                v-model="queryParam.k3Code"
-                allowClear
-                style="width: 150px"
-              />
+              <a-input placeholder="原K3物料代码" v-model="queryParam.k3Code" allowClear style="width: 150px" />
+            </a-form-item>
+
+            <a-form-item>
+              <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
             </a-form-item>
             <a-form-item>
-              <a-select
-                placeholder="创建日期排序"
-                :allowClear="true"
-                style="width: 130px;"
-                v-model="queryParam.orderCreatedTimeDesc"
-              >
-                  <a-select-option :value="1">降序</a-select-option>
-                  <a-select-option :value="2">升序</a-select-option>
-                </a-select>
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                icon="search"
-                @click="search({ current: 1 })"
-              >查询</a-button>
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                icon="filter"
-                @click="doAction('filter', null)"
-              >筛选</a-button>
+              <a-button type="primary" icon="filter" @click="doAction('filter', null)">筛选</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:add')">
-              <a-button
-                type="primary"
-                @click="doAction('add', null)"
-              >新增</a-button>
+              <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:edit')">
-              <a-button
-                :disabled="!canEdit"
-                type="primary"
-                @click="doAction('edit', null)"
-              >修改</a-button>
+              <a-button :disabled="!canEdit" type="primary" @click="doAction('edit', null)">修改</a-button>
             </a-form-item>
 
             <a-form-item v-if="$auth('routineMaterialInfo:disable')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('disable', null)"
-              >禁用</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('disable', null)">禁用</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:enable')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('enable', null)"
-              >启用</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('enable', null)">启用</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:del')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('del', null)"
-              >删除</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('del', null)">删除</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:audit')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('approval', null)"
-              >审核</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('approval', null)">审核</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterial:annulAudit')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('unapproval', null)"
-              >反审核</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('unapproval', null)">反审核</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterial:export')">
-              <a-button
-                :disabled="!canUse"
-                type="primary"
-                @click="doAction('export', null)"
-              >导出</a-button>
+              <a-button :disabled="!canUse" type="primary" @click="doAction('export', null)">导出</a-button>
             </a-form-item>
           </a-form>
         </div>
-        <a-alert
-          message="字体颜色说明"
-          type="info"
-          show-icon
-          style="margin-top: 10px"
-        >
+        <a-alert message="字体颜色说明" type="info" show-icon style="margin-top: 10px">
           <div slot="description">
             <span style="color: blue">蓝色-常用</span>
             <span style="color: red; margin: 0 10px">红色-呆滞</span>
@@ -187,62 +96,37 @@
           @change="handleTableChange"
           :customRow="customRowFunction"
           :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+          :scroll="{ x: 1500 }"
         >
-          <div
-            slot="order"
-            slot-scope="text, record, index"
-          >
+          <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
-          <div
-            slot="materialSource"
-            slot-scope="text, record, index"
-          >
+          <div slot="materialSource" slot-scope="text, record, index">
             <!-- {{ {1:'自制',2:'外购',3:'委外',4:'标准件',5:'定制'}[text] }} -->
-            {{ {1:'自制',2:'通用外购',3:'委外加工',4:'定制外购'}[text] || `${text}(已弃用)` }}
+            {{ { 1: '自制', 2: '通用外购', 3: '委外加工', 4: '定制外购' }[text] || `${text}(已弃用)` }}
           </div>
 
-          <div
-            slot="subUnit"
-            slot-scope="text, record, index"
-          >
-            {{ {1:'支',2:'把',3:'件'}[text] || text }}
+          <div slot="subUnit" slot-scope="text, record, index">
+            {{ { 1: '支', 2: '把', 3: '件' }[text] || text }}
           </div>
-          <div
-            slot="specifications"
-            slot-scope="text, record, index"
-          >
+          <div slot="specifications" slot-scope="text, record, index">
             <a-tooltip>
               <template slot="title">
-                {{text}}
+                {{ text }}
               </template>
               <span class="icon-required">查看</span>
-              <a-icon
-                type="question-circle"
-                style="margin-left:5px;color:#1890ff;"
-              />
+              <a-icon type="question-circle" style="margin-left:5px;color:#1890ff;" />
             </a-tooltip>
           </div>
-          <a
-            slot="auditStatus"
-            slot-scope="text, record"
-            @click="approvalPreview(record)"
-          >
-            {{ {1:'未审核',2:'审批中',3:'已审核'}[text] }}
+          <a slot="auditStatus" slot-scope="text, record" @click="approvalPreview(record)">
+            {{ { 1: '未审核', 2: '审批中', 3: '已审核' }[text] }}
           </a>
         </a-table>
       </div>
     </div>
-    <NormalAddForm
-      ref="NormalAddForm"
-      :key="normalAddFormKeyCount"
-      @finish="finishHandler"
-    />
+    <NormalAddForm ref="NormalAddForm" :key="normalAddFormKeyCount" @finish="finishHandler" />
     <ApproveInfo ref="approveInfoCard" />
-    <SearchForm
-      ref="searchForm"
-      @change="paramChangeHandler"
-    />
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </a-card>
 </template>
 
@@ -262,67 +146,6 @@ import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import NormalAddForm from './module/NormalAddForm'
 import SearchForm from './module/SearchForm'
 import Split from 'split.js'
-const columns = [
-  {
-    align: 'center',
-    title: '原K3物料代码',
-    dataIndex: 'k3Code',
-  },
-  {
-    align: 'center',
-    title: '物料代码',
-    dataIndex: 'materialCode'
-  },
-  {
-    align: 'center',
-    title: '中文名称',
-    dataIndex: 'materialName'
-  },
-  {
-    align: 'center',
-    title: '物料来源属性',
-    dataIndex: 'materialSource',
-    scopedSlots: { customRender: 'materialSource' }
-  },
-  // {
-  //   align: 'center',
-  //   title: '规格型号',
-  //   dataIndex: 'specifications',
-  //   scopedSlots: { customRender: 'specifications' }
-  // },
-  {
-    align: 'center',
-    title: '使用计量单位',
-    dataIndex: 'subUnit',
-    scopedSlots: { customRender: 'subUnit' }
-  },
-  {
-    align: 'center',
-    title: '录入人',
-    dataIndex: 'createdName'
-  },
-  {
-    align: 'center',
-    title: '录入时间',
-    dataIndex: 'createdTime',
-  },
-  {
-    align: 'center',
-    title: '修改人',
-    dataIndex: 'modifierName',
-  },
-  {
-    align: 'center',
-    title: '修改时间',
-    dataIndex: 'modifyTime',
-  },
-  {
-    align: 'center',
-    title: '审核状态',
-    dataIndex: 'auditStatus',
-    scopedSlots: { customRender: 'auditStatus' }
-  }
-]
 
 const getParentKey = (key, tree) => {
   let parentKey
@@ -351,8 +174,6 @@ export default {
       parentId: 0, // 父id
       parentItem: {},
       selectedTreeNode: null, //新增修改后刷新节点用
-      // 表头
-      columns,
       orgTree: [],
       dataSource: [],
       selectedRowKeys: [],
@@ -360,7 +181,7 @@ export default {
 
       dataList: [],
       expandedKeys: [],
-      loadedKeys:[],
+      loadedKeys: [],
       searchValue: '',
       autoExpandParent: true,
 
@@ -376,7 +197,8 @@ export default {
       },
       treeInputSearchDebounce: null,
       normalAddFormKeyCount: 1,
-      spinning: false
+      spinning: false,
+      sortedInfo: null
     }
   },
   watch: {
@@ -390,6 +212,102 @@ export default {
     }
   },
   computed: {
+    columns() {
+      let sortedInfo = this.sortedInfo
+      return [
+        {
+          align: 'center',
+          title: '原K3物料代码',
+          dataIndex: 'k3Code',
+          width:120,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '物料代码',
+          dataIndex: 'materialCode',
+          width:150,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '中文名称',
+          dataIndex: 'materialName',
+          ellipsis: true,
+          width: 250
+        },
+        {
+          align: 'center',
+          title: '物料来源',
+          dataIndex: 'materialSource',
+          scopedSlots: { customRender: 'materialSource' },
+          width:100,
+        },
+        // {
+        //   align: 'center',
+        //   title: '规格型号',
+        //   dataIndex: 'specifications',
+        //   scopedSlots: { customRender: 'specifications' }
+        // },
+        {
+          align: 'center',
+          title: '计量单位',
+          dataIndex: 'subUnit',
+          scopedSlots: { customRender: 'subUnit' },
+          width:100,
+        },
+        // {
+        //   align: 'center',
+        //   title: '使用状态',
+        //   dataIndex: 'useStatus',
+        //   scopedSlots: { customRender: 'useStatus' },
+        //   sortDirections: ["descend", "ascend"],
+        //   sorter: (a, b) => 0,
+        //   defaultSortOrder: "descend",
+        //   sortOrder: sortedInfo && sortedInfo.columnKey === "useStatus" && sortedInfo.order,
+        // },
+        {
+          align: 'center',
+          title: '录入人',
+          dataIndex: 'createdName',
+          width:100,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '录入时间',
+          dataIndex: 'createdTime',
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => 0,
+          sortOrder: sortedInfo && sortedInfo.columnKey === "createdTime" && sortedInfo.order,
+          width:160,
+        },
+        {
+          align: 'center',
+          title: '修改人',
+          dataIndex: 'modifierName',
+          width:100,
+          ellipsis: true,
+        },
+        {
+          align: 'center',
+          title: '修改时间',
+          dataIndex: 'modifyTime',
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => 0,
+          sortOrder: sortedInfo && sortedInfo.columnKey === "modifyTime" && sortedInfo.order,
+          width:160,
+        },
+        {
+          align: 'center',
+          title: '审核状态',
+          dataIndex: 'auditStatus',
+          scopedSlots: { customRender: 'auditStatus' },
+          width:100,
+          ellipsis: true,
+        }
+      ]
+    },
     canEdit() {
       // auditStatus 审核状态：1未审核，2审批中，3已审核
       // forbidden  是否禁用：1禁用，2启用
@@ -430,7 +348,6 @@ export default {
       const value = that.searchValue.trim()
       if (type === 1) {
         if (value.length === 0) {
-
         } else {
           that.fetchTreeWithName(value)
         }
@@ -694,8 +611,44 @@ export default {
         })
     },
     handleTableChange(pagination, filters, sorter) {
-      this.pagination = { ...this.pagination, current: pagination.current }
-      this.search()
+      const that = this
+      that.pagination = { ...that.pagination, current: pagination.current }
+      that.sortedInfo = sorter;
+      
+      // if(sorter && sorter.columnKey === "useStatus"){
+      //   const sortList = [1, 2, 5, 3, 6, 4]
+      //   that.queryParam = {
+      //     ...that.queryParam,
+      //     orderUseStatusDesc: sorter.order ? (sorter.order === 'descend' ? 2 : 1) : undefined,
+      //     orderUseStatusStr: sorter.order ? sortList.join(',') : undefined,
+
+      //     orderCreatedTimeDesc:undefined,
+      //     orderModifiedTimeDesc:undefined
+      //   }
+      // }
+      
+      if(sorter && sorter.columnKey === "createdTime"){
+        that.queryParam = {
+          ...that.queryParam,
+          orderCreatedTimeDesc: sorter.order ? (sorter.order === 'descend' ? 1 : 2) : undefined,
+
+          orderUseStatusDesc:undefined,
+          orderUseStatusStr:undefined,
+          orderModifiedTimeDesc:undefined
+        }
+      }
+      
+      if(sorter && sorter.columnKey === "modifyTime"){
+        that.queryParam = {
+          ...that.queryParam,
+          orderModifiedTimeDesc: sorter.order ? (sorter.order === 'descend' ? 1 : 2) : undefined,
+          orderUseStatusDesc:undefined,
+          orderUseStatusStr:undefined,
+          orderCreatedTimeDesc:undefined
+        }
+      }
+
+      that.search()
     },
     onShowSizeChangeHandler(current, pageSize) {
       this.pagination = { ...this.pagination, current, pageSize }
@@ -908,7 +861,7 @@ export default {
       this.queryParam = { ...this.queryParam, ...params }
       this.search()
     },
-    onLoadAction(loadedKeys){
+    onLoadAction(loadedKeys) {
       this.loadedKeys = loadedKeys
     },
     splitClear() {
@@ -943,4 +896,3 @@ export default {
   padding: 0 5px;
 }
 </style>
-

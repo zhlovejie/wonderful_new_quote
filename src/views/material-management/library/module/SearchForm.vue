@@ -106,8 +106,7 @@
             <a-range-picker
               style="width:100%;"
               v-decorator="['sDate']"
-               :show-time="{ format: 'HH:mm:ss' }"
-              format="YYYY-MM-DD HH:mm:ss"
+              format="YYYY-MM-DD"
               :placeholder="['开始时间', '结束时间']"
             />
           </a-form-item>
@@ -123,8 +122,7 @@
             <a-range-picker
               style="width:100%;"
               v-decorator="['sUpdateDate']"
-               :show-time="{ format: 'HH:mm:ss' }"
-              format="YYYY-MM-DD HH:mm:ss"
+              format="YYYY-MM-DD"
               :placeholder="['开始时间', '结束时间']"
             />
           </a-form-item>
@@ -215,8 +213,8 @@ export default {
         // 创建时间,创建人
         let beginTime = undefined, endTime = undefined;
         if (Array.isArray(values.sDate) && values.sDate.length === 2) {
-          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD HH:mm:ss') : undefined
-          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD HH:mm:ss') : undefined
+          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD 00:00:00') : undefined
+          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD 23:59:59') : undefined
         }
         values.startTime = beginTime
         values.endTime = endTime
@@ -225,8 +223,8 @@ export default {
         // 修改时间,修改人
         beginTime = undefined, endTime = undefined;
         if (Array.isArray(values.sUpdateDate) && values.sUpdateDate.length === 2) {
-          beginTime = values.sUpdateDate[0] instanceof moment ? values.sUpdateDate[0].format('YYYY-MM-DD HH:mm:ss') : undefined
-          endTime = values.sUpdateDate[1] instanceof moment ? values.sUpdateDate[1].format('YYYY-MM-DD HH:mm:ss') : undefined
+          beginTime = values.sUpdateDate[0] instanceof moment ? values.sUpdateDate[0].format('YYYY-MM-DD 00:00:00') : undefined
+          endTime = values.sUpdateDate[1] instanceof moment ? values.sUpdateDate[1].format('YYYY-MM-DD 23:59:59') : undefined
         }
         values.modifiedStartTime = beginTime
         values.modifiedEndTime = endTime
