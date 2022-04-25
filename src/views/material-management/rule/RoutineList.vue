@@ -705,6 +705,8 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
+      that.selectedRowKeys = []
+      that.selectedRows = []
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       routineMaterialRulePageList(_searchParam)

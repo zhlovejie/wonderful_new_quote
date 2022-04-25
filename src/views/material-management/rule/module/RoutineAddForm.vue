@@ -630,6 +630,8 @@ export default {
             param.ruleName = `${param.ruleNamePrefix}_${param.ruleName}`
           }
 
+          param.ruleName = that.separatorFormat(param.ruleName)
+
           if (that.isEdit) {
             param.newCode = param.code
             param.newCodeLength = param.codeLength
@@ -639,6 +641,7 @@ export default {
             // delete param.codeLength
             // delete param.ruleName
           }
+
           let isCopyAction = that.isNormalAdd && that.activeKey === 2
           let emitParam = {
             key: isCopyAction ? param.copyToParentId : param.parentId,
@@ -801,8 +804,11 @@ export default {
     },
     handleDictionaryChange(item){
       this.ruleNamePrefix = item ? item.text : ''
+    },
+    /** 逗号换成中文逗号 */
+    separatorFormat(name){
+      return String(name).replace(/[,]/g,'，')
     }
-    
   },
 }
 </script>

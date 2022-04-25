@@ -71,7 +71,16 @@
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>
             <a-form-item v-if="$auth('routineMaterialInfo:edit')">
-              <a-button type="primary" @click="doAction('edit', null)">修改</a-button>
+              <a-tooltip>
+                <template slot="title">
+                  禁止修改已审核和禁用状态的物料
+                </template>
+                <!-- <a-button :disabled="!canEdit" type="primary" @click="doAction('edit', null)"> -->
+                <a-button type="primary" @click="doAction('edit', null)">
+                  修改
+                  <a-icon type="question-circle" />
+                </a-button>
+              </a-tooltip>
             </a-form-item>
 
             <a-form-item v-if="$auth('routineMaterialInfo:disable')">
@@ -613,6 +622,8 @@ export default {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
+      that.selectedRowKeys = []
+      that.selectedRows = []
       that.loading = true
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       console.log(JSON.stringify(_searchParam,null,2))
@@ -765,6 +776,9 @@ export default {
         })
         return
       } else if (type === 'edit') {
+        if(that.selectedRows.length === 0){
+          return
+        }
         if (+that.selectedRows[0].auditStatus !== 1) {
           that.$message.info('只允许修改未审核的物料')
           return

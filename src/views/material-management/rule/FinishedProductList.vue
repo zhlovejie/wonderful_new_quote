@@ -490,6 +490,8 @@ export default {
         size: that.pagination.pageSize || 10,
       }
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
+      that.selectedRowKeys = []
+      that.selectedRows = []
       that.loading = true
       productMaterialRulePageList(_searchParam)
         .then((res) => {
