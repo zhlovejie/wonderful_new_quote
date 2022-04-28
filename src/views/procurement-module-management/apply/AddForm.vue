@@ -85,16 +85,16 @@
             <tr v-if="isRelatedSellOrder">
               <td style="width:150px;">关联单号</td>
               <td >
-                <!-- <a-form-model-item prop="relatedNum">
+                <a-form-model-item prop="relatedNum">
                   <a-input
                     v-model="form.relatedNum"
                     read-only="read-only"
                     style="width:360px;"
-                    @click="openModel('choiceOrderFactory')"
+                    @click="openModel('choiceOrderFactory',{callback:relatedNumCallback})"
                   />
-                </a-form-model-item> -->
+                </a-form-model-item>
 
-                <a-form-model-item prop="relatedNum" v-if="!isDisabled">
+                <!-- <a-form-model-item prop="relatedNum" v-if="!isDisabled">
                   <a-select  style="width: 360px" allowClear v-model="form.relatedNum" @change="relatedNumChange">
                     <a-select-option
                       v-for="item in relatedNumList"
@@ -107,7 +107,7 @@
                 </a-form-model-item>
                 <span v-else>
                   {{detail.relatedNum || '无'}}
-                </span>
+                </span> -->
               </td>
             </tr>
             <tr>
@@ -220,20 +220,16 @@
             </div>
 
             <div slot="relatedNumText" slot-scope="text, record, index">
+
               <a-form-model-item prop="relatedNum" v-if="!isDisabled && record.__isRelated">
-                  <a-select  style="width: 180px" allowClear v-model="record.relatedNum">
-                    <a-select-option
-                      v-for="item in relatedNumList"
-                      :key="item.id"
-                      :value="item.id"
-                    >
-                    {{item.label}}
-                    </a-select-option>
-                  </a-select>
-                </a-form-model-item>
-                <span v-else>
-                  {{text}}
-                </span>
+                <a-input
+                  v-model="record.relatedNum"
+                  read-only="read-only"
+                  style="width:260px;"
+                  @click="openModel('choiceOrderFactory',{callback:(args) => tableRelatedNumCallback(record,...args)})"
+                />
+              </a-form-model-item>
+              <span v-else>{{text}}</span>
             </div>
 
 
@@ -758,21 +754,37 @@ export default {
         return
       }
     },
-    contractChange(result) {
+    contractChange({selectedKey,record,input}) {
       let that = this
-      switch(result.selectedKey){
+      switch(selectedKey){
         case 'invoiceSaleContract':
-          // that.fillContract(result.record)
+          // that.fillContract(record)
           break
         case 'invoicePresentOrder':
-          // that.fillPresentOrder(result.record)
+          // that.fillPresentOrder(record)
           break
+        case 'SaleOrderReport':
+          input.callback.call(that,record)
         default:
           break
       }
     },
-    openModel(name){
-      this.$refs[name].query()
+    relatedNumCallback(record){
+      const that = this
+      that.form = {
+        ...that.form,
+        relatedNum:record.orderNum
+      }
+    },
+    tableRelatedNumCallback(record,selectRecord){
+      const that = this
+      let dataSource = [...that.dataSource]
+      let item = dataSource.find(item => item.key === record.key)
+      item.relatedNum = selectRecord.orderNum
+      that.dataSource = dataSource
+    },
+    openModel(name,input){
+      this.$refs[name].query(input)
     },
     async materialFuzzyAction(wd,isFilter=false) {
       const that = this
