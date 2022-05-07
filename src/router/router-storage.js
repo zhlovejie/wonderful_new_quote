@@ -261,6 +261,14 @@ export default {
             title: '出库单',
             permission: ['permission']
           }
+        },{
+          path: '/storageManagement/storageExport/materialApply',
+          name: 'stock_management_material_apply',
+          component: () => import('@/views/storageManagement/storage-export/materialApply/List'),
+          meta: {
+            title: '原料出库申请单',
+            permission: ['permission']
+          }
         }
       ]
     },
