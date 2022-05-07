@@ -19,7 +19,8 @@
 
 import {
   findApprovedNodeList,
-  findApprovedNodeListByMaterial
+  findApprovedNodeListByMaterial,
+  findApprovedNodeListdep
 } from '@/api/common'
 const priewColumns = [
   {
@@ -62,7 +63,8 @@ export default {
     init (instanceId,type='normal') {
       const __api = {
         'normal':findApprovedNodeList,
-        'material':findApprovedNodeListByMaterial
+        'material':findApprovedNodeListByMaterial,
+        'dep':findApprovedNodeListdep
       }
 
       this.priewData = []

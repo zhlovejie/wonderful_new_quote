@@ -67,6 +67,22 @@ export function craftRouteDelete(parameter) {
   })
 }
 
+
+/**
+ * 根据物料id和物料类型查询其所有子物料：工艺路线使用
+ * @param {int} materialId 物料materialId
+ * @param {int} type  成品传1 常规传2
+ * @returns
+ */
+ export function listMaterialFormChildDetail(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/craftRoute/listMaterialFormChildDetail',
+    method: 'GET',
+    params: parameter
+  })
+}
+
 /**单个工艺路线反审核 ，权限码：craftRoute:annulAudit */
 export function craftRouteAnnulAudit(parameter) {
   return axios({
