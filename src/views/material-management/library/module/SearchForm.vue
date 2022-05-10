@@ -128,7 +128,7 @@
           </a-form-item>
         </a-col>
 
-        <a-col :span="23" offset="1" >
+        <a-col :span="11" offset="1" >
           <a-form-item label="禁用">
             <a-radio-group
               v-decorator="['isForbidden']"
@@ -139,6 +139,16 @@
             </a-radio-group>
           </a-form-item>
         </a-col>
+
+        <a-col :span="11" offset="1" >
+          <a-form-item label="监管状态">
+            <a-select v-decorator="['isCare']" placeholder="监管状态">
+              <a-select-option :value="1">待执行</a-select-option>
+              <a-select-option :value="2">已监管</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
         <template v-if="isNormal">
           <a-col :span="23" offset="1">规格型号</a-col>
           <a-col :span="23" offset="1">

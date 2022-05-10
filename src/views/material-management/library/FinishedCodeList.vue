@@ -54,6 +54,10 @@
             <a-form-item>
               <a-button type="primary" icon="filter" @click="doAction('filter', null)">筛选</a-button>
             </a-form-item>
+          </a-form>
+        </div>
+        <div class="search-wrapper">
+          <a-form layout="inline">
             <a-form-item v-if="$auth('routineMaterialInfo:add')">
               <a-button type="primary" @click="doAction('add', null)">新增</a-button>
             </a-form-item>

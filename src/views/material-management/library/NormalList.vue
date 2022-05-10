@@ -48,19 +48,15 @@
             </a-form-item>
             
             <a-form-item>
-              <a-select placeholder="监管状态" :allowClear="true" style="width: 130px;" v-model="queryParam.isCare">
-                <a-select-option :value="1">待执行</a-select-option>
-                <a-select-option :value="2">已监管</a-select-option>
-              </a-select>
-            </a-form-item>
-
-            <a-form-item>
               <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
             </a-form-item>
             <a-form-item>
               <a-button type="primary" icon="filter" @click="doAction('filter', null)">筛选</a-button>
             </a-form-item>
-
+          </a-form>
+        </div>
+        <div class="search-wrapper">
+          <a-form layout="inline">
             <a-form-item v-if="$auth('routineMaterialInfo:care')">
               <a-button :disabled="!canUse" type="primary" @click="doAction('care', null)">监管</a-button>
             </a-form-item>
