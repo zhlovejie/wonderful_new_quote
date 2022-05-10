@@ -406,7 +406,7 @@ export default {
           customerName: res.data.customerName,
           contractAmount: res.data.totalAmount,
           paperMoney: res.data.totalAmount,
-          bankNoAccount: res.data.accountNum,
+          bankNoAccount: res.data.bankName + res.data.accountNum,
           customerTel: res.data.telephone,
           customerAddress: res.data.address,
           saleContract: res.data.id,

@@ -218,10 +218,12 @@ export default {
     },
     updateData() {
       const that = this
-      let id = that.normalAddForm.getId()
-      that.normalAddForm.submitParams.blueprints = [...that.dataSource].map(item => {
-        return { ...item, id }
-      })
+      // let id = that.normalAddForm.getId()
+      // that.normalAddForm.submitParams.blueprints = [...that.dataSource].map(item => {
+      //   return { ...item, id }
+      // })
+
+      that.normalAddForm.submitParams.blueprints = [...that.dataSource]
       that.normalAddForm.submitParams.has3d = that.dataSource.some(item => item.blueprintType === 2) ? 1 : 2
       that.normalAddForm.submitParams.hasPdf = that.dataSource.some(item => item.blueprintType === 1) ? 1 : 2
     },

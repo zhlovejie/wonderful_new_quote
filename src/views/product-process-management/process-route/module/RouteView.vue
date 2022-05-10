@@ -102,7 +102,7 @@
                 </td>
               </tr>
               <tr>
-                <td>主计量单位</td>
+                <td>采购计量单位</td>
                 <td>
                   <a-form-model-item>
                     {{ {1:'支',2:'把',3:'件'}[materialInfo.mainUnit] || materialInfo.mainUnit }}

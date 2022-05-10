@@ -115,6 +115,12 @@
                 <a type="primary">删除</a>
               </a-popconfirm>
             </template>
+            <template v-if="record.status === 2">
+              <a-divider type="vertical" />
+              <a v-download="record.wordUrl">下载</a>
+              <a-divider type="vertical" />
+              <a type="primary" @click="uploadPhoto(record)">附件</a>
+            </template>
           </template>
 
           <template v-if="activeKey === 1 && record.status === 1">
@@ -130,6 +136,7 @@
 
     <AddForm ref="addForm" @filet="searchAction()" />
     <ApproveInfo ref="approveInfoCard" />
+    <upload-photo ref="uploadPhoto" @ok="handleSaveOk" />
   </div>
 </template>
 <script>
@@ -142,6 +149,7 @@ import {
 import AddForm from './module/AccessorForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import moment from 'moment'
+import UploadPhoto from './UploadPhoto'
 const columns = [
   {
     align: 'center',
@@ -226,6 +234,7 @@ export default {
   components: {
     AddForm: AddForm,
     ApproveInfo: ApproveInfo,
+    UploadPhoto,
   },
   data() {
     return {
@@ -272,7 +281,9 @@ export default {
       let that = this
       that.searchAction()
     },
-
+    handleSaveOk() {
+      this.init()
+    },
     // 删除
     confirmDelete(record) {
       let that = this
@@ -298,6 +309,9 @@ export default {
     //审批流组件
     approvalPreview(record) {
       this.$refs.approveInfoCard.init(record.instanceId)
+    },
+    uploadPhoto(record) {
+      this.$refs.uploadPhoto.showForm(record)
     },
     // 完结
     confirmEnd(record) {

@@ -187,7 +187,7 @@
               </a-form-item>
             </td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td colspan="4">
               <b>货物合同</b>
               <Mdeol v-if="!isSee" style="float: right" ref="mdeol" @getmsg="getChildMsg" :statusId="2" />
@@ -230,7 +230,7 @@
                 <a href="javascript:void(0);" @click="delItem('planList', index)">删除</a>
               </template>
             </td>
-          </tr>
+          </tr> -->
         </table>
       </a-form>
       <XdocView ref="xdocView" />

@@ -48,6 +48,21 @@ export function getUserList(parameter) {
   })
 }
 
+/**
+ * 通过当前登录用户岗位id，获取所有下级岗位用户和自身，调薪获取用户接口 
+ * 全部权限：salaryChangeUser:findAll
+ * @param {*} parameter 
+ * @returns 
+ */
+export function getUserListByUserId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/user/getUserListByUserId',
+    method: 'get',
+    params: parameter
+  })
+}
+
 // 获取部门下面的所有人员
 export function getUserByDep(parameter) {
   return axios({

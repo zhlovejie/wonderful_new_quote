@@ -65,12 +65,16 @@
           </a-select-option>
         </a-select> -->
       </a-form-model-item>
+      
     </a-form-model>
-    <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
+    
     </a-spin>
+    <SpecificationSearchForm ref="specificationSearchForm" @selected="specificationSelectedHandler" />
   </div>
 </template>
 <script>
+import SpecificationSearchForm from './SpecificationSearchForm'
+
 import {
   routineMaterialRulePageTwoTierTreeList,
   routineMaterialInfoTwoTierTreeList,
@@ -79,7 +83,6 @@ import {
   routineMaterialRulePageConditionTreeList
 } from '@/api/routineMaterial'
 
-import SpecificationSearchForm from './SpecificationSearchForm'
 
 
 const getParentKey = (key, tree) => {
@@ -98,7 +101,10 @@ const getParentKey = (key, tree) => {
 }
 
 export default {
-  components:{SpecificationSearchForm},
+  name:"SpecificationSearch",
+  components:{
+    SpecificationSearchForm
+  },
   props:['info'],
   data() {
     return {
@@ -400,11 +406,15 @@ export default {
           specificationsList
         }
       }
+      let specification = specificationsList
+        .filter(item => item.selectedID && item.selectedLabel)
+        .map(item => `${item.newRuleName || item.ruleName}:${item.selectedLabel}  `)
+        .join(',')
+      that.$emit('change',{specification})
     },
     doAction(type,record){
       const that = this
       if(type === 'specificationSearch'){
-        debugger
         that.$refs.specificationSearchForm.query(type,{...record})
         return
       }

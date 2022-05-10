@@ -423,6 +423,7 @@ export default {
       })
       //产品信息内的产品列表
       that.dataSource = productDataSource
+      that.visibleBoolean = true
     },
     add(res) {
       // const data = {"receiptCode"}
@@ -465,6 +466,7 @@ export default {
             currencyRate: '1',
           },
         ]
+        that.visibleBoolean = true
       })
     },
 

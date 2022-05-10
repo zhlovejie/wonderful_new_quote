@@ -10,6 +10,7 @@
 <script>
 //import invoicePresentOrder from './invoicePresentOrder'
 import invoiceSaleContract from './invoiceSaleContract'
+import { isOutboundByContractId } from '@api/invoice'
 
 export default {
   name: 'ChoiceOrderFactory',
@@ -43,6 +44,11 @@ export default {
       this.activeKey = key
     },
     change(record) {
+      isOutboundByContractId({ id: record.contractId }).then((res) => {
+        if (res.data) {
+          this.$message.info('合同存在未出库发货单，存在发货单的产品不能重复带入')
+        }
+      })
       this.$emit('change', {
         selectedKey: this.activeKey,
         record: record,

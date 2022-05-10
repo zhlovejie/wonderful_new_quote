@@ -7,6 +7,18 @@
         allowClear
         style="width: 200px; margin-right: 10px"
       />
+      <a-input
+        placeholder="车牌号"
+        v-model="queryParam.licensePlateNumber"
+        allowClear
+        style="width: 200px; margin-right: 10px"
+      />
+      <a-input
+        placeholder="驾驶人姓名/手机号"
+        v-model="queryParam.fullNameOrDriveNo"
+        allowClear
+        style="width: 200px; margin-right: 10px"
+      />
       <a-range-picker @change="dateChange" style="width: 400px; margin-right: 10px" v-model="queryParam.rangeDate" />
 
       <a-button style="margin-left: 10px" type="primary" @click="searchAction({ current: 1 })">查询</a-button>
@@ -26,9 +38,13 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <span slot="addressName" slot-scope="text, record">
-          <span>{{ (text = text.split(',').join('')) }}{{ record.detailedAddressName }}</span>
+        <span slot="payer" slot-scope="text, record">
+          <span> {{ { 1: '我方付款', 2: '客户付款' }[text] || '未知' }}</span>
         </span>
+        <span slot="payerType" slot-scope="text, record">
+          <span> {{ { 1: '回付', 2: '现付', 3: '到付', 4: '包邮' }[text] || '未知' }}</span>
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <a @click="applyFor('see', record)">查看</a>
           <a-divider type="vertical" />
@@ -36,13 +52,13 @@
           <template v-if="$auth('logistics:add') && +record.createdId === +userInfo.id">
             <a-divider type="vertical" />
             <a @click="applyFor('edit-salary', record)">修改</a>
-            <a-divider type="vertical" />
-            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a>
+            <!-- <a-divider type="vertical" />
+            <a class="ant-dropdown-link" @click="delete_list(record.id)">删除</a> -->
           </template>
-          <template v-if="$auth('logistics:returnV')">
+          <!-- <template v-if="$auth('logistics:returnV')">
             <a-divider type="vertical" />
             <a class="ant-dropdown-link" @click="returnV(record.id)">回访记录</a>
-          </template>
+          </template> -->
         </span>
       </a-table>
     </a-layout>
@@ -55,7 +71,7 @@
 import moment from 'moment'
 import system from '@/config/defaultSettings'
 import ReturnVisit from './module/returnVisit'
-import { logisticsList, logisticsDelete } from '@/api/distribution-management'
+import { logisticsList, logisticsDelete, adminList } from '@/api/distribution-management'
 const columns = [
   {
     dataIndex: 'name',
@@ -77,6 +93,12 @@ const columns = [
     align: 'center',
   },
   {
+    title: '物流类别',
+    dataIndex: 'logisticsTypeName',
+    key: 'logisticsTypeName',
+    align: 'center',
+  },
+  {
     title: '车牌号',
     dataIndex: 'licensePlateNumber',
     key: 'licensePlateNumber',
@@ -95,16 +117,23 @@ const columns = [
     align: 'center',
   },
   {
-    title: '目的地',
-    dataIndex: 'addressName',
-    key: 'addressName',
+    title: '付款方',
+    dataIndex: 'payer',
+    key: 'payer',
     align: 'center',
-    scopedSlots: { customRender: 'addressName' },
+    scopedSlots: { customRender: 'payer' },
   },
   {
-    title: '结算方式',
-    dataIndex: 'settlementMethodName',
-    key: 'settlementMethodName',
+    title: '付款方式',
+    dataIndex: 'payerType',
+    key: 'payerType',
+    align: 'center',
+    scopedSlots: { customRender: 'payerType' },
+  },
+  {
+    title: '提交人',
+    dataIndex: 'createdName',
+    key: 'createdName',
     align: 'center',
   },
   {
@@ -217,9 +246,15 @@ export default {
       })
     },
     applyFor(type, record) {
-      this.$router.push({
-        name: 'basicInform',
-        params: { typeName: type, action: record },
+      adminList().then((res) => {
+        if (res.data.length !== 0) {
+          this.$router.push({
+            name: 'basicInform',
+            params: { typeName: type, action: record },
+          })
+        } else {
+          this.$message.error('请设置搬运管理中工价设置')
+        }
       })
     },
 

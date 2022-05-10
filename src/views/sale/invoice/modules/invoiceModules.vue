@@ -4,13 +4,9 @@
       <div class="content-wrap">
         <div class="top-ation clearfix" style="text-align: right">
           <div class="table-operator fl-r" style="margin-top: 10px">
-            <a-button
-              class="fl-r"
-              type="primary"
-              @click="submit"
-              :loading="loading"
-              icon="check"
-            >{{btnActionTxt}}</a-button>
+            <a-button class="fl-r" type="primary" @click="submit" :loading="loading" icon="check">{{
+              btnActionTxt
+            }}</a-button>
             <a-button class="fl-r" type="primary" @click="goBackPricing" icon="backward">返回</a-button>
           </div>
         </div>
@@ -20,23 +16,23 @@
             <a-form :form="form">
               <div class="form-container">
                 <a-form-item hidden>
-                  <a-input v-decorator="[ 'contractId' ]" />
+                  <a-input v-decorator="['contractId']" />
                 </a-form-item>
                 <a-form-item hidden>
-                  <a-input v-decorator="[ 'presentId' ]" />
+                  <a-input v-decorator="['presentId']" />
                 </a-form-item>
                 <a-form-item hidden>
-                  <a-input v-decorator="[ 'presentNum' ]" />
+                  <a-input v-decorator="['presentNum']" />
                 </a-form-item>
                 <a-form-item hidden>
-                  <a-input v-decorator="[ 'invoiceType' ]" />
+                  <a-input v-decorator="['invoiceType']" />
                 </a-form-item>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">发货单编号</div>
                   <div class="row-item wid-35">
                     <a-input
                       read-only="read-only"
-                      style="height: 30px;border: none;"
+                      style="height: 30px; border: none"
                       v-decorator="['invoiceNum', {}]"
                     />
                   </div>
@@ -46,17 +42,20 @@
                       <a-input
                         read-only="read-only"
                         placeholder="请选择合同编号/赠送单编号"
-                        style="height: 30px;border: none;"
-                        v-decorator="['contractNum', {rules: [{required: true, message: '请选择合同编号/赠送单编号!',}]}]"
+                        style="height: 30px; border: none"
+                        v-decorator="[
+                          'contractNum',
+                          { rules: [{ required: true, message: '请选择合同编号/赠送单编号!' }] },
+                        ]"
                         @click="openModel"
                       />
                     </a-form-item>
                   </div>
                 </a-form-item>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">客户名称</div>
                   <div class="row-item wid-35">
-                    <a-input style="height: 30px;border: none;" v-decorator="['customerName', {}]" />
+                    <a-input style="height: 30px; border: none" v-decorator="['customerName', {}]" />
                   </div>
                   <div class="row-item wid-15">运费结算方式</div>
                   <div class="row-item wid-35">
@@ -64,108 +63,118 @@
                       <a-select
                         placeholder="运费结算方式"
                         @change="settlementMethodChange"
-                        v-decorator="['settlementMethod', {rules: [{required: true, message: '请选择运费结算方式!',}]}]"
+                        v-decorator="[
+                          'settlementMethod',
+                          { rules: [{ required: true, message: '请选择运费结算方式!' }] },
+                        ]"
                       >
                         <a-select-option :value="1">代付</a-select-option>
                         <a-select-option :value="2">包邮</a-select-option>
                         <a-select-option :value="3">到付</a-select-option>
+                        <a-select-option :value="4">回付</a-select-option>
+                        <a-select-option :value="5">现付</a-select-option>
                       </a-select>
                     </a-form-item>
                   </div>
                 </a-form-item>
 
                 <!-- 设置了运费，并且 运费结算方式 为 代付和包邮 才显示 -->
-                <a-form-item
-                  class="form-row clearfix"
-                  style="margin-bottom: 0px;"
-                  v-show="needFreightCharge"
-                >
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px" v-show="needFreightCharge">
                   <div class="row-item wid-15">运费</div>
                   <div class="row-item wid-85">
                     <a-form-item style="margin: 0">
                       <a-input-number
-                        style="width:100%;"
+                        style="width: 100%"
                         :min="0"
                         :step="0.1"
                         :precision="2"
                         placeholder="运费"
-                        v-decorator="['freightCharge', {rules: [{required: settlementMethod !== 3, message: '请输入运费!'}]}]"
+                        v-decorator="[
+                          'freightCharge',
+                          { rules: [{ required: settlementMethod !== 3, message: '请输入运费!' }] },
+                        ]"
                       />
                     </a-form-item>
                   </div>
                 </a-form-item>
 
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">收货地址</div>
                   <div class="row-item wid-85">
                     <a-row>
                       <a-col :span="6">
-                        <a-form-item style="margin:0px;">
+                        <a-form-item style="margin: 0px">
                           <a-select
                             placeholder="省"
-                            v-if="show=true"
-                            v-decorator="['province',{rules: [{required: true, message: '请选择省!',}]}]"
+                            v-if="(show = true)"
+                            v-decorator="['province', { rules: [{ required: true, message: '请选择省!' }] }]"
                           >
                             <a-select-option
-                              @click="getCity(1,province.id)"
+                              @click="getCity(1, province.id)"
                               v-for="province in this.provinces"
                               :key="province.index"
                               :value="province.area"
-                            >{{ province.area }}</a-select-option>
+                              >{{ province.area }}</a-select-option
+                            >
                           </a-select>
                         </a-form-item>
                       </a-col>
                       <a-col :span="6">
-                        <a-form-item style="margin:0 0 0 10px;">
+                        <a-form-item style="margin: 0 0 0 10px">
                           <a-select
                             placeholder="市"
-                            v-if="show=true"
-                            v-decorator="['city',{rules: [{required: true, message: '请选择市!',}]}]"
+                            v-if="(show = true)"
+                            v-decorator="['city', { rules: [{ required: true, message: '请选择市!' }] }]"
                           >
                             <a-select-option
-                              @click="getCity(2,city.id)"
+                              @click="getCity(2, city.id)"
                               v-for="city in this.citys"
                               :key="city.index"
                               :value="city.area"
-                            >{{ city.area }}</a-select-option>
+                              >{{ city.area }}</a-select-option
+                            >
                           </a-select>
                         </a-form-item>
                       </a-col>
                       <a-col :span="6">
-                        <a-form-item style="margin:0 0 0 10px;">
+                        <a-form-item style="margin: 0 0 0 10px">
                           <a-select
                             placeholder="区"
-                            v-if="show=true"
-                            v-decorator="['area',{rules: [{required: false, message: '请选择区!',}]}]"
+                            v-if="(show = true)"
+                            v-decorator="['area', { rules: [{ required: false, message: '请选择区!' }] }]"
                           >
-                            <a-select-option
-                              v-for="area in this.areas"
-                              :key="area.index"
-                              :value="area.area"
-                            >{{ area.area }}</a-select-option>
+                            <a-select-option v-for="area in this.areas" :key="area.index" :value="area.area">{{
+                              area.area
+                            }}</a-select-option>
                           </a-select>
                         </a-form-item>
                       </a-col>
                     </a-row>
                     <a-row>
                       <a-col :span="18">
-                        <a-form-item style="margin:0px;">
+                        <a-form-item style="margin: 0px">
                           <a-input
                             placeholder="请输入详细地址"
-                            v-decorator="['addressDetail',{rules: [{required: false, message: '请输入详细地址!',}]}]"
+                            v-decorator="[
+                              'addressDetail',
+                              { rules: [{ required: false, message: '请输入详细地址!' }] },
+                            ]"
                           />
                         </a-form-item>
                       </a-col>
                     </a-row>
                   </div>
                 </a-form-item>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">发货方式</div>
                   <div class="row-item wid-35">
                     <a-form-item style="margin: 0">
                       <a-select
                         placeholder="发货方式"
-                        v-decorator="['delivery', {initialValue:1,rules: [{required: false, message: '请选择发货方式!'}]}]"
+                        v-decorator="[
+                          'delivery',
+                          { initialValue: 1, rules: [{ required: false, message: '请选择发货方式!' }] },
+                        ]"
                       >
                         <a-select-option :value="1">客户货站自提</a-select-option>
                         <a-select-option :value="2">送货上门</a-select-option>
@@ -177,21 +186,24 @@
                   <div class="row-item wid-35">
                     <a-form-item style="margin: 0">
                       <a-input
-                        style="height: 30px;border: none;"
+                        style="height: 30px; border: none"
                         placeholder="请输入收货人"
-                        v-decorator="['consignee', {rules: [{required: true, message: '请输入收货人!'}]}]"
+                        v-decorator="['consignee', { rules: [{ required: true, message: '请输入收货人!' }] }]"
                       />
                     </a-form-item>
                   </div>
                 </a-form-item>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">联系方式</div>
                   <div class="row-item wid-85">
                     <a-form-item style="margin: 0">
                       <a-input
-                        style="height: 30px;border: none;"
+                        style="height: 30px; border: none"
                         placeholder="请输入联系方式"
-                        v-decorator="['contactInformation', {rules: [{required: true, message: '请输入联系方式!',}]}]"
+                        v-decorator="[
+                          'contactInformation',
+                          { rules: [{ required: true, message: '请输入联系方式!' }] },
+                        ]"
                       />
                     </a-form-item>
                   </div>
@@ -206,54 +218,53 @@
                   :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                   :scroll="{ x: 2000 }"
                 >
-                  <div slot="order" slot-scope="text,record,index">
-                    <span>{{ index+1 }}</span>
+                  <div slot="order" slot-scope="text, record, index">
+                    <span>{{ index + 1 }}</span>
                   </div>
 
                   <div slot="productType" slot-scope="text">
-                    <span v-if="text==0">常规产品</span>
-                    <span v-if="text==1">非常规产品</span>
+                    <span v-if="text == 0">常规产品</span>
+                    <span v-if="text == 1">非常规产品</span>
                   </div>
                   <div slot="company" slot-scope="text">
-                    <span v-if="text==0">套</span>
-                    <span v-if="text==1">台</span>
-                    <span v-if="text==2">个</span>
+                    <span v-if="text == 0">套</span>
+                    <span v-if="text == 1">台</span>
+                    <span v-if="text == 2">个</span>
                   </div>
-                  <div slot="invoiceCount" slot-scope="text,record">
-                    <a-input-number
-                      :min="1"
-                      :max="record.prevRemainCount"
-                      v-model="record.invoiceCount"
-                    />
+                  <div slot="invoiceCount" slot-scope="text, record">
+                    <a-input-number :min="1" :max="record.prevRemainCount" v-model="record.invoiceCount" />
                   </div>
                 </a-table>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">备注</div>
                   <div class="row-item wid-85">
                     <a-input
-                      style="height: 30px;border: none;"
+                      style="height: 30px; border: none"
                       placeholder="请输入备注"
                       v-decorator="['remarks', {}]"
                     />
                   </div>
                 </a-form-item>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-15">发货时间</div>
                   <div class="row-item wid-35" style="text-align: center">
                     <a-form-item style="margin: 0">
                       <a-date-picker
-                        v-decorator="['deliveryTime', {initialValue:moment(),rules: [{required: true, message: '请选择发货时间!'}]}]"
+                        v-decorator="[
+                          'deliveryTime',
+                          { initialValue: moment(), rules: [{ required: true, message: '请选择发货时间!' }] },
+                        ]"
                       />
                     </a-form-item>
                   </div>
                 </a-form-item>
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px;">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px">
                   <div class="row-item wid-12">创建人</div>
                   <div class="row-item wid-12">
                     <a-input
                       read-only="read-only"
                       placeholder="无需输入"
-                      style="height: 30px;border: none;"
+                      style="height: 30px; border: none"
                       v-decorator="['createdName', {}]"
                     />
                   </div>
@@ -262,7 +273,7 @@
                     <a-input
                       read-only="read-only"
                       placeholder="无需输入"
-                      style="height: 30px;border: none;"
+                      style="height: 30px; border: none"
                       v-decorator="['createdTime', {}]"
                     />
                   </div>
@@ -271,7 +282,7 @@
                     <a-input
                       disabled
                       placeholder="无需输入"
-                      style="height: 30px;border: none;"
+                      style="height: 30px; border: none"
                       v-decorator="['approveName', {}]"
                     />
                   </div>
@@ -280,7 +291,7 @@
                     <a-input
                       disabled
                       placeholder="无需输入"
-                      style="height: 30px;border: none;"
+                      style="height: 30px; border: none"
                       v-decorator="['approveTime', {}]"
                     />
                   </div>
@@ -311,7 +322,7 @@ export default {
   components: {
     AFormItem,
     ChoiceOrderFactory,
-    moment
+    moment,
   },
   props: {},
   data() {
@@ -334,55 +345,55 @@ export default {
           title: '序号',
           key: 'order',
           width: '70px',
-          scopedSlots: { customRender: 'order' }
+          scopedSlots: { customRender: 'order' },
         },
         {
           title: '标的名称',
-          dataIndex: 'targetName'
+          dataIndex: 'targetName',
         },
         {
           title: '产品类别',
           dataIndex: 'productType',
-          scopedSlots: { customRender: 'productType' }
+          scopedSlots: { customRender: 'productType' },
         },
         {
           title: '产品代码',
           dataIndex: 'productModel',
-          scopedSlots: { customRender: 'productModel' }
+          scopedSlots: { customRender: 'productModel' },
         },
         {
           title: '名称',
           dataIndex: 'productName',
-          scopedSlots: { customRender: 'productName' }
+          scopedSlots: { customRender: 'productName' },
         },
         {
           title: '规格型号',
           dataIndex: 'productStandard',
-          scopedSlots: { customRender: 'productStandard' }
+          scopedSlots: { customRender: 'productStandard' },
         },
         {
           title: '单位',
           dataIndex: 'company',
-          scopedSlots: { customRender: 'company' }
+          scopedSlots: { customRender: 'company' },
         },
         {
           title: '数量',
           dataIndex: 'invoiceCount',
-          scopedSlots: { customRender: 'invoiceCount' }
-        }
+          scopedSlots: { customRender: 'invoiceCount' },
+        },
       ],
       type: 'Add',
       settlementMethod: -1,
-      spinning: false
+      spinning: false,
     }
   },
   computed: {
-    btnActionTxt: function() {
+    btnActionTxt: function () {
       return this.type === 'Add' ? '保存' : '重新提交'
     },
-    needFreightCharge: function() {
+    needFreightCharge: function () {
       return this.settlementMethod === 1 || this.settlementMethod === 2
-    }
+    },
   },
   mounted() {
     console.log(this.$route.params)
@@ -428,17 +439,17 @@ export default {
 
         let _provinces = await this.areaByParent()
         this.provinces = _provinces
-        let _provinceItem = _provinces.find(item => item.area == _provinceName)
+        let _provinceItem = _provinces.find((item) => item.area == _provinceName)
         this.record.province = _provinceItem ? _provinceItem.area : ''
 
         let _citys = await this.getCity(1, _provinceItem.id)
         this.citys = _citys
-        let _cityItem = _citys.find(item => item.area == _cityName)
+        let _cityItem = _citys.find((item) => item.area == _cityName)
         this.record.city = _cityItem ? _cityItem.area : ''
 
         let _areas = await this.getCity(2, _cityItem.id)
         this.areas = _areas
-        let _areaItem = _areas.find(item => item.area == _areaName)
+        let _areaItem = _areas.find((item) => item.area == _areaName)
         this.record.area = _areaItem ? _areaItem.area : ''
       } catch (err) {}
 
@@ -446,7 +457,7 @@ export default {
     },
     getCity(type, pId) {
       return getAreaByParent({ pId: pId })
-        .then(res => {
+        .then((res) => {
           if (type === 1) {
             this.citys = res.data
           } else if (type === 2) {
@@ -454,7 +465,7 @@ export default {
           }
           return res.data
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log(err)
         })
     },
@@ -472,7 +483,7 @@ export default {
           { ...this.record },
           {
             addressDetail: this.record.addressDetail,
-            deliveryTime: moment(this.record.deliveryTime)
+            deliveryTime: moment(this.record.deliveryTime),
           }
         )
         console.log(obj)
@@ -485,7 +496,7 @@ export default {
     getProducts() {
       // 根据发货单id获取发货单产品
       const parameter = { invoiceId: this.record.id }
-      getProductById(parameter).then(res => {
+      getProductById(parameter).then((res) => {
         const listProduct = []
         console.log('res.data', res.data)
         for (const productKey in res.data) {
@@ -498,7 +509,7 @@ export default {
             productName: product.products.contractProductPo.productName,
             productStandard: product.products.contractProductPo.productStandard,
             company: product.products.company,
-            invoiceCount: product.invoiceCount
+            invoiceCount: product.invoiceCount,
           })
         }
         this.dataSource = listProduct
@@ -507,23 +518,23 @@ export default {
     },
     areaByParent() {
       return getAreaByParent({ pId: 100000 })
-        .then(res => {
+        .then((res) => {
           // 所有省
           this.provinces = res.data
           return res.data
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log(err)
         })
     },
     //获取收据单编号
     invoiceNum() {
       getInvoiceNum()
-        .then(res => {
+        .then((res) => {
           console.log('获取发货单编号的结果', res)
           this.form.setFieldsValue({ invoiceNum: res.data })
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
         })
     },
@@ -534,7 +545,7 @@ export default {
     },
     contractChange(result) {
       let that = this
-      switch(result.selectedKey){
+      switch (result.selectedKey) {
         case 'invoiceSaleContract':
           that.fillContract(result.record)
           break
@@ -546,7 +557,7 @@ export default {
       }
     },
     //填充合同
-    fillContract(data){
+    fillContract(data) {
       // debugger
       console.log('data', data)
       this.form.setFieldsValue({ contractNum: data.contractNum })
@@ -554,7 +565,7 @@ export default {
       this.form.setFieldsValue({ contractId: data.contractId })
       this.form.setFieldsValue({ invoiceType: 0 })
       const paramter = { id: data.contractId, type: 0 }
-      getContractOne(paramter).then(res => {
+      getContractOne(paramter).then((res) => {
         console.log('res.data.product', res.data)
         const listProduct = []
         for (let productKey in res.data.product) {
@@ -571,18 +582,18 @@ export default {
             invoiceCount: product.remainCount,
             count: product.count,
             remainCount: product.remainCount,
-            prevRemainCount: product.remainCount
+            prevRemainCount: product.remainCount,
           })
         }
         //this.dataSource = listProduct
-        this.dataSource = listProduct.filter(item => item.remainCount > 0)
+        this.dataSource = listProduct.filter((item) => item.remainCount > 0)
         console.log('this.dataSource', this.dataSource)
       })
     },
     //填充赠送订单
-    fillPresentOrder(data){
+    fillPresentOrder(data) {
       let that = this
-      presentOrderDetail({ presentId: data.id }).then(res => {
+      presentOrderDetail({ presentId: data.id }).then((res) => {
         let _data = res.data
         that.form.setFieldsValue({ contractNum: data.presentNum })
         that.form.setFieldsValue({ presentNum: _data.presentNum })
@@ -590,21 +601,23 @@ export default {
         that.form.setFieldsValue({ presentId: _data.id })
         that.form.setFieldsValue({ invoiceType: 1 })
 
-        that.dataSource = _data.productList.map(item =>{
-          return {
-            id:item.id,
-            targetName:item.targetName,
-            productType:item.productType,
-            productModel:item.productCode,
-            productName:item.productName,
-            productStandard:item.productStand,
-            company:item.company,
-            invoiceCount:item.remainCount,
-            count:item.count,
-            remainCount:item.remainCount,
-            prevRemainCount:item.remainCount
-          }
-        }).filter(item => item.remainCount > 0)
+        that.dataSource = _data.productList
+          .map((item) => {
+            return {
+              id: item.id,
+              targetName: item.targetName,
+              productType: item.productType,
+              productModel: item.productCode,
+              productName: item.productName,
+              productStandard: item.productStand,
+              company: item.company,
+              invoiceCount: item.remainCount,
+              count: item.count,
+              remainCount: item.remainCount,
+              prevRemainCount: item.remainCount,
+            }
+          })
+          .filter((item) => item.remainCount > 0)
         console.log(res)
       })
     },
@@ -636,26 +649,26 @@ export default {
           if (_this.type === 'Add') {
             _this.spinning = true
             save(values)
-              .then(res => {
+              .then((res) => {
                 _this.spinning = false
                 if (res.code == 200) {
                   _this.goBackPricing()
                 }
               })
-              .catch(err => {
+              .catch((err) => {
                 _this.spinning = false
               })
           } else {
             _this.spinning = true
             values.id = _this.record.id
             updateInvoice(values)
-              .then(res => {
+              .then((res) => {
                 _this.spinning = false
                 if (res.code == 200) {
                   _this.goBackPricing()
                 }
               })
-              .catch(err => {
+              .catch((err) => {
                 _this.spinning = false
               })
           }
@@ -672,8 +685,8 @@ export default {
     settlementMethodChange(e) {
       //console.log(e)
       this.settlementMethod = parseInt(e)
-    }
-  }
+    },
+  },
 }
 </script>
 

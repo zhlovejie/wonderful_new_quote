@@ -37,6 +37,7 @@ export default {
       const that = this
       let commonData = await that.$refs.baseInnerData.validate()
       let graphicData = await that.$refs.graphicData.validate()
+
       if(commonData && graphicData){
         that.normalAddForm.submitParams.materialDiagram = graphicData
         for(let key in commonData){

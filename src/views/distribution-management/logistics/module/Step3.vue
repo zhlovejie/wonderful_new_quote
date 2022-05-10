@@ -7,23 +7,17 @@
       </a-row>
       <a-button v-if="!isSee" type="primary" icon="plus" @click="addInvoice()">新增</a-button>
       <a-form :form="form" class="form wdf-form">
-        <div v-for="(i ,index) in todayList" :key="index">
-          <h3 style="font-weight: 700; ">
-            发货单{{index+ 1}}
-            <a-button
-              v-if="!isSee"
-              style="margin-bottom:10px; float: right;"
-              type="primary"
-              @click="deleteItem(index)"
-            >删除</a-button>
+        <div v-for="(i, index) in todayList" :key="index">
+          <h3 style="font-weight: 700">
+            发货单{{ index + 1 }}
+            <a-button v-if="!isSee" style="margin-bottom: 10px; float: right" type="primary" @click="deleteItem(index)"
+              >删除</a-button
+            >
           </h3>
 
           <table class="custom-table custom-table-border">
             <tr>
-              <td
-                colspan="3"
-                style="text-align: Left;  border-top: none; border-left: none;border-right: none; "
-              >
+              <td colspan="3" style="text-align: Left; border-top: none; border-left: none; border-right: none">
                 <b>提货信息</b>
               </td>
             </tr>
@@ -33,35 +27,35 @@
               <th>电话</th>
             </tr>
             <tr>
-              <td>{{i.customerName}}</td>
-              <td>{{i.consignee}}</td>
-              <td>{{i.contactInformation}}</td>
+              <td>{{ i.customerName }}</td>
+              <td>{{ i.consignee }}</td>
+              <td>{{ i.contactInformation }}</td>
             </tr>
             <tr>
-              <td colspan="3" style="text-align: Left; border-left: none;border-right: none; ">
+              <td colspan="3" style="text-align: Left; border-left: none; border-right: none">
                 <b>货物信息</b>
               </td>
             </tr>
             <tr>
               <th>名称</th>
               <th>数量</th>
-              <th>体积</th>
+              <th>方数</th>
             </tr>
-            <tr v-for="(item ,index) in i.logisticsCargInformationList" :key="index">
-              <td>{{item.productName}}</td>
-              <td>{{item.invoiceCount}}</td>
+            <tr v-for="(item, index) in i.logisticsCargInformationList" :key="index">
+              <td>{{ item.productName }}</td>
+              <td>{{ item.invoiceCount }}</td>
               <td>
-                <a-input placeholder v-model="item.volume" :disabled="isSee" />
+                {{ item.squareNum }}
               </td>
             </tr>
           </table>
         </div>
-        <h3 style="width:150px;   font-weight: 700;">备注</h3>
+        <h3 style="width: 150px; font-weight: 700">备注</h3>
         <a-form-item>
           <a-textarea :rows="3" v-model="remarks" :disabled="isSee" />
         </a-form-item>
         <a-form-item class="btns-grop">
-          <a-button style="margin-left: 8px;" @click="prevStep">上一步</a-button>
+          <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
           <a-button type="primary" @click="nextStep">下一步</a-button>
         </a-form-item>
       </a-form>
@@ -70,7 +64,7 @@
 </template>
 
 <script>
-import { logisticsaddAndUpdte } from '@/api/distribution-management'
+import { logisticsaddAndUpdte, listMaterialInfoByCodes } from '@/api/distribution-management'
 import moment from 'moment'
 import Invoice from './Invoice'
 
@@ -96,6 +90,7 @@ export default {
       remarks: '',
       queryonedata1: {},
       isSee: false,
+      materList: [],
     }
   },
   watch: {
@@ -130,21 +125,35 @@ export default {
     // 接收发货单数据
     handlerCustomerSelected(record) {
       console.log(record)
-      let obj = {}
-      obj.address = record.address
-      obj.customerName = record.customerName
-      obj.consignee = record.consignee
-      obj.contactInformation = record.contactInformation
-      obj.saleInvoiceId = record.id
-      let arr = record.products.map((red) => {
-        return {
-          volume: red.volume || '',
-          productName: red.productName,
-          invoiceCount: red.invoiceCount,
-        }
+
+      let react = record.products
+        .map((i) => {
+          return i.productModel
+        })
+        .toString()
+      listMaterialInfoByCodes({ codes: react }).then((res) => {
+        console.log(res)
+        // this.materList = res.data
+        this.materList = record.products.map((red) => {
+          let react = res.data.find((i) => i.materialCode === red.productModel)
+          return {
+            volume: red.squareNum || '',
+            productName: red.productName,
+            invoiceCount: red.invoiceCount,
+            materialCode: red.productModel,
+            materialName: red.productName,
+            squareNum: Number(react.squareNum) * Number(red.invoiceCount) || '',
+          }
+        })
+        let obj = {}
+        obj.address = record.address
+        obj.customerName = record.customerName
+        obj.consignee = record.consignee
+        obj.contactInformation = record.contactInformation
+        obj.saleInvoiceId = record.id
+        obj.logisticsCargInformationList = this.materList
+        this.todayList.push(obj)
       })
-      obj.logisticsCargInformationList = arr
-      this.todayList.push(obj)
     },
     // 点击下一步
     nextStep(status) {

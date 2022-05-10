@@ -19,7 +19,7 @@ const materialBaseUrl = system.materialBaseUrl
   /**新增 */
   export function requestApplyAdd(parameter) {
     return axios({
-      baseURL: system.baseURL,
+      baseURL: materialBaseUrl,
       url: '/requestApply',
       method: 'POST',
       data: parameter
@@ -28,7 +28,7 @@ const materialBaseUrl = system.materialBaseUrl
   /**修改 */
   export function requestApplyUpdate(parameter) {
     return axios({
-      baseURL: system.baseURL,
+      baseURL: materialBaseUrl,
       url: '/requestApply',
       method: 'PUT',
       data: parameter
@@ -46,7 +46,7 @@ const materialBaseUrl = system.materialBaseUrl
   /**审批 */
   export function requestApplyApproval(parameter) {
     return axios({
-      baseURL: system.baseURL,
+      baseURL: materialBaseUrl,
       url: '/requestApply/audit',
       method: 'POST',
       data: parameter
@@ -55,7 +55,7 @@ const materialBaseUrl = system.materialBaseUrl
   /**撤销 */
   export function requestApplyRevocation(parameter) {
     return axios({
-      baseURL: system.baseURL,
+      baseURL: materialBaseUrl,
       url: '/requestApply/revocation',
       method: 'POST',
       data: parameter
@@ -65,7 +65,7 @@ const materialBaseUrl = system.materialBaseUrl
   /**调整需求数量 */
   export function requestApplyChangeNum(parameter) {
     return axios({
-      baseURL: system.baseURL,
+      baseURL: materialBaseUrl,
       url: '/requestApply/changeRequestNum',
       method: 'POST',
       data: parameter

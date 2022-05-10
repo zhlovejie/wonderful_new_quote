@@ -54,7 +54,49 @@ export default { //售后管理
         keepAlive: false,
         permission: ['permission']
       },
-    }, {
+    },
+    {
+      path: '/after-sales-management/AfterSalesReceipt',
+      name: 'After_sales_receipt',
+      component: () => import('@/views/after-sales-management/AfterSalesReceipt/List'),
+      meta: {
+        title: '售后收款单',
+        icon: 'select',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/after-sales-management/AfterSalesReceipt/ReceiptAdd',
+      name: 'AfterSalesReceiptAdd',
+      hidden: true,
+      component: () => import('@/views/after-sales-management/AfterSalesReceipt/ReceiptAdd'),
+      meta: {
+        title: '售后收款单添加',
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/after-sales-management/AfterSalesReceipt/ReceiptAudit',
+      name: 'AfterSalesReceiptAudit',
+      hidden: true,
+      component: () => import('@/views/after-sales-management/AfterSalesReceipt/ReceiptAudit'),
+      meta: {
+        title: '审批',
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/after-sales-management/AfterSalesReceipt/ReceiptVue',
+      name: 'AfterSalesReceiptVue',
+      hidden: true,
+      component: () => import('@/views/after-sales-management/AfterSalesReceipt/ReceiptVue'),
+      meta: {
+        title: '查看',
+        permission: ['permission']
+      }
+    },
+    {
       path: '/after-sales-management/PartsInvoicing/OpenPaperAdd',
       name: 'PartsInvoicingPaperAdd',
       hidden: true,

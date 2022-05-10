@@ -6,9 +6,14 @@
         <a-button key="submit" type="primary" @click="handleOk">保存</a-button>
       </template>
     </template>
-    <div style="height: 360px">
+    <div style="height: 456px">
       <div>
         <h2 style="text-align: center">{{ totalAmount }}</h2>
+      </div>
+      <div style="margin-bottom: 30px">
+        <p>对公账户</p>
+        <p style="padding-left: 70px">开 户 行： 中国银行徐州铜山支行营业部</p>
+        <p style="padding-left: 70px">帐 号：472871189287</p>
       </div>
       <!-- <a-alert style="margin-bottom: 20px" :message="totalAmount" type="success" /> -->
       <a-list :grid="{ gutter: 24, column: 2 }">

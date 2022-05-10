@@ -11,7 +11,10 @@
       <a-row :gutter="0">
         <a-col :span="24">基本信息</a-col>
         <a-col :span="12">
-          <a-form-item label="销售经理">
+          <a-form-item label="负责人">
+            <a-input v-decorator="['saleUserName']" placeholder="负责人" :allowClear="true" />
+          </a-form-item>
+          <!-- <a-form-item label="销售经理">
             <a-select
               optionFilterProp="children"
               showSearch
@@ -25,7 +28,7 @@
                 item.salesmanName
               }}</a-select-option>
             </a-select>
-          </a-form-item>
+          </a-form-item> -->
         </a-col>
         <a-col :span="12">
           <a-form-item label="客户名称">
@@ -110,7 +113,7 @@ export default {
       visible: false,
       form: this.$form.createForm(this),
       saleUser: [],
-      isShowApproveStatus:false
+      isShowApproveStatus: false,
     }
   },
   methods: {

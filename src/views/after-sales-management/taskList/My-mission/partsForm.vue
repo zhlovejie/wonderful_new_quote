@@ -295,6 +295,22 @@
           </a-select>
         </a-form-model-item>
         <a-form-model-item
+          v-if="form.paymentType === 0 || form.paymentType === 1"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+          label="付款形式"
+          :prop="'paymentForm'"
+          :rules="{
+            required: true,
+            message: '请选择付款形式',
+          }"
+        >
+          <a-select v-model="form.paymentForm" placeholder="付款形式">
+            <a-select-option :value="0">付款码</a-select-option>
+            <a-select-option :value="1">公户打款</a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item
           v-if="form.paymentType === 0 || form.paymentType === 3"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
@@ -353,6 +369,7 @@ export default {
         deviceInfoId: undefined,
         mainBoardNo: undefined,
         paymentType: undefined,
+        paymentForm: 0,
         handlerUser: undefined,
         isTax: 0,
         remark: undefined,
@@ -582,6 +599,7 @@ export default {
         deviceInfoId: undefined,
         mainBoardNo: undefined,
         paymentType: undefined,
+        paymentForm: 0,
         handlerUser: undefined,
         isTax: 0,
         remark: undefined,

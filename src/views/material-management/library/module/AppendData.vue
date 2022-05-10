@@ -183,32 +183,36 @@ export default {
   methods: {
     moment,
     doAction(type, record) {
+      debugger
       const that = this
       if (type === 'view') {
         // that.$message.info('暂不支持预览')
         that.$refs.xdocView.query(record.fileUrl)
         return
       } else if (type === 'del') {
-        let _api_del = that.normalAddForm.isNormal ? routineMaterialAccessoryDelete : productMaterialAccessoryDelete
-        if(record.id){
-          that.loading = true
-          _api_del({id:record.id}).then(res => {
-            that.loading = false
-            that.$message.info(res.msg)
-            if(+res.code === 200){
-              that.dataSource = that.dataSource.filter(item => item.key !== record.key)
-              that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
-              that.updateData()
-            }
-          }).catch(err =>{
-            that.loading = false
-            that.$message.error(err)
-          })
-        }else{
-          that.dataSource = that.dataSource.filter(item => item.key !== record.key)
-          that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
-          that.updateData()
-        }
+        // let _api_del = that.normalAddForm.isNormal ? routineMaterialAccessoryDelete : productMaterialAccessoryDelete
+        // if(record.id){
+        //   that.loading = true
+        //   _api_del({id:record.id}).then(res => {
+        //     that.loading = false
+        //     that.$message.info(res.msg)
+        //     if(+res.code === 200){
+        //       that.dataSource = that.dataSource.filter(item => item.key !== record.key)
+        //       that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
+        //       that.updateData()
+        //     }
+        //   }).catch(err =>{
+        //     that.loading = false
+        //     that.$message.error(err)
+        //   })
+        // }else{
+        //   that.dataSource = that.dataSource.filter(item => item.key !== record.key)
+        //   that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
+        //   that.updateData()
+        // }
+        that.dataSource = that.dataSource.filter(item => item.key !== record.key)
+        that.$refs.uploadFile && that.$refs.uploadFile.setFiles([...that.dataSource])
+        that.updateData()
         return
       }
     },

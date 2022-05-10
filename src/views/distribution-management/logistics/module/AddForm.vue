@@ -133,7 +133,7 @@ export default {
     },
     goBackAction() {
       const _this = this
-      _this.$router.push({ name: 'distribution_logistics' })
+      _this.$router.go(-1)
     },
   },
 }

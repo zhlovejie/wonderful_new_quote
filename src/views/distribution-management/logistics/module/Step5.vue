@@ -4,12 +4,11 @@
       <a-row>
         <a-col :span="24" class="basic-tit" justify="center" align="middle">货物合同</a-col>
       </a-row>
-
       <a-row>
         <a-col :span="6"></a-col>
         <a-col :span="12">
           <template v-if="!isSee">
-            <a-button style="float: right" type="primary" icon="plus" @click="applyFor('add', null)">新增</a-button>
+            <a-button style="float: right" type="primary" icon="plus" @click="applyFor(1)">新增</a-button>
           </template>
           <table class="custom-table custom-table-border" style="margin-top: 20px">
             <tr>
@@ -35,6 +34,41 @@
           </table>
         </a-col>
       </a-row>
+      <div v-if="queryonedata1.carrierType === 1" style="margin-top: 100px">
+        <a-row>
+          <a-col :span="24" class="basic-tit" justify="center" align="middle">合作协议</a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="6"></a-col>
+          <a-col :span="12">
+            <template v-if="!isSee">
+              <a-button style="float: right" type="primary" icon="plus" @click="applyFor(2)">新增</a-button>
+            </template>
+            <table class="custom-table custom-table-border" style="margin-top: 20px">
+              <tr>
+                <th>
+                  <b>文件名称</b>
+                </th>
+                <th>
+                  <b>操作</b>
+                </th>
+              </tr>
+              <tr v-for="(item, index) in goodsList1" :key="index">
+                <td>{{ item.name }}</td>
+                <td>
+                  <a class="ant-dropdown-link" @click="delete_list(item.url)">查看</a>
+                  <a-divider type="vertical" />
+                  <a class="ant-dropdown-link" :href="item.url" target="_blank">下载</a>
+                  <template v-if="!isSee">
+                    <a-divider type="vertical" />
+                    <a class="ant-dropdown-link" @click="deletes1(index)">删除</a>
+                  </template>
+                </td>
+              </tr>
+            </table>
+          </a-col>
+        </a-row>
+      </div>
 
       <a-form class="form wdf-form">
         <a-form-item class="btns-grop" style="border-left: none">
@@ -70,6 +104,7 @@ export default {
       loading: false,
       spinning: false,
       goodsList: [],
+      goodsList1: [],
       isProductOrder: false,
       queryonedata1: {},
       isSee: false,
@@ -86,30 +121,39 @@ export default {
   },
   mounted() {
     if (this.queryonedata1.logisticsGoodsContracts) {
-      this.goodsList = this.queryonedata1.logisticsGoodsContracts
+      this.goodsList = this.queryonedata1.logisticsGoodsContracts.filter((i) => i.type === 1)
+      this.goodsList1 = this.queryonedata1.logisticsGoodsContracts.filter((i) => i.type === 2)
     }
     if (this.$parent.routeParams.typeName === 'see') {
       this.isSee = true
     }
   },
   methods: {
-    applyFor() {
+    applyFor(react) {
       //打开新增上传模板
-      this.$refs.normalUpload.query()
+      this.$refs.normalUpload.query(react)
     },
     specialList(data) {
       //接收子组件传的数据
-      this.goodsList.push(data)
+      if (data.type === 1) {
+        this.goodsList.push(data)
+      } else {
+        this.goodsList1.push(data)
+      }
     },
     deletes(id) {
       this.goodsList.splice(id, 1)
+    },
+    deletes1(id) {
+      this.goodsList1.splice(id, 1)
     },
     delete_list(idurl) {
       this.$refs.xdocView.query(idurl)
     },
     //退出
     next() {
-      this.$router.push({ name: 'distribution_logistics' })
+      const _this = this
+      _this.$router.go(-1)
     },
     // handler 表单数据验证成功后回调事件
     handleSubmit(e) {
@@ -126,10 +170,10 @@ export default {
       const that = this
 
       let params = {
-        logisticsGoodsContracts: that.goodsList,
+        logisticsGoodsContracts: [...that.goodsList, ...that.goodsList1],
       }
       let valuer = { ...that.queryonedata, ...params }
-      if (that.goodsList.length > 0) {
+      if (that.goodsList.length > 0 && that.goodsList1.length > 0) {
         that.spinning = true
         logisticsPreservation(valuer).then((res) => {
           if (res.code === 200) {
@@ -141,7 +185,7 @@ export default {
           }
         })
       } else {
-        that.$message.error('货物合同不能为空！')
+        that.$message.error('货物合同或合作协议不能为空！')
       }
     },
     // 上一步

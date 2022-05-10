@@ -75,11 +75,22 @@
             <template v-if="queryParam.searchStatus !== '1'">
               <a @click="handleAdd('veiw', record)">查看</a>
             </template>
-            <template v-if="queryParam.searchStatus === '0' && record.productInfoList.some((i) => i.isWarranty === 1)">
+            <template
+              v-if="
+                queryParam.searchStatus === '0' &&
+                record.productInfoList.some((i) => i.isWarranty === 1) &&
+                (record.paymentType === 0 || record.paymentType === 1)
+              "
+            >
               <a-divider type="vertical" />
               <a @click="accessorAdd('add', record)">配件销售合同</a>
             </template>
             <template v-if="queryParam.searchStatus === '1'">
+              <a @click="handleAdd('edit', record)">处理</a>
+            </template>
+            <!-- 已处理 待完结 也显示处理按钮 -->
+            <template v-if="+queryParam.searchStatus === 2 && +record.status === 2">
+              <a-divider type="vertical" />
               <a @click="handleAdd('edit', record)">处理</a>
             </template>
             <template>

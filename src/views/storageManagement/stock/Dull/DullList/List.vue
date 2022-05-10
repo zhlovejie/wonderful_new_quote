@@ -117,7 +117,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     key: 'subUnit',
     dataIndex: 'subUnit',
   },

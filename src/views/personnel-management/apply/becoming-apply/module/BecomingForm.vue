@@ -293,6 +293,32 @@
                     </a-form-item>
                   </td>
                 </tr>
+
+                <tr v-if="isEditSalary || (isView && this.record.state === 2)">
+                  <td>转正考核工资</td>
+                  <td colspan="2">
+                    <a-form-item>
+                      <a-input-number
+                        style="width: 100%"
+                        :disabled="isView"
+                        placeholder="转正考核工资"
+                        :min="0"
+                        :max="100000000"
+                        :step="1"
+                        v-decorator="[
+                          'fullMemberAssessSalary',
+                          { rules: [{ required: false, message: '输入转正考核工资' }] },
+                        ]"
+                      />
+                    </a-form-item>
+                  </td>
+                  <td></td>
+                  <td colspan="2">
+                    
+                  </td>
+                </tr>
+
+
               </table>
             </td>
           </tr>
@@ -497,6 +523,7 @@ export default {
                 ...{
                   fullMemberBasicSalary: res.data.fullMemberBasicSalary,
                   fullMemberPostSalary: res.data.fullMemberPostSalary,
+                  fullMemberAssessSalary:res.data.fullMemberAssessSalary
                 },
               })
             )
@@ -594,9 +621,12 @@ export default {
       let that = this
       that.form.validateFields((err, values) => {
         if (!err) {
+          let fullMemberSalary = Number(values.fullMemberSalary) || 0
+          let fullMemberBasicSalary = Number(values.fullMemberBasicSalary) || 0
+          let fullMemberPostSalary = Number(values.fullMemberPostSalary) || 0
+          let fullMemberAssessSalary = Number(values.fullMemberAssessSalary) || 0
           if (
-            Number(values.fullMemberSalary) !==
-            Number(values.fullMemberPostSalary) + Number(values.fullMemberBasicSalary)
+            fullMemberSalary !== (fullMemberBasicSalary + fullMemberPostSalary + fullMemberAssessSalary)
           ) {
             return this.$message.error('转正总工资 = 转正基本工资 + 转正岗位工资')
           }
@@ -605,6 +635,7 @@ export default {
             fullMemberSalary: values.fullMemberSalary,
             fullMemberPostSalary: values.fullMemberPostSalary,
             fullMemberBasicSalary: values.fullMemberBasicSalary,
+            fullMemberAssessSalary:values.fullMemberAssessSalary,
             proposerId: this.survey.proposerId,
           }
           that.spinning = true

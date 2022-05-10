@@ -517,6 +517,7 @@ export default {
   watch: {
     $route(to, from) {
       if (to.name === 'ReceiptAdd') {
+        this.contractType = this.$route.params.contractType
         this.init()
       }
     },
@@ -644,6 +645,7 @@ export default {
         })
         //产品信息内的产品列表
         that.dataSource = productDataSource
+
         //总订货清单
         that.setDataSource(contractResult)
         //获取已发货产品
@@ -672,6 +674,9 @@ export default {
           .catch((err) => {
             console.log(err)
           })
+
+        that.visibleBoolean = true
+        
       } else {
         //原新增处理方式
         goAdd().then((res) => that.form.setFieldsValue({ receiptCode: res.data }))
@@ -686,7 +691,6 @@ export default {
       }
       this.$refs.receiptContract.query({ type: 0 })
     },
-
     //接收弹出单据数据
     receiptChange(data) {
       this.Deduction = data
@@ -819,6 +823,8 @@ export default {
               productName: product.contractProductPo.productName,
               productTypeName: product.productType,
               productStandard: product.contractProductPo.productModel,
+              productModel:product.contractProductPo.productModel,
+              countMoney:Number(__price).toFixed(2),
               //price: product.count * product.unitPrice*(product.taxRate/100+1),
               price: Number(__price).toFixed(2),
               receivable: Number(__receivable).toFixed(2),
@@ -842,13 +848,18 @@ export default {
               targetName: product.targetName,
               productType: product.productType,
               productStandard: product.contractProductPo.productModel,
+              productModel:product.contractProductPo.productModel,
               company: product.company,
               count: product.count,
               amountMoney: Math.round(product.count * product.unitPrice),
+              countMoney: Math.round(product.count * product.unitPrice),
             })
           }
 
           this.dataSource = listProduct.filter((item) => +item.receivable < +item.price)
+
+          this.visibleBoolean = true
+
           this.dataSourceContract = listProductContract
           //this.dataSourceUnshipped = JSON.parse(JSON.stringify(listProductContract))
           this.dataSourceUnshipped = listProductContract
@@ -885,6 +896,7 @@ export default {
               targetName: product.products.targetName,
               productType: product.products.productType,
               productStandard: product.products.contractProductPo.productModel,
+              productModel: product.products.contractProductPo.productModel,
               company: product.products.company,
               count: product.invoiceCount,
               amountMoney: Math.round(product.products.count * product.products.unitPrice),
@@ -938,6 +950,7 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
+          debugger
           if (!this.visibleBoolean) {
             this.$message.error('请先补全产品信息数据')
             that.spinning = false
@@ -948,11 +961,17 @@ export default {
             return this.$message.error('抵扣金额必须小于等于预收款单金额 不得大于')
           }
           var money = Number(0)
-          for (const key in this.dataSource) {
-            // 需要数据转换
-            this.dataSource[key].payType = this.dataSource[key].payTypeNew
-            this.dataSource[key].currency = this.dataSource[key].currencyNew
-            money += Number(this.dataSource[key].paidMoney)
+
+          // 没有产品时特殊处理 取 本次收款金额 输入的金额
+          if(this.dataSource.length === 0){
+            money = Number(values.paidMoney) || 0
+          }else{
+            for (const key in this.dataSource) {
+              // 需要数据转换
+              this.dataSource[key].payType = this.dataSource[key].payTypeNew
+              this.dataSource[key].currency = this.dataSource[key].currencyNew
+              money += Number(this.dataSource[key].paidMoney)
+            }
           }
           this.$set(values, 'receiptDetails', this.dataSource)
           this.$set(values, 'paidMoney', money)
@@ -964,7 +983,7 @@ export default {
           values.receiptTime = values.receiptTime.format('YYYY-MM-DD')
           console.log(values)
           values.saleAdvancesId = this.Deduction.id
-          //return
+          // return
           if (that.isEdit) {
             values.id = that.$route.params.id
             that.spinning = true
@@ -1023,7 +1042,7 @@ export default {
         this.$message.error('请输入币率')
         return
       }
-      this.$message.info('保存成功')
+      // this.$message.info('保存成功')
       this.visibleBoolean = true
     },
     setDataSource(data) {

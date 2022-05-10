@@ -41,7 +41,7 @@
           target="_blank"
           style="margin-left: 10px"
           class="a-button ant-btn ant-btn-primary"
-          href="http://192.168.13.251/images/cloud/20210323/基本工资模板733a880c-90a7-48f8-8fd6-feadfd284240.xlsx"
+          href="http://linkbin.net/images/cloud/20220221/基本工资模板(1)b1b21795-fa56-4928-a942-0bc7d9656953.xlsx"
           >下载模板</a
         >
       </template>
@@ -155,6 +155,12 @@ const columns = [
         title: '岗位工资',
         dataIndex: 'realityPostSalary',
         key: 'realityPostSalary',
+      },
+      {
+        align: 'center',
+        title: '考核工资',
+        dataIndex: 'realityAssessSalary',
+        key: 'realityAssessSalary',
       },
     ],
   },

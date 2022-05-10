@@ -52,7 +52,7 @@
       <a-alert :message="searchTotalMoney" type="info" />
       <a-col>
         <div>
-          <a-tabs defaultActiveKey="0" @change="paramClick">
+          <a-tabs :defaultActiveKey="contractState" @change="paramClick">
             <a-tab-pane tab="我的" key="0" forceRender> </a-tab-pane>
 
             <template v-if="$auth('receipt:approval')">
@@ -89,15 +89,15 @@
             <template v-if="$auth('receipt:one')">
               <a @click="handleVue(record)">查看</a>
             </template>
-            <template v-if="$auth('receipt:edit') && audit">
+            <template v-if="$auth('receipt:edit') && +contractState === 4">
               <a-divider type="vertical" />
               <a @click="handleAudit(record)">审核</a>
             </template>
             <template
               v-if="
                 $auth('receipt:edit') &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
-                userInfo.id === record.createdId
+                  (+record.receiptStatus === 3 || +record.receiptStatus === 9) &&
+                  userInfo.id === record.createdId
               "
             >
               <a-divider type="vertical" />
@@ -106,15 +106,15 @@
             <template
               v-if="
                 $auth('receipt:del') &&
-                !audit &&
-                userInfo.id === record.createdId &&
-                (+record.receiptStatus === 3 || +record.receiptStatus === 9)
+                  +contractState === 0 &&
+                  userInfo.id === record.createdId &&
+                  (+record.receiptStatus === 3 || +record.receiptStatus === 9)
               "
             >
               <a-divider type="vertical" />
               <a class="delete" @click="() => del(record)">删除</a>
             </template>
-            <template v-if="!audit && record.receiptStatus === 1">
+            <template v-if="+contractState === 0 && record.receiptStatus === 1">
               <a-divider type="vertical" />
               <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('reback', record)">
                 <a type="primary" href="javascript:;">撤回</a>
@@ -177,7 +177,7 @@ import {
   getContractOne,
   getServiceList,
   revocationReceipt,
-  receiptGetSumAmountByList,
+  receiptGetSumAmountByList
 } from '@/api/receipt'
 import ReceiptAdd from './ReceiptAdd'
 import InvestigateNode from '../record/InvestigateNode'
@@ -191,7 +191,7 @@ const innerColumns = [
     dataIndex: 'productModel',
     key: 'productModel',
     width: '200px',
-    scopedSlots: { customRender: 'productModel' },
+    scopedSlots: { customRender: 'productModel' }
   },
   {
     align: 'center',
@@ -199,7 +199,7 @@ const innerColumns = [
     dataIndex: 'productName',
     key: 'productName',
     scopedSlots: { customRender: 'productName' },
-    width: '200px',
+    width: '200px'
   },
   {
     align: 'center',
@@ -207,7 +207,7 @@ const innerColumns = [
     dataIndex: 'countMoney',
     key: 'countMoney',
     scopedSlots: { customRender: 'countMoney' },
-    width: '120px',
+    width: '120px'
   },
   {
     align: 'center',
@@ -215,7 +215,7 @@ const innerColumns = [
     dataIndex: 'paidType',
     key: 'paidType',
     width: '100px',
-    scopedSlots: { customRender: 'paidType' },
+    scopedSlots: { customRender: 'paidType' }
   },
   {
     align: 'center',
@@ -223,14 +223,14 @@ const innerColumns = [
     dataIndex: 'freightCharge',
     key: 'freightCharge',
     scopedSlots: { customRender: 'freightCharge' },
-    width: '120px',
+    width: '120px'
   },
   {
     align: 'center',
     title: '本次实收金额',
     key: 'paidMoney1',
     scopedSlots: { customRender: 'paidMoney1' },
-    width: '120px',
+    width: '120px'
   },
   {
     align: 'center',
@@ -238,8 +238,8 @@ const innerColumns = [
     dataIndex: 'settlementDiscount',
     key: 'settlementDiscount',
     scopedSlots: { customRender: 'settlementDiscount' },
-    width: '120px',
-  },
+    width: '120px'
+  }
 ]
 export default {
   name: 'ReceiptList',
@@ -248,7 +248,7 @@ export default {
     InvestigateNode,
     ReceiptAdd,
     STable,
-    SearchForm,
+    SearchForm
   },
   data() {
     return {
@@ -257,7 +257,7 @@ export default {
       // 查询参数
       queryParam: {
         dayWeekMonth: 1,
-        statue: 0,
+        statue: 0
       },
       recordResult: {},
       queryRecord: {},
@@ -272,20 +272,20 @@ export default {
       contractStatus: [
         {
           id: 0,
-          name: '请选择状态',
+          name: '请选择状态'
         },
         {
           id: 1,
-          name: '待审批',
+          name: '待审批'
         },
         {
           id: 2,
-          name: '通过',
+          name: '通过'
         },
         {
           id: 3,
-          name: '不通过',
-        },
+          name: '不通过'
+        }
       ],
       // 表头
       columns: [
@@ -298,63 +298,63 @@ export default {
         // },
         {
           title: '收款编号',
-          dataIndex: 'receiptCode',
+          dataIndex: 'receiptCode'
         },
         {
           title: '合同编号',
           dataIndex: 'contractNum',
-          scopedSlots: { customRender: 'contractNum' },
+          scopedSlots: { customRender: 'contractNum' }
         },
         {
           title: '客户名称',
           dataIndex: 'customerName',
           scopedSlots: { customRender: 'customerName' },
-          width: '200px',
+          width: '200px'
         },
         {
-          title: '销售经理',
-          dataIndex: 'saleUserName',
+          title: '负责人',
+          dataIndex: 'saleUserName'
         },
         {
           title: '收款日期',
           dataIndex: 'receiptTime',
           scopedSlots: { customRender: 'receiptTime' },
-          width: 100,
+          width: 100
         },
         {
           title: '结算方式',
-          dataIndex: 'moneyTypeName',
+          dataIndex: 'moneyTypeName'
         },
         {
           title: '本次实收金额',
           dataIndex: 'paidMoney',
-          scopedSlots: { customRender: 'paidMoney' },
+          scopedSlots: { customRender: 'paidMoney' }
         },
         {
           title: '单据状态',
           dataIndex: 'receiptStatus',
-          scopedSlots: { customRender: 'receiptStatus' },
+          scopedSlots: { customRender: 'receiptStatus' }
         },
         {
           title: '申请人',
-          dataIndex: 'createName',
+          dataIndex: 'createName'
         },
         {
           title: '申请时间',
-          dataIndex: 'createTime',
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
           dataIndex: 'id',
 
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       innerColumns: innerColumns,
       // 加载数据方法 必须为 Promise 对象
-      loadData: (parameter) => {
+      loadData: parameter => {
         console.log('开始加载数据', JSON.stringify(this.queryParam))
-        return getServiceList(Object.assign(parameter, this.queryParam)).then((res) => {
+        return getServiceList(Object.assign(parameter, this.queryParam)).then(res => {
           return res
         })
       },
@@ -367,30 +367,29 @@ export default {
       pagination: {
         showSizeChanger: true,
         pageSizeOptions: ['10', '20', '50', '100'], //每页中显示的数据
-        showTotal: (total) => `共有 ${total} 条数据`, //分页中显示总的数据
-        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction()),
+        showTotal: total => `共有 ${total} 条数据`, //分页中显示总的数据
+        onShowSizeChange: (current, pageSize) => ((this.pagination1.size = pageSize), this.searchAction())
       },
       loading: false,
       isExpanded: false, //是否展开列表子数据
       expandedRowKeys: [],
-      searchTotalMoney: '',
+      searchTotalMoney: ''
     }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
-        console.log(to.params.queryParam)
-
+      handler: function(to, from) {
         if (to.name === 'receiptList' && to.params.queryParam === undefined) {
           this.queryParam = { ...this.queryParam, dayWeekMonth: 1 }
           this.searchAction()
         } else {
           this.queryParam = to.params.queryParam
+          this.contractState = to.params.queryParam.statue
           this.searchAction()
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   methods: {
     searchAction(opt) {
@@ -399,24 +398,24 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       getServiceList(_searchParam)
-        .then((res) => {
+        .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             return item
           })
 
-          that.expandedRowKeys = that.isExpanded ? that.dataSource.map((item) => item.key) : []
+          that.expandedRowKeys = that.isExpanded ? that.dataSource.map(item => item.key) : []
 
           //设置数据总条数
           const pagination = { ...that.pagination }
           pagination.total = res.data.total
           that.pagination = pagination
         })
-        .catch((err) => (that.loading = false))
+        .catch(err => (that.loading = false))
 
       receiptGetSumAmountByList(_searchParam)
-        .then((res) => {
+        .then(res => {
           console.log(that, res)
           if (+res.code !== 200) {
             let msg = `获取【汇总合计金额】接口出错，错误代码:${res.code} 错误消息：${res.msg}。`
@@ -428,7 +427,7 @@ export default {
           }
           that.searchTotalMoney = `本次搜索汇总合计金额：${that.$root._f('moneyFormatNumber')(res.data)}`
         })
-        .catch((err) => {
+        .catch(err => {
           that.$message.error(err.message)
         })
     },
@@ -471,7 +470,7 @@ export default {
         cancelText: '取消',
         onOk() {
           // 在这里调用删除接口
-          deleteReceipt({ id: row.id }).then((res) => {
+          deleteReceipt({ id: row.id }).then(res => {
             if (res.code == 200) {
               _this.searchAction()
             } else {
@@ -483,7 +482,7 @@ export default {
         },
         onCancel() {
           console.log('Cancel')
-        },
+        }
       })
     },
     tendering(record) {
@@ -492,16 +491,16 @@ export default {
         //软件合同
         this.$router.push({
           name: 'previewSoftwareContract',
-          params: { id: record.contractId, action: 'view', from: 'receiptList' },
+          params: { id: record.contractId, action: 'view', from: 'receiptList' }
         })
       } else if (record.contractType === 1) {
         //销售合同  又细分 产品订货单、销售合同、三方合同
-        getContractOne({ id: record.contractId }).then((res) => {
+        getContractOne({ id: record.contractId }).then(res => {
           if (res.data.contractAttribute === 1) {
             //选择三方合同
             this.$router.push({
               name: 'previewTripartiteContract',
-              params: { queryOneData: res.data, from: 'receiptList' },
+              params: { queryOneData: res.data, from: 'receiptList' }
             })
             console.log('queryOneData:record', record)
           } else {
@@ -509,13 +508,13 @@ export default {
               //含税--选择销售合同
               this.$router.push({
                 name: 'previewSalesContract',
-                params: { queryOneData: res.data, from: 'receiptList' },
+                params: { queryOneData: res.data, from: 'receiptList' }
               })
               console.log('queryOneData:record', record)
             } else {
               this.$router.push({
                 name: 'previewProductOrderForm',
-                params: { queryOneData: res.data, from: 'receiptList' },
+                params: { queryOneData: res.data, from: 'receiptList' }
               })
               console.log('queryOneData:record', record)
             }
@@ -537,7 +536,7 @@ export default {
       } else {
         this.showFlag = false
       }
-      this.contractState = key
+      this.contractState = +key
 
       if (key == 4) {
         this.audit = true
@@ -556,7 +555,13 @@ export default {
       if (e.contractType === 2) {
         this.$router.push({
           name: 'ReceiptSoftwareVue',
-          params: { id: e.id, queryParam: this.queryParam },
+          params: { id: e.id, queryParam: this.queryParam }
+        })
+      }
+      if (e.contractType === 6) {
+        this.$router.push({
+          name: 'AfterSalesReceiptVue',
+          params: { id: e.id, queryParam: this.queryParam }
         })
       }
     },
@@ -572,7 +577,13 @@ export default {
       if (e.contractType === 2) {
         this.$router.push({
           name: 'ReceiptSoftwareAudit',
-          params: { id: e.id, queryParam: this.queryParam },
+          params: { id: e.id, queryParam: this.queryParam }
+        })
+      }
+      if (e.contractType === 6) {
+        this.$router.push({
+          name: 'AfterSalesReceiptAudit',
+          params: { id: e.id, queryParam: this.queryParam }
         })
       }
     },
@@ -584,10 +595,10 @@ export default {
     },
     handleEdit(record) {
       if (record.contractType === 1) {
-        this.$router.push({ name: 'ReceiptAdd', params: { id: record.id, action: 'edit' } })
+        this.$router.push({ name: 'ReceiptAdd', params: { id: record.id, action: 'edit', contractType: 1 } })
       }
       if (record.contractType === 2) {
-        this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: record.id, action: 'edit' } })
+        this.$router.push({ name: 'ReceiptSoftwareAdd', params: { id: record.id, action: 'edit', contractType: 2 } })
       }
     },
     getPayType(type) {
@@ -597,7 +608,7 @@ export default {
         2: '进度款',
         3: '验收款',
         4: '预付款',
-        5: '提货款',
+        5: '提货款'
       }
       return m[type] || '未知'
     },
@@ -606,8 +617,9 @@ export default {
     },
     paramChangeHandler(params) {
       this.isExpanded = true
+      this.pagination = { ...{ current: 1 } }
       this.queryParam = { ...this.queryParam, ...params, dayWeekMonth: this.dayWeekMonth }
-      this.searchAction()
+      this.searchAction({ current: 1 })
     },
     simpleSearch(type) {
       if (type === 4) {
@@ -628,13 +640,13 @@ export default {
       if (expanded) {
         this.expandedRowKeys = [...this.expandedRowKeys, record.key]
       } else {
-        this.expandedRowKeys = this.expandedRowKeys.filter((val) => val !== record.key)
+        this.expandedRowKeys = this.expandedRowKeys.filter(val => val !== record.key)
       }
     },
     doAction(type, record) {
       let that = this
       if (type === 'reback') {
-        revocationReceipt({ id: record.id }).then((res) => {
+        revocationReceipt({ id: record.id }).then(res => {
           that.$message.info(res.msg)
           that.searchAction()
         })
@@ -646,8 +658,8 @@ export default {
       let res = await exprotAction(3, { ...that.queryParam }, '收款单')
       console.log(res)
       that.$message.info(res.msg)
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -289,7 +289,7 @@ const columns = [
   },
   {
     align: 'center',
-    title: '主计量单位',
+    title: '采购计量单位',
     dataIndex: 'materialCommonCaculatorUnit',
     scopedSlots: { customRender: 'materialCommonCaculatorUnit' }
   },
@@ -575,7 +575,7 @@ export default {
         const { isRule, isProduct, isSubProduct } = treeNode.dataRef
         if (isRule) {
           const ruleResult = await productMaterialInfoTwoTierTreeList({ parentId: treeNode.dataRef.value })
-            .then(res => res.data)
+            .then(res => res.data || [])
             .catch(err => {
               console.log(err)
               return []
@@ -585,7 +585,7 @@ export default {
             that.orgTree = [...that.orgTree]
           } else {
             const productResult = await getAllProductMaterial({ ruleId: treeNode.dataRef.value })
-              .then(res => res.data)
+              .then(res => res.data || [])
               .catch(err => {
                 console.log(err)
                 return []
@@ -598,7 +598,7 @@ export default {
         }
         if (isProduct) {
           const subProductResult = await craftRouteListByMaterial({ materialGroupId: treeNode.dataRef.__id })
-            .then(res => res.data)
+            .then(res => res.data || [])
             .catch(err => {
               console.log(err)
               return []
@@ -887,7 +887,7 @@ export default {
       this.search()
     },
     customRowFunction(record) {
-      // useStatus 使用状态：1使用，2未使用，3逐步淘汰，4已淘汰
+      // useStatus 使用状态：{1:'常用',2:'不常用',3:'即将淘汰',4:'生产淘汰',5:'呆滞',6:'生产淘汰（售后用）'}
       // isForbidden  是否禁用：1禁用，2启用
       const { useStatus, isForbidden } = record
       return {

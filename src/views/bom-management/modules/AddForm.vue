@@ -96,7 +96,7 @@
                 </td>
               </tr>
               <tr>
-                <td>辅计量单位</td>
+                <td>使用计量单位</td>
                 <td>
                   <a-form-model-item>
                     {{ {1:'支',2:'把',3:'件'}[form.materialUnit] || form.materialUnit }}
@@ -464,7 +464,7 @@ const columnsDetail = [
   },
   {
     align: 'center',
-    title: '辅计量单位',
+    title: '使用计量单位',
     dataIndex: 'materialUnit',
     scopedSlots: { customRender: 'materialUnit' }
   },
@@ -695,13 +695,37 @@ export default {
             if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
               return []
             }
-            return res.data.records
+            let records = (res.data.records || []).map(item => {
+              item.material_id = item.id
+              item.type = 2
+              return item
+            })
+
+            let arr = []
+            records.map(r => {
+              if(!arr.find(item => item.id === r.id)){
+                arr.push({...r})
+              }
+            })
+            return arr
           }),
           productMaterialInfoPageList(_searchParam).then(res => {
             if (!(res && res.data && res.data.records && Array.isArray(res.data.records))) {
               return []
             }
-            return res.data.records
+            let records = (res.data.records || []).map(item => {
+              item.materialId = item.id
+              item.type = 1
+              return item
+            })
+
+            let arr = []
+            records.map(r => {
+              if(!arr.find(item => item.id === r.id)){
+                arr.push({...r})
+              }
+            })
+            return arr
           })
         ]
       )
@@ -735,11 +759,12 @@ export default {
       const target = that.materialFuzzySearch.list.find(item => item.materialCodeFormat === key)
       that.form = {
         ...that.form,
+        type:target.type,
         materialId: target.id,
         materialCode: target.materialCodeFormat,
         materialName: target.materialName,
         materialProperty: target.materialSource,
-        materialUnit: target.mainUnit,
+        materialUnit: target.subUnit || '',
         modelType:  'specification' in target  ? (target.specification || target.specifications) : '无'
       }
       console.log(target)
@@ -840,7 +865,10 @@ export default {
         return ''
       }
       let trimLeft = /^[0]*/g,trimRight = /[0]*$/g;
-      return codeStr.split('.').map(s => s.replace(trimLeft,'')).join(joinSymbol)
+      return codeStr.split('.').map(s => {
+        s = s.replace(trimLeft,'').replace('\\r','').replace('\\n','')
+        return s
+      }).join(joinSymbol)
     },
   }
 }

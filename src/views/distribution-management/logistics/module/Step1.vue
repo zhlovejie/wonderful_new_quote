@@ -17,8 +17,8 @@
                 <a-input
                   type="text"
                   :precision="0"
-                  style="border: none;width: 60%;"
-                  v-decorator="['logisticsOrderNo',{rules: [{ required: false, message: '物流编号' }]}]"
+                  style="border: none; width: 60%"
+                  v-decorator="['logisticsOrderNo', { rules: [{ required: false, message: '物流编号' }] }]"
                   disabled
                 />
               </a-form-item>
@@ -27,14 +27,13 @@
             <a-col class="col-border" :span="9" justify="center" align="middle">
               <a-form-item>
                 <a-date-picker
-                  style="border: none;width: 60%;"
+                  style="border: none; width: 60%"
                   show-time
                   :precision="0"
                   :disabled="isSee"
                   placeholder="日期"
                   format="YYYY-MM-DD"
-                  v-decorator="['date', {initialValue:moment(),rules: [{required: true,message: '请输入日期',},
-             ]}]"
+                  v-decorator="['date', { initialValue: moment(), rules: [{ required: true, message: '请输入日期' }] }]"
                 />
               </a-form-item>
             </a-col>
@@ -42,32 +41,40 @@
         </a-form-item>
         <a-form-item>
           <a-row type="flex">
-            <a-col class="col-border" :span="3" justify="center" align="middle">是否开票</a-col>
-            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
-              <a-form-item>
-                <a-radio-group :disabled="isSee" v-decorator="['isInvoice',{initialValue:0}]">
-                  <a-radio :value="0">否</a-radio>
-                  <a-radio :value="1">是</a-radio>
-                </a-radio-group>
-              </a-form-item>
-            </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">物流属性</a-col>
+            <a-col class="col-border" :span="3" justify="center" align="middle">付款方式</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
-                  placeholder="物流属性"
+                  :disabled="isSee"
+                  placeholder="付款方式"
+                  :allowClear="true"
+                  @change="handleCustomerClick"
+                  style="border: none; width: 60%"
+                  v-decorator="['payerType', { rules: [{ required: true, message: '请选择付款方!' }] }]"
+                >
+                  <a-select-option :value="1">回付</a-select-option>
+                  <a-select-option :value="2">现付</a-select-option>
+                  <a-select-option :value="3">到付</a-select-option>
+                  <a-select-option :value="4">包邮</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+
+            <a-col class="col-border" :span="3" justify="center" align="middle">物流类别</a-col>
+            <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
+              <a-form-item>
+                <a-select
+                  placeholder="物流类别"
                   :allowClear="true"
                   :precision="0"
                   :disabled="isSee"
-                  style="border: none;width: 60%;"
-                  v-decorator="['logisticsAttribute', {rules: [{required: true,message: '请选择物流属性!',},
-             ]}]"
+                  @change="handlechength"
+                  style="border: none; width: 60%"
+                  v-decorator="['logisticsTypeId', { rules: [{ required: true, message: '请选择物流类别!' }] }]"
                 >
-                  <a-select-option
-                    v-for="item in postSelectDataSource"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option v-for="item in postSelectDataSource" :key="item.id" :value="item.id">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -80,31 +87,39 @@
               <a-form-item>
                 <a-input-number
                   :disabled="isSee"
-                  style="width:60%;"
+                  style="width: 60%"
                   :precision="2"
                   placeholder="物流价格"
-                  v-decorator="['logisticsPrice',{rules: [{required: true,message: '请输入物流价格',},
-             ]}]"
+                  v-decorator="['logisticsPrice', { rules: [{ required: true, message: '请输入物流价格' }] }]"
                 />
               </a-form-item>
             </a-col>
-            <a-col class="col-border" :span="3" justify="center" align="middle">结算方式</a-col>
+            <a-col class="col-border" :span="3" justify="center" align="middle">付款方</a-col>
             <a-col class="col-border" :span="9" type="flex" justify="left" align="middle">
               <a-form-item>
                 <a-select
                   :disabled="isSee"
-                  placeholder="结算方式"
+                  placeholder="付款方"
                   :allowClear="true"
-                  style="border: none;width: 60%;"
-                  v-decorator="['settlementMethod', {rules: [{required: true,message: '请选择结算方式!',},
-             ]}]"
+                  style="border: none; width: 60%"
+                  v-decorator="['payer', { rules: [{ required: true, message: '请选择付款方!' }] }]"
                 >
-                  <a-select-option
-                    v-for="item in settlement"
-                    :key="item.id"
-                    :value="item.id"
-                  >{{item.text}}</a-select-option>
+                  <a-select-option :value="1">我方付款</a-select-option>
+                  <a-select-option :value="2">客户付款</a-select-option>
                 </a-select>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form-item>
+        <a-form-item>
+          <a-row type="flex">
+            <a-col class="col-border" :span="3" justify="center" align="middle">是否开票</a-col>
+            <a-col class="col-border" :span="21" type="flex" justify="left" align="middle">
+              <a-form-item>
+                <a-radio-group :disabled="isSee" v-decorator="['isInvoice']">
+                  <a-radio :value="0" style="margin: 0 50px">否</a-radio>
+                  <a-radio :value="1">是</a-radio>
+                </a-radio-group>
               </a-form-item>
             </a-col>
           </a-row>
@@ -117,10 +132,12 @@
               <a-form-item>
                 <a-input-number
                   :disabled="isSee"
-                  style="width:60%;"
+                  style="width: 60%"
                   :precision="2"
-                  v-decorator="['managementFeeWithdrawal',{rules: [{required: true,  message: '请输入管理提取数额',},
-             ]}]"
+                  v-decorator="[
+                    'managementFeeWithdrawal',
+                    { rules: [{ required: true, message: '请输入管理提取数额' }] },
+                  ]"
                 />
               </a-form-item>
             </a-col>
@@ -129,19 +146,49 @@
               <a-form-item>
                 <a-date-picker
                   :disabled="isSee"
-                  style="border: none;width: 60%;"
+                  style="border: none; width: 60%"
                   show-time
                   :precision="0"
                   placeholder="年月日"
                   format="YYYY-MM-DD"
-                  v-decorator="['preDeliveryTime', {rules: [{required: true,message: '请选择预提货日期',},
-             ]}]"
+                  v-decorator="['preDeliveryTime', { rules: [{ required: true, message: '请选择预提货日期' }] }]"
                 />
               </a-form-item>
             </a-col>
           </a-row>
         </a-form-item>
-        <a-form-item :style="{borderBottom:'1px solid #ddd'}">
+
+        <a-form-item v-if="showHandlechength">
+          <a-row type="flex">
+            <a-col class="col-border" :span="3" justify="center" align="middle">快运信息</a-col>
+            <a-col class="col-border" :span="21" justify="center" align="middle">
+              <a-col :span="2" justify="center" align="middle"></a-col>
+              <a-col :lg="6" :md="6" :sm="24">
+                <a-form-item>
+                  <a-input
+                    :disabled="isSee"
+                    :precision="0"
+                    placeholder="请输入物流名称"
+                    v-decorator="['logisticsName', { rules: [{ required: true, message: '请输入物流名称！' }] }]"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="2" justify="center" align="middle"></a-col>
+              <a-col :lg="6" :md="6" :sm="24">
+                <a-form-item>
+                  <a-input
+                    :disabled="isSee"
+                    :precision="0"
+                    placeholder="快递单号"
+                    v-decorator="['courierNumber', { rules: [{ required: true, message: '请输入快递单号' }] }]"
+                  />
+                </a-form-item>
+              </a-col>
+            </a-col>
+          </a-row>
+        </a-form-item>
+
+        <a-form-item :style="{ borderBottom: '1px solid #ddd' }">
           <a-row type="flex">
             <a-col class="col-border" :span="3" justify="center" align="middle">目的地</a-col>
             <a-col class="col-border" :span="21" justify="center" align="middle">
@@ -151,14 +198,15 @@
                     :disabled="isSee"
                     placeholder="省"
                     :precision="0"
-                    v-decorator="['province',{rules: [{required: true, message: '请选择省！'}]}]"
+                    v-decorator="['province', { rules: [{ required: true, message: '请选择省！' }] }]"
                   >
                     <a-select-option
-                      @click="getCity(1,province.id, province.area)"
+                      @click="getCity(1, province.id, province.area)"
                       v-for="province in this.provinces"
                       :key="province.index"
                       :value="province.id"
-                    >{{ province.area }}</a-select-option>
+                      >{{ province.area }}</a-select-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -168,14 +216,15 @@
                     :disabled="isSee"
                     placeholder="市"
                     :precision="0"
-                    v-decorator="['city',{rules: [{required: true, message: '请选择区！'}]}]"
+                    v-decorator="['city', { rules: [{ required: true, message: '请选择区！' }] }]"
                   >
                     <a-select-option
-                      @click="getCity(2,city.id,city.area)"
+                      @click="getCity(2, city.id, city.area)"
                       v-for="city in this.citys"
                       :key="city.index"
                       :value="city.id"
-                    >{{ city.area }}</a-select-option>
+                      >{{ city.area }}</a-select-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -185,14 +234,15 @@
                     :disabled="isSee"
                     placeholder="区"
                     :precision="0"
-                    v-decorator="['area',{rules: [{required: true, message: '请选择区！'}]}]"
+                    v-decorator="['area', { rules: [{ required: true, message: '请选择区！' }] }]"
                   >
                     <a-select-option
-                      @click="getCity(3,null,area.area)"
+                      @click="getCity(3, null, area.area)"
                       v-for="area in this.areas"
                       :key="area.index"
                       :value="area.id"
-                    >{{ area.area }}</a-select-option>
+                      >{{ area.area }}</a-select-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -202,7 +252,10 @@
                     :disabled="isSee"
                     :precision="0"
                     placeholder="请输入详细地址"
-                    v-decorator="['detailedAddressName',{rules: [{required: false, max:30, message: '详细地址最少为5个字符！'}]}]"
+                    v-decorator="[
+                      'detailedAddressName',
+                      { rules: [{ required: false, max: 30, message: '详细地址最少为5个字符！' }] },
+                    ]"
                   />
                 </a-form-item>
               </a-col>
@@ -211,7 +264,7 @@
         </a-form-item>
 
         <a-form-item>
-          <div style="margin: 16px auto 0;width: 100px;">
+          <div style="margin: 16px auto 0; width: 100px">
             <a-button type="primary" @click="nextStep">下一步</a-button>
           </div>
         </a-form-item>
@@ -237,6 +290,7 @@ export default {
     return {
       postSelectDataSource: [], //物流属性数据字典
       settlement: [], //结算方式 数据字典
+      showHandlechength: false,
       oneLBCol: {
         xs: { span: 4 },
         sm: { span: 4 },
@@ -290,7 +344,7 @@ export default {
       .catch(function (err) {
         console.log(err)
       })
-    getDictionaryList({ parentId: 541 }).then((res) => {
+    getDictionaryList({ parentId: '924' }).then((res) => {
       this.postSelectDataSource = res.data
     })
     getDictionaryList({ parentId: 542 }).then((res) => {
@@ -299,6 +353,21 @@ export default {
   },
   methods: {
     moment,
+    handleCustomerClick(e) {
+      if (e == 1) {
+        this.form.setFieldsValue({
+          isInvoice: 1,
+        })
+      } else {
+        this.form.setFieldsValue({
+          isInvoice: 0,
+        })
+      }
+    },
+    handlechength(e) {
+      console.log(e)
+      this.showHandlechength = e === 931 ? true : false
+    },
     quweyData() {
       let qt = this.queryonedata1 ? this.queryonedata1 : {}
       if (JSON.stringify(qt) != '{}') {
@@ -311,20 +380,27 @@ export default {
       if (JSON.stringify(qt) != '{}') {
         this.freightType = qt.freightType
         qt.addressNumber = (qt.addressNumber || '').split(',')
-        this.form.setFieldsValue({
-          id: qt.id,
-          logisticsOrderNo: qt.logisticsOrderNo,
-          date: moment(qt.date),
-          isInvoice: qt.isInvoice,
-          settlementMethod: qt.settlementMethod,
-          logisticsAttribute: qt.logisticsAttribute,
-          logisticsPrice: qt.logisticsPrice,
-          managementFeeWithdrawal: qt.managementFeeWithdrawal,
-          preDeliveryTime: moment(qt.preDeliveryTime),
-          province: Number(qt.addressNumber[0]),
-          city: Number(qt.addressNumber[1]),
-          area: Number(qt.addressNumber[2]),
-          detailedAddressName: qt.detailedAddressName,
+        this.showHandlechength = qt.logisticsTypeId === 931 ? true : false
+        console.log(qt)
+        this.$nextTick(() => {
+          this.form.setFieldsValue({
+            id: qt.id,
+            logisticsOrderNo: qt.logisticsOrderNo,
+            payer: qt.payer,
+            logisticsTypeId: qt.logisticsTypeId,
+            logisticsName: qt.logisticsName,
+            courierNumber: qt.courierNumber,
+            payerType: qt.payerType,
+            date: moment(qt.date),
+            isInvoice: qt.isInvoice,
+            logisticsPrice: qt.logisticsPrice,
+            managementFeeWithdrawal: qt.managementFeeWithdrawal,
+            preDeliveryTime: moment(qt.preDeliveryTime),
+            province: Number(qt.addressNumber[0]),
+            city: Number(qt.addressNumber[1]),
+            area: Number(qt.addressNumber[2]),
+            detailedAddressName: qt.detailedAddressName,
+          })
         })
       }
     },
@@ -383,6 +459,8 @@ export default {
           values.id = that.queryonedata.id
         }
         if (!err) {
+          let react = this.postSelectDataSource.find((i) => i.id === values.logisticsTypeId)
+          values.logisticsTypeName = react.text
           values.preDeliveryTime = moment(values.preDeliveryTime).format('YYYY-MM-DD')
           values.date = moment(values.date).format('YYYY-MM-DD')
           values.addressName = that.province + ',' + that.city + ',' + that.area

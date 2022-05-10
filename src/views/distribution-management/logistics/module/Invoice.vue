@@ -8,18 +8,18 @@
     @cancel="handleCancel"
   >
     <a-card :bordered="false">
-      <div class="table-page-search-wrapper" style="margin-bottom: 20px;">
+      <div class="table-page-search-wrapper" style="margin-bottom: 20px">
         <a-input
           placeholder="客户名称"
           v-model="queryParam.customerName"
           allowClear
-          style="width: 200px;margin-right:10px;"
+          style="width: 200px; margin-right: 10px"
         />
         <a-select
           placeholder="运费结算方式"
           v-model="queryParam.delivery"
           :allowClear="true"
-          style="width: 200px;margin-right:10px;"
+          style="width: 200px; margin-right: 10px"
         >
           <a-select-option :value="1">代付</a-select-option>
           <a-select-option :value="2">包邮</a-select-option>
@@ -29,37 +29,32 @@
           placeholder="发放方式"
           v-model="queryParam.settlementMethod"
           :allowClear="true"
-          style="width: 200px;margin-right:10px;"
+          style="width: 200px; margin-right: 10px"
         >
           <a-select-option :value="1">客户货站自提</a-select-option>
           <a-select-option :value="2">送货上门</a-select-option>
           <a-select-option :value="3">万德福自提</a-select-option>
         </a-select>
-        <a-button style="margin-left:10px;" type="primary" @click="searchAction()">查询</a-button>
+        <a-button style="margin-left: 10px" type="primary" @click="searchAction()">查询</a-button>
       </div>
       <a-layout>
         <!--  此处编写表单中的功能按钮    -->
-        <a-table
-          :columns="columns"
-          :data-source="dataSource"
-          @change="handleTableChange "
-          :pagination="pagination"
-        >
+        <a-table :columns="columns" :data-source="dataSource" @change="handleTableChange" :pagination="pagination">
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
           </div>
           <div slot="settlementMethod" slot-scope="text">
-            <span v-if="text==1">代付</span>
-            <span v-if="text==2">包邮</span>
-            <span v-if="text==3">到付</span>
+            <span v-if="text == 1">代付</span>
+            <span v-if="text == 2">包邮</span>
+            <span v-if="text == 3">到付</span>
           </div>
           <div slot="delivery" slot-scope="text">
-            <span v-if="text==1">客户货站自提</span>
-            <span v-if="text==2">送货上门</span>
-            <span v-if="text==3">万德福自提</span>
+            <span v-if="text == 1">客户货站自提</span>
+            <span v-if="text == 2">送货上门</span>
+            <span v-if="text == 3">万德福自提</span>
           </div>
-          <div slot="invoiceNum" slot-scope="text ,record">
-            <a @click="InvoiceNumber(record)">{{text}}</a>
+          <div slot="invoiceNum" slot-scope="text, record">
+            <a @click="InvoiceNumber(record)">{{ text }}</a>
           </div>
         </a-table>
       </a-layout>
@@ -68,7 +63,7 @@
 </template>
 <script>
 import moment from 'moment'
-import { getList } from '@/api/distribution-management'
+import { getList, listMaterialInfoByCodes } from '@/api/distribution-management'
 
 export default {
   data() {
@@ -181,8 +176,20 @@ export default {
     },
     InvoiceNumber(record) {
       //抛出去
-      this.$emit('selected', record)
-      this.visible = false
+      let react = record.products
+        .map((i) => {
+          return i.productModel
+        })
+        .toString()
+      listMaterialInfoByCodes({ codes: react }).then((res) => {
+        let react = res.data.every((i) => i.squareNum)
+        if (res.code === 200 && res.data.length > 0 && react) {
+          this.$emit('selected', record)
+          this.visible = false
+        } else {
+          this.$message.error('此数据没有配置方数')
+        }
+      })
     },
   },
 }

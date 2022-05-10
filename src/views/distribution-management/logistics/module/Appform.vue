@@ -77,6 +77,7 @@ export default {
       //   上传文件
       fileList: [],
       fileType: undefined,
+      type: '',
     }
   },
 
@@ -127,8 +128,9 @@ export default {
       //打开高拍仪
       this.$refs.gaoPaiYiDevices.show()
     },
-    query() {
+    query(type) {
       this.visible = true
+      this.type = type
     },
 
     handleOk() {
@@ -136,6 +138,7 @@ export default {
       that.form.validateFields((err, values) => {
         if (!err) {
           values.url = that.fileType || values.url.fileList[0].response.data
+          values.type = this.type
           that.$emit('msgId', values)
           that.fileList = []
           that.fileType = undefined

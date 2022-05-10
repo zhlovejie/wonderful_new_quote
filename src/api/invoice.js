@@ -1,7 +1,9 @@
-import { axios } from '@/utils/request'
+import {
+  axios
+} from '@/utils/request'
 import system from '@/config/defaultSettings'
 
-export function deleteInvoice (parameter) {
+export function deleteInvoice(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/delete',
@@ -11,7 +13,7 @@ export function deleteInvoice (parameter) {
 }
 
 // 获取发货单列表
-export function getInvoiceList (parameter) {
+export function getInvoiceList(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/getPageList',
@@ -20,7 +22,7 @@ export function getInvoiceList (parameter) {
   })
 }
 // 获取发货编号
-export function getInvoiceNum (parameter) {
+export function getInvoiceNum(parameter) {
   console.log('获取发货编号', parameter)
   return axios({
     baseURL: system.baseURL,
@@ -34,11 +36,24 @@ export function getInvoiceNum (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function invoiceSaleContract (parameter) {
+export function invoiceSaleContract(parameter) {
   console.log('invoiceSaleContract manages' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/listContract',
+    method: 'get',
+    params: parameter
+  })
+}
+/**
+ * 发货单 查询合同判断入参合同id，判断当前合同是否存在未出库发货单，如果返回true表示有发货单，
+ * @param parameter
+ * @returns {*}
+ */
+export function isOutboundByContractId(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/invoice/isOutboundByContractId',
     method: 'get',
     params: parameter
   })
@@ -49,8 +64,7 @@ export function invoiceSaleContract (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function getContractOne (parameter) {
-  console.log('getContractOne manages' + JSON.stringify(parameter))
+export function getContractOne(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/sale-contract/queryOne',
@@ -64,7 +78,7 @@ export function getContractOne (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function save (parameter) {
+export function save(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/save',
@@ -78,7 +92,7 @@ export function save (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function updateInvoice (parameter) {
+export function updateInvoice(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/updateInvoice',
@@ -93,7 +107,7 @@ export function updateInvoice (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function auditInvoice (parameter) {
+export function auditInvoice(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/auditInvoice',
@@ -106,7 +120,7 @@ export function auditInvoice (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function update (parameter) {
+export function update(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/update',
@@ -120,7 +134,7 @@ export function update (parameter) {
  * @param parameter
  * @returns {*}
  */
-export function getProductById (parameter) {
+export function getProductById(parameter) {
   console.log('getProductById manages' + JSON.stringify(parameter))
   return axios({
     baseURL: system.baseURL,
@@ -131,7 +145,7 @@ export function getProductById (parameter) {
 }
 
 /**发货单 撤回 */
-export function revocationInvoice (parameter) {
+export function revocationInvoice(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/revocation',
@@ -141,7 +155,7 @@ export function revocationInvoice (parameter) {
 }
 
 /**发货单 -无权限 */
-export function getInvoicePageListDropDown (parameter) {
+export function getInvoicePageListDropDown(parameter) {
   return axios({
     baseURL: system.baseURL,
     url: '/invoice/getPageListDropDown',
