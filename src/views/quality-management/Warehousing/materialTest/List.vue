@@ -1,53 +1,35 @@
 <template>
-  <!-- 原料出库申请单 -->
+  <!-- 出库原料质检 -->
   <div class="wdf-custom-wrapper" id="agency-contract-wrapper">
-    <!-- 筛选-开始 -->
-    <div class="search-wrapper">
-      <a-form layout="inline">
-        <a-form-item>
-          <a-select placeholder="选择加工商" v-model="searchParam.facId" style="width: 150px" :allowClear="true">
-            <a-select-option :value="1">加工商A</a-select-option>
-            <a-select-option :value="2">加工商B</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-select
-            placeholder="选择物料"
-            v-model="searchParam.materialId"
-            style="width: 250px"
-            :allowClear="true"
-            show-search
-            option-filter-prop="children"
-            :filter-option="filterOption"
-          >
-            <a-select-option v-for="val in storageMaterialList" :key="val.materialId" :value="val.materialId">{{
-              `${val.materialName}(${val.materialCode})`
-            }}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-select placeholder="选择加工单号" v-model="searchParam.orderId" style="width: 150px" :allowClear="true">
-            <a-select-option :value="1">wwjgd0001</a-select-option>
-            <a-select-option :value="2">wwjgd0002</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-input
-            placeholder="委外加工单号/物料名称/出库单号模糊搜索"
-            v-model="searchParam.parameter"
-            style="width:300px;"
-          />
-        </a-form-item>
-        <a-form-item>
-          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
-        </a-form-item>
-      </a-form>
+    <div>
+      <a-button-group>
+        <a-button type="primary" :class="{ currentsearchType: searchType === 1 }" @click="simpleSearch(1)"
+          >今天</a-button
+        >
+        <a-button type="primary" :class="{ currentsearchType: searchType === 2 }" @click="simpleSearch(2)"
+          >本周</a-button
+        >
+        <a-button type="primary" :class="{ currentsearchType: searchType === 3 }" @click="simpleSearch(3)"
+          >本月</a-button
+        >
+        <a-button type="primary" :class="{ currentsearchType: searchType === 4 }" @click="simpleSearch(4)"
+          >全部</a-button
+        >
+      </a-button-group>
+      <a-button
+        class="a-button"
+        style="margin-bottom: 20px; margin-left: 10px"
+        type="primary"
+        icon="search"
+        @click="openSearchModel"
+        >高级筛选</a-button
+      >
     </div>
-    <!-- 筛选-结束 -->
+
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="待出库" key="0" />
-        <a-tab-pane tab="已出库" key="1" />
+        <a-tab-pane tab="待处理" key="0" />
+        <a-tab-pane tab="已完结" key="1" />
       </a-tabs>
       <a-table
         rowKey="id"
@@ -62,21 +44,20 @@
         </div>
         <!-- 操作按钮：查看详情/删除
         查看详情：各种状态均可查看详情
-        删除：待出库 且 当前登录人为创建人 -->
+        删除：待处理 且 当前登录人为创建人 -->
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" v-if="$auth('exWarehouseMaterialList:view')" @click="doAction('view', record)">查看</a>
-          <a type="primary" @click="doAction('edit', record)">测试编辑</a>
-          <template
-            v-if="
-              [0].includes(+record.status) &&
-                $auth('exWarehouseMaterialList:delete') &&
-                +userInfo.id === +record.createdId
-            "
-          >
+          <a type="primary" @click="doAction('view', record)">查看</a>
+          <template v-if="[0].includes(+record.status) && +userInfo.id === +record.createdId">
             <a-divider type="vertical" />
-            <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
-              <a type="primary" href="javascript:;">删除</a>
-            </a-popconfirm>
+            <a type="primary" @click="doAction('del', record)">删除</a>
+          </template>
+          <template v-if="+record.status === 0">
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('over', record)">处理</a>
+          </template>
+          <template v-if="+record.status === 1">
+            <a-divider type="vertical" />
+            <a type="primary" v-download="record.wordUrl">下载凭证</a>
           </template>
         </div>
         <!-- 原料出库产品表  开始 -->
@@ -84,7 +65,7 @@
           slot="expandedRowRender"
           slot-scope="record"
           :columns="innerColumns"
-          :dataSource="record.exWarehouseMaterialList"
+          :dataSource="record.materialList"
           :pagination="false"
           size="small"
         >
@@ -104,17 +85,16 @@
       </a-table>
     </div>
     <AddForm ref="addForm" @ok="() => searchAction()" />
+    <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </div>
 </template>
 
 <script>
 import {
-  materialOutPageList, //原料出库申请单-列表
-  materialOutDelete //原料出库申请单-删除
+  materialTestPageList, //出库原料质检-列表
+  materialTestDelete //出库原料质检-删除
 } from '@/api/material'
-import {
-  exWarehouseApplyGetMaterial //条件检索-物料列表
-} from '@/api/storage_wzz'
+import SearchForm from './SearchForm'
 import AddForm from './AddForm'
 
 const columns = [
@@ -125,8 +105,8 @@ const columns = [
     scopedSlots: { customRender: 'order' }
   },
   {
-    title: '出库单号',
-    dataIndex: 'exWarehouseNo'
+    title: '检验单号',
+    dataIndex: 'inspectionNo'
   },
   {
     title: '委外加工单号',
@@ -137,16 +117,20 @@ const columns = [
     dataIndex: 'facName'
   },
   {
-    title: '出库状态',
-    dataIndex: 'statusText'
-  },
-  {
-    title: '提交人',
+    title: '报检人',
     dataIndex: 'createdName'
   },
   {
-    title: '提交时间',
+    title: '报检时间',
     dataIndex: 'createdTime'
+  },
+  {
+    title: '质检员',
+    dataIndex: 'inspectionUserName'
+  },
+  {
+    title: '单据状态',
+    dataIndex: 'statusText'
   },
   {
     title: '操作',
@@ -184,31 +168,28 @@ const innerColumns = [
     dataIndex: 'subUnit'
   },
   {
-    title: '待出库数量',
+    title: '出库数量',
     dataIndex: 'exWarehouseNum'
   },
   {
     title: '原料送取',
     dataIndex: 'sendType', //原料送取(1:委托方送货,2:加工商提货)
     scopedSlots: { customRender: 'sendType' }
-  },
-  {
-    title: '实际出库数量',
-    dataIndex: 'realityExWarehouseNum'
   }
 ]
 
 export default {
-  name: 'stock_management_export_apply',
+  name: 'quality-management_Warehousing_material_test',
   components: {
-    AddForm
+    AddForm,
+    SearchForm
   },
   data() {
     return {
       activeKey: 0,
+      dataSource: [], //出库原料质检列表
       columns,
       innerColumns,
-      dataSource: [], //原料出库申请单列表
       pagination: {
         //分页加载
         current: 1,
@@ -219,12 +200,8 @@ export default {
         showTotal: total => `共有 ${total} 条数据`
       },
       loading: false,
-      searchParam: {
-        facId: undefined, //加工商id
-        materialId: undefined, //物料id
-        orderId: undefined, //委外加工单id
-        parameter: '' //模糊检索关键词
-      },
+      searchType: 1, //查询周期类型：1、今日 2、本周 3、本月 4、全部")
+      searchParam: {},
       userInfo: this.$store.getters.userInfo, //当前登录人
       storageMaterialList: [] //物料列表
     }
@@ -232,44 +209,52 @@ export default {
   watch: {
     $route: {
       handler: function(to) {
-        if (to.name === 'stock_management_material_apply') {
-          this.init()
+        if (to.name === 'quality-management_Warehousing_material_first') {
+          this.searchAction()
         }
       },
       immediate: true
     }
   },
-  created() {
-    this.init()
+  mounted() {
+    this.searchAction()
   },
-  mounted() {},
   methods: {
-    //获取初始数据源-物料列表
-    init() {
-      let that = this
-      that.searchParam = { ...that.searchParam, status: that.activeKey }
-      let queue = []
-      let task1 = exWarehouseApplyGetMaterial().then(res => (that.storageMaterialList = res.data))
-      queue.push(task1)
-      that.searchAction()
-      return Promise.all(queue)
+    //高级筛选打开
+    openSearchModel() {
+      this.$refs.searchForm.query(this.contractState)
     },
-    // 查询-原料出库申请单列表
+    //高级筛选返回数据
+    paramChangeHandler(params) {
+      this.searchParam = params
+      this.searchAction()
+    },
+    //简单筛选-今天/本周/本月/全部
+    simpleSearch(type) {
+      this.searchType = type
+      this.searchAction()
+    },
+    // 查询-出库原料质检列表
     searchAction(opt = {}) {
       let that = this
       const paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
-      const _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
+      const _searchParam = Object.assign(
+        {},
+        { ...this.searchParam, searchType: this.searchType, status: this.activeKey },
+        paginationParam,
+        opt
+      )
       this.loading = true
-      materialOutPageList(_searchParam)
+      materialTestPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            // 单据状态（0 待出库 1已出库）
-            item.statusText = { 0: '待出库', 1: '已出库' }[item.status] || '未知'
+            // 单据状态（0 待处理 1已处理）
+            item.statusText = { 0: '待处理', 1: '已处理' }[item.status] || '未知'
             return item
           })
 
@@ -287,7 +272,7 @@ export default {
         })
         .catch(() => (that.loading = false))
     },
-    // 列表-分页、排序、筛选变化时触发
+    //列表-分页、排序、筛选变化时触发
     handleTableChange(pagination) {
       const pager = pagination
       if (+pager.pageSize !== +pager._prePageSize) {
@@ -301,7 +286,7 @@ export default {
     doAction(actionType, record) {
       let that = this
       if (actionType === 'del') {
-        materialOutDelete({ id: record.id })
+        materialTestDelete({ id: record.id })
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -313,10 +298,9 @@ export default {
         that.$refs.addForm.query(actionType, record || {})
       }
     },
-    // 切换 待出库/已出库 选项卡，并刷新数据
+    //选项卡切换，并刷新数据
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
-      this.searchParam = { ...this.searchParam, status: this.activeKey }
       this.searchAction({ current: 1 })
     },
     //筛选-选择物料-是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
@@ -330,9 +314,9 @@ export default {
 <style scoped>
 .wdf-custom-wrapper {
   background-color: #fff;
-  padding: 10px 20px;
+  padding: 24px;
 }
-.main-wrapper {
-  margin-top: 20px;
+.currentsearchType {
+  opacity: 0.7;
 }
 </style>

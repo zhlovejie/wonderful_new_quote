@@ -131,6 +131,24 @@ export default {
             title: '报废检验记录单',
             permission: ['permission']
           }
+        },
+        {
+          path: '/quality-management/Warehousing/material-test',
+          name: 'quality-management_Warehousing_material_test',
+          component: () => import('@/views/quality-management/Warehousing/materialTest/List'),
+          meta: {
+            title: '出库原料质检',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/quality-management/Warehousing/material-first',
+          name: 'quality-management_Warehousing_material_first',
+          component: () => import('@/views/quality-management/Warehousing/materialFirst/List'),
+          meta: {
+            title: '委外原料首检',
+            permission: ['permission']
+          }
         }
       ]
     },
@@ -155,6 +173,6 @@ export default {
         keepAlive: false,
         permission: ['permission']
       }
-    },
+    }
   ]
 }
