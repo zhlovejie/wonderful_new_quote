@@ -79,7 +79,7 @@
                 </a-form-item>
 
                 <!-- 设置了运费，并且 运费结算方式 为 代付和包邮 才显示 -->
-                <a-form-item class="form-row clearfix" style="margin-bottom: 0px" v-show="needFreightCharge">
+                <a-form-item class="form-row clearfix" style="margin-bottom: 0px" v-show="+settlementMethod !== 3">
                   <div class="row-item wid-15">运费</div>
                   <div class="row-item wid-85">
                     <a-form-item style="margin: 0">
@@ -91,7 +91,7 @@
                         placeholder="运费"
                         v-decorator="[
                           'freightCharge',
-                          { rules: [{ required: settlementMethod !== 3, message: '请输入运费!' }] },
+                          { rules: [{ required: +settlementMethod !== 3, message: '请输入运费!' }] },
                         ]"
                       />
                     </a-form-item>
@@ -392,7 +392,7 @@ export default {
       return this.type === 'Add' ? '保存' : '重新提交'
     },
     needFreightCharge: function () {
-      return this.settlementMethod === 1 || this.settlementMethod === 2
+      return +this.settlementMethod === 1 || +this.settlementMethod === 2
     },
   },
   mounted() {
