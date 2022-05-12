@@ -161,9 +161,9 @@
               <template slot="title">
                 <span>{{record.__showParent ? '折叠' : '展开'}}</span>
               </template>
-              <span @click="showParentTree(record)"  style="padding:5px 10px;cursor: pointer;"> 
+              <div @click="showParentTree(record)"  style="cursor: pointer;"> 
                 <a-icon type="up"  :style="{'transition': 'all .3s','transform':`rotate(${record.__showParent ? 180 : 0}deg)`}" />
-              </span>
+              </div>
             </a-tooltip>
           </div>
           <div slot="fullCode" slot-scope="text, record, index">
@@ -243,7 +243,8 @@ const columns = [
   {
     align: 'center',
     slots: { title: 'toggleTreeTitle' },
-    scopedSlots: { customRender: 'toggleTree' }
+    scopedSlots: { customRender: 'toggleTree' },
+    width: 40,
   },
   {
     align: 'center',

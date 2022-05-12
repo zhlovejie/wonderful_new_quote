@@ -189,7 +189,10 @@
                       'stationIds',
                       {
                         initialValue: detail.stationIds,
-                        rules: [{ required: hasParentCanAddAuth, message: '请选择岗位' }],
+                        rules: [
+                          { required: hasParentCanAddAuth, message: '请选择岗位' },
+                          { validator: validatePost, trigger: 'change' }
+                        ],
                       },
                     ]"
                   >
@@ -520,6 +523,46 @@ function getBase64(file) {
   })
 }
 
+/**
+ * 查找节点
+ */
+function findTreeNode(root, key) {
+  console.log(arguments)
+  if(String(root.value) === String(key)){
+    return root
+  }
+  if (Array.isArray(root.children)) {
+    for (let i = 0; i < root.children.length; i++) {
+      let node = findTreeNode(root.children[i], key)
+      if (node) {
+        return node
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * 递归往上查找节点的部门和岗位
+ */
+function getDepartmentAndStationIds(root,key){
+  let targetKey = key
+  if(String(targetKey) === "0"){
+    return null
+  }
+  let node = findTreeNode(root,targetKey)
+  let {departmentId,stationIds} = node
+  if(departmentId && stationIds){
+    return {
+      departmentId,
+      stationIds
+    }
+  }else{
+    return getDepartmentAndStationIds(root,node.parentId)
+  }
+}
+
+
 export default {
   name: 'RoutineAddForm',
   components:{
@@ -552,6 +595,9 @@ export default {
       postList:[],
 
       hasParentCanAddAuth:false,// 父节点 是否具有 录入人权限
+
+      parentDepartmentId:null,
+      parnetStationIds:[]
     }
   },
   created() {
@@ -593,6 +639,22 @@ export default {
     }
   },
   methods: {
+    validatePost(rule, value, callback) {
+      const that = this
+      if(!that.hasParentCanAddAuth){
+        callback();
+        return
+      }
+      if(value.length === 0){
+        callback(new Error('请选择岗位'));
+        return
+      }
+      if(!value.every(v => that.parnetStationIds.includes(v))){
+        callback(new Error('录入人只可在原有基础上更改，如需增加录入人请至顶级菜单增加！'));
+        return
+      }
+      callback();
+    },
     fetchDepartment() {
       const that = this
       return departmentList().then(res => {
@@ -649,14 +711,29 @@ export default {
         departmentId:_departmentId,
         stationIds:_stationIds
       } = record
-      
+      // debugger
+      // console.log(JSON.stringify(__treeData,null,2))
+      // 部门和岗位的获取
+      // 1.先从列表获取 2. 父节点获取 3. 往上递归获取
+      let departmentId,stationIds
+      let result = getDepartmentAndStationIds(__treeData[0],__selectItem.value)
+      if(result){
+        departmentId = result.departmentId
+        stationIds = result.stationIds
+      }
+
       let {departmentId :__departmentId,stationIds :__stationIds} = __selectItem
+      departmentId = departmentId || _departmentId || __departmentId || undefined
+      stationIds = stationIds || _stationIds || __stationIds || undefined
 
-      that.hasParentCanAddAuth = !!(__departmentId && __stationIds)
+      that.hasParentCanAddAuth = !!(departmentId && stationIds)
 
-      let departmentId = _departmentId || __departmentId || undefined
-      let stationIds = String(_stationIds || __stationIds || '')
+      stationIds = stationIds || ''
+      stationIds = String(stationIds)
       stationIds = stationIds.length === 0 ? [] : stationIds.split(',').map(v => +v)
+
+      that.parentDepartmentId = departmentId || null
+      that.parnetStationIds = stationIds || []
 
       if(picUrl){
         that.fileList = [
@@ -669,7 +746,6 @@ export default {
         ]
       }
       
-
       that.from = __from
       that.treeData = __treeData
       that._api = __API__[__from][type]
@@ -953,7 +1029,7 @@ export default {
     /** 逗号换成中文逗号 */
     separatorFormat(name){
       return String(name).replace(/[,]/g,'，')
-    }
+    },
   },
 }
 </script>
