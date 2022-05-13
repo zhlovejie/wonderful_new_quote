@@ -202,8 +202,7 @@ export default {
       loading: false,
       searchType: 1, //查询周期类型：1、今日 2、本周 3、本月 4、全部")
       searchParam: {},
-      userInfo: this.$store.getters.userInfo, //当前登录人
-      storageMaterialList: [] //物料列表
+      userInfo: this.$store.getters.userInfo //当前登录人
     }
   },
   watch: {
@@ -302,10 +301,6 @@ export default {
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
       this.searchAction({ current: 1 })
-    },
-    //筛选-选择物料-是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     }
   }
 }

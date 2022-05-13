@@ -79,7 +79,7 @@
             <td style="width:550px;">
               <a-form-model-item>
                 <span v-if="isView">{{ detail.remark }}</span>
-                <a-input v-else v-model="remark" placeholder="请输入备注信息" :allowClear="true" />
+                <a-input v-else v-model="detail.remark" placeholder="请输入备注信息" :allowClear="true" />
               </a-form-model-item>
             </td>
           </tr>

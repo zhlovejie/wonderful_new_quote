@@ -65,7 +65,7 @@
           slot="expandedRowRender"
           slot-scope="record"
           :columns="innerColumns"
-          :dataSource="record.materialList"
+          :dataSource="[record.inspectionMaterialVo]"
           :pagination="false"
           size="small"
         >
@@ -84,7 +84,7 @@
         <!-- 原料出库产品表  结束 -->
       </a-table>
     </div>
-    <!-- <AddForm ref="addForm" @ok="() => searchAction()" /> -->
+    <AddForm ref="addForm" @ok="() => searchAction()" />
     <SearchForm ref="searchForm" @change="paramChangeHandler" />
   </div>
 </template>
@@ -95,7 +95,7 @@ import {
   materialFirstDelete //委外原料首检-删除
 } from '@/api/material'
 import SearchForm from '../materialTest/SearchForm'
-// import AddForm from './AddForm'
+import AddForm from './AddForm'
 
 const columns = [
   {
@@ -147,11 +147,6 @@ const innerColumns = [
     scopedSlots: { customRender: 'order' }
   },
   {
-    title: '属性',
-    dataIndex: 'attribute', //属性（1原材料 2模具）
-    scopedSlots: { customRender: 'attribute' }
-  },
-  {
     title: '物料代码',
     dataIndex: 'materialCode'
   },
@@ -166,22 +161,13 @@ const innerColumns = [
   {
     title: '使用计量单位',
     dataIndex: 'subUnit'
-  },
-  {
-    title: '出库数量',
-    dataIndex: 'exWarehouseNum'
-  },
-  {
-    title: '原料送取',
-    dataIndex: 'sendType', //原料送取(1:委托方送货,2:加工商提货)
-    scopedSlots: { customRender: 'sendType' }
   }
 ]
 
 export default {
   name: 'quality-management_Warehousing_material_first',
   components: {
-    // AddForm,
+    AddForm,
     SearchForm
   },
   data() {
@@ -202,8 +188,7 @@ export default {
       loading: false,
       searchType: 1, //查询周期类型：1、今日 2、本周 3、本月 4、全部")
       searchParam: {},
-      userInfo: this.$store.getters.userInfo, //当前登录人
-      storageMaterialList: [] //物料列表
+      userInfo: this.$store.getters.userInfo //当前登录人
     }
   },
   watch: {
@@ -302,10 +287,6 @@ export default {
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
       this.searchAction({ current: 1 })
-    },
-    //筛选-选择物料-是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     }
   }
 }
