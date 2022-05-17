@@ -1,14 +1,5 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   path: '/sales-management',
@@ -20,7 +11,8 @@ export default {
     permission: ['permission']
   },
   redirect: '/sales-management',
-  children: [{
+  children: [
+    {
       path: '/sales-management/customer', // 访问路径
       name: 'customer',
       component: RouteView,
@@ -30,7 +22,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/sales-management/customer/dep-customer',
           name: 'DepCustomerList',
           component: () => import('@/views/sales-management/customer/dep-customer/DepCustomerList'),
@@ -157,7 +150,8 @@ export default {
         keepAlive: true,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/sales-management/contract-template-management/salesContractTemplate',
           name: 'salesContractTemplate',
           component: () => import('@/views/sales-management/contract-template-management/salesContractTemplate'),
@@ -214,7 +208,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/sale/electronic-receipt/electronicReceipt',
           name: 'electronicReceipt',
           component: () => import('@/views/sale/electronic-receipt/electronicReceipt'),
@@ -277,24 +272,24 @@ export default {
           path: '/sale/invoice/modules',
           name: 'invoiceModules',
           hidden: true,
-          hideChildrenInMenu:true,
+          hideChildrenInMenu: true,
           component: () => import('@/views/sale/invoice/modules/invoiceModules'),
           meta: {
             title: '发货单申请',
             permission: ['permission'],
-            hidden:true,
+            hidden: true
           }
         },
         {
           path: '/sale/invoice/modules',
           name: 'invoiceApproval',
           hidden: true,
-          hideChildrenInMenu:true,
+          hideChildrenInMenu: true,
           component: () => import('@/views/sale/invoice/modules/invoiceApproval'),
           meta: {
             title: '发货单审批',
             permission: ['permission'],
-            hidden:true
+            hidden: true
           }
         },
         {
@@ -306,7 +301,8 @@ export default {
             title: '延迟付款单',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'addDelayedPayment',
           hidden: true,
@@ -315,7 +311,8 @@ export default {
             title: '延迟付款单新增',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'addSoftDelayedPayment',
           hidden: true,
@@ -324,7 +321,8 @@ export default {
             title: '延迟付款单新增',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'lookDelayedPayment',
           hidden: true,
@@ -333,7 +331,8 @@ export default {
             title: '延迟付款单查看',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'lookSoftDelayedPayment',
           hidden: true,
@@ -342,7 +341,8 @@ export default {
             title: '延迟付款单查看',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'resubmit',
           hidden: true,
@@ -351,7 +351,8 @@ export default {
             title: '延迟付款单重新提交',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'softResubmit',
           hidden: true,
@@ -360,7 +361,8 @@ export default {
             title: '延迟付款单重新提交',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/delayed_payment/modules',
           name: 'createPromise',
           hidden: true,
@@ -439,7 +441,8 @@ export default {
             title: '审批',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/receipt/ReceiptSoftwareAudit',
           name: 'ReceiptSoftwareAudit',
           hidden: true,
@@ -519,7 +522,8 @@ export default {
             title: '开票单',
             permission: ['user']
           }
-        }, {
+        },
+        {
           path: '/sale/openpaper/OpenPaperAdd',
           name: 'openPaperAdd',
           hidden: true,
@@ -528,7 +532,8 @@ export default {
             title: '开票申请',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/openpaper/modules/SoftwareOpenPaperAdd',
           name: 'softwareOpenPaperAdd',
           hidden: true,
@@ -537,7 +542,8 @@ export default {
             title: '软件合同开票申请',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/openpaper/OpenPaperVue',
           name: 'openPaperVue',
           hidden: true,
@@ -585,7 +591,8 @@ export default {
             title: '产品调试任务单',
             permission: ['user']
           }
-        }, {
+        },
+        {
           path: '/sale/after/AfterAdd',
           name: 'afterAdd',
           hidden: true,
@@ -594,7 +601,8 @@ export default {
             title: '产品调试任务单',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sale/after/AfterVueOfAudit',
           name: 'AfterVueOfAudit',
           hidden: true,
@@ -693,7 +701,8 @@ export default {
         icon: 'table',
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/sales-management/contract-list-management/distributionContractList',
           name: 'distributionContractList',
           component: () => import('@/views/sales-management/contract-list-management/distributionContractList'),
@@ -728,7 +737,8 @@ export default {
           path: '/sales-management/contract-list-management/step-forms-edit/basicInformation1',
           name: 'basicInformationEdit',
           hidden: true,
-          component: () => import('@/views/sales-management/contract-list-management/step-forms-edit/basicInformation1'),
+          component: () =>
+            import('@/views/sales-management/contract-list-management/step-forms-edit/basicInformation1'),
           meta: {
             title: '申请合同',
             permission: ['permission']
@@ -766,7 +776,8 @@ export default {
           path: '/sales-management/contract-list-management/preview/previewTripartiteContract',
           name: 'previewTripartiteContract', //三方合同
           hidden: true,
-          component: () => import('@/views/sales-management/contract-list-management/preview/previewTripartiteContract'),
+          component: () =>
+            import('@/views/sales-management/contract-list-management/preview/previewTripartiteContract'),
           meta: {
             title: '销售合同',
             permission: ['permission']
@@ -795,7 +806,8 @@ export default {
         {
           path: '/sales-management/software-contract-management/preview/previewSoftwareContract',
           name: 'previewSoftwareContract',
-          component: () => import('@/views/sales-management/software-contract-management/preview/previewSoftwareContract'),
+          component: () =>
+            import('@/views/sales-management/software-contract-management/preview/previewSoftwareContract'),
           meta: {
             title: '软件合同预览',
             permission: ['permission']
@@ -847,7 +859,8 @@ export default {
             keepAlive: false,
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sales-management/businessBorrowing/agencyContractView',
           name: 'Business_borrowingView',
           component: () => import('@/views/sales-management/businessBorrowing/agencyContractView'),
@@ -874,7 +887,8 @@ export default {
             title: '投标借用协议预览',
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/sales-management/afterSales',
           name: 'afterSalesList',
           component: () => import('@/views/sales-management/afterSales/afterSalesList'),
@@ -925,15 +939,17 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
-        path: '/sale/record/InvestigateList',
-        name: 'investigateList',
-        component: () => import('@/views/sale/record/InvestigateList'),
-        meta: {
-          title: '授权列表',
-          permission: ['permission']
+      children: [
+        {
+          path: '/sale/record/InvestigateList',
+          name: 'investigateList',
+          component: () => import('@/views/sale/record/InvestigateList'),
+          meta: {
+            title: '授权列表',
+            permission: ['permission']
+          }
         }
-      }]
+      ]
     },
     {
       path: '/sales-record-new', // 访问路径
@@ -945,15 +961,17 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
-        path: '/sale/recordNew/List',
-        name: 'recordNewList',
-        component: () => import('@/views/sale/recordNew/List'),
-        meta: {
-          title: '备案列表',
-          permission: ['permission']
+      children: [
+        {
+          path: '/sale/recordNew/List',
+          name: 'recordNewList',
+          component: () => import('@/views/sale/recordNew/List'),
+          meta: {
+            title: '备案列表',
+            permission: ['permission']
+          }
         }
-      }]
+      ]
     },
     {
       path: '/sales-report', // 访问路径
@@ -965,7 +983,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/sale/salesReport/ComparativeAnalysisSales',
           name: 'ComparativeAnalysisSales',
           component: () => import('@/views/sale/report/ComparativeAnalysisSales'),
@@ -1019,9 +1038,6 @@ export default {
             permission: ['permission']
           }
         },
-
-
-
 
         {
           path: '/sale/salesReport/SaleOrderReport',
@@ -1162,6 +1178,6 @@ export default {
         title: '非常规产品信息',
         permission: ['permission']
       }
-    },
+    }
   ]
 }

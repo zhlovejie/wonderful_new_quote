@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //人事管理
+export default {
+  //人事管理
   path: '/personnel-management',
   name: 'personnel-management',
   component: PageView,
@@ -20,7 +12,8 @@ export default { //人事管理
     permission: ['permission']
   },
   redirect: '/personnel-management',
-  children: [{
+  children: [
+    {
       path: '/personnel-management/personnel-reserve',
       name: 'personnel-reserve',
       component: () => import('@/views/personnel-management/reserve/ReserveList'),
@@ -41,7 +34,7 @@ export default { //人事管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/personnel-management/organizational-structure',
@@ -60,7 +53,7 @@ export default { //人事管理
       name: 'personnel-report',
       component: () => import('@/views/personnel-management/report/ReportList'),
       meta: { title: '人事报表', icon: 'file', keepAlive: false, permission: ['permission'] },
-      children:[]
+      children: []
     },
     {
       path: '/personnel-management/personnel-apply',
@@ -72,7 +65,8 @@ export default { //人事管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/personnel-management/personnel-apply/recruit-apply',
           name: 'recruit-apply',
           component: () => import('@/views/personnel-management/apply/recruit-apply/RecruitApplyList'),

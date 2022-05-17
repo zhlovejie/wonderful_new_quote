@@ -1,8 +1,8 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import { PageView } from '@/layouts'
 
-export default { //工作上报管理
+export default {
+  //工作上报管理
   path: '/work-report-management',
   name: 'work-report-management',
   component: PageView,
@@ -12,7 +12,8 @@ export default { //工作上报管理
     permission: ['permission']
   },
   redirect: '/work-report-management',
-  children: [{
+  children: [
+    {
       path: '/work-report-management/report-set',
       name: 'wrm-report-set',
       component: () => import('@/views/work-report-management/report-set/List'),
@@ -21,7 +22,7 @@ export default { //工作上报管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/work-report-management/report-daily-set',
@@ -32,7 +33,7 @@ export default { //工作上报管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/work-report-management/report-week-set',
@@ -43,7 +44,7 @@ export default { //工作上报管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/work-report-management/report-month-set',
@@ -54,7 +55,7 @@ export default { //工作上报管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
-    },
+      }
+    }
   ]
 }

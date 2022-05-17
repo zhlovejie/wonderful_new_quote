@@ -1,6 +1,5 @@
 // 仓储管理
-import { BasicLayout, BlankLayout, PageView, RouteView, UserLayout } from '@/layouts'
-import { bxAnaalyse } from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   path: '/storageManagement',
@@ -180,8 +179,6 @@ export default {
       ]
     },
 
-
-
     {
       path: '/storageManagement/storageImport',
       component: RouteView,
@@ -341,6 +338,6 @@ export default {
           ]
         }
       ]
-    },
+    }
   ]
 }

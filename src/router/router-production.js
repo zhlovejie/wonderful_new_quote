@@ -1,6 +1,5 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   path: '/production',
@@ -12,7 +11,8 @@ export default {
     permission: ['permission']
   },
   redirect: '/production/retrospect',
-  children: [{
+  children: [
+    {
       path: '/production/retrospect',
       name: 'retrospect',
       component: RouteView,
@@ -22,7 +22,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/production/retrospect/processList',
           name: 'ProcessList',
           component: () => import('@/views/production/retrospect/ProcessList'),
@@ -61,15 +62,17 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
-        path: '/production/event/EventList',
-        name: 'eventList',
-        component: () => import('@/views/production/event/EventList'),
-        meta: {
-          title: '质量事件列表',
-          permission: ['permission']
+      children: [
+        {
+          path: '/production/event/EventList',
+          name: 'eventList',
+          component: () => import('@/views/production/event/EventList'),
+          meta: {
+            title: '质量事件列表',
+            permission: ['permission']
+          }
         }
-      }]
+      ]
     },
     {
       path: '/production/cutCost',
@@ -81,7 +84,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/production/cutCostRecord',
           name: 'cutCostRecord',
           component: () => import('@/views/production/cut-cost/RecordList'),

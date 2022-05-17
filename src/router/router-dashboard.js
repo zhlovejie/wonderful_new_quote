@@ -14,27 +14,28 @@ export default {
     icon: bxAnaalyse,
     permission: ['dashboard']
   },
-  children: [{
-      path: '/dashboard/analysis',
-      name: 'Analysis',
-      hidden: true,
-      component: () => import('@/views/dashboard/Analysis'),
-      meta: {
-        title: '分析页',
-        keepAlive: false,
-        permission: ['dashboard']
-      }
-    },
-    // 外部链接：万德福官网链接
-    {
-      path: 'http://www.xzwonderful.com/',
-      name: 'Monitor',
-      hidden: true,
-      meta: {
-        title: '监控页（外部）',
-        target: '_blank'
-      }
-    },
+  children: [
+    // {
+    //   path: '/dashboard/analysis',
+    //   name: 'Analysis',
+    //   hidden: true,
+    //   component: () => import('@/views/dashboard/Analysis'),
+    //   meta: {
+    //     title: '分析页',
+    //     keepAlive: false,
+    //     permission: ['dashboard']
+    //   }
+    // },
+    // // 外部链接：万德福官网链接
+    // {
+    //   path: 'http://www.xzwonderful.com/',
+    //   name: 'Monitor',
+    //   hidden: true,
+    //   meta: {
+    //     title: '监控页（外部）',
+    //     target: '_blank'
+    //   }
+    // },
     {
       path: '/dashboard/workplace',
       name: 'Workplace',

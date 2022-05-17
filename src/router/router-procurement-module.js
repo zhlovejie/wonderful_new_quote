@@ -1,10 +1,8 @@
 // eslint-disable-next-line
-import {
-  PageView,
-  RouteView
-} from '@/layouts'
+import { PageView } from '@/layouts'
 
-export default { //采购模块
+export default {
+  //采购模块
   path: '/procurement-module-management',
   name: 'procurement-module-management',
   redirect: '/procurement-module-management/apply',
@@ -12,9 +10,10 @@ export default { //采购模块
   meta: {
     title: '采购管理',
     icon: 'dollar',
-    permission: ['permission'],
+    permission: ['permission']
   },
-  children: [{
+  children: [
+    {
       path: '/procurement-module-management/apply',
       name: 'procurement-module-management-apply',
       component: () => import('@/views/procurement-module-management/apply/List'),
@@ -23,7 +22,7 @@ export default { //采购模块
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/procurement-module-management/grab',
@@ -34,7 +33,7 @@ export default { //采购模块
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/procurement-module-management/order',
@@ -45,7 +44,7 @@ export default { //采购模块
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
-    },
+      }
+    }
   ]
 }

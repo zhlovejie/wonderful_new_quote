@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //车辆管理
+export default {
+  //车辆管理
 
   path: '/vehicle-management',
   name: 'vehicle-management',
@@ -21,7 +13,8 @@ export default { //车辆管理
     permission: ['permission']
   },
   redirect: '/vehicle-management/car-info-list',
-  children: [{
+  children: [
+    {
       path: '/vehicle-management/car-info-list',
       name: 'vehicle-management-car-info-list',
       component: () => import('@/views/vehicle-management/car-info-list/List'),
@@ -30,7 +23,7 @@ export default { //车辆管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/vehicle-management/gas-card',
@@ -41,7 +34,7 @@ export default { //车辆管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/vehicle-management/use-record',
@@ -52,7 +45,7 @@ export default { //车辆管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/vehicle-management/author-record',
@@ -63,7 +56,7 @@ export default { //车辆管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/vehicle-management/supervision',
@@ -76,7 +69,8 @@ export default { //车辆管理
         permission: ['permission']
       },
       redirect: '/vehicle-management/supervision/gas-record',
-      children: [{
+      children: [
+        {
           path: '/vehicle-management/supervision/gas-record',
           name: 'vehicle-management-supervision-gas-record',
           component: () => import('@/views/vehicle-management/supervision/gas-record/List'),
@@ -85,7 +79,7 @@ export default { //车辆管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
 
         {
@@ -97,7 +91,7 @@ export default { //车辆管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
 
         {
@@ -109,7 +103,7 @@ export default { //车辆管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
 
         {
@@ -121,7 +115,7 @@ export default { //车辆管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
 
         {
@@ -134,7 +128,8 @@ export default { //车辆管理
             keepAlive: false,
             permission: ['permission']
           }
-        }, {
+        },
+        {
           path: '/vehicle-management/supervision/travelPath',
           name: 'vehicle-management-supervision-travelPath',
           component: () => import('@/views/vehicle-management/supervision/travelPath/travelPathList'),
