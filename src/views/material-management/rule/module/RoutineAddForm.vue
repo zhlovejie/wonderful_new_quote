@@ -154,6 +154,70 @@
               </a-modal>
             </a-form-item>
 
+            <div style="display:flex;" v-if="$auth('routineMaterialRule:canAdd')">
+              <div style="width:140px;"><i v-if="hasParentCanAddAuth" class="wdf-required"></i>录入人</div>
+              <div style="flex:1">
+                <a-form-item >
+                  <a-select 
+                    :disabled="isDisabled || hasParentCanAddAuth"
+                    style="width: 100%" 
+                    allowClear
+                    @change="handleDepartmentChange"
+                    placeholder="请选择部门"
+                    v-decorator="[
+                      'departmentId',
+                      {
+                        initialValue: detail.departmentId,
+                        rules: [{ required: hasParentCanAddAuth, message: '请选择部门' }],
+                      },
+                    ]"
+                  >
+                    <a-select-option v-for="dep in depList" :key="dep.value">
+                      {{ dep.label }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item >
+                  <a-select 
+                    :disabled="isDisabled"
+                    style="width: 100%;"
+                    allowClear
+                    mode="multiple"
+                    placeholder="请选择岗位"
+                    @change="handlePostChange"
+                    v-decorator="[
+                      'stationIds',
+                      {
+                        initialValue: detail.stationIds,
+                        rules: [
+                          { required: hasParentCanAddAuth, message: '请选择岗位' },
+                          { validator: validatePost, trigger: 'change' }
+                        ],
+                      },
+                    ]"
+                  >
+                    <a-select-option v-for="post in postList" :key="post.value">
+                      {{ post.label }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </div>
+            </div>
+            <a-form-item label="是否品牌/型号">
+              <a-switch
+                :disabled="isDisabled"
+                checked-children="是"
+                un-checked-children="否"
+                v-decorator="[
+                  'isBrand',
+                  {
+                    initialValue: +detail.isBrand === 1,
+                    valuePropName: 'checked',
+                    rules: [{ required: true, message: '请选择是否品牌/型号' }],
+                  },
+                ]"
+              />
+            </a-form-item>
             <a-form-item label="是否线缆">
               <a-switch
                 :disabled="isDisabled"
@@ -430,9 +494,14 @@ import {
   routineMaterialRulePageTwoTierTreeList,
   productMaterialRulePageTwoTierTreeList,
 } from '@/api/routineMaterial'
+import {
+  departmentList, //所有部门
+  getStationList //获取所有岗位
+} from '@/api/systemSetting'
 import { getDictionary } from '@/api/common'
 import { getUploadPath2 } from '@/api/common'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
+import DepartmentPostCascade from '@/components/CustomerList/DepartmentPostCascade'
 const __API__ = {
   normal: {
     add: routineMaterialRuleAdd,
@@ -454,10 +523,51 @@ function getBase64(file) {
   })
 }
 
+/**
+ * 查找节点
+ */
+function findTreeNode(root, key) {
+  console.log(arguments)
+  if(String(root.value) === String(key)){
+    return root
+  }
+  if (Array.isArray(root.children)) {
+    for (let i = 0; i < root.children.length; i++) {
+      let node = findTreeNode(root.children[i], key)
+      if (node) {
+        return node
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * 递归往上查找节点的部门和岗位
+ */
+function getDepartmentAndStationIds(root,key){
+  let targetKey = key
+  if(String(targetKey) === "0"){
+    return null
+  }
+  let node = findTreeNode(root,targetKey)
+  let {departmentId,stationIds} = node
+  if(departmentId && stationIds){
+    return {
+      departmentId,
+      stationIds
+    }
+  }else{
+    return getDepartmentAndStationIds(root,node.parentId)
+  }
+}
+
+
 export default {
   name: 'RoutineAddForm',
   components:{
-    CommonDictionarySelect
+    CommonDictionarySelect,
+    DepartmentPostCascade
   },
   data() {
     return {
@@ -479,10 +589,20 @@ export default {
       fileList: [],
       uploadPath: getUploadPath2(), // 上传图片的url
       rulePrefixList:[],
-      ruleNamePrefix:undefined // 物料规则名称前缀
+      ruleNamePrefix:undefined, // 物料规则名称前缀
+
+      depList:[],
+      postList:[],
+
+      hasParentCanAddAuth:false,// 父节点 是否具有 录入人权限
+
+      parentDepartmentId:null,
+      parnetStationIds:[]
     }
   },
-  created() {},
+  created() {
+    this.fetchDepartment()
+  },
   computed: {
     modalTitle() {
       return this.isAdd ? '新增' : this.isEdit ? '修改' : '查看'
@@ -519,6 +639,49 @@ export default {
     }
   },
   methods: {
+    validatePost(rule, value, callback) {
+      const that = this
+      if(!that.hasParentCanAddAuth){
+        callback();
+        return
+      }
+      if(value.length === 0){
+        callback(new Error('请选择岗位'));
+        return
+      }
+      if(!value.every(v => that.parnetStationIds.includes(v))){
+        callback(new Error('录入人只可在原有基础上更改，如需增加录入人请至顶级菜单增加！'));
+        return
+      }
+      callback();
+    },
+    fetchDepartment() {
+      const that = this
+      return departmentList().then(res => {
+        that.depList = res.data.map(item => {
+          return { label: item.departmentName, value: item.id, isLeaf: false }
+        })
+      })
+    },
+    handleDepartmentChange(departmentId){
+      this.postList = []
+      this.form.setFieldsValue({ stationIds: undefined })
+      departmentId && this.fetchPost(departmentId)
+    },
+    fetchPost(departmentId) {
+      const that = this
+      if (!departmentId) {
+        return
+      }
+      return getStationList({ id: departmentId }).then(res => {
+        that.postList = res.data.map(item => {
+          return { label: item.stationName, value: item.id, isLeaf: true }
+        })
+      })
+    },
+    handlePostChange(postArrList){
+      console.log(postArrList)
+    },
     handleChange({ fileList }) {
       this.fileList = fileList
     },
@@ -538,7 +701,39 @@ export default {
       that.fileList = []
       that.visible = true
 
-      let { __selectItem, __treeData, __from , picUrl, isColor, ruleName} = record
+      let { 
+        __selectItem, 
+        __treeData, 
+        __from , 
+        picUrl, 
+        isColor, 
+        ruleName,
+        departmentId:_departmentId,
+        stationIds:_stationIds
+      } = record
+      // debugger
+      // console.log(JSON.stringify(__treeData,null,2))
+      // 部门和岗位的获取
+      // 1.先从列表获取 2. 父节点获取 3. 往上递归获取
+      let departmentId,stationIds
+      let result = getDepartmentAndStationIds(__treeData[0],__selectItem.value)
+      if(result){
+        departmentId = result.departmentId
+        stationIds = result.stationIds
+      }
+
+      let {departmentId :__departmentId,stationIds :__stationIds} = __selectItem
+      departmentId = departmentId || _departmentId || __departmentId || undefined
+      stationIds = stationIds || _stationIds || __stationIds || undefined
+
+      that.hasParentCanAddAuth = !!(departmentId && stationIds)
+
+      stationIds = stationIds || ''
+      stationIds = String(stationIds)
+      stationIds = stationIds.length === 0 ? [] : stationIds.split(',').map(v => +v)
+
+      that.parentDepartmentId = departmentId || null
+      that.parnetStationIds = stationIds || []
 
       if(picUrl){
         that.fileList = [
@@ -551,7 +746,6 @@ export default {
         ]
       }
       
-
       that.from = __from
       that.treeData = __treeData
       that._api = __API__[__from][type]
@@ -563,6 +757,7 @@ export default {
             getDictionary({ text: '物料等差' }).then((res) => (that.differenceList = res.data)),
             getDictionary({ text: '物料单位' }).then((res) => (that.unitList = res.data)),
             getDictionary({ text: '物料规则名称前缀' }).then((res) => (that.rulePrefixList = res.data)),
+            that.fetchPost(departmentId)
           ])
         }
         that.spinning = false
@@ -582,8 +777,11 @@ export default {
         isBringCode:1,
          ...record,
          ruleNamePrefix:that.ruleNamePrefix,
-         ruleName:__ruleName
+         ruleName:__ruleName,
+         departmentId:departmentId,
+         stationIds:stationIds
       }
+      
       that.$nextTick(() => {
         that.form.setFieldsValue({ parentId: __selectItem.key })
       })
@@ -596,7 +794,7 @@ export default {
       }
       that.form.validateFields((err, values) => {
         if (!err) {
-          that.spinning = true
+          
           if ((that.isAdd || that.isEdit) && 'isSpecification' in values) {
             values.isSpecification = values.isSpecification === true ? 1 : 2
           }
@@ -606,6 +804,23 @@ export default {
           }
 
           let param = { ...values }
+
+          let _dep = that.depList.find(dep => +dep.value === +param.departmentId)
+          if(_dep){
+            param.departmentName = _dep.label
+          }
+          
+          let _post_arr = [];
+          ;(param.stationIds || []).map(postId => {
+            let _post = that.postList.find(post => +post.value === +postId)
+            if(_post){
+              _post_arr.push({..._post})
+            }
+          })
+
+          param.stationIds = _post_arr.map(post => post.value).join(',')
+          param.stationNames = _post_arr.map(post => post.label).join(',')
+
           if ('inBatch' in param) {
             param.inBatch = param.inBatch ? 1 : 2
           }
@@ -620,6 +835,11 @@ export default {
           if ('isColor' in param) {
             param.isColor = param.isColor ? 1 : 0
           }
+
+          if ('isBrand' in param) {
+            param.isBrand = param.isBrand ? 1 : 0
+          }
+
           if(that.fileList.length > 0){
             param.picUrl = that.fileList[0].url || that.fileList[0].response.data
           }else{
@@ -630,6 +850,8 @@ export default {
             param.ruleName = `${param.ruleNamePrefix}_${param.ruleName}`
           }
 
+          param.ruleName = that.separatorFormat(param.ruleName)
+
           if (that.isEdit) {
             param.newCode = param.code
             param.newCodeLength = param.codeLength
@@ -639,6 +861,7 @@ export default {
             // delete param.codeLength
             // delete param.ruleName
           }
+
           let isCopyAction = that.isNormalAdd && that.activeKey === 2
           let emitParam = {
             key: isCopyAction ? param.copyToParentId : param.parentId,
@@ -654,6 +877,7 @@ export default {
           let _api = isCopyAction ? routineMaterialRuleCopy : that._api
           console.log(param)
           // return
+          that.spinning = true
           _api(param)
             .then((res) => {
               that.spinning = false
@@ -801,8 +1025,11 @@ export default {
     },
     handleDictionaryChange(item){
       this.ruleNamePrefix = item ? item.text : ''
-    }
-    
+    },
+    /** 逗号换成中文逗号 */
+    separatorFormat(name){
+      return String(name).replace(/[,]/g,'，')
+    },
   },
 }
 </script>
@@ -846,6 +1073,17 @@ export default {
 }
 .alert-wrapper .bd{
   flex: 1;
+}
+
+i.wdf-required::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  font-style: normal;
+  line-height: 1;
+  content: '*';
 }
 </style>
 

@@ -1,7 +1,8 @@
 // eslint-disable-next-line
-import {PageView} from '@/layouts'
+import { PageView } from '@/layouts'
 
-export default {//监控管理
+export default {
+  //监控管理
   path: '/monitor-device-management',
   name: 'monitor-device-management',
   component: PageView,
@@ -11,7 +12,8 @@ export default {//监控管理
     permission: ['permission']
   },
   redirect: '/monitor-device-management/device-list',
-  children: [{
+  children: [
+    {
       path: '/monitor-device-management/device-list',
       name: 'monitor-device-management-device-list',
       component: () => import('@/views/monitor-device-management/DeviceList'),
@@ -20,7 +22,7 @@ export default {//监控管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/monitor-device-management/device-monitor',

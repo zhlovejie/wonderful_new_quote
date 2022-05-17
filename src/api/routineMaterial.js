@@ -1232,3 +1232,13 @@ export function getRoutineMaterialInfoCode(parameter) {
     params: parameter
   })
 }
+
+/**通过规格id反查父级树 */
+export function routineMaterialRuleParentTree(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/parentTree',
+    method: 'get',
+    params: parameter
+  })
+}

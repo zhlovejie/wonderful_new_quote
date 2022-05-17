@@ -12,8 +12,9 @@ export default {
   },
   render () {
     const { $route: { meta }, $store: { getters } } = this
+    const maxKeepAliveCount = 9999
     const inKeep = (
-      <keep-alive>
+      <keep-alive max={maxKeepAliveCount}>
         <router-view />
       </keep-alive>
     )

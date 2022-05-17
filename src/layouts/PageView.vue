@@ -1,5 +1,5 @@
 <template>
-  <div :style="!$route.meta.hiddenHeaderContent ? 'margin: -24px -24px 0px;' : null">
+  <div class="__custom_dialog_mount_wrapper__" :style="!$route.meta.hiddenHeaderContent ? 'margin: -24px -24px 0px;' : null">
     <!-- pageHeader , route meta :true on hide -->
     <page-header v-if="!$route.meta.hiddenHeaderContent" :title="pageTitle" :logo="logo" :avatar="avatar">
       <slot slot="action" name="action"></slot>
@@ -41,7 +41,7 @@
       <div class="page-header-index-wide">
         <slot>
           <!-- keep-alive  -->
-          <keep-alive v-if="multiTab">
+          <keep-alive v-if="multiTab" :max="9999">
             <router-view ref="content" />
           </keep-alive>
           <router-view v-else ref="content" />

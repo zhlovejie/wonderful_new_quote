@@ -309,6 +309,7 @@ export default {
     let _submitParams = that.$_.cloneDeep(submitParams || {})
     delete _submitParams.materialDiagram
     delete _submitParams.blueprints
+    delete _submitParams.accessory
     that.form = {
       ..._submitParams,
       mainUnit,

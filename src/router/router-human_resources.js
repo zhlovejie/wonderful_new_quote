@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //人力资源
+export default {
+  //人力资源
 
   path: '/human_Resources',
   name: 'human_Resources',
@@ -21,7 +13,8 @@ export default { //人力资源
     permission: ['permission']
   },
   redirect: '/human_Resources',
-  children: [{
+  children: [
+    {
       path: '/human_Resources/notice',
       name: 'human_Resources_notice',
       component: () => import('@/views/human_Resources/notice/Notice-List'),
@@ -30,7 +23,7 @@ export default { //人力资源
         icon: 'read',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/human_Resources/security',
@@ -43,7 +36,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/human_Resources/security/Insurance',
-      children: [{
+      children: [
+        {
           path: '/human_Resources/security/Insurance',
           name: 'human_Resources_Insurance',
           component: () => import('@/views/human_Resources/security/Insurance/Insurance_List'),
@@ -52,7 +46,7 @@ export default { //人力资源
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/security/social',
@@ -63,12 +57,12 @@ export default { //人力资源
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
     },
-    { //补贴
+    {
+      //补贴
       path: '/salary-management/salary-subsidy',
       name: 'salary-subsidy',
       component: RouteView,
@@ -78,7 +72,8 @@ export default { //人力资源
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/Human-resource-management/senior_worker',
           name: 'Human_senior_worker',
           component: () => import('@/views/Human-resource-management/senior_worker/senior_worker_List'),
@@ -87,7 +82,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/Human-resource-management/shuttle_Bus',
@@ -98,8 +93,9 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        }, {
+          }
+        },
+        {
           path: '/salary-management/salary-subsidy-oil',
           name: 'salary-subsidy-oil',
           component: () => import('@/views/salary-management/salary-subsidy-oil/List'),
@@ -108,7 +104,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/replenishment-oil',
@@ -119,7 +115,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-communication',
@@ -130,7 +126,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-cover',
@@ -141,7 +137,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-other',
@@ -152,7 +148,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-industrial-accident',
@@ -163,7 +159,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
@@ -175,7 +171,7 @@ export default { //人力资源
       meta: {
         title: '社保列表',
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/human_Resources/leagueBuilding',
@@ -186,7 +182,7 @@ export default { //人力资源
         icon: 'usergroup-delete',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/human_Resources/labor_contract',
@@ -199,7 +195,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/human_Resources/labor_contract/post_allocation',
-      children: [{
+      children: [
+        {
           path: '/human_Resources/labor_contract/post_allocation',
           name: 'human_Resources_allocation',
           component: () => import('@/views/human_Resources/labor_contract/post_allocation/post_allocation_List'),
@@ -208,7 +205,7 @@ export default { //人力资源
             icon: 'container',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/labor_contract/contractAgreement',
@@ -219,8 +216,8 @@ export default { //人力资源
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
+          }
+        }
       ]
     },
     {
@@ -234,7 +231,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/human_Resources/dormitory/electricity',
-      children: [{
+      children: [
+        {
           path: '/human_Resources/dormitory/electricity',
           name: 'human_Resources_electricity',
           component: () => import('@/views/human_Resources/dormitory/electricity/electricity_List'),
@@ -243,7 +241,7 @@ export default { //人力资源
             icon: 'container',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/dormitory/personnel',
@@ -254,7 +252,7 @@ export default { //人力资源
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/dormitory/room',
@@ -265,7 +263,7 @@ export default { //人力资源
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/dormitory/securityHealth',
@@ -276,7 +274,7 @@ export default { //人力资源
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/dormitory/electricityCharges',
@@ -287,8 +285,8 @@ export default { //人力资源
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
+          }
+        }
       ]
     },
     {
@@ -301,7 +299,8 @@ export default { //人力资源
         icon: 'setting',
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/human_Resources/asset-management/mine',
           name: 'asset-management-mine',
           component: () => import('@/views/asset-management/mine/List'),
@@ -310,7 +309,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/asset-management/search',
@@ -321,7 +320,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/asset-management/management',
@@ -332,7 +331,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/asset-management/record',
@@ -343,7 +342,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/asset-management/inventory-record-cycle',
@@ -354,7 +353,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/human_Resources/asset-management/inventory-record',
@@ -365,7 +364,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
@@ -381,7 +380,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/communication-management/settings',
-      children: [{
+      children: [
+        {
           path: '/communication-management/settings',
           name: 'communication-management-settings',
           component: () => import('@/views/communication-management/settings/List'),
@@ -390,7 +390,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/communication-management/phone-number',
@@ -401,7 +401,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/communication-management/consume',
@@ -412,7 +412,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/communication-management/account',
@@ -423,7 +423,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/communication-management/group-leader',
@@ -434,14 +434,10 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
-
-
-
-
 
     {
       //制度文档管理
@@ -454,20 +450,20 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/files-management/list',
-      children: [{
-        path: '/files-management/list',
-        name: 'files-management-list',
-        component: () => import('@/views/files-management/List'),
-        meta: {
-          title: '制度文档管理',
-          icon: 'file',
-          keepAlive: false,
-          permission: ['permission']
-        },
-      }]
+      children: [
+        {
+          path: '/files-management/list',
+          name: 'files-management-list',
+          component: () => import('@/views/files-management/List'),
+          meta: {
+            title: '制度文档管理',
+            icon: 'file',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        }
+      ]
     },
-
-
 
     {
       //食堂菜单管理
@@ -480,7 +476,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/canteen-menu-management/config',
-      children: [{
+      children: [
+        {
           path: '/canteen-menu-management/config',
           name: 'canteen-menu-management-config',
           component: () => import('@/views/canteen-menu-management/config/List'),
@@ -489,7 +486,7 @@ export default { //人力资源
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/canteen-menu-management/record',
@@ -500,7 +497,7 @@ export default { //人力资源
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/canteen-menu-management/evaluate',
@@ -511,12 +508,10 @@ export default { //人力资源
             icon: 'file-done',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
-
-
 
     {
       // 福利管理
@@ -528,7 +523,8 @@ export default { //人力资源
         icon: 'setting',
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/welfare-management/healthy',
           name: 'welfare-management-healthy',
           component: RouteView,
@@ -536,9 +532,10 @@ export default { //人力资源
             title: '健康管理',
             icon: 'setting',
             keepAlive: false,
-            permission: ['permission'],
+            permission: ['permission']
           },
-          children: [{
+          children: [
+            {
               path: '/welfare-management/healthy/config',
               name: 'welfare-management-healthy-config',
               component: () => import('@/views/welfare-management/healthy/config/List'),
@@ -547,7 +544,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/healthy/cycle-config',
@@ -558,7 +555,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/healthy/management',
@@ -569,7 +566,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             }
           ]
         },
@@ -581,9 +578,10 @@ export default { //人力资源
             title: '员工关怀',
             icon: 'setting',
             keepAlive: false,
-            permission: ['permission'],
+            permission: ['permission']
           },
-          children: [{
+          children: [
+            {
               path: '/welfare-management/employee-care/config',
               name: 'welfare-management-employee-care-config',
               component: () => import('@/views/welfare-management/employee-care/config/List'),
@@ -592,7 +590,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/employee-care/config-record',
@@ -603,7 +601,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             }
           ]
         },
@@ -616,9 +614,10 @@ export default { //人力资源
             title: '过节礼品',
             icon: 'setting',
             keepAlive: false,
-            permission: ['permission'],
+            permission: ['permission']
           },
-          children: [{
+          children: [
+            {
               path: '/welfare-management/holiday-gifts/config',
               name: 'welfare-management-holiday-gifts-config',
               component: () => import('@/views/welfare-management/holiday-gifts/config/List'),
@@ -627,7 +626,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/holiday-gifts/money-config',
@@ -638,7 +637,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/holiday-gifts/money-config-record',
@@ -650,7 +649,7 @@ export default { //人力资源
                 keepAlive: false,
                 permission: ['permission']
               }
-            },
+            }
           ]
         },
         {
@@ -661,9 +660,10 @@ export default { //人力资源
             title: '福利',
             icon: 'setting',
             keepAlive: false,
-            permission: ['permission'],
+            permission: ['permission']
           },
-          children: [{
+          children: [
+            {
               path: '/welfare-management/welfare/config',
               name: 'welfare-management-welfare-config',
               component: () => import('@/views/welfare-management/welfare/config/List'),
@@ -672,7 +672,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/welfare/birthday-config',
@@ -683,7 +683,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/welfare-management/welfare/annual-meeting-config',
@@ -694,7 +694,7 @@ export default { //人力资源
                 icon: 'setting',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             }
           ]
         }

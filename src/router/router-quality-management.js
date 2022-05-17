@@ -1,8 +1,5 @@
 // eslint-disable-next-line
-import {
-  PageView,
-  RouteView
-} from '@/layouts'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   path: '/quality-management',
@@ -14,7 +11,8 @@ export default {
     permission: ['permission']
   },
   redirect: '/quality-management/parameter-term',
-  children: [{
+  children: [
+    {
       path: '/quality-management/parameter-term',
       name: 'quality-management_parameter-term',
       component: () => import('@/views/quality-management/checkParameterTerm/List'),
@@ -47,7 +45,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/quality-management/standard/inspection-basis',
           name: 'quality-management_standard_inspection-basis',
           component: () => import('@/views/quality-management/checkInspectionBasis/List'),
@@ -87,7 +86,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/quality-management/Warehousing/incoming',
           name: 'quality-management_Warehousing_incoming',
           component: () => import('@/views/quality-management/Warehousing/incoming/List'),
@@ -155,6 +155,6 @@ export default {
         keepAlive: false,
         permission: ['permission']
       }
-    },
+    }
   ]
 }

@@ -1,14 +1,5 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   //薪酬管理
@@ -21,7 +12,9 @@ export default {
     permission: ['permission']
   },
   redirect: '/salary-management',
-  children: [{ //工资参照表
+  children: [
+    {
+      //工资参照表
       path: '/salary-management/salary-reference-record',
       name: 'salary-reference-record',
       component: () => import('@/views/salary-management/salary-reference-record/List'),
@@ -30,9 +23,10 @@ export default {
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
-    { //薪资项设置
+    {
+      //薪资项设置
       path: '/salary-management/salary-options-setting',
       name: 'salary-options-setting',
       component: () => import('@/views/salary-management/salary-options-setting/List'),
@@ -41,9 +35,10 @@ export default {
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
-    { //基本工资表
+    {
+      //基本工资表
       path: '/salary-management/salary-base-record',
       name: 'salary-base-record',
       component: RouteView,
@@ -54,7 +49,8 @@ export default {
         permission: ['permission']
       },
       redirect: '/salary-management/salary-base-common-record',
-      children: [{
+      children: [
+        {
           path: '/salary-management/salary-base-common-record',
           name: 'salary-base-common-record',
           component: () => import('@/views/salary-management/salary-base-common-record/List'),
@@ -63,8 +59,8 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
+          }
+        }
         // {
         //   path: '/salary-management/salary-base-sale-rules',
         //   name: 'salary-base-sale-rules',
@@ -89,7 +85,8 @@ export default {
         // }
       ]
     },
-    { //工资
+    {
+      //工资
       path: '/salary-management/salary-info',
       name: 'salary-info',
       component: RouteView,
@@ -100,7 +97,8 @@ export default {
         permission: ['permission']
       },
       redirect: '/salary-management/salary-details',
-      children: [{
+      children: [
+        {
           path: '/salary-management/salary-details',
           name: 'salary-details',
           component: () => import('@/views/salary-management/salary-details/List'),
@@ -109,13 +107,13 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
     },
 
-    { //提成规则
+    {
+      //提成规则
       path: '/salary-management/commission/rule',
       name: 'commission-rules',
       component: RouteView,
@@ -125,7 +123,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/salary-management/commission/rule/salary-base-sale-rules',
           name: 'salary-base-sale-rules',
           component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/List'),
@@ -134,8 +133,9 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        }, {
+          }
+        },
+        {
           path: '/salary-management/commission/rule/salary-base-sale-rules/module',
           name: 'salary-base-sale-module',
           component: () => import('@/views/salary-management/commission/rule/salary-base-sale-rules/module/See'),
@@ -145,7 +145,7 @@ export default {
             hidden: true,
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/rule/wrong-salary-base-sale-rules',
@@ -156,8 +156,9 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        }, {
+          }
+        },
+        {
           path: '/salary-management/commission/rule/wrong-salary-base-sale-rules/module',
           name: 'wrong-salary-base-sale-module',
           component: () => import('@/views/salary-management/commission/rule/wrong-salary-base-sale-rules/module/See'),
@@ -167,7 +168,7 @@ export default {
             hidden: true,
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/rule/research',
@@ -178,7 +179,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/rule/Hardware',
@@ -189,12 +190,13 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
+          }
+        }
       ]
     },
 
-    { //提成
+    {
+      //提成
       path: '/salary-management/commission',
       name: 'commission',
       component: RouteView,
@@ -204,7 +206,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/salary-management/commission/collection',
           name: 'collection',
           component: () => import('@/views/salary-management/commission/collection/List'),
@@ -213,7 +216,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/order',
@@ -224,7 +227,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/sale-commission-bonus',
@@ -235,7 +238,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/research-commission-bonus',
@@ -246,7 +249,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/softwareAndHardware',
@@ -257,7 +260,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/wrongResearchCommission',
@@ -268,7 +271,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/commission/commissionDetail',
@@ -281,28 +284,31 @@ export default {
             permission: ['permission']
           },
           redirect: '/salary-management/commission/commissionDetailByPerson',
-          children: [{
-            path: '/salary-management/commission/commissionDetailByPerson',
-            name: 'commission-detail-by-person',
-            component: () => import('@/views/salary-management/commission/commission-detail-by-person/List'),
-            meta: {
-              title: '人员提成明细',
-              icon: 'select',
-              keepAlive: false,
-              permission: ['permission']
+          children: [
+            {
+              path: '/salary-management/commission/commissionDetailByPerson',
+              name: 'commission-detail-by-person',
+              component: () => import('@/views/salary-management/commission/commission-detail-by-person/List'),
+              meta: {
+                title: '人员提成明细',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              }
             },
-          }, {
-            path: '/salary-management/commission/commissionDetailDiffRecord',
-            name: 'commission-detail-diff-record',
-            component: () => import('@/views/salary-management/commission/commission-detail-diff-record/List'),
-            meta: {
-              title: '差额记录',
-              icon: 'select',
-              hidden: true,
-              keepAlive: false,
-              permission: ['permission']
-            },
-          }]
+            {
+              path: '/salary-management/commission/commissionDetailDiffRecord',
+              name: 'commission-detail-diff-record',
+              component: () => import('@/views/salary-management/commission/commission-detail-diff-record/List'),
+              meta: {
+                title: '差额记录',
+                icon: 'select',
+                hidden: true,
+                keepAlive: false,
+                permission: ['permission']
+              }
+            }
+          ]
         },
         {
           path: '/salary-management/commission/AIProductDetail',
@@ -315,28 +321,31 @@ export default {
             permission: ['permission']
           },
           redirect: '/salary-management/commission/ai-product-detail/development',
-          children: [{
-            path: '/salary-management/commission/ai-product-detail/development',
-            name: 'ai-product-detail-development',
-            component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
-            meta: {
-              title: '智能产品提成明细',
-              icon: 'select',
-              keepAlive: false,
-              permission: ['permission']
+          children: [
+            {
+              path: '/salary-management/commission/ai-product-detail/development',
+              name: 'ai-product-detail-development',
+              component: () => import('@/views/salary-management/commission/ai-product-detail-development/List'),
+              meta: {
+                title: '智能产品提成明细',
+                icon: 'select',
+                keepAlive: false,
+                permission: ['permission']
+              }
             },
-          }, {
-            path: '/salary-management/commission/ai-product-detail/diff',
-            name: 'ai-product-detail-diff',
-            component: () => import('@/views/salary-management/commission/ai-product-detail-diff/List'),
-            meta: {
-              title: '差额记录',
-              icon: 'select',
-              hidden: true,
-              keepAlive: false,
-              permission: ['permission']
-            },
-          }]
+            {
+              path: '/salary-management/commission/ai-product-detail/diff',
+              name: 'ai-product-detail-diff',
+              component: () => import('@/views/salary-management/commission/ai-product-detail-diff/List'),
+              meta: {
+                title: '差额记录',
+                icon: 'select',
+                hidden: true,
+                keepAlive: false,
+                permission: ['permission']
+              }
+            }
+          ]
         }
       ]
     },
@@ -350,7 +359,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/salary-management/salary-subsidy-engineer-rules',
           name: 'salary-subsidy-engineer-rules',
           component: () => import('@/views/salary-management/salary-subsidy-engineer-rules/List'),
@@ -359,7 +369,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-rules-record',
@@ -370,7 +380,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/engineer_subsidy',
@@ -381,7 +391,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-workyears-rules',
@@ -392,7 +402,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
 
         {
@@ -404,7 +414,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-traffic-rules',
@@ -415,7 +425,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/salary-subsidy-heat-rules',
@@ -426,12 +436,13 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
 
-    { //xucongcong-奖金管理
+    {
+      //xucongcong-奖金管理
       path: '/salary-management/bonus',
       name: 'salary-management_bonus',
       component: RouteView,
@@ -440,7 +451,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/salary-management/bonus/bonusRules',
           name: 'salary-management_bonusRules',
           component: RouteView,
@@ -450,7 +462,8 @@ export default {
             keepAlive: false,
             permission: ['permission']
           },
-          children: [{
+          children: [
+            {
               path: '/salary-management/bonus/bonusRules/research',
               name: 'bonusRules_research',
               component: () => import('@/views/salary-management/bonus/bonusRules/research/research_List'),
@@ -459,7 +472,7 @@ export default {
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/salary-management/bonus/bonusRules/overtime',
@@ -470,7 +483,7 @@ export default {
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/salary-management/bonus/bonusRules/attendance',
@@ -481,7 +494,7 @@ export default {
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             },
             {
               path: '/salary-management/bonus/bonusRules/yearDonusRules',
@@ -492,7 +505,7 @@ export default {
                 icon: 'select',
                 keepAlive: false,
                 permission: ['permission']
-              },
+              }
             }
           ]
         },
@@ -505,7 +518,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/bonus/other_bonus',
@@ -516,11 +529,12 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
-    { //xucongcong-应扣资金
+    {
+      //xucongcong-应扣资金
       path: '/salary-management/capital',
       name: 'salary_year_capital',
       component: RouteView,
@@ -529,7 +543,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/salary-management/capital/Meals',
           name: 'salary_capital_Meals',
           component: () => import('@/views/salary-management/capital/Meals/Meals_List'),
@@ -538,7 +553,7 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/salary-management/capital/bill',
@@ -549,11 +564,12 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
-    { //保底年薪制
+    {
+      //保底年薪制
       path: '/salary-management/salary-year',
       name: 'salary-year',
       component: RouteView,
@@ -564,37 +580,41 @@ export default {
         permission: ['permission']
       },
       redirect: '/salary-management/salary-year-rules',
-      children: [{
-        path: '/salary-management/salary-year-rules',
-        name: 'salary-year-rules',
-        component: () => import('@/views/salary-management/salary-year-rules/List'),
-        meta: {
-          title: '年薪制规则',
-          icon: 'select',
-          keepAlive: false,
-          permission: ['permission']
+      children: [
+        {
+          path: '/salary-management/salary-year-rules',
+          name: 'salary-year-rules',
+          component: () => import('@/views/salary-management/salary-year-rules/List'),
+          meta: {
+            title: '年薪制规则',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          }
         },
-      }, {
-        path: '/salary-management/Salary_accounting',
-        name: 'Salary_accounting',
-        component: () => import('@/views/salary-management/Salary_accounting/List'),
-        meta: {
-          title: '薪资核算',
-          icon: 'select',
-          keepAlive: false,
-          permission: ['permission']
+        {
+          path: '/salary-management/Salary_accounting',
+          name: 'Salary_accounting',
+          component: () => import('@/views/salary-management/Salary_accounting/List'),
+          meta: {
+            title: '薪资核算',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          }
         },
-      }, {
-        path: '/salary-management/salary-year-rules-Add',
-        name: 'salary-year-rules-Add',
-        component: () => import('@/views/salary-management/salary-year-rules-Add/List'),
-        meta: {
-          title: '年薪制申请',
-          icon: 'select',
-          keepAlive: false,
-          permission: ['permission']
-        },
-      }]
+        {
+          path: '/salary-management/salary-year-rules-Add',
+          name: 'salary-year-rules-Add',
+          component: () => import('@/views/salary-management/salary-year-rules-Add/List'),
+          meta: {
+            title: '年薪制申请',
+            icon: 'select',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        }
+      ]
     }
   ]
 }

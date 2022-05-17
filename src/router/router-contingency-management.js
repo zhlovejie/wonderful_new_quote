@@ -1,6 +1,5 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import {PageView } from '@/layouts'
 
 export default {//应急管理
         

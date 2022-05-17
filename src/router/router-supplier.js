@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView } from '@/layouts'
 
-export default { //供应商管理
+export default {
+  //供应商管理
   path: '/supplier',
   name: 'supplier',
   component: PageView,
@@ -20,7 +12,8 @@ export default { //供应商管理
     permission: ['permission']
   },
   redirect: '/supplier/list',
-  children: [{
+  children: [
+    {
       path: '/supplier/list',
       name: 'SupplierList',
       component: () => import('@/views/supplier/List'),
@@ -29,7 +22,7 @@ export default { //供应商管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/supplier/list/modules',
@@ -40,8 +33,7 @@ export default { //供应商管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
-    },
-
+      }
+    }
   ]
 }

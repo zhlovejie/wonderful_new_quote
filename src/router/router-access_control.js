@@ -1,17 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-
-export default { //人力资源
+export default {
+  //人力资源
 
   path: '/access_control',
   name: 'access_control',
@@ -22,7 +13,8 @@ export default { //人力资源
     permission: ['permission']
   },
   redirect: '/access_control',
-  children: [{
+  children: [
+    {
       path: '/access_control/vehicle_barrier',
       name: 'access_control_vehicle_barrier',
       component: RouteView,
@@ -33,7 +25,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/access_control/vehicle_barrier/Vehicle_List',
-      children: [{
+      children: [
+        {
           path: '/access_control/vehicle_barrier/Vehicle_List',
           name: 'access_control_vehicleList',
           component: () => import('@/views/access_control/vehicle_barrier/Vehicle_List'),
@@ -42,7 +35,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/access_control/vehicle_barrier/Vehicle_information',
@@ -53,9 +46,8 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
     },
 
@@ -70,7 +62,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/access_control/office_gate/Gate_equipment_List',
-      children: [{
+      children: [
+        {
           path: '/access_control/office_gate/Gate_equipment_List',
           name: 'access_office_equipment',
           component: () => import('@/views/access_control/office_gate/Gate_equipment_List'),
@@ -79,7 +72,7 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/access_control/office_gate/Gate_information',
@@ -90,9 +83,8 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
     },
 
@@ -107,7 +99,8 @@ export default { //人力资源
         permission: ['permission']
       },
       redirect: '/access_control/sidewalk_gate/sidewalk_gate_List',
-      children: [{
+      children: [
+        {
           path: '/access_control/sidewalk_gate/sidewalk_gate_List',
           name: 'access_sidewalk',
           component: () => import('@/views/access_control/sidewalk_gate/sidewalk_gate_List'),
@@ -116,11 +109,9 @@ export default { //人力资源
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
-    },
-
+    }
   ]
 }

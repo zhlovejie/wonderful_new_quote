@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //研发管理
+export default {
+  //研发管理
 
   path: '/research-managements',
   name: 'research-managements',
@@ -21,7 +13,8 @@ export default { //研发管理
     permission: ['permission']
   },
   redirect: '/research-managements/drawing-managements/permissions',
-  children: [{
+  children: [
+    {
       path: '/research-managements/drawing-managements',
       name: 'research-managements-drawing-managements',
       component: RouteView,
@@ -31,7 +24,8 @@ export default { //研发管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/research-managements/drawing-managements/permissions',
           name: 'research-managements-drawing-managements-permissions',
           component: () => import('@/views/research-managements/drawing-managements/permissions/List'),
@@ -40,7 +34,7 @@ export default { //研发管理
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/drawing-managements/management',
@@ -51,7 +45,7 @@ export default { //研发管理
             icon: 'profile',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
@@ -65,7 +59,8 @@ export default { //研发管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/research-managements/research-task/task-list',
           name: 'research-task-list',
           component: () => import('@/views/research-managements/research-task/task-list/List'),
@@ -73,7 +68,7 @@ export default { //研发管理
             title: '任务单',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/research-task/my-task-list',
@@ -83,7 +78,7 @@ export default { //研发管理
             title: '我的任务单',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/research-task/task-list-approval',
@@ -93,7 +88,7 @@ export default { //研发管理
             title: '任务单审核',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/research-task/task-performance',
@@ -103,7 +98,7 @@ export default { //研发管理
             title: '任务绩效',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/research-task/task-bonus-shares',
@@ -113,7 +108,7 @@ export default { //研发管理
             title: '奖金分配',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
@@ -127,7 +122,8 @@ export default { //研发管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/research-managements/project-management/Project-node',
           name: 'project-management-Project-node',
           component: () => import('@/views/research-managements/project-management/Project-node/List'),
@@ -135,7 +131,7 @@ export default { //研发管理
             title: '项目节点关联项配置',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/Project-selection',
@@ -145,7 +141,7 @@ export default { //研发管理
             title: '项目节点选项配置',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/Project-list',
@@ -155,7 +151,7 @@ export default { //研发管理
             title: '项目列表',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/My-project/Project',
@@ -166,7 +162,7 @@ export default { //研发管理
             keepAlive: true,
             hidden: true,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/My-project/module',
@@ -177,7 +173,7 @@ export default { //研发管理
             keepAlive: true,
             hidden: true,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/My-project',
@@ -187,7 +183,7 @@ export default { //研发管理
             title: '我的项目',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/Project-audit/module',
@@ -197,7 +193,7 @@ export default { //研发管理
             title: '项目审核',
             keepAlive: true,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/Project-audit',
@@ -207,7 +203,7 @@ export default { //研发管理
             title: '项目审核',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/Project-patent',
@@ -217,7 +213,7 @@ export default { //研发管理
             title: '项目专利',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/research-managements/project-management/Inspection-report',
@@ -227,7 +223,7 @@ export default { //研发管理
             title: '检验报告',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     }

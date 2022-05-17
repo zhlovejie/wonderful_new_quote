@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //物流管理
+export default {
+  //物流管理
 
   path: '/distribution-management',
   name: 'distribution-management',
@@ -21,7 +13,8 @@ export default { //物流管理
     permission: ['permission']
   },
   redirect: '/distribution-management',
-  children: [{
+  children: [
+    {
       path: '/distribution-management/Distribution',
       name: 'distribution_Distribution',
       component: () => import('@/views/distribution-management/Distribution/Distribution_List'),
@@ -30,7 +23,7 @@ export default { //物流管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/distribution-management/logistics',
@@ -41,7 +34,7 @@ export default { //物流管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/distribution-management/logistics/module',
@@ -51,7 +44,7 @@ export default { //物流管理
       meta: {
         title: '新增物流信息登记',
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/distribution-management/Invoice',
@@ -62,7 +55,7 @@ export default { //物流管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
 
     {
@@ -94,7 +87,7 @@ export default { //物流管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/distribution-management/transport',
@@ -105,7 +98,7 @@ export default { //物流管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/distribution-management/HandlingManagement',
@@ -116,7 +109,7 @@ export default { //物流管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/distribution-management/Return',
@@ -129,7 +122,8 @@ export default { //物流管理
         permission: ['permission']
       },
       redirect: '/distribution-management/Return/rule',
-      children: [{
+      children: [
+        {
           path: '/distribution-management/Return/rule',
           name: 'distribution_management_rule',
           component: () => import('@/views/distribution-management/Return/rule/List'),
@@ -138,7 +132,7 @@ export default { //物流管理
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/distribution-management/Return/Additional',
@@ -149,9 +143,8 @@ export default { //物流管理
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
     },
     {
@@ -165,7 +158,8 @@ export default { //物流管理
         permission: ['permission']
       },
       redirect: '/distribution-management/expense/Commission',
-      children: [{
+      children: [
+        {
           path: '/distribution-management/expense/Commission',
           name: 'distribution_management_Commission',
           component: () => import('@/views/distribution-management/expense/Commission/List'),
@@ -174,7 +168,7 @@ export default { //物流管理
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/distribution-management/expense/Netprofit',
@@ -185,7 +179,7 @@ export default { //物流管理
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/distribution-management/expense/Collection',
@@ -196,10 +190,9 @@ export default { //物流管理
             icon: 'audit',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
-    },
+    }
   ]
 }

@@ -10,27 +10,34 @@
 <script>
 //import invoicePresentOrder from './invoicePresentOrder'
 import InvoiceSaleContract from './InvoiceSaleContract'
-
+import SaleOrderReport from './SaleOrderReport'
 export default {
   name: 'ChoiceOrderFactory',
   components: {
     InvoiceSaleContract,
+    SaleOrderReport
     //invoicePresentOrder
   },
   data() {
     return {
       visible: false,
-      activeKey: 'InvoiceSaleContract',
+      activeKey: 'SaleOrderReport',
       tabs: [
+        // {
+        //   name: '合同',
+        //   key: 'InvoiceSaleContract',
+        // },
         {
-          name: '合同',
-          key: 'InvoiceSaleContract',
+          name: '选择订单',
+          key: 'SaleOrderReport',
         },
+
         // ,{
         //   name:'赠送订单',
         //   key:'invoicePresentOrder'
         // }
       ],
+      input:null
     }
   },
   computed: {
@@ -46,11 +53,13 @@ export default {
       this.$emit('change', {
         selectedKey: this.activeKey,
         record: record,
+        input:this.input
       })
       this.visible = false
     },
     query(opt) {
       this.visible = true
+      this.input = opt
     },
   },
 }

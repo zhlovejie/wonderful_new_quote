@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //产品报价管理
+export default {
+  //产品报价管理
   path: '/product-offer-management',
   name: 'product-offer-management',
   component: PageView,
@@ -29,7 +21,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/products-price',
@@ -40,7 +32,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/4d0/central-control-system-config',
@@ -63,7 +55,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/2d0', // 访问路径
@@ -75,7 +67,8 @@ export default { //产品报价管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/product-offer-management/2d0/products-config',
           name: 'pom-products-config2d0',
           component: () => import('@/views/product-offer-management/products-config/List2'),
@@ -84,7 +77,7 @@ export default { //产品报价管理
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/product-offer-management/2d0/productPriceCoefficient',
@@ -94,7 +87,7 @@ export default { //产品报价管理
             title: '产品价格系数',
             permission: ['permission']
           }
-        },
+        }
       ]
     },
     {
@@ -107,7 +100,8 @@ export default { //产品报价管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/product-offer-management/4d0/products-config',
           name: 'pom-products-config4d0',
           component: () => import('@/views/product-offer-management/products-config/List'),
@@ -116,7 +110,7 @@ export default { //产品报价管理
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/product-offer-management/4d0/productPriceCoefficient',
@@ -126,8 +120,7 @@ export default { //产品报价管理
             title: '产品价格系数',
             permission: ['permission']
           }
-        },
-
+        }
       ]
     },
     {
@@ -140,7 +133,8 @@ export default { //产品报价管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/product-offer-management/5d0/products-config',
           name: 'pom-products-config5d0',
           component: () => import('@/views/product-offer-management/products-config/List3'),
@@ -149,7 +143,7 @@ export default { //产品报价管理
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/product-offer-management/5d0/productPriceCoefficient',
@@ -159,8 +153,7 @@ export default { //产品报价管理
             title: '产品价格系数',
             permission: ['permission']
           }
-        },
-
+        }
       ]
     },
     {
@@ -173,7 +166,8 @@ export default { //产品报价管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/product-offer-management/waste/products-config',
           name: 'pom-products-configWaste',
           component: () => import('@/views/product-offer-management/products-config/List4'),
@@ -182,7 +176,7 @@ export default { //产品报价管理
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/product-offer-management/waste/productPriceCoefficient',
@@ -192,8 +186,7 @@ export default { //产品报价管理
             title: '产品价格系数',
             permission: ['permission']
           }
-        },
-
+        }
       ]
     },
     {
@@ -206,7 +199,8 @@ export default { //产品报价管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/product-offer-management/pricing/Interval-allocation',
           name: 'Interval-allocation',
           component: () => import('@/views/product-offer-management/Interval-allocation/List'),
@@ -215,7 +209,7 @@ export default { //产品报价管理
             icon: 'setting',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/product-offer-management/pricing/product-type',
@@ -225,8 +219,7 @@ export default { //产品报价管理
             title: '产品类型配置',
             permission: ['permission']
           }
-        },
-
+        }
       ]
     },
     {
@@ -238,7 +231,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/pricings',
@@ -249,9 +242,8 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
-
 
     {
       path: '/product-offer-management/opt-management',
@@ -262,7 +254,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/control-system-options',
@@ -273,7 +265,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/product-options-management',
@@ -284,7 +276,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-offer-management/product-offer-price',
@@ -295,7 +287,7 @@ export default { //产品报价管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     }
   ]
 }
