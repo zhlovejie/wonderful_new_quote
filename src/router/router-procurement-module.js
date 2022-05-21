@@ -45,6 +45,29 @@ export default {
         keepAlive: false,
         permission: ['permission']
       }
+    },
+    {
+      path: '/procurement-module-management/purchase-contract',
+      name: 'procurement-module-management-purchase-contract',
+      component: () => import('@/views/procurement-module-management/purchase-contract/List'),
+      meta: {
+        title: '采购合同',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/procurement-module-management/purchase-contract-action',
+      name: 'procurement-module-management-purchase-contract-action',
+      component: () => import('@/views/procurement-module-management/purchase-contract/modules/AddForm'),
+      props: true,
+      meta: {
+        title: '采购合同',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
     }
   ]
 }

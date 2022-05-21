@@ -6,122 +6,84 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="1?null:{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 3000 }"
     >
-      <div
-        slot="order"
-        slot-scope="text, record, index"
-      >
-        {{index + 1}}
+      <div slot="order" slot-scope="text, record, index">
+        {{ index + 1 }}
       </div>
-      <div
-        slot="urgencyDegree"
-        slot-scope="text, record, index"
-      >
-        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+      <div slot="urgencyDegree" slot-scope="text, record, index">
+        {{ { 1: '一般', 2: '加急', 3: '特急' }[text] }}
       </div>
 
-      <div
-        slot="action"
-        slot-scope="text, record, index"
-      >
-        <a @click="doAction('view',record)">查看</a>
+      <div slot="action" slot-scope="text, record, index">
+        <a @click="doAction('view', record)">查看</a>
         <a-divider type="vertical" />
-        <a @click="doAction('offer',record)">下单</a>
+        <a @click="doAction('offer', record)">下单</a>
       </div>
 
-      <div
-        slot="materialName"
-        slot-scope="text, record, index"
-      >
-        <a-popover
-          :title="text"
-          trigger="hover"
-        >
+      <div slot="materialName" slot-scope="text, record, index">
+        <a-popover :title="text" trigger="hover">
           <template slot="content">
-            <p>物料名称：{{record.materialName}}</p>
-            <p>物料代码：{{record.materialCode}}</p>
-            <p>规格型号：{{record.materialModelType}}</p>
-            <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
+            <p>物料名称：{{ record.materialName }}</p>
+            <p>物料代码：{{ record.materialCode }}</p>
+            <p>规格型号：{{ record.materialModelType }}</p>
+            <p>单位：{{ { 1: '支', 2: '把', 3: '件' }[record.unit] }}</p>
           </template>
-          <a
-            href="javascript:void(0);"
-            @click="doAction('materialView',record)"
-          >
-            {{text}}
+          <a href="javascript:void(0);" @click="doAction('materialView', record)">
+            {{ text }}
           </a>
         </a-popover>
       </div>
 
-      <div
-        slot="nakedPrice"
-        slot-scope="text, record, index"
-      >
-        {{ {1:'含税运',2:'含税不含运'}[text] }}
+      <div slot="nakedPrice" slot-scope="text, record, index">
+        {{ { 1: '含税运', 2: '含税不含运' }[text] }}
       </div>
 
-      <div
-        slot="newPrice"
-        slot-scope="text, record, index"
-      >
+      <div slot="newPrice" slot-scope="text, record, index">
         {{ text | moneyFormatNumber }}
       </div>
 
-      <div
-        slot="lastPrice"
-        slot-scope="text, record, index"
-      >
+      <div slot="lastPrice" slot-scope="text, record, index">
         {{ text | moneyFormatNumber }}
       </div>
 
-      <div
-        slot="createdName"
-        slot-scope="text, record, index"
-      >
-        {{record.createdDepName}}/{{ record.createdName }}
+      <div slot="createdName" slot-scope="text, record, index">
+        {{ record.createdDepName }}/{{ record.createdName }}
       </div>
-      <div
-        slot="requestNum"
-        slot-scope="text, record, index"
-      >
-        <a-popover
-          :title="`${record.materialName}（${record.materialCode}）数量预警`"
-          trigger="hover"
-        >
+      <div slot="requestNum" slot-scope="text, record, index">
+        <a-popover :title="`${record.materialName}（${record.materialCode}）数量预警`" trigger="hover">
           <template slot="content">
-            <p>需求数量：{{text}}</p>
-            <p>安全库存：{{record.__safetyStock}}</p>
+            <p>需求数量：{{ text }}</p>
+            <p>安全库存：{{ record.__safetyStock }}</p>
             <p>超安全库存数量：{{ record.__difNum < 0 ? 0 : record.__difNum }}</p>
           </template>
-          <span :style="{color:record.__isWarning ? 'red' : ''}" style="padding:5px 15px;">{{text}}</span>
+          <span :style="{ color: record.__isWarning ? 'red' : '' }" style="padding:5px 15px;">{{ text }}</span>
         </a-popover>
       </div>
-      <template
-        slot="footer"
-        slot-scope="text"
-      >
+      <template slot="footer" slot-scope="text">
+        <div>
+          <a-button :disabled="selectedRowKeys.length === 0" @click="doAction('caigou')">新增采购合同</a-button>
+        </div>
       </template>
 
-      <div
-        slot="approveStatus"
-        slot-scope="text, record, index"
-      >
+      <div slot="approveStatus" slot-scope="text, record, index">
         <a href="javascript:void(0);" @click="approvalPreview(record)">
-          {{ {1:'待审批',2:'通过',3:'不通过',4:'不通过已报价',5:'异常',6:'异常已处理'}[text] || '未知状态' }}
+          {{
+            { 1: '待审批', 2: '通过', 3: '不通过', 4: '不通过已报价', 5: '异常', 6: '异常已处理' }[text] || '未知状态'
+          }}
         </a>
       </div>
-
     </a-table>
-    <OfferPriceView ref="offerPriceView" @finish="() => search()"/>
-    <OrderForm ref="orderForm" @finish="() => search()"/>
+    <OfferPriceView ref="offerPriceView" @finish="() => search()" />
+    <OrderForm ref="orderForm" @finish="() => search()" />
     <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
   </div>
 </template>
 
 <script>
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
-import { quotationPageList } from '@/api/procurementModuleManagement'
+import { quotationRequestApplyPageList } from '@/api/procurementModuleManagement'
 import { getBuyRequirement } from '@/api/routineMaterial'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import OfferPriceView from '../grab/OfferPriceView'
@@ -159,7 +121,7 @@ const columns = [
   {
     title: '需求日期',
     dataIndex: 'requestTime',
-    width:200
+    width: 200
   },
   {
     title: '供应商名称',
@@ -208,7 +170,7 @@ const columns = [
   {
     title: '报价时间',
     dataIndex: 'createdTime',
-    width:200
+    width: 200
   },
   // {
   //   title: '审批状态',
@@ -282,7 +244,7 @@ export default {
       }
       const _searchParam = Object.assign({}, { ...that.queryParamCustom }, paginationParam, params)
       that.loading = true
-      quotationPageList(_searchParam)
+      quotationRequestApplyPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
@@ -310,28 +272,28 @@ export default {
           console.log(err)
         })
     },
-    async fillNum(){
+    async fillNum() {
       const that = this
       let arr = that.dataSource.map(item => {
         return new Promise(resolve => {
-          getBuyRequirement({ materialId:item.materialId })
-              .then(res => {
-                let n = 0
-                try{
-                  n = res.data.pageNum || 0
-                }catch(e){
-                  n = 0
-                }
-                let dataSource = [...that.dataSource]
-                let target = dataSource.find(_item => _item.key === item.key)
-                target.__safetyStock = n //安全库存
-                target.__difNum = (target.requestNum || 0) - n
-                target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
-                that.dataSource = dataSource
-              })
-              .catch(err => {
-                console.log(err)
-              })
+          getBuyRequirement({ materialId: item.materialId })
+            .then(res => {
+              let n = 0
+              try {
+                n = res.data.pageNum || 0
+              } catch (e) {
+                n = 0
+              }
+              let dataSource = [...that.dataSource]
+              let target = dataSource.find(_item => _item.key === item.key)
+              target.__safetyStock = n //安全库存
+              target.__difNum = (target.requestNum || 0) - n
+              target.__isWarning = (target.requestNum || 0) > n //是否超安全库存
+              that.dataSource = dataSource
+            })
+            .catch(err => {
+              console.log(err)
+            })
         })
       })
 
@@ -356,8 +318,8 @@ export default {
         that.$refs.orderForm.query('add', record)
         return
       } else if (type === 'materialView') {
-        if(!record.materialId){
-          that.$message.info('物料编号未定义');
+        if (!record.materialId) {
+          that.$message.info('物料编号未定义')
           return
         }
         that.normalAddFormKeyCount++
@@ -369,6 +331,16 @@ export default {
             id: record.materialId,
             __from
           })
+        })
+        return
+      } else if (type === 'caigou') {
+        that.$router.push({
+          name: 'procurement-module-management-purchase-contract-action',
+          params: {
+            selectedRows: [...that.selectedRows],
+            action: 'add',
+            from: 'procurement-module-management-order'
+          }
         })
         return
       }

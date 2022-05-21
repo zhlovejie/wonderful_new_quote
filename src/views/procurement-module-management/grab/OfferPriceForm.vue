@@ -18,92 +18,48 @@
         :wrapper-col="wrapperCol"
         class="ask-price-form-wrapper"
       >
-
-
-
-
-        <a-card :bordered="cardBordered" >
-          <a-form-model-item
-            label="有无供应商"
-            prop="hasSupplier"
-          >
-            <a-radio-group
-              name="hasSupplier"
-              v-model="form.hasSupplier"
-              @change="hasSupplierChange"
-            >
-              <a-radio v-for="(item,idx) in hasSupplierList" :key="idx" :value="item.id">{{item.label}}</a-radio>
+        <a-card :bordered="cardBordered">
+          <a-form-model-item label="有无供应商" prop="hasSupplier">
+            <a-radio-group name="hasSupplier" v-model="form.hasSupplier" @change="hasSupplierChange">
+              <a-radio v-for="(item, idx) in hasSupplierList" :key="idx" :value="item.id">{{ item.label }}</a-radio>
             </a-radio-group>
           </a-form-model-item>
 
           <template v-if="form.hasSupplier === 1">
-            <a-form-model-item
-              label="供应商"
-              prop="supplierId"
-            >
-              <a-select
-                v-model="form.supplierId"
-                placeholder="选择供应商"
-                allowClear
-                @change="supplierChangeHandler"
-              >
-                <a-select-option
-                  v-for="item in supplierList"
-                  :value="item.id"
-                  :key="item.id"
-                >
-                  {{item.supplierName}}
+            <a-form-model-item label="供应商" prop="supplierId">
+              <a-select v-model="form.supplierId" placeholder="选择供应商" allowClear @change="supplierChangeHandler">
+                <a-select-option v-for="item in supplierList" :value="item.id" :key="item.id">
+                  {{ item.supplierName }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
           </template>
 
           <template v-if="form.hasSupplier === 2">
-            <a-form-model-item
-              label="供应商"
-              prop="supplierName"
-            >
-              <a-input
-                v-model="form.supplierName"
-                placeholder="请输入供应商名称，输入后不可更改"
-              />
+            <a-form-model-item label="供应商" prop="supplierName">
+              <a-input v-model="form.supplierName" placeholder="请输入供应商名称，输入后不可更改" />
             </a-form-model-item>
           </template>
         </a-card>
 
-
-
         <a-card :bordered="cardBordered">
           <a-form-model-item label="物料名称">
-            <span>{{record.materialName}}</span>
+            <span>{{ record.materialName }}</span>
           </a-form-model-item>
           <a-form-model-item label="规格型号">
-            <span>{{record.materialModelType}}</span>
+            <span>{{ record.materialModelType }}</span>
           </a-form-model-item>
 
-          <a-form-model-item
-            label="包装方式"
-            prop="packageType"
-          >
+          <a-form-model-item label="包装方式" prop="packageType">
             <a-row>
               <a-col :span="11">
-                <a-select
-                  style="width:100%;"
-                  allowClear
-                  v-model="form.packageType"
-                  placeholder="包装类型"
-                >
-                  <a-select-option
-                    v-for="item in packingType"
-                    :key="item.text"
-                    :value="item.text"
-                  >{{item.text}}</a-select-option>
+                <a-select style="width:100%;" allowClear v-model="form.packageType" placeholder="包装类型">
+                  <a-select-option v-for="item in packingType" :key="item.text" :value="item.text">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-col>
-              <a-col
-                :span="11"
-                :offset="2"
-              >
+              <a-col :span="11" :offset="2">
                 <a-input-number
                   v-model="form.packageCount"
                   placeholder="包装内数量"
@@ -116,28 +72,30 @@
             </a-row>
           </a-form-model-item>
 
-          <a-form-model-item
-            label="品牌/型号"
-            prop="modelName"
-          >
+          <a-form-model-item label="品牌/型号" prop="modelName">
             <template v-if="Array.isArray(form.manageBrands) && form.manageBrands.length > 0">
-              <a-row
-                v-for="(b,idx) in form.manageBrands"
-                :key="b.id"
-              >
+              <a-row v-for="(b, idx) in form.manageBrands" :key="b.id">
                 <a-col :span="24">
-                  <span>{{b.brandName}}</span>
+                  <span>{{ b.brandName }}</span>
                   <span style="margin:0 5px;">：</span>
-                  <span>{{Array.isArray(b.manageBrandModels) && b.manageBrandModels.length > 0 ? b.manageBrandModels.map(sub => sub.modelName).join(',') : '无'}}</span>
+                  <span>{{
+                    Array.isArray(b.manageBrandModels) && b.manageBrandModels.length > 0
+                      ? b.manageBrandModels.map(sub => sub.modelName).join(',')
+                      : '无'
+                  }}</span>
                 </a-col>
               </a-row>
 
-              <a-row v-if="!supplierRequirement.manageBrands || (Array.isArray(supplierRequirement.manageBrands) && supplierRequirement.manageBrands.length === 0)">
+              <a-row
+                v-if="
+                  !supplierRequirement.manageBrands ||
+                    (Array.isArray(supplierRequirement.manageBrands) && supplierRequirement.manageBrands.length === 0)
+                "
+              >
                 <a-col>
                   <a-button @click="brandsAction('edit')">修改品牌型号</a-button>
                 </a-col>
               </a-row>
-
             </template>
             <template v-else>
               <span>该物料需求下暂未设置品牌，请手动添加</span>
@@ -164,13 +122,9 @@
                 />
               </a-col>
             </a-row> -->
-
           </a-form-model-item>
-          <a-form-model-item
-            label="最后一次采购单价"
-            prop="lastPrice"
-          >
-            {{`${form.lastPrice || 0} 元`}}
+          <a-form-model-item label="最后一次采购单价" prop="lastPrice">
+            {{ `${form.lastPrice || 0} 元` }}
             <!-- <a-input-number
               placeholder="最新采购单价"
               v-model="form.lastPrice"
@@ -185,15 +139,9 @@
         </a-card>
 
         <a-card :bordered="cardBordered">
-          <a-form-model-item
-            label="结算方式"
-            prop="settlementMode"
-          >
+          <a-form-model-item label="结算方式" prop="settlementMode">
             <template v-if="form.hasSupplier === 2">
-              <a-select
-                v-model="form.settlementMode"
-                placeholder="结算方式"
-              >
+              <a-select v-model="form.settlementMode" placeholder="结算方式">
                 <a-select-option :value="0">
                   现款现货
                 </a-select-option>
@@ -201,21 +149,14 @@
                   账期结算
                 </a-select-option>
               </a-select>
-
             </template>
             <template v-else>
-              {{ {0:'现款现货',1:'账期结算'}[form.settlementMode] || '-' }}
+              {{ { 0: '现款现货', 1: '账期结算' }[form.settlementMode] || '-' }}
             </template>
           </a-form-model-item>
 
-          <a-form-model-item
-            label="发票类型"
-            prop="invoiceType"
-          >
-            <a-select
-              v-model="form.invoiceType"
-              placeholder="发票类型"
-            >
+          <a-form-model-item label="发票类型" prop="invoiceType">
+            <a-select v-model="form.invoiceType" placeholder="发票类型">
               <a-select-option :value="0">
                 不限
               </a-select-option>
@@ -228,14 +169,8 @@
             </a-select>
           </a-form-model-item>
 
-          <a-form-model-item
-            label="裸价标准"
-            prop="nakedPrice"
-          >
-            <a-select
-              v-model="form.nakedPrice"
-              placeholder="裸价标准"
-            >
+          <a-form-model-item label="裸价标准" prop="nakedPrice">
+            <a-select v-model="form.nakedPrice" placeholder="裸价标准">
               <a-select-option :value="1">
                 含税运
               </a-select-option>
@@ -244,10 +179,7 @@
               </a-select-option>
             </a-select>
           </a-form-model-item>
-          <a-form-model-item
-            label="最新报价"
-            prop="newPrice"
-          >
+          <a-form-model-item label="最新报价" prop="newPrice">
             <a-input-number
               placeholder="最新报价"
               v-model="form.newPrice"
@@ -259,10 +191,7 @@
               :parser="value => value.replace('元', '')"
             />
           </a-form-model-item>
-          <a-form-model-item
-            label="物料税率"
-            prop="materialRate"
-          >
+          <a-form-model-item label="物料税率" prop="materialRate">
             <a-input-number
               placeholder="物料税率"
               v-model="form.materialRate"
@@ -275,10 +204,7 @@
               :parser="value => value.replace('%', '')"
             />
           </a-form-model-item>
-          <a-form-model-item
-            label="运费税率"
-            prop="freightRate"
-          >
+          <a-form-model-item label="运费税率" prop="freightRate">
             <a-input-number
               placeholder="运费税率"
               v-model="form.freightRate"
@@ -291,10 +217,7 @@
               :parser="value => value.replace('%', '')"
             />
           </a-form-model-item>
-          <a-form-model-item
-            label="最低采购数量"
-            prop="lowestNum"
-          >
+          <a-form-model-item label="最低采购数量" prop="lowestNum">
             <a-input-number
               placeholder="最低采购数量"
               v-model="form.lowestNum"
@@ -305,10 +228,7 @@
             />
           </a-form-model-item>
 
-          <a-form-model-item
-            label="交货周期"
-            prop="deliveryCycle"
-          >
+          <a-form-model-item label="交货周期" prop="deliveryCycle">
             <a-input-number
               placeholder="交货周期"
               v-model="form.deliveryCycle"
@@ -320,10 +240,7 @@
               :parser="value => value.replace('天', '')"
             />
           </a-form-model-item>
-          <a-form-model-item
-            label="保质期"
-            prop="shelfLife"
-          >
+          <a-form-model-item label="保质期" prop="shelfLife">
             <a-input-number
               placeholder="保质期"
               v-model="form.shelfLife"
@@ -337,7 +254,7 @@
           </a-form-model-item>
         </a-card>
       </a-form-model>
-      <BrandFrom ref="brandFrom" @brandChange="brandChange"/>
+      <BrandFrom ref="brandFrom" @brandChange="brandChange" />
     </a-spin>
   </a-modal>
 </template>
@@ -354,37 +271,37 @@ import { getBuyRequirement, getSupplierOffer } from '@/api/routineMaterial'
 import BrandFrom from '@/views/supplier/modules/BrandFrom'
 import { getDictionary } from '@/api/common'
 export default {
-  components:{BrandFrom},
+  components: { BrandFrom },
   data() {
-    let isExists = (obj) => obj !== undefined && obj !== null && obj !== ''
+    let isExists = obj => obj !== undefined && obj !== null && obj !== ''
     let validateDeliveryCycle = (rule, value, callback) => {
       let deliveryCycle = this.extendsValidate.deliveryCycle
-      if(isExists(deliveryCycle)){
+      if (isExists(deliveryCycle)) {
         callback()
-      }else{
-        if(!isExists(value)){
-          callback(new Error('请输入交货周期'));
+      } else {
+        if (!isExists(value)) {
+          callback(new Error('请输入交货周期'))
         }
-        if(+value >= 0 && +value <= 30){
+        if (+value >= 0 && +value <= 30) {
           callback()
-        }else{
-          callback(new Error('交货周期必须在30天内'));
+        } else {
+          callback(new Error('交货周期必须在30天内'))
         }
       }
     }
 
     let validateShelfLife = (rule, value, callback) => {
       let shelfLife = this.extendsValidate.shelfLife
-      if(isExists(shelfLife)){
+      if (isExists(shelfLife)) {
         callback()
-      }else{
-        if(!isExists(value)){
-          callback(new Error('请输入交保质期'));
+      } else {
+        if (!isExists(value)) {
+          callback(new Error('请输入交保质期'))
         }
-        if(+value >= 180){
+        if (+value >= 180) {
           callback()
-        }else{
-          callback(new Error('保质期必须大于等于 180 天'));
+        } else {
+          callback(new Error('保质期必须大于等于 180 天'))
         }
       }
     }
@@ -440,14 +357,12 @@ export default {
       materialRequirement: {},
       supplierRequirement: {},
       needValidateMaterialRequiredAndSupplierRequired: true,
-      isDesignatedSupplier:false,//是否指定供应商
+      isDesignatedSupplier: false, //是否指定供应商
 
-
-      extendsValidate:{
-        deliveryCycle:null,
-        shelfLife:null
+      extendsValidate: {
+        deliveryCycle: null,
+        shelfLife: null
       }
-
     }
   },
   computed: {
@@ -489,13 +404,13 @@ export default {
       )
       return btn
     },
-    hasSupplierList(){
-      let list= [
-        {id:1,label:'有'},
-        {id:2,label:'无' }
+    hasSupplierList() {
+      let list = [
+        { id: 1, label: '有' },
+        { id: 2, label: '无' }
       ]
-      if(this.isDesignatedSupplier){
-        return [{id:1,label:'有'}]
+      if (this.isDesignatedSupplier) {
+        return [{ id: 1, label: '有' }]
       }
       return list
     }
@@ -568,12 +483,12 @@ export default {
             that.$message.info(`获取物料最新采购单价失败:${err}`)
             return 0
           })
-        that.form = {...that.form,lastPrice: newLastPrice || 0}
+        that.form = { ...that.form, lastPrice: newLastPrice || 0 }
         // await that.initMaterialRequired()
         await that.testSupplierByMaterial()
       }
     },
-    async testSupplierByMaterial(){
+    async testSupplierByMaterial() {
       const that = this
       that.spinning = true
 
@@ -587,18 +502,20 @@ export default {
 
       that.spinning = false
       that.materialRequirement = materialRequirement
-      let {supplierId,supplierName} = that.materialRequirement
+      let { supplierId, supplierName } = that.materialRequirement
 
+      debugger
       //是否指定供应商
-      that.isDesignatedSupplier = (supplierId !== undefined && supplierId !== null) &&  +supplierId !== 0
+      that.isDesignatedSupplier = supplierId !== undefined && supplierId !== null && +supplierId !== 0
       //没有物料要求的时候  可选供应商 是同部门该物料的供应商都可以用
       //有采购要求 并且指定供应商了 只能选择被指定的几个供应商 且是自己部门的数据
-      if(that.isDesignatedSupplier){
+      if (that.isDesignatedSupplier) {
         // that.form = {...that.form}
         let supplierArr = supplierId.split(',').map(v => +v)
         that.supplierList = that.supplierList.filter(c => {
           return supplierArr.includes(+c.id)
         })
+        console.log(that.supplierList)
       }
     },
     async initMaterialRequired() {
@@ -620,7 +537,6 @@ export default {
       //   const msg = `物料名称：${that.record.materialName} 要求获取失败`
       //   that.$message.error(msg)
       // }
-
 
       if (materialRequirement) {
         const _manageBrands = materialRequirement.buyRequirementBrands.map(c => {
@@ -651,8 +567,7 @@ export default {
           deliveryCycle: materialRequirement.maxDelivery || undefined,
           shelfLife: materialRequirement.minWarranty || undefined
         }
-      }
-      else {
+      } else {
         // that.form = {
         //   ...that.form,
         //   lastPrice: newLastPrice
@@ -698,45 +613,95 @@ export default {
             lowestNum,
             deliveryCycle,
             shelfLife,
-            manageBrandLists : manageBrands
+            manageBrandLists: manageBrands
           } = supplierRequirement
 
           //先填充供应商信息，供应商未提供的  物料需求里面有的 就用 物料需求里面的
           let materialRequirement = that.materialRequirement || {}
-          const _buyRequirementBrands = materialRequirement && materialRequirement.buyRequirementBrands
-            ? [...materialRequirement.buyRequirementBrands] : []
+          const _buyRequirementBrands =
+            materialRequirement && materialRequirement.buyRequirementBrands
+              ? [...materialRequirement.buyRequirementBrands]
+              : []
           const _manageBrands = _buyRequirementBrands.map(c => {
-              const obj = { ...c }
-              obj.manageBrandModels = that.$_.cloneDeep(obj.buyRequirementBrandModels)
-              delete obj.buyRequirementBrandModels
-              return obj
-            })
-          let isExists = (obj) => obj !== undefined && obj !== null
+            const obj = { ...c }
+            obj.manageBrandModels = that.$_.cloneDeep(obj.buyRequirementBrandModels)
+            delete obj.buyRequirementBrandModels
+            return obj
+          })
+          let isExists = obj => obj !== undefined && obj !== null
           that.form = {
             ...that.form,
             //buyRequirement ,
             // supplierId: String(supplierId),
             // materialId,
-            packageType: isExists(packageType) ? packageType : isExists(materialRequirement.packMethod) ? materialRequirement.packMethod : undefined,
-            packageCount:isExists(packageCount) ? packageCount : isExists(materialRequirement.pageNum) ? materialRequirement.pageNum : undefined,
+            packageType: isExists(packageType)
+              ? packageType
+              : isExists(materialRequirement.packMethod)
+              ? materialRequirement.packMethod
+              : undefined,
+            packageCount: isExists(packageCount)
+              ? packageCount
+              : isExists(materialRequirement.pageNum)
+              ? materialRequirement.pageNum
+              : undefined,
             // settlementMode,
-            invoiceType:isExists(invoiceType) ? invoiceType : isExists(materialRequirement.invoiceType) ? materialRequirement.invoiceType : undefined,
+            invoiceType: isExists(invoiceType)
+              ? invoiceType
+              : isExists(materialRequirement.invoiceType)
+              ? materialRequirement.invoiceType
+              : undefined,
             lastPrice: newLastPrice,
-            nakedPrice:isExists(nakedPrice) ? nakedPrice : isExists(materialRequirement.nakedPrice) ? materialRequirement.nakedPrice : undefined,
-            newPrice:isExists(newPrice) ? newPrice : isExists(materialRequirement.price) ? materialRequirement.price : undefined,
-            materialRate:isExists(materialRate) ? materialRate : isExists(materialRequirement.taxRate) ? materialRequirement.taxRate : undefined,
+            nakedPrice: isExists(nakedPrice)
+              ? nakedPrice
+              : isExists(materialRequirement.nakedPrice)
+              ? materialRequirement.nakedPrice
+              : undefined,
+            newPrice: isExists(newPrice)
+              ? newPrice
+              : isExists(materialRequirement.price)
+              ? materialRequirement.price
+              : undefined,
+            materialRate: isExists(materialRate)
+              ? materialRate
+              : isExists(materialRequirement.taxRate)
+              ? materialRequirement.taxRate
+              : undefined,
             freightRate,
-            lowestNum:isExists(lowestNum) ? lowestNum : isExists(materialRequirement.maxPurchase) ? materialRequirement.maxPurchase : undefined,
-            deliveryCycle : isExists(deliveryCycle) ? deliveryCycle : isExists(materialRequirement.maxDelivery) ? materialRequirement.maxDelivery : undefined,
-            shelfLife:isExists(shelfLife) ? shelfLife : isExists(materialRequirement.minWarranty) ? materialRequirement.minWarranty : undefined,
-            manageBrands:Array.isArray(manageBrands) && manageBrands.length > 0 ? manageBrands : Array.isArray(_manageBrands) && _manageBrands.length > 0 ? _manageBrands : undefined,
+            lowestNum: isExists(lowestNum)
+              ? lowestNum
+              : isExists(materialRequirement.maxPurchase)
+              ? materialRequirement.maxPurchase
+              : undefined,
+            deliveryCycle: isExists(deliveryCycle)
+              ? deliveryCycle
+              : isExists(materialRequirement.maxDelivery)
+              ? materialRequirement.maxDelivery
+              : undefined,
+            shelfLife: isExists(shelfLife)
+              ? shelfLife
+              : isExists(materialRequirement.minWarranty)
+              ? materialRequirement.minWarranty
+              : undefined,
+            manageBrands:
+              Array.isArray(manageBrands) && manageBrands.length > 0
+                ? manageBrands
+                : Array.isArray(_manageBrands) && _manageBrands.length > 0
+                ? _manageBrands
+                : undefined
           }
 
           that.extendsValidate = {
-            deliveryCycle : isExists(deliveryCycle) ? deliveryCycle : isExists(materialRequirement.maxDelivery) ? materialRequirement.maxDelivery : undefined,
-            shelfLife:isExists(shelfLife) ? shelfLife : isExists(materialRequirement.minWarranty) ? materialRequirement.minWarranty : undefined,
+            deliveryCycle: isExists(deliveryCycle)
+              ? deliveryCycle
+              : isExists(materialRequirement.maxDelivery)
+              ? materialRequirement.maxDelivery
+              : undefined,
+            shelfLife: isExists(shelfLife)
+              ? shelfLife
+              : isExists(materialRequirement.minWarranty)
+              ? materialRequirement.minWarranty
+              : undefined
           }
-
         })
         .catch(err => {
           console.log(err)
@@ -758,13 +723,13 @@ export default {
           that.spinning = true
           let params = that.$_.cloneDeep(that.form)
           const { manageBrands } = params
-          if(Array.isArray(manageBrands)){
+          if (Array.isArray(manageBrands)) {
             let arr = []
             manageBrands.map(c => {
               arr.push(`${c.brandName}:${c.manageBrandModels.map(c1 => c1.modelName).join(',')}`)
             })
             params.model = arr.join(';')
-          }else{
+          } else {
             params.model = '无'
           }
 
@@ -812,12 +777,17 @@ export default {
       const supplierList = [...that.supplierList]
       const target = supplierList.find(item => +item.id === +v)
       if (target) {
-        that.form = { ...that.form, supplierName: target.supplierName,supplierId:v ,settlementMode:target.settlementMode}
-      }else{
-        that.form = { ...that.form, supplierName: undefined,supplierId:undefined ,settlementMode:undefined}
+        that.form = {
+          ...that.form,
+          supplierName: target.supplierName,
+          supplierId: v,
+          settlementMode: target.settlementMode
+        }
+      } else {
+        that.form = { ...that.form, supplierName: undefined, supplierId: undefined, settlementMode: undefined }
       }
 
-      if(v){
+      if (v) {
         that.fillSupplierInfo(v)
       }
 
@@ -829,9 +799,9 @@ export default {
 
     validateMaterialRequiredAndSupplierRequired() {
       const that = this
-      let isExists = (obj) => obj !== undefined && obj !== null
+      let isExists = obj => obj !== undefined && obj !== null
       const buyRequirement = that.supplierRequirement.buyRequirement
-      if(!buyRequirement){
+      if (!buyRequirement) {
         return true
       }
       const {
@@ -896,7 +866,7 @@ export default {
         })
       }
 
-      if (isExists (buyRequirement.packMethod) && isExists( buyRequirement.pageNum)) {
+      if (isExists(buyRequirement.packMethod) && isExists(buyRequirement.pageNum)) {
         //比较包装类型和数量
         //是否固定包装(1是固定，2是不固定)
         if (buyRequirement.packType === 1) {
@@ -972,7 +942,7 @@ export default {
           }
         })
       }
-      if ( isExists(buyRequirement.maxPurchase) && buyRequirement.maxPurchase > 0) {
+      if (isExists(buyRequirement.maxPurchase) && buyRequirement.maxPurchase > 0) {
         //对比采购量
         arrCase.push({
           msg: `采购量不匹配，供应商提供为【${lowestNum}】物料要求为【${buyRequirement.maxPurchase}】`,
@@ -985,7 +955,7 @@ export default {
           }
         })
       }
-      if(isExists(buyRequirement.taxRate) && +buyRequirement.taxRate >=0 ){
+      if (isExists(buyRequirement.taxRate) && +buyRequirement.taxRate >= 0) {
         //对比物料税率
         arrCase.push({
           msg: `物料税率不匹配，供应商提供为【${materialRate}%】物料要求为【${buyRequirement.taxRate}%】`,
@@ -1038,10 +1008,10 @@ export default {
       return errorList.length === 0
     },
 
-    brandsAction(type){
+    brandsAction(type) {
       //添加品牌型号
       let that = this
-      that.$refs.brandFrom.query(that.$_.cloneDeep((that.form.manageBrands || [])))
+      that.$refs.brandFrom.query(that.$_.cloneDeep(that.form.manageBrands || []))
     },
     brandChange(data) {
       const that = this
@@ -1053,7 +1023,7 @@ export default {
         modelType: manageBrands.map(c => [...c.manageBrandModels.map(c1 => c1.modelName)]).join(',')
       }
     },
-    isExists (obj) {
+    isExists(obj) {
       return obj !== undefined && obj !== null
     }
   }

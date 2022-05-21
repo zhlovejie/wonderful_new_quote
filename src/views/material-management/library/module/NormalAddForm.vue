@@ -16,7 +16,7 @@
       <StepProduct v-show="isProduct && step === 1" @change="stepOneChange" />
       <StepTwo v-if="step === 2" @change="stepTwoChange" />
     </div>
-    <div v-else-if="isView ">
+    <div v-else-if="isView">
       <StepTwo @change="stepTwoChange" />
     </div>
     <div v-else></div>
@@ -35,17 +35,20 @@ import {
   getRoutineMaterialInfoCode
 } from '@/api/routineMaterial'
 const modalTitleMap = { add: '新增', view: '查看', edit: '修改', loading: '加载中...' }
-let uuid = () => Math.random().toString(32).slice(-10)
+let uuid = () =>
+  Math.random()
+    .toString(32)
+    .slice(-10)
 export default {
   name: 'material-rule-management-library-normal-AddForm',
   components: {
     StepOne,
     StepTwo,
-    StepProduct,
+    StepProduct
   },
   provide() {
     return {
-      normalAddForm: this,
+      normalAddForm: this
     }
   },
   data() {
@@ -55,10 +58,11 @@ export default {
       spinning: false,
       step: 1,
       detail: {},
+      record: {},
       submitParams: {},
       selectNode: {},
-      stepOneCacheData:{},
-      stepTwoCacheData:{},
+      stepOneCacheData: {},
+      stepTwoCacheData: {}
     }
   },
   computed: {
@@ -79,7 +83,7 @@ export default {
     },
     isProduct() {
       return this.detail.__from === 'product'
-    },
+    }
   },
   methods: {
     uuid,
@@ -88,6 +92,7 @@ export default {
       //that.type = type
       that.visible = true
       that.detail = { ...record }
+      that.record = { ...record }
       that.stepOneCacheData = {}
       that.stepTwoCacheData = {}
       that.selectNode = { ...that.detail.__selectItem }
@@ -102,12 +107,12 @@ export default {
         let __APIAccessory = that.isNormal ? routineMaterialAccessory : productMaterialAccessory
         let __APIInfo = that.isNormal ? routineMaterialInfo : productMaterialInfo
 
-        let [accessory,result,stepOneData] = await Promise.all([
-          __APIAccessory({ materialId: record.id }).then((res) => res.data),
-          __APIInfo({ id: record.id }).then((res) => res.data),
-          getRoutineMaterialInfoCode({materialId:record.id}).then((res) => res.data)
+        let [accessory, result, stepOneData] = await Promise.all([
+          __APIAccessory({ materialId: record.id }).then(res => res.data),
+          __APIInfo({ id: record.id }).then(res => res.data),
+          getRoutineMaterialInfoCode({ materialId: record.id }).then(res => res.data)
         ])
-        
+
         // let accessory = await __APIAccessory({ materialId: record.id }).then((res) => res.data)
         // let result = await __APIInfo({ id: record.id }).then((res) => res.data)
         // let stepOneData = await getRoutineMaterialInfoCode({materialId:record.id}).then((res) => res.data)
@@ -115,8 +120,8 @@ export default {
         that.submitParams = {
           ...result,
           accessory,
-          stepOneData:stepOneData,
-          __materialCodeCache:result.materialCode
+          stepOneData: stepOneData,
+          __materialCodeCache: result.materialCode
         }
       }
       that.$nextTick(() => {
@@ -137,13 +142,13 @@ export default {
     },
     stepTwoChange(type) {
       const that = this
-      if(type === 'ok'){
+      if (type === 'ok') {
         that.handleCancel()
         that.$emit('finish')
-      }else if(type === 'prevStep'){
+      } else if (type === 'prevStep') {
         debugger
         that.step = 1
-        if(that.isEdit && that.$refs.stepOne){
+        if (that.isEdit && that.$refs.stepOne) {
           that.$refs.stepOne.fillDate()
         }
       }
@@ -167,10 +172,9 @@ export default {
     },
     getId() {
       return this.detail.id
-    },
-  },
+    }
+  }
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

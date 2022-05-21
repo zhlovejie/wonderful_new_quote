@@ -24,9 +24,9 @@ Vue.use(Antd)
 
 //提示信息垂直居中
 Vue.prototype.$message.config({
-  top:'calc(50% - 25px)',//消息距离顶部的位置
-  duration:3, //多少秒后自动关闭
-  maxCount:1 //最大显示数
+  top: 'calc(50% - 25px)', //消息距离顶部的位置
+  duration: 3, //多少秒后自动关闭
+  maxCount: 1 //最大显示数
 })
 
 Vue.prototype.$_ = _
@@ -44,7 +44,7 @@ Vue.use(VueAxios)
 new Vue({
   router,
   store,
-  created () {
+  created() {
     bootstrap()
   },
   render: h => h(App)

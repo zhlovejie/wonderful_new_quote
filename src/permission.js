@@ -14,7 +14,9 @@ const whiteList = ['login', '404'] // 没有重定向白名单
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
+  // debugger
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`)
+  to.meta.title = routerMetaTitleChange(to)
   if (Vue.ls.get(ACCESS_TOKEN)) {
     let currentUser = Vue.ls.get('CURRENT_USER')
     if (currentUser) {
@@ -88,3 +90,17 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   NProgress.done() // finish progress bar
 })
+
+function routerMetaTitleChange(to) {
+  if (to.name === 'procurement-module-management-purchase-contract-action' && to.params.action) {
+    const titleMap = {
+      add: '新增',
+      view: '查看',
+      edit: '修改',
+      approval: '审批',
+      preview: '预览'
+    }
+    return `${to.meta.title}-${titleMap[to.params.action]}`
+  }
+  return to.meta.title
+}
