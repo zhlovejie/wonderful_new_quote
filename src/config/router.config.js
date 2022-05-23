@@ -1,15 +1,5 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
-
+import { BasicLayout, UserLayout } from '@/layouts'
 
 import routerDashboard from '@/router/router-dashboard'
 import systemSetting from '@/router/router-system-setting'
@@ -41,7 +31,7 @@ import supplier from '@/router/router-supplier'
 import qualityManagement from '@/router/router-quality-management'
 import storageManagement from '@/router/router-storage'
 
-const __ROUTER_MAP__ = [
+var __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
   systemSetting, //系统设置
   salesManagement, //销售管理
@@ -68,13 +58,12 @@ const __ROUTER_MAP__ = [
   qualityManagement, // 质量管理
   procurementModuleManagement, //采购管理
   supplier, //供应商管理
-  storageManagement, //仓储管理
+  storageManagement //仓储管理
 ]
 /*
 会有权限筛选处理，并作为菜单显示
 */
-export const asyncRouterMap = [
-  // index/dashboard
+export var asyncRouterMap = [
   {
     path: '/',
     name: 'index',
@@ -83,9 +72,7 @@ export const asyncRouterMap = [
       title: '首页'
     },
     redirect: '/dashboard/workplace',
-    children: [
-      ...__ROUTER_MAP__
-    ]
+    children: [...__ROUTER_MAP__]
   }
 ]
 
@@ -94,28 +81,30 @@ export const asyncRouterMap = [
  * 所有角色都可以訪問到的
  * @type { *[] }
  */
-export const constantRouterMap = [{
+export var constantRouterMap = [
+  {
     path: '/user',
     component: UserLayout,
     redirect: '/user/login',
     hidden: true,
-    children: [{
+    children: [
+      {
         path: 'login',
         name: 'login',
-        component: () => import( /* webpackChunkName: "user" */ '@/views/user/Login')
+        component: () => import('@/views/user/Login')
       }
     ]
   },
   {
     path: '/404',
-    name:'404',
+    name: '404',
     hideInMenu: true,
-    component: () => import( /* webpackChunkName: "fail" */ '@/views/exception/404')
+    component: () => import('@/views/exception/404')
   }
 ]
 
 // 前端未找到页面路由（固定不用改）
-export const notFoundRouter = {
+export var notFoundRouter = {
   path: '*',
   redirect: '/404',
   hidden: true

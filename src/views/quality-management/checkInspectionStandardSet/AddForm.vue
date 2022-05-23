@@ -1,36 +1,18 @@
 <template>
   <div>
-    <a-modal
-      :title="modalTitle"
-      :visible="visible"
-      :footer="null"
-      :width="1400"
-      @cancel="handleCancel"
-    >
+    <a-modal :title="modalTitle" :visible="visible" :footer="null" :width="1400" @cancel="handleCancel">
       <a-spin :spinning="spinning">
-        <a-row v-if="isView">
+        <a-row v-if="isView && showCopy">
           <a-col :span="22"></a-col>
           <a-col :span="2">
-            <a-button
-              type="primary"
-              @click="handlerCopy"
-            >复制检验标准</a-button>
+            <a-button type="primary" @click="handlerCopy">复制检验标准</a-button>
           </a-col>
         </a-row>
-        <a-form-model
-          ref="ruleForm"
-          :model="form"
-          :rules="rules"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-        >
+        <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
           <h3>物料基本信息</h3>
           <a-row>
             <a-col :span="10">
-              <a-form-model-item
-                prop="materialCode"
-                label="物料编码"
-              >
+              <a-form-model-item prop="materialCode" label="物料编码">
                 <a-select
                   v-if="isCopy && !isDisabled"
                   show-search
@@ -41,14 +23,10 @@
                   :show-arrow="false"
                   :filter-option="false"
                   :not-found-content="materialFuzzySearch.fetching ? undefined : '未找到匹配项'"
-                  @search="(w) => materialFuzzyAction(w,false)"
+                  @search="w => materialFuzzyAction(w, false)"
                   @change="materialFuzzyHandleChange"
                 >
-                  <a-spin
-                    v-if="materialFuzzySearch.fetching"
-                    slot="notFoundContent"
-                    size="small"
-                  />
+                  <a-spin v-if="materialFuzzySearch.fetching" slot="notFoundContent" size="small" />
                   <a-select-option
                     v-for="item in materialFuzzySearch.list"
                     :key="item.__key"
@@ -57,35 +35,25 @@
                     {{ item.materialCodeFormat }}
                   </a-select-option>
                 </a-select>
-                <span v-else>{{record.materialCode}}</span>
+                <span v-else>{{ record.materialCode }}</span>
               </a-form-model-item>
-
             </a-col>
             <a-col :span="10">
               <!-- <p>物料名称：{{record.materialName}}</p> -->
-              <a-form-model-item
-                prop="materialCode"
-                label="物料名称"
-              >
-                {{record.materialName}}
+              <a-form-model-item prop="materialCode" label="物料名称">
+                {{ record.materialName }}
               </a-form-model-item>
             </a-col>
             <a-col :span="10">
               <!-- <p>规格型号：{{record.specification}}</p> -->
-              <a-form-model-item
-                prop="materialCode"
-                label="规格型号"
-              >
-                {{record.specification}}
+              <a-form-model-item prop="materialCode" label="规格型号">
+                {{ record.specification }}
               </a-form-model-item>
             </a-col>
             <a-col :span="10">
               <!-- <p>物料来源：{{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[record.materialSource] }}</p> -->
-              <a-form-model-item
-                prop="materialCode"
-                label="物料来源"
-              >
-                {{ {1:'自制',2:'通用外购',3:'委外加工',4:'定制外购'}[record.materialSource] }}
+              <a-form-model-item prop="materialCode" label="物料来源">
+                {{ { 1: '自制', 2: '通用外购', 3: '委外加工', 4: '定制外购' }[record.materialSource] }}
               </a-form-model-item>
             </a-col>
           </a-row>
@@ -93,15 +61,8 @@
           <h3>检验标准明细</h3>
           <a-row>
             <a-col :span="10">
-              <a-form-model-item
-                label="检验类别"
-                prop="inspectionStatus"
-              >
-                <a-select
-                  :disabled="isDisabled"
-                  v-model="form.inspectionStatus"
-                  placeholder="检验类别"
-                >
+              <a-form-model-item label="检验类别" prop="inspectionStatus">
+                <a-select :disabled="isDisabled" v-model="form.inspectionStatus" placeholder="检验类别">
                   <a-select-option :value="1">
                     来料检验
                   </a-select-option>
@@ -118,10 +79,7 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="10">
-              <a-form-model-item
-                label="是否检验"
-                prop="inspectionType"
-              >
+              <a-form-model-item label="是否检验" prop="inspectionType">
                 <a-radio-group
                   :disabled="isDisabled"
                   v-model="form.inspectionType"
@@ -141,10 +99,10 @@
               <a-form-model-item
                 label="检验方案"
                 prop="inspectionSchemeId"
-                :rules="{ 
-                  required: +form.inspectionType === 1, 
-                  message: '请选择检验方案', 
-                  trigger: 'change' 
+                :rules="{
+                  required: +form.inspectionType === 1,
+                  message: '请选择检验方案',
+                  trigger: 'change'
                 }"
               >
                 <a-select
@@ -153,11 +111,8 @@
                   @change="handlerInspectionSchemeChange"
                   :disabled="isDisabled"
                 >
-                  <a-select-option
-                    v-for="item in inspectionSchemeList"
-                    :key="item.id"
-                  >
-                    {{item.inspectionScheme}}
+                  <a-select-option v-for="item in inspectionSchemeList" :key="item.id">
+                    {{ item.inspectionScheme }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -179,11 +134,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="item in checkInspectionStandardDetails"
-                :key="item.key"
-              >
-                <td>{{item.projectName}}</td>
+              <tr v-for="item in checkInspectionStandardDetails" :key="item.key">
+                <td>{{ item.projectName }}</td>
                 <td>
                   <a-textarea
                     placeholder="检验要点标注"
@@ -199,13 +151,10 @@
                     style="width: 100%;"
                     v-model="item.toolId"
                     :disabled="isDisabled"
-                    @change="(val) => handlerSelectName(val,'tool',item)"
+                    @change="val => handlerSelectName(val, 'tool', item)"
                   >
-                    <a-select-option
-                      v-for="item in toolList"
-                      :key="item.id"
-                    >
-                      {{item.termName}}
+                    <a-select-option v-for="item in toolList" :key="item.id">
+                      {{ item.termName }}
                     </a-select-option>
                   </a-select>
                 </td>
@@ -214,13 +163,10 @@
                     style="width: 100%;"
                     v-model="item.methodId"
                     :disabled="isDisabled"
-                    @change="(val) => handlerSelectName(val,'method',item)"
+                    @change="val => handlerSelectName(val, 'method', item)"
                   >
-                    <a-select-option
-                      v-for="item in methodList"
-                      :key="item.id"
-                    >
-                      {{item.termName}}
+                    <a-select-option v-for="item in methodList" :key="item.id">
+                      {{ item.termName }}
                     </a-select-option>
                   </a-select>
                 </td>
@@ -229,73 +175,44 @@
                     style="width: 100%;"
                     v-model="item.frequencyId"
                     :disabled="isDisabled"
-                    @change="(val) => handlerSelectName(val,'frequency',item)"
+                    @change="val => handlerSelectName(val, 'frequency', item)"
                   >
-                    <a-select-option
-                      v-for="item in frequencyList"
-                      :key="item.id"
-                    >
-                      {{item.termName}}
+                    <a-select-option v-for="item in frequencyList" :key="item.id">
+                      {{ item.termName }}
                     </a-select-option>
                   </a-select>
                 </td>
                 <td>
-                  <a
-                    @click="handlerUpload(item)"
-                    href="javascript:void(0);"
-                  >{{isDisabled ? '查看' : '上传'}}</a>
+                  <a @click="handlerUpload(item)" href="javascript:void(0);">{{ isDisabled ? '查看' : '上传' }}</a>
                 </td>
 
-                <td>{{item.inspectionBasisName}}</td>
-                <td>{{item.parameterTermAqlName}}</td>
-                <td>{{ {0:'正常',1:'加严',2:'放宽'}[item.inspectionGrade] }}</td>
+                <td>{{ item.inspectionBasisName }}</td>
+                <td>{{ item.parameterTermAqlName }}</td>
+                <td>{{ { 0: '正常', 1: '加严', 2: '放宽' }[item.inspectionGrade] }}</td>
               </tr>
             </tbody>
           </table>
           <p style="text-align:center;">
             <template v-if="isAdd || isEdit">
               <a-button @click="handleCancel">取消</a-button>
-              <a-button
-                type="primary"
-                @click="() => handleOk(0)"
-                style="margin:0 10px;"
-              >保存为草稿</a-button>
-              <a-button
-                type="primary"
-                @click="() => handleOk(1)"
-              >保持并提交审核</a-button>
+              <a-button type="primary" @click="() => handleOk(0)" style="margin:0 10px;">保存为草稿</a-button>
+              <a-button type="primary" @click="() => handleOk(1)">保持并提交审核</a-button>
             </template>
 
             <template v-if="isApproval">
-              <a-button
-                type="primary"
-                @click="passAction"
-              >通过</a-button>
-              <a-button
-                @click="noPassAction"
-                style="margin:0 10px;"
-              >不通过</a-button>
+              <a-button type="primary" @click="passAction">通过</a-button>
+              <a-button @click="noPassAction" style="margin:0 10px;">不通过</a-button>
             </template>
 
             <template v-if="isView">
-              <a-button
-                type="primary"
-                @click="handleCancel"
-              >关闭</a-button>
+              <a-button type="primary" @click="handleCancel">关闭</a-button>
             </template>
           </p>
         </a-form-model>
       </a-spin>
     </a-modal>
-    <UploadModel
-      ref="uploadModel"
-      @change="uploadModelChange"
-    />
-    <Approval
-      ref="approval"
-      @opinionChange="opinionChange"
-    />
-
+    <UploadModel ref="uploadModel" @change="uploadModelChange" />
+    <Approval ref="approval" @opinionChange="opinionChange" />
   </div>
 </template>
 <script>
@@ -322,6 +239,12 @@ export default {
   components:{
     UploadModel,
     Approval
+  },
+  props:{
+    showCopy:{
+      type:Boolean,
+      default:() => true
+    }
   },
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)

@@ -6,125 +6,78 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="1?null:{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1 ? null : { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 2400 }"
     >
-      <div
-        slot="order"
-        slot-scope="text, record, index"
-      >
-        {{index + 1}}
+      <div slot="order" slot-scope="text, record, index">
+        {{ index + 1 }}
       </div>
-      <div
-        slot="urgencyDegree"
-        slot-scope="text, record, index"
-      >
-        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+      <div slot="urgencyDegree" slot-scope="text, record, index">
+        {{ { 1: '一般', 2: '加急', 3: '特急' }[text] }}
       </div>
 
-      <div
-        slot="action"
-        slot-scope="text, record, index"
-      >
-        <a @click="doAction('view',record)">查看</a>
+      <div slot="action" slot-scope="text, record, index">
+        <a @click="doAction('view', record)">查看</a>
         <a-divider type="vertical" />
-        <a @click="doAction('ask',record)">询价</a>
+        <a @click="doAction('ask', record)">询价</a>
         <a-divider type="vertical" />
-        <a @click="doAction('offer',record)">报价</a>
+        <a @click="doAction('offer', record)">报价</a>
         <a-divider type="vertical" />
-        <a @click="doAction('reject',record)">驳回</a>
+        <a @click="doAction('reject', record)">驳回</a>
       </div>
 
-      <div
-        slot="materialName"
-        slot-scope="text, record, index"
-      >
-        <a-popover
-          :title="text"
-          trigger="hover"
-        >
+      <div slot="materialName" slot-scope="text, record, index">
+        <a-popover :title="text" trigger="hover">
           <template slot="content">
-            <p>物料名称：{{record.materialName}}</p>
-            <p>物料代码：{{record.materialCode}}</p>
-            <p>规格型号：{{record.materialModelType}}</p>
-            <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
+            <p>物料名称：{{ record.materialName }}</p>
+            <p>物料代码：{{ record.materialCode }}</p>
+            <p>规格型号：{{ record.materialModelType }}</p>
+            <p>单位：{{ record.unit }}</p>
           </template>
-          <a
-            href="javascript:void(0);"
-            @click="doAction('materialView',record)"
-          >
-            {{text}}
+          <a href="javascript:void(0);" @click="doAction('materialView', record)">
+            {{ text }}
           </a>
         </a-popover>
       </div>
-      <div
-        slot="proposerName"
-        slot-scope="text, record, index"
-      >
-        {{record.applyDepName}}/{{record.proposerName}}
+      <div slot="proposerName" slot-scope="text, record, index">
+        {{ record.applyDepName }}/{{ record.proposerName }}
       </div>
 
-      <div
-        slot="reason"
-        slot-scope="text, record, index"
-      >
+      <div slot="reason" slot-scope="text, record, index">
         <a-tooltip v-if="String(text).length > 15">
-          <template slot="title">{{text}}</template>
-          {{ String(text).slice(0,15) }}...
+          <template slot="title">{{ text }}</template>
+          {{ String(text).slice(0, 15) }}...
         </a-tooltip>
-        <span v-else>{{text}}</span>
+        <span v-else>{{ text }}</span>
       </div>
 
-      <div
-        slot="remark"
-        slot-scope="text, record, index"
-      >
+      <div slot="remark" slot-scope="text, record, index">
         <a-tooltip v-if="String(text).length > 15">
-          <template slot="title">{{text}}</template>
-          {{ String(text).slice(0,15) }}...
+          <template slot="title">{{ text }}</template>
+          {{ String(text).slice(0, 15) }}...
         </a-tooltip>
-        <span v-else>{{text}}</span>
+        <span v-else>{{ text }}</span>
       </div>
 
-            <div
-            slot="requestNum"
-            slot-scope="text, record, index"
-          >
+      <div slot="requestNum" slot-scope="text, record, index">
+        <a-popover :title="`${record.materialName}（${record.materialCode}）数量预警`" trigger="hover">
+          <template slot="content">
+            <p>需求数量：{{ text }}</p>
+            <p>安全库存：{{ record.__safetyStock }}</p>
+            <p>超安全库存数量：{{ record.__difNum < 0 ? 0 : record.__difNum }}</p>
+          </template>
 
-            <a-popover
-              :title="`${record.materialName}（${record.materialCode}）数量预警`"
-              trigger="hover"
-            >
-              <template slot="content">
-                <p>需求数量：{{text}}</p>
-                <p>安全库存：{{record.__safetyStock}}</p>
-                <p>超安全库存数量：{{ record.__difNum < 0 ? 0 : record.__difNum }}</p>
-              </template>
+          <span :style="{ color: record.__isWarning ? 'red' : '' }" style="padding:5px 15px;">{{ text }}</span>
+        </a-popover>
+      </div>
 
-                <span :style="{color:record.__isWarning ? 'red' : ''}" style="padding:5px 15px;">{{text}}</span>
-
-            </a-popover>
-
-          </div>
-
-      <template
-        slot="footer"
-        slot-scope="text"
-      >
-      </template>
-
+      <template slot="footer" slot-scope="text"> </template>
     </a-table>
-    <AskPriceForm
-      ref="askPriceForm"
-      @finished="() => search()"
-    />
-    <OfferPriceForm
-      ref="offerPriceForm"
-      @finished="() => search()"
-    />
-    <ApplyView ref="applyView" @finished="() => search()"/>
+    <AskPriceForm ref="askPriceForm" @finished="() => search()" />
+    <OfferPriceForm ref="offerPriceForm" @finished="() => search()" />
+    <ApplyView ref="applyView" @finished="() => search()" />
     <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
-    <RejectForm ref="rejectForm" @finished="() => search()"/>
+    <RejectForm ref="rejectForm" @finished="() => search()" />
   </div>
 </template>
 
@@ -319,28 +272,28 @@ export default {
         })
     },
 
-    async fillNum(){
+    async fillNum() {
       const that = this
       let arr = that.dataSource.map(item => {
         return new Promise(resolve => {
-          getBuyRequirement({ materialId:item.materialId })
-              .then(res => {
-                let n = 0
-                try{
-                  n = res.data.pageNum || 0
-                }catch(e){
-                  n = 0
-                }
-                let dataSource = [...that.dataSource]
-                let target = dataSource.find(_item => _item.key === item.key)
-                target.__safetyStock = n //安全库存
-                target.__difNum = (target.requestNum || 0) - n
-                target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
-                that.dataSource = dataSource
-              })
-              .catch(err => {
-                console.log(err)
-              })
+          getBuyRequirement({ materialId: item.materialId })
+            .then(res => {
+              let n = 0
+              try {
+                n = res.data.pageNum || 0
+              } catch (e) {
+                n = 0
+              }
+              let dataSource = [...that.dataSource]
+              let target = dataSource.find(_item => _item.key === item.key)
+              target.__safetyStock = n //安全库存
+              target.__difNum = (target.requestNum || 0) - n
+              target.__isWarning = (target.requestNum || 0) > n //是否超安全库存
+              that.dataSource = dataSource
+            })
+            .catch(err => {
+              console.log(err)
+            })
         })
       })
 
@@ -361,11 +314,11 @@ export default {
         that.$refs.askPriceForm.query(record)
       } else if (type === 'offer') {
         let source = +that.$attrs.tagKey
-        that.$refs.offerPriceForm.query('add',{...record,source})
+        that.$refs.offerPriceForm.query('add', { ...record, source })
         return
       } else if (type === 'materialView') {
-        if(!record.materialId){
-          that.$message.info('物料编号未定义');
+        if (!record.materialId) {
+          that.$message.info('物料编号未定义')
           return
         }
         that.normalAddFormKeyCount++
@@ -379,8 +332,8 @@ export default {
           })
         })
         return
-      } else if(type === 'reject'){
-        that.$refs.rejectForm.query({requestId:record.id})
+      } else if (type === 'reject') {
+        that.$refs.rejectForm.query({ requestId: record.id })
         return
       }
     }

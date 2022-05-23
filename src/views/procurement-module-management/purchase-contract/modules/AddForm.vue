@@ -3,9 +3,11 @@
     <a-steps class="steps" :current="currentTab">
       <a-step v-for="s in stepList" :key="s.id" :title="s.title" />
     </a-steps>
-    <keep-alive :max="10">
-      <component ref="currentComponent" :is="stepList[currentTab].component"></component>
-    </keep-alive>
+    <div style="padding:20px 20px 0 20px;">
+      <keep-alive :max="10">
+        <component ref="currentComponent" :is="stepList[currentTab].component"></component>
+      </keep-alive>
+    </div>
     <div class="btn-wapper">
       <a-button type="primary" :disabled="currentTab === 0" @click="doAction('prev')">上一步</a-button>
       <a-button type="primary" :disabled="currentTab === stepList.length - 1" @click="doAction('next')"
@@ -35,12 +37,12 @@ import {
   purchaseContractPageList,
   purchaseContractDel,
   purchaseContractApproval,
-  purchaseContractRevocation,
-  getDetailBySupplierId,
+  purchaseContractRevocati,
   purchaseContractOrderList,
-  purchaseContractOrderListRefresh
+  purchaseContractOrderListRefresh,
+  getDetailBySupplierId
 } from '@/api/procurementModuleManagement'
-
+import { getBuyRequirement } from '@/api/routineMaterial'
 export default {
   name: 'purchase-contract-addform',
   provide() {
@@ -101,7 +103,7 @@ export default {
           component: Step5
         }
       ],
-      currentTab: 0,
+      currentTab: -1,
       submitParams: {},
       supplierInfo: null // 供应商信息
     }
@@ -132,25 +134,49 @@ export default {
   },
   created() {
     const that = this
-    that.submitParams = {
-      ...that.submitParams,
-      purchaseUserId: that.userInfo.id,
-      purchaseUserName: that.userInfo.trueName,
-      purchasePhone: that.userInfo.mobile
-    }
   },
   methods: {
     async init() {
       const that = this
       // 新增需要获取供应商信息
-      debugger
       if (that.isAdd && that.selectedRows.length > 0) {
-        that.supplierInfo = await getDetailBySupplierId({ supplierId: that.selectedRows[0].supplierId })
-          .then(res => res.data)
-          .catch(err => {
-            console.log(err)
-            return null
-          })
+        let [requirement, supplierInfo] = await Promise.all([
+          that.getRequirement().then(res => {
+            return res || {}
+          }),
+          getDetailBySupplierId({ supplierId: that.selectedRows[0].supplierId })
+            .then(res => {
+              return res.data || {}
+            })
+            .catch(err => {
+              console.log(err)
+              return {}
+            })
+        ])
+        console.log(`requirement---------------------`)
+        console.log(JSON.stringify(requirement, null, 2))
+        console.log(`requirement---------------------`)
+
+        console.log(`supplierInfo---------------------`)
+        console.log(JSON.stringify(supplierInfo, null, 2))
+        console.log(`supplierInfo---------------------`)
+        that.supplierInfo = {
+          ...that.selectedRows[0],
+          requirement: requirement,
+          supplierInfo: supplierInfo
+        }
+
+        that.submitParams = {
+          ...that.submitParams,
+          purchaseUserId: that.userInfo.id,
+          purchaseUserName: that.userInfo.trueName,
+          purchasePhone: that.userInfo.mobile,
+          supplierId: that.supplierInfo.supplierId,
+          supplierName: that.supplierInfo.supplierName,
+          invoiceType: that.supplierInfo.invoiceType,
+          materialRate: that.supplierInfo.materialRate,
+          settlementMode: that.supplierInfo.settlementMode
+        }
       } else {
         // 别的情况需要获取合同详情
         const result_detail = await purchaseContractDetail({ id: that.record.id })
@@ -163,6 +189,27 @@ export default {
           that.submitParams = { ...result_detail }
         }
       }
+      that.currentTab = 0
+    },
+    async getRequirement() {
+      const that = this
+      let arr = that.selectedRows.map(item => {
+        return new Promise(resolve => {
+          getBuyRequirement({ materialId: item.materialId })
+            .then(res => {
+              resolve(res.data || {})
+            })
+            .catch(err => {
+              resolve({})
+              console.log(err)
+            })
+        })
+      })
+
+      let res = await Promise.all(arr)
+      return res.reduce((a, b) => {
+        return { ...a, ...b }
+      }, {})
     },
     async doAction(type) {
       const that = this
@@ -173,7 +220,7 @@ export default {
         if (result.hasError) {
           return
         }
-        that.submitParams = that._.assign(that.submitParams, result.data)
+        that.submitParams = that.$_.assign(that.submitParams, result.data)
         console.log(JSON.stringify(that.submitParams, null, 2))
         that.currentTab++
       }
@@ -181,7 +228,7 @@ export default {
     pick(source, keys) {
       let obj = {}
       keys.forEach(k => {
-        obj[k] = source[k] || undefined
+        obj[k] = source[k]
       })
       return obj
     }

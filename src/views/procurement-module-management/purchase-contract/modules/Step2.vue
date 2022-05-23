@@ -29,7 +29,7 @@
           <a-form-model-item>
             <a-input-number
               style="width:100%;"
-              v-model="record.freightRate"
+              :value="record.percentage"
               :min="0"
               :max="100"
               :step="1"
@@ -128,51 +128,27 @@ export default {
     console.log('stop2 activated called...')
     const that = this
     that.form = that.addForm.pick(that.addForm.submitParams, Object.keys(that.form))
-    console.log(JSON.stringify(that.form, null, 2))
     if (that.addForm.isAdd) {
+      let { contractSettlements, paymentCycle } = that.addForm.supplierInfo.supplierInfo
+      let { __calInfo } = that.addForm.submitParams
+      const m = {
+        1: '预付款',
+        2: '提货款',
+        3: '验收款',
+        4: '质保金'
+      }
       that.form = {
         ...that.form,
-        settlementList: [
-          {
-            key: 1,
-            moneyTypeText: '预付款',
-            moneyType: 1,
-            percentage: '0',
-            percentageMoeny: undefined,
-            paymentDate: undefined,
-            remark: ''
-          },
-          {
-            key: 2,
-            moneyTypeText: '提货款',
-            moneyType: 2,
-            percentage: '0',
-            percentageMoeny: undefined,
-            paymentDate: undefined,
-            remark: ''
-          },
-          {
-            key: 3,
-            moneyTypeText: '验收款',
-            moneyType: 3,
-            percentage: '0',
-            percentageMoeny: undefined,
-            paymentDate: undefined,
-            remark: ''
-          },
-          {
-            key: 4,
-            moneyTypeText: '质保金',
-            moneyType: 4,
-            percentage: '0',
-            percentageMoeny: undefined,
-            paymentDate: undefined,
-            remark: ''
-          }
-        ],
-        paymentCycle: undefined,
-        fullTotalMoney: undefined
+        settlementList: contractSettlements.map(item => {
+          item.key = that._uuid()
+          item.moneyTypeText = m[item.moneyType]
+          return item
+        }),
+        paymentCycle: paymentCycle || undefined,
+        fullTotalMoney: __calInfo.total || undefined
       }
+
+      that.handleFullTotalMoney()
     }
   },
   methods: {
@@ -197,6 +173,7 @@ export default {
       let { fullTotalMoney, settlementList } = that.form
       let _settlementList = [...settlementList]
       let target = _settlementList.find(item => item.key === record.key)
+      target.percentage = v
       let rate = v / 100
       target.percentageMoeny = that.$root._f('moneyFormatNumber')(fullTotalMoney * rate)
       that.form = {
@@ -207,10 +184,11 @@ export default {
     handleFullTotalMoney() {
       const that = this
       let f = () => {
+        debugger
         let { fullTotalMoney, settlementList } = that.form
         let _settlementList = [...settlementList]
         _settlementList = _settlementList.map(item => {
-          item.percentageMoeny = that.$root._f('moneyFormatNumber')((fullTotalMoney * (item.freightRate || 0)) / 100)
+          item.percentageMoeny = that.$root._f('moneyFormatNumber')((fullTotalMoney * (item.percentage || 0)) / 100)
           return item
         })
         that.form = {
@@ -241,11 +219,14 @@ export default {
     },
     validate_self() {
       const that = this
-
-      const totalFreightRate = that.selectedRows.reduce((c, item) => {
-        return c + item.freightRate
+      if (that.selectedRows.length === 0) {
+        that.$message.info(`请选择结算方式`)
+        return true
+      }
+      const totalRate = that.selectedRows.reduce((c, item) => {
+        return c + item.percentage
       }, 0)
-      if (totalFreightRate !== 100) {
+      if (totalRate !== 100) {
         that.$message.info(`结算比例尚未达到100%`)
         return true
       }

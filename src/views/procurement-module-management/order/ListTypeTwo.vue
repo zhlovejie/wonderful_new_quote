@@ -6,148 +6,91 @@
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
-      :rowSelection="1?null:{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
+      :rowSelection="1 ? null : { onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
       :scroll="{ x: 3000 }"
     >
-      <div
-        slot="order"
-        slot-scope="text, record, index"
-      >
-        {{index + 1}}
+      <div slot="order" slot-scope="text, record, index">
+        {{ index + 1 }}
       </div>
-      <div
-        slot="storageStatus"
-        slot-scope="text, record, index"
-      >
+      <div slot="storageStatus" slot-scope="text, record, index">
         <!-- 入库状态：1未入库，2部分入库，3全部入库 -->
-        {{ {1:'未入库',2:'部分入库',3:'全部入库'}[text] }}
+        {{ { 1: '未入库', 2: '部分入库', 3: '全部入库' }[text] }}
       </div>
 
-      <div
-        slot="action"
-        slot-scope="text, record, index"
-      >
-        <a @click="doAction('view',record)">查看</a>
+      <div slot="action" slot-scope="text, record, index">
+        <a @click="doAction('view', record)">查看</a>
         <a-divider type="vertical" />
-        <a @click="doAction('saveMaterial',record)">收料</a>
+        <a @click="doAction('saveMaterial', record)">收料</a>
         <a-divider type="vertical" />
-        <a @click="doAction('takeGoods',record)">提货</a>
+        <a @click="doAction('takeGoods', record)">提货</a>
         <a-divider type="vertical" />
-        <a @click="doAction('over',record)">采购完成</a>
+        <a @click="doAction('over', record)">采购完成</a>
       </div>
 
-      <div
-        slot="materialName"
-        slot-scope="text, record, index"
-      >
-        <a-popover
-          :title="text"
-          trigger="hover"
-        >
+      <div slot="materialName" slot-scope="text, record, index">
+        <a-popover :title="text" trigger="hover">
           <template slot="content">
-            <p>物料名称：{{record.materialName}}</p>
-            <p>物料代码：{{record.materialCode}}</p>
-            <p>规格型号：{{record.materialModelType}}</p>
-            <p>单位：{{ {1:'支',2:'把',3:'件'}[record.unit] }}</p>
+            <p>物料名称：{{ record.materialName }}</p>
+            <p>物料代码：{{ record.materialCode }}</p>
+            <p>规格型号：{{ record.specification }}</p>
+            <p>单位：{{ record.subUnit }}</p>
           </template>
-          <a
-            href="javascript:void(0);"
-            @click="doAction('materialView',record)"
-          >
-            {{text}}
+          <a href="javascript:void(0);" @click="doAction('materialView', record)">
+            {{ text }}
           </a>
         </a-popover>
       </div>
 
-      <div
-        slot="urgencyDegree"
-        slot-scope="text, record, index"
-      >
-        {{ {1:'一般',2:'加急',3:'特急'}[text] }}
+      <div slot="urgencyDegree" slot-scope="text, record, index">
+        {{ { 1: '一般', 2: '加急', 3: '特急' }[text] }}
       </div>
 
-      <div
-        slot="nakedPrice"
-        slot-scope="text, record, index"
-      >
-        {{ {1:'含税运',2:'含税不含运'}[text] }}
+      <div slot="nakedPrice" slot-scope="text, record, index">
+        {{ { 1: '含税运', 2: '含税不含运' }[text] }}
       </div>
 
-      <div
-        slot="orderPrice"
-        slot-scope="text, record, index"
-      >
+      <div slot="orderPrice" slot-scope="text, record, index">
         {{ text | moneyFormatNumber }}
       </div>
-      <div
-        slot="quotationPrice"
-        slot-scope="text, record, index"
-      >
+      <div slot="quotationPrice" slot-scope="text, record, index">
         {{ text | moneyFormatNumber }}
       </div>
 
-      <div
-        slot="totalPrice"
-        slot-scope="text, record, index"
-      >
+      <div slot="totalPrice" slot-scope="text, record, index">
         {{ (record.orderPrice * record.requestNum) | moneyFormatNumber }}
       </div>
 
-      <div
-        slot="storageQuantity"
-        slot-scope="text, record, index"
-      >
+      <div slot="storageQuantity" slot-scope="text, record, index">
         {{ text || 0 }}
       </div>
 
-      <div
-        slot="backQuantity"
-        slot-scope="text, record, index"
-      >
+      <div slot="backQuantity" slot-scope="text, record, index">
         {{ text || 0 }}
       </div>
-      <div
-        slot="requestNum"
-        slot-scope="text, record, index"
-      >
-        <a-popover
-          :title="`${record.materialName}（${record.materialCode}）数量预警`"
-          trigger="hover"
-        >
+      <div slot="requestNum" slot-scope="text, record, index">
+        <a-popover :title="`${record.materialName}（${record.materialCode}）数量预警`" trigger="hover">
           <template slot="content">
-            <p>需求数量：{{text}}</p>
-            <p>安全库存：{{record.__safetyStock}}</p>
+            <p>需求数量：{{ text }}</p>
+            <p>安全库存：{{ record.__safetyStock }}</p>
             <p>超安全库存数量：{{ record.__difNum < 0 ? 0 : record.__difNum }}</p>
           </template>
-          <span :style="{color:record.__isWarning ? 'red' : ''}" style="padding:5px 15px;">{{text}}</span>
+          <span :style="{ color: record.__isWarning ? 'red' : '' }" style="padding:5px 15px;">{{ text }}</span>
         </a-popover>
       </div>
-      <template
-        slot="footer"
-        slot-scope="text"
-      >
-      </template>
-
+      <template slot="footer" slot-scope="text"> </template>
     </a-table>
     <OrderFormView ref="orderFormView" />
-    <ReceiveMaterial
-      ref="receiveMaterial"
-      @finish="() => search()"
-    />
-    <TakeGoods
-      ref="takeGoods"
-      @finish="() => search()"
-    />
+    <ReceiveMaterial ref="receiveMaterial" @finish="() => search()" />
+    <TakeGoods ref="takeGoods" @finish="() => search()" />
     <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
 
-    <FinishForm ref="finishForm" @finished="() => search()"/>
-
+    <FinishForm ref="finishForm" @finished="() => search()" />
   </div>
 </template>
 
 <script>
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
-import { orderPageList ,orderFinish} from '@/api/procurementModuleManagement'
+import { orderPageList, orderFinish } from '@/api/procurementModuleManagement'
 import { getBuyRequirement } from '@/api/routineMaterial'
 import OrderFormView from './OrderFormView'
 import ReceiveMaterial from './ReceiveMaterial'
@@ -335,28 +278,28 @@ export default {
           console.log(err)
         })
     },
-        async fillNum(){
+    async fillNum() {
       const that = this
       let arr = that.dataSource.map(item => {
         return new Promise(resolve => {
-          getBuyRequirement({ materialId:item.materialId })
-              .then(res => {
-                let n = 0
-                try{
-                  n = res.data.pageNum || 0
-                }catch(e){
-                  n = 0
-                }
-                let dataSource = [...that.dataSource]
-                let target = dataSource.find(_item => _item.key === item.key)
-                target.__safetyStock = n //安全库存
-                target.__difNum = (target.requestNum || 0) - n
-                target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
-                that.dataSource = dataSource
-              })
-              .catch(err => {
-                console.log(err)
-              })
+          getBuyRequirement({ materialId: item.materialId })
+            .then(res => {
+              let n = 0
+              try {
+                n = res.data.pageNum || 0
+              } catch (e) {
+                n = 0
+              }
+              let dataSource = [...that.dataSource]
+              let target = dataSource.find(_item => _item.key === item.key)
+              target.__safetyStock = n //安全库存
+              target.__difNum = (target.requestNum || 0) - n
+              target.__isWarning = (target.requestNum || 0) > n //是否超安全库存
+              that.dataSource = dataSource
+            })
+            .catch(err => {
+              console.log(err)
+            })
         })
       })
 
@@ -383,8 +326,8 @@ export default {
         that.$refs.takeGoods.query('takeGoods', record)
         return
       } else if (type === 'materialView') {
-        if(!record.materialId){
-          that.$message.info('物料编号未定义');
+        if (!record.materialId) {
+          that.$message.info('物料编号未定义')
           return
         }
         that.normalAddFormKeyCount++
@@ -398,7 +341,7 @@ export default {
           })
         })
         return
-      }else if(type === 'over'){
+      } else if (type === 'over') {
         that.$refs.finishForm.query(record)
         return
       }

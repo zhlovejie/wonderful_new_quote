@@ -214,6 +214,7 @@ export default {
   activated() {
     console.log('stop0 activated called...')
     const that = this
+    debugger
     that.form = that.addForm.pick(that.addForm.submitParams, Object.keys(that.form))
     console.log(JSON.stringify(that.form, null, 2))
     if (that.addForm.isAdd) {
