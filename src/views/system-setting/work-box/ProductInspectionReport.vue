@@ -73,7 +73,7 @@ export default {
   components: {
     // 组件
     STable,
-    Modal,
+    Modal
   },
   data() {
     return {
@@ -86,51 +86,51 @@ export default {
       columns: [
         {
           title: '序号',
-          scopedSlots: { customRender: 'serial' },
+          scopedSlots: { customRender: 'serial' }
         },
         {
           title: '名称',
-          dataIndex: 'fileName',
+          dataIndex: 'fileName'
         },
         {
           title: '操作人',
-          dataIndex: 'modifierName',
+          dataIndex: 'modifierName'
         },
         {
           title: '操作时间',
-          dataIndex: 'modifierTime',
+          dataIndex: 'modifierTime'
           // sorter: true
         },
         {
           title: '操作',
           dataIndex: 'action',
           width: '200px',
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: (parameter) => {
+      loadData: parameter => {
         return getFileManagementList(Object.assign(parameter, this.queryParam))
-          .then((res) => {
+          .then(res => {
             return res
           })
-          .catch(function (err) {
+          .catch(function(err) {
             console.log(err)
           })
-      },
+      }
     }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
+      handler: function(to, from) {
         if (to.name === 'ProductInspectionReport') {
           this.$nextTick(() => {
             this.$refs.table && this.$refs.table.refresh(true)
           })
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   methods: {
     handleEdit(record) {
@@ -156,7 +156,7 @@ export default {
         onOk() {
           // 在这里调用删除接口
           delFileManagement({ id: record.id })
-            .then((data) => {
+            .then(data => {
               if (data.code == 200) {
                 _this.$message.success('删除成功')
                 _this.$refs.table.refresh(true)
@@ -170,7 +170,7 @@ export default {
         },
         onCancel() {
           console.log('Cancel')
-        },
+        }
       })
     },
 
@@ -195,9 +195,10 @@ export default {
     viewFormat(record) {
       let url = String(record.fileUrl)
       let pdfUrl = String(record.filePdf)
-      let isWord = (url) => ['.doc', '.docx', '.xls', '.xlsx'].some((suffix) => url.endsWith(suffix))
-      let isPdf = (url) => url.endsWith('.pdf')
-      let isImage = (url) => ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some((suffix) => url.endsWith(suffix))
+
+      let isWord = url => ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => url.endsWith(suffix))
+      let isPdf = url => url.endsWith('.pdf')
+      let isImage = url => ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => url.endsWith(suffix))
       if (url) {
         if (isPdf(url) || isImage(url)) {
           return url
@@ -207,10 +208,9 @@ export default {
         }
       }
       return '#'
-    },
-  },
+    }
+  }
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

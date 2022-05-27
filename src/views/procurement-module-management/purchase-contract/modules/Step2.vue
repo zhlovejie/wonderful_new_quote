@@ -14,13 +14,8 @@
         />
       </a-form-model-item>
 
-      <a-table
-        :columns="columns"
-        :dataSource="form.settlementList"
-        :pagination="false"
-        size="small"
-        :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }"
-      >
+      <a-table :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
+        <!-- :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }" -->
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -102,6 +97,17 @@ const columns = [
     scopedSlots: { customRender: 'remark' }
   }
 ]
+
+function getMoneyTypeText(type) {
+  const m = {
+    1: '预付款',
+    2: '提货款',
+    3: '验收款',
+    4: '质保金'
+  }
+  return m[type]
+}
+
 export default {
   name: 'purchase-contract-step2',
   components: {
@@ -128,31 +134,39 @@ export default {
     console.log('stop2 activated called...')
     const that = this
     that.form = that.addForm.pick(that.addForm.submitParams, Object.keys(that.form))
+
+    let { __calInfo } = that.addForm.submitParams
     if (that.addForm.isAdd) {
       let { contractSettlements, paymentCycle } = that.addForm.supplierInfo.supplierInfo
-      let { __calInfo } = that.addForm.submitParams
-      const m = {
-        1: '预付款',
-        2: '提货款',
-        3: '验收款',
-        4: '质保金'
-      }
       that.form = {
         ...that.form,
         settlementList: contractSettlements.map(item => {
           item.key = that._uuid()
-          item.moneyTypeText = m[item.moneyType]
+          item.moneyTypeText = getMoneyTypeText(item.moneyType)
           return item
         }),
         paymentCycle: paymentCycle || undefined,
         fullTotalMoney: __calInfo.total || undefined
       }
-
-      that.handleFullTotalMoney()
+    } else {
+      that.form = {
+        ...that.form,
+        settlementList: that.form.settlementList.map(item => {
+          item.key = that._uuid()
+          item.moneyTypeText = getMoneyTypeText(item.moneyType)
+          return item
+        }),
+        fullTotalMoney: __calInfo.total || undefined
+      }
     }
+
+    that.selectedRowKeys = that.form.settlementList.map(item => item.key)
+    that.selectedRows = that.form.settlementList
+    that.handleFullTotalMoney()
   },
   methods: {
     moment,
+
     rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
       const totalFreightRate = selectedRows.reduce((c, item) => {
         return c + item.freightRate
@@ -184,7 +198,6 @@ export default {
     handleFullTotalMoney() {
       const that = this
       let f = () => {
-        debugger
         let { fullTotalMoney, settlementList } = that.form
         let _settlementList = [...settlementList]
         _settlementList = _settlementList.map(item => {
@@ -219,17 +232,17 @@ export default {
     },
     validate_self() {
       const that = this
-      if (that.selectedRows.length === 0) {
-        that.$message.info(`请选择结算方式`)
-        return true
-      }
-      const totalRate = that.selectedRows.reduce((c, item) => {
-        return c + item.percentage
-      }, 0)
-      if (totalRate !== 100) {
-        that.$message.info(`结算比例尚未达到100%`)
-        return true
-      }
+      // if (that.selectedRows.length === 0) {
+      //   that.$message.info(`请选择结算方式`)
+      //   return true
+      // }
+      // const totalRate = that.selectedRows.reduce((c, item) => {
+      //   return c + item.percentage
+      // }, 0)
+      // if (totalRate !== 100) {
+      //   that.$message.info(`结算比例尚未达到100%`)
+      //   return true
+      // }
 
       for (let i = 0, len = that.selectedRows.length; i < len; i++) {
         const { paymentDate } = that.selectedRows[i]

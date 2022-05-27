@@ -40,12 +40,6 @@
                 {{ { 1: '一般', 2: '加急', 3: '特急' }[text] }}
               </div>
 
-              <div slot="action" slot-scope="text, record, index">
-                <a @click="doAction('view', record)">查看</a>
-                <a-divider type="vertical" />
-                <a @click="doAction('offer', record)">下单</a>
-              </div>
-
               <div slot="materialName" slot-scope="text, record, index">
                 <a-popover :title="text" trigger="hover">
                   <template slot="content">
@@ -168,6 +162,7 @@ const columns = [
 
 export default {
   name: 'selectOrder',
+  inject: ['addForm'],
   data() {
     return {
       loading: false,
@@ -201,10 +196,52 @@ export default {
       this.$nextTick(() => (this.visible = false))
     },
     doAction(type) {
-      this.visible = false
+      const that = this
       if (type === 'ok') {
-        this.$emit('change', { decoratorKey: this.decoratorKey, selectedRows: [...this.selectedRows] })
+        // 供应商或者裸价标准 不一致 不允许参加
+        if (!that.checkMatch()) {
+          return
+        }
+        that.$emit('change', { decoratorKey: that.decoratorKey, selectedRows: [...that.selectedRows] })
+        that.$nextTick(() => (that.visible = false))
       }
+    },
+    checkMatch() {
+      const that = this
+      let matched = false
+      let { taxType, freightType, supplierId, supplierName } = that.addForm.submitParams
+      let _nakedPrice = +taxType === 1 && +freightType === 1 ? 1 : +taxType === 1 && +freightType === 0 ? 2 : -1
+      if (_nakedPrice === -1) {
+        that.$message.info('裸价标准异常')
+        return
+      }
+      const m = { 1: '含税运', 2: '含税不含运' }
+      // 供应商或者裸价标准 不一致 不允许参加
+      let result = []
+      that.selectedRows.map(r => {
+        r.supplierMatched = r.supplierId === supplierId
+        r.nakedPriceMatched = r.nakedPrice === _nakedPrice
+        if (!r.supplierMatched) {
+          result.push(
+            `【需求单号：${r.requestApplyNum} 物料名称：${r.materialName}】 供应商不一致：【原】${supplierName} ---> 【现】${r.supplierName}`
+          )
+        }
+        if (!r.nakedPriceMatched) {
+          result.push(
+            `【需求单号：${r.requestApplyNum} 物料名称：${r.materialName}】 裸价标准不一致：【原】${
+              m[_nakedPrice]
+            } ---> 【现】${m[r.nakedPrice]}`
+          )
+        }
+      })
+
+      matched = result.length === 0
+      if (!matched) {
+        that.$message.info(result.join(' '))
+      }
+      return matched
+      // { 1: '含税运', 2: '含税不含运' }
+      // selectedRows.nakedPrice
     },
     search(params = {}) {
       const that = this

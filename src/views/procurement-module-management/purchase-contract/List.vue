@@ -99,44 +99,43 @@
               {{ record.amount | moneyFormatNumber }}
             </div>
             <div slot="finishStatus" slot-scope="text, record, index">
-              {{ { 1: '未完成', 2: '已完成' }[record.finishStatus] }}
+              {{ { 1: '未完成', 2: '已完成' }[record.finishStatus] || '未完成' }}
             </div>
           </a-table>
 
           <div slot="action" slot-scope="text, record, index">
-            <a @click="doAction('view', record)">详情</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('edit', record)">修改</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('del', record)">删除</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('revocation', record)">撤回</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('approval', record)">审批</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('change', record)">变更合同</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('download', record)">下载</a>
-            <a-divider type="vertical" />
-            <a @click="doAction('files', record)">附件</a>
-          </div>
+            <!--{{ { 0: '待提交', 1: '待审批', 2: '通过', 3: '不通过', 4: '已撤销' }[text] || '未知状态' }} -->
 
-          <!-- <div slot="materialName" slot-scope="text, record, index">
-            <a-popover :title="text" trigger="hover">
-              <template slot="content">
-                <p>物料名称：{{ record.materialName }}</p>
-                <p>物料代码：{{ record.materialCode }}</p>
-                <p>规格型号：{{ record.materialModelType }}</p>
-                <p>单位：{{ { 1: '支', 2: '把', 3: '件' }[record.unit] }}</p>
+            <template v-if="+activeKey === 0">
+              <a @click="doAction('view', record)">详情</a>
+              <template v-if="[0, 3, 4].includes(+record.status)">
+                <a-divider type="vertical" />
+                <a @click="doAction('edit', record)">修改</a>
+                <a-divider type="vertical" />
+                <a @click="doAction('del', record)">删除</a>
               </template>
-              <a href="javascript:void(0);" @click="doAction('materialView', record)">
-                {{ text }}
-              </a>
-            </a-popover>
-          </div> -->
+              <template v-if="+record.status === 1">
+                <a-divider type="vertical" />
+                <a @click="doAction('revocation', record)">撤回</a>
+              </template>
+              <template v-if="+record.status === 2">
+                <a-divider type="vertical" />
+                <a @click="doAction('change', record)">变更合同</a>
+                <a-divider type="vertical" />
+                <a @click="doAction('download', record)">下载</a>
+                <a-divider type="vertical" />
+                <a @click="doAction('files', record)">附件</a>
+              </template>
+            </template>
+            <template v-if="+activeKey === 1">
+              <a @click="doAction('approval', record)">审批</a>
+            </template>
+            <template v-if="+activeKey === 2">
+              <a @click="doAction('view', record)">详情</a>
+            </template>
+          </div>
         </a-table>
       </div>
-      <AddForm ref="addForm" @finish="() => search()" />
       <SearchForm ref="searchForm" @change="handleSearch" />
       <ApproveInfo ref="approveInfoCard" />
     </a-spin>
@@ -147,14 +146,9 @@
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import SearchForm from './SearchForm'
-import AddForm from './modules/AddForm'
 import {
-  purchaseContractAddOrUpdate,
-  purchaseContractList,
-  purchaseContractDetail,
   purchaseContractPageList,
   purchaseContractDel,
-  purchaseContractApproval,
   purchaseContractRevocation
 } from '@/api/procurementModuleManagement'
 
@@ -218,11 +212,11 @@ const innerColumns = [
     title: '采购需求单号',
     dataIndex: 'requestApplyNum'
   },
-  {
-    title: '采购单状态',
-    dataIndex: 'finishStatus',
-    scopedSlots: { customRender: 'finishStatus' }
-  },
+  // {
+  //   title: '采购单状态',
+  //   dataIndex: 'finishStatus',
+  //   scopedSlots: { customRender: 'finishStatus' }
+  // },
   {
     title: '物料代码',
     dataIndex: 'materialCode'
@@ -260,8 +254,7 @@ export default {
   components: {
     CommonDictionarySelect,
     ApproveInfo,
-    SearchForm,
-    AddForm
+    SearchForm
   },
   data() {
     return {
@@ -357,14 +350,22 @@ export default {
     },
     doAction(type, record) {
       const that = this
-      if (['add', 'edit', 'view', 'approval'].includes(type)) {
-        that.$refs['addForm'].query(type, { ...record })
+      if (['add', 'edit', 'view', 'approval', 'change'].includes(type)) {
+        // that.$refs['addForm'].query(type, { ...record })
+        that.$router.push({
+          name: 'procurement-module-management-purchase-contract-action',
+          params: {
+            record: { ...record },
+            action: type,
+            from: 'procurement-module-management-purchase-contract'
+          }
+        })
         return
       } else if (type === 'del') {
         that.confirmModel({
-          content: '删除后无法恢复，请谨慎操作，确认删除该条数据吗?',
+          content: '确认执行删除操作吗?',
           success: () => {
-            purchaseContractDel(`id=${record.id}`)
+            purchaseContractDel({ id: record.id })
               .then(res => {
                 that.$message.info(res.msg)
                 if (+res.code === 200) {
@@ -379,13 +380,44 @@ export default {
           }
         })
         return
-      } else if (type === 'reject') {
-        // that.$refs.rejectForm.query({ requestId: record.id })
+      } else if (type === 'revocation') {
+        that.confirmModel({
+          content: '确认执行撤回操作吗?',
+          success: () => {
+            purchaseContractRevocation({ id: record.id })
+              .then(res => {
+                that.$message.info(res.msg)
+                if (+res.code === 200) {
+                  that.search()
+                }
+              })
+              .catch(err => {
+                console.error(err)
+                that.$message.error(err)
+              })
+            return
+          }
+        })
         return
       }
     },
+    confirmModel(opt) {
+      const that = this
+      let { title, content, success, attrs } = opt
+      that.$confirm({
+        title: title || '提示',
+        content: h => {
+          return h('div', null, content)
+        },
+        onOk() {
+          success && success()
+        },
+        onCancel() {},
+        ...(attrs || {})
+      })
+      return
+    },
     handleSearch(params) {
-      debugger
       this.queryParam = {
         ...this.queryParam,
         ...params

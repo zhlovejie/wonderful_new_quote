@@ -93,6 +93,7 @@
                         :max="100"
                         :step="1"
                         :precision="0"
+                        @change="handleExceptionPoints"
                       />
                       <span style="margin: 0 5px;">%</span>
                     </a-form-model-item>
@@ -107,6 +108,7 @@
                         :max="100"
                         :step="1"
                         :precision="0"
+                        @change="handleExceptionPoints"
                       />
                       <span style="margin: 0 5px;">%</span>
                     </a-form-model-item>
@@ -126,6 +128,7 @@
                         :max="100"
                         :step="1"
                         :precision="0"
+                        @change="handleExceptionPoints"
                       />
                       <span style="margin: 0 5px;">%</span>
                     </a-form-model-item>
@@ -139,11 +142,19 @@
           </tr>
           <tr>
             <td style="width:200px;">
-              <span><i class="wdf-required"></i>变更原因</span>
+              <span><i v-if="hasExceptionPoints" class="wdf-required"></i>变更原因</span>
             </td>
             <td>
               <div class="block">
-                <a-form-model-item prop="changeReason" style="dispaly:block;">
+                <a-form-model-item
+                  prop="changeReason"
+                  style="dispaly:block;"
+                  :rules="{
+                    required: hasExceptionPoints,
+                    message: '请输入变更原因',
+                    trigger: 'blur'
+                  }"
+                >
                   <a-textarea placeholder="变更原因" :autoSize="true" style="width:100%;" v-model="form.changeReason" />
                 </a-form-model-item>
               </div>
@@ -151,7 +162,7 @@
           </tr>
           <tr>
             <td style="width:200px;">
-              <span><i class="wdf-required"></i>其他约定</span>
+              <span>其他约定</span>
             </td>
             <td>
               <div class="block">
@@ -178,7 +189,11 @@ export default {
   inject: ['addForm'],
   data() {
     return {
-      form: {},
+      form: {
+        disputeSolveType: 1,
+        signType: 1,
+        freshChapterType: 0
+      },
       rules: {
         disputeSolveType: [{ required: true, message: '请选择合同争议解决方式', trigger: 'change' }],
         signType: [{ required: true, message: '请选择签订形式', trigger: 'change' }],
@@ -188,26 +203,31 @@ export default {
         secondWeChat: [{ required: true, message: '请输入乙方微信', trigger: 'blur' }],
         freshChapterType: [{ required: true, message: '请选择鲜章', trigger: 'change' }],
         unpaidFalsify: [{ required: true, message: '请输入未付金额比例', trigger: 'blur' }],
-        fullAmount: [{ required: true, message: '请输入合同总价款比例', trigger: 'blur' }],
-        changeReason: [{ required: true, message: '请输入变更原因', trigger: 'blur' }],
-        otherAppointStr: [{ required: true, message: '请输入其他约定', trigger: 'blur' }]
-      }
+        fullAmount: [{ required: true, message: '请输入合同总价款比例', trigger: 'blur' }]
+        // changeReason: [{ required: true, message: '请输入变更原因', trigger: 'blur' }]
+        // otherAppointStr: [{ required: true, message: '请输入其他约定', trigger: 'blur' }]
+      },
+      hasExceptionPoints: false
     }
   },
   activated() {
     console.log('stop5 activated called...')
     const that = this
-    let result = that.addForm.pick(that.addForm.submitParams, ['otherAppoint', 'changeReasonsList'])
+    let result = that.addForm.pick(that.addForm.submitParams, ['otherAppoint'])
     that.form = {
-      ...result.otherAppoint,
-      changeReason: result?.changeReasonsList?.changeReason
+      ...result.otherAppoint
     }
-    console.log(JSON.stringify(that.form, null, 2))
+
     if (that.addForm.isAdd) {
-      console.log(JSON.stringify(that.form, null, 2))
     }
+    that.handleExceptionPoints()
   },
   methods: {
+    handleExceptionPoints() {
+      const that = this
+      let exceptionPoints = that.addForm.getExceptionPoints()
+      that.hasExceptionPoints = !!exceptionPoints.find(e => e.abnormalType === '违约责任修改')
+    },
     validate() {
       const that = this
       return new Promise(resolve => {
@@ -216,12 +236,8 @@ export default {
             let params = {
               otherAppoint: {
                 ...that.form
-              },
-              changeReasonsList: {
-                changeReason: that.form.changeReason
               }
             }
-            console.log(JSON.stringify(params, null, 2))
             resolve({ hasError: false, data: params })
           } else {
             console.log('error submit!!')

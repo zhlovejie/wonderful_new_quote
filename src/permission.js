@@ -100,7 +100,7 @@ function routerMetaTitleChange(to) {
       approval: '审批',
       preview: '预览'
     }
-    return `${to.meta.title}-${titleMap[to.params.action]}`
+    return `采购合同-${titleMap[to.params.action]}`
   }
   return to.meta.title
 }

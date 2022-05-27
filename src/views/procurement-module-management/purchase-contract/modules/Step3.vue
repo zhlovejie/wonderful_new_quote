@@ -170,15 +170,17 @@ export default {
     validate() {
       const that = this
       return new Promise(resolve => {
-        if (1) {
-          let params = { ...that.form }
-          console.log(JSON.stringify(params, null, 2))
-          resolve({ hasError: false, data: params })
-        } else {
-          console.log('error submit!!')
-          resolve({ hasError: true, data: {} })
-          return false
-        }
+        that.$refs.ruleForm.validate(valid => {
+          if (valid) {
+            let params = { ...that.form }
+            console.log(JSON.stringify(params, null, 2))
+            resolve({ hasError: false, data: params })
+          } else {
+            console.log('error submit!!')
+            resolve({ hasError: true, data: {} })
+            return false
+          }
+        })
       })
     }
   }

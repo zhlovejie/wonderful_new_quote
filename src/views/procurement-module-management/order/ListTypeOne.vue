@@ -334,6 +334,10 @@ export default {
         })
         return
       } else if (type === 'caigou') {
+        if (!that.checkMatch()) {
+          that.$message.info(`供应商或裸价标准不一致`)
+          return
+        }
         that.$router.push({
           name: 'procurement-module-management-purchase-contract-action',
           params: {
@@ -344,6 +348,12 @@ export default {
         })
         return
       }
+    },
+    checkMatch() {
+      const that = this
+      let selectedRows = [...that.selectedRows]
+      const { supplierId, nakedPrice } = selectedRows[0]
+      return !selectedRows.find(r => r.supplierId !== supplierId || r.nakedPrice !== nakedPrice)
     }
   }
 }

@@ -5,10 +5,10 @@
       <table class="custom-table custom-table-border">
         <tbody>
           <tr>
-            <td style="width:150px;">
+            <td style="width:15%;">
               <span>合同编号</span>
             </td>
-            <td>
+            <td style="width:35%;">
               <a-form-model-item>
                 {{ form.contractNum || '系统生成' }}
               </a-form-model-item>
@@ -39,11 +39,12 @@
             </td>
             <td>
               <a-form-model-item prop="invoiceType">
-                <a-select placeholder="发票类型" v-model="form.invoiceType" :allowClear="true">
+                {{ { 1: '不限', 2: '增值税专用发票', 3: '普通发票' }[form.invoiceType] }}
+                <!-- <a-select placeholder="发票类型" v-model="form.invoiceType" :allowClear="true">
                   <a-select-option :value="1">不限</a-select-option>
                   <a-select-option :value="2">增值税专用发票</a-select-option>
                   <a-select-option :value="3">普通发票</a-select-option>
-                </a-select>
+                </a-select> -->
               </a-form-model-item>
             </td>
           </tr>
@@ -53,14 +54,15 @@
             </td>
             <td>
               <a-form-model-item prop="materialRate">
-                <a-input-number
+                {{ form.materialRate }}
+                <!-- <a-input-number
                   style="width:100%;"
                   v-model="form.materialRate"
                   :min="0"
                   :max="100"
                   :step="1"
                   :precision="0"
-                />
+                /> -->
               </a-form-model-item>
             </td>
             <td style="width:150px;">
@@ -68,10 +70,11 @@
             </td>
             <td>
               <a-form-model-item prop="settlementMode">
-                <a-select placeholder="结算方式" v-model="form.settlementMode" :allowClear="true">
+                {{ { 0: '现款现货', 1: '账期结算' }[form.settlementMode] }}
+                <!-- <a-select placeholder="结算方式" v-model="form.settlementMode" :allowClear="true">
                   <a-select-option :value="0">现款现货</a-select-option>
                   <a-select-option :value="1">账期结算</a-select-option>
-                </a-select>
+                </a-select> -->
               </a-form-model-item>
             </td>
           </tr>
@@ -81,24 +84,35 @@
             </td>
             <td>
               <a-form-model-item prop="freightType">
-                <a-radio-group v-model="form.freightType">
+                {{ { 0: '否', 1: '是' }[form.freightType] }}
+                <!-- <a-radio-group v-model="form.freightType">
                   <a-radio :value="0">否</a-radio>
                   <a-radio :value="1">是</a-radio>
-                </a-radio-group>
+                </a-radio-group> -->
               </a-form-model-item>
             </td>
+
             <td style="width:150px;">
               <span>运费金额(元)</span>
             </td>
             <td>
-              <a-form-model-item prop="freightFullAmount">
+              <a-form-model-item
+                prop="freightFullAmount"
+                :rules="{
+                  required: +form.freightType === 1,
+                  message: '请输入运费金额',
+                  trigger: 'blur'
+                }"
+              >
                 <a-input-number
+                  v-if="+form.freightType === 1"
                   style="width:100%;"
                   v-model="form.freightFullAmount"
                   :min="0"
                   :step="1"
                   :precision="2"
                 />
+                <span v-else>无</span>
               </a-form-model-item>
             </td>
           </tr>
@@ -107,8 +121,16 @@
               <span>运费税率(%)</span>
             </td>
             <td>
-              <a-form-model-item prop="freightRate">
+              <a-form-model-item
+                prop="freightRate"
+                :rules="{
+                  required: +form.freightType === 1,
+                  message: '请输入运费税率',
+                  trigger: 'blur'
+                }"
+              >
                 <a-input-number
+                  v-if="+form.freightType === 1"
                   style="width:100%;"
                   v-model="form.freightRate"
                   :min="0"
@@ -116,19 +138,22 @@
                   :step="1"
                   :precision="0"
                 />
+                <span v-else>无</span>
               </a-form-model-item>
             </td>
+
             <td style="width:150px;">
               <span>货运方式</span>
             </td>
             <td>
-              <a-form-model-item>
+              <a-form-model-item prop="logisticsTypeId">
                 <CommonDictionarySelect
                   placeholder="货运方式"
-                  style="width: 100%"
+                  style="width: 100%;"
                   allowClear
                   :text="'物料类别'"
                   :dictionaryId.sync="form.logisticsTypeId"
+                  @selected="handlerLogisticsTypeChange"
                 />
                 <!-- logisticsTypeName -->
               </a-form-model-item>
@@ -143,8 +168,9 @@
                 <a-date-picker
                   v-model="form.signDate"
                   valueFormat="YYYY-MM-DD"
-                  style="width:100%;"
+                  :class="{ 'sign-date-current': isSignDateCurrent, 'sign-date-no-current': !isSignDateCurrent }"
                   :allowClear="true"
+                  @change="handleSignDateChange"
                 />
               </a-form-model-item>
             </td>
@@ -187,16 +213,16 @@ export default {
       form: {
         contractNum: undefined,
         supplierName: '',
-        taxType: 0,
+        taxType: 1,
         invoiceType: 1,
-        materialRate: undefined,
+        materialRate: 0,
         settlementMode: undefined,
         freightType: undefined,
-        freightFullAmount: undefined,
-        freightRate: undefined,
+        freightFullAmount: 0,
+        freightRate: 0,
         logisticsTypeId: undefined,
         logisticsTypeName: undefined,
-        signDate: undefined,
+        signDate: moment(),
         purchaseUserName: undefined,
         purchasePhone: undefined,
         purchaseUserId: undefined
@@ -205,31 +231,46 @@ export default {
         materialRate: [{ required: true, message: '请输入物料税率', trigger: 'blur' }],
         settlementMode: [{ required: true, message: '请选择结算方式', trigger: 'change' }],
         freightType: [{ required: true, message: '请选择是否含运费', trigger: 'change' }],
-        freightFullAmount: [{ required: true, message: '请输入运费金额', trigger: 'blur' }],
-        freightRate: [{ required: true, message: '请输入运费税率', trigger: 'blur' }],
-        logisticsTypeId: [{ required: true, message: '请选择货运方式', trigger: 'change' }]
-      }
+        // freightFullAmount: [{ required: true, message: '请输入运费金额', trigger: 'blur' }],
+        // freightRate: [{ required: true, message: '请输入运费税率', trigger: 'blur' }],
+        logisticsTypeId: [{ required: true, message: '请选择货运方式', trigger: 'change' }],
+        signDate: [{ required: true, message: '请选择签订日期', trigger: 'change' }]
+      },
+      isSignDateCurrent: false
     }
   },
   activated() {
     console.log('stop0 activated called...')
     const that = this
-    debugger
     that.form = that.addForm.pick(that.addForm.submitParams, Object.keys(that.form))
     console.log(JSON.stringify(that.form, null, 2))
     if (that.addForm.isAdd) {
       that.form = {
         contractNum: undefined,
-        taxType: 0,
+        taxType: 1,
         invoiceType: 1,
         signDate: moment(),
         ...that.form
       }
       console.log(JSON.stringify(that.form, null, 2))
     }
+
+    that.handleSignDateChange(that.form.signDate)
   },
   methods: {
     moment,
+    handleSignDateChange(val) {
+      let case1 = moment(val).format('YYYY-MM-DD')
+      let case2 = moment().format('YYYY-MM-DD')
+      this.isSignDateCurrent = case1 === case2
+    },
+    handlerLogisticsTypeChange() {
+      this.form = {
+        ...this.form,
+        logisticsTypeId: record.id,
+        logisticsTypeName: record.text
+      }
+    },
     validate() {
       const that = this
       return new Promise(resolve => {
@@ -262,6 +303,18 @@ export default {
     th,
     td {
       padding: 5px;
+    }
+  }
+
+  .sign-date-current {
+    width: 100%;
+  }
+
+  .sign-date-no-current {
+    width: 100%;
+    color: red !important;
+    /deep/ input.ant-calendar-picker-input {
+      color: red !important;
     }
   }
 }

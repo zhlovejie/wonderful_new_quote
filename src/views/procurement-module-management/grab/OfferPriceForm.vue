@@ -431,13 +431,13 @@ export default {
       }
       if (!that.isAdd) {
         const [d1, d2] = Promise.all([
-          quotationDetail({ id: that.record.id })
+          quotationDetail({ id: that.record.requestId })
             .then(res => res.data)
             .catch(err => {
               that.$message.error(err)
               return null
             }),
-          quotationDetailForUpdate({ id: that.record.id })
+          quotationDetailForUpdate({ id: that.record.requestId })
             .then(res => res.data)
             .catch(err => {
               that.$message.error(err)

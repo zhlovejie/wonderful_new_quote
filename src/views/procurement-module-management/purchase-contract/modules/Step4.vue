@@ -42,7 +42,7 @@
           </tr>
           <tr>
             <td style="width:150px;">
-              <span><i class="wdf-required"></i>电子邮箱</span>
+              <span>电子邮箱</span>
             </td>
             <td>
               <a-form-model-item prop="supplierEmail">
@@ -50,7 +50,7 @@
               </a-form-model-item>
             </td>
             <td style="width:150px;">
-              <span><i class="wdf-required"></i>邮政编号</span>
+              <span>邮政编号</span>
             </td>
             <td>
               <a-form-model-item prop="postalCode">
@@ -60,7 +60,7 @@
           </tr>
           <tr>
             <td style="width:150px;">
-              <span><i class="wdf-required"></i>开户行名称</span>
+              <span>开户行名称</span>
             </td>
             <td>
               <a-form-model-item prop="bankName">
@@ -68,7 +68,7 @@
               </a-form-model-item>
             </td>
             <td style="width:150px;">
-              <span><i class="wdf-required"></i>税号</span>
+              <span>税号</span>
             </td>
             <td>
               <a-form-model-item prop="taxpayerNumber">
@@ -78,7 +78,7 @@
           </tr>
           <tr>
             <td style="width:150px;">
-              <span><i class="wdf-required"></i>银行账号名称</span>
+              <span>银行账号名称</span>
             </td>
             <td>
               <a-form-model-item prop="cardName">
@@ -86,7 +86,7 @@
               </a-form-model-item>
             </td>
             <td style="width:150px;">
-              <span><i class="wdf-required"></i>银行账号</span>
+              <span>银行账号</span>
             </td>
             <td>
               <a-form-model-item prop="cardNumber">
@@ -122,23 +122,24 @@ export default {
         cfullName: [{ required: true, message: '请输入单位全称', trigger: 'blur' }],
         address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
         phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-        weChat: [{ required: true, message: '请输入微信号', trigger: 'blur' }],
-        supplierEmail: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
-        postalCode: [{ required: true, message: '请输入邮政编号', trigger: 'blur' }],
-        bankName: [{ required: true, message: '请输入开户行名称', trigger: 'blur' }],
-        taxpayerNumber: [{ required: true, message: '请输入税号', trigger: 'blur' }],
-        cardName: [{ required: true, message: '请输入银行名称', trigger: 'blur' }],
-        cardNumber: [{ required: true, message: '请输入银行账号', trigger: 'blur' }]
+        weChat: [{ required: true, message: '请输入微信号', trigger: 'blur' }]
+        // supplierEmail: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+        // postalCode: [{ required: true, message: '请输入邮政编号', trigger: 'blur' }],
+        // bankName: [{ required: true, message: '请输入开户行名称', trigger: 'blur' }],
+        // taxpayerNumber: [{ required: true, message: '请输入税号', trigger: 'blur' }],
+        // cardName: [{ required: true, message: '请输入银行名称', trigger: 'blur' }],
+        // cardNumber: [{ required: true, message: '请输入银行账号', trigger: 'blur' }]
       }
     }
   },
   activated() {
     console.log('stop4 activated called...')
     const that = this
-    that.form = that.addForm.pick(that.addForm.submitParams, Object.keys(that.form))
-    console.log(JSON.stringify(that.form, null, 2))
+    let result = that.addForm.pick(that.addForm.submitParams, ['secondPartyInfo'])
+    that.form = {
+      ...result.secondPartyInfo
+    }
     if (that.addForm.isAdd) {
-      console.log(JSON.stringify(that.form, null, 2))
     }
   },
   methods: {
@@ -147,7 +148,7 @@ export default {
       return new Promise(resolve => {
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
-            let params = { ...that.form }
+            let params = { secondPartyInfo: that.form }
             console.log(JSON.stringify(params, null, 2))
             resolve({ hasError: false, data: params })
           } else {
