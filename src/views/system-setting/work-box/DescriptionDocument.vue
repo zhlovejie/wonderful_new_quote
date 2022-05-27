@@ -4,24 +4,25 @@
     <div class="description-document-search-wrapper">
       <a-form layout="inline">
         <a-form-item label="名称">
-          <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询"/>
+          <a-input v-model.trim="queryParam.fileName" placeholder="根据名称模糊查询" />
         </a-form-item>
         <template v-if="$auth('document:list')">
           <a-form-item>
-          <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+            <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
           </a-form-item>
         </template>
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
-          <template v-if="$auth('document:add')">
-            <a-button style="margin-left: 8px" type="primary" icon="plus" @click="$refs.modal.add(3)">新增</a-button>
-          </template>
-          <template v-if="$auth('document:list')">
-            <a-button style="margin-left: 8px" type="primary" icon="download" @click="handleBatchDownload">批量下载</a-button>
-          </template>
+            <template v-if="$auth('document:add')">
+              <a-button style="margin-left: 8px" type="primary" icon="plus" @click="$refs.modal.add(3)">新增</a-button>
+            </template>
+            <template v-if="$auth('document:list')">
+              <a-button style="margin-left: 8px" type="primary" icon="download" @click="handleBatchDownload"
+                >批量下载</a-button
+              >
+            </template>
           </a-form-item>
         </div>
-
       </a-form>
     </div>
     <s-table
@@ -33,10 +34,10 @@
       :alert="false"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
-      <span slot="serial" slot-scope="text,record,index">
+      <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
-      <span slot="action" slot-scope="text,record">
+      <span slot="action" slot-scope="text, record">
         <template>
           <template v-if="$auth('document:one')">
             <a target="_blank" :href="viewFormat(record)">查看</a>
@@ -56,7 +57,7 @@
         </template>
       </span>
     </s-table>
-    <Modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
+    <Modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
   </a-card>
 </template>
 
@@ -68,11 +69,12 @@ import Modal from './modules/SchemeModal'
 
 export default {
   name: 'DescriptionDocument',
-  components: { // 组件
+  components: {
+    // 组件
     STable,
     Modal
   },
-  data () {
+  data() {
     return {
       url: 'https://view.officeapps.live.com/op/view.aspx?src=',
       selectedRowKeys: [],
@@ -110,52 +112,55 @@ export default {
         return getFileManagementList(Object.assign(parameter, this.queryParam))
           .then(res => {
             return res
-          }).catch(function (err) {
+          })
+          .catch(function(err) {
             console.log(err)
           })
       }
     }
   },
   methods: {
-    handleEdit (record) { // 修改
+    handleEdit(record) {
+      // 修改
       this.$refs.modal.edit(record)
     },
-    handleOk () {
+    handleOk() {
       this.$refs.table.refresh()
     },
-    handleSaveOk () {
+    handleSaveOk() {
       this.$refs.table.refresh(true)
     },
-    handleSaveClose () {
-
-    },
+    handleSaveClose() {},
     // 删除
-    del (record) {
+    del(record) {
       const _this = this
-      this.$confirm({ title: '警告',
+      this.$confirm({
+        title: '警告',
         content: `真的要删除 ${record.fileName} 吗?`,
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           // 在这里调用删除接口
-          delFileManagement({ 'id': record.id }).then(data => {
-            if (data.code == 200) {
-              _this.$message.success('删除成功')
-              _this.$refs.table.refresh(true)
-            } else {
-              _this.$message.error(data.msg)
-            }
-          }).catch(() => {
-            // Do something
-          })
+          delFileManagement({ id: record.id })
+            .then(data => {
+              if (data.code == 200) {
+                _this.$message.success('删除成功')
+                _this.$refs.table.refresh(true)
+              } else {
+                _this.$message.error(data.msg)
+              }
+            })
+            .catch(() => {
+              // Do something
+            })
         },
-        onCancel () {
+        onCancel() {
           console.log('Cancel')
         }
       })
     },
-    handleBatchDownload () {
+    handleBatchDownload() {
       const data = [] // 需要下载打包的路径, 可以是本地相对路径, 也可以是跨域的全路径
       const selectedRows = this.selectedRows
       if (selectedRows.length < 1) {
@@ -167,32 +172,31 @@ export default {
         downloadFile(url)
       }
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       console.log('onSelectChange 点击了', selectedRows)
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    viewFormat(record){
-      let url = String(record.fileUrl)
-      let pdfUrl = String(record.filePdf)
-      let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
-      let isPdf = url => url.endsWith('.pdf')
-      let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
-      if(url){
-        if(isPdf(url) || isImage(url)){
-          return url
-        }
-        if(isWord(url)){
-          return isPdf(pdfUrl) ? pdfUrl : `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
-        }
+    viewFormat(record = {}) {
+      if (!(record && (record.fileUrl || record.filePdf))) {
+        return '#'
+      }
+      let url = String(record.fileUrl || record.filePdf)
+      let _suffix = url.slice(url.lastIndexOf('.')).toLocaleLowerCase()
+      let isWord = ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => suffix === _suffix)
+      let isPdf = _suffix === '.pdf'
+      let isImage = ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => suffix === _suffix)
+
+      if (isPdf || isImage) {
+        return url
+      }
+      if (isWord) {
+        return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
       }
       return '#'
     }
   }
-
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

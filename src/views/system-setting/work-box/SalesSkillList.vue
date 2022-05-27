@@ -13,43 +13,36 @@
         <div class="action-wrapper" style="float:right;">
           <a-form-item>
             <template v-if="$auth('SalesSkil:add')">
-              <a-button type="primary" icon="plus" @click="handleAction('add',null)">新增</a-button>
+              <a-button type="primary" icon="plus" @click="handleAction('add', null)">新增</a-button>
             </template>
           </a-form-item>
         </div>
       </a-form>
     </div>
-        <s-table
-          ref="table"
-          size="default"
-          rowKey="id"
-          :columns="columns"
-          :data="loadData"
-          :alert="false"
-        >
-          <div slot="order" slot-scope="text, record, index">
-            <span>{{ index + 1 }}</span>
-          </div>
-          <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('SalesSkil:one')">
-              <a target="_blank" :href="viewFormat(record)">预览</a>
-            </template>
-            <template v-if="$auth('SalesSkil:edit')">
-              <a-divider type="vertical"/>
-              <a @click="handleAction('edit',record)">编辑</a>
-            </template>
-            <template v-if="$auth('SalesSkil:del')">
-              <a-divider type="vertical"/>
-              <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del',record)">
-                <a href="javascript:;">删除</a>
-              </a-popconfirm>
-            </template>
-          </span>
-        </s-table>
+    <s-table ref="table" size="default" rowKey="id" :columns="columns" :data="loadData" :alert="false">
+      <div slot="order" slot-scope="text, record, index">
+        <span>{{ index + 1 }}</span>
+      </div>
+      <span slot="action" slot-scope="text, record">
+        <template v-if="$auth('SalesSkil:one')">
+          <a target="_blank" :href="viewFormat(record)">预览</a>
+        </template>
+        <template v-if="$auth('SalesSkil:edit')">
+          <a-divider type="vertical" />
+          <a @click="handleAction('edit', record)">编辑</a>
+        </template>
+        <template v-if="$auth('SalesSkil:del')">
+          <a-divider type="vertical" />
+          <a-popconfirm title="确认删除该条数据吗?" @confirm="handleAction('del', record)">
+            <a href="javascript:;">删除</a>
+          </a-popconfirm>
+        </template>
+      </span>
+    </s-table>
     <!-- <modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <modal ref="editModal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <preview ref="preview" @ok="handleSaveOk"/> -->
-    <ToolBoxCommonUploadForm ref="toolBoxCommonUploadForm" @ok="handleSaveOk"/>
+    <ToolBoxCommonUploadForm ref="toolBoxCommonUploadForm" @ok="handleSaveOk" />
   </a-card>
 </template>
 
@@ -62,7 +55,6 @@ import { STable } from '@/components'
 //import Modal from '../modules/Synopsis'
 //import Preview from '../modules/SynopsisPreview'
 import ToolBoxCommonUploadForm from './modules/ToolBoxCommonUploadForm'
-
 
 const columns = [
   {
@@ -92,7 +84,8 @@ const columns = [
     title: '操作',
     key: 'action',
     scopedSlots: { customRender: 'action' }
-  }]
+  }
+]
 
 export default {
   name: 'EnterpriseSynopsis',
@@ -102,14 +95,14 @@ export default {
     //Preview,
     ToolBoxCommonUploadForm
   },
-  data () {
+  data() {
     return {
       selectedRowKeys: [],
       selectedRows: [],
       // 查询参数
       queryParam: {
-        type:7,
-        toolType:0
+        type: 7,
+        toolType: 0
       },
       // 表头
       columns: columns,
@@ -118,7 +111,8 @@ export default {
         return getFileManagementList(Object.assign(parameter, this.queryParam))
           .then(res => {
             return res
-          }).catch(error => {
+          })
+          .catch(error => {
             this.loading = false
             console.error(error)
           })
@@ -126,55 +120,59 @@ export default {
     }
   },
   methods: {
-    handleAction(type,record){
+    handleAction(type, record) {
       const that = this
-      if(['add','edit'].includes(type)){
-        let _record = record ? {
-          id:record.id,
-          fileName:record.fileName,
-          fileUrl:record.fileUrl
-        } : {}
-        that.$refs.toolBoxCommonUploadForm.query(type,_record,7,0)  
-      }else if(type === 'del'){
-        delFileManagement({ 'id': record.id }).then(data => {
-          if (data.code == 200) {
-            that.$message.success('删除成功')
-            that.$refs.table.refresh(true)
-          } else {
-            that.$message.error(data.msg)
-          }
-        }).catch((err) => {
-          console.log(err)
-        })
+      if (['add', 'edit'].includes(type)) {
+        let _record = record
+          ? {
+              id: record.id,
+              fileName: record.fileName,
+              fileUrl: record.fileUrl
+            }
+          : {}
+        that.$refs.toolBoxCommonUploadForm.query(type, _record, 7, 0)
+      } else if (type === 'del') {
+        delFileManagement({ id: record.id })
+          .then(data => {
+            if (data.code == 200) {
+              that.$message.success('删除成功')
+              that.$refs.table.refresh(true)
+            } else {
+              that.$message.error(data.msg)
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
       }
     },
-    handleSaveOk () {
+    handleSaveOk() {
       this.$refs.table.refresh(true)
     },
-    handleSaveClose () {
-
-    },
-    handleEditOk () {
+    handleSaveClose() {},
+    handleEditOk() {
       this.$refs.table.refresh(true)
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       console.log('onSelectChange 点击了')
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    viewFormat(record){
-      let url = String(record.fileUrl)
-      let pdfUrl = String(record.filePdf)
-      let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
-      let isPdf = url => url.endsWith('.pdf')
-      let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
-      if(url){
-        if(isPdf(url) || isImage(url)){
-          return url
-        }
-        if(isWord(url)){
-          return isPdf(pdfUrl) ? pdfUrl : `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
-        }
+    viewFormat(record = {}) {
+      if (!(record && (record.fileUrl || record.filePdf))) {
+        return '#'
+      }
+      let url = String(record.fileUrl || record.filePdf)
+      let _suffix = url.slice(url.lastIndexOf('.')).toLocaleLowerCase()
+      let isWord = ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => suffix === _suffix)
+      let isPdf = _suffix === '.pdf'
+      let isImage = ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => suffix === _suffix)
+
+      if (isPdf || isImage) {
+        return url
+      }
+      if (isWord) {
+        return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
       }
       return '#'
     }
@@ -182,6 +180,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

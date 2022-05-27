@@ -2,12 +2,7 @@
   <!-- 体检管理 -->
   <div class="wdf-custom-wrapper">
     <div class="search-wrapper">
-      <a-month-picker
-        style="width:150px;"
-        :allowClear="true"
-        placeholder="请选择月份"
-        v-model="createdMonth"
-      />
+      <a-month-picker style="width:150px;" :allowClear="true" placeholder="请选择月份" v-model="createdMonth" />
       <a-select
         placeholder="选择部门"
         @change="depChangeHandler"
@@ -15,14 +10,12 @@
         :allowClear="true"
         style="width: 150px"
       >
-        <a-select-option
-          v-for="item in depSelectDataSource"
-          :key="item.id"
-          :value="item.id"
-        >{{item.departmentName}}</a-select-option>
+        <a-select-option v-for="item in depSelectDataSource" :key="item.id" :value="item.id">{{
+          item.departmentName
+        }}</a-select-option>
       </a-select>
 
-      <a-input style="width:150px;" placeholder="人员模糊查询" v-model="userName" :allowClear="true"/>
+      <a-input style="width:150px;" placeholder="人员模糊查询" v-model="userName" :allowClear="true" />
 
       <!-- <a-select
         style="width:150px;"
@@ -42,18 +35,13 @@
         <a-select-option :value="4">入职体检</a-select-option>
       </a-select>
 
-      <a-select
-        style="width:150px;"
-        placeholder="体检结果"
-        v-model="checkupResult"
-        :allowClear="true"
-      >
+      <a-select style="width:150px;" placeholder="体检结果" v-model="checkupResult" :allowClear="true">
         <a-select-option :value="0">无</a-select-option>
         <a-select-option :value="1">合格</a-select-option>
         <a-select-option :value="2">不合格</a-select-option>
       </a-select>
 
-      <a-button class="a-button" type="primary" icon="search" @click="searchAction({current:1})">查询</a-button>
+      <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
       <!-- <a-button style="float:right;" type="primary" icon="plus" @click="doAction('add',null)">新增</a-button> -->
     </div>
     <div class="main-wrapper">
@@ -68,17 +56,17 @@
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="checkupType" slot-scope="text, record, index">
-          {{ {1:'工龄体检',2:'特殊岗位体检',3:'管理层休检',4:'入职体检'}[text] || '未知' }}
+          {{ { 1: '工龄体检', 2: '特殊岗位体检', 3: '管理层休检', 4: '入职体检' }[text] || '未知' }}
         </div>
         <div slot="checkupResult" slot-scope="text, record, index">
-          {{ {0:'无',1:'合格',2:'不合格'}[text] || '未知' }}
+          {{ { 0: '无', 1: '合格', 2: '不合格' }[text] || '未知' }}
         </div>
         <div slot="checkupReport" slot-scope="text, record, index">
           <a v-if="text" target="_blank" :href="viewFormat(text)">查看</a>
           <span v-else>无</span>
         </div>
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" @click="doAction('upload',record)">上传</a>
+          <a type="primary" @click="doAction('upload', record)">上传</a>
         </div>
       </a-table>
     </div>
@@ -91,7 +79,7 @@
 import {
   departmentList, //所有部门
   getStationList, //获取部门下面的岗位
-  getUserByDep,
+  getUserByDep
 } from '@/api/systemSetting'
 import { checkupManagementList, checkupManagementUploadReport } from '@/api/welfareManagement'
 import AddForm from './AddForm'
@@ -103,18 +91,18 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' },
+    scopedSlots: { customRender: 'order' }
   },
   {
     align: 'center',
     title: '日期',
-    dataIndex: 'createdMonth',
+    dataIndex: 'createdMonth'
   },
   {
     align: 'center',
     title: '体检类别',
     dataIndex: 'checkupType',
-    scopedSlots: { customRender: 'checkupType' },
+    scopedSlots: { customRender: 'checkupType' }
   },
   {
     align: 'center',
@@ -135,31 +123,31 @@ const columns = [
     align: 'center',
     title: '体检结果',
     dataIndex: 'checkupResult',
-    scopedSlots: { customRender: 'checkupResult' },
+    scopedSlots: { customRender: 'checkupResult' }
   },
   {
     align: 'center',
     title: '体检报告',
     dataIndex: 'checkupReport',
-    scopedSlots: { customRender: 'checkupReport' },
+    scopedSlots: { customRender: 'checkupReport' }
   },
   {
     align: 'center',
     title: '体检上传日期',
-    dataIndex: 'reportTime',
+    dataIndex: 'reportTime'
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
+    scopedSlots: { customRender: 'action' }
+  }
 ]
 
 export default {
   name: 'welfare-management-healthy-management',
   components: {
-    AddForm: AddForm,
+    AddForm: AddForm
   },
   data() {
     return {
@@ -175,9 +163,9 @@ export default {
       depSelectDataSource: [],
       postSelectDataSource: [],
       pagination: {
-        current: 1,
+        current: 1
       },
-      loading: false,
+      loading: false
     }
   },
   computed: {
@@ -187,25 +175,25 @@ export default {
         depId: this.depId,
         userName: this.userName,
         checkupType: this.checkupType,
-        checkupResult: this.checkupResult,
+        checkupResult: this.checkupResult
       }
-    },
+    }
   },
   watch: {
     $route: {
-      handler: function (to, from) {
+      handler: function(to, from) {
         if (to.name === 'welfare-management-healthy-management') {
           this.init()
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   methods: {
     moment,
     init() {
       let that = this
-      departmentList().then((res) => {
+      departmentList().then(res => {
         that.depSelectDataSource = res.data
       })
       this.searchAction()
@@ -216,7 +204,7 @@ export default {
       console.log('执行搜索...', _searchParam)
       that.loading = true
       checkupManagementList(_searchParam)
-        .then((res) => {
+        .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
@@ -229,7 +217,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
         })
-        .catch((err) => (that.loading = false))
+        .catch(err => (that.loading = false))
     },
     // 分页
     handleTableChange(pagination, filters, sorter) {
@@ -250,28 +238,30 @@ export default {
     depChangeHandler(dep_id) {
       let that = this
       that.postSelectDataSource = []
-      getUserByDep({ departmentId: dep_id }).then((res) => (that.userList = res.data))
+      getUserByDep({ departmentId: dep_id }).then(res => (that.userList = res.data))
     },
     filterOption(input, option) {
-      return (
-        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      );
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    viewFormat(_url){
-      let url = _url
-      let isWord = url => ['.doc','.docx','.xls','.xlsx'].some(suffix => url.endsWith(suffix))
-      let isPdf = url => url.endsWith('.pdf')
-      let isImage = url => ['.png','.jpg','jpeg','.gif','.bmp'].some(suffix => url.endsWith(suffix))
-      if(url){
-        if(isPdf(url) || isImage(url)){
-          return url
-        }else if(isWord){
-          return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
-        }
+    viewFormat(_url) {
+      if (!_url) {
+        return '#'
+      }
+      let url = String(_url)
+      let _suffix = url.slice(url.lastIndexOf('.')).toLocaleLowerCase()
+      let isWord = ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => suffix === _suffix)
+      let isPdf = _suffix === '.pdf'
+      let isImage = ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => suffix === _suffix)
+
+      if (isPdf || isImage) {
+        return url
+      }
+      if (isWord) {
+        return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
       }
       return '#'
     }
-  },
+  }
 }
 </script>
 
