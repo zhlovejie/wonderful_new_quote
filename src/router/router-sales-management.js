@@ -143,11 +143,10 @@ export default {
       path: '/sales-management/contract-template-management',
       component: RouteView,
       name: 'contractManagement',
-      redirect: '/sales-management/contract-template-management',
+      redirect: '/sales-management/contract-template-management/salesContractTemplate',
       meta: {
         title: '合同模版管理',
         icon: 'book',
-        keepAlive: true,
         permission: ['permission']
       },
       children: [
@@ -193,6 +192,15 @@ export default {
           component: () => import('@/views/sales-management/contract-template-management/agencyContractTemplate'),
           meta: {
             title: '代理合同模板',
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/sales-management/contract-template-management/purchaseContractTemplate',
+          name: 'purchaseContractTemplate',
+          component: () => import('@/views/sales-management/contract-template-management/purchaseContractTemplate'),
+          meta: {
+            title: '采购合同模板',
             permission: ['permission']
           }
         }

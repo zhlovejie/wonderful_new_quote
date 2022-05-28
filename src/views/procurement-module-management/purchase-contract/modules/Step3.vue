@@ -34,7 +34,7 @@
       </a-table>
       <div>
         <a-form-model-item prop="transportType" label="运输方式">
-          <a-radio-group v-model="form.transportType">
+          <a-radio-group v-model="form.transportType" :disabled="addForm.isDisabled">
             <a-radio :value="0">代办运输</a-radio>
             <a-radio :value="1">自提</a-radio>
           </a-radio-group>
@@ -42,7 +42,7 @@
       </div>
       <div>
         <a-form-model-item prop="transportType" label="备注">
-          <a-textarea placeholder="备注" :rows="3" v-model="form.remark" />
+          <a-textarea :disabled="addForm.isDisabled" placeholder="备注" :rows="3" v-model="form.remark" />
         </a-form-model-item>
       </div>
     </a-form-model>

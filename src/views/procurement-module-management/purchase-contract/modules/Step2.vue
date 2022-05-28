@@ -5,6 +5,7 @@
 
       <a-form-model-item label="全款付款金额(元)" prop="fullTotalMoney">
         <a-input-number
+          :disabled="addForm.isDisabled"
           style="width:200px;"
           v-model="form.fullTotalMoney"
           :min="0"
@@ -22,7 +23,8 @@
 
         <div slot="percentage" slot-scope="text, record, index">
           <a-form-model-item>
-            <a-input-number
+            {{ record.percentage }}%
+            <!-- <a-input-number
               style="width:100%;"
               :value="record.percentage"
               :min="0"
@@ -30,13 +32,14 @@
               :step="1"
               :precision="0"
               @change="v => handleFreightRate(v, record)"
-            />
+            /> -->
           </a-form-model-item>
         </div>
 
         <div slot="paymentDate" slot-scope="text, record, index">
           <a-form-model-item>
             <a-date-picker
+              :disabled="addForm.isDisabled"
               v-model="record.paymentDate"
               valueFormat="YYYY-MM-DD"
               style="width:100%;"
@@ -47,7 +50,7 @@
 
         <div slot="remark" slot-scope="text, record, index">
           <a-form-model-item>
-            <a-input v-model="record.remark" style="width:100%;" :allowClear="true" />
+            <a-input :disabled="addForm.isDisabled" v-model="record.remark" style="width:100%;" :allowClear="true" />
           </a-form-model-item>
         </div>
       </a-table>
@@ -56,7 +59,14 @@
 
       <div style="display:flex;">
         <a-form-model-item label="票到付款周期" prop="paymentCycle">
-          <a-input-number style="width:200px;" v-model="form.paymentCycle" :min="1" :step="1" :precision="0" />
+          <a-input-number
+            :disabled="addForm.isDisabled"
+            style="width:200px;"
+            v-model="form.paymentCycle"
+            :min="1"
+            :step="1"
+            :precision="0"
+          />
         </a-form-model-item>
         <span style="line-height:36px;">天</span>
       </div>

@@ -122,7 +122,7 @@
                 <a-divider type="vertical" />
                 <a @click="doAction('change', record)">变更合同</a>
                 <a-divider type="vertical" />
-                <a @click="doAction('download', record)">下载</a>
+                <a v-download="record.contractUrl">下载</a>
                 <a-divider type="vertical" />
                 <a @click="doAction('files', record)">附件</a>
               </template>
@@ -133,11 +133,16 @@
             <template v-if="+activeKey === 2">
               <a @click="doAction('view', record)">详情</a>
             </template>
+            <a-divider type="vertical" />
+            <a @click="doAction('files', record)">附件</a>
+            <a-divider type="vertical" />
+            <a-button type="primary" @click="doAction('preview', record)">合同预览</a-button>
           </div>
         </a-table>
       </div>
       <SearchForm ref="searchForm" @change="handleSearch" />
       <ApproveInfo ref="approveInfoCard" />
+      <Files ref="files" />
     </a-spin>
   </a-card>
 </template>
@@ -146,6 +151,7 @@
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import SearchForm from './SearchForm'
+import Files from './modules/Files'
 import {
   purchaseContractPageList,
   purchaseContractDel,
@@ -254,7 +260,8 @@ export default {
   components: {
     CommonDictionarySelect,
     ApproveInfo,
-    SearchForm
+    SearchForm,
+    Files
   },
   data() {
     return {
@@ -396,6 +403,18 @@ export default {
                 that.$message.error(err)
               })
             return
+          }
+        })
+        return
+      } else if (type === 'files') {
+        that.$refs['files'].query({ ...record })
+        return
+      } else if (type === 'preview') {
+        that.$router.push({
+          name: 'procurement-module-management-purchase-contract-preview',
+          params: {
+            contractId: record.id,
+            from: 'procurement-module-management-purchase-contract'
           }
         })
         return

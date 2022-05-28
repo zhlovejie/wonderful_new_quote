@@ -92,15 +92,20 @@ router.afterEach(() => {
 })
 
 function routerMetaTitleChange(to) {
-  if (to.name === 'procurement-module-management-purchase-contract-action' && to.params.action) {
-    const titleMap = {
-      add: '新增',
-      view: '查看',
-      edit: '修改',
-      approval: '审批',
-      preview: '预览'
+  if (to.name === 'procurement-module-management-purchase-contract-action') {
+    if (to.params.action) {
+      const titleMap = {
+        add: '新增',
+        view: '查看',
+        edit: '修改',
+        approval: '审批',
+        preview: '预览',
+        change: '变更'
+      }
+      return `采购合同-${titleMap[to.params.action]}`
+    } else {
+      return '采购合同'
     }
-    return `采购合同-${titleMap[to.params.action]}`
   }
   return to.meta.title
 }

@@ -19,7 +19,7 @@
           >下一步</a-button
         >
         <!-- <a-button type="primary" @click="doAction('save')">保存当前信息</a-button> -->
-        <template v-if="isAdd || isEdit">
+        <template v-if="isAdd || isEdit || isChange">
           <a-button
             type="primary"
             v-if="currentTab === stepList.length - 1"
@@ -160,6 +160,9 @@ export default {
     isChange() {
       // 变更合同
       return this.action === 'change'
+    },
+    isDisabled() {
+      return this.isView || this.isApproval
     }
   },
   watch: {
@@ -270,8 +273,8 @@ export default {
         if (result_detail) {
           result_detail.orderList = that.$_.cloneDeep(result_detail.contractOrderDetailVos || [])
           result_detail.settlementList = that.$_.cloneDeep(result_detail.contractSettlementDetailVos || [])
-          result_detail.secondPartyInfo = that.$_.cloneDeep(result_detail.contractSecondPartyInfoDetailVo || [])
-          result_detail.otherAppoint = that.$_.cloneDeep(result_detail.contractOtherAppointDetailVo || [])
+          result_detail.secondPartyInfo = that.$_.cloneDeep(result_detail.contractSecondPartyInfoDetailVo || {})
+          result_detail.otherAppoint = that.$_.cloneDeep(result_detail.contractOtherAppointDetailVo || {})
 
           delete result_detail.contractOrderDetailVos
           delete result_detail.contractSettlementDetailVos

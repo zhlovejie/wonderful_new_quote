@@ -11,7 +11,7 @@
             <td>
               <div style="text-">
                 <a-form-model-item prop="disputeSolveType">
-                  <a-radio-group v-model="form.disputeSolveType">
+                  <a-radio-group v-model="form.disputeSolveType" :disabled="addForm.isDisabled">
                     <a-radio :value="1">向甲方所在地人民法院提起诉讼</a-radio>
                     <a-radio :value="2">向乙方所在地人民法院提起诉讼</a-radio>
                   </a-radio-group>
@@ -25,7 +25,7 @@
             </td>
             <td>
               <a-form-model-item prop="signType">
-                <a-radio-group v-model="form.signType">
+                <a-radio-group v-model="form.signType" :disabled="addForm.isDisabled">
                   <a-radio :value="1">邮件</a-radio>
                   <a-radio :value="2">书面</a-radio>
                   <a-radio :value="3">微信</a-radio>
@@ -40,10 +40,20 @@
             <td>
               <div style="display:flex;">
                 <a-form-model-item prop="nailEmail" label="甲方邮箱">
-                  <a-input v-model="form.nailEmail" style="width:100%;" :allowClear="true" />
+                  <a-input
+                    :disabled="addForm.isDisabled"
+                    v-model="form.nailEmail"
+                    style="width:100%;"
+                    :allowClear="true"
+                  />
                 </a-form-model-item>
                 <a-form-model-item prop="secondEmail" label="乙方邮箱">
-                  <a-input v-model="form.secondEmail" style="width:100%;" :allowClear="true" />
+                  <a-input
+                    :disabled="addForm.isDisabled"
+                    v-model="form.secondEmail"
+                    style="width:100%;"
+                    :allowClear="true"
+                  />
                 </a-form-model-item>
               </div>
             </td>
@@ -55,10 +65,20 @@
             <td>
               <div style="display:flex;">
                 <a-form-model-item prop="nailWeChat" label="甲方微信">
-                  <a-input v-model="form.nailWeChat" style="width:100%;" :allowClear="true" />
+                  <a-input
+                    :disabled="addForm.isDisabled"
+                    v-model="form.nailWeChat"
+                    style="width:100%;"
+                    :allowClear="true"
+                  />
                 </a-form-model-item>
                 <a-form-model-item prop="secondWeChat" label="乙方微信">
-                  <a-input v-model="form.secondWeChat" style="width:100%;" :allowClear="true" />
+                  <a-input
+                    :disabled="addForm.isDisabled"
+                    v-model="form.secondWeChat"
+                    style="width:100%;"
+                    :allowClear="true"
+                  />
                 </a-form-model-item>
               </div>
             </td>
@@ -69,7 +89,7 @@
             </td>
             <td>
               <a-form-model-item prop="freshChapterType">
-                <a-radio-group v-model="form.freshChapterType">
+                <a-radio-group :disabled="addForm.isDisabled" v-model="form.freshChapterType">
                   <a-radio :value="0">不要</a-radio>
                   <a-radio :value="1">要</a-radio>
                 </a-radio-group>
@@ -88,6 +108,7 @@
                     <a-form-model-item prop="unpaidFalsify" style="margin:0;">
                       <a-input-number
                         style="width:80px;"
+                        :disabled="addForm.isDisabled"
                         v-model="form.unpaidFalsify"
                         :min="0"
                         :max="100"
@@ -103,6 +124,7 @@
                     <a-form-model-item prop="fullAmount" style="margin:0;">
                       <a-input-number
                         style="width:80px;"
+                        :disabled="addForm.isDisabled"
                         v-model="form.fullAmount"
                         :min="0"
                         :max="100"
@@ -123,6 +145,7 @@
                     <a-form-model-item prop="breachContract" style="margin:0;">
                       <a-input-number
                         style="width:80px;"
+                        :disabled="addForm.isDisabled"
                         v-model="form.breachContract"
                         :min="0"
                         :max="100"
@@ -155,7 +178,13 @@
                     trigger: 'blur'
                   }"
                 >
-                  <a-textarea placeholder="变更原因" :autoSize="true" style="width:100%;" v-model="form.changeReason" />
+                  <a-textarea
+                    :disabled="addForm.isDisabled"
+                    placeholder="变更原因"
+                    :autoSize="true"
+                    style="width:100%;"
+                    v-model="form.changeReason"
+                  />
                 </a-form-model-item>
               </div>
             </td>
@@ -168,6 +197,7 @@
               <div class="block">
                 <a-form-model-item prop="otherAppointStr">
                   <a-textarea
+                    :disabled="addForm.isDisabled"
                     placeholder="其他约定"
                     :autoSize="true"
                     style="width:100%;"

@@ -489,6 +489,45 @@ export function purchaseContractOrderListRefresh(parameter) {
   })
 }
 
+/**合同附件-新增 */
+export function purchaseContractAttachmentAddOrUpdate(parameter) {
+  return axios({
+    baseURL: system.baseURL,
+    url: '/purchase/contract-attachment/addOrUpdate',
+    method: 'POST',
+    data: parameter
+  })
+}
+/**合同附件-删除 */
+export function purchaseContractAttachmentDel(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/purchase/contract-attachment/delById',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**合同附件-详情 */
+export function purchaseContractAttachmentDetail(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/purchase/contract-attachment/getDetailById',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**合同附件-列表 */
+export function purchaseContractAttachmentList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/purchase/contract-attachment/getList',
+    method: 'GET',
+    params: parameter
+  })
+}
+
 /** 采购合同 END*/
 
 /**采购订单位置->采购需求单列表 */

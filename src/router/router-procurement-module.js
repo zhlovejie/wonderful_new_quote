@@ -68,6 +68,18 @@ export default {
         keepAlive: false,
         permission: ['permission']
       }
+    },
+    {
+      path: '/procurement-module-management/purchase-contract-preview',
+      name: 'procurement-module-management-purchase-contract-preview',
+      component: () => import('@/views/procurement-module-management/purchase-contract/modules/previewContract'),
+      props: true,
+      meta: {
+        title: '预览采购合同',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
     }
   ]
 }

@@ -28,7 +28,7 @@
             </td>
             <td>
               <a-form-model-item>
-                <a-radio-group v-model="form.taxType">
+                <a-radio-group v-model="form.taxType" :disabled="addForm.isDisabled">
                   <a-radio :value="0">否</a-radio>
                   <a-radio :value="1">是</a-radio>
                 </a-radio-group>
@@ -106,6 +106,7 @@
               >
                 <a-input-number
                   v-if="+form.freightType === 1"
+                  :disabled="addForm.isDisabled"
                   style="width:100%;"
                   v-model="form.freightFullAmount"
                   :min="0"
@@ -131,6 +132,7 @@
               >
                 <a-input-number
                   v-if="+form.freightType === 1"
+                  :disabled="addForm.isDisabled"
                   style="width:100%;"
                   v-model="form.freightRate"
                   :min="0"
@@ -153,6 +155,7 @@
                   allowClear
                   :text="'物料类别'"
                   :dictionaryId.sync="form.logisticsTypeId"
+                  :disabled="addForm.isDisabled"
                   @selected="handlerLogisticsTypeChange"
                 />
                 <!-- logisticsTypeName -->
@@ -170,6 +173,7 @@
                   valueFormat="YYYY-MM-DD"
                   :class="{ 'sign-date-current': isSignDateCurrent, 'sign-date-no-current': !isSignDateCurrent }"
                   :allowClear="true"
+                  :disabled="addForm.isDisabled"
                   @change="handleSignDateChange"
                 />
               </a-form-model-item>

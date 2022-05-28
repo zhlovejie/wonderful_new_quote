@@ -2,7 +2,7 @@
   <div class="purchase-contract-step1-wrapper">
     <h3>产品信息</h3>
     <a-form-model ref="ruleForm" :model="form" :rules="rules">
-      <div class="sub-title">未变动部分</div>
+      <div class="sub-title" v-if="addForm.isChange">未变动部分</div>
       <a-table :columns="columns" :dataSource="orderList" :pagination="false" size="small">
         <div slot="order" slot-scope="text, record, index">
           {{ index + 1 }}
@@ -18,6 +18,7 @@
 
         <div slot="purchaseNum" slot-scope="text, record, index">
           <a-input-number
+            :disabled="addForm.isDisabled"
             :key="record.key"
             style="width:100px;"
             placeholder="采购量"
@@ -43,61 +44,78 @@
           </a-popover>
         </div>
         <div slot="action" slot-scope="text, record, index">
-          <a @click="doAction('del', record)">删除</a>
+          <template v-if="addForm.isChange">
+            <a v-if="+record.purchaseProgress < 8" @click="doAction('del', record)">删除</a>
+            <span style="color:red;" v-else>已完结</span>
+          </template>
+          <template v-else-if="addForm.isDisabled">
+            <span>-</span>
+          </template>
+          <template v-else>
+            <a @click="doAction('del', record)">删除</a>
+          </template>
         </div>
       </a-table>
-      <a-button style="width: 100%" type="dashed" icon="plus" @click="doAction('add', { key: 'orderList' })"
+      <a-button
+        v-if="!addForm.isDisabled"
+        style="width: 100%"
+        type="dashed"
+        icon="plus"
+        @click="doAction('add', { key: 'orderList' })"
         >添加</a-button
       >
 
-      <div class="sub-title">变动部分</div>
-      <a-table :columns="columns" :dataSource="orderListForChange" :pagination="false" size="small">
-        <div slot="order" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </div>
-        <div slot="requestApplyNum" slot-scope="text, record, index">
-          <div v-if="record._isNew">
-            <a-button @click="() => handleSelectOrder(record)">选择需求单</a-button>
+      <template v-if="addForm.isChange">
+        <div class="sub-title">变动部分</div>
+        <a-table :columns="columns" :dataSource="orderListForChange" :pagination="false" size="small">
+          <div slot="order" slot-scope="text, record, index">
+            {{ index + 1 }}
           </div>
-          <div v-else>
-            {{ text }}
-          </div>
-        </div>
-
-        <div slot="purchaseNum" slot-scope="text, record, index">
-          <a-input-number
-            :key="record.key"
-            style="width:100px;"
-            placeholder="采购量"
-            :value="record.purchaseNum"
-            :min="record._sourcePurchaseNum"
-            :max="999999999999999"
-            :step="1"
-            :precision="0"
-            @change="e => handlePurchaseNumChange(e, record)"
-          />
-        </div>
-        <div slot="materialName" slot-scope="text, record, index">
-          <a-popover :title="text" trigger="hover">
-            <template slot="content">
-              <p>物料名称：{{ record.materialName }}</p>
-              <p>物料代码：{{ record.materialCode }}</p>
-              <p>规格型号：{{ record.specification }}</p>
-              <p>单位：{{ record.subUnit }}</p>
-            </template>
-            <a href="javascript:void(0);" @click="doAction('materialView', record)">
+          <div slot="requestApplyNum" slot-scope="text, record, index">
+            <div v-if="record._isNew">
+              <a-button @click="() => handleSelectOrder(record)">选择需求单</a-button>
+            </div>
+            <div v-else>
               {{ text }}
-            </a>
-          </a-popover>
-        </div>
-        <div slot="action" slot-scope="text, record, index">
-          <a @click="doAction('del', record)">删除</a>
-        </div>
-      </a-table>
-      <a-button style="width: 100%" type="dashed" icon="plus" @click="doAction('add', { key: 'orderListForChange' })"
-        >添加</a-button
-      >
+            </div>
+          </div>
 
+          <div slot="purchaseNum" slot-scope="text, record, index">
+            <a-input-number
+              :key="record.key"
+              style="width:100px;"
+              placeholder="采购量"
+              :value="record.purchaseNum"
+              :min="record._sourcePurchaseNum"
+              :max="999999999999999"
+              :step="1"
+              :precision="0"
+              @change="e => handlePurchaseNumChange(e, record)"
+            />
+          </div>
+          <div slot="materialName" slot-scope="text, record, index">
+            <a-popover :title="text" trigger="hover">
+              <template slot="content">
+                <p>物料名称：{{ record.materialName }}</p>
+                <p>物料代码：{{ record.materialCode }}</p>
+                <p>规格型号：{{ record.specification }}</p>
+                <p>单位：{{ record.subUnit }}</p>
+              </template>
+              <a href="javascript:void(0);" @click="doAction('materialView', record)">
+                {{ text }}
+              </a>
+            </a-popover>
+          </div>
+          <div slot="action" slot-scope="text, record, index">
+            <a @click="doAction('del', record)">删除</a>
+            <a-divider type="vertical" />
+            <a @click="doAction('refresh', record)">刷新</a>
+          </div>
+        </a-table>
+        <a-button style="width: 100%" type="dashed" icon="plus" @click="doAction('add', { key: 'orderListForChange' })"
+          >添加</a-button
+        >
+      </template>
       <div class="calc-wrapper sub-title">
         <div>
           <span>运费(人民币)：{{ calInfo.freightFullAmountWithTax | moneyFormatNumber }}</span>
@@ -142,6 +160,7 @@
 <script>
 //数字转大写接口
 import { turnTheCapital } from '@/api/contractListManagement'
+import { purchaseContractOrderListRefresh } from '@/api/procurementModuleManagement'
 import SelectOrder from './SelectOrder'
 const columns = [
   {
@@ -194,7 +213,8 @@ const columns = [
   },
   {
     title: '操作',
-    scopedSlots: { customRender: 'action' }
+    scopedSlots: { customRender: 'action' },
+    width: 150
   }
 ]
 export default {
@@ -286,6 +306,33 @@ export default {
         that[keyName] = orderList
       } else if (type === 'del') {
         that[keyName] = orderList.filter(o => o.key !== record.key)
+      } else if (type === 'refresh') {
+        that.addForm.spinning = true
+        purchaseContractOrderListRefresh({ requestId: record.requestId })
+          .then(res => {
+            that.addForm.spinning = false
+            let data = res.data || {}
+            let orderList = [
+              ...that.orderListForChange.filter(r => r.key !== record.key),
+              ...[data].map(o => {
+                o.key = that._uuid()
+                o.purchaseNum = o.requestNum || 0
+                o._sourcePurchaseNum = o._sourcePurchaseNum || o.purchaseNum
+                o.amount = Number(o.newPrice || 0) * o.purchaseNum
+                o.amountText = that.$root._f('moneyFormatNumber')(o.amount)
+                return o
+              })
+            ]
+            that.orderListForChange = that.$_.cloneDeep(orderList)
+
+            that.$nextTick(() => {
+              that.calc()
+            })
+          })
+          .catch(err => {
+            that.addForm.spinning = false
+            that.$message.info(err.message)
+          })
       }
     },
     handleSelectOrder(record) {
@@ -303,10 +350,14 @@ export default {
           o._sourcePurchaseNum = o._sourcePurchaseNum || o.purchaseNum
           o.amount = Number(o.newPrice || 0) * o.purchaseNum
           o.amountText = that.$root._f('moneyFormatNumber')(o.amount)
-          return r
+          return o
         })
       ]
       that[keyName] = that.$_.cloneDeep(orderList)
+
+      that.$nextTick(() => {
+        that.calc()
+      })
     },
     handlePurchaseNumChange(val, record) {
       const that = this

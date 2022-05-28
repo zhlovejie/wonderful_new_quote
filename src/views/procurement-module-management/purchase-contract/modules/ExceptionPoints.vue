@@ -7,9 +7,8 @@
     @cancel="handleCancel"
     :footer="null"
     :maskClosable="false"
-    size="small"
   >
-    <a-table :columns="columns" :dataSource="dataSource" :pagination="false" :loading="loading">
+    <a-table size="small" :columns="columns" :dataSource="dataSource" :pagination="false" :loading="loading">
       <div slot="order" slot-scope="text, record, index">
         {{ index + 1 }}
       </div>

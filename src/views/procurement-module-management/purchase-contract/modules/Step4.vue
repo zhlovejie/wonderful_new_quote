@@ -10,7 +10,12 @@
             </td>
             <td>
               <a-form-model-item prop="cfullName">
-                <a-input v-model="form.cfullName" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.cfullName"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
             <td style="width:150px;">
@@ -18,7 +23,7 @@
             </td>
             <td>
               <a-form-model-item prop="address">
-                <a-input v-model="form.address" style="width:100%;" :allowClear="true" />
+                <a-input :disabled="addForm.isDisabled" v-model="form.address" style="width:100%;" :allowClear="true" />
               </a-form-model-item>
             </td>
           </tr>
@@ -28,7 +33,7 @@
             </td>
             <td>
               <a-form-model-item prop="phone">
-                <a-input v-model="form.phone" style="width:100%;" :allowClear="true" />
+                <a-input :disabled="addForm.isDisabled" v-model="form.phone" style="width:100%;" :allowClear="true" />
               </a-form-model-item>
             </td>
             <td style="width:150px;">
@@ -36,7 +41,7 @@
             </td>
             <td>
               <a-form-model-item prop="weChat">
-                <a-input v-model="form.weChat" style="width:100%;" :allowClear="true" />
+                <a-input :disabled="addForm.isDisabled" v-model="form.weChat" style="width:100%;" :allowClear="true" />
               </a-form-model-item>
             </td>
           </tr>
@@ -46,7 +51,12 @@
             </td>
             <td>
               <a-form-model-item prop="supplierEmail">
-                <a-input v-model="form.supplierEmail" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.supplierEmail"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
             <td style="width:150px;">
@@ -54,7 +64,12 @@
             </td>
             <td>
               <a-form-model-item prop="postalCode">
-                <a-input v-model="form.postalCode" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.postalCode"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
           </tr>
@@ -64,7 +79,12 @@
             </td>
             <td>
               <a-form-model-item prop="bankName">
-                <a-input v-model="form.bankName" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.bankName"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
             <td style="width:150px;">
@@ -72,7 +92,12 @@
             </td>
             <td>
               <a-form-model-item prop="taxpayerNumber">
-                <a-input v-model="form.taxpayerNumber" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.taxpayerNumber"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
           </tr>
@@ -82,7 +107,12 @@
             </td>
             <td>
               <a-form-model-item prop="cardName">
-                <a-input v-model="form.cardName" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.cardName"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
             <td style="width:150px;">
@@ -90,7 +120,12 @@
             </td>
             <td>
               <a-form-model-item prop="cardNumber">
-                <a-input v-model="form.cardNumber" style="width:100%;" :allowClear="true" />
+                <a-input
+                  :disabled="addForm.isDisabled"
+                  v-model="form.cardNumber"
+                  style="width:100%;"
+                  :allowClear="true"
+                />
               </a-form-model-item>
             </td>
           </tr>
