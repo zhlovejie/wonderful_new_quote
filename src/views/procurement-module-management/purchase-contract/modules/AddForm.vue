@@ -38,7 +38,7 @@
           <a-button type="primary" @click="passAction">通过</a-button>
           <a-button type="primary" @click="noPassAction">不通过</a-button>
         </template>
-        <a-button type="primary" v-if="currentTab === stepList.length - 1" @click="doAction('preview')"
+        <a-button type="primary" v-if="isView || currentTab === stepList.length - 1" @click="doAction('preview')"
           >合同预览</a-button
         >
         <a-button type="danger" v-if="currentTab === stepList.length - 1" @click="doAction('exceptionPoints')"
@@ -319,7 +319,17 @@ export default {
         that.submitParams = that.$_.assign(that.submitParams, result.data)
         console.log(JSON.stringify(that.submitParams, null, 2))
         that.currentTab++
-      } else if (type === 'submit' || type === 'approval') {
+      } else if (type === 'submit' || type === 'approval' || type === 'preview') {
+        if (that.isView && type === 'preview') {
+          that.$router.push({
+            name: 'procurement-module-management-purchase-contract-preview',
+            params: {
+              contractId: that.submitParams.id,
+              from: 'procurement-module-management-purchase-contract'
+            }
+          })
+          return
+        }
         let result = await that.$refs['currentComponent'].validate()
         if (result.hasError) {
           return
@@ -332,12 +342,24 @@ export default {
         purchaseContractAddOrUpdate(_params)
           .then(res => {
             that.spinning = false
-            const { code, msg } = res
+            const { code, data, msg } = res
             that.$message.info(msg)
             if (code === 200) {
-              that.$router.push({
-                name: 'procurement-module-management-purchase-contract'
-              })
+              if (type === 'preview') {
+                that.$router.push({
+                  name: 'procurement-module-management-purchase-contract-preview',
+                  params: {
+                    contractId: data,
+                    from: 'procurement-module-management-purchase-contract'
+                  }
+                })
+                return
+              } else {
+                that.$router.push({
+                  name: 'procurement-module-management-purchase-contract'
+                })
+                return
+              }
             }
           })
           .catch(err => {

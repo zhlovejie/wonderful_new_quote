@@ -133,10 +133,10 @@
             <template v-if="+activeKey === 2">
               <a @click="doAction('view', record)">详情</a>
             </template>
-            <a-divider type="vertical" />
+            <!-- <a-divider type="vertical" />
             <a @click="doAction('files', record)">附件</a>
             <a-divider type="vertical" />
-            <a-button type="primary" @click="doAction('preview', record)">合同预览</a-button>
+            <a-button type="primary" @click="doAction('preview', record)">合同预览</a-button> -->
           </div>
         </a-table>
       </div>

@@ -241,7 +241,7 @@
             <div class="card-wrap clearfix">
               <div class="card">
                 <p class="card-tit">供方（甲方）</p>
-                <!-- <p style="position: relative;">
+                <p style="position: relative;">
                   供方单位（盖章）：
                   <img
                     v-if="+detail.freshChapterType === 0"
@@ -249,13 +249,13 @@
                     :src="detail.commonSeal"
                     alt="公章"
                   />
-                </p> -->
+                </p>
                 <p>
                   供方代表签字：
                   <img
                     style="height: 50px;width: auto;vertical-align: middle;"
-                    :src="detail.saleUserSeal"
-                    alt="销售人员章"
+                    :src="detail.purchaseUserSeal"
+                    alt="采购人员章"
                   />
                 </p>
                 <p>地址：江苏省徐州市铜山区张集工业园</p>
@@ -324,9 +324,9 @@ import moment from 'moment'
 
 /**
  * TODO
- * 1.saleUserSeal - (供方代表签字-销售人员章)
- * 2.commonSeal - 供方单位（盖章）
- * 3.新增合同 接口成功后需要返回 编号
+ * 1.详情接口 需要返回 saleUserSeal - (供方代表签字-销售人员章)
+ * 2.详情接口 需要返回 commonSeal - 供方单位（盖章）
+ * 3.新增合同 接口成功后需要返回 合同ID
  */
 const productColumns = [
   {
