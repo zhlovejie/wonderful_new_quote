@@ -28,12 +28,12 @@ export default {
 
   // baseURL: 'http://106.14.194.64/cloud_new',
   // baseURL: 'http://192.168.13.151:8998',
-  // baseURL: 'http://192.168.13.150:8996/oa', //王利
-  baseURL: 'http://172.16.1.253:9992/oa', //张恒
+  baseURL: 'http://172.16.1.147:8995/oa', //王利
+  // baseURL: 'http://172.16.1.253:9992/oa', //张恒
   // baseURL:'http://192.168.13.3:8999/oa',
 
-  materialBaseUrl: 'http://172.16.1.253:9995/cloud_development', //物料规则专用地址
-
+  // materialBaseUrl: 'http://172.16.1.253:9995/cloud_development', //物料规则专用地址-张恒
+  materialBaseUrl: 'http://172.16.1.147:9995/cloud_development', //物料规则专用地址-王利
   // baseURL: 'http://192.168.13.158:9997/cloud_development',
   gaoPaiYiUploadProxyURL: 'http://localhost:8090/', //参考 GaoPaiYiUploadProxy.exe.config -> localServerUrl
   attendanceMonitoringConfig: { //考勤监控 摄像头信息

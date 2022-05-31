@@ -39,6 +39,42 @@ export default { //委外管理
         keepAlive: false,
         permission: ['permission']
       },
+    },
+    {
+      path: '/router-outsourcing-management/order-change',
+      name: 'outsourcing-order-change',
+      component: RouteView,
+      meta: {
+        title: '加工需求变更单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+      redirect: '/router-outsourcing-management/order-change/refuelling',
+      children: [
+        {
+          path: '/router-outsourcing-management/order-change/refuelling',
+          name: 'outsourcing-order-change-refuelling',
+          component: () => import('@/views/router-outsourcing-management/order-change/refuelling/List'),
+          meta: {
+            title: '换料单',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        },
+        {
+          path: '/router-outsourcing-management/order-change/working',
+          name: 'outsourcing-order-change-working',
+          component: () => import('@/views/router-outsourcing-management/order-change/working/List'),
+          meta: {
+            title: '工序变更单',
+            icon: 'setting',
+            keepAlive: false,
+            permission: ['permission']
+          }
+        }
+      ]
     }
   ]
 }

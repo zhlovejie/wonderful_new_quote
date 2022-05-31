@@ -14,7 +14,7 @@
     <!-- a-spin:loading 状态, spinning:是否为加载中状态 -->
     <a-spin :spinning="spinning">
       <!-- a-form-model:使用:model 来绑定整个表单的数据，使用:rules来绑定整个表单的校验 -->
-      <a-form-model ref="ruleForm" :model="detail" :rules="rules" class="gift-form-wrapper">
+      <a-form-model ref="ruleForm" :model="detail" class="gift-form-wrapper">
         <div class="__hd">基本信息</div>
         <table rowKey="id" class="custom-table custom-table-border">
           <tr>
@@ -62,8 +62,7 @@
               >
                 <a-input
                   read-only="read-only"
-                  :disabled="isView"
-                  @click="openModel(record)"
+                  @click="openModel(record, detail.orderId)"
                   placeholder="请选择物料代码"
                   :value="record.materialCode"
                 />
@@ -77,9 +76,9 @@
                 :rules="{ required: true, message: '请输入出库数量' }"
               >
                 <a-input-number
-                  :disabled="isView"
                   style="width:80px;text-align:center;"
-                  :min="0"
+                  :min="1"
+                  :max="record.notExWarehouseNum"
                   :step="1"
                   :precision="0"
                   :value="record.exWarehouseNum"
@@ -90,8 +89,8 @@
             </div>
 
             <template slot="footer">
-              <div class="totle"
-                >合计:出库数量 &nbsp;{{
+              <div class="totle">
+                合计:出库数量 &nbsp;{{
                   detail.exWarehouseMaterialList.reduce(
                     (adder, item) => adder + (parseFloat(item.exWarehouseNum) || 0),
                     0
@@ -107,14 +106,12 @@
         <div class="__hd">备注</div>
         <a-form-model-item>
           <a-textarea
-            v-if="!isView"
             class="remark"
             :disabled="isView"
             v-model="detail.remark"
             placeholder="请输入备注信息"
             :rows="4"
           />
-          <span v-else>{{ detail.remark }}</span>
         </a-form-model-item>
         <div class="__hd">操作记录</div>
         <table class="custom-table custom-table-border">
@@ -139,17 +136,17 @@
           <a-button v-if="!isView" @click="handleSubmit('submit')" type="primary">提交</a-button>
         </div>
       </a-form-model>
-      <!-- <MaterialSelect ref="materialSelect" @custom-change="handlerMaterialChange"/> -->
+      <MaterialSelect ref="materialSelect" v-if="!isView" @custom-change="handlerMaterialChange" />
     </a-spin>
   </a-modal>
 </template>
 
 <script>
-import { 
-  materialOutDetail,//原料出库申请单-详情
-materialOutAdd //原料出库申请单-新增/编辑 
+import {
+  materialOutDetail, //原料出库申请单-详情
+  materialOutAdd //原料出库申请单-新增/编辑
 } from '@/api/material'
-// import MaterialSelect from './MaterialSelect'
+import MaterialSelect from './MaterialSelect.vue'
 
 const columns = [
   {
@@ -164,7 +161,8 @@ const columns = [
   },
   {
     title: '物料代码',
-    dataIndex: 'materialCode'
+    dataIndex: 'materialCode',
+    scopedSlots: { customRender: 'materialCode' }
   },
   {
     title: '物料名称',
@@ -180,18 +178,19 @@ const columns = [
   },
   {
     title: '出库数量',
-    dataIndex: 'exWarehouseNum'
+    dataIndex: 'exWarehouseNum',
+    scopedSlots: { customRender: 'exWarehouseNum' }
   },
   {
     title: '原料送取',
-    dataIndex: 'providerText' //原料送取(1:委托方送货,2:加工商提货)
+    dataIndex: 'sendTypeText' //原料送取(1:委托方送货,2:加工商提货)
   }
 ]
 
 export default {
-  name: 'materia-apply-addForm',
+  name: 'Materia-apply-addForm',
   components: {
-    // MaterialSelect
+    MaterialSelect
   },
   data() {
     return {
@@ -201,10 +200,7 @@ export default {
       detail: {
         exWarehouseMaterialList: [] //物料信息
       }, //详情记录
-      type: 'view',
-      rules: {
-        // materialCode: [{ required: true, message: '请选择物料代码' }]
-      }
+      type: 'view'
     }
   },
   computed: {
@@ -218,8 +214,8 @@ export default {
   },
   methods: {
     //选择物料代码
-    openModel(record) {
-      this.$refs.materialSelect.query(record)
+    openModel(record, orderId) {
+      this.$refs.materialSelect.query(record, orderId)
     },
     //出库数量改变
     handleExWarehouseNumChange(index, record, val) {
@@ -227,8 +223,8 @@ export default {
       let exWarehouseMaterialList = [...that.detail.exWarehouseMaterialList]
       let target = exWarehouseMaterialList[index]
       target.exWarehouseNum = val
-      if (+val > +record.__maxExWarehouseNum) {
-        that.$message.warning(`出库数量已大于库存数量，库存数量为：${record.__maxExWarehouseNum}`)
+      if (+val > +record.notExWarehouseNum) {
+        that.$message.warning(`出库数量已大于原材料剩余已出库申请数量(${record.notExWarehouseNum})`)
       }
     },
     //物料信息-添加
@@ -242,6 +238,10 @@ export default {
       } else if (type === 'delete') {
         exWarehouseMaterialList = exWarehouseMaterialList.filter(item => item.key !== record.key)
       }
+      that.detail = {
+        ...that.detail,
+        exWarehouseMaterialList
+      }
     },
     //type:view/del
     async query(type, record) {
@@ -252,47 +252,65 @@ export default {
       if (type != 'add' && this.detail) {
         //原料出库申请单-查看详情
         materialOutDetail({ id: this.detail.id }).then(res => {
-          let data = res.data
-          that.detail = data
-          that.detail.exWarehouseMaterialList = data.exWarehouseMaterialList.map(item => {
-            ;(item.__maxExWarehouseNum = item.notExWarehouseNum),
-              (item.attributeText = { 1: '原材料', 2: '模具' }[item.attribute] || '未知'),
-              (item.providerText = { 1: '委托方送货', 2: '加工商提货' }[item.attribute] || '未知')
-            return item
-          })
+          if (res.code === 200) {
+            let data = res.data
+            that.detail = data
+            that.detail.exWarehouseMaterialList = data.exWarehouseMaterialList.map(item => {
+              ;(item.attributeText = { 1: '原材料', 2: '模具' }[item.attribute] || '未知'),
+                (item.sendTypeText = { 1: '委托方送货', 2: '加工商提货' }[item.sendType] || '未知')
+              return item
+            })
+          } else {
+            that.$message.error(res.msg)
+          }
         })
       }
     },
 
     // 原料选择
     handlerMaterialChange({ selectItem, recordParam }) {
-      const that = this
+      console.log('原料选取：', selectItem)
       const {
-        id,
-        positionCode,
+        exitApplyNum, //原材料已出库申请数量
+        // needCount, //所需数量
+        remainExitApplyNum, //原材料剩余已出库申请数量
+        sendType, //原材料送取类型(1:委托方提货,2:加工商送货)
         materialId,
-        materialName,
-        materialCode,
-        specification,
-        subUnit,
-        positionQuantity,
-        k3Code
+        materialName, //物料名称
+        materialCode, //物料代码
+        specification, //规格型号
+        subUnit, //辅计量单位
+        type, //类型(1:原料,2:模具)
+        createdId,
+        createdTime
       } = selectItem
 
-      let exWarehouseMaterialList = [...that.detail.exWarehouseMaterialList]
-      let item = exWarehouseMaterialList.find(item => item.key === recordParam.key)
-      item.positionId = id
-      item.positionCode = positionCode
-      item.materialId = materialId
-      item.materialName = materialName
-      item.materialCode = materialCode
-      item.specification = specification
-      item.subUnit = subUnit
-      item.exWarehouseNum = positionQuantity
-      item.notExWarehouseNum = 0
-      item.alreadyExWarehouseNum = 0
-      item.__maxExWarehouseNum = positionQuantity
-      item.k3Code = k3Code
+      const exWarehouseMaterialList = [...this.detail.exWarehouseMaterialList]
+      // 物料信息列表中已存在该物料，无需重新添加，直接调整原记录即可
+      var temp = exWarehouseMaterialList.find(element => element.materialCode === materialCode)
+      if (temp) {
+        this.$message.warning('物料代码为【' + materialCode + '】的记录已存在')
+      } else {
+        const item = exWarehouseMaterialList.find(obj => obj.key === recordParam.key)
+        item.attribute = type
+        item.createdId = createdId
+        item.createdTime = createdTime
+        item.materialCode = materialCode
+        item.materialId = materialId
+        item.materialName = materialName
+        item.sendType = sendType
+        item.specification = specification
+        item.subUnit = subUnit
+        item.realityExWarehouseNum = exitApplyNum //实际出库数量
+        item.notExWarehouseNum = remainExitApplyNum //未出库数量
+        item.exWarehouseNum = remainExitApplyNum //待出库数量
+        item.attributeText = { 1: '原材料', 2: '模具' }[type] || '未知'
+        item.sendTypeText = { 1: '委托方送货', 2: '加工商提货' }[sendType] || '未知'
+        this.detail = {
+          ...this.detail,
+          exWarehouseMaterialList
+        }
+      }
     },
 
     handleSubmit(type) {
@@ -302,16 +320,9 @@ export default {
       } else if (type === 'submit') {
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
-            const params = {
-              ...that.detail,
-              exWarehouseMaterialList: that.detail.exWarehouseMaterialList.map(item => {
-                item.notExWarehouseNum = (Number(item.exWarehouseNum) || 0) - (Number(item.alreadyExWarehouseNum) || 0)
-                return { ...item }
-              })
-            }
-            console.log(params)
+            console.log(that.detail)
             that.spinning = true
-            materialOutAdd(params)
+            materialOutAdd(that.detail)
               .then(res => {
                 that.spinning = false
                 that.$message.info(res.msg)

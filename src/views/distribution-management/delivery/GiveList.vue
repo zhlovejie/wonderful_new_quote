@@ -1,5 +1,5 @@
 <template>
-  <!-- 出库原料质检 -->
+  <!-- 派送单 -->
   <div class="wdf-custom-wrapper" id="agency-contract-wrapper">
     <div>
       <a-button-group>
@@ -28,8 +28,8 @@
 
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="待处理" key="0" />
-        <a-tab-pane tab="已完结" key="1" />
+        <a-tab-pane tab="待派送" key="0" />
+        <a-tab-pane tab="已派送" key="1" />
       </a-tabs>
       <a-table
         rowKey="id"
@@ -42,30 +42,15 @@
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
-        <!-- 操作按钮：查看详情/删除
-        查看详情：各种状态均可查看详情
-        删除：待处理 且 当前登录人为创建人 -->
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">查看</a>
-          <template v-if="[0].includes(+record.status) && +userInfo.id === +record.createdId">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('del', record)">删除</a>
-          </template>
-          <template v-if="+record.status === 0">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('over', record)">处理</a>
-          </template>
-          <template v-if="+record.status === 1">
-            <a-divider type="vertical" />
-            <a type="primary" v-download="record.wordUrl">下载凭证</a>
-          </template>
         </div>
         <!-- 原料出库产品表  开始 -->
         <a-table
           slot="expandedRowRender"
           slot-scope="record"
           :columns="innerColumns"
-          :dataSource="record.materialList"
+          :dataSource="record.exWarehouseMaterialList"
           :pagination="false"
           size="small"
         >
@@ -75,10 +60,6 @@
           <!-- 属性（1原材料 2模具） -->
           <div slot="attribute" slot-scope="text">
             {{ text == 1 ? '原材料' : '模具' }}
-          </div>
-          <!-- 原料送取(1:委托方送货,2:加工商提货)） -->
-          <div slot="sendType" slot-scope="text">
-            {{ text == 1 ? '委托方送货' : '加工商提货' }}
           </div>
         </a-table>
         <!-- 原料出库产品表  结束 -->
@@ -91,11 +72,10 @@
 
 <script>
 import {
-  materialTestPageList, //出库原料质检-列表
-  materialTestDelete //出库原料质检-删除
+  givePageList //派送单-列表
 } from '@/api/material'
-import SearchForm from './SearchForm'
-import AddForm from './AddForm'
+import SearchForm from './GiveSearchForm'
+import AddForm from '@/views/storageManagement/storage-export/materialApply/GiveAddForm'
 
 const columns = [
   {
@@ -105,8 +85,16 @@ const columns = [
     scopedSlots: { customRender: 'order' }
   },
   {
-    title: '检验单号',
-    dataIndex: 'inspectionNo'
+    title: '日期',
+    dataIndex: 'createdDate'
+  },
+  {
+    title: '派送单号',
+    dataIndex: 'deliveryNoteNo'
+  },
+  {
+    title: '出库单号',
+    dataIndex: 'exWarehouseNo'
   },
   {
     title: '委外加工单号',
@@ -117,20 +105,24 @@ const columns = [
     dataIndex: 'facName'
   },
   {
-    title: '报检人',
+    title: '原料送取',
+    dataIndex: 'sendTypeText'
+  },
+  {
+    title: '预计发货日期',
+    dataIndex: 'deliveryTime'
+  },
+  {
+    title: '状态',
+    dataIndex: 'statusText'
+  },
+  {
+    title: '提交人',
     dataIndex: 'createdName'
   },
   {
-    title: '报检时间',
+    title: '提交时间',
     dataIndex: 'createdTime'
-  },
-  {
-    title: '质检员',
-    dataIndex: 'inspectionUserName'
-  },
-  {
-    title: '单据状态',
-    dataIndex: 'statusText'
   },
   {
     title: '操作',
@@ -168,18 +160,13 @@ const innerColumns = [
     dataIndex: 'subUnit'
   },
   {
-    title: '出库数量',
+    title: '派送数量',
     dataIndex: 'exWarehouseNum'
-  },
-  {
-    title: '原料送取',
-    dataIndex: 'sendType', //原料送取(1:委托方送货,2:加工商提货)
-    scopedSlots: { customRender: 'sendType' }
   }
 ]
 
 export default {
-  name: 'Quality-management_Warehousing_material_test',
+  name: 'Distribution_delivery_give',
   components: {
     AddForm,
     SearchForm
@@ -187,7 +174,7 @@ export default {
   data() {
     return {
       activeKey: 0,
-      dataSource: [], //出库原料质检列表
+      dataSource: [], //派送单列表
       columns,
       innerColumns,
       pagination: {
@@ -208,7 +195,7 @@ export default {
   watch: {
     $route: {
       handler: function(to) {
-        if (to.name === 'quality-management_Warehousing_material_first') {
+        if (to.name === 'distribution_delivery_give') {
           this.searchAction()
         }
       },
@@ -219,9 +206,9 @@ export default {
     this.searchAction()
   },
   methods: {
-    //高级筛选打开
+    //高级筛选打开 派送单和提货单复用 1:派送单 2:提货单
     openSearchModel() {
-      this.$refs.searchForm.query(this.contractState)
+      this.$refs.searchForm.query(1)
     },
     //高级筛选返回数据
     paramChangeHandler(params) {
@@ -233,7 +220,7 @@ export default {
       this.searchType = type
       this.searchAction()
     },
-    // 查询-出库原料质检列表
+    // 查询-派送单列表
     searchAction(opt = {}) {
       let that = this
       const paginationParam = {
@@ -247,13 +234,16 @@ export default {
         opt
       )
       this.loading = true
-      materialTestPageList(_searchParam)
+      givePageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            // 单据状态（0 待处理 1已处理）
-            item.statusText = { 0: '待处理', 1: '已处理' }[item.status] || '未知'
+            item.createdDate = item.createdTime.slice(0,10)//日期截取创建时间年月日
+            // 单据状态（0 待派送 1已派送）
+            item.statusText = { 0: '待派送', 1: '已派送' }[item.status] || '未知';
+            // 原料送取(1:委托方送货,2:加工商提货)）派送单固定为：委托方送货
+            item.sendTypeText = '委托方送货';
             return item
           })
 
@@ -281,21 +271,9 @@ export default {
       this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
-    //列表操作-查看/删除
+    //列表操作-查看
     doAction(actionType, record) {
-      let that = this
-      if (actionType === 'del') {
-        materialTestDelete({ id: record.id })
-          .then(res => {
-            that.$message.info(res.msg)
-            that.searchAction()
-          })
-          .catch(err => {
-            that.$message.info(`错误：${err.message}`)
-          })
-      } else {
-        that.$refs.addForm.query(actionType, record || {})
-      }
+      this.$refs.addForm.query(actionType, record || {})
     },
     //选项卡切换，并刷新数据
     tabChange(tagKey) {

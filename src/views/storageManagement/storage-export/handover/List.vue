@@ -1,5 +1,5 @@
 <template>
-  <!-- 原料出库申请单 -->
+  <!-- 交接单 -->
   <div class="wdf-custom-wrapper" id="agency-contract-wrapper">
     <!-- 筛选-开始 -->
     <div class="search-wrapper">
@@ -10,12 +10,11 @@
             @click="openFacOrderModel(1)"
             placeholder="请选择加工商"
             :value="searchParam.facName"
-            :allowClear="true"
           />
         </a-form-item>
         <a-form-item>
           <a-select
-            placeholder="请选择物料"
+            placeholder="选择物料"
             v-model="searchParam.materialId"
             style="width: 250px"
             :allowClear="true"
@@ -40,22 +39,18 @@
           <a-input
             placeholder="委外加工单号/物料名称/出库单号模糊搜索"
             v-model="searchParam.parameter"
-            style="width:300px;"
             :allowClear="true"
+            style="width:300px;"
           />
         </a-form-item>
         <a-form-item>
           <a-button type="text" @click="onClean" style="margin-right:10px;">清除</a-button>
-          <a-button type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+          <a-button class="a-button" type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
         </a-form-item>
       </a-form>
     </div>
     <!-- 筛选-结束 -->
     <div class="main-wrapper">
-      <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="待出库" key="0" />
-        <a-tab-pane tab="已出库" key="1" />
-      </a-tabs>
       <a-table
         rowKey="id"
         :columns="columns"
@@ -71,36 +66,14 @@
         查看详情：各种状态均可查看详情
         删除：待出库 且 当前登录人为创建人 -->
         <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" v-if="$auth('exWarehouseMaterialList:view')" @click="doAction('view', record)">查看</a>
-          <template v-if="+record.status === 0">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('edit', record)">测试编辑</a>
-          </template>
-
-          <template
-            v-if="
-              [0].includes(+record.status) &&
-                $auth('exWarehouseMaterialList:delete') &&
-                +userInfo.id === +record.createdId
-            "
-          >
+          <a type="primary" @click="doAction('view', record)">查看</a>
+          <a-divider type="vertical" />
+          <a type="primary" @click="doAction('edit', record)">测试编辑</a>
+          <template v-if="[0].includes(+record.status) && +userInfo.id === +record.createdId">
             <a-divider type="vertical" />
             <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
               <a type="primary" href="javascript:;">删除</a>
             </a-popconfirm>
-          </template>
-          <!-- operationType: 1派送 2交接 3派送和交接 否则均不显示 -->
-          <!-- 已出库-派送与交接显示与原料送取有关系 -->
-          <!-- 派送：委托方送货 -->
-          <!-- 交接：加工商提货 -->
-          <!-- 如果一个单子两者都有，则两个按钮均显示 -->
-          <template v-if="+record.status === 1 && (+record.operationType === 1 || +record.operationType === 3)">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doGiveAction(record)">派送</a>
-          </template>
-          <template v-if="+record.status === 1 && (+record.operationType === 2 || +record.operationType === 3)">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doHandoverAction(record)">交接</a>
           </template>
         </div>
         <!-- 原料出库产品表  开始 -->
@@ -119,33 +92,25 @@
           <div slot="attribute" slot-scope="text">
             {{ text == 1 ? '原材料' : '模具' }}
           </div>
-          <!-- 原料送取(1:委托方送货,2:加工商提货） -->
-          <div slot="sendType" slot-scope="text">
-            {{ { 1: '委托方送货', 2: '加工商提货' }[text] || '未知' }}
-          </div>
         </a-table>
         <!-- 原料出库产品表  结束 -->
       </a-table>
     </div>
-    <AddForm ref="addForm" @ok="() => searchAction({ current: 1 })" />
-    <GiveAddForm ref="giveAddForm" @ok="() => searchAction({ current: 1 })" />
-    <HandoverAddForm ref="handoverAddForm" @ok="() => searchAction({ current: 1 })" />
+    <AddForm ref="addForm" @ok="() => searchAction()" />
     <FacAndOrderSelect ref="facAndOrderSelect" @change="onFacOrderChange" />
   </div>
 </template>
 
 <script>
 import {
-  materialOutPageList, //原料出库申请单-列表
-  materialOutDelete //原料出库申请单-删除
+  materialHandoverPageList, //交接单-列表
+  materialHandoverDelete //交接单-删除
 } from '@/api/material'
 import {
   exWarehouseApplyGetMaterial //条件检索-物料列表
 } from '@/api/storage_wzz'
 import AddForm from './AddForm'
-import GiveAddForm from './GiveAddForm.vue'
-import HandoverAddForm from '../handover/AddForm'
-import FacAndOrderSelect from './FacAndOrderSelect.vue'
+import FacAndOrderSelect from '../materialApply/FacAndOrderSelect'
 
 const columns = [
   {
@@ -153,6 +118,10 @@ const columns = [
     key: 'order',
     width: '70px',
     scopedSlots: { customRender: 'order' }
+  },
+  {
+    title: '交接单号',
+    dataIndex: 'handNoteNo'
   },
   {
     title: '出库单号',
@@ -167,15 +136,23 @@ const columns = [
     dataIndex: 'facName'
   },
   {
-    title: '出库状态',
-    dataIndex: 'statusText'
+    title: '原料送取',
+    dataIndex: 'sendTypeText' //原料送取(1:委托方送货,2:加工商提货)
   },
   {
-    title: '提交人',
+    title: '接货人',
+    dataIndex: 'handUserName'
+  },
+  {
+    title: '接货人手机号',
+    dataIndex: 'handUserTel'
+  },
+  {
+    title: '交接人',
     dataIndex: 'createdName'
   },
   {
-    title: '提交时间',
+    title: '交接时间',
     dataIndex: 'createdTime'
   },
   {
@@ -214,34 +191,22 @@ const innerColumns = [
     dataIndex: 'subUnit'
   },
   {
-    title: '待出库数量',
+    title: '交接数量',
     dataIndex: 'exWarehouseNum'
-  },
-  {
-    title: '原料送取',
-    dataIndex: 'sendType', //原料送取(1:委托方送货,2:加工商提货)
-    scopedSlots: { customRender: 'sendType' }
-  },
-  {
-    title: '实际出库数量',
-    dataIndex: 'realityExWarehouseNum'
   }
 ]
 
 export default {
-  name: 'Stock_management_material_apply',
+  name: 'Stock_management_export_handover',
   components: {
-    AddForm, //详情
-    GiveAddForm, //派送单
-    HandoverAddForm, //交接单
-    FacAndOrderSelect //加工商 和 加工单号筛选
+    AddForm,
+    FacAndOrderSelect
   },
   data() {
     return {
-      activeKey: 0,
       columns,
       innerColumns,
-      dataSource: [], //原料出库申请单列表
+      dataSource: [], //交接单列表
       pagination: {
         //分页加载
         current: 1,
@@ -256,10 +221,7 @@ export default {
         facId: undefined, //加工商id
         materialId: undefined, //物料id
         orderId: undefined, //委外加工单id
-        parameter: '', //模糊检索关键词
-
-        facName: '',
-        orderNo: ''
+        parameter: '' //模糊检索关键词
       },
       userInfo: this.$store.getters.userInfo, //当前登录人
       storageMaterialList: [] //物料列表
@@ -268,7 +230,7 @@ export default {
   watch: {
     $route: {
       handler: function(to) {
-        if (to.name === 'stock_management_material_apply') {
+        if (to.name === 'stock_management_export_handover') {
           this.init()
         }
       },
@@ -289,22 +251,21 @@ export default {
       that.searchAction()
       return Promise.all(queue)
     },
-    // 查询-原料出库申请单列表
+    // 查询-交接单列表
     searchAction(opt = {}) {
       let that = this
       const paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
-      const _searchParam = Object.assign({}, { ...this.searchParam, status: that.activeKey }, paginationParam, opt)
+      const _searchParam = Object.assign({}, { ...this.searchParam }, paginationParam, opt)
       this.loading = true
-      materialOutPageList(_searchParam)
+      materialHandoverPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            // 单据状态（0 待出库 1已出库）
-            item.statusText = { 0: '待出库', 1: '已出库' }[item.status] || '未知'
+            item.sendTypeText = item.sendType == 1 ? '委托方送货' : '加工商提货'
             return item
           })
 
@@ -336,7 +297,7 @@ export default {
     doAction(actionType, record) {
       let that = this
       if (actionType === 'del') {
-        materialOutDelete({ id: record.id })
+        materialHandoverDelete({ id: record.id })
           .then(res => {
             that.$message.info(res.msg)
             that.searchAction()
@@ -347,19 +308,6 @@ export default {
       } else {
         that.$refs.addForm.query(actionType, record || {})
       }
-    },
-    //列表操作-派送
-    doGiveAction(record) {
-      this.$refs.giveAddForm.query('add', record || {})
-    },
-    //列表操作-交接
-    doHandoverAction(record) {
-      this.$refs.handoverAddForm.query('add', record || {})
-    },
-    // 切换 待出库/已出库 选项卡，并刷新数据
-    tabChange(tagKey) {
-      this.activeKey = parseInt(tagKey)
-      this.searchAction({ current: 1 })
     },
     //筛选-选择物料-是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
     filterOption(input, option) {

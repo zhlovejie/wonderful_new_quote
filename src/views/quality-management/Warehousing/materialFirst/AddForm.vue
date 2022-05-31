@@ -42,7 +42,7 @@
             <td style="width:150px;">加工商地址</td>
             <td style="width:350px;">
               <a-form-model-item>
-                加工商地址需要后台返回
+                {{detail.facAddress}}
               </a-form-model-item>
             </td>
           </tr>
@@ -50,13 +50,13 @@
             <td style="width:150px;">业务员</td>
             <td style="width:350px;">
               <a-form-model-item>
-                业务员名称后台返回
+                {{detail.facSalemanName?detail.facSalemanName:''}}
               </a-form-model-item>
             </td>
             <td style="width:150px;">业务员电话</td>
             <td style="width:350px;">
               <a-form-model-item>
-                业务员电话后台返回
+                {{detail.facSalemanTel?detail.facSalemanTel:''}}
               </a-form-model-item>
             </td>
           </tr>
@@ -85,8 +85,8 @@
               <a-form-model-item>
                 <span v-if="isView">{{ detail.detectionResult }}</span>
                 <a-select v-else placeholder="请选择检测结果" v-model="detail.detectionResult" :allowClear="true">
-                  <a-select-option :value="1">合格</a-select-option>
-                  <a-select-option :value="0">不合格</a-select-option>
+                  <a-select-option :value="合格">合格</a-select-option>
+                  <a-select-option :value="不合格">不合格</a-select-option>
                 </a-select>
               </a-form-model-item>
             </td>
@@ -225,7 +225,7 @@ const columns = [
 ]
 
 export default {
-  name: 'materia-first-addForm',
+  name: 'Materia-first-addForm',
   components: {},
   data() {
     return {

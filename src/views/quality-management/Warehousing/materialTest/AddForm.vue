@@ -184,7 +184,7 @@ const columns = [
 ]
 
 export default {
-  name: 'materia-test-addForm',
+  name: 'Materia-test-addForm',
   components: {},
   data() {
     return {
@@ -220,7 +220,7 @@ export default {
           that.detail = data
           that.detail.materialList = data.materialList.map(item => {
             ;(item.attributeText = { 1: '原材料', 2: '模具' }[item.attribute] || '未知'),
-              (item.providerText = { 1: '委托方送货', 2: '加工商提货' }[item.attribute] || '未知')
+              (item.providerText = { 1: '委托方送货', 2: '加工商提货' }[item.provider] || '未知')
             return item
           })
         })

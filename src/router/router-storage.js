@@ -269,6 +269,15 @@ export default {
             title: '原料出库申请单',
             permission: ['permission']
           }
+        },
+        {
+          path: '/storageManagement/storageExport/handover',
+          name: 'stock_management_export_handover',
+          component: () => import('@/views/storageManagement/storage-export/handover/List'),
+          meta: {
+            title: '交接单',
+            permission: ['permission']
+          }
         }
       ]
     },

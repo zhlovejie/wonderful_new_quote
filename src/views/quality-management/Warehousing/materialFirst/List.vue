@@ -165,7 +165,7 @@ const innerColumns = [
 ]
 
 export default {
-  name: 'quality-management_Warehousing_material_first',
+  name: 'Quality-management_Warehousing_material_first',
   components: {
     AddForm,
     SearchForm

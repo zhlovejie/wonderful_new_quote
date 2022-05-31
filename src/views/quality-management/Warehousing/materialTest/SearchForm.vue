@@ -89,7 +89,7 @@ import {
 } from '@/api/storage_wzz'
 
 export default {
-  name: 'searchForm',
+  name: 'SearchForm',
   components: {},
   data() {
     return {

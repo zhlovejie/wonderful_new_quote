@@ -1,21 +1,12 @@
 <template>
-  <!-- 原料出库申请单 -->
+  <!-- 工序变更单 -->
   <div class="wdf-custom-wrapper" id="agency-contract-wrapper">
     <!-- 筛选-开始 -->
     <div class="search-wrapper">
       <a-form layout="inline">
         <a-form-item>
-          <a-input
-            read-only="read-only"
-            @click="openFacOrderModel(1)"
-            placeholder="请选择加工商"
-            :value="searchParam.facName"
-            :allowClear="true"
-          />
-        </a-form-item>
-        <a-form-item>
           <a-select
-            placeholder="请选择物料"
+            placeholder="请选择成品物料"
             v-model="searchParam.materialId"
             style="width: 250px"
             :allowClear="true"
@@ -28,17 +19,24 @@
             }}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item>
-          <a-input
-            read-only="read-only"
-            @click="openFacOrderModel(2)"
-            placeholder="请选择加工单号"
-            :value="searchParam.orderNo"
-          />
+        <!-- 审批状态：1待提交 2待审批，3通过，4不通过，5已撤回 -->
+        <a-form-item v-if="+activeKey === 0">
+          <a-select
+            placeholder="请选择审批状态"
+            v-model="searchParam.approveStatus"
+            style="width:150px;"
+            :allowClear="true"
+          >
+            <a-select-option :value="1">待提交</a-select-option>
+            <a-select-option :value="2">待审批</a-select-option>
+            <a-select-option :value="3">通过</a-select-option>
+            <a-select-option :value="4">不通过</a-select-option>
+            <a-select-option :value="5">已撤回</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item>
           <a-input
-            placeholder="委外加工单号/物料名称/出库单号模糊搜索"
+            placeholder="需求单号/成品物料名称/工序变更单号"
             v-model="searchParam.parameter"
             style="width:300px;"
             :allowClear="true"
@@ -47,14 +45,18 @@
         <a-form-item>
           <a-button type="text" @click="onClean" style="margin-right:10px;">清除</a-button>
           <a-button type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
+          <a-button type="text" @click="doAction('add', { orderId: 1, needId: 10 })" style="margin-left:10px;"
+            >测试新增</a-button
+          >
         </a-form-item>
       </a-form>
     </div>
     <!-- 筛选-结束 -->
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
-        <a-tab-pane tab="待出库" key="0" />
-        <a-tab-pane tab="已出库" key="1" />
+        <a-tab-pane tab="我的" key="0" />
+        <a-tab-pane tab="待审批" key="1" />
+        <a-tab-pane tab="已审核" key="2" />
       </a-tabs>
       <a-table
         rowKey="id"
@@ -64,184 +66,128 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
-        </div>
-        <!-- 操作按钮：查看详情/删除
-        查看详情：各种状态均可查看详情
-        删除：待出库 且 当前登录人为创建人 -->
-        <div class="action-btns" slot="action" slot-scope="text, record">
-          <a type="primary" v-if="$auth('exWarehouseMaterialList:view')" @click="doAction('view', record)">查看</a>
-          <template v-if="+record.status === 0">
-            <a-divider type="vertical" />
-            <a type="primary" @click="doAction('edit', record)">测试编辑</a>
-          </template>
-
-          <template
-            v-if="
-              [0].includes(+record.status) &&
-                $auth('exWarehouseMaterialList:delete') &&
-                +userInfo.id === +record.createdId
-            "
+        <div slot="approveStatusText" slot-scope="text, record">
+          <a
+            v-if="record.approveStatus > 1 && record.approveStatus < 5"
+            type="primary"
+            @click="onApproveList(record)"
+            >{{ text }}</a
           >
+          <span v-else>{{ text }}</span>
+        </div>
+        <!-- 原工序变化-查看 -->
+        <div slot="materialView" slot-scope="text, record">
+          <a type="primary" @click="onMaterialView(record)">查看</a>
+        </div>
+        <!-- approveStatus 审批状态：1待提交 2待审批 3通过，4不通过 5已撤回  -->
+        <div class="action-btns" slot="action" slot-scope="text, record">
+          <a type="primary" @click="doAction('view', record)">详情</a>
+          <template
+            v-if="(record.approveStatus === 1 || record.approveStatus === 5) && +userInfo.id === +record.createdId"
+          >
+            <a-divider type="vertical" />
+            <a type="primary" @click="doAction('edit', record)">编辑</a>
+          </template>
+          <template
+            v-if="(record.approveStatus === 1 || record.approveStatus === 2) && +userInfo.id === +record.createdId"
+          >
+            <a-divider type="vertical" />
+            <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('del', record)">
+              <a type="primary" @click="doAction('withdraw', record)">撤回</a>
+            </a-popconfirm>
+          </template>
+          <template v-if="record.approveStatus === 5 && +userInfo.id === +record.createdId">
             <a-divider type="vertical" />
             <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
               <a type="primary" href="javascript:;">删除</a>
             </a-popconfirm>
           </template>
-          <!-- operationType: 1派送 2交接 3派送和交接 否则均不显示 -->
-          <!-- 已出库-派送与交接显示与原料送取有关系 -->
-          <!-- 派送：委托方送货 -->
-          <!-- 交接：加工商提货 -->
-          <!-- 如果一个单子两者都有，则两个按钮均显示 -->
-          <template v-if="+record.status === 1 && (+record.operationType === 1 || +record.operationType === 3)">
+
+          <template v-if="activeKey === 1 && record.approveStatus === 2">
             <a-divider type="vertical" />
-            <a type="primary" @click="doGiveAction(record)">派送</a>
+            <a type="primary" @click="doAction('approve', record)">审核</a>
           </template>
-          <template v-if="+record.status === 1 && (+record.operationType === 2 || +record.operationType === 3)">
+          <!-- //是否展示变更报价按钮：0 不展示 1 展示 -->
+          <template v-if="record.showChangeQuotationButton === 1">
             <a-divider type="vertical" />
-            <a type="primary" @click="doHandoverAction(record)">交接</a>
+            <a type="primary" @click="doAction('change', record)">变更报价</a>
           </template>
         </div>
-        <!-- 原料出库产品表  开始 -->
-        <a-table
-          slot="expandedRowRender"
-          slot-scope="record"
-          :columns="innerColumns"
-          :dataSource="record.exWarehouseMaterialList"
-          :pagination="false"
-          size="small"
-        >
-          <div slot="order" slot-scope="text, record, index">
-            {{ index + 1 }}
-          </div>
-          <!-- 属性（1原材料 2模具） -->
-          <div slot="attribute" slot-scope="text">
-            {{ text == 1 ? '原材料' : '模具' }}
-          </div>
-          <!-- 原料送取(1:委托方送货,2:加工商提货） -->
-          <div slot="sendType" slot-scope="text">
-            {{ { 1: '委托方送货', 2: '加工商提货' }[text] || '未知' }}
-          </div>
-        </a-table>
-        <!-- 原料出库产品表  结束 -->
       </a-table>
     </div>
+    <MaterialChange ref="materialChangeModal" />
     <AddForm ref="addForm" @ok="() => searchAction({ current: 1 })" />
-    <GiveAddForm ref="giveAddForm" @ok="() => searchAction({ current: 1 })" />
-    <HandoverAddForm ref="handoverAddForm" @ok="() => searchAction({ current: 1 })" />
-    <FacAndOrderSelect ref="facAndOrderSelect" @change="onFacOrderChange" />
+    <ApproveInfo ref="approveInfoCard" />
   </div>
 </template>
 
 <script>
 import {
-  materialOutPageList, //原料出库申请单-列表
-  materialOutDelete //原料出库申请单-删除
-} from '@/api/material'
+  craftPageList, //工序变更单-列表
+  craftDelete, //工序变更单-删除
+  craftWithdraw //工序变更单-撤回
+} from '@/api/orderChange'
 import {
   exWarehouseApplyGetMaterial //条件检索-物料列表
 } from '@/api/storage_wzz'
-import AddForm from './AddForm'
-import GiveAddForm from './GiveAddForm.vue'
-import HandoverAddForm from '../handover/AddForm'
-import FacAndOrderSelect from './FacAndOrderSelect.vue'
+import MaterialChange from './modules/MaterialChange.vue' //原工序变化-查看
+import AddForm from './modules/AddForm.vue' //新增/详情
+import ApproveInfo from '@/components/CustomerList/ApproveInfo' //审批预览
 
 const columns = [
   {
     title: '序号',
-    key: 'order',
+    key: 'key',
     width: '70px',
-    scopedSlots: { customRender: 'order' }
+    dataIndex: 'key'
   },
   {
-    title: '出库单号',
-    dataIndex: 'exWarehouseNo'
+    title: '工序变更单号',
+    dataIndex: 'applyCode'
   },
   {
-    title: '委外加工单号',
-    dataIndex: 'orderNo'
+    title: '技改单号',
+    dataIndex: 'craftChangeCode'
   },
   {
-    title: '加工商名称',
-    dataIndex: 'facName'
+    title: '加工需求单号',
+    dataIndex: 'needCode'
   },
   {
-    title: '出库状态',
-    dataIndex: 'statusText'
+    title: '原工序变化',
+    dataIndex: 'materialView',
+    scopedSlots: { customRender: 'materialView' }
   },
   {
-    title: '提交人',
-    dataIndex: 'createdName'
+    title: '原成品是否可用',
+    dataIndex: 'oldUseFlagText' //原成品物料是否可用：0 不可用 1 可用
   },
   {
-    title: '提交时间',
-    dataIndex: 'createdTime'
+    title: '状态',
+    width: '80px',
+    dataIndex: 'approveStatusText', //审批状态：1待提交 2待审批 3通过，4不通过 5已撤回
+    scopedSlots: { customRender: 'approveStatusText' }
   },
   {
+    align: 'center',
     title: '操作',
-    key: 'action',
+    dataIndex: 'action',
     scopedSlots: { customRender: 'action' }
   }
 ]
 
-const innerColumns = [
-  {
-    title: '序号',
-    key: 'order',
-    width: '70px',
-    scopedSlots: { customRender: 'order' }
-  },
-  {
-    title: '属性',
-    dataIndex: 'attribute', //属性（1原材料 2模具）
-    scopedSlots: { customRender: 'attribute' }
-  },
-  {
-    title: '物料代码',
-    dataIndex: 'materialCode'
-  },
-  {
-    title: '物料名称',
-    dataIndex: 'materialName'
-  },
-  {
-    title: '规格型号',
-    dataIndex: 'specification'
-  },
-  {
-    title: '使用计量单位',
-    dataIndex: 'subUnit'
-  },
-  {
-    title: '待出库数量',
-    dataIndex: 'exWarehouseNum'
-  },
-  {
-    title: '原料送取',
-    dataIndex: 'sendType', //原料送取(1:委托方送货,2:加工商提货)
-    scopedSlots: { customRender: 'sendType' }
-  },
-  {
-    title: '实际出库数量',
-    dataIndex: 'realityExWarehouseNum'
-  }
-]
-
 export default {
-  name: 'Stock_management_material_apply',
+  name: 'outsourcing-order-change-craft',
   components: {
-    AddForm, //详情
-    GiveAddForm, //派送单
-    HandoverAddForm, //交接单
-    FacAndOrderSelect //加工商 和 加工单号筛选
+    AddForm,
+    MaterialChange,
+    ApproveInfo
   },
   data() {
     return {
       activeKey: 0,
       columns,
-      innerColumns,
-      dataSource: [], //原料出库申请单列表
+      dataSource: [], //工序变更单列表
       pagination: {
         //分页加载
         current: 1,
@@ -253,13 +199,9 @@ export default {
       },
       loading: false,
       searchParam: {
-        facId: undefined, //加工商id
-        materialId: undefined, //物料id
-        orderId: undefined, //委外加工单id
-        parameter: '', //模糊检索关键词
-
-        facName: '',
-        orderNo: ''
+        needCode: undefined, //需求单单号
+        applyCode: undefined, //工序变更单单号
+        approveStatus: undefined //审批状态：1待提交 2待审批，3通过，4不通过，5已撤回
       },
       userInfo: this.$store.getters.userInfo, //当前登录人
       storageMaterialList: [] //物料列表
@@ -268,7 +210,7 @@ export default {
   watch: {
     $route: {
       handler: function(to) {
-        if (to.name === 'stock_management_material_apply') {
+        if (to.name === 'outsourcing-order-change-craft') {
           this.init()
         }
       },
@@ -289,22 +231,30 @@ export default {
       that.searchAction()
       return Promise.all(queue)
     },
-    // 查询-原料出库申请单列表
+    // 查询-工序变更单列表
     searchAction(opt = {}) {
       let that = this
       const paginationParam = {
         current: that.pagination.current || 1,
         size: that.pagination.pageSize || 10
       }
-      const _searchParam = Object.assign({}, { ...this.searchParam, status: that.activeKey }, paginationParam, opt)
+      const _searchParam = Object.assign(
+        {},
+        { ...this.searchParam, searchStatus: that.activeKey },
+        paginationParam,
+        opt
+      )
       this.loading = true
-      materialOutPageList(_searchParam)
+      craftPageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
-            // 单据状态（0 待出库 1已出库）
-            item.statusText = { 0: '待出库', 1: '已出库' }[item.status] || '未知'
+            //原成品物料是否可用：0 不可用 1 可用
+            item.oldUseFlagText = { 0: '不可用', 1: '可用' }[item.oldUseFlag] || '未知'
+            //审批状态：1待提交 2待审批，3通过，4不通过，5已撤回
+            item.approveStatusText =
+              { 1: '待提交', 2: '待审批', 3: '通过', 4: '不通过', 5: '已撤回' }[item.approveStatus] || '未知'
             return item
           })
 
@@ -332,14 +282,32 @@ export default {
       this.pagination = { ...this.pagination, ...pager }
       this.searchAction()
     },
+    //原工序变化-查看
+    onMaterialView(record) {
+      console.log('原工序变化-查看:', record)
+      this.$refs.materialChangeModal.query('view', record || {})
+    },
     //列表操作-查看/删除
     doAction(actionType, record) {
-      let that = this
+      const that = this
       if (actionType === 'del') {
-        materialOutDelete({ id: record.id })
+        craftDelete(`idList=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
-            that.searchAction()
+            if (res.code === 200) {
+              that.searchAction()
+            }
+          })
+          .catch(err => {
+            that.$message.info(`错误：${err.message}`)
+          })
+      } else if (actionType === 'withdraw') {
+        craftWithdraw({ id: record.id })
+          .then(res => {
+            that.$message.info(res.msg)
+            if (res.code === 200) {
+              that.searchAction()
+            }
           })
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
@@ -347,14 +315,6 @@ export default {
       } else {
         that.$refs.addForm.query(actionType, record || {})
       }
-    },
-    //列表操作-派送
-    doGiveAction(record) {
-      this.$refs.giveAddForm.query('add', record || {})
-    },
-    //列表操作-交接
-    doHandoverAction(record) {
-      this.$refs.handoverAddForm.query('add', record || {})
     },
     // 切换 待出库/已出库 选项卡，并刷新数据
     tabChange(tagKey) {
@@ -382,6 +342,10 @@ export default {
     //清空筛选条件
     onClean() {
       this.searchParam = {}
+    },
+    //查看审批流程
+    onApproveList(record) {
+      this.$refs.approveInfoCard.init(record.instanceId, 'material')
     }
   }
 }
